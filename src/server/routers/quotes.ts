@@ -471,4 +471,151 @@ export const quotesRouter = createTRPCRouter({
         recentQuotes,
       };
     }),
+
+  // Comparar cotações por material
+  compare: tenantProcedure
+    .input(
+      z.object({
+        materialId: z.string().optional(),
+        materialIds: z.array(z.string()).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const materialFilter = input.materialId 
+        ? { materialId: input.materialId }
+        : input.materialIds?.length 
+          ? { materialId: { in: input.materialIds } }
+          : {};
+
+      // Buscar itens de cotações com os materiais especificados
+      const quoteItems = await ctx.prisma.quoteItem.findMany({
+        where: {
+          ...materialFilter,
+          quote: {
+            supplier: { ...tenantFilter(ctx.companyId) },
+            status: { in: ["RECEIVED", "APPROVED", "PENDING"] },
+          },
+        },
+        include: {
+          quote: {
+            include: {
+              supplier: {
+                select: {
+                  id: true,
+                  code: true,
+                  companyName: true,
+                  tradeName: true,
+                  qualityIndex: true,
+                },
+              },
+            },
+          },
+          material: {
+            select: {
+              id: true,
+              code: true,
+              description: true,
+              unit: true,
+            },
+          },
+        },
+        orderBy: [
+          { materialId: "asc" },
+          { unitPrice: "asc" },
+        ],
+      });
+
+      // Agrupar por material
+      const byMaterial = quoteItems.reduce((acc, item) => {
+        const key = item.materialId;
+        if (!acc[key]) {
+          acc[key] = {
+            material: item.material,
+            quotes: [],
+          };
+        }
+        acc[key].quotes.push({
+          quoteId: item.quote.id,
+          quoteCode: item.quote.code,
+          quoteStatus: item.quote.status,
+          supplier: item.quote.supplier,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          deliveryDays: item.deliveryDays,
+          requestDate: item.quote.requestDate,
+          validUntil: item.quote.validUntil,
+        });
+        return acc;
+      }, {} as Record<string, {
+        material: typeof quoteItems[0]["material"];
+        quotes: Array<{
+          quoteId: string;
+          quoteCode: number;
+          quoteStatus: string;
+          supplier: typeof quoteItems[0]["quote"]["supplier"];
+          quantity: number;
+          unitPrice: number;
+          totalPrice: number;
+          deliveryDays: number | null;
+          requestDate: Date;
+          validUntil: Date | null;
+        }>;
+      }>);
+
+      // Calcular estatísticas por material
+      const comparison = Object.values(byMaterial).map((group) => {
+        const prices = group.quotes.map((q) => q.unitPrice);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+        const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+        const bestQuote = group.quotes.find((q) => q.unitPrice === minPrice);
+
+        return {
+          material: group.material,
+          quotesCount: group.quotes.length,
+          minPrice,
+          maxPrice,
+          avgPrice,
+          priceVariation: maxPrice > 0 ? ((maxPrice - minPrice) / maxPrice) * 100 : 0,
+          bestQuote,
+          quotes: group.quotes.sort((a, b) => a.unitPrice - b.unitPrice),
+        };
+      });
+
+      return comparison;
+    }),
+
+  // Listar materiais com múltiplas cotações
+  materialsWithQuotes: tenantProcedure
+    .query(async ({ ctx }) => {
+      const materials = await ctx.prisma.material.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          quoteItems: {
+            some: {
+              quote: {
+                status: { in: ["RECEIVED", "APPROVED", "PENDING"] },
+              },
+            },
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              quoteItems: {
+                where: {
+                  quote: {
+                    status: { in: ["RECEIVED", "APPROVED", "PENDING"] },
+                  },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { description: "asc" },
+      });
+
+      return materials.filter((m) => m._count.quoteItems > 1);
+    }),
 });

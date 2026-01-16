@@ -83,6 +83,7 @@ model Company {
   permissions  UserCompanyPermission[]
   cloneLogsSource CloneLog[] @relation("CloneSource")
   cloneLogsTarget CloneLog[] @relation("CloneTarget")
+  purchaseOrders  PurchaseOrder[]
 
   @@map("companies")
 }
@@ -234,6 +235,7 @@ model Material {
   inventory           Inventory[]
   supplierMaterials   SupplierMaterial[]
   quoteItems          QuoteItem[]
+  purchaseOrderItems  PurchaseOrderItem[]
 
   @@map("materials")
 }
@@ -277,6 +279,7 @@ model Supplier {
   supplierMaterials SupplierMaterial[]
   quotes            Quote[]
   inventoryMovements InventoryMovement[]
+  purchaseOrders    PurchaseOrder[]
 
   @@map("suppliers")
 }
@@ -374,6 +377,7 @@ model Quote {
   updatedAt       DateTime    @updatedAt
 
   items           QuoteItem[]
+  purchaseOrders  PurchaseOrder[]
 
   @@map("quotes")
 }
@@ -392,7 +396,75 @@ model QuoteItem {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  purchaseOrderItems PurchaseOrderItem[]
+
   @@map("quote_items")
+}
+
+// =============================================================================
+// MÓDULO PEDIDO DE COMPRA
+// =============================================================================
+
+enum PurchaseOrderStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  SENT
+  PARTIAL
+  COMPLETED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id                    String              @id @default(uuid())
+  code                  Int                 @unique
+  supplierId            String
+  supplier              Supplier            @relation(fields: [supplierId], references: [id])
+  quoteId               String?
+  quote                 Quote?              @relation(fields: [quoteId], references: [id])
+  status                PurchaseOrderStatus @default(DRAFT)
+  orderDate             DateTime            @default(now())
+  expectedDeliveryDate  DateTime?
+  actualDeliveryDate    DateTime?
+  paymentTerms          String?
+  deliveryTerms         String?
+  freightValue          Float               @default(0)
+  discountPercent       Float               @default(0)
+  totalValue            Float               @default(0)
+  notes                 String?
+  companyId             String?
+  company               Company?            @relation(fields: [companyId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  items                 PurchaseOrderItem[]
+
+  @@index([supplierId])
+  @@index([companyId])
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  materialId      String
+  material        Material      @relation(fields: [materialId], references: [id])
+  quoteItemId     String?
+  quoteItem       QuoteItem?    @relation(fields: [quoteItemId], references: [id])
+  quantity        Float
+  unitPrice       Float         @default(0)
+  totalPrice      Float         @default(0)
+  receivedQty     Float         @default(0)
+  deliveryDays    Int?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([purchaseOrderId])
+  @@index([materialId])
+  @@map("purchase_order_items")
 }
 
 // =============================================================================

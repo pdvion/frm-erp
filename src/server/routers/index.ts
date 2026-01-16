@@ -3,6 +3,7 @@ import { materialsRouter } from "./materials";
 import { suppliersRouter } from "./suppliers";
 import { inventoryRouter } from "./inventory";
 import { quotesRouter } from "./quotes";
+import { purchaseOrdersRouter } from "./purchaseOrders";
 import { tenantRouter } from "./tenant";
 import { auditRouter } from "./audit";
 
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   suppliers: suppliersRouter,
   inventory: inventoryRouter,
   quotes: quotesRouter,
+  purchaseOrders: purchaseOrdersRouter,
   audit: auditRouter,
 });
 
