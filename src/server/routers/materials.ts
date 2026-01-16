@@ -129,4 +129,13 @@ export const materialsRouter = createTRPCRouter({
         where: { id: input.id, companyId: ctx.companyId },
       });
     }),
+
+  // Listar categorias
+  listCategories: tenantProcedure
+    .query(async ({ ctx }) => {
+      return ctx.prisma.category.findMany({
+        where: tenantFilter(ctx.companyId),
+        orderBy: { name: "asc" },
+      });
+    }),
 });
