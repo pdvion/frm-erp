@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3 } from "lucide-react";
+import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const modules = [
@@ -46,6 +46,13 @@ const modules = [
     href: "/settings",
     icon: Settings,
     color: "bg-gray-500",
+  },
+  {
+    title: "Auditoria",
+    description: "Logs de ações e governança",
+    href: "/audit",
+    icon: Shield,
+    color: "bg-indigo-500",
   },
 ];
 
