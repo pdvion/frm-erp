@@ -2,19 +2,61 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { getTenantContext, hasPermission, type TenantContext, type SystemModule, type PermissionLevel } from "./context";
 
+async function getSupabaseUser() {
+  const cookieStore = await cookies();
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Ignore errors in Server Components
+          }
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  // Por enquanto, simular usuário logado (admin)
-  // TODO: Integrar com Supabase Auth
-  const userId = opts.headers.get("x-user-id") ?? "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+  // Obter usuário autenticado do Supabase
+  const supabaseUser = await getSupabaseUser();
+  
+  // Buscar usuário no banco local pelo email do Supabase
+  let userId: string | null = null;
+  if (supabaseUser?.email) {
+    const localUser = await prisma.user.findUnique({
+      where: { email: supabaseUser.email },
+    });
+    userId = localUser?.id ?? null;
+  }
+  
+  // Fallback para header (desenvolvimento) ou null
+  const finalUserId = userId ?? opts.headers.get("x-user-id");
   const activeCompanyId = opts.headers.get("x-company-id");
   
-  const tenant = await getTenantContext(userId, activeCompanyId);
+  const tenant = await getTenantContext(finalUserId, activeCompanyId);
   
   return {
     prisma,
     tenant,
+    supabaseUser,
     ...opts,
   };
 };
