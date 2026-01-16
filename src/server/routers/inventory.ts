@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, publicProcedure, tenantFilter } from "../trpc";
+import { auditCreate } from "../services/audit";
 
 export const inventoryRouter = createTRPCRouter({
   // Listar estoque (com filtro de tenant)
@@ -142,6 +143,17 @@ export const inventoryRouter = createTRPCRouter({
           balanceAfter: newQuantity,
           ...movementData,
         },
+        include: {
+          inventory: {
+            include: { material: true },
+          },
+        },
+      });
+
+      // Auditar movimento
+      await auditCreate("InventoryMovement", movement, `${movementType} - ${movement.inventory.material.code}`, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
       });
 
       // Atualizar estoque

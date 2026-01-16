@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, publicProcedure, tenantFilter } from "../trpc";
+import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 
 export const suppliersRouter = createTRPCRouter({
   // Listar todos os fornecedores (com filtro de tenant)
@@ -98,12 +99,19 @@ export const suppliersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.supplier.create({
+      const supplier = await ctx.prisma.supplier.create({
         data: {
           ...input,
           companyId: ctx.companyId,
         },
       });
+
+      await auditCreate("Supplier", supplier, String(supplier.code), {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      return supplier;
     }),
 
   // Atualizar fornecedor
@@ -148,10 +156,17 @@ export const suppliersRouter = createTRPCRouter({
         throw new Error("Fornecedor não encontrado ou sem permissão");
       }
       
-      return ctx.prisma.supplier.update({
+      const supplier = await ctx.prisma.supplier.update({
         where: { id },
         data,
       });
+
+      await auditUpdate("Supplier", id, String(supplier.code), existing, supplier, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      return supplier;
     }),
 
   // Deletar fornecedor
@@ -167,8 +182,15 @@ export const suppliersRouter = createTRPCRouter({
         throw new Error("Fornecedor não encontrado ou sem permissão");
       }
       
-      return ctx.prisma.supplier.delete({
+      const deleted = await ctx.prisma.supplier.delete({
         where: { id: input.id },
       });
+
+      await auditDelete("Supplier", existing, String(existing.code), {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      return deleted;
     }),
 });

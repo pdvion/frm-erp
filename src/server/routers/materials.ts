@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, publicProcedure } from "../trpc";
+import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 
 export const materialsRouter = createTRPCRouter({
   // Listar todos os materiais
@@ -87,12 +88,19 @@ export const materialsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.material.create({
+      const material = await ctx.prisma.material.create({
         data: {
           ...input,
           companyId: ctx.companyId,
         },
       });
+
+      await auditCreate("Material", material, String(material.code), {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      return material;
     }),
 
   // Atualizar material
@@ -115,19 +123,46 @@ export const materialsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      return ctx.prisma.material.update({
+      
+      const oldMaterial = await ctx.prisma.material.findUnique({
+        where: { id, companyId: ctx.companyId },
+      });
+
+      const material = await ctx.prisma.material.update({
         where: { id, companyId: ctx.companyId },
         data,
       });
+
+      if (oldMaterial) {
+        await auditUpdate("Material", id, String(material.code), oldMaterial, material, {
+          userId: ctx.tenant.userId ?? undefined,
+          companyId: ctx.companyId,
+        });
+      }
+
+      return material;
     }),
 
   // Deletar material
   delete: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.material.delete({
+      const material = await ctx.prisma.material.findUnique({
         where: { id: input.id, companyId: ctx.companyId },
       });
+
+      const deleted = await ctx.prisma.material.delete({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+
+      if (material) {
+        await auditDelete("Material", material, String(material.code), {
+          userId: ctx.tenant.userId ?? undefined,
+          companyId: ctx.companyId,
+        });
+      }
+
+      return deleted;
     }),
 
   // Listar categorias
