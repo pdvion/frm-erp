@@ -1,0 +1,395 @@
+// POC Delphi FRM - Schema do Banco de Dados
+// Migração do sistema ERP industrial FRM (Delphi) para stack moderna
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum MaterialStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum MovementType {
+  ENTRY        // Entrada
+  EXIT         // Saída
+  TRANSFER     // Transferência
+  ADJUSTMENT   // Ajuste de inventário
+  RETURN       // Devolução
+  PRODUCTION   // Produção
+}
+
+enum InventoryType {
+  RAW_MATERIAL    // Matéria-Prima
+  SEMI_FINISHED   // Semi-Acabado
+  FINISHED        // Pronto
+  CRITICAL        // Crítico
+  DEAD            // Morto
+  SCRAP           // Refugo
+}
+
+enum QuoteStatus {
+  DRAFT           // Rascunho
+  PENDING         // Pendente
+  SENT            // Enviado
+  RECEIVED        // Recebido
+  APPROVED        // Aprovado
+  REJECTED        // Rejeitado
+  CANCELLED       // Cancelado
+}
+
+// =============================================================================
+// TABELAS BASE (A00)
+// =============================================================================
+
+model Company {
+  id          String   @id @default(uuid())
+  code        Int      @unique // codEmpresa original
+  name        String   // nomeEmpresa
+  tradeName   String?  // nomeFantasia
+  cnpj        String?  @unique
+  ie          String?  // Inscrição Estadual
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  phone       String?
+  email       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  materials    Material[]
+  suppliers    Supplier[]
+  inventory    Inventory[]
+  users        User[]
+  categories   Category[]
+  userCompanies UserCompany[]
+  permissions  UserCompanyPermission[]
+  cloneLogsSource CloneLog[] @relation("CloneSource")
+  cloneLogsTarget CloneLog[] @relation("CloneTarget")
+
+  @@map("companies")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  code        Int?     // codUsuario original
+  email       String   @unique
+  name        String
+  password    String?
+  isActive    Boolean  @default(true)
+  companyId   String?  // Empresa padrão (legado)
+  company     Company? @relation(fields: [companyId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inventoryMovements InventoryMovement[]
+  userCompanies      UserCompany[]
+  permissions        UserCompanyPermission[]
+  cloneLogs          CloneLog[]
+
+  @@map("users")
+}
+
+// =============================================================================
+// MULTI-TENANT: Permissões por Empresa
+// =============================================================================
+
+enum PermissionLevel {
+  NONE
+  VIEW
+  EDIT
+  FULL
+}
+
+enum SystemModule {
+  MATERIALS
+  SUPPLIERS
+  QUOTES
+  RECEIVING
+  MATERIAL_OUT
+  INVENTORY
+  REPORTS
+  SETTINGS
+}
+
+// Acesso do usuário às empresas do grupo
+model UserCompany {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, companyId])
+  @@map("user_companies")
+}
+
+// Permissões granulares: Usuário x Empresa x Módulo
+model UserCompanyPermission {
+  id          String          @id @default(uuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  module      SystemModule
+  permission  PermissionLevel @default(NONE)
+  canShare    Boolean         @default(false)
+  canClone    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([userId, companyId, module])
+  @@map("user_company_permissions")
+}
+
+// Log de clonagem de configurações entre empresas
+model CloneLog {
+  id              String   @id @default(uuid())
+  sourceCompanyId String
+  sourceCompany   Company  @relation("CloneSource", fields: [sourceCompanyId], references: [id])
+  targetCompanyId String
+  targetCompany   Company  @relation("CloneTarget", fields: [targetCompanyId], references: [id])
+  entityType      String
+  entityId        String
+  clonedEntityId  String
+  clonedBy        String
+  clonedByUser    User     @relation(fields: [clonedBy], references: [id])
+  createdAt       DateTime @default(now())
+
+  @@map("clone_logs")
+}
+
+// =============================================================================
+// MÓDULO CP06 - CATEGORIAS/FAMÍLIAS
+// =============================================================================
+
+model Category {
+  id          String     @id @default(uuid())
+  code        Int?       // codFamilia original
+  name        String     // descFamilia
+  parentId    String?    // id_pai para subcategorias
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  companyId   String?    // Empresa dona (null = global)
+  company     Company?   @relation(fields: [companyId], references: [id])
+  isShared    Boolean    @default(false) // Visível para outras empresas?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  materials   Material[]
+
+  @@map("categories")
+}
+
+// =============================================================================
+// MÓDULO CP10 - MATERIAIS
+// =============================================================================
+
+model Material {
+  id                  String         @id @default(uuid())
+  code                Int            @unique // codMaterial original
+  internalCode        String?        // codigo interno (material_codCA)
+  description         String         // descMaterial
+  categoryId          String?
+  category            Category?      @relation(fields: [categoryId], references: [id])
+  unit                String         @default("UN") // unidadeEstoque
+  location            String?        // local de armazenamento
+  minQuantity         Float          @default(0) // qdeMinima
+  maxQuantity         Float?         // qdeMaxima
+  monthlyAverage      Float          @default(0) // qdeMediaMensal
+  lastPurchasePrice   Float?         // vlrUnitUltCompra
+  lastPurchaseDate    DateTime?      // dtUltCompra
+  ncm                 String?        // código NCM
+  status              MaterialStatus @default(ACTIVE)
+  requiresQualityCheck Boolean       @default(false) // requerIQF
+  isShared            Boolean        @default(false) // Visível para outras empresas?
+  companyId           String?
+  company             Company?       @relation(fields: [companyId], references: [id])
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  inventory           Inventory[]
+  supplierMaterials   SupplierMaterial[]
+  quoteItems          QuoteItem[]
+
+  @@map("materials")
+}
+
+// =============================================================================
+// MÓDULO CP11 - FORNECEDORES
+// =============================================================================
+
+model Supplier {
+  id              String         @id @default(uuid())
+  code            Int            @unique // codFornecedor original
+  companyName     String         // razaoSocial
+  tradeName       String?        // nomeFantasia
+  cnpj            String?        @unique
+  cpf             String?        // para PF
+  ie              String?        // Inscrição Estadual
+  im              String?        // Inscrição Municipal
+  address         String?
+  number          String?
+  complement      String?
+  neighborhood    String?
+  city            String?
+  state           String?
+  zipCode         String?
+  country         String         @default("Brasil")
+  phone           String?
+  mobile          String?
+  email           String?
+  website         String?
+  contactName     String?        // contato principal
+  paymentTerms    String?        // condições de pagamento
+  notes           String?
+  status          SupplierStatus @default(ACTIVE)
+  qualityIndex    Float?         // IQF - Índice de Qualidade
+  isShared        Boolean        @default(false) // Visível para outras empresas?
+  companyId       String?
+  company         Company?       @relation(fields: [companyId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  supplierMaterials SupplierMaterial[]
+  quotes            Quote[]
+  inventoryMovements InventoryMovement[]
+
+  @@map("suppliers")
+}
+
+// Relação N:N entre Fornecedores e Materiais
+model SupplierMaterial {
+  id              String    @id @default(uuid())
+  supplierId      String
+  supplier        Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  materialId      String
+  material        Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  supplierCode    String?   // código do material no fornecedor
+  lastPrice       Float?
+  lastPriceDate   DateTime?
+  leadTimeDays    Int?      // prazo de entrega em dias
+  minOrderQty     Float?    // quantidade mínima de pedido
+  isPreferred     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([supplierId, materialId])
+  @@map("supplier_materials")
+}
+
+// =============================================================================
+// MÓDULO EST10 - ESTOQUE
+// =============================================================================
+
+model Inventory {
+  id              String        @id @default(uuid())
+  materialId      String
+  material        Material      @relation(fields: [materialId], references: [id])
+  companyId       String?
+  company         Company?      @relation(fields: [companyId], references: [id])
+  inventoryType   InventoryType @default(RAW_MATERIAL)
+  quantity        Float         @default(0)
+  reservedQty     Float         @default(0) // quantidade reservada
+  availableQty    Float         @default(0) // quantidade disponível
+  unitCost        Float         @default(0) // custo unitário médio
+  totalCost       Float         @default(0) // custo total
+  lastMovementAt  DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  movements       InventoryMovement[]
+
+  @@unique([materialId, companyId, inventoryType])
+  @@map("inventory")
+}
+
+model InventoryMovement {
+  id              String       @id @default(uuid())
+  inventoryId     String
+  inventory       Inventory    @relation(fields: [inventoryId], references: [id])
+  movementType    MovementType
+  quantity        Float
+  unitCost        Float        @default(0)
+  totalCost       Float        @default(0)
+  balanceAfter    Float        @default(0) // saldo após movimento
+  documentType    String?      // tipo de documento (NF, OS, etc)
+  documentNumber  String?      // número do documento
+  documentId      String?      // referência ao documento
+  supplierId      String?      // fornecedor (para entradas)
+  supplier        Supplier?    @relation(fields: [supplierId], references: [id])
+  notes           String?
+  userId          String?
+  user            User?        @relation(fields: [userId], references: [id])
+  movementDate    DateTime     @default(now())
+  createdAt       DateTime     @default(now())
+
+  @@index([inventoryId, movementDate])
+  @@map("inventory_movements")
+}
+
+// =============================================================================
+// MÓDULO CP12 - ORÇAMENTOS/COTAÇÕES
+// =============================================================================
+
+model Quote {
+  id              String      @id @default(uuid())
+  code            Int         @unique // número do orçamento
+  supplierId      String
+  supplier        Supplier    @relation(fields: [supplierId], references: [id])
+  status          QuoteStatus @default(DRAFT)
+  requestDate     DateTime    @default(now())
+  responseDate    DateTime?
+  validUntil      DateTime?
+  paymentTerms    String?
+  deliveryTerms   String?
+  freightValue    Float       @default(0)
+  discountPercent Float       @default(0)
+  totalValue      Float       @default(0)
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items           QuoteItem[]
+
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id              String   @id @default(uuid())
+  quoteId         String
+  quote           Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  materialId      String
+  material        Material @relation(fields: [materialId], references: [id])
+  quantity        Float
+  unitPrice       Float    @default(0)
+  totalPrice      Float    @default(0)
+  deliveryDays    Int?     // prazo de entrega
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("quote_items")
+}

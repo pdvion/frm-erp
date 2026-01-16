@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FRM ERP
 
-## Getting Started
+Sistema ERP industrial FRM - Migração do sistema Delphi para stack moderna.
 
-First, run the development server:
+[![CI](https://github.com/pdvion/frm-erp/actions/workflows/ci.yml/badge.svg)](https://github.com/pdvion/frm-erp/actions/workflows/ci.yml)
+[![Deploy](https://github.com/pdvion/frm-erp/actions/workflows/deploy.yml/badge.svg)](https://github.com/pdvion/frm-erp/actions/workflows/deploy.yml)
+
+## 🚀 Stack
+
+- **Frontend**: Next.js 15 + React 19 + TypeScript
+- **Styling**: TailwindCSS + Lucide Icons
+- **Backend**: tRPC + Prisma ORM
+- **Database**: Supabase (PostgreSQL)
+- **Deploy**: Vercel
+
+## 📦 Módulos
+
+| Código | Módulo | Status |
+|--------|--------|--------|
+| CP10 | Materiais | ✅ MVP |
+| CP11 | Fornecedores | 🔄 Em desenvolvimento |
+| CP12 | Orçamentos | ⏳ Pendente |
+| CP14 | Recebimento NFe | ⏳ Pendente |
+| CP15 | Saída de Materiais | ⏳ Pendente |
+| EST10 | Estoque | 🔄 Em desenvolvimento |
+
+## 🏗️ Arquitetura Multi-Tenant
+
+O sistema suporta múltiplas empresas do grupo FRM com:
+- Isolamento de dados por empresa
+- Compartilhamento de dados com permissões
+- Clonagem de configurações entre empresas
+- Permissões granulares por módulo
+
+## 🛠️ Setup Local
+
+### Pré-requisitos
+
+- Node.js 20+
+- pnpm 9+
+- Conta no Supabase
+
+### Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone o repositório
+git clone https://github.com/pdvion/frm-erp.git
+cd frm-erp
+
+# Instale as dependências
+pnpm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais do Supabase
+
+# Gere o Prisma Client
+pnpm prisma generate
+
+# Inicie o servidor de desenvolvimento
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Estrutura do Projeto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+frm-erp/
+├── src/
+│   ├── app/              # App Router (Next.js)
+│   ├── components/       # Componentes React
+│   ├── lib/              # Utilitários e configurações
+│   └── server/           # Backend (tRPC + Prisma)
+│       ├── routers/      # Routers tRPC
+│       ├── context.ts    # Contexto Multi-Tenant
+│       └── trpc.ts       # Configuração tRPC
+├── prisma/
+│   └── schema.prisma     # Schema do banco de dados
+└── .github/
+    └── workflows/        # GitHub Actions
+```
 
-## Learn More
+## 🔄 Ambientes
 
-To learn more about Next.js, take a look at the following resources:
+| Ambiente | Branch | URL | Banco |
+|----------|--------|-----|-------|
+| Produção | `main` | frm-erp.vercel.app | Supabase Prod |
+| Staging | `develop` | frm-erp-staging.vercel.app | Supabase Branch |
+| Preview | `feature/*` | frm-erp-*.vercel.app | Supabase Branch |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧪 Testes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Lint
+pnpm lint
 
-## Deploy on Vercel
+# Type check
+pnpm type-check
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Testes unitários
+pnpm test
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Testes E2E
+pnpm test:e2e
+```
+
+## 📝 Convenções
+
+### Commits (Conventional Commits)
+
+```
+feat: adiciona CRUD de materiais
+fix: corrige filtro de tenant
+docs: atualiza README
+chore: atualiza dependências
+refactor: simplifica middleware
+test: adiciona testes de permissões
+```
+
+### Branches
+
+- `main` - Produção (protegida)
+- `develop` - Integração contínua
+- `feature/*` - Novas funcionalidades
+- `fix/*` - Correções de bugs
+- `hotfix/*` - Correções urgentes
+
+## 📚 Documentação
+
+- [DeepWiki - Documentação Completa](https://deepwiki.com/pdvion/frm-erp)
+- [Linear - Gestão de Tarefas](https://linear.app/vion/project/poc-delphi-frm-migracao-erp-bd2c2d103f58)
+
+## 📄 Licença
+
+Proprietário - FRM Indústria e Comércio Ltda
