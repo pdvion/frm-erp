@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield } from "lucide-react";
+import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const modules = [
@@ -32,6 +32,13 @@ const modules = [
     href: "/quotes",
     icon: FileText,
     color: "bg-purple-500",
+  },
+  {
+    title: "Pedidos de Compra",
+    description: "Pedidos e recebimento de materiais",
+    href: "/purchase-orders",
+    icon: ShoppingCart,
+    color: "bg-teal-500",
   },
   {
     title: "Relatórios",
