@@ -184,6 +184,12 @@ export default function InventoryPage() {
           {/* Movement Buttons */}
           <div className="flex gap-2">
             <Link
+              href="/inventory/movements"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <span>Histórico</span>
+            </Link>
+            <Link
               href="/inventory/entry"
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
