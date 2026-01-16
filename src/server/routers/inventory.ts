@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, publicProcedure, tenantFilter } from "../trpc";
 
 export const inventoryRouter = createTRPCRouter({
-  // Listar estoque
-  list: publicProcedure
+  // Listar estoque (com filtro de tenant)
+  list: tenantProcedure
     .input(
       z.object({
         search: z.string().optional(),
@@ -17,6 +17,7 @@ export const inventoryRouter = createTRPCRouter({
       const { search, inventoryType, belowMinimum, page = 1, limit = 20 } = input ?? {};
       
       const where = {
+        ...tenantFilter(ctx.companyId),
         ...(inventoryType && { inventoryType }),
         ...(search && {
           material: {
@@ -63,11 +64,14 @@ export const inventoryRouter = createTRPCRouter({
     }),
 
   // Buscar estoque por material
-  byMaterialId: publicProcedure
+  byMaterialId: tenantProcedure
     .input(z.object({ materialId: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.inventory.findMany({
-        where: { materialId: input.materialId },
+        where: { 
+          materialId: input.materialId,
+          ...tenantFilter(ctx.companyId),
+        },
         include: {
           material: true,
           movements: {
@@ -79,7 +83,7 @@ export const inventoryRouter = createTRPCRouter({
     }),
 
   // Registrar movimento de estoque
-  createMovement: publicProcedure
+  createMovement: tenantProcedure
     .input(
       z.object({
         materialId: z.string(),
@@ -92,11 +96,11 @@ export const inventoryRouter = createTRPCRouter({
         supplierId: z.string().optional(),
         notes: z.string().optional(),
         userId: z.string().optional(),
-        companyId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { materialId, inventoryType, movementType, quantity, unitCost, companyId, ...movementData } = input;
+      const { materialId, inventoryType, movementType, quantity, unitCost, ...movementData } = input;
+      const companyId = ctx.companyId;
 
       // Buscar ou criar registro de estoque
       let inventory = await ctx.prisma.inventory.findFirst({
@@ -159,7 +163,7 @@ export const inventoryRouter = createTRPCRouter({
     }),
 
   // Listar movimentos
-  listMovements: publicProcedure
+  listMovements: tenantProcedure
     .input(
       z.object({
         inventoryId: z.string().optional(),
@@ -175,8 +179,9 @@ export const inventoryRouter = createTRPCRouter({
       const { inventoryId, materialId, movementType, startDate, endDate, page = 1, limit = 50 } = input ?? {};
 
       const where = {
+        inventory: { ...tenantFilter(ctx.companyId) },
         ...(inventoryId && { inventoryId }),
-        ...(materialId && { inventory: { materialId } }),
+        ...(materialId && { inventory: { materialId, ...tenantFilter(ctx.companyId) } }),
         ...(movementType && { movementType }),
         ...(startDate && endDate && {
           movementDate: {
