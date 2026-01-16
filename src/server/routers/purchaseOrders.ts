@@ -267,7 +267,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       return order;
     }),
 
-  // Registrar recebimento parcial
+  // Registrar recebimento parcial (com entrada automática no estoque)
   registerReceipt: tenantProcedure
     .input(
       z.object({
@@ -279,7 +279,10 @@ export const purchaseOrdersRouter = createTRPCRouter({
       const item = await ctx.prisma.purchaseOrderItem.findUnique({
         where: { id: input.itemId },
         include: {
-          purchaseOrder: true,
+          purchaseOrder: {
+            include: { supplier: true },
+          },
+          material: true,
         },
       });
 
@@ -289,9 +292,75 @@ export const purchaseOrdersRouter = createTRPCRouter({
 
       const newReceivedQty = item.receivedQty + input.receivedQty;
 
+      // Atualizar quantidade recebida do item
       const updatedItem = await ctx.prisma.purchaseOrderItem.update({
         where: { id: input.itemId },
         data: { receivedQty: newReceivedQty },
+      });
+
+      // === INTEGRAÇÃO COM ESTOQUE ===
+      // Buscar ou criar registro de estoque para o material
+      let inventory = await ctx.prisma.inventory.findFirst({
+        where: {
+          materialId: item.materialId,
+          inventoryType: "RAW_MATERIAL",
+          companyId: ctx.companyId ?? null,
+        },
+      });
+
+      if (!inventory) {
+        inventory = await ctx.prisma.inventory.create({
+          data: {
+            materialId: item.materialId,
+            inventoryType: "RAW_MATERIAL",
+            companyId: ctx.companyId,
+            quantity: 0,
+            availableQty: 0,
+            unitCost: 0,
+            totalCost: 0,
+          },
+        });
+      }
+
+      // Calcular novo saldo
+      const newQuantity = inventory.quantity + input.receivedQty;
+      const totalCost = input.receivedQty * item.unitPrice;
+
+      // Criar movimento de entrada
+      await ctx.prisma.inventoryMovement.create({
+        data: {
+          inventoryId: inventory.id,
+          movementType: "ENTRY",
+          quantity: input.receivedQty,
+          unitCost: item.unitPrice,
+          totalCost,
+          balanceAfter: newQuantity,
+          documentType: "PURCHASE_ORDER",
+          documentNumber: `PC-${item.purchaseOrder.code.toString().padStart(6, "0")}`,
+          supplierId: item.purchaseOrder.supplierId,
+          notes: `Recebimento do pedido PC-${item.purchaseOrder.code.toString().padStart(6, "0")}`,
+        },
+      });
+
+      // Atualizar saldo do estoque
+      await ctx.prisma.inventory.update({
+        where: { id: inventory.id },
+        data: {
+          quantity: newQuantity,
+          availableQty: newQuantity,
+          unitCost: item.unitPrice,
+          totalCost: newQuantity * item.unitPrice,
+          lastMovementAt: new Date(),
+        },
+      });
+
+      // Atualizar preço da última compra no material
+      await ctx.prisma.material.update({
+        where: { id: item.materialId },
+        data: {
+          lastPurchasePrice: item.unitPrice,
+          lastPurchaseDate: new Date(),
+        },
       });
 
       // Verificar se todos os itens foram recebidos
