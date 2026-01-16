@@ -103,6 +103,7 @@ model User {
   userCompanies      UserCompany[]
   permissions        UserCompanyPermission[]
   cloneLogs          CloneLog[]
+  auditLogs          AuditLog[]
 
   @@map("users")
 }
@@ -392,4 +393,61 @@ model QuoteItem {
   updatedAt       DateTime @updatedAt
 
   @@map("quote_items")
+}
+
+// =============================================================================
+// AUDITORIA (Governança)
+// =============================================================================
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+}
+
+model AuditLog {
+  id            String      @id @default(uuid()) @db.Uuid
+  
+  // Quem fez a ação
+  userId        String?     @db.Uuid
+  user          User?       @relation(fields: [userId], references: [id])
+  userEmail     String?     // Backup caso user seja deletado
+  userName      String?     // Backup caso user seja deletado
+  
+  // Contexto da empresa
+  companyId     String?     @db.Uuid
+  companyName   String?     // Backup caso company seja deletada
+  
+  // O que foi feito
+  action        AuditAction
+  entityType    String      // Ex: "Material", "Supplier", "Inventory"
+  entityId      String?     // ID do registro afetado
+  entityCode    String?     // Código legível (ex: código do material)
+  
+  // Detalhes da mudança
+  description   String?     // Descrição legível da ação
+  oldValues     Json?       // Valores anteriores (para UPDATE/DELETE)
+  newValues     Json?       // Novos valores (para CREATE/UPDATE)
+  changedFields String[]    @default([])
+  
+  // Metadados técnicos
+  ipAddress     String?
+  userAgent     String?
+  requestPath   String?     // Rota da API chamada
+  requestMethod String?     // GET, POST, PUT, DELETE
+  
+  // Timestamp
+  createdAt     DateTime    @default(now())
+  
+  @@index([userId])
+  @@index([companyId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
