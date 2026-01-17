@@ -9,6 +9,7 @@ import { tenantRouter } from "./tenant";
 import { auditRouter } from "./audit";
 import { authLogsRouter } from "./authLogs";
 import { groupsRouter } from "./groups";
+import { settingsRouter } from "./settings";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   audit: auditRouter,
   authLogs: authLogsRouter,
   groups: groupsRouter,
+  settings: settingsRouter,
 });
 
 export type AppRouter = typeof appRouter;
