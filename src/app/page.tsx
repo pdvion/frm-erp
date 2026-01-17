@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput } from "lucide-react";
+import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, User } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { useAuth } from "@/contexts/AuthContext";
 
 const modules = [
   {
@@ -71,6 +72,8 @@ const modules = [
 ];
 
 export default function Home() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -88,6 +91,16 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-4">
               <CompanySwitcher />
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-[var(--frm-primary)] hover:bg-gray-50 rounded-lg transition-colors"
+                title="Meu Perfil"
+              >
+                <div className="w-8 h-8 bg-[var(--frm-primary)] rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <span className="hidden sm:inline">{user?.email?.split("@")[0] || "Perfil"}</span>
+              </Link>
             </div>
           </div>
         </div>
