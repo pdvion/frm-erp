@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogIn, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signIn, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -141,5 +141,34 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[var(--frm-50)] to-[var(--frm-100)] flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-[var(--frm-primary)] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg viewBox="0 0 100 60" className="w-16 h-10">
+              <text x="50" y="45" textAnchor="middle" fill="white" fontSize="32" fontWeight="bold" fontFamily="Arial, sans-serif">FRM</text>
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-[var(--frm-primary)]">FRM ERP</h1>
+          <p className="text-gray-600 mt-1">Sistema de Gestão Industrial</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-xl p-8 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginForm />
+    </Suspense>
   );
 }
