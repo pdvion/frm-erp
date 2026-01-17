@@ -4,6 +4,7 @@ import { suppliersRouter } from "./suppliers";
 import { inventoryRouter } from "./inventory";
 import { quotesRouter } from "./quotes";
 import { purchaseOrdersRouter } from "./purchaseOrders";
+import { receivedInvoicesRouter } from "./receivedInvoices";
 import { tenantRouter } from "./tenant";
 import { auditRouter } from "./audit";
 
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   inventory: inventoryRouter,
   quotes: quotesRouter,
   purchaseOrders: purchaseOrdersRouter,
+  receivedInvoices: receivedInvoicesRouter,
   audit: auditRouter,
 });
 

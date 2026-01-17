@@ -84,6 +84,7 @@ model Company {
   cloneLogsSource CloneLog[] @relation("CloneSource")
   cloneLogsTarget CloneLog[] @relation("CloneTarget")
   purchaseOrders  PurchaseOrder[]
+  receivedInvoices ReceivedInvoice[]
 
   @@map("companies")
 }
@@ -236,6 +237,7 @@ model Material {
   supplierMaterials   SupplierMaterial[]
   quoteItems          QuoteItem[]
   purchaseOrderItems  PurchaseOrderItem[]
+  receivedInvoiceItems ReceivedInvoiceItem[]
 
   @@map("materials")
 }
@@ -280,6 +282,7 @@ model Supplier {
   quotes            Quote[]
   inventoryMovements InventoryMovement[]
   purchaseOrders    PurchaseOrder[]
+  receivedInvoices  ReceivedInvoice[]
 
   @@map("suppliers")
 }
@@ -438,6 +441,7 @@ model PurchaseOrder {
   updatedAt             DateTime            @updatedAt
 
   items                 PurchaseOrderItem[]
+  receivedInvoices      ReceivedInvoice[]
 
   @@index([supplierId])
   @@index([companyId])
@@ -461,6 +465,8 @@ model PurchaseOrderItem {
   notes           String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  
+  receivedInvoiceItems ReceivedInvoiceItem[]
 
   @@index([purchaseOrderId])
   @@index([materialId])
@@ -522,4 +528,127 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// =============================================================================
+// MÓDULO CP14 - ENTRADA DE NFe (EVOLUÍDO)
+// =============================================================================
+
+enum InvoiceStatus {
+  PENDING     // Aguardando conferência
+  VALIDATED   // Validado, aguardando aprovação
+  APPROVED    // Aprovado, entrada realizada
+  REJECTED    // Rejeitado
+  CANCELLED   // Cancelado
+}
+
+enum MatchStatus {
+  PENDING     // Aguardando vinculação
+  MATCHED     // Vinculado com sucesso
+  DIVERGENT   // Vinculado com divergência
+  NOT_FOUND   // Material não encontrado
+}
+
+model ReceivedInvoice {
+  id              String        @id @default(uuid())
+  accessKey       String        @unique @db.VarChar(44)
+  invoiceNumber   Int
+  series          Int           @default(1)
+  issueDate       DateTime
+  
+  // Fornecedor
+  supplierId      String?
+  supplier        Supplier?     @relation(fields: [supplierId], references: [id])
+  supplierCnpj    String        @db.VarChar(18)
+  supplierName    String        @db.VarChar(255)
+  
+  // Valores
+  totalProducts   Float         @default(0)
+  totalInvoice    Float         @default(0)
+  freightValue    Float         @default(0)
+  discountValue   Float         @default(0)
+  
+  // Impostos
+  icmsBase        Float         @default(0)
+  icmsValue       Float         @default(0)
+  ipiValue        Float         @default(0)
+  pisValue        Float         @default(0)
+  cofinsValue     Float         @default(0)
+  
+  // Status
+  status          InvoiceStatus @default(PENDING)
+  
+  // Relacionamentos
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  items           ReceivedInvoiceItem[]
+  
+  // Auditoria
+  receivedAt      DateTime?
+  receivedBy      String?
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectedAt      DateTime?
+  rejectedBy      String?
+  rejectionReason String?
+  
+  // Multi-tenant
+  companyId       String?
+  company         Company?      @relation(fields: [companyId], references: [id])
+  
+  // XML original
+  xmlContent      String?       @db.Text
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([status])
+  @@index([companyId])
+  @@index([supplierId])
+  @@index([issueDate])
+  @@map("received_invoices")
+}
+
+model ReceivedInvoiceItem {
+  id                    String        @id @default(uuid())
+  invoiceId             String
+  invoice               ReceivedInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  // Dados do XML
+  itemNumber            Int
+  productCode           String        @db.VarChar(60)
+  productName           String        @db.VarChar(255)
+  ncm                   String?       @db.VarChar(10)
+  cfop                  Int
+  quantity              Float
+  unit                  String        @db.VarChar(10)
+  unitPrice             Float
+  totalPrice            Float
+  
+  // Impostos do item
+  icmsRate              Float         @default(0)
+  icmsValue             Float         @default(0)
+  ipiRate               Float         @default(0)
+  ipiValue              Float         @default(0)
+  
+  // Vinculação
+  materialId            String?
+  material              Material?     @relation(fields: [materialId], references: [id])
+  purchaseOrderItemId   String?
+  purchaseOrderItem     PurchaseOrderItem? @relation(fields: [purchaseOrderItemId], references: [id])
+  
+  // Conferência
+  matchStatus           MatchStatus   @default(PENDING)
+  divergenceType        String?       @db.VarChar(20)
+  divergenceNote        String?
+  
+  // Recebimento
+  receivedQty           Float         @default(0)
+  
+  createdAt             DateTime      @default(now())
+  
+  @@index([invoiceId])
+  @@index([materialId])
+  @@index([matchStatus])
+  @@map("received_invoice_items")
 }
