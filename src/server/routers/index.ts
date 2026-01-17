@@ -8,6 +8,7 @@ import { receivedInvoicesRouter } from "./receivedInvoices";
 import { tenantRouter } from "./tenant";
 import { auditRouter } from "./audit";
 import { authLogsRouter } from "./authLogs";
+import { groupsRouter } from "./groups";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   receivedInvoices: receivedInvoicesRouter,
   audit: auditRouter,
   authLogs: authLogsRouter,
+  groups: groupsRouter,
 });
 
 export type AppRouter = typeof appRouter;

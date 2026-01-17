@@ -85,6 +85,7 @@ model Company {
   cloneLogsTarget CloneLog[] @relation("CloneTarget")
   purchaseOrders  PurchaseOrder[]
   receivedInvoices ReceivedInvoice[]
+  userGroups   UserGroup[]
 
   @@map("companies")
 }
@@ -106,6 +107,8 @@ model User {
   permissions        UserCompanyPermission[]
   cloneLogs          CloneLog[]
   auditLogs          AuditLog[]
+  groupMemberships   UserGroupMember[]
+  addedToGroups      UserGroupMember[] @relation("AddedByUser")
 
   @@map("users")
 }
@@ -164,6 +167,44 @@ model UserCompanyPermission {
 
   @@unique([userId, companyId, module])
   @@map("user_company_permissions")
+}
+
+// =============================================================================
+// SISTEMA DE GRUPOS E PERMISSÕES
+// =============================================================================
+
+// Grupos de usuários com permissões
+model UserGroup {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?
+  companyId   String?  @db.Uuid
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  permissions Json     @default("[]") // Array de permissões: ["materials.*", "settings.landing.edit"]
+  isSystem    Boolean  @default(false) // Grupos do sistema não podem ser deletados
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     UserGroupMember[]
+
+  @@unique([name, companyId])
+  @@map("user_groups")
+}
+
+// Membros dos grupos
+model UserGroupMember {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId   String    @db.Uuid
+  group     UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  addedBy   String?   @db.Uuid
+  addedByUser User?   @relation("AddedByUser", fields: [addedBy], references: [id], onDelete: SetNull)
+  addedAt   DateTime  @default(now())
+
+  @@unique([userId, groupId])
+  @@map("user_group_members")
 }
 
 // Log de clonagem de configurações entre empresas
