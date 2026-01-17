@@ -1,28 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { LogIn, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { signIn, isAuthenticated, isLoading: authLoading } = useAuth();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const returnUrl = searchParams.get("returnUrl") || "/";
+
+  // Redirecionar se já autenticado
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push(returnUrl);
+    }
+  }, [isAuthenticated, authLoading, router, returnUrl]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await signIn(email, password);
 
     if (error) {
       setError(error.message === "Invalid login credentials" 
@@ -32,7 +39,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    router.push(returnUrl);
     router.refresh();
   };
 
