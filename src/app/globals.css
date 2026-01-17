@@ -3,6 +3,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Cores FRM (extraídas da logo) */
+  --frm-primary: #1a3a6e;
+  --frm-dark: #0f2847;
+  --frm-light: #2a5a9e;
+  --frm-lighter: #3d6cb8;
+  --frm-50: #e8eef6;
+  --frm-100: #c5d4e8;
+  --frm-200: #9fb8d9;
+  --frm-300: #789cca;
+  --frm-400: #5a85be;
+  --frm-500: #3d6eb2;
+  --frm-600: #1a3a6e;
+  --frm-700: #152f5a;
+  --frm-800: #0f2847;
+  --frm-900: #0a1c33;
 }
 
 @theme inline {
@@ -10,6 +26,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* FRM Brand Colors */
+  --color-frm-primary: var(--frm-primary);
+  --color-frm-dark: var(--frm-dark);
+  --color-frm-light: var(--frm-light);
+  --color-frm-50: var(--frm-50);
+  --color-frm-100: var(--frm-100);
+  --color-frm-200: var(--frm-200);
+  --color-frm-600: var(--frm-600);
+  --color-frm-700: var(--frm-700);
+  --color-frm-800: var(--frm-800);
+  --color-frm-900: var(--frm-900);
 }
 
 @media (prefers-color-scheme: dark) {
