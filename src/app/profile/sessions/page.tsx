@@ -107,7 +107,7 @@ export default function SessionsPage() {
       
       setMessage({ type: "success", text: "Outras sessões foram encerradas" });
       await loadSessions();
-    } catch (error) {
+    } catch {
       setMessage({ type: "error", text: "Erro ao encerrar sessões" });
     } finally {
       setRevoking(null);
@@ -121,7 +121,7 @@ export default function SessionsPage() {
     try {
       await supabase.auth.signOut({ scope: "global" });
       // Usuário será redirecionado para login
-    } catch (error) {
+    } catch {
       setMessage({ type: "error", text: "Erro ao encerrar sessões" });
       setRevoking(null);
     }

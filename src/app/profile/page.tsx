@@ -36,7 +36,6 @@ export default function ProfilePage() {
   
   // Password change
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -89,7 +88,6 @@ export default function ProfilePage() {
     } else {
       setPasswordMessage({ type: "success", text: "Senha alterada com sucesso!" });
       setShowPasswordForm(false);
-      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     }

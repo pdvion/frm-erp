@@ -9,8 +9,7 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   RefreshCw,
-  Filter,
-  Search
+  Filter
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";

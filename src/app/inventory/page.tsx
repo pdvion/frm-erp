@@ -11,7 +11,6 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   AlertTriangle,
-  Building2,
   TrendingUp,
   TrendingDown
 } from "lucide-react";

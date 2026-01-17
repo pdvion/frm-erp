@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
@@ -14,14 +14,11 @@ import {
   AlertTriangle,
   Loader2,
   Building2,
-  Calendar,
   Package,
   Truck,
   DollarSign,
   Link2,
   Unlink,
-  Check,
-  X,
   RefreshCw,
   FileCheck,
   Ban,
@@ -44,7 +41,6 @@ const matchStatusConfig: Record<string, { label: string; color: string; icon: Re
 
 export default function InvoiceDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -109,7 +105,6 @@ export default function InvoiceDetailPage() {
 
   const config = statusConfig[invoice.status];
   const canApprove = invoice.status === "PENDING" || invoice.status === "VALIDATED";
-  const canReject = invoice.status === "PENDING" || invoice.status === "VALIDATED";
   const allItemsLinked = invoice.items.every((item) => item.materialId);
 
   const pendingItems = invoice.items.filter((i) => i.matchStatus === "PENDING").length;
