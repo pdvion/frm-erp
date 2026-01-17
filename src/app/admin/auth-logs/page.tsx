@@ -1,15 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-
-// Importar ProtectedRoute dinamicamente para evitar SSR
-const ProtectedRoute = dynamic(
-  () => import("@/components/ProtectedRoute").then((mod) => mod.ProtectedRoute),
-  { ssr: false }
-);
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
   Shield,
   ArrowLeft,
