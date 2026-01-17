@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -93,36 +93,41 @@ export default function EditSupplierPage() {
     },
   });
 
-  useEffect(() => {
-    if (supplier) {
-      setFormData({
-        code: supplier.code,
-        companyName: supplier.companyName,
-        tradeName: supplier.tradeName ?? "",
-        cnpj: supplier.cnpj ?? "",
-        cpf: supplier.cpf ?? "",
-        ie: supplier.ie ?? "",
-        im: supplier.im ?? "",
-        address: supplier.address ?? "",
-        number: supplier.number ?? "",
-        complement: supplier.complement ?? "",
-        neighborhood: supplier.neighborhood ?? "",
-        city: supplier.city ?? "",
-        state: supplier.state ?? "",
-        zipCode: supplier.zipCode ?? "",
-        phone: supplier.phone ?? "",
-        mobile: supplier.mobile ?? "",
-        email: supplier.email ?? "",
-        website: supplier.website ?? "",
-        contactName: supplier.contactName ?? "",
-        paymentTerms: supplier.paymentTerms ?? "",
-        notes: supplier.notes ?? "",
-        status: supplier.status,
-        qualityIndex: supplier.qualityIndex ?? 0,
-        isShared: supplier.isShared,
-      });
-    }
+  const supplierFormData = useMemo(() => {
+    if (!supplier) return null;
+    return {
+      code: supplier.code,
+      companyName: supplier.companyName,
+      tradeName: supplier.tradeName ?? "",
+      cnpj: supplier.cnpj ?? "",
+      cpf: supplier.cpf ?? "",
+      ie: supplier.ie ?? "",
+      im: supplier.im ?? "",
+      address: supplier.address ?? "",
+      number: supplier.number ?? "",
+      complement: supplier.complement ?? "",
+      neighborhood: supplier.neighborhood ?? "",
+      city: supplier.city ?? "",
+      state: supplier.state ?? "",
+      zipCode: supplier.zipCode ?? "",
+      phone: supplier.phone ?? "",
+      mobile: supplier.mobile ?? "",
+      email: supplier.email ?? "",
+      website: supplier.website ?? "",
+      contactName: supplier.contactName ?? "",
+      paymentTerms: supplier.paymentTerms ?? "",
+      notes: supplier.notes ?? "",
+      status: supplier.status as "ACTIVE" | "INACTIVE" | "BLOCKED",
+      qualityIndex: supplier.qualityIndex ?? 0,
+      isShared: supplier.isShared ?? false,
+    };
   }, [supplier]);
+
+  useEffect(() => {
+    if (supplierFormData) {
+      setFormData(supplierFormData);
+    }
+  }, [supplierFormData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

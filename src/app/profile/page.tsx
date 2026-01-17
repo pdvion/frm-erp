@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUser } from "@/hooks/useUser";
@@ -45,16 +45,16 @@ export default function ProfilePage() {
 
   const supabase = createClient();
 
-  useEffect(() => {
-    loadMFAFactors();
-  }, []);
-
-  const loadMFAFactors = async () => {
+  const loadMFAFactors = useCallback(async () => {
     setLoadingMFA(true);
     const factors = await listFactors();
     setMfaFactors(factors.filter((f) => f.status === "verified"));
     setLoadingMFA(false);
-  };
+  }, [listFactors]);
+
+  useEffect(() => {
+    loadMFAFactors();
+  }, [loadMFAFactors]);
 
   const handleRemoveMFA = async (factorId: string) => {
     const success = await unenroll(factorId);

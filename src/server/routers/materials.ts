@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 
 export const materialsRouter = createTRPCRouter({

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 
 export const auditRouter = createTRPCRouter({
   // Listar logs de auditoria

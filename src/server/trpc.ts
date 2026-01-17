@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { getTenantContext, hasPermission, type TenantContext, type SystemModule, type PermissionLevel } from "./context";
+import { getTenantContext, hasPermission, type SystemModule, type PermissionLevel } from "./context";
 
 async function getSupabaseUser() {
   const cookieStore = await cookies();

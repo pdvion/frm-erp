@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -58,7 +58,7 @@ function formatDate(date: Date | string) {
 }
 
 export default function SessionsPage() {
-  const { session: currentSession } = useAuth();
+  useAuth();
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [revoking, setRevoking] = useState<string | null>(null);
@@ -66,11 +66,7 @@ export default function SessionsPage() {
 
   const supabase = createClient();
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     setIsLoading(true);
     try {
       // Supabase não expõe lista de sessões diretamente
@@ -94,7 +90,11 @@ export default function SessionsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [supabase.auth]);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
 
   const revokeSession = async (sessionId: string) => {
     setRevoking(sessionId);

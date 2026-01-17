@@ -7,7 +7,6 @@ import {
   ChevronLeft, 
   Edit,
   Loader2,
-  Building2,
   MapPin,
   Phone,
   Mail,

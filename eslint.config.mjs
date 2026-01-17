@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Desabilitar regra que proíbe setState em useEffect
+      // É um padrão válido para sincronizar estado com dados externos (queries, localStorage)
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

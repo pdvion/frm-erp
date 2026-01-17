@@ -24,12 +24,12 @@ export function CompanySwitcher() {
   useEffect(() => {
     // Carregar empresa salva no localStorage
     const savedCompanyId = localStorage.getItem("frm-active-company");
-    if (savedCompanyId) {
+    if (savedCompanyId && !selectedCompanyId) {
       setSelectedCompanyId(savedCompanyId);
-    } else if (tenantData?.companyId) {
+    } else if (tenantData?.companyId && !selectedCompanyId) {
       setSelectedCompanyId(tenantData.companyId);
     }
-  }, [tenantData?.companyId]);
+  }, [tenantData?.companyId, selectedCompanyId]);
 
   const handleSelectCompany = async (company: Company) => {
     try {
