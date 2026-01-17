@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { LinkMaterialModal } from "@/components/LinkMaterialModal";
 import {
   FileText,
   ChevronLeft,
@@ -22,6 +23,8 @@ import {
   RefreshCw,
   FileCheck,
   Ban,
+  UserPlus,
+  Wand2,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -45,10 +48,20 @@ export default function InvoiceDetailPage() {
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [linkingItem, setLinkingItem] = useState<{
+    id: string;
+    name: string;
+    code: string;
+  } | null>(null);
 
   const { data: invoice, isLoading, refetch } = trpc.receivedInvoices.byId.useQuery({ id });
 
-  const autoMatchMutation = trpc.receivedInvoices.autoMatch.useMutation({
+  // Mutations para validação de fornecedor
+  const findSupplierMutation = trpc.nfe.findOrCreateSupplier.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const autoLinkMutation = trpc.nfe.autoLinkItems.useMutation({
     onSuccess: () => refetch(),
   });
 
@@ -146,19 +159,47 @@ export default function InvoiceDetailPage() {
                 <Building2 className="w-5 h-5 text-blue-600" />
               </div>
               <h3 className="font-medium text-gray-900">Fornecedor</h3>
+              {!invoice.supplier && canApprove && (
+                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">
+                  Não vinculado
+                </span>
+              )}
             </div>
             <div className="space-y-2">
               <p className="font-medium text-gray-900">
                 {invoice.supplier?.companyName || invoice.supplierName}
               </p>
               <p className="text-sm text-gray-500">CNPJ: {invoice.supplierCnpj}</p>
-              {invoice.supplier && (
+              {invoice.supplier ? (
                 <Link
                   href={`/suppliers/${invoice.supplier.id}`}
                   className="text-sm text-indigo-600 hover:text-indigo-800"
                 >
                   Ver cadastro →
                 </Link>
+              ) : canApprove && (
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => findSupplierMutation.mutate({ invoiceId: id, createIfNotFound: false })}
+                    disabled={findSupplierMutation.isPending}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50"
+                  >
+                    {findSupplierMutation.isPending ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <RefreshCw className="w-3 h-3" />
+                    )}
+                    Buscar
+                  </button>
+                  <button
+                    onClick={() => findSupplierMutation.mutate({ invoiceId: id, createIfNotFound: true })}
+                    disabled={findSupplierMutation.isPending}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-50"
+                  >
+                    <UserPlus className="w-3 h-3" />
+                    Criar
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -261,18 +302,20 @@ export default function InvoiceDetailPage() {
               </div>
             </div>
             {canApprove && (
-              <button
-                onClick={() => autoMatchMutation.mutate({ invoiceId: id })}
-                disabled={autoMatchMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50"
-              >
-                {autoMatchMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4" />
-                )}
-                Auto-vincular
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => autoLinkMutation.mutate({ invoiceId: id })}
+                  disabled={autoLinkMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50"
+                >
+                  {autoLinkMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4" />
+                  )}
+                  Auto-vincular
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -357,6 +400,18 @@ export default function InvoiceDetailPage() {
                             <span className="text-xs text-yellow-600 max-w-[200px] truncate" title={item.divergenceNote}>
                               {item.divergenceNote}
                             </span>
+                          )}
+                          {canApprove && !item.materialId && (
+                            <button
+                              onClick={() => setLinkingItem({
+                                id: item.id,
+                                name: item.productName,
+                                code: item.productCode,
+                              })}
+                              className="mt-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                              Vincular
+                            </button>
                           )}
                         </div>
                       </td>
@@ -487,6 +542,17 @@ export default function InvoiceDetailPage() {
           </div>
         )}
       </main>
+
+      {/* Link Material Modal */}
+      {linkingItem && (
+        <LinkMaterialModal
+          itemId={linkingItem.id}
+          itemName={linkingItem.name}
+          itemCode={linkingItem.code}
+          onClose={() => setLinkingItem(null)}
+          onLinked={() => refetch()}
+        />
+      )}
 
       {/* Reject Modal */}
       {showRejectModal && (

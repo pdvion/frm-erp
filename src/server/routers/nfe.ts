@@ -412,6 +412,339 @@ export const nfeRouter = createTRPCRouter({
       return invoice;
     }),
 
+  // Buscar fornecedor por CNPJ e criar se não existir
+  findOrCreateSupplier: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+      createIfNotFound: z.boolean().default(false),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const invoice = await prisma.receivedInvoice.findFirst({
+        where: {
+          id: input.invoiceId,
+          ...tenantFilter(ctx.companyId),
+        },
+      });
+
+      if (!invoice) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NFe não encontrada",
+        });
+      }
+
+      // Buscar fornecedor pelo CNPJ
+      const cnpjLimpo = invoice.supplierCnpj.replace(/\D/g, "");
+      let supplier = await prisma.supplier.findFirst({
+        where: {
+          cnpj: { contains: cnpjLimpo },
+        },
+      });
+
+      if (!supplier && input.createIfNotFound) {
+        // Obter próximo código
+        const lastSupplier = await prisma.supplier.findFirst({
+          orderBy: { code: "desc" },
+        });
+        const nextCode = (lastSupplier?.code || 0) + 1;
+
+        // Criar fornecedor
+        supplier = await prisma.supplier.create({
+          data: {
+            code: nextCode,
+            companyName: invoice.supplierName,
+            cnpj: invoice.supplierCnpj,
+            companyId: ctx.companyId,
+          },
+        });
+      }
+
+      if (supplier) {
+        // Vincular à NFe
+        await prisma.receivedInvoice.update({
+          where: { id: input.invoiceId },
+          data: { supplierId: supplier.id },
+        });
+      }
+
+      return {
+        found: !!supplier,
+        supplier,
+        created: input.createIfNotFound && !!supplier,
+      };
+    }),
+
+  // Buscar materiais para vincular aos itens da NFe
+  suggestMaterials: tenantProcedure
+    .input(z.object({
+      itemId: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const item = await prisma.receivedInvoiceItem.findUnique({
+        where: { id: input.itemId },
+        include: {
+          invoice: true,
+        },
+      });
+
+      if (!item) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Item não encontrado",
+        });
+      }
+
+      // Buscar por código do fornecedor (SupplierMaterial)
+      const bySupplierCode = item.invoice.supplierId
+        ? await prisma.supplierMaterial.findMany({
+            where: {
+              supplierId: item.invoice.supplierId,
+              supplierCode: item.productCode,
+            },
+            include: { material: true },
+            take: 5,
+          })
+        : [];
+
+      // Buscar por descrição similar
+      const searchTerms = item.productName
+        .split(/\s+/)
+        .filter((t) => t.length > 3)
+        .slice(0, 3);
+
+      const byDescription = await prisma.material.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          OR: searchTerms.map((term) => ({
+            description: { contains: term, mode: "insensitive" as const },
+          })),
+        },
+        take: 10,
+      });
+
+      // Buscar por NCM
+      const byNcm = item.ncm
+        ? await prisma.material.findMany({
+            where: {
+              ...tenantFilter(ctx.companyId),
+              ncm: item.ncm,
+            },
+            take: 5,
+          })
+        : [];
+
+      // Combinar e remover duplicatas
+      const allMaterials = [
+        ...bySupplierCode.map((sm) => ({ ...sm.material, matchType: "supplier_code" as const })),
+        ...byNcm.map((m) => ({ ...m, matchType: "ncm" as const })),
+        ...byDescription.map((m) => ({ ...m, matchType: "description" as const })),
+      ];
+
+      const uniqueMaterials = allMaterials.filter(
+        (m, i, arr) => arr.findIndex((x) => x.id === m.id) === i
+      );
+
+      return {
+        item,
+        suggestions: uniqueMaterials,
+        hasExactMatch: bySupplierCode.length > 0,
+      };
+    }),
+
+  // Vincular item e salvar vínculo para futuras importações
+  linkItemAndSave: tenantProcedure
+    .input(z.object({
+      itemId: z.string(),
+      materialId: z.string(),
+      saveForFuture: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      const item = await prisma.receivedInvoiceItem.findUnique({
+        where: { id: input.itemId },
+        include: { invoice: true },
+      });
+
+      if (!item) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Item não encontrado",
+        });
+      }
+
+      // Atualizar item
+      const updatedItem = await prisma.receivedInvoiceItem.update({
+        where: { id: input.itemId },
+        data: {
+          materialId: input.materialId,
+          matchStatus: "MATCHED",
+        },
+        include: { material: true },
+      });
+
+      // Salvar vínculo para futuras importações
+      if (input.saveForFuture && item.invoice.supplierId) {
+        // Verificar se já existe
+        const existing = await prisma.supplierMaterial.findFirst({
+          where: {
+            supplierId: item.invoice.supplierId,
+            materialId: input.materialId,
+          },
+        });
+
+        if (!existing) {
+          await prisma.supplierMaterial.create({
+            data: {
+              supplierId: item.invoice.supplierId,
+              materialId: input.materialId,
+              supplierCode: item.productCode,
+              lastPrice: item.unitPrice,
+              lastPriceDate: new Date(),
+            },
+          });
+        } else {
+          // Atualizar código e preço
+          await prisma.supplierMaterial.update({
+            where: { id: existing.id },
+            data: {
+              supplierCode: item.productCode,
+              lastPrice: item.unitPrice,
+              lastPriceDate: new Date(),
+            },
+          });
+        }
+      }
+
+      return updatedItem;
+    }),
+
+  // Auto-vincular todos os itens possíveis
+  autoLinkItems: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const invoice = await prisma.receivedInvoice.findFirst({
+        where: {
+          id: input.invoiceId,
+          ...tenantFilter(ctx.companyId),
+        },
+        include: {
+          items: {
+            where: { matchStatus: "PENDING" },
+          },
+        },
+      });
+
+      if (!invoice) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NFe não encontrada",
+        });
+      }
+
+      let linked = 0;
+      let notFound = 0;
+
+      for (const item of invoice.items) {
+        // Buscar por código do fornecedor
+        if (invoice.supplierId) {
+          const supplierMaterial = await prisma.supplierMaterial.findFirst({
+            where: {
+              supplierId: invoice.supplierId,
+              supplierCode: item.productCode,
+            },
+          });
+
+          if (supplierMaterial) {
+            await prisma.receivedInvoiceItem.update({
+              where: { id: item.id },
+              data: {
+                materialId: supplierMaterial.materialId,
+                matchStatus: "MATCHED",
+              },
+            });
+            linked++;
+            continue;
+          }
+        }
+
+        // Marcar como não encontrado
+        await prisma.receivedInvoiceItem.update({
+          where: { id: item.id },
+          data: { matchStatus: "NOT_FOUND" },
+        });
+        notFound++;
+      }
+
+      return {
+        total: invoice.items.length,
+        linked,
+        notFound,
+      };
+    }),
+
+  // Criar material a partir do item da NFe
+  createMaterialFromItem: tenantProcedure
+    .input(z.object({
+      itemId: z.string(),
+      categoryId: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const item = await prisma.receivedInvoiceItem.findUnique({
+        where: { id: input.itemId },
+        include: { invoice: true },
+      });
+
+      if (!item) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Item não encontrado",
+        });
+      }
+
+      // Obter próximo código
+      const lastMaterial = await prisma.material.findFirst({
+        orderBy: { code: "desc" },
+      });
+      const nextCode = (lastMaterial?.code || 0) + 1;
+
+      // Criar material
+      const material = await prisma.material.create({
+        data: {
+          code: nextCode,
+          description: item.productName,
+          unit: item.unit,
+          ncm: item.ncm,
+          categoryId: input.categoryId,
+          companyId: ctx.companyId,
+        },
+      });
+
+      // Vincular item ao material
+      await prisma.receivedInvoiceItem.update({
+        where: { id: input.itemId },
+        data: {
+          materialId: material.id,
+          matchStatus: "MATCHED",
+        },
+      });
+
+      // Criar vínculo fornecedor-material
+      if (item.invoice.supplierId) {
+        await prisma.supplierMaterial.create({
+          data: {
+            supplierId: item.invoice.supplierId,
+            materialId: material.id,
+            supplierCode: item.productCode,
+            lastPrice: item.unitPrice,
+            lastPriceDate: new Date(),
+          },
+        });
+      }
+
+      return material;
+    }),
+
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, validated, approved, rejected, totalValue] = await Promise.all([
