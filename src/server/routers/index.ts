@@ -11,6 +11,7 @@ import { authLogsRouter } from "./authLogs";
 import { groupsRouter } from "./groups";
 import { settingsRouter } from "./settings";
 import { storageRouter } from "./storage";
+import { nfeRouter } from "./nfe";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -25,6 +26,7 @@ export const appRouter = createTRPCRouter({
   groups: groupsRouter,
   settings: settingsRouter,
   storage: storageRouter,
+  nfe: nfeRouter,
 });
 
 export type AppRouter = typeof appRouter;
