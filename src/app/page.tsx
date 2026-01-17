@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { trpc } from "@/lib/trpc";
 import { 
   LogIn, 
   Mail, 
@@ -16,40 +17,78 @@ import {
   BarChart3,
   Shield,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Truck,
+  DollarSign,
+  Factory,
+  ClipboardList,
+  LucideIcon,
 } from "lucide-react";
 
-const features = [
+// Mapeamento de ícones disponíveis
+const ICON_MAP: Record<string, LucideIcon> = {
+  Package,
+  Warehouse,
+  FileText,
+  BarChart3,
+  Shield,
+  CheckCircle,
+  Users,
+  Truck,
+  DollarSign,
+  Factory,
+  ClipboardList,
+};
+
+// Features padrão (fallback)
+const DEFAULT_FEATURES = [
   {
-    icon: Package,
+    icon: "Package",
     title: "Gestão de Materiais",
     description: "Controle completo de materiais, categorias e especificações técnicas"
   },
   {
-    icon: Warehouse,
+    icon: "Warehouse",
     title: "Controle de Estoque",
     description: "Movimentações, inventário e rastreabilidade em tempo real"
   },
   {
-    icon: FileText,
+    icon: "FileText",
     title: "Entrada de NFe",
     description: "Importação automática de XML, validação e conferência"
   },
   {
-    icon: BarChart3,
+    icon: "BarChart3",
     title: "Relatórios Avançados",
     description: "Dashboards e indicadores para tomada de decisão"
   },
 ];
 
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const { signIn, isAuthenticated, isLoading: authLoading } = useAuth();
+  
+  // Buscar configurações da landing page
+  const { data: landingConfig } = trpc.settings.getLandingConfig.useQuery();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Extrair configurações com fallbacks
+  const heroTitle = String(landingConfig?.hero?.title || "Gestão Industrial");
+  const heroSubtitle = String(landingConfig?.hero?.subtitle || "Completa e Moderna");
+  const heroDescription = String(landingConfig?.hero?.description || "ERP desenvolvido para indústrias, com módulos avançados de compras, estoque, produção e financeiro.");
+  const heroImage = landingConfig?.hero?.image as string | null;
+  const features: Feature[] = (landingConfig?.features as Feature[]) || DEFAULT_FEATURES;
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -86,18 +125,30 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Hero/Features */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--frm-primary)] to-[var(--frm-dark)] relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)" />
-          </svg>
-        </div>
+      <div 
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
+        style={{
+          background: heroImage 
+            ? `url(${heroImage}) center/cover`
+            : "linear-gradient(135deg, var(--frm-primary), var(--frm-dark))",
+        }}
+      >
+        {/* Overlay for image */}
+        {heroImage && <div className="absolute inset-0 bg-black/40" />}
+        
+        {/* Background Pattern (only when no image) */}
+        {!heroImage && (
+          <div className="absolute inset-0 opacity-10">
+            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100" height="100" fill="url(#grid)" />
+            </svg>
+          </div>
+        )}
 
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
           {/* Logo */}
@@ -117,24 +168,26 @@ export default function LandingPage() {
           <div className="space-y-8">
             <div>
               <h2 className="text-4xl font-bold leading-tight">
-                Gestão Industrial<br />
-                <span className="text-white/80">Completa e Moderna</span>
+                {heroTitle}<br />
+                <span className="text-white/80">{heroSubtitle}</span>
               </h2>
               <p className="mt-4 text-lg text-white/70 max-w-md">
-                ERP desenvolvido para indústrias, com módulos avançados de compras, 
-                estoque, produção e financeiro.
+                {heroDescription}
               </p>
             </div>
 
             {/* Features */}
             <div className="grid grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <div key={index} className="bg-white/10 backdrop-blur rounded-xl p-4">
-                  <feature.icon className="w-8 h-8 text-white/90 mb-3" />
-                  <h3 className="font-semibold text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/60 mt-1">{feature.description}</p>
-                </div>
-              ))}
+              {features.map((feature, index) => {
+                const IconComponent = ICON_MAP[feature.icon] || Package;
+                return (
+                  <div key={index} className="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <IconComponent className="w-8 h-8 text-white/90 mb-3" />
+                    <h3 className="font-semibold text-white">{feature.title}</h3>
+                    <p className="text-sm text-white/60 mt-1">{feature.description}</p>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Trust Indicators */}
