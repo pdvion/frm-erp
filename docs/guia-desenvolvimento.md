@@ -12,6 +12,66 @@
 
 ---
 
+## Sistema Original (Delphi)
+
+### Código Fonte
+- **Localização**: `/Users/pdv/Downloads/FRM SUITE/`
+- **Arquivos**: 682 .pas + 616 .dfm
+- **Módulos**: 57 módulos organizados por área
+- **Análise**: `/Users/pdv/Downloads/FRM_SUITE_extracted/ANALISE_FRM_SUITE.md`
+
+### Módulos por Área
+
+#### COMPRAS (CP) - 14 módulos
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| CP10 | Materiais | ✅ Migrado |
+| CP11 | Fornecedores | ✅ Migrado |
+| CP11 | Preview XML NFe | 🔴 Pendente |
+| CP12 | Cotações | ✅ Migrado |
+| CP13 | Pedidos de Compra | ✅ Migrado |
+| CP14 | Entrada NFe | 🔴 **CRÍTICO** |
+| CP15 | Saída Materiais | 🔴 Pendente |
+| CP16 | Ativos | 🟡 Baixa prioridade |
+
+#### ESTOQUE (EST)
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| EST10 | Estoque Produtos | ✅ Migrado |
+
+#### PRODUÇÃO (OP) - 10 módulos
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| OP10 | Ordens Produção | 🔴 Pendente |
+| OP15-50 | Apontamento/Gestão | 🔴 Pendente |
+
+#### VENDAS (PV/VD) - 4 módulos
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| PV10 | Pedido Vendas | 🔴 Pendente |
+| VD10 | Orçamentos Venda | 🔴 Pendente |
+
+#### FINANCEIRO (FN)
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| FN10 | Contas a Pagar | 🔴 Pendente |
+
+#### RH/DP - 8 módulos
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| DP00-04 | Dpto Pessoal | 🟢 Baixa prioridade |
+| FP41 | Folha Ponto | 🟢 Baixa prioridade |
+
+### Tecnologias Originais
+- **Linguagem**: Delphi (Object Pascal)
+- **Banco**: MySQL via Zeos (ZConnection)
+- **UI**: TMS AdvGrid, JVCL
+- **NFe/CTe**: ACBr
+- **REST**: RESTRequest4D
+- **Email**: Indy (IdSMTP)
+
+---
+
 ## Stack Tecnológica
 
 | Camada | Tecnologia | Versão |
