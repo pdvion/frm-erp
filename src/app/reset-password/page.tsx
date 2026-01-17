@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { PasswordStrength } from "@/components/PasswordStrength";
+import { validatePassword } from "@/lib/password";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -35,8 +37,9 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("A senha deve ter pelo menos 8 caracteres");
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      setError(validation.errors[0] || "Senha não atende aos requisitos");
       return;
     }
 
@@ -135,6 +138,7 @@ export default function ResetPasswordPage() {
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
+                  <PasswordStrength password={password} />
                 </div>
 
                 <div>
