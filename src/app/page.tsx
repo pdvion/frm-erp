@@ -1,188 +1,295 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, User } from "lucide-react";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { useAuth } from "@/contexts/AuthContext";
+import { 
+  LogIn, 
+  Mail, 
+  Lock, 
+  Loader2, 
+  AlertCircle,
+  Package,
+  Warehouse,
+  FileText,
+  BarChart3,
+  Shield,
+  CheckCircle,
+  ArrowRight
+} from "lucide-react";
 
-const modules = [
+const features = [
   {
-    title: "Materiais",
-    description: "Cadastro e gestão de materiais",
-    href: "/materials",
     icon: Package,
-    color: "bg-blue-500",
+    title: "Gestão de Materiais",
+    description: "Controle completo de materiais, categorias e especificações técnicas"
   },
   {
-    title: "Fornecedores",
-    description: "Cadastro de fornecedores",
-    href: "/suppliers",
-    icon: Users,
-    color: "bg-green-500",
-  },
-  {
-    title: "Estoque",
-    description: "Controle de estoque e movimentações",
-    href: "/inventory",
     icon: Warehouse,
-    color: "bg-orange-500",
+    title: "Controle de Estoque",
+    description: "Movimentações, inventário e rastreabilidade em tempo real"
   },
   {
-    title: "Orçamentos",
-    description: "Cotações e orçamentos de compra",
-    href: "/quotes",
     icon: FileText,
-    color: "bg-purple-500",
+    title: "Entrada de NFe",
+    description: "Importação automática de XML, validação e conferência"
   },
   {
-    title: "Pedidos de Compra",
-    description: "Pedidos e recebimento de materiais",
-    href: "/purchase-orders",
-    icon: ShoppingCart,
-    color: "bg-teal-500",
-  },
-  {
-    title: "NFe Recebidas",
-    description: "Entrada de materiais e notas fiscais",
-    href: "/invoices",
-    icon: FileInput,
-    color: "bg-indigo-500",
-  },
-  {
-    title: "Relatórios",
-    description: "Relatórios e dashboards",
-    href: "/reports",
     icon: BarChart3,
-    color: "bg-pink-500",
-  },
-  {
-    title: "Configurações",
-    description: "Configurações do sistema",
-    href: "/settings",
-    icon: Settings,
-    color: "bg-gray-500",
-  },
-  {
-    title: "Auditoria",
-    description: "Logs de ações e governança",
-    href: "/audit",
-    icon: Shield,
-    color: "bg-indigo-500",
+    title: "Relatórios Avançados",
+    description: "Dashboards e indicadores para tomada de decisão"
   },
 ];
 
-export default function Home() {
-  const { user } = useAuth();
+export default function LandingPage() {
+  const router = useRouter();
+  const { signIn, isAuthenticated, isLoading: authLoading } = useAuth();
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      setError(error.message === "Invalid login credentials" 
+        ? "E-mail ou senha inválidos" 
+        : error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)]" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
+    <div className="min-h-screen flex">
+      {/* Left Side - Hero/Features */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--frm-primary)] to-[var(--frm-dark)] relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="100" height="100" fill="url(#grid)" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
+          {/* Logo */}
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+              <svg viewBox="0 0 100 60" className="w-8 h-5">
+                <text x="50" y="45" textAnchor="middle" fill="white" fontSize="32" fontWeight="bold" fontFamily="Arial, sans-serif">FRM</text>
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">FRM ERP</h1>
+              <p className="text-sm text-white/70">Sistema de Gestão Industrial</p>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-4xl font-bold leading-tight">
+                Gestão Industrial<br />
+                <span className="text-white/80">Completa e Moderna</span>
+              </h2>
+              <p className="mt-4 text-lg text-white/70 max-w-md">
+                ERP desenvolvido para indústrias, com módulos avançados de compras, 
+                estoque, produção e financeiro.
+              </p>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-4">
+              {features.map((feature, index) => (
+                <div key={index} className="bg-white/10 backdrop-blur rounded-xl p-4">
+                  <feature.icon className="w-8 h-8 text-white/90 mb-3" />
+                  <h3 className="font-semibold text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/60 mt-1">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="flex items-center gap-6 text-white/70">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-400" />
+                <span className="text-sm">Multi-tenant</span>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">FRM ERP</h1>
-                <p className="text-sm text-gray-500">Sistema de Gestão Industrial</p>
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-400" />
+                <span className="text-sm">MFA Seguro</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-400" />
+                <span className="text-sm">Auditoria</span>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-[var(--frm-primary)] hover:bg-gray-50 rounded-lg transition-colors"
-                title="Meu Perfil"
-              >
-                <div className="w-8 h-8 bg-[var(--frm-primary)] rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+          </div>
+
+          {/* Footer */}
+          <p className="text-sm text-white/50">
+            © 2026 FRM ERP - Grupo FRM
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden text-center mb-8">
+            <div className="w-16 h-16 bg-[var(--frm-primary)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg viewBox="0 0 100 60" className="w-12 h-7">
+                <text x="50" y="45" textAnchor="middle" fill="white" fontSize="32" fontWeight="bold" fontFamily="Arial, sans-serif">FRM</text>
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-[var(--frm-primary)]">FRM ERP</h1>
+            <p className="text-gray-600 mt-1">Sistema de Gestão Industrial</p>
+          </div>
+
+          {/* Login Card */}
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Bem-vindo de volta</h2>
+              <p className="text-gray-600 mt-1">Entre com suas credenciais para acessar o sistema</p>
+            </div>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-800">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm">{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-5">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  E-mail
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="seu@email.com"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
+                  />
                 </div>
-                <span className="hidden sm:inline">{user?.email?.split("@")[0] || "Perfil"}</span>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Senha
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" />
+                  <span className="text-sm text-gray-600">Lembrar-me</span>
+                </label>
+                <Link 
+                  href="/forgot-password" 
+                  className="text-sm text-[var(--frm-light)] hover:text-[var(--frm-primary)] hover:underline"
+                >
+                  Esqueci minha senha
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--frm-primary)] text-white rounded-xl hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Entrando...
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    Entrar
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500">ou</span>
+              </div>
+            </div>
+
+            {/* Demo Access */}
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-3">Quer conhecer o sistema?</p>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 text-[var(--frm-primary)] hover:text-[var(--frm-dark)] font-medium"
+              >
+                Acessar página de login completa
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Bem-vindo ao FRM ERP
-          </h2>
-          <p className="text-gray-600">
-            Sistema de gestão de materiais, fornecedores e estoque.
-            Selecione um módulo para começar.
+          {/* Footer */}
+          <p className="text-center text-sm text-gray-500 mt-6">
+            Ao entrar, você concorda com nossos{" "}
+            <Link href="#" className="text-[var(--frm-light)] hover:underline">Termos de Uso</Link>
+            {" "}e{" "}
+            <Link href="#" className="text-[var(--frm-light)] hover:underline">Política de Privacidade</Link>
           </p>
         </div>
-
-        {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((module) => (
-            <Link
-              key={module.href}
-              href={module.href}
-              className="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all"
-            >
-              <div className="flex items-start gap-4">
-                <div className={`${module.color} p-3 rounded-lg`}>
-                  <module.icon className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {module.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {module.description}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Status Section */}
-        <div className="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Status do Sistema
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Banco de Dados</p>
-                <p className="text-xs text-gray-500">Supabase PostgreSQL</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">API</p>
-                <p className="text-xs text-gray-500">tRPC Ativo</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Integrações</p>
-                <p className="text-xs text-gray-500">SEFAZ - Pendente</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="mt-auto border-t bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-sm text-gray-500 text-center">
-            POC Delphi FRM © 2026 - Migração do sistema ERP industrial
-          </p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

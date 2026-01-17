@@ -35,22 +35,24 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Rotas públicas que não precisam de autenticação
-  const publicRoutes = ["/login", "/auth", "/api/trpc"];
+  const publicRoutes = ["/login", "/auth", "/api/trpc", "/forgot-password", "/reset-password"];
   const isPublicRoute = publicRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
+  const isLandingPage = request.nextUrl.pathname === "/";
 
-  // Se não está logado e não é rota pública, redireciona para login
-  if (!user && !isPublicRoute && request.nextUrl.pathname !== "/") {
+  // Se não está logado e não é rota pública nem landing page, redireciona para login
+  if (!user && !isPublicRoute && !isLandingPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.searchParams.set("returnUrl", request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
 
-  // Se está logado e tenta acessar login, redireciona para home
-  if (user && request.nextUrl.pathname === "/login") {
+  // Se está logado e tenta acessar login ou landing page, redireciona para dashboard
+  if (user && (request.nextUrl.pathname === "/login" || isLandingPage)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

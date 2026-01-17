@@ -15,7 +15,7 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const returnUrl = searchParams.get("returnUrl") || "/";
+  const returnUrl = searchParams.get("returnUrl") || "/dashboard";
 
   // Redirecionar se já autenticado
   useEffect(() => {
