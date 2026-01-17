@@ -2,11 +2,17 @@
 
 ## Contexto
 
-O projeto FRM ERP nasceu da necessidade de modernizar o sistema legado em Delphi do Grupo FRM. Porém, a visão evoluiu para algo maior: **criar um ERP completo e moderno**, capaz de competir com soluções como Sankhya, TOTVS e SAP Business One.
+O projeto FRM ERP nasceu da necessidade de modernizar o sistema legado em Delphi do Grupo FRM. Porém, a visão evoluiu para algo maior: **criar um ERP completo, avançado e moderno**, capaz de competir com soluções como Sankhya, TOTVS e SAP Business One.
 
 ## Visão
 
-> **Desenvolver um ERP industrial completo, moderno e escalável, que atenda às necessidades do Grupo FRM e possa ser comercializado como produto SaaS.**
+> **Desenvolver um ERP industrial COMPLETO E AVANÇADO, moderno e escalável, que atenda às necessidades do Grupo FRM e possa ser comercializado como produto SaaS.**
+
+## Princípio Fundamental
+
+> ⚠️ **TODOS OS MÓDULOS DEVEM SER AVANÇADOS E COMPLETOS**
+> 
+> Não aceitamos implementações básicas ou simplificadas. Cada módulo deve ser desenvolvido com funcionalidades de nível enterprise, equivalentes ou superiores às soluções de mercado como Sankhya, TOTVS e SAP.
 
 ## Comparativo: Desenvolver vs Contratar
 
@@ -54,24 +60,34 @@ Baseado na análise da Sankhya e necessidades industriais:
 | **Autenticação** | ✅ Feito | Login, MFA, Sessões, Audit |
 | **Multi-Tenant** | ✅ Feito | Múltiplas empresas |
 
-### 🟡 Fase 2: Operacional (6-12 meses)
+### 🟡 Fase 2: Operacional Completo (6-12 meses)
 
 | Módulo | Prioridade | Descrição |
 |--------|------------|-----------|
-| **Produção (MRP)** | Alta | Ordens de produção, apontamentos |
-| **Qualidade** | Média | Inspeções, não-conformidades |
-| **Manutenção** | Média | Ordens de serviço, preventivas |
-| **Expedição** | Alta | Romaneios, rastreamento |
+| **Engenharia** | Alta | BOM multinível, roteiros, centros de trabalho |
+| **MRP** | Alta | Explosão de necessidades, sugestões de OPs e OCs |
+| **Produção (MES)** | Alta | Ordens, programação Gantt, apontamentos |
+| **Apontamentos** | Alta | Produção, MO, máquina, paradas, rastreabilidade |
+| **OEE** | Alta | Dashboard tempo real, indicadores |
+| **Qualidade** | Alta | Inspeções, laudos, não-conformidades, ações corretivas |
+| **Manutenção** | Alta | Preventiva, corretiva, MTBF/MTTR |
+| **Expedição** | Alta | Romaneios, rastreamento, integração transportadoras |
 
-### 🔵 Fase 3: Financeiro (12-18 meses)
+> ⚠️ **Nota**: O módulo de Produção deve ser **completo e avançado** (MRP/MES), equivalente ao módulo Produção/W da Sankhya. Não aceitamos implementações básicas.
+
+### 🔵 Fase 3: Financeiro Completo (12-18 meses)
 
 | Módulo | Prioridade | Descrição |
 |--------|------------|-----------|
-| **Contas a Pagar** | Alta | Títulos, baixas, conciliação |
-| **Contas a Receber** | Alta | Faturamento, cobrança |
-| **Fluxo de Caixa** | Média | Projeções, DRE |
-| **Contabilidade** | Baixa | Lançamentos, balancetes |
-| **Fiscal** | Alta | SPED, NFe, NFSe |
+| **Contas a Pagar** | Alta | Títulos, autorização multinível, baixas, CNAB |
+| **Contas a Receber** | Alta | Faturamento, boletos, cobrança automática, CNAB |
+| **Tesouraria** | Alta | Contas bancárias, conciliação OFX, transferências |
+| **Fluxo de Caixa** | Alta | Realizado e projetado, DRE gerencial |
+| **Integração Bancária** | Alta | Boletos, remessa/retorno CNAB 240/400, PIX |
+| **Contabilidade** | Média | Lançamentos automáticos, balancetes, DRE |
+| **Fiscal** | Alta | SPED, NFe entrada/saída, NFSe, manifestação |
+
+> ⚠️ **Nota**: O módulo Financeiro deve ser **completo e avançado**, equivalente ao módulo Financeiro da Sankhya (100+ telas). Não aceitamos implementações básicas.
 
 ### 🟣 Fase 4: Comercial (18-24 meses)
 
@@ -82,15 +98,22 @@ Baseado na análise da Sankhya e necessidades industriais:
 | **Precificação** | Média | Tabelas, políticas |
 | **Comissões** | Baixa | Cálculo, relatórios |
 
-### ⚪ Fase 5: RH/DP (24+ meses)
+### ⚪ Fase 5: RH/DP Completo (24+ meses)
 
 | Módulo | Prioridade | Descrição |
 |--------|------------|-----------|
-| **Cadastro Pessoal** | Média | Funcionários, cargos |
-| **Ponto** | Alta | Marcações, banco de horas |
-| **Folha** | Alta | Cálculos, eSocial |
-| **Benefícios** | Média | VT, VR, planos |
-| **Treinamentos** | Baixa | Cursos, certificações |
+| **Admissão Digital** | Alta | Workflow completo, documentos, eSocial |
+| **Ponto Eletrônico** | Alta | REP, mobile, banco de horas, escalas |
+| **Folha de Pagamento** | Alta | Cálculos completos, eventos, integração contábil |
+| **Férias e 13º** | Alta | Programação, cálculo automático, eSocial |
+| **Rescisões** | Alta | TRCT, GRRF, homologação |
+| **Benefícios** | Alta | VT, VA, plano saúde, cálculo automático |
+| **eSocial** | Alta | Todos os eventos (tabelas, periódicos, não-periódicos) |
+| **Portal Colaborador** | Média | Holerite, férias, ponto online |
+| **App Mobile RH** | Média | Ponto, holerite, solicitações |
+| **Treinamentos** | Média | Cursos, certificações, matriz polivalência |
+
+> ⚠️ **Nota**: O módulo de RH/DP deve ser **completo e avançado**, equivalente ao Pessoas+ da Sankhya. Não aceitamos implementações básicas.
 
 ## Funcionalidades Transversais
 
