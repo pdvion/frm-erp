@@ -113,6 +113,9 @@ model Company {
   mrpRuns          MrpRun[]
   workCenters      WorkCenter[]
   oeeTargets       OeeTarget[]
+  leads            Lead[]
+  salesQuotes      SalesQuote[]
+  salesOrders      SalesOrder[]
 
   @@map("companies")
 }
@@ -139,6 +142,7 @@ model User {
   settingsUpdated    SystemSetting[]
   payableApprovals   PayableApproval[]
   approverThresholds ApprovalThresholdApprover[]
+  assignedLeads      Lead[]
 
   @@map("users")
 }
@@ -338,6 +342,8 @@ model Material {
   bomAsChild          BomItem[]       @relation("BomChild")
   mrpParameter        MrpParameter?
   mrpSuggestions      MrpSuggestion[]
+  salesQuoteItems     SalesQuoteItem[]
+  salesOrderItems     SalesOrderItem[]
 
   @@map("materials")
 }
@@ -1000,6 +1006,7 @@ model ProductionOrder {
   materials       ProductionOrderMaterial[]
   operations      ProductionOrderOperation[]
   productionLogs  ProductionLog[]
+  salesOrderItems SalesOrderItem[]
   
   @@unique([companyId, code])
   @@index([companyId])
@@ -1247,7 +1254,10 @@ model Customer {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   
-  receivables AccountsReceivable[]
+  receivables  AccountsReceivable[]
+  leads        Lead[]
+  salesQuotes  SalesQuote[]
+  salesOrders  SalesOrder[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -1670,4 +1680,250 @@ model OeeTarget {
   @@index([workCenterId])
   @@index([year, month])
   @@map("oee_targets")
+}
+
+// =============================================================================
+// MÓDULO DE VENDAS
+// =============================================================================
+
+enum LeadStatus {
+  NEW         // Novo
+  CONTACTED   // Contatado
+  QUALIFIED   // Qualificado
+  PROPOSAL    // Proposta
+  NEGOTIATION // Negociação
+  WON         // Ganho
+  LOST        // Perdido
+}
+
+enum LeadSource {
+  WEBSITE     // Site
+  REFERRAL    // Indicação
+  COLD_CALL   // Prospecção
+  TRADE_SHOW  // Feira
+  SOCIAL_MEDIA // Redes Sociais
+  EMAIL       // Email
+  OTHER       // Outros
+}
+
+enum SalesQuoteStatus {
+  DRAFT       // Rascunho
+  SENT        // Enviado
+  VIEWED      // Visualizado
+  ACCEPTED    // Aceito
+  REJECTED    // Rejeitado
+  EXPIRED     // Expirado
+  CONVERTED   // Convertido
+}
+
+enum SalesOrderStatus {
+  PENDING       // Pendente
+  CONFIRMED     // Confirmado
+  IN_PRODUCTION // Em Produção
+  READY         // Pronto
+  SHIPPED       // Enviado
+  DELIVERED     // Entregue
+  CANCELLED     // Cancelado
+}
+
+// =============================================================================
+// LEADS / OPORTUNIDADES
+// =============================================================================
+model Lead {
+  id                String      @id @default(uuid()) @db.Uuid
+  code              String
+  companyId         String?     @db.Uuid
+  company           Company?    @relation(fields: [companyId], references: [id])
+  customerId        String?     @db.Uuid
+  customer          Customer?   @relation(fields: [customerId], references: [id])
+  companyName       String
+  contactName       String?
+  email             String?
+  phone             String?
+  source            LeadSource  @default(OTHER)
+  status            LeadStatus  @default(NEW)
+  estimatedValue    Float?
+  probability       Int?        @default(50)
+  expectedCloseDate DateTime?
+  description       String?
+  notes             String?
+  assignedTo        String?     @db.Uuid
+  assignedUser      User?       @relation(fields: [assignedTo], references: [id])
+  lastContactAt     DateTime?
+  wonAt             DateTime?
+  lostAt            DateTime?
+  lostReason        String?
+  createdBy         String?     @db.Uuid
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  activities  LeadActivity[]
+  salesQuotes SalesQuote[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([assignedTo])
+  @@map("leads")
+}
+
+// =============================================================================
+// ATIVIDADES DO LEAD
+// =============================================================================
+model LeadActivity {
+  id          String    @id @default(uuid()) @db.Uuid
+  leadId      String    @db.Uuid
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type        String
+  subject     String
+  description String?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdBy   String?   @db.Uuid
+  createdAt   DateTime  @default(now())
+  
+  @@index([leadId])
+  @@map("lead_activities")
+}
+
+// =============================================================================
+// ORÇAMENTOS DE VENDA
+// =============================================================================
+model SalesQuote {
+  id                 String           @id @default(uuid()) @db.Uuid
+  code               Int
+  companyId          String?          @db.Uuid
+  company            Company?         @relation(fields: [companyId], references: [id])
+  customerId         String           @db.Uuid
+  customer           Customer         @relation(fields: [customerId], references: [id])
+  leadId             String?          @db.Uuid
+  lead               Lead?            @relation(fields: [leadId], references: [id])
+  status             SalesQuoteStatus @default(DRAFT)
+  issueDate          DateTime         @default(now())
+  validUntil         DateTime?
+  deliveryDays       Int?
+  paymentTerms       String?
+  shippingMethod     String?
+  subtotal           Float            @default(0)
+  discountPercent    Float            @default(0)
+  discountValue      Float            @default(0)
+  shippingValue      Float            @default(0)
+  taxValue           Float            @default(0)
+  totalValue         Float            @default(0)
+  notes              String?
+  internalNotes      String?
+  sentAt             DateTime?
+  viewedAt           DateTime?
+  acceptedAt         DateTime?
+  rejectedAt         DateTime?
+  rejectionReason    String?
+  convertedToOrderId String?          @unique @db.Uuid
+  convertedToOrder   SalesOrder?      @relation("QuoteToOrder", fields: [convertedToOrderId], references: [id])
+  createdBy          String?          @db.Uuid
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  
+  items SalesQuoteItem[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@map("sales_quotes")
+}
+
+// =============================================================================
+// ITENS DO ORÇAMENTO DE VENDA
+// =============================================================================
+model SalesQuoteItem {
+  id              String     @id @default(uuid()) @db.Uuid
+  quoteId         String     @db.Uuid
+  quote           SalesQuote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  materialId      String     @db.Uuid
+  material        Material   @relation(fields: [materialId], references: [id])
+  description     String?
+  quantity        Float
+  unit            String     @default("UN")
+  unitPrice       Float
+  discountPercent Float      @default(0)
+  totalPrice      Float
+  sequence        Int        @default(0)
+  notes           String?
+  createdAt       DateTime   @default(now())
+  
+  @@index([quoteId])
+  @@map("sales_quote_items")
+}
+
+// =============================================================================
+// PEDIDOS DE VENDA
+// =============================================================================
+model SalesOrder {
+  id                 String           @id @default(uuid()) @db.Uuid
+  code               Int
+  companyId          String?          @db.Uuid
+  company            Company?         @relation(fields: [companyId], references: [id])
+  customerId         String           @db.Uuid
+  customer           Customer         @relation(fields: [customerId], references: [id])
+  quoteId            String?          @db.Uuid
+  status             SalesOrderStatus @default(PENDING)
+  orderDate          DateTime         @default(now())
+  deliveryDate       DateTime?
+  shippedAt          DateTime?
+  deliveredAt        DateTime?
+  paymentTerms       String?
+  shippingMethod     String?
+  shippingAddress    String?
+  subtotal           Float            @default(0)
+  discountPercent    Float            @default(0)
+  discountValue      Float            @default(0)
+  shippingValue      Float            @default(0)
+  taxValue           Float            @default(0)
+  totalValue         Float            @default(0)
+  notes              String?
+  internalNotes      String?
+  invoiceNumber      String?
+  invoiceDate        DateTime?
+  trackingCode       String?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdBy          String?          @db.Uuid
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  
+  items       SalesOrderItem[]
+  sourceQuote SalesQuote?      @relation("QuoteToOrder")
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@map("sales_orders")
+}
+
+// =============================================================================
+// ITENS DO PEDIDO DE VENDA
+// =============================================================================
+model SalesOrderItem {
+  id                String           @id @default(uuid()) @db.Uuid
+  orderId           String           @db.Uuid
+  order             SalesOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  materialId        String           @db.Uuid
+  material          Material         @relation(fields: [materialId], references: [id])
+  description       String?
+  quantity          Float
+  deliveredQty      Float            @default(0)
+  unit              String           @default("UN")
+  unitPrice         Float
+  discountPercent   Float            @default(0)
+  totalPrice        Float
+  sequence          Int              @default(0)
+  productionOrderId String?          @db.Uuid
+  productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+  notes             String?
+  createdAt         DateTime         @default(now())
+  
+  @@index([orderId])
+  @@map("sales_order_items")
 }
