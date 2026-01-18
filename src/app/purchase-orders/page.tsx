@@ -39,7 +39,7 @@ export default function PurchaseOrdersPage() {
 
   const { data, isLoading, error } = trpc.purchaseOrders.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "DRAFT" | "PENDING" | "APPROVED" | "SENT" | "PARTIAL" | "COMPLETED" | "CANCELLED" | undefined,
+    status: statusFilter ? (statusFilter as "DRAFT" | "PENDING" | "APPROVED" | "SENT" | "PARTIAL" | "COMPLETED" | "CANCELLED") : undefined,
     page,
     limit: 20,
   });

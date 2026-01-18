@@ -38,7 +38,7 @@ export default function InvoicesPage() {
 
   const { data, isLoading, refetch } = trpc.receivedInvoices.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "PENDING" | "VALIDATED" | "APPROVED" | "REJECTED" | "CANCELLED" | undefined,
+    status: statusFilter ? (statusFilter as "PENDING" | "VALIDATED" | "APPROVED" | "REJECTED" | "CANCELLED") : undefined,
     page,
     limit: 20,
   });
