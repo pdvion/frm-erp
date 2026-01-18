@@ -18,7 +18,7 @@ export const inventoryRouter = createTRPCRouter({
       const { search, inventoryType, belowMinimum, page = 1, limit = 20 } = input ?? {};
       
       const where = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false), // Inventory não tem isShared
         ...(inventoryType && { inventoryType }),
         ...(search && {
           material: {
@@ -71,7 +71,7 @@ export const inventoryRouter = createTRPCRouter({
       return ctx.prisma.inventory.findMany({
         where: { 
           materialId: input.materialId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false), // Inventory não tem isShared
         },
         include: {
           material: true,
@@ -191,9 +191,9 @@ export const inventoryRouter = createTRPCRouter({
       const { inventoryId, materialId, movementType, startDate, endDate, page = 1, limit = 50 } = input ?? {};
 
       const where = {
-        inventory: { ...tenantFilter(ctx.companyId) },
+        inventory: { ...tenantFilter(ctx.companyId, false) },
         ...(inventoryId && { inventoryId }),
-        ...(materialId && { inventory: { materialId, ...tenantFilter(ctx.companyId) } }),
+        ...(materialId && { inventory: { materialId, ...tenantFilter(ctx.companyId, false) } }),
         ...(movementType && { movementType }),
         ...(startDate && endDate && {
           movementDate: {

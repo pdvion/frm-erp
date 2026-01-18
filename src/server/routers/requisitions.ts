@@ -28,7 +28,7 @@ export const requisitionsRouter = createTRPCRouter({
       } = input || {};
 
       const where: Prisma.MaterialRequisitionWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
       };
 
       if (status && status !== "ALL") {
@@ -89,7 +89,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           items: {
@@ -188,7 +188,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.requisitionId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -265,7 +265,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { items: true },
       });
@@ -310,7 +310,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { items: true },
       });
@@ -364,7 +364,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -537,7 +537,7 @@ export const requisitionsRouter = createTRPCRouter({
       const requisition = await prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { items: true },
       });
@@ -572,20 +572,20 @@ export const requisitionsRouter = createTRPCRouter({
     const [byStatus, byType, recentCount] = await Promise.all([
       prisma.materialRequisition.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
       }),
       prisma.materialRequisition.groupBy({
         by: ["type"],
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { notIn: ["CANCELLED", "COMPLETED"] },
         },
         _count: true,
       }),
       prisma.materialRequisition.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           requestedAt: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // últimos 7 dias
           },

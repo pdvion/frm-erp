@@ -38,7 +38,7 @@ export default function QuotesPage() {
 
   const { data, isLoading, error } = trpc.quotes.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "DRAFT" | "PENDING" | "SENT" | "RECEIVED" | "APPROVED" | "REJECTED" | "CANCELLED" | undefined,
+    status: statusFilter ? (statusFilter as "DRAFT" | "PENDING" | "SENT" | "RECEIVED" | "APPROVED" | "REJECTED" | "CANCELLED") : undefined,
     page,
     limit: 20,
   });
