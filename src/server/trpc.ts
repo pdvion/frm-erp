@@ -35,30 +35,56 @@ async function getSupabaseUser() {
 }
 
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  // Obter usuário autenticado do Supabase
-  const supabaseUser = await getSupabaseUser();
-  
-  // Buscar usuário no banco local pelo email do Supabase
-  let userId: string | null = null;
-  if (supabaseUser?.email) {
+  // Contexto padrão vazio para endpoints públicos
+  const emptyTenant = {
+    userId: null,
+    companyId: null,
+    companies: [],
+    permissions: new Map(),
+  };
+
+  try {
+    // Obter usuário autenticado do Supabase
+    const supabaseUser = await getSupabaseUser();
+    
+    // Se não há usuário autenticado, retornar contexto vazio (para endpoints públicos)
+    if (!supabaseUser?.email) {
+      return {
+        prisma,
+        tenant: emptyTenant,
+        supabaseUser: null,
+        ...opts,
+      };
+    }
+    
+    // Buscar usuário no banco local pelo email do Supabase
     const localUser = await prisma.user.findUnique({
       where: { email: supabaseUser.email },
     });
-    userId = localUser?.id ?? null;
+    const userId = localUser?.id ?? null;
+    
+    // Fallback para header (desenvolvimento) ou null
+    const finalUserId = userId ?? opts.headers.get("x-user-id");
+    const activeCompanyId = opts.headers.get("x-company-id");
+    
+    const tenant = await getTenantContext(finalUserId, activeCompanyId);
+    
+    return {
+      prisma,
+      tenant,
+      supabaseUser,
+      ...opts,
+    };
+  } catch (error) {
+    // Em caso de erro, retornar contexto vazio para não quebrar endpoints públicos
+    console.error("Error creating TRPC context:", error);
+    return {
+      prisma,
+      tenant: emptyTenant,
+      supabaseUser: null,
+      ...opts,
+    };
   }
-  
-  // Fallback para header (desenvolvimento) ou null
-  const finalUserId = userId ?? opts.headers.get("x-user-id");
-  const activeCompanyId = opts.headers.get("x-company-id");
-  
-  const tenant = await getTenantContext(finalUserId, activeCompanyId);
-  
-  return {
-    prisma,
-    tenant,
-    supabaseUser,
-    ...opts,
-  };
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
