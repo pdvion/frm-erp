@@ -12,6 +12,11 @@ function getBaseUrl() {
   return `http://localhost:3000`;
 }
 
+function getActiveCompanyId(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("frm-active-company");
+}
+
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
@@ -20,6 +25,10 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           transformer: superjson,
+          headers() {
+            const companyId = getActiveCompanyId();
+            return companyId ? { "x-company-id": companyId } : {};
+          },
         }),
       ],
     })
