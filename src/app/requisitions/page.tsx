@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
   Search,
@@ -76,32 +76,19 @@ export default function RequisitionsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Package className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Requisições de Material</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/requisitions/new"
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Requisição
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title="Requisições de Material" 
+        icon={<Package className="w-6 h-6 text-amber-600" />}
+        module="MATERIAL_OUT"
+      >
+        <Link
+          href="/requisitions/new"
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Requisição
+        </Link>
+      </PageHeader>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}

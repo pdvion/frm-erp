@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   Plus,
@@ -58,38 +58,26 @@ export default function QuotesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-gray-500 hover:text-gray-700">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-gray-900">
-                Cotações (CP12)
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/quotes/compare"
-                className="flex items-center gap-2 px-4 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors"
-              >
-                <BarChart3 className="w-4 h-4" />
-                Comparar
-              </Link>
-              <Link
-                href="/quotes/new"
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Cotação
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title="Cotações" 
+        icon={<FileText className="w-6 h-6 text-purple-600" />}
+        module="QUOTES"
+      >
+        <Link
+          href="/quotes/compare"
+          className="flex items-center gap-2 px-4 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors"
+        >
+          <BarChart3 className="w-4 h-4" />
+          Comparar
+        </Link>
+        <Link
+          href="/quotes/new"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Cotação
+        </Link>
+      </PageHeader>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
