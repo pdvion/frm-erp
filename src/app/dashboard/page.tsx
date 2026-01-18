@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, DollarSign, User } from "lucide-react";
+import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, DollarSign, User, BookOpen } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -114,6 +115,14 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-4">
                 <CompanySwitcher />
+                <Link
+                  href="/docs"
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                  title="Documentação"
+                >
+                  <BookOpen className="w-5 h-5" />
+                </Link>
+                <NotificationBell />
                 <Link
                   href="/profile"
                   className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-[var(--frm-primary)] hover:bg-gray-50 rounded-lg transition-colors"

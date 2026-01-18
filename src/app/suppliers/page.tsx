@@ -7,7 +7,7 @@ import {
   Plus, 
   Search, 
   Filter, 
-  ChevronLeft, 
+  ChevronLeft,
   ChevronRight,
   Edit,
   Trash2,
@@ -17,7 +17,7 @@ import {
   Mail
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Supplier {
   id: string;
@@ -59,28 +59,11 @@ export default function SuppliersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-gray-400 hover:text-gray-600">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Fornecedores</h1>
-                <p className="text-sm text-gray-500">CP11 - Cadastro de Fornecedores</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title="Fornecedores" 
+        icon={<Users className="w-6 h-6 text-green-600" />}
+        module="SUPPLIERS"
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

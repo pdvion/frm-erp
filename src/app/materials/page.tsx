@@ -7,7 +7,7 @@ import {
   Plus, 
   Search, 
   Filter, 
-  ChevronLeft, 
+  ChevronLeft,
   ChevronRight,
   Edit,
   Trash2,
@@ -15,7 +15,7 @@ import {
   Building2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function MaterialsPage() {
   const [search, setSearch] = useState("");
@@ -34,28 +34,11 @@ export default function MaterialsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-gray-400 hover:text-gray-600">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Materiais</h1>
-                <p className="text-sm text-gray-500">CP10 - Cadastro de Materiais</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title="Materiais" 
+        icon={<Package className="w-6 h-6 text-blue-600" />}
+        module="MATERIALS"
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
