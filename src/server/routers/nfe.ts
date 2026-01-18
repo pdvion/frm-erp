@@ -54,7 +54,28 @@ export const nfeRouter = createTRPCRouter({
         },
       });
 
-      // Criar NFe e itens
+      // Buscar materiais por código para vincular automaticamente
+      const productCodes = parsed.itens.map((item) => item.codigo);
+      const productCodesAsNumbers = productCodes.map((c) => parseInt(c, 10)).filter((n) => !isNaN(n));
+      
+      const materials = await prisma.material.findMany({
+        where: {
+          OR: [
+            { code: { in: productCodesAsNumbers } },
+            { internalCode: { in: productCodes } },
+          ],
+          ...tenantFilter(ctx.companyId),
+        },
+      });
+
+      // Criar mapa de código -> materialId
+      const materialMap = new Map<string, string>();
+      materials.forEach((m) => {
+        if (m.code) materialMap.set(String(m.code), m.id);
+        if (m.internalCode) materialMap.set(m.internalCode, m.id);
+      });
+
+      // Criar NFe e itens com vinculação de materiais
       const invoice = await prisma.receivedInvoice.create({
         data: {
           accessKey: parsed.chaveAcesso,
@@ -90,6 +111,7 @@ export const nfeRouter = createTRPCRouter({
               icmsValue: item.icms.valor,
               ipiRate: item.ipi.aliquota,
               ipiValue: item.ipi.valor,
+              materialId: materialMap.get(item.codigo) || null,
             })),
           },
         },
@@ -99,11 +121,16 @@ export const nfeRouter = createTRPCRouter({
         },
       });
 
+      // Contar itens vinculados
+      const linkedItems = parsed.itens.filter((item) => materialMap.has(item.codigo)).length;
+
       return {
         invoice,
         parsed,
         supplierFound: !!supplier,
         itemsCount: parsed.itens.length,
+        linkedItemsCount: linkedItems,
+        unlinkedItemsCount: parsed.itens.length - linkedItems,
       };
     }),
 
