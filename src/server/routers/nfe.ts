@@ -379,17 +379,127 @@ export const nfeRouter = createTRPCRouter({
         });
       }
 
-      // Atualizar status
+      // Criar movimentações de estoque para cada item
+      const movements = [];
+      for (const item of invoice.items) {
+        if (!item.materialId) continue;
+
+        // Buscar ou criar registro de estoque
+        let inventory = await prisma.inventory.findFirst({
+          where: {
+            materialId: item.materialId,
+            ...tenantFilter(ctx.companyId),
+          },
+        });
+
+        if (!inventory) {
+          // Criar registro de estoque
+          inventory = await prisma.inventory.create({
+            data: {
+              materialId: item.materialId,
+              quantity: 0,
+              unitCost: item.unitPrice,
+              totalCost: 0,
+              companyId: ctx.companyId,
+            },
+          });
+        }
+
+        // Calcular novo custo médio
+        const currentTotal = inventory.quantity * inventory.unitCost;
+        const newTotal = item.quantity * item.unitPrice;
+        const newQuantity = inventory.quantity + item.quantity;
+        const newUnitCost = newQuantity > 0 ? (currentTotal + newTotal) / newQuantity : item.unitPrice;
+
+        // Atualizar estoque
+        await prisma.inventory.update({
+          where: { id: inventory.id },
+          data: {
+            quantity: newQuantity,
+            unitCost: newUnitCost,
+            totalCost: newQuantity * newUnitCost,
+            availableQty: newQuantity - inventory.reservedQty,
+            lastMovementAt: new Date(),
+          },
+        });
+
+        // Criar movimentação de entrada
+        const movement = await prisma.inventoryMovement.create({
+          data: {
+            inventoryId: inventory.id,
+            movementType: "ENTRY",
+            quantity: item.quantity,
+            unitCost: item.unitPrice,
+            totalCost: item.totalPrice,
+            balanceAfter: newQuantity,
+            documentType: "NFE",
+            documentNumber: String(invoice.invoiceNumber),
+            documentId: invoice.id,
+            supplierId: invoice.supplierId,
+            notes: `Entrada via NFe ${invoice.invoiceNumber} - ${invoice.supplierName}`,
+          },
+        });
+        movements.push(movement);
+
+        // Atualizar preço do fornecedor
+        if (invoice.supplierId) {
+          const supplierMaterial = await prisma.supplierMaterial.findFirst({
+            where: {
+              supplierId: invoice.supplierId,
+              materialId: item.materialId,
+            },
+          });
+
+          if (supplierMaterial) {
+            await prisma.supplierMaterial.update({
+              where: { id: supplierMaterial.id },
+              data: {
+                lastPrice: item.unitPrice,
+                lastPriceDate: new Date(),
+              },
+            });
+          }
+        }
+      }
+
+      // Atualizar status da NFe
       const updated = await prisma.receivedInvoice.update({
         where: { id: input.id },
         data: {
           status: "APPROVED",
           approvedAt: new Date(),
           approvedBy: ctx.tenant.userId,
+          receivedAt: new Date(),
         },
       });
 
-      return updated;
+      // Atualizar status do pedido de compra se vinculado
+      if (invoice.purchaseOrderId) {
+        // Verificar se todas as NFes do pedido foram recebidas
+        const pendingInvoices = await prisma.receivedInvoice.count({
+          where: {
+            purchaseOrderId: invoice.purchaseOrderId,
+            status: { not: "APPROVED" },
+          },
+        });
+
+        if (pendingInvoices === 0) {
+          await prisma.purchaseOrder.update({
+            where: { id: invoice.purchaseOrderId },
+            data: { status: "COMPLETED" },
+          });
+        } else {
+          await prisma.purchaseOrder.update({
+            where: { id: invoice.purchaseOrderId },
+            data: { status: "PARTIAL" },
+          });
+        }
+      }
+
+      return {
+        invoice: updated,
+        movementsCreated: movements.length,
+      };
     }),
 
   // Rejeitar NFe
