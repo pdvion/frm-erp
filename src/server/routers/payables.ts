@@ -558,4 +558,59 @@ export const payablesRouter = createTRPCRouter({
         },
       });
     }),
+
+  // Criar contas a pagar a partir das duplicatas da NFe
+  createFromNfe: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+      supplierId: z.string(),
+      duplicatas: z.array(z.object({
+        numero: z.string(),
+        vencimento: z.date(),
+        valor: z.number(),
+      })),
+      nfeNumber: z.string(),
+      nfeSeries: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { invoiceId, supplierId, duplicatas, nfeNumber, nfeSeries } = input;
+
+      // Buscar próximo código
+      const lastPayable = await prisma.accountsPayable.findFirst({
+        where: tenantFilter(ctx.companyId),
+        orderBy: { code: "desc" },
+      });
+      let nextCode = (lastPayable?.code || 0) + 1;
+
+      // Criar um título para cada duplicata
+      const payables = await Promise.all(
+        duplicatas.map(async (dup, index) => {
+          const payable = await prisma.accountsPayable.create({
+            data: {
+              code: nextCode + index,
+              companyId: ctx.companyId,
+              supplierId,
+              invoiceId,
+              documentType: "INVOICE",
+              documentNumber: `${nfeNumber}${nfeSeries ? `-${nfeSeries}` : ""}-${dup.numero}`,
+              description: `NFe ${nfeNumber} - Parcela ${dup.numero}`,
+              dueDate: dup.vencimento,
+              issueDate: new Date(),
+              originalValue: dup.valor,
+              netValue: dup.valor,
+              installmentNumber: index + 1,
+              totalInstallments: duplicatas.length,
+              createdBy: ctx.tenant.userId,
+            },
+          });
+          return payable;
+        })
+      );
+
+      return {
+        created: payables.length,
+        payables,
+        totalValue: duplicatas.reduce((sum, d) => sum + d.valor, 0),
+      };
+    }),
 });
