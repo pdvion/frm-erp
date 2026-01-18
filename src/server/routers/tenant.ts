@@ -1,7 +1,78 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { prisma } from "@/lib/prisma";
+import type { SystemModule } from "../context";
 
 export const tenantRouter = createTRPCRouter({
+  // Garantir que o usuário existe no banco local (auto-provisioning)
+  ensureUser: publicProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.supabaseUser?.email) {
+      return { created: false, userId: null };
+    }
+
+    // Verificar se usuário já existe
+    let localUser = await prisma.user.findUnique({
+      where: { email: ctx.supabaseUser.email },
+    });
+
+    if (localUser) {
+      return { created: false, userId: localUser.id };
+    }
+
+    // Buscar empresa padrão
+    const defaultCompany = await prisma.company.findFirst({
+      orderBy: { code: "asc" },
+    });
+
+    if (!defaultCompany) {
+      return { created: false, userId: null, error: "Nenhuma empresa cadastrada" };
+    }
+
+    // Buscar próximo código
+    const lastUser = await prisma.user.findFirst({
+      orderBy: { code: "desc" },
+      select: { code: true },
+    });
+    const nextCode = (lastUser?.code ?? 0) + 1;
+
+    // Criar usuário
+    localUser = await prisma.user.create({
+      data: {
+        code: nextCode,
+        email: ctx.supabaseUser.email,
+        name: ctx.supabaseUser.user_metadata?.name || ctx.supabaseUser.email.split("@")[0],
+        password: "supabase-auth",
+        isActive: true,
+        companyId: defaultCompany.id,
+      },
+    });
+
+    // Vincular à empresa
+    await prisma.userCompany.create({
+      data: {
+        userId: localUser.id,
+        companyId: defaultCompany.id,
+        isDefault: true,
+        isActive: true,
+      },
+    });
+
+    // Criar permissões
+    const modules: SystemModule[] = ["MATERIALS", "SUPPLIERS", "QUOTES", "RECEIVING", "MATERIAL_OUT", "INVENTORY", "REPORTS", "SETTINGS"];
+    await prisma.userCompanyPermission.createMany({
+      data: modules.map((module) => ({
+        userId: localUser!.id,
+        companyId: defaultCompany.id,
+        module,
+        permission: "FULL" as const,
+        canShare: true,
+        canClone: true,
+      })),
+    });
+
+    return { created: true, userId: localUser.id };
+  }),
+
   // Retorna informações do tenant atual
   current: publicProcedure.query(async ({ ctx }) => {
     return {
