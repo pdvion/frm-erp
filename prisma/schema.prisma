@@ -116,6 +116,9 @@ model Company {
   leads            Lead[]
   salesQuotes      SalesQuote[]
   salesOrders      SalesOrder[]
+  stockLocations   StockLocation[]
+  stockTransfers   StockTransfer[]
+  physicalInventories PhysicalInventory[]
 
   @@map("companies")
 }
@@ -143,6 +146,11 @@ model User {
   payableApprovals   PayableApproval[]
   approverThresholds ApprovalThresholdApprover[]
   assignedLeads      Lead[]
+  transfersRequested         StockTransfer[] @relation("TransferRequested")
+  transfersApproved          StockTransfer[] @relation("TransferApproved")
+  transfersShipped           StockTransfer[] @relation("TransferShipped")
+  transfersReceived          StockTransfer[] @relation("TransferReceived")
+  requisitionApprovals       RequisitionApproval[]
 
   @@map("users")
 }
@@ -344,6 +352,9 @@ model Material {
   mrpSuggestions      MrpSuggestion[]
   salesQuoteItems     SalesQuoteItem[]
   salesOrderItems     SalesOrderItem[]
+  locationInventory   LocationInventory[]
+  stockTransferItems  StockTransferItem[]
+  inventoryCounts     InventoryCount[]
 
   @@map("materials")
 }
@@ -918,6 +929,7 @@ model MaterialRequisition {
   
   // Itens
   items           MaterialRequisitionItem[]
+  approvals       RequisitionApproval[]
   
   @@unique([companyId, code])
   @@index([companyId])
@@ -1926,4 +1938,219 @@ model SalesOrderItem {
   
   @@index([orderId])
   @@map("sales_order_items")
+}
+
+// =============================================================================
+// MÓDULO DE ESTOQUE AVANÇADO
+// =============================================================================
+
+enum TransferStatus {
+  PENDING     // Pendente
+  IN_TRANSIT  // Em Trânsito
+  RECEIVED    // Recebido
+  CANCELLED   // Cancelado
+}
+
+enum LocationType {
+  WAREHOUSE   // Almoxarifado
+  PRODUCTION  // Produção
+  QUALITY     // Qualidade
+  SHIPPING    // Expedição
+  RECEIVING   // Recebimento
+  EXTERNAL    // Externo
+}
+
+// =============================================================================
+// LOCAIS DE ESTOQUE
+// =============================================================================
+model StockLocation {
+  id          String       @id @default(uuid()) @db.Uuid
+  code        String
+  name        String
+  description String?
+  type        LocationType @default(WAREHOUSE)
+  parentId    String?      @db.Uuid
+  parent      StockLocation?  @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children    StockLocation[] @relation("LocationHierarchy")
+  companyId   String?      @db.Uuid
+  company     Company?     @relation(fields: [companyId], references: [id])
+  address     String?
+  isActive    Boolean      @default(true)
+  isDefault   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  locationInventory    LocationInventory[]
+  transfersFrom        StockTransfer[]      @relation("TransferFrom")
+  transfersTo          StockTransfer[]      @relation("TransferTo")
+  physicalInventories  PhysicalInventory[]
+  inventoryCounts      InventoryCount[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([type])
+  @@map("stock_locations")
+}
+
+// =============================================================================
+// ESTOQUE POR LOCAL
+// =============================================================================
+model LocationInventory {
+  id             String        @id @default(uuid()) @db.Uuid
+  locationId     String        @db.Uuid
+  location       StockLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  materialId     String        @db.Uuid
+  material       Material      @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  quantity       Float         @default(0)
+  reservedQty    Float         @default(0)
+  minQuantity    Float         @default(0)
+  maxQuantity    Float?
+  lastMovementAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  @@unique([locationId, materialId])
+  @@index([locationId])
+  @@index([materialId])
+  @@map("location_inventory")
+}
+
+// =============================================================================
+// TRANSFERÊNCIAS DE ESTOQUE
+// =============================================================================
+model StockTransfer {
+  id                 String         @id @default(uuid()) @db.Uuid
+  code               Int
+  companyId          String?        @db.Uuid
+  company            Company?       @relation(fields: [companyId], references: [id])
+  fromLocationId     String         @db.Uuid
+  fromLocation       StockLocation  @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocationId       String         @db.Uuid
+  toLocation         StockLocation  @relation("TransferTo", fields: [toLocationId], references: [id])
+  status             TransferStatus @default(PENDING)
+  requestedAt        DateTime       @default(now())
+  requestedBy        String?        @db.Uuid
+  requestedByUser    User?          @relation("TransferRequested", fields: [requestedBy], references: [id])
+  approvedAt         DateTime?
+  approvedBy         String?        @db.Uuid
+  approvedByUser     User?          @relation("TransferApproved", fields: [approvedBy], references: [id])
+  shippedAt          DateTime?
+  shippedBy          String?        @db.Uuid
+  shippedByUser      User?          @relation("TransferShipped", fields: [shippedBy], references: [id])
+  receivedAt         DateTime?
+  receivedBy         String?        @db.Uuid
+  receivedByUser     User?          @relation("TransferReceived", fields: [receivedBy], references: [id])
+  cancelledAt        DateTime?
+  cancelledBy        String?        @db.Uuid
+  cancellationReason String?
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  
+  items StockTransferItem[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([status])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+  @@map("stock_transfers")
+}
+
+// =============================================================================
+// ITENS DA TRANSFERÊNCIA
+// =============================================================================
+model StockTransferItem {
+  id           String        @id @default(uuid()) @db.Uuid
+  transferId   String        @db.Uuid
+  transfer     StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  materialId   String        @db.Uuid
+  material     Material      @relation(fields: [materialId], references: [id])
+  requestedQty Float
+  shippedQty   Float         @default(0)
+  receivedQty  Float         @default(0)
+  unit         String        @default("UN")
+  notes        String?
+  createdAt    DateTime      @default(now())
+  
+  @@index([transferId])
+  @@map("stock_transfer_items")
+}
+
+// =============================================================================
+// WORKFLOW DE APROVAÇÃO DE REQUISIÇÕES
+// =============================================================================
+model RequisitionApproval {
+  id            String             @id @default(uuid()) @db.Uuid
+  requisitionId String             @db.Uuid
+  requisition   MaterialRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  level         Int                @default(1)
+  approverId    String             @db.Uuid
+  approver      User               @relation(fields: [approverId], references: [id])
+  status        ApprovalStatus     @default(PENDING)
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  comments      String?
+  createdAt     DateTime           @default(now())
+  
+  @@index([requisitionId])
+  @@index([approverId])
+  @@index([status])
+  @@map("requisition_approvals")
+}
+
+// =============================================================================
+// INVENTÁRIO FÍSICO (CONTAGEM)
+// =============================================================================
+model PhysicalInventory {
+  id          String         @id @default(uuid()) @db.Uuid
+  code        Int
+  companyId   String?        @db.Uuid
+  company     Company?       @relation(fields: [companyId], references: [id])
+  locationId  String?        @db.Uuid
+  location    StockLocation? @relation(fields: [locationId], references: [id])
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  status      String         @default("OPEN")
+  createdBy   String?        @db.Uuid
+  closedBy    String?        @db.Uuid
+  closedAt    DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  counts InventoryCount[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([status])
+  @@map("physical_inventories")
+}
+
+// =============================================================================
+// CONTAGENS DO INVENTÁRIO
+// =============================================================================
+model InventoryCount {
+  id          String            @id @default(uuid()) @db.Uuid
+  inventoryId String            @db.Uuid
+  inventory   PhysicalInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  materialId  String            @db.Uuid
+  material    Material          @relation(fields: [materialId], references: [id])
+  locationId  String?           @db.Uuid
+  location    StockLocation?    @relation(fields: [locationId], references: [id])
+  systemQty   Float             @default(0)
+  countedQty  Float?
+  difference  Float?
+  countedBy   String?           @db.Uuid
+  countedAt   DateTime?
+  verified    Boolean           @default(false)
+  verifiedBy  String?           @db.Uuid
+  verifiedAt  DateTime?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  
+  @@index([inventoryId])
+  @@index([materialId])
+  @@map("inventory_counts")
 }
