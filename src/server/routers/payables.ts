@@ -580,7 +580,7 @@ export const payablesRouter = createTRPCRouter({
         where: tenantFilter(ctx.companyId),
         orderBy: { code: "desc" },
       });
-      let nextCode = (lastPayable?.code || 0) + 1;
+      const nextCode = (lastPayable?.code || 0) + 1;
 
       // Criar um título para cada duplicata
       const payables = await Promise.all(

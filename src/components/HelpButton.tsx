@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { HelpCircle, X, ExternalLink, Loader2 } from "lucide-react";
 
@@ -74,12 +75,12 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
                   <p className="text-gray-500">
                     Nenhum tutorial disponível para este módulo.
                   </p>
-                  <a
+                  <Link
                     href="/docs"
                     className="text-blue-600 hover:underline mt-2 inline-block"
                   >
                     Ver todos os tutoriais
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
