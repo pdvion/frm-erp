@@ -32,8 +32,10 @@ import { tutorialsRouter } from "./tutorials";
 import { notificationsRouter } from "./notifications";
 import { systemLogsRouter } from "./systemLogs";
 import { tasksRouter } from "./tasks";
+import { dashboardRouter } from "./dashboard";
 
 export const appRouter = createTRPCRouter({
+  dashboard: dashboardRouter,
   tenant: tenantRouter,
   materials: materialsRouter,
   suppliers: suppliersRouter,

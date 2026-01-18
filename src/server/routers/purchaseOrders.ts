@@ -18,7 +18,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       const { supplierId, status, search, page = 1, limit = 20 } = input ?? {};
 
       const where = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(supplierId && { supplierId }),
         ...(status && { status }),
         ...(search && {
@@ -76,7 +76,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       return ctx.prisma.purchaseOrder.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           supplier: true,
@@ -434,16 +434,16 @@ export const purchaseOrdersRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const [total, byStatus, recentOrders] = await Promise.all([
         ctx.prisma.purchaseOrder.count({
-          where: tenantFilter(ctx.companyId),
+          where: tenantFilter(ctx.companyId, false),
         }),
         ctx.prisma.purchaseOrder.groupBy({
           by: ["status"],
-          where: tenantFilter(ctx.companyId),
+          where: tenantFilter(ctx.companyId, false),
           _count: true,
           _sum: { totalValue: true },
         }),
         ctx.prisma.purchaseOrder.findMany({
-          where: tenantFilter(ctx.companyId),
+          where: tenantFilter(ctx.companyId, false),
           include: { supplier: true },
           orderBy: { createdAt: "desc" },
           take: 5,

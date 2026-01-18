@@ -1,101 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, DollarSign, User, BookOpen } from "lucide-react";
+import { 
+  Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, 
+  ShoppingCart, FileInput, DollarSign, User, BookOpen, AlertTriangle,
+  TrendingUp, TrendingDown, Clock, CheckCircle, ClipboardList, ArrowRight,
+  Loader2
+} from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { trpc } from "@/lib/trpc";
 
 const modules = [
-  {
-    title: "Materiais",
-    description: "Cadastro e gestão de materiais",
-    href: "/materials",
-    icon: Package,
-    color: "bg-blue-500",
-  },
-  {
-    title: "Fornecedores",
-    description: "Cadastro de fornecedores",
-    href: "/suppliers",
-    icon: Users,
-    color: "bg-green-500",
-  },
-  {
-    title: "Estoque",
-    description: "Controle de estoque e movimentações",
-    href: "/inventory",
-    icon: Warehouse,
-    color: "bg-orange-500",
-  },
-  {
-    title: "Orçamentos",
-    description: "Cotações e orçamentos de compra",
-    href: "/quotes",
-    icon: FileText,
-    color: "bg-purple-500",
-  },
-  {
-    title: "Pedidos de Compra",
-    description: "Pedidos e recebimento de materiais",
-    href: "/purchase-orders",
-    icon: ShoppingCart,
-    color: "bg-teal-500",
-  },
-  {
-    title: "NFe Recebidas",
-    description: "Entrada de materiais e notas fiscais",
-    href: "/invoices",
-    icon: FileInput,
-    color: "bg-indigo-500",
-  },
-  {
-    title: "Contas a Pagar",
-    description: "Gestão de títulos e pagamentos",
-    href: "/payables",
-    icon: DollarSign,
-    color: "bg-red-500",
-  },
-  {
-    title: "Requisições",
-    description: "Saída de materiais e requisições",
-    href: "/requisitions",
-    icon: Package,
-    color: "bg-amber-500",
-  },
-  {
-    title: "Produção",
-    description: "Ordens de produção e apontamentos",
-    href: "/production",
-    icon: Settings,
-    color: "bg-purple-500",
-  },
-  {
-    title: "Relatórios",
-    description: "Relatórios e dashboards",
-    href: "/reports",
-    icon: BarChart3,
-    color: "bg-pink-500",
-  },
-  {
-    title: "Configurações",
-    description: "Configurações do sistema",
-    href: "/settings",
-    icon: Settings,
-    color: "bg-gray-500",
-  },
-  {
-    title: "Auditoria",
-    description: "Logs de ações e governança",
-    href: "/audit",
-    icon: Shield,
-    color: "bg-indigo-500",
-  },
+  { title: "Materiais", description: "Cadastro e gestão", href: "/materials", icon: Package, color: "bg-blue-500" },
+  { title: "Fornecedores", description: "Cadastro de fornecedores", href: "/suppliers", icon: Users, color: "bg-green-500" },
+  { title: "Estoque", description: "Controle de estoque", href: "/inventory", icon: Warehouse, color: "bg-orange-500" },
+  { title: "Cotações", description: "Orçamentos de compra", href: "/quotes", icon: FileText, color: "bg-purple-500" },
+  { title: "Pedidos", description: "Pedidos de compra", href: "/purchase-orders", icon: ShoppingCart, color: "bg-teal-500" },
+  { title: "NFe", description: "Notas fiscais", href: "/invoices", icon: FileInput, color: "bg-indigo-500" },
+  { title: "Financeiro", description: "Contas a pagar", href: "/payables", icon: DollarSign, color: "bg-red-500" },
+  { title: "Requisições", description: "Saída de materiais", href: "/requisitions", icon: Package, color: "bg-amber-500" },
+  { title: "Tarefas", description: "Gestão de tarefas", href: "/tasks", icon: ClipboardList, color: "bg-cyan-500" },
+  { title: "Produção", description: "Ordens de produção", href: "/production", icon: Settings, color: "bg-purple-500" },
+  { title: "Configurações", description: "Sistema", href: "/settings", icon: Settings, color: "bg-gray-500" },
+  { title: "Auditoria", description: "Logs e governança", href: "/audit", icon: Shield, color: "bg-indigo-500" },
 ];
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+};
+
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("pt-BR").format(value);
+};
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { data: kpis, isLoading: kpisLoading } = trpc.dashboard.kpis.useQuery();
+  const { data: alerts } = trpc.dashboard.alerts.useQuery();
+  const { data: activity } = trpc.dashboard.recentActivity.useQuery();
 
   return (
     <ProtectedRoute>
@@ -115,19 +60,11 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-4">
                 <CompanySwitcher />
-                <Link
-                  href="/docs"
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-                  title="Documentação"
-                >
+                <Link href="/docs" className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Documentação">
                   <BookOpen className="w-5 h-5" />
                 </Link>
                 <NotificationBell />
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-[var(--frm-primary)] hover:bg-gray-50 rounded-lg transition-colors"
-                  title="Meu Perfil"
-                >
+                <Link href="/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-[var(--frm-primary)] hover:bg-gray-50 rounded-lg" title="Meu Perfil">
                   <div className="w-8 h-8 bg-[var(--frm-primary)] rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
@@ -138,81 +75,258 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Welcome Section */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Bem-vindo ao FRM ERP
-            </h2>
-            <p className="text-gray-600">
-              Sistema de gestão de materiais, fornecedores e estoque.
-              Selecione um módulo para começar.
-            </p>
-          </div>
-
-          {/* Modules Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {modules.map((module) => (
-              <Link
-                key={module.href}
-                href={module.href}
-                className="group bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-gray-300 transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`${module.color} p-3 rounded-lg`}>
-                    <module.icon className="w-6 h-6 text-white" />
-                  </div>
+          {/* Alerts */}
+          {alerts && alerts.length > 0 && (
+            <div className="mb-6 space-y-2">
+              {alerts.map((alert, index) => (
+                <Link
+                  key={index}
+                  href={alert.link || "#"}
+                  className={`flex items-center gap-3 p-4 rounded-lg border ${
+                    alert.type === "error" ? "bg-red-50 border-red-200 text-red-800" :
+                    alert.type === "warning" ? "bg-yellow-50 border-yellow-200 text-yellow-800" :
+                    "bg-blue-50 border-blue-200 text-blue-800"
+                  }`}
+                >
+                  <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-[var(--frm-primary)] transition-colors">
-                      {module.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {module.description}
-                    </p>
+                    <span className="font-medium">{alert.title}:</span> {alert.message}
                   </div>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* KPIs Grid */}
+          {kpisLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            </div>
+          ) : kpis && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {/* Estoque */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-orange-600 mb-2">
+                  <Warehouse className="w-5 h-5" />
+                  <span className="text-sm font-medium">Estoque</span>
                 </div>
-              </Link>
-            ))}
+                <div className="text-2xl font-bold text-gray-900">{formatCurrency(kpis.inventory.totalValue)}</div>
+                <div className="text-xs text-gray-500">{kpis.inventory.totalItems} itens</div>
+                {kpis.inventory.lowStockCount > 0 && (
+                  <div className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                    <TrendingDown className="w-3 h-3" />
+                    {kpis.inventory.lowStockCount} abaixo do mínimo
+                  </div>
+                )}
+              </div>
+
+              {/* Contas Vencidas */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-red-600 mb-2">
+                  <DollarSign className="w-5 h-5" />
+                  <span className="text-sm font-medium">Vencidos</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{formatCurrency(kpis.financial.overdue.value)}</div>
+                <div className="text-xs text-gray-500">{kpis.financial.overdue.count} títulos</div>
+              </div>
+
+              {/* Vence Hoje */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-yellow-600 mb-2">
+                  <Clock className="w-5 h-5" />
+                  <span className="text-sm font-medium">Vence Hoje</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{formatCurrency(kpis.financial.dueToday.value)}</div>
+                <div className="text-xs text-gray-500">{kpis.financial.dueToday.count} títulos</div>
+              </div>
+
+              {/* Pago no Mês */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-green-600 mb-2">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="text-sm font-medium">Pago no Mês</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{formatCurrency(kpis.financial.paidThisMonth.value)}</div>
+                <div className="text-xs text-gray-500">{kpis.financial.paidThisMonth.count} pagamentos</div>
+              </div>
+
+              {/* Tarefas Pendentes */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-purple-600 mb-2">
+                  <ClipboardList className="w-5 h-5" />
+                  <span className="text-sm font-medium">Tarefas</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{kpis.tasks.pending + kpis.tasks.inProgress}</div>
+                <div className="text-xs text-gray-500">{kpis.tasks.pending} pendentes, {kpis.tasks.inProgress} em andamento</div>
+                {kpis.tasks.overdue > 0 && (
+                  <div className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    {kpis.tasks.overdue} atrasadas
+                  </div>
+                )}
+              </div>
+
+              {/* Minhas Tarefas */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-2">
+                  <User className="w-5 h-5" />
+                  <span className="text-sm font-medium">Minhas Tarefas</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{kpis.tasks.myTasks}</div>
+                <div className="text-xs text-gray-500">atribuídas a mim</div>
+              </div>
+
+              {/* NFes Pendentes */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-indigo-600 mb-2">
+                  <FileInput className="w-5 h-5" />
+                  <span className="text-sm font-medium">NFes Pendentes</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{kpis.purchases.pendingInvoices}</div>
+                <div className="text-xs text-gray-500">aguardando aprovação</div>
+              </div>
+
+              {/* Requisições */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 text-amber-600 mb-2">
+                  <Package className="w-5 h-5" />
+                  <span className="text-sm font-medium">Requisições</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{kpis.requisitions.pending}</div>
+                <div className="text-xs text-gray-500">em andamento</div>
+              </div>
+            </div>
+          )}
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {/* Recent Activity */}
+            <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Atividade Recente</h3>
+              
+              {activity && (
+                <div className="space-y-4">
+                  {activity.tasks.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Tarefas</h4>
+                      <div className="space-y-2">
+                        {activity.tasks.slice(0, 3).map((task) => (
+                          <Link key={task.id} href={`/tasks/${task.id}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                            <div className="flex items-center gap-3">
+                              <ClipboardList className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-900">{task.title}</span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              task.status === "COMPLETED" ? "bg-green-100 text-green-700" :
+                              task.status === "IN_PROGRESS" ? "bg-purple-100 text-purple-700" :
+                              "bg-yellow-100 text-yellow-700"
+                            }`}>{task.status}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activity.invoices.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">NFes Recentes</h4>
+                      <div className="space-y-2">
+                        {activity.invoices.slice(0, 3).map((invoice) => (
+                          <Link key={invoice.id} href={`/invoices/${invoice.id}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                            <div className="flex items-center gap-3">
+                              <FileInput className="w-4 h-4 text-gray-400" />
+                              <div>
+                                <span className="text-sm text-gray-900">NFe {invoice.invoiceNumber}</span>
+                                <span className="text-xs text-gray-500 ml-2">{invoice.supplier?.tradeName || invoice.supplier?.companyName}</span>
+                              </div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">{formatCurrency(invoice.totalValue)}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activity.requisitions.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Requisições</h4>
+                      <div className="space-y-2">
+                        {activity.requisitions.slice(0, 3).map((req) => (
+                          <Link key={req.id} href={`/requisitions/${req.id}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                            <div className="flex items-center gap-3">
+                              <Package className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-900">#{req.code} - {req.type}</span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              req.status === "COMPLETED" ? "bg-green-100 text-green-700" :
+                              req.status === "APPROVED" ? "bg-blue-100 text-blue-700" :
+                              "bg-yellow-100 text-yellow-700"
+                            }`}>{req.status}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {!activity.tasks.length && !activity.invoices.length && !activity.requisitions.length && (
+                    <div className="text-center py-8 text-gray-500">
+                      <CheckCircle className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                      <p>Nenhuma atividade recente</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Access */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Acesso Rápido</h3>
+              <div className="space-y-2">
+                {modules.slice(0, 8).map((module) => (
+                  <Link
+                    key={module.href}
+                    href={module.href}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className={`${module.color} p-2 rounded-lg`}>
+                      <module.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-gray-900">{module.title}</span>
+                      <p className="text-xs text-gray-500">{module.description}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Status Section */}
-          <div className="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Status do Sistema
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Banco de Dados</p>
-                  <p className="text-xs text-gray-500">Supabase PostgreSQL</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">API</p>
-                  <p className="text-xs text-gray-500">tRPC Ativo</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Integrações</p>
-                  <p className="text-xs text-gray-500">SEFAZ - Pendente</p>
-                </div>
-              </div>
+          {/* All Modules */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Todos os Módulos</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {modules.map((module) => (
+                <Link
+                  key={module.href}
+                  href={module.href}
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-gray-50 transition-colors text-center"
+                >
+                  <div className={`${module.color} p-3 rounded-lg`}>
+                    <module.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">{module.title}</span>
+                </Link>
+              ))}
             </div>
           </div>
         </main>
 
-        {/* Footer */}
         <footer className="mt-auto border-t bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <p className="text-sm text-gray-500 text-center">
-              FRM ERP © 2026 - Sistema de Gestão Industrial
-            </p>
+            <p className="text-sm text-gray-500 text-center">FRM ERP © 2026 - Sistema de Gestão Industrial</p>
           </div>
         </footer>
       </div>
