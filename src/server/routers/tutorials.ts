@@ -9,6 +9,7 @@ export const tutorialsRouter = createTRPCRouter({
     .input(z.object({
       module: z.string().optional(),
       category: z.string().optional(),
+      includeContent: z.boolean().optional(),
     }).optional())
     .query(async ({ input }) => {
       return prisma.tutorial.findMany({
@@ -27,9 +28,27 @@ export const tutorialsRouter = createTRPCRouter({
           category: true,
           icon: true,
           orderIndex: true,
+          content: input?.includeContent ?? false,
+          isPublished: true,
+          updatedAt: true,
         },
       });
     }),
+
+  // Listar todos os tutoriais (admin - inclui não publicados)
+  listAll: tenantProcedure.query(async ({ ctx }) => {
+    const hasPermission = ctx.tenant.permissions.get("SETTINGS")?.level === "FULL";
+    if (!hasPermission) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Sem permissão para gerenciar tutoriais",
+      });
+    }
+
+    return prisma.tutorial.findMany({
+      orderBy: { orderIndex: "asc" },
+    });
+  }),
 
   // Obter tutorial por slug
   getBySlug: publicProcedure
