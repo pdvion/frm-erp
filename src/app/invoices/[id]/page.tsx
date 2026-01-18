@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { LinkMaterialModal } from "@/components/LinkMaterialModal";
+import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
 import {
   FileText,
   ChevronLeft,
@@ -53,6 +54,7 @@ export default function InvoiceDetailPage() {
     name: string;
     code: string;
   } | null>(null);
+  const [showCompareModal, setShowCompareModal] = useState(false);
 
   const { data: invoice, isLoading, refetch } = trpc.receivedInvoices.byId.useQuery({ id });
 
@@ -315,6 +317,15 @@ export default function InvoiceDetailPage() {
                   )}
                   Auto-vincular
                 </button>
+                {invoice.supplierId && (
+                  <button
+                    onClick={() => setShowCompareModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100"
+                  >
+                    <FileCheck className="w-4 h-4" />
+                    Conferir com Pedido
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -551,6 +562,16 @@ export default function InvoiceDetailPage() {
           itemCode={linkingItem.code}
           onClose={() => setLinkingItem(null)}
           onLinked={() => refetch()}
+        />
+      )}
+
+      {/* Compare Invoice Modal */}
+      {showCompareModal && invoice && (
+        <CompareInvoiceModal
+          invoiceId={id}
+          invoiceNumber={invoice.invoiceNumber}
+          onClose={() => setShowCompareModal(false)}
+          onCompared={() => refetch()}
         />
       )}
 

@@ -745,6 +745,276 @@ export const nfeRouter = createTRPCRouter({
       return material;
     }),
 
+  // Comparar NFe com Pedido de Compra
+  compareWithPurchaseOrder: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+      purchaseOrderId: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const [invoice, purchaseOrder] = await Promise.all([
+        prisma.receivedInvoice.findFirst({
+          where: {
+            id: input.invoiceId,
+            ...tenantFilter(ctx.companyId),
+          },
+          include: {
+            items: {
+              include: { material: true },
+            },
+          },
+        }),
+        prisma.purchaseOrder.findFirst({
+          where: {
+            id: input.purchaseOrderId,
+            ...tenantFilter(ctx.companyId),
+          },
+          include: {
+            items: {
+              include: { material: true },
+            },
+          },
+        }),
+      ]);
+
+      if (!invoice) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NFe não encontrada",
+        });
+      }
+
+      if (!purchaseOrder) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Pedido de Compra não encontrado",
+        });
+      }
+
+      interface DivergenceItem {
+        invoiceItemId: string;
+        purchaseOrderItemId: string | null;
+        materialId: string | null;
+        materialDescription: string;
+        invoiceQty: number;
+        purchaseOrderQty: number | null;
+        invoicePrice: number;
+        purchaseOrderPrice: number | null;
+        qtyDivergence: number | null;
+        priceDivergence: number | null;
+        qtyDivergencePercent: number | null;
+        priceDivergencePercent: number | null;
+        status: "OK" | "QTY_DIVERGENT" | "PRICE_DIVERGENT" | "BOTH_DIVERGENT" | "NOT_IN_PO";
+      }
+
+      const divergences: DivergenceItem[] = [];
+      let totalDivergences = 0;
+
+      for (const invoiceItem of invoice.items) {
+        // Buscar item correspondente no pedido de compra
+        const poItem = purchaseOrder.items.find(
+          (poi) => poi.materialId === invoiceItem.materialId
+        );
+
+        if (!poItem) {
+          divergences.push({
+            invoiceItemId: invoiceItem.id,
+            purchaseOrderItemId: null,
+            materialId: invoiceItem.materialId,
+            materialDescription: invoiceItem.material?.description || invoiceItem.productName,
+            invoiceQty: invoiceItem.quantity,
+            purchaseOrderQty: null,
+            invoicePrice: invoiceItem.unitPrice,
+            purchaseOrderPrice: null,
+            qtyDivergence: null,
+            priceDivergence: null,
+            qtyDivergencePercent: null,
+            priceDivergencePercent: null,
+            status: "NOT_IN_PO",
+          });
+          totalDivergences++;
+          continue;
+        }
+
+        const qtyDivergence = invoiceItem.quantity - poItem.quantity;
+        const priceDivergence = invoiceItem.unitPrice - poItem.unitPrice;
+        const qtyDivergencePercent = poItem.quantity > 0
+          ? (qtyDivergence / poItem.quantity) * 100
+          : 0;
+        const priceDivergencePercent = poItem.unitPrice > 0
+          ? (priceDivergence / poItem.unitPrice) * 100
+          : 0;
+
+        // Tolerância de 1% para preço e 0% para quantidade
+        const hasQtyDivergence = Math.abs(qtyDivergence) > 0.001;
+        const hasPriceDivergence = Math.abs(priceDivergencePercent) > 1;
+
+        let status: DivergenceItem["status"] = "OK";
+        if (hasQtyDivergence && hasPriceDivergence) {
+          status = "BOTH_DIVERGENT";
+          totalDivergences++;
+        } else if (hasQtyDivergence) {
+          status = "QTY_DIVERGENT";
+          totalDivergences++;
+        } else if (hasPriceDivergence) {
+          status = "PRICE_DIVERGENT";
+          totalDivergences++;
+        }
+
+        divergences.push({
+          invoiceItemId: invoiceItem.id,
+          purchaseOrderItemId: poItem.id,
+          materialId: invoiceItem.materialId,
+          materialDescription: invoiceItem.material?.description || invoiceItem.productName,
+          invoiceQty: invoiceItem.quantity,
+          purchaseOrderQty: poItem.quantity,
+          invoicePrice: invoiceItem.unitPrice,
+          purchaseOrderPrice: poItem.unitPrice,
+          qtyDivergence,
+          priceDivergence,
+          qtyDivergencePercent,
+          priceDivergencePercent,
+          status,
+        });
+      }
+
+      // Verificar itens do PO que não estão na NFe
+      const missingInInvoice = purchaseOrder.items.filter(
+        (poi) => !invoice.items.some((ii) => ii.materialId === poi.materialId)
+      );
+
+      return {
+        invoice: {
+          id: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          totalInvoice: invoice.totalInvoice,
+        },
+        purchaseOrder: {
+          id: purchaseOrder.id,
+          code: purchaseOrder.code,
+          totalValue: purchaseOrder.totalValue,
+        },
+        divergences,
+        missingInInvoice: missingInInvoice.map((poi) => ({
+          purchaseOrderItemId: poi.id,
+          materialId: poi.materialId,
+          materialDescription: poi.material?.description || "",
+          quantity: poi.quantity,
+          unitPrice: poi.unitPrice,
+        })),
+        summary: {
+          totalItems: invoice.items.length,
+          okItems: divergences.filter((d) => d.status === "OK").length,
+          divergentItems: totalDivergences,
+          missingItems: missingInInvoice.length,
+          totalValueDivergence: invoice.totalInvoice - purchaseOrder.totalValue,
+        },
+      };
+    }),
+
+  // Aplicar divergências aos itens
+  applyDivergences: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+      items: z.array(z.object({
+        itemId: z.string(),
+        status: z.enum(["MATCHED", "DIVERGENT"]),
+        divergenceNote: z.string().optional(),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      for (const item of input.items) {
+        await prisma.receivedInvoiceItem.update({
+          where: { id: item.itemId },
+          data: {
+            matchStatus: item.status,
+            divergenceNote: item.divergenceNote,
+          },
+        });
+      }
+
+      // Atualizar status da NFe para VALIDATED se todos os itens foram verificados
+      const invoice = await prisma.receivedInvoice.findUnique({
+        where: { id: input.invoiceId },
+        include: { items: true },
+      });
+
+      if (invoice) {
+        const allVerified = invoice.items.every(
+          (item) => item.matchStatus === "MATCHED" || item.matchStatus === "DIVERGENT"
+        );
+
+        if (allVerified) {
+          await prisma.receivedInvoice.update({
+            where: { id: input.invoiceId },
+            data: { status: "VALIDATED" },
+          });
+        }
+      }
+
+      return { success: true };
+    }),
+
+  // Buscar pedidos de compra do mesmo fornecedor para vincular
+  findPurchaseOrders: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const invoice = await prisma.receivedInvoice.findFirst({
+        where: {
+          id: input.invoiceId,
+          ...tenantFilter(ctx.companyId),
+        },
+      });
+
+      if (!invoice) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NFe não encontrada",
+        });
+      }
+
+      if (!invoice.supplierId) {
+        return [];
+      }
+
+      // Buscar pedidos do mesmo fornecedor que ainda não foram totalmente recebidos
+      const supplierId = invoice.supplierId;
+      const purchaseOrders = await prisma.purchaseOrder.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          supplierId: supplierId,
+          status: { in: ["APPROVED", "PARTIAL"] },
+        },
+        include: {
+          items: {
+            include: { material: true },
+          },
+          _count: {
+            select: { receivedInvoices: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      });
+
+      return purchaseOrders.map((po) => ({
+        id: po.id,
+        code: po.code,
+        createdAt: po.createdAt,
+        totalValue: po.totalValue,
+        itemsCount: po.items.length,
+        receivedCount: po._count.receivedInvoices,
+        items: po.items.map((item: { id: string; material: { description: string } | null; quantity: number; unitPrice: number }) => ({
+          id: item.id,
+          materialDescription: item.material?.description || "",
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+        })),
+      }));
+    }),
+
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, validated, approved, rejected, totalValue] = await Promise.all([
