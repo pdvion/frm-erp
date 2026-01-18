@@ -169,8 +169,30 @@ export const materialsRouter = createTRPCRouter({
   listCategories: tenantProcedure
     .query(async ({ ctx }) => {
       return ctx.prisma.category.findMany({
-        where: tenantFilter(ctx.companyId, false),
+        where: tenantFilter(ctx.companyId, true),
         orderBy: { name: "asc" },
       });
+    }),
+
+  // Criar categoria
+  createCategory: tenantProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        isActive: z.boolean().default(true),
+        isShared: z.boolean().default(false),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const category = await ctx.prisma.category.create({
+        data: {
+          name: input.name,
+          isActive: input.isActive,
+          isShared: input.isShared,
+          companyId: ctx.companyId,
+        },
+      });
+
+      return category;
     }),
 });
