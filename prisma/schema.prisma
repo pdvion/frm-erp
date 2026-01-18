@@ -124,6 +124,7 @@ model Company {
   employees        Employee[]
   payrolls         Payroll[]
   materialReceivings MaterialReceiving[]
+  notifications      Notification[]
 
   @@map("companies")
 }
@@ -158,6 +159,8 @@ model User {
   requisitionApprovals       RequisitionApproval[]
   employeeProfile            Employee[]
   tutorials                  Tutorial[]
+  notifications              Notification[]
+  notificationPreferences    NotificationPreference[]
 
   @@map("users")
 }
@@ -2643,4 +2646,46 @@ model Tutorial {
   @@index([module])
   @@index([category])
   @@map("tutorials")
+}
+
+// =============================================================================
+// NOTIFICAÇÕES EM TEMPO REAL
+// =============================================================================
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String?   @db.Uuid @map("user_id")
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String?   @db.Uuid @map("company_id")
+  company     Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type        String    @db.VarChar(50) // info, success, warning, error
+  category    String    @db.VarChar(50) // system, business, error
+  title       String    @db.VarChar(255)
+  message     String?
+  link        String?   @db.VarChar(500)
+  metadata    Json      @default("{}")
+  isRead      Boolean   @default(false) @map("is_read")
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([isRead])
+  @@index([createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid @map("user_id")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      String   @db.VarChar(50)
+  emailEnabled  Boolean  @default(true) @map("email_enabled")
+  pushEnabled   Boolean  @default(true) @map("push_enabled")
+  inAppEnabled  Boolean  @default(true) @map("in_app_enabled")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@map("notification_preferences")
 }
