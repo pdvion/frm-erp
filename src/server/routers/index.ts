@@ -12,6 +12,7 @@ import { groupsRouter } from "./groups";
 import { settingsRouter } from "./settings";
 import { storageRouter } from "./storage";
 import { nfeRouter } from "./nfe";
+import { payablesRouter } from "./payables";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -27,6 +28,7 @@ export const appRouter = createTRPCRouter({
   settings: settingsRouter,
   storage: storageRouter,
   nfe: nfeRouter,
+  payables: payablesRouter,
 });
 
 export type AppRouter = typeof appRouter;
