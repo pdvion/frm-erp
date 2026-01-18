@@ -137,9 +137,10 @@ export const receivingRouter = createTRPCRouter({
   // Conferir item
   conferItem: tenantProcedure
     .input(z.object({
+      receivingId: z.string(),
       itemId: z.string(),
       receivedQuantity: z.number(),
-      approvedQuantity: z.number(),
+      approvedQuantity: z.number().optional(),
       rejectedQuantity: z.number().default(0),
       rejectionReason: z.string().optional(),
       batchNumber: z.string().optional(),
@@ -147,20 +148,33 @@ export const receivingRouter = createTRPCRouter({
       locationId: z.string().optional(),
       qualityStatus: z.string().optional(),
       qualityNotes: z.string().optional(),
+      notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { itemId, ...data } = input;
+      const { itemId, receivingId, notes, ...data } = input;
 
-      const status = data.rejectedQuantity > 0 && data.approvedQuantity === 0
+      // Se approvedQuantity não foi informado, usar receivedQuantity
+      const approvedQuantity = data.approvedQuantity ?? data.receivedQuantity;
+      const rejectedQuantity = data.rejectedQuantity ?? 0;
+
+      const status = rejectedQuantity > 0 && approvedQuantity === 0
         ? "REJECTED"
-        : data.rejectedQuantity > 0
+        : rejectedQuantity > 0
           ? "PARTIAL"
           : "APPROVED";
 
       return ctx.prisma.materialReceivingItem.update({
         where: { id: itemId },
         data: {
-          ...data,
+          receivedQuantity: data.receivedQuantity,
+          approvedQuantity,
+          rejectedQuantity,
+          rejectionReason: data.rejectionReason,
+          batchNumber: data.batchNumber,
+          expirationDate: data.expirationDate,
+          locationId: data.locationId,
+          qualityStatus: data.qualityStatus,
+          qualityNotes: data.qualityNotes || notes,
           status,
           conferredBy: ctx.tenant.userId,
           conferredAt: new Date(),
