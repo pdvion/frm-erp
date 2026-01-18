@@ -28,6 +28,10 @@ export type TenantContext = {
   }>;
 };
 
+// Cache simples em memória para contexto do tenant (TTL: 30s)
+const tenantCache = new Map<string, { data: TenantContext; expires: number }>();
+const CACHE_TTL = 30000; // 30 segundos
+
 export async function getTenantContext(
   userId: string | null,
   activeCompanyId?: string | null
@@ -43,25 +47,26 @@ export async function getTenantContext(
     return emptyContext;
   }
 
-  // Buscar empresas que o usuário tem acesso
-  const userCompanies = await prisma.userCompany.findMany({
-    where: {
-      userId,
-      isActive: true,
-    },
-    include: {
-      company: {
-        select: {
-          id: true,
-          code: true,
-          name: true,
-        },
+  // Verificar cache
+  const cacheKey = `${userId}:${activeCompanyId || "default"}`;
+  const cached = tenantCache.get(cacheKey);
+  if (cached && cached.expires > Date.now()) {
+    return cached.data;
+  }
+
+  // Query única: buscar empresas E permissões em paralelo
+  const [userCompanies, allPermissions] = await Promise.all([
+    prisma.userCompany.findMany({
+      where: { userId, isActive: true },
+      include: {
+        company: { select: { id: true, code: true, name: true } },
       },
-    },
-    orderBy: {
-      isDefault: "desc",
-    },
-  });
+      orderBy: { isDefault: "desc" },
+    }),
+    prisma.userCompanyPermission.findMany({
+      where: { userId },
+    }),
+  ]);
 
   if (userCompanies.length === 0) {
     return { ...emptyContext, userId };
@@ -79,39 +84,46 @@ export async function getTenantContext(
   let companyId: string | null = activeCompanyId ?? null;
   type CompanyItem = typeof companies[number];
   if (!companyId || !companies.find((c: CompanyItem) => c.id === companyId)) {
-    // Usar empresa padrão ou primeira da lista
     const defaultCompany = companies.find((c: CompanyItem) => c.isDefault);
     companyId = defaultCompany?.id ?? companies[0].id;
   }
 
-  // Buscar permissões para a empresa ativa
-  const userPermissions = await prisma.userCompanyPermission.findMany({
-    where: {
-      userId,
-      companyId,
-    },
-  });
-
+  // Filtrar permissões da empresa ativa
   const permissions = new Map<SystemModule, {
     level: PermissionLevel;
     canShare: boolean;
     canClone: boolean;
   }>();
 
-  for (const perm of userPermissions) {
-    permissions.set(perm.module as SystemModule, {
-      level: perm.permission as PermissionLevel,
-      canShare: perm.canShare,
-      canClone: perm.canClone,
-    });
+  for (const perm of allPermissions) {
+    if (perm.companyId === companyId) {
+      permissions.set(perm.module as SystemModule, {
+        level: perm.permission as PermissionLevel,
+        canShare: perm.canShare,
+        canClone: perm.canClone,
+      });
+    }
   }
 
-  return {
+  const result: TenantContext = {
     userId,
     companyId,
     companies,
     permissions,
   };
+
+  // Salvar no cache
+  tenantCache.set(cacheKey, { data: result, expires: Date.now() + CACHE_TTL });
+
+  // Limpar entradas expiradas periodicamente
+  if (tenantCache.size > 100) {
+    const now = Date.now();
+    for (const [key, value] of tenantCache) {
+      if (value.expires < now) tenantCache.delete(key);
+    }
+  }
+
+  return result;
 }
 
 export function hasPermission(

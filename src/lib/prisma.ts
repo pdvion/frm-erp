@@ -20,12 +20,17 @@ function createPrismaClient(): PrismaClient {
     });
   }
 
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({ 
+    connectionString,
+    max: 10, // máximo de conexões no pool
+    idleTimeoutMillis: 30000, // tempo ocioso antes de fechar conexão
+    connectionTimeoutMillis: 5000, // timeout para obter conexão
+  });
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
 
