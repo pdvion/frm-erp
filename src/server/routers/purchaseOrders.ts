@@ -109,7 +109,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
         where: {
           id: input.quoteId,
           status: "APPROVED",
-          supplier: { ...tenantFilter(ctx.companyId, false) },
+          supplier: { ...tenantFilter(ctx.companyId, true) },
         },
         include: {
           supplier: true,
