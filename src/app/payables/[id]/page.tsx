@@ -1,23 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   DollarSign,
   ChevronLeft,
-  Clock,
   CheckCircle,
-  XCircle,
-  AlertTriangle,
   Loader2,
-  Calendar,
-  Building2,
-  FileText,
-  CreditCard,
   Ban,
+  CreditCard,
+  FileText,
+  Building2,
   History,
   Receipt,
 } from "lucide-react";
@@ -32,7 +28,6 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 
 export default function PayableDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);

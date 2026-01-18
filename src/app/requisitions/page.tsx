@@ -69,6 +69,7 @@ export default function RequisitionsPage() {
     return new Date(date).toLocaleDateString("pt-BR");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatDateTime = (date: Date | string) => {
     return new Date(date).toLocaleString("pt-BR");
   };

@@ -17,8 +17,6 @@ import {
   Send,
   Ban,
   Check,
-  Minus,
-  Plus,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -41,7 +39,6 @@ export default function RequisitionDetailPage() {
   const [separateQty, setSeparateQty] = useState("");
 
   const { data: requisition, isLoading, refetch } = trpc.requisitions.byId.useQuery({ id });
-  const utils = trpc.useUtils();
 
   const submitMutation = trpc.requisitions.submit.useMutation({
     onSuccess: () => refetch(),
@@ -70,6 +67,7 @@ export default function RequisitionDetailPage() {
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formatDate = (date: Date | string | null) => {
     if (!date) return "-";
     return new Date(date).toLocaleDateString("pt-BR");
