@@ -53,6 +53,21 @@ enum QuoteStatus {
   CANCELLED       // Cancelado
 }
 
+enum PayableStatus {
+  PENDING         // Pendente
+  PARTIAL         // Parcialmente pago
+  PAID            // Pago
+  OVERDUE         // Vencido
+  CANCELLED       // Cancelado
+}
+
+enum PayableType {
+  INVOICE         // Nota Fiscal
+  SERVICE         // Serviço
+  TAX             // Imposto
+  OTHER           // Outros
+}
+
 // =============================================================================
 // TABELAS BASE (A00)
 // =============================================================================
@@ -87,6 +102,7 @@ model Company {
   receivedInvoices ReceivedInvoice[]
   userGroups   UserGroup[]
   systemSettings SystemSetting[]
+  accountsPayable AccountsPayable[]
 
   @@map("companies")
 }
@@ -348,6 +364,7 @@ model Supplier {
   inventoryMovements InventoryMovement[]
   purchaseOrders    PurchaseOrder[]
   receivedInvoices  ReceivedInvoice[]
+  accountsPayable   AccountsPayable[]
 
   @@map("suppliers")
 }
@@ -667,6 +684,9 @@ model ReceivedInvoice {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   
+  // Títulos a pagar gerados
+  accountsPayable AccountsPayable[]
+  
   @@index([status])
   @@index([companyId])
   @@index([supplierId])
@@ -716,4 +736,93 @@ model ReceivedInvoiceItem {
   @@index([materialId])
   @@index([matchStatus])
   @@map("received_invoice_items")
+}
+
+// =============================================================================
+// MÓDULO FN10 - CONTAS A PAGAR
+// =============================================================================
+
+model AccountsPayable {
+  id              String         @id @default(uuid())
+  code            Int            // número do título
+  companyId       String?
+  company         Company?       @relation(fields: [companyId], references: [id])
+  
+  // Fornecedor
+  supplierId      String
+  supplier        Supplier       @relation(fields: [supplierId], references: [id])
+  
+  // Documento de origem
+  documentType    PayableType    @default(INVOICE)
+  documentNumber  String?        // número da NF
+  documentId      String?        // ID da NFe (ReceivedInvoice)
+  invoiceId       String?
+  invoice         ReceivedInvoice? @relation(fields: [invoiceId], references: [id])
+  
+  // Valores
+  description     String
+  dueDate         DateTime       // data de vencimento
+  issueDate       DateTime       @default(now()) // data de emissão
+  originalValue   Float          // valor original
+  discountValue   Float          @default(0) // desconto
+  interestValue   Float          @default(0) // juros
+  fineValue       Float          @default(0) // multa
+  paidValue       Float          @default(0) // valor pago
+  netValue        Float          // valor líquido a pagar
+  
+  // Status
+  status          PayableStatus  @default(PENDING)
+  paidAt          DateTime?      // data do pagamento
+  
+  // Parcela
+  installmentNumber Int          @default(1) // número da parcela
+  totalInstallments Int          @default(1) // total de parcelas
+  
+  // Categorização
+  categoryId      String?        // natureza financeira
+  costCenterId    String?        // centro de custo
+  
+  // Observações
+  notes           String?
+  barcode         String?        // código de barras do boleto
+  
+  // Auditoria
+  createdBy       String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  // Pagamentos
+  payments        PayablePayment[]
+  
+  @@unique([companyId, code])
+  @@index([supplierId])
+  @@index([companyId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([invoiceId])
+  @@map("accounts_payable")
+}
+
+model PayablePayment {
+  id              String         @id @default(uuid())
+  payableId       String
+  payable         AccountsPayable @relation(fields: [payableId], references: [id])
+  
+  paymentDate     DateTime       // data do pagamento
+  value           Float          // valor pago
+  discountValue   Float          @default(0) // desconto obtido
+  interestValue   Float          @default(0) // juros pagos
+  fineValue       Float          @default(0) // multa paga
+  
+  paymentMethod   String?        // forma de pagamento
+  bankAccountId   String?        // conta bancária
+  
+  notes           String?
+  
+  createdBy       String?
+  createdAt       DateTime       @default(now())
+  
+  @@index([payableId])
+  @@index([paymentDate])
+  @@map("payable_payments")
 }

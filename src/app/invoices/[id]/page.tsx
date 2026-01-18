@@ -80,6 +80,16 @@ export default function InvoiceDetailPage() {
     },
   });
 
+  const generatePayablesMutation = trpc.nfe.generatePayables.useMutation({
+    onSuccess: (data) => {
+      alert(`${data.created} título(s) gerado(s) no valor total de R$ ${data.total.toFixed(2)}`);
+      refetch();
+    },
+    onError: (error) => {
+      alert(`Erro: ${error.message}`);
+    },
+  });
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -483,9 +493,23 @@ export default function InvoiceDetailPage() {
         {/* Approved Info */}
         {invoice.status === "APPROVED" && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-              <h3 className="font-medium text-green-900">NFe Aprovada</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+                <h3 className="font-medium text-green-900">NFe Aprovada</h3>
+              </div>
+              <button
+                onClick={() => generatePayablesMutation.mutate({ invoiceId: id })}
+                disabled={generatePayablesMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {generatePayablesMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <DollarSign className="w-4 h-4" />
+                )}
+                Gerar Títulos a Pagar
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -500,6 +524,14 @@ export default function InvoiceDetailPage() {
             <p className="mt-4 text-sm text-green-700">
               ✓ Entrada no estoque realizada automaticamente
             </p>
+            {generatePayablesMutation.error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center gap-2 text-red-700">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span>{generatePayablesMutation.error.message}</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

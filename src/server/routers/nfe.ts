@@ -1154,4 +1154,124 @@ export const nfeRouter = createTRPCRouter({
       totalValue: totalValue._sum.totalInvoice || 0,
     };
   }),
+
+  // Gerar títulos a pagar a partir das duplicatas da NFe
+  generatePayables: tenantProcedure
+    .input(z.object({
+      invoiceId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      // Buscar NFe com XML
+      const invoice = await prisma.receivedInvoice.findUnique({
+        where: { id: input.invoiceId },
+        include: {
+          supplier: true,
+          accountsPayable: true,
+        },
+      });
+
+      if (!invoice) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NFe não encontrada",
+        });
+      }
+
+      if (!invoice.supplierId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "NFe não possui fornecedor vinculado",
+        });
+      }
+
+      if (invoice.accountsPayable.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Títulos já foram gerados para esta NFe",
+        });
+      }
+
+      // Parsear XML para extrair duplicatas
+      if (!invoice.xmlContent) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "XML da NFe não disponível",
+        });
+      }
+
+      const { parseNFeXml } = await import("@/lib/nfe-parser");
+      const nfeData = parseNFeXml(invoice.xmlContent);
+
+      if (nfeData.duplicatas.length === 0) {
+        // Se não há duplicatas, criar um título único com o valor total
+        const nextCode = await getNextPayableCode(ctx.companyId);
+        
+        await prisma.accountsPayable.create({
+          data: {
+            code: nextCode,
+            companyId: ctx.companyId,
+            supplierId: invoice.supplierId,
+            documentType: "INVOICE",
+            documentNumber: String(invoice.invoiceNumber),
+            invoiceId: invoice.id,
+            description: `NF ${invoice.invoiceNumber} - ${invoice.supplierName}`,
+            dueDate: invoice.issueDate, // Vencimento = emissão se não há duplicatas
+            issueDate: invoice.issueDate,
+            originalValue: invoice.totalInvoice,
+            netValue: invoice.totalInvoice,
+            installmentNumber: 1,
+            totalInstallments: 1,
+            createdBy: ctx.tenant.userId,
+          },
+        });
+
+        return { created: 1, total: invoice.totalInvoice };
+      }
+
+      // Criar um título para cada duplicata
+      const payables = [];
+      const totalInstallments = nfeData.duplicatas.length;
+
+      for (let i = 0; i < nfeData.duplicatas.length; i++) {
+        const dup = nfeData.duplicatas[i];
+        const nextCode = await getNextPayableCode(ctx.companyId);
+
+        const payable = await prisma.accountsPayable.create({
+          data: {
+            code: nextCode,
+            companyId: ctx.companyId,
+            supplierId: invoice.supplierId,
+            documentType: "INVOICE",
+            documentNumber: String(invoice.invoiceNumber),
+            invoiceId: invoice.id,
+            description: `NF ${invoice.invoiceNumber}/${dup.numero} - ${invoice.supplierName}`,
+            dueDate: dup.vencimento,
+            issueDate: invoice.issueDate,
+            originalValue: dup.valor,
+            netValue: dup.valor,
+            installmentNumber: i + 1,
+            totalInstallments,
+            createdBy: ctx.tenant.userId,
+          },
+        });
+        payables.push(payable);
+      }
+
+      const totalValue = payables.reduce((sum, p) => sum + p.netValue, 0);
+
+      return {
+        created: payables.length,
+        total: totalValue,
+      };
+    }),
 });
+
+// Função auxiliar para obter próximo código de título
+async function getNextPayableCode(companyId: string): Promise<number> {
+  const lastPayable = await prisma.accountsPayable.findFirst({
+    where: { companyId },
+    orderBy: { code: "desc" },
+    select: { code: true },
+  });
+  return (lastPayable?.code || 0) + 1;
+}
