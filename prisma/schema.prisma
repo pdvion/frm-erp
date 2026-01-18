@@ -110,6 +110,9 @@ model Company {
   customers        Customer[]
   accountsReceivable AccountsReceivable[]
   approvalThresholds ApprovalThreshold[]
+  mrpRuns          MrpRun[]
+  workCenters      WorkCenter[]
+  oeeTargets       OeeTarget[]
 
   @@map("companies")
 }
@@ -331,6 +334,10 @@ model Material {
   requisitionItems    MaterialRequisitionItem[]
   productionOrdersAsProduct ProductionOrder[] @relation("ProductionProduct")
   productionOrderMaterials ProductionOrderMaterial[] @relation("ProductionMaterial")
+  bomAsParent         BomItem[]       @relation("BomParent")
+  bomAsChild          BomItem[]       @relation("BomChild")
+  mrpParameter        MrpParameter?
+  mrpSuggestions      MrpSuggestion[]
 
   @@map("materials")
 }
@@ -992,6 +999,7 @@ model ProductionOrder {
   // Relações
   materials       ProductionOrderMaterial[]
   operations      ProductionOrderOperation[]
+  productionLogs  ProductionLog[]
   
   @@unique([companyId, code])
   @@index([companyId])
@@ -1419,4 +1427,247 @@ model ApprovalThresholdApprover {
   @@index([thresholdId])
   @@index([userId])
   @@map("approval_threshold_approvers")
+}
+
+// =============================================================================
+// MÓDULO MRP - PLANEJAMENTO DE NECESSIDADES
+// =============================================================================
+
+enum MrpSuggestionType {
+  PRODUCTION  // Ordem de produção
+  PURCHASE    // Ordem de compra
+  RESCHEDULE  // Reprogramar
+  CANCEL      // Cancelar
+}
+
+enum MrpSuggestionStatus {
+  PENDING     // Pendente
+  APPROVED    // Aprovada
+  REJECTED    // Rejeitada
+  CONVERTED   // Convertida em ordem
+}
+
+enum StopType {
+  PLANNED     // Parada planejada
+  UNPLANNED   // Parada não planejada
+  SETUP       // Setup
+  MAINTENANCE // Manutenção
+  QUALITY     // Qualidade
+  MATERIAL    // Falta de material
+  OTHER       // Outros
+}
+
+// =============================================================================
+// ESTRUTURA DE PRODUTO (BOM)
+// =============================================================================
+model BomItem {
+  id               String   @id @default(uuid()) @db.Uuid
+  parentMaterialId String   @db.Uuid
+  parentMaterial   Material @relation("BomParent", fields: [parentMaterialId], references: [id], onDelete: Cascade)
+  childMaterialId  String   @db.Uuid
+  childMaterial    Material @relation("BomChild", fields: [childMaterialId], references: [id])
+  quantity         Float
+  unit             String   @default("UN")
+  scrapPercentage  Float    @default(0)
+  leadTimeDays     Int      @default(0)
+  sequence         Int      @default(0)
+  notes            String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([parentMaterialId, childMaterialId])
+  @@index([parentMaterialId])
+  @@index([childMaterialId])
+  @@map("bom_items")
+}
+
+// =============================================================================
+// PARÂMETROS MRP
+// =============================================================================
+model MrpParameter {
+  id                     String   @id @default(uuid()) @db.Uuid
+  materialId             String   @unique @db.Uuid
+  material               Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  minLotSize             Float    @default(1)
+  lotMultiple            Float    @default(1)
+  safetyStock            Float    @default(0)
+  productionLeadTimeDays Int      @default(1)
+  purchaseLeadTimeDays   Int      @default(7)
+  orderPolicy            String   @default("LOT_FOR_LOT")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  
+  @@index([materialId])
+  @@map("mrp_parameters")
+}
+
+// =============================================================================
+// EXECUÇÕES MRP
+// =============================================================================
+model MrpRun {
+  id                    String          @id @default(uuid()) @db.Uuid
+  companyId             String?         @db.Uuid
+  company               Company?        @relation(fields: [companyId], references: [id])
+  runDate               DateTime        @default(now())
+  horizonDays           Int             @default(30)
+  status                String          @default("RUNNING")
+  totalSuggestions      Int             @default(0)
+  productionSuggestions Int             @default(0)
+  purchaseSuggestions   Int             @default(0)
+  completedAt           DateTime?
+  createdBy             String?         @db.Uuid
+  notes                 String?
+  
+  suggestions MrpSuggestion[]
+  
+  @@index([companyId])
+  @@index([runDate])
+  @@map("mrp_runs")
+}
+
+// =============================================================================
+// SUGESTÕES MRP
+// =============================================================================
+model MrpSuggestion {
+  id               String              @id @default(uuid()) @db.Uuid
+  runId            String              @db.Uuid
+  run              MrpRun              @relation(fields: [runId], references: [id], onDelete: Cascade)
+  materialId       String              @db.Uuid
+  material         Material            @relation(fields: [materialId], references: [id])
+  type             MrpSuggestionType
+  status           MrpSuggestionStatus @default(PENDING)
+  suggestedDate    DateTime
+  requiredDate     DateTime
+  quantity         Float
+  sourceOrderId    String?             @db.Uuid
+  sourceOrderType  String?
+  reason           String?
+  convertedOrderId String?             @db.Uuid
+  convertedAt      DateTime?
+  approvedBy       String?             @db.Uuid
+  approvedAt       DateTime?
+  rejectedBy       String?             @db.Uuid
+  rejectedAt       DateTime?
+  rejectionReason  String?
+  createdAt        DateTime            @default(now())
+  
+  @@index([runId])
+  @@index([materialId])
+  @@index([status])
+  @@index([type])
+  @@map("mrp_suggestions")
+}
+
+// =============================================================================
+// CENTROS DE TRABALHO
+// =============================================================================
+model WorkCenter {
+  id               String   @id @default(uuid()) @db.Uuid
+  code             String
+  name             String
+  description      String?
+  companyId        String?  @db.Uuid
+  company          Company? @relation(fields: [companyId], references: [id])
+  capacityPerHour  Float    @default(1)
+  hoursPerDay      Float    @default(8)
+  daysPerWeek      Int      @default(5)
+  efficiencyTarget Float    @default(85)
+  setupTimeMinutes Int      @default(0)
+  costPerHour      Float    @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  productionLogs ProductionLog[]
+  machineStops   MachineStop[]
+  oeeTargets     OeeTarget[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@map("work_centers")
+}
+
+// =============================================================================
+// REGISTROS DE PRODUÇÃO (OEE)
+// =============================================================================
+model ProductionLog {
+  id                    String           @id @default(uuid()) @db.Uuid
+  workCenterId          String           @db.Uuid
+  workCenter            WorkCenter       @relation(fields: [workCenterId], references: [id])
+  productionOrderId     String?          @db.Uuid
+  productionOrder       ProductionOrder? @relation(fields: [productionOrderId], references: [id])
+  operatorId            String?          @db.Uuid
+  shiftDate             DateTime         @db.Date
+  shiftNumber           Int              @default(1)
+  plannedQuantity       Float            @default(0)
+  producedQuantity      Float            @default(0)
+  goodQuantity          Float            @default(0)
+  scrapQuantity         Float            @default(0)
+  reworkQuantity        Float            @default(0)
+  plannedTimeMinutes    Int              @default(0)
+  actualTimeMinutes     Int              @default(0)
+  setupTimeMinutes      Int              @default(0)
+  runTimeMinutes        Int              @default(0)
+  stopTimeMinutes       Int              @default(0)
+  cycleTimeSeconds      Float?
+  idealCycleTimeSeconds Float?
+  notes                 String?
+  createdBy             String?          @db.Uuid
+  createdAt             DateTime         @default(now())
+  
+  machineStops MachineStop[]
+  
+  @@index([workCenterId])
+  @@index([shiftDate])
+  @@index([productionOrderId])
+  @@map("production_logs")
+}
+
+// =============================================================================
+// PARADAS DE MÁQUINA
+// =============================================================================
+model MachineStop {
+  id              String         @id @default(uuid()) @db.Uuid
+  workCenterId    String         @db.Uuid
+  workCenter      WorkCenter     @relation(fields: [workCenterId], references: [id])
+  productionLogId String?        @db.Uuid
+  productionLog   ProductionLog? @relation(fields: [productionLogId], references: [id])
+  stopType        StopType
+  startTime       DateTime
+  endTime         DateTime?
+  durationMinutes Int?
+  reason          String
+  solution        String?
+  reportedBy      String?        @db.Uuid
+  createdAt       DateTime       @default(now())
+  
+  @@index([workCenterId])
+  @@index([startTime])
+  @@index([stopType])
+  @@map("machine_stops")
+}
+
+// =============================================================================
+// METAS OEE
+// =============================================================================
+model OeeTarget {
+  id                 String      @id @default(uuid()) @db.Uuid
+  companyId          String?     @db.Uuid
+  company            Company?    @relation(fields: [companyId], references: [id])
+  workCenterId       String?     @db.Uuid
+  workCenter         WorkCenter? @relation(fields: [workCenterId], references: [id], onDelete: Cascade)
+  year               Int
+  month              Int?
+  availabilityTarget Float       @default(90)
+  performanceTarget  Float       @default(95)
+  qualityTarget      Float       @default(99)
+  oeeTarget          Float       @default(85)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  
+  @@index([companyId])
+  @@index([workCenterId])
+  @@index([year, month])
+  @@map("oee_targets")
 }
