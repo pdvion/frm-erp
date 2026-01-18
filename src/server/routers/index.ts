@@ -33,6 +33,7 @@ import { notificationsRouter } from "./notifications";
 import { systemLogsRouter } from "./systemLogs";
 import { tasksRouter } from "./tasks";
 import { dashboardRouter } from "./dashboard";
+import { sefazRouter } from "./sefaz";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -69,6 +70,7 @@ export const appRouter = createTRPCRouter({
   notifications: notificationsRouter,
   systemLogs: systemLogsRouter,
   tasks: tasksRouter,
+  sefaz: sefazRouter,
 });
 
 export type AppRouter = typeof appRouter;
