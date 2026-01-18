@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, User } from "lucide-react";
+import { Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, ShoppingCart, FileInput, DollarSign, User } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -48,6 +48,13 @@ const modules = [
     href: "/invoices",
     icon: FileInput,
     color: "bg-indigo-500",
+  },
+  {
+    title: "Contas a Pagar",
+    description: "Gestão de títulos e pagamentos",
+    href: "/payables",
+    icon: DollarSign,
+    color: "bg-red-500",
   },
   {
     title: "Relatórios",
