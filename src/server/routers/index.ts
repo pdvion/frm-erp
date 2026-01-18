@@ -26,6 +26,7 @@ import { stockLocationsRouter } from "./stockLocations";
 import { transfersRouter } from "./transfers";
 import { hrRouter } from "./hr";
 import { receivingRouter } from "./receiving";
+import { emailIntegrationRouter } from "./emailIntegration";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -55,6 +56,7 @@ export const appRouter = createTRPCRouter({
   transfers: transfersRouter,
   hr: hrRouter,
   receiving: receivingRouter,
+  emailIntegration: emailIntegrationRouter,
 });
 
 export type AppRouter = typeof appRouter;
