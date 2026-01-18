@@ -1,6 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import pg from "pg";
+
+// Desabilitar verificação de certificado SSL para Supabase
+// Isso é necessário porque o adapter-pg não suporta rejectUnauthorized corretamente
+if (typeof process !== 'undefined') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -10,7 +16,6 @@ function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   
   // Durante o build, DATABASE_URL pode não estar disponível
-  // Retornar um cliente "dummy" que será substituído em runtime
   if (!connectionString) {
     console.warn("DATABASE_URL not defined, using mock PrismaClient for build");
     return new Proxy({} as PrismaClient, {
@@ -20,12 +25,17 @@ function createPrismaClient(): PrismaClient {
     });
   }
 
-  const pool = new Pool({ 
+  // Pool com SSL para Supabase Supavisor
+  const pool = new pg.Pool({ 
     connectionString,
-    max: 10, // máximo de conexões no pool
-    idleTimeoutMillis: 30000, // tempo ocioso antes de fechar conexão
-    connectionTimeoutMillis: 5000, // timeout para obter conexão
+    max: 3,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
+  
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
