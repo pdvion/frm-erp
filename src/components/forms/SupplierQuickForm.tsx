@@ -30,7 +30,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
   const utils = trpc.useUtils();
 
   const createMutation = trpc.suppliers.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { id: string; companyName: string; code: number }) => {
       utils.suppliers.list.invalidate();
       onSuccess({ id: data.id, companyName: data.companyName, code: data.code });
     },

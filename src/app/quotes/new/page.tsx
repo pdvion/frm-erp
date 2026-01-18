@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
+import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
 import {
   ChevronLeft,
   Save,
@@ -176,19 +178,23 @@ export default function NewQuotePage() {
                 <h2 className="text-lg font-medium text-gray-900 mb-4">
                   Fornecedor
                 </h2>
-                <select
+                <SelectWithAdd
+                  id="supplierId"
+                  name="supplierId"
+                  label="Fornecedor"
                   value={supplierId}
                   onChange={(e) => setSupplierId(e.target.value)}
+                  options={suppliers?.suppliers.map((supplier) => ({
+                    value: supplier.id,
+                    label: `${supplier.code} - ${supplier.tradeName || supplier.companyName}`,
+                  })) || []}
+                  placeholder="Selecione um fornecedor"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Selecione um fornecedor</option>
-                  {suppliers?.suppliers.map((supplier) => (
-                    <option key={supplier.id} value={supplier.id}>
-                      {supplier.code} - {supplier.tradeName || supplier.companyName}
-                    </option>
-                  ))}
-                </select>
+                  drawerTitle="Novo Fornecedor"
+                  drawerDescription="Cadastre um novo fornecedor rapidamente"
+                  drawerSize="lg"
+                  FormComponent={SupplierQuickForm}
+                />
               </div>
 
               {/* Items */}
