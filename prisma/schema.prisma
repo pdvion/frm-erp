@@ -119,6 +119,10 @@ model Company {
   stockLocations   StockLocation[]
   stockTransfers   StockTransfer[]
   physicalInventories PhysicalInventory[]
+  departments      Department[]
+  jobPositions     JobPosition[]
+  employees        Employee[]
+  payrolls         Payroll[]
 
   @@map("companies")
 }
@@ -151,6 +155,7 @@ model User {
   transfersShipped           StockTransfer[] @relation("TransferShipped")
   transfersReceived          StockTransfer[] @relation("TransferReceived")
   requisitionApprovals       RequisitionApproval[]
+  employeeProfile            Employee[]
 
   @@map("users")
 }
@@ -1151,6 +1156,7 @@ model CostCenter {
   
   payableAllocations PayableCostAllocation[]
   receivables        AccountsReceivable[]
+  departments        Department[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2153,4 +2159,297 @@ model InventoryCount {
   @@index([inventoryId])
   @@index([materialId])
   @@map("inventory_counts")
+}
+
+// =============================================================================
+// MÓDULO DE RH
+// =============================================================================
+
+enum ContractType {
+  CLT         // CLT
+  PJ          // Pessoa Jurídica
+  TEMPORARY   // Temporário
+  INTERN      // Estagiário
+  APPRENTICE  // Aprendiz
+}
+
+enum EmployeeStatus {
+  ACTIVE      // Ativo
+  VACATION    // Férias
+  LEAVE       // Afastado
+  SUSPENDED   // Suspenso
+  TERMINATED  // Desligado
+}
+
+enum TimeClockType {
+  CLOCK_IN    // Entrada
+  CLOCK_OUT   // Saída
+  BREAK_START // Início Intervalo
+  BREAK_END   // Fim Intervalo
+}
+
+enum PayrollEventType {
+  SALARY      // Salário
+  OVERTIME    // Hora Extra
+  BONUS       // Bônus
+  COMMISSION  // Comissão
+  ALLOWANCE   // Adicional
+  DEDUCTION   // Desconto
+  TAX         // Imposto
+  BENEFIT     // Benefício
+}
+
+// =============================================================================
+// DEPARTAMENTOS
+// =============================================================================
+model Department {
+  id           String       @id @default(uuid()) @db.Uuid
+  code         String
+  name         String
+  description  String?
+  managerId    String?      @db.Uuid
+  parentId     String?      @db.Uuid
+  parent       Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children     Department[] @relation("DepartmentHierarchy")
+  companyId    String?      @db.Uuid
+  company      Company?     @relation(fields: [companyId], references: [id])
+  costCenterId String?      @db.Uuid
+  costCenter   CostCenter?  @relation(fields: [costCenterId], references: [id])
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  positions JobPosition[]
+  employees Employee[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@map("departments")
+}
+
+// =============================================================================
+// CARGOS
+// =============================================================================
+model JobPosition {
+  id           String      @id @default(uuid()) @db.Uuid
+  code         String
+  name         String
+  description  String?
+  departmentId String?     @db.Uuid
+  department   Department? @relation(fields: [departmentId], references: [id])
+  companyId    String?     @db.Uuid
+  company      Company?    @relation(fields: [companyId], references: [id])
+  baseSalary   Float?
+  level        Int?        @default(1)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  
+  employees Employee[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@map("job_positions")
+}
+
+// =============================================================================
+// FUNCIONÁRIOS
+// =============================================================================
+model Employee {
+  id                  String         @id @default(uuid()) @db.Uuid
+  code                Int
+  companyId           String?        @db.Uuid
+  company             Company?       @relation(fields: [companyId], references: [id])
+  userId              String?        @db.Uuid
+  user                User?          @relation(fields: [userId], references: [id])
+  name                String
+  cpf                 String?
+  rg                  String?
+  birthDate           DateTime?      @db.Date
+  gender              String?
+  maritalStatus       String?
+  email               String?
+  phone               String?
+  mobile              String?
+  address             String?
+  addressNumber       String?
+  addressComplement   String?
+  addressNeighborhood String?
+  addressCity         String?
+  addressState        String?
+  addressZipCode      String?
+  departmentId        String?        @db.Uuid
+  department          Department?    @relation(fields: [departmentId], references: [id])
+  positionId          String?        @db.Uuid
+  position            JobPosition?   @relation(fields: [positionId], references: [id])
+  managerId           String?        @db.Uuid
+  manager             Employee?      @relation("EmployeeManager", fields: [managerId], references: [id])
+  subordinates        Employee[]     @relation("EmployeeManager")
+  contractType        ContractType   @default(CLT)
+  status              EmployeeStatus @default(ACTIVE)
+  hireDate            DateTime       @db.Date
+  terminationDate     DateTime?      @db.Date
+  salary              Float          @default(0)
+  workHoursPerDay     Float          @default(8)
+  workDaysPerWeek     Int            @default(5)
+  bankName            String?
+  bankBranch          String?
+  bankAccount         String?
+  bankAccountType     String?
+  pixKey              String?
+  pis                 String?
+  ctps                String?
+  voterRegistration   String?
+  militaryService     String?
+  notes               String?
+  photo               String?
+  createdBy           String?        @db.Uuid
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  
+  timeClockEntries TimeClockEntry[]
+  timesheetDays    TimesheetDay[]
+  payrollItems     PayrollItem[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([departmentId])
+  @@index([status])
+  @@map("employees")
+}
+
+// =============================================================================
+// REGISTROS DE PONTO
+// =============================================================================
+model TimeClockEntry {
+  id            String        @id @default(uuid()) @db.Uuid
+  employeeId    String        @db.Uuid
+  employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type          TimeClockType
+  timestamp     DateTime
+  location      String?
+  latitude      Float?
+  longitude     Float?
+  deviceId      String?
+  ipAddress     String?
+  isManual      Boolean       @default(false)
+  justification String?
+  approvedBy    String?       @db.Uuid
+  approvedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  
+  @@index([employeeId])
+  @@index([timestamp])
+  @@map("time_clock_entries")
+}
+
+// =============================================================================
+// FOLHA DE PONTO (RESUMO DIÁRIO)
+// =============================================================================
+model TimesheetDay {
+  id             String    @id @default(uuid()) @db.Uuid
+  employeeId     String    @db.Uuid
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date           DateTime  @db.Date
+  scheduledHours Float     @default(8)
+  workedHours    Float     @default(0)
+  overtimeHours  Float     @default(0)
+  nightHours     Float     @default(0)
+  absenceHours   Float     @default(0)
+  isHoliday      Boolean   @default(false)
+  isWeekend      Boolean   @default(false)
+  status         String    @default("PENDING")
+  notes          String?
+  approvedBy     String?   @db.Uuid
+  approvedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@unique([employeeId, date])
+  @@index([employeeId])
+  @@index([date])
+  @@map("timesheet_days")
+}
+
+// =============================================================================
+// FOLHA DE PAGAMENTO
+// =============================================================================
+model Payroll {
+  id              String    @id @default(uuid()) @db.Uuid
+  code            Int
+  companyId       String?   @db.Uuid
+  company         Company?  @relation(fields: [companyId], references: [id])
+  referenceMonth  Int
+  referenceYear   Int
+  status          String    @default("DRAFT")
+  totalGross      Float     @default(0)
+  totalDeductions Float     @default(0)
+  totalNet        Float     @default(0)
+  employeeCount   Int       @default(0)
+  processedAt     DateTime?
+  processedBy     String?   @db.Uuid
+  approvedAt      DateTime?
+  approvedBy      String?   @db.Uuid
+  paidAt          DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  items PayrollItem[]
+  
+  @@unique([code, companyId])
+  @@unique([companyId, referenceMonth, referenceYear])
+  @@index([companyId])
+  @@map("payrolls")
+}
+
+// =============================================================================
+// ITENS DA FOLHA (POR FUNCIONÁRIO)
+// =============================================================================
+model PayrollItem {
+  id              String   @id @default(uuid()) @db.Uuid
+  payrollId       String   @db.Uuid
+  payroll         Payroll  @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+  employeeId      String   @db.Uuid
+  employee        Employee @relation(fields: [employeeId], references: [id])
+  baseSalary      Float    @default(0)
+  workedDays      Int      @default(0)
+  workedHours     Float    @default(0)
+  overtimeHours   Float    @default(0)
+  nightHours      Float    @default(0)
+  absenceDays     Int      @default(0)
+  grossSalary     Float    @default(0)
+  totalDeductions Float    @default(0)
+  netSalary       Float    @default(0)
+  inss            Float    @default(0)
+  irrf            Float    @default(0)
+  fgts            Float    @default(0)
+  notes           String?
+  createdAt       DateTime @default(now())
+  
+  events PayrollEvent[]
+  
+  @@unique([payrollId, employeeId])
+  @@index([payrollId])
+  @@index([employeeId])
+  @@map("payroll_items")
+}
+
+// =============================================================================
+// EVENTOS DA FOLHA (PROVENTOS/DESCONTOS)
+// =============================================================================
+model PayrollEvent {
+  id            String           @id @default(uuid()) @db.Uuid
+  payrollItemId String           @db.Uuid
+  payrollItem   PayrollItem      @relation(fields: [payrollItemId], references: [id], onDelete: Cascade)
+  type          PayrollEventType
+  code          String
+  description   String
+  reference     Float?
+  value         Float
+  isDeduction   Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  
+  @@index([payrollItemId])
+  @@map("payroll_events")
 }
