@@ -125,6 +125,7 @@ model Company {
   payrolls         Payroll[]
   materialReceivings MaterialReceiving[]
   notifications      Notification[]
+  systemLogs         SystemLog[]
 
   @@map("companies")
 }
@@ -161,6 +162,7 @@ model User {
   tutorials                  Tutorial[]
   notifications              Notification[]
   notificationPreferences    NotificationPreference[]
+  systemLogs                 SystemLog[]
 
   @@map("users")
 }
@@ -2688,4 +2690,30 @@ model NotificationPreference {
   @@unique([userId, category])
   @@index([userId])
   @@map("notification_preferences")
+}
+
+// =============================================================================
+// LOGS DO SISTEMA
+// =============================================================================
+model SystemLog {
+  id          String    @id @default(uuid()) @db.Uuid
+  level       String    @db.VarChar(10) // debug, info, warn, error, fatal
+  message     String
+  context     Json      @default("{}")
+  stack       String?
+  userId      String?   @db.Uuid @map("user_id")
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  companyId   String?   @db.Uuid @map("company_id")
+  company     Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  requestId   String?   @db.VarChar(100) @map("request_id")
+  source      String?   @db.VarChar(100)
+  durationMs  Int?      @map("duration_ms")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([level])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId])
+  @@index([companyId])
+  @@index([source])
+  @@map("system_logs")
 }
