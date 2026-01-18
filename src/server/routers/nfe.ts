@@ -64,7 +64,7 @@ export const nfeRouter = createTRPCRouter({
             { code: { in: productCodesAsNumbers } },
             { internalCode: { in: productCodes } },
           ],
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -253,7 +253,7 @@ export const nfeRouter = createTRPCRouter({
     }))
     .query(async ({ input, ctx }) => {
       const where = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(input.status && { status: input.status }),
         ...(input.supplierId && { supplierId: input.supplierId }),
         ...(input.startDate && { issueDate: { gte: input.startDate } }),
@@ -303,7 +303,7 @@ export const nfeRouter = createTRPCRouter({
       const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           supplier: true,
@@ -378,7 +378,7 @@ export const nfeRouter = createTRPCRouter({
       const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { items: true },
       });
@@ -415,7 +415,7 @@ export const nfeRouter = createTRPCRouter({
         let inventory = await prisma.inventory.findFirst({
           where: {
             materialId: item.materialId,
-            ...tenantFilter(ctx.companyId),
+            ...tenantFilter(ctx.companyId, false),
           },
         });
 
@@ -559,7 +559,7 @@ export const nfeRouter = createTRPCRouter({
       const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -651,7 +651,7 @@ export const nfeRouter = createTRPCRouter({
 
       const byDescription = await prisma.material.findMany({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           OR: searchTerms.map((term) => ({
             description: { contains: term, mode: "insensitive" as const },
           })),
@@ -663,7 +663,7 @@ export const nfeRouter = createTRPCRouter({
       const byNcm = item.ncm
         ? await prisma.material.findMany({
             where: {
-              ...tenantFilter(ctx.companyId),
+              ...tenantFilter(ctx.companyId, false),
               ncm: item.ncm,
             },
             take: 5,
@@ -763,7 +763,7 @@ export const nfeRouter = createTRPCRouter({
       const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           items: {
@@ -893,7 +893,7 @@ export const nfeRouter = createTRPCRouter({
         prisma.receivedInvoice.findFirst({
           where: {
             id: input.invoiceId,
-            ...tenantFilter(ctx.companyId),
+            ...tenantFilter(ctx.companyId, false),
           },
           include: {
             items: {
@@ -904,7 +904,7 @@ export const nfeRouter = createTRPCRouter({
         prisma.purchaseOrder.findFirst({
           where: {
             id: input.purchaseOrderId,
-            ...tenantFilter(ctx.companyId),
+            ...tenantFilter(ctx.companyId, false),
           },
           include: {
             items: {
@@ -1101,7 +1101,7 @@ export const nfeRouter = createTRPCRouter({
       const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -1120,7 +1120,7 @@ export const nfeRouter = createTRPCRouter({
       const supplierId = invoice.supplierId;
       const purchaseOrders = await prisma.purchaseOrder.findMany({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           supplierId: supplierId,
           status: { in: ["APPROVED", "PARTIAL"] },
         },
@@ -1156,19 +1156,19 @@ export const nfeRouter = createTRPCRouter({
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, validated, approved, rejected, totalValue] = await Promise.all([
       prisma.receivedInvoice.count({
-        where: { ...tenantFilter(ctx.companyId), status: "PENDING" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" },
       }),
       prisma.receivedInvoice.count({
-        where: { ...tenantFilter(ctx.companyId), status: "VALIDATED" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "VALIDATED" },
       }),
       prisma.receivedInvoice.count({
-        where: { ...tenantFilter(ctx.companyId), status: "APPROVED" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "APPROVED" },
       }),
       prisma.receivedInvoice.count({
-        where: { ...tenantFilter(ctx.companyId), status: "REJECTED" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "REJECTED" },
       }),
       prisma.receivedInvoice.aggregate({
-        where: { ...tenantFilter(ctx.companyId), status: "APPROVED" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "APPROVED" },
         _sum: { totalInvoice: true },
       }),
     ]);

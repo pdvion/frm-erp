@@ -19,7 +19,7 @@ export const materialsRouter = createTRPCRouter({
       
       const where = {
         // Filtro de tenant (inclui dados compartilhados)
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { description: { contains: search, mode: "insensitive" as const } },
@@ -59,7 +59,7 @@ export const materialsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.material.findUnique({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
         include: {
           category: true,
           inventory: true,
@@ -169,7 +169,7 @@ export const materialsRouter = createTRPCRouter({
   listCategories: tenantProcedure
     .query(async ({ ctx }) => {
       return ctx.prisma.category.findMany({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { name: "asc" },
       });
     }),

@@ -18,7 +18,7 @@ export const receivingRouter = createTRPCRouter({
       const { status, supplierId, startDate, endDate, page = 1, limit = 20 } = input || {};
 
       const where: Prisma.MaterialReceivingWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(status && status !== "ALL" && { status }),
         ...(supplierId && { supplierId }),
         ...(startDate && { receivingDate: { gte: startDate } }),
@@ -93,7 +93,7 @@ export const receivingRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const lastReceiving = await ctx.prisma.materialReceiving.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
 
@@ -317,14 +317,14 @@ export const receivingRouter = createTRPCRouter({
 
     const [pending, inProgress, completedMonth, byStatus] = await Promise.all([
       ctx.prisma.materialReceiving.count({
-        where: { ...tenantFilter(ctx.companyId), status: "PENDING" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" },
       }),
       ctx.prisma.materialReceiving.count({
-        where: { ...tenantFilter(ctx.companyId), status: "IN_PROGRESS" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "IN_PROGRESS" },
       }),
       ctx.prisma.materialReceiving.aggregate({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: "COMPLETED",
           approvedAt: { gte: startOfMonth },
         },
@@ -333,7 +333,7 @@ export const receivingRouter = createTRPCRouter({
       }),
       ctx.prisma.materialReceiving.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
       }),
     ]);

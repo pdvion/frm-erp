@@ -139,7 +139,7 @@ export const mrpRouter = createTRPCRouter({
         // Buscar ordens de produção planejadas/em andamento
         const productionOrders = await ctx.prisma.productionOrder.findMany({
           where: {
-            ...tenantFilter(ctx.companyId),
+            ...tenantFilter(ctx.companyId, false),
             status: { in: ["PLANNED", "RELEASED", "IN_PROGRESS"] },
             dueDate: { lte: new Date(Date.now() + input.horizonDays * 24 * 60 * 60 * 1000) },
           },
@@ -158,7 +158,7 @@ export const mrpRouter = createTRPCRouter({
 
             // Buscar estoque disponível
             const inventory = await ctx.prisma.inventory.findFirst({
-              where: { materialId: bomItem.childMaterialId, ...tenantFilter(ctx.companyId) },
+              where: { materialId: bomItem.childMaterialId, ...tenantFilter(ctx.companyId, false) },
             });
 
             const availableQty = inventory?.availableQty || 0;
@@ -260,12 +260,12 @@ export const mrpRouter = createTRPCRouter({
 
       const [runs, total] = await Promise.all([
         ctx.prisma.mrpRun.findMany({
-          where: tenantFilter(ctx.companyId),
+          where: tenantFilter(ctx.companyId, false),
           orderBy: { runDate: "desc" },
           skip: (page - 1) * limit,
           take: limit,
         }),
-        ctx.prisma.mrpRun.count({ where: tenantFilter(ctx.companyId) }),
+        ctx.prisma.mrpRun.count({ where: tenantFilter(ctx.companyId, false) }),
       ]);
 
       return { runs, total, pages: Math.ceil(total / limit) };
@@ -336,7 +336,7 @@ export const mrpRouter = createTRPCRouter({
   dashboard: tenantProcedure
     .query(async ({ ctx }) => {
       const lastRun = await ctx.prisma.mrpRun.findFirst({
-        where: { ...tenantFilter(ctx.companyId), status: "COMPLETED" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "COMPLETED" },
         orderBy: { runDate: "desc" },
       });
 
@@ -352,7 +352,7 @@ export const mrpRouter = createTRPCRouter({
       // Materiais sem BOM
       const materialsWithoutBom = await ctx.prisma.material.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: "ACTIVE",
           bomAsParent: { none: {} },
           inventory: { some: { inventoryType: "FINISHED" } },
@@ -362,7 +362,7 @@ export const mrpRouter = createTRPCRouter({
       // Materiais sem parâmetros MRP
       const materialsWithoutParams = await ctx.prisma.material.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: "ACTIVE",
           mrpParameter: null,
         },

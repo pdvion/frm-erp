@@ -15,7 +15,7 @@ export const bankAccountsRouter = createTRPCRouter({
       const { search, includeInactive, accountType } = input || {};
 
       const where: Prisma.BankAccountWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { code: { contains: search, mode: "insensitive" as const } },
@@ -40,7 +40,7 @@ export const bankAccountsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const account = await ctx.prisma.bankAccount.findUnique({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
         include: {
           _count: { select: { transactions: true } },
         },
@@ -73,7 +73,7 @@ export const bankAccountsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // Verificar código único
       const existing = await ctx.prisma.bankAccount.findFirst({
-        where: { code: input.code, ...tenantFilter(ctx.companyId) },
+        where: { code: input.code, ...tenantFilter(ctx.companyId, false) },
       });
 
       if (existing) {
@@ -83,7 +83,7 @@ export const bankAccountsRouter = createTRPCRouter({
       // Se for default, remover default das outras
       if (input.isDefault) {
         await ctx.prisma.bankAccount.updateMany({
-          where: { ...tenantFilter(ctx.companyId), isDefault: true },
+          where: { ...tenantFilter(ctx.companyId, false), isDefault: true },
           data: { isDefault: false },
         });
       }
@@ -123,13 +123,13 @@ export const bankAccountsRouter = createTRPCRouter({
       // Se for default, remover default das outras
       if (data.isDefault) {
         await ctx.prisma.bankAccount.updateMany({
-          where: { ...tenantFilter(ctx.companyId), isDefault: true, id: { not: id } },
+          where: { ...tenantFilter(ctx.companyId, false), isDefault: true, id: { not: id } },
           data: { isDefault: false },
         });
       }
 
       const account = await ctx.prisma.bankAccount.update({
-        where: { id, ...tenantFilter(ctx.companyId) },
+        where: { id, ...tenantFilter(ctx.companyId, false) },
         data,
       });
 
@@ -140,7 +140,7 @@ export const bankAccountsRouter = createTRPCRouter({
   balance: tenantProcedure
     .query(async ({ ctx }) => {
       const accounts = await ctx.prisma.bankAccount.findMany({
-        where: { ...tenantFilter(ctx.companyId), isActive: true },
+        where: { ...tenantFilter(ctx.companyId, false), isActive: true },
         select: { id: true, code: true, name: true, currentBalance: true, accountType: true },
       });
 

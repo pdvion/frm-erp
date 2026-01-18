@@ -14,7 +14,7 @@ export const stockLocationsRouter = createTRPCRouter({
       const { search, type, includeInactive } = input || {};
 
       const where: Prisma.StockLocationWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { code: { contains: search, mode: "insensitive" as const } },
@@ -71,7 +71,7 @@ export const stockLocationsRouter = createTRPCRouter({
       // Se for default, remover default dos outros
       if (input.isDefault) {
         await ctx.prisma.stockLocation.updateMany({
-          where: { ...tenantFilter(ctx.companyId), isDefault: true },
+          where: { ...tenantFilter(ctx.companyId, false), isDefault: true },
           data: { isDefault: false },
         });
       }
@@ -104,7 +104,7 @@ export const stockLocationsRouter = createTRPCRouter({
 
       if (isDefault) {
         await ctx.prisma.stockLocation.updateMany({
-          where: { ...tenantFilter(ctx.companyId), isDefault: true },
+          where: { ...tenantFilter(ctx.companyId, false), isDefault: true },
           data: { isDefault: false },
         });
       }

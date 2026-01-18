@@ -10,7 +10,7 @@ export const hrRouter = createTRPCRouter({
     .input(z.object({ includeInactive: z.boolean().default(false) }).optional())
     .query(async ({ input, ctx }) => {
       return ctx.prisma.department.findMany({
-        where: { ...tenantFilter(ctx.companyId), ...(!input?.includeInactive && { isActive: true }) },
+        where: { ...tenantFilter(ctx.companyId, false), ...(!input?.includeInactive && { isActive: true }) },
         include: { parent: { select: { id: true, code: true, name: true } }, _count: { select: { employees: true } } },
         orderBy: { code: "asc" },
       });
@@ -35,7 +35,7 @@ export const hrRouter = createTRPCRouter({
     .input(z.object({ departmentId: z.string().optional() }).optional())
     .query(async ({ input, ctx }) => {
       return ctx.prisma.jobPosition.findMany({
-        where: { ...tenantFilter(ctx.companyId), isActive: true, ...(input?.departmentId && { departmentId: input.departmentId }) },
+        where: { ...tenantFilter(ctx.companyId, false), isActive: true, ...(input?.departmentId && { departmentId: input.departmentId }) },
         include: { department: { select: { id: true, name: true } } },
         orderBy: { name: "asc" },
       });
@@ -68,7 +68,7 @@ export const hrRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { search, status, departmentId, page = 1, limit = 20 } = input || {};
       const where: Prisma.EmployeeWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { cpf: { contains: search } }] }),
         ...(status && status !== "ALL" && { status }),
         ...(departmentId && { departmentId }),
@@ -118,7 +118,7 @@ export const hrRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const lastEmployee = await ctx.prisma.employee.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
 
@@ -195,7 +195,7 @@ export const hrRouter = createTRPCRouter({
     .input(z.object({ year: z.number().optional() }).optional())
     .query(async ({ input, ctx }) => {
       return ctx.prisma.payroll.findMany({
-        where: { ...tenantFilter(ctx.companyId), ...(input?.year && { referenceYear: input.year }) },
+        where: { ...tenantFilter(ctx.companyId, false), ...(input?.year && { referenceYear: input.year }) },
         orderBy: [{ referenceYear: "desc" }, { referenceMonth: "desc" }],
       });
     }),
@@ -218,12 +218,12 @@ export const hrRouter = createTRPCRouter({
     .input(z.object({ referenceMonth: z.number().min(1).max(12), referenceYear: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const lastPayroll = await ctx.prisma.payroll.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
 
       const employees = await ctx.prisma.employee.findMany({
-        where: { ...tenantFilter(ctx.companyId), status: "ACTIVE" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "ACTIVE" },
       });
 
       return ctx.prisma.payroll.create({
@@ -250,15 +250,15 @@ export const hrRouter = createTRPCRouter({
   // ==========================================================================
   dashboard: tenantProcedure.query(async ({ ctx }) => {
     const [totalEmployees, byStatus, byDepartment, recentHires] = await Promise.all([
-      ctx.prisma.employee.count({ where: tenantFilter(ctx.companyId) }),
-      ctx.prisma.employee.groupBy({ by: ["status"], where: tenantFilter(ctx.companyId), _count: true }),
+      ctx.prisma.employee.count({ where: tenantFilter(ctx.companyId, false) }),
+      ctx.prisma.employee.groupBy({ by: ["status"], where: tenantFilter(ctx.companyId, false), _count: true }),
       ctx.prisma.employee.groupBy({
         by: ["departmentId"],
-        where: { ...tenantFilter(ctx.companyId), status: "ACTIVE" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "ACTIVE" },
         _count: true,
       }),
       ctx.prisma.employee.findMany({
-        where: { ...tenantFilter(ctx.companyId), status: "ACTIVE" },
+        where: { ...tenantFilter(ctx.companyId, false), status: "ACTIVE" },
         orderBy: { hireDate: "desc" },
         take: 5,
         select: { id: true, name: true, hireDate: true, position: { select: { name: true } } },

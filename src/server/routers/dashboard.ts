@@ -31,7 +31,7 @@ export const dashboardRouter = createTRPCRouter({
     // Cotações pendentes
     const pendingQuotes = await prisma.quote.count({
       where: {
-        supplier: tenantFilter(ctx.companyId),
+        supplier: tenantFilter(ctx.companyId, false),
         status: { in: ["PENDING", "SENT"] },
       },
     });
@@ -39,7 +39,7 @@ export const dashboardRouter = createTRPCRouter({
     // Pedidos de compra em aberto
     const openPurchaseOrders = await prisma.purchaseOrder.count({
       where: {
-        supplier: tenantFilter(ctx.companyId),
+        supplier: tenantFilter(ctx.companyId, false),
         status: { in: ["PENDING", "APPROVED", "SENT", "PARTIAL"] },
       },
     });

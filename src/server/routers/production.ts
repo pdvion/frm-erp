@@ -26,7 +26,7 @@ export const productionRouter = createTRPCRouter({
       } = input || {};
 
       const where: Prisma.ProductionOrderWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
       };
 
       if (status && status !== "ALL") {
@@ -78,7 +78,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           product: true,
@@ -199,7 +199,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -243,7 +243,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -281,7 +281,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { materials: true },
       });
@@ -313,7 +313,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
       });
 
@@ -352,7 +352,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           product: {
@@ -558,7 +558,7 @@ export const productionRouter = createTRPCRouter({
       const order = await prisma.productionOrder.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: { materials: true },
       });
@@ -600,20 +600,20 @@ export const productionRouter = createTRPCRouter({
     const [byStatus, urgentCount, lateCount] = await Promise.all([
       prisma.productionOrder.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
         _sum: { quantity: true, producedQty: true },
       }),
       prisma.productionOrder.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { in: ["PLANNED", "RELEASED", "IN_PROGRESS"] },
           priority: 1,
         },
       }),
       prisma.productionOrder.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { in: ["PLANNED", "RELEASED", "IN_PROGRESS"] },
           dueDate: { lt: new Date() },
         },

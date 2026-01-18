@@ -17,7 +17,7 @@ export const suppliersRouter = createTRPCRouter({
       const { search, status, page = 1, limit = 20 } = input ?? {};
       
       const where = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { companyName: { contains: search, mode: "insensitive" as const } },
@@ -56,7 +56,7 @@ export const suppliersRouter = createTRPCRouter({
       return ctx.prisma.supplier.findFirst({
         where: { 
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           supplierMaterials: {

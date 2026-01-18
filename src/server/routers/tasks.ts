@@ -27,7 +27,7 @@ export const tasksRouter = createTRPCRouter({
       const skip = (page - 1) * limit;
 
       const where: Record<string, unknown> = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
       };
 
       if (search) {
@@ -100,7 +100,7 @@ export const tasksRouter = createTRPCRouter({
       const task = await prisma.task.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
         },
         include: {
           owner: { select: { id: true, name: true, email: true } },
@@ -254,20 +254,20 @@ export const tasksRouter = createTRPCRouter({
     const [byStatus, byPriority, overdue, myPending] = await Promise.all([
       prisma.task.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
       }),
       prisma.task.groupBy({
         by: ["priority"],
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { notIn: ["COMPLETED", "CANCELLED"] },
         },
         _count: true,
       }),
       prisma.task.count({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { notIn: ["COMPLETED", "CANCELLED"] },
           deadline: { lt: new Date() },
         },
@@ -275,7 +275,7 @@ export const tasksRouter = createTRPCRouter({
       ctx.tenant.userId
         ? prisma.task.count({
             where: {
-              ...tenantFilter(ctx.companyId),
+              ...tenantFilter(ctx.companyId, false),
               ownerId: ctx.tenant.userId,
               status: { notIn: ["COMPLETED", "CANCELLED"] },
             },
@@ -294,7 +294,7 @@ export const tasksRouter = createTRPCRouter({
   // Dashboard de tarefas por departamento
   departmentDashboard: tenantProcedure.query(async ({ ctx }) => {
     const departments = await prisma.department.findMany({
-      where: tenantFilter(ctx.companyId),
+      where: tenantFilter(ctx.companyId, false),
       select: {
         id: true,
         name: true,

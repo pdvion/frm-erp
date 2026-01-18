@@ -19,7 +19,7 @@ export const salesRouter = createTRPCRouter({
       const { search, status, assignedTo, page = 1, limit = 20 } = input || {};
 
       const where: Prisma.LeadWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { companyName: { contains: search, mode: "insensitive" as const } },
@@ -171,7 +171,7 @@ export const salesRouter = createTRPCRouter({
       const { search, status, customerId, page = 1, limit = 20 } = input || {};
 
       const where: Prisma.SalesQuoteWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { customer: { companyName: { contains: search, mode: "insensitive" as const } } },
@@ -242,7 +242,7 @@ export const salesRouter = createTRPCRouter({
 
       // Gerar próximo código
       const lastQuote = await ctx.prisma.salesQuote.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
       const nextCode = (lastQuote?.code || 0) + 1;
@@ -326,7 +326,7 @@ export const salesRouter = createTRPCRouter({
 
       // Gerar próximo código de pedido
       const lastOrder = await ctx.prisma.salesOrder.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
       const nextCode = (lastOrder?.code || 0) + 1;
@@ -389,7 +389,7 @@ export const salesRouter = createTRPCRouter({
       const { search, status, customerId, page = 1, limit = 20 } = input || {};
 
       const where: Prisma.SalesOrderWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { customer: { companyName: { contains: search, mode: "insensitive" as const } } },
@@ -478,14 +478,14 @@ export const salesRouter = createTRPCRouter({
       // Pipeline de leads
       const leadsByStatus = await ctx.prisma.lead.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
         _sum: { estimatedValue: true },
       });
 
       // Orçamentos pendentes
       const pendingQuotes = await ctx.prisma.salesQuote.aggregate({
-        where: { ...tenantFilter(ctx.companyId), status: { in: ["DRAFT", "SENT", "VIEWED"] } },
+        where: { ...tenantFilter(ctx.companyId, false), status: { in: ["DRAFT", "SENT", "VIEWED"] } },
         _count: true,
         _sum: { totalValue: true },
       });
@@ -493,7 +493,7 @@ export const salesRouter = createTRPCRouter({
       // Pedidos do mês
       const monthOrders = await ctx.prisma.salesOrder.aggregate({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           orderDate: { gte: startOfMonth },
           status: { not: "CANCELLED" },
         },
@@ -504,17 +504,17 @@ export const salesRouter = createTRPCRouter({
       // Pedidos por status
       const ordersByStatus = await ctx.prisma.salesOrder.groupBy({
         by: ["status"],
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         _count: true,
         _sum: { totalValue: true },
       });
 
       // Taxa de conversão (orçamentos aceitos / total)
       const totalQuotes = await ctx.prisma.salesQuote.count({
-        where: { ...tenantFilter(ctx.companyId), status: { not: "DRAFT" } },
+        where: { ...tenantFilter(ctx.companyId, false), status: { not: "DRAFT" } },
       });
       const acceptedQuotes = await ctx.prisma.salesQuote.count({
-        where: { ...tenantFilter(ctx.companyId), status: { in: ["ACCEPTED", "CONVERTED"] } },
+        where: { ...tenantFilter(ctx.companyId, false), status: { in: ["ACCEPTED", "CONVERTED"] } },
       });
 
       const conversionRate = totalQuotes > 0 ? (acceptedQuotes / totalQuotes) * 100 : 0;

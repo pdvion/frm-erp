@@ -31,7 +31,7 @@ export const receivablesRouter = createTRPCRouter({
       } = input || {};
 
       const where: Prisma.AccountsReceivableWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
       };
 
       if (status && status !== "ALL") {
@@ -96,7 +96,7 @@ export const receivablesRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const receivable = await ctx.prisma.accountsReceivable.findUnique({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
         include: {
           customer: true,
           costCenter: true,
@@ -135,7 +135,7 @@ export const receivablesRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // Gerar próximo código
       const lastReceivable = await ctx.prisma.accountsReceivable.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
         select: { code: true },
       });
@@ -179,7 +179,7 @@ export const receivablesRouter = createTRPCRouter({
 
       // Gerar próximo código
       const lastReceivable = await ctx.prisma.accountsReceivable.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
         select: { code: true },
       });
@@ -348,7 +348,7 @@ export const receivablesRouter = createTRPCRouter({
 
       const receivables = await ctx.prisma.accountsReceivable.findMany({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { in: ["PENDING", "PARTIAL"] },
         },
         select: { dueDate: true, netValue: true, paidValue: true },
@@ -382,7 +382,7 @@ export const receivablesRouter = createTRPCRouter({
 
       const monthPayments = await ctx.prisma.receivablePayment.aggregate({
         where: {
-          receivable: tenantFilter(ctx.companyId),
+          receivable: tenantFilter(ctx.companyId, false),
           paymentDate: { gte: startOfMonth, lte: endOfMonth },
         },
         _sum: { value: true },
@@ -408,7 +408,7 @@ export const receivablesRouter = createTRPCRouter({
 
       const receivables = await ctx.prisma.accountsReceivable.findMany({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           status: { in: ["PENDING", "PARTIAL"] },
         },
         select: { dueDate: true, netValue: true, paidValue: true },

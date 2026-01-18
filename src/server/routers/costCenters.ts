@@ -13,7 +13,7 @@ export const costCentersRouter = createTRPCRouter({
       const { search, includeInactive } = input || {};
 
       const where = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { code: { contains: search, mode: "insensitive" as const } },
@@ -41,7 +41,7 @@ export const costCentersRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const costCenter = await ctx.prisma.costCenter.findUnique({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
         include: {
           parent: true,
           children: true,
@@ -67,7 +67,7 @@ export const costCentersRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // Verificar código único
       const existing = await ctx.prisma.costCenter.findFirst({
-        where: { code: input.code, ...tenantFilter(ctx.companyId) },
+        where: { code: input.code, ...tenantFilter(ctx.companyId, false) },
       });
 
       if (existing) {
@@ -99,7 +99,7 @@ export const costCentersRouter = createTRPCRouter({
       const { id, ...data } = input;
 
       const costCenter = await ctx.prisma.costCenter.update({
-        where: { id, ...tenantFilter(ctx.companyId) },
+        where: { id, ...tenantFilter(ctx.companyId, false) },
         data,
       });
 
@@ -123,7 +123,7 @@ export const costCentersRouter = createTRPCRouter({
       }
 
       await ctx.prisma.costCenter.delete({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
       });
 
       return { success: true };

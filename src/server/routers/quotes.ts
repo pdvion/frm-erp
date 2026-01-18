@@ -20,7 +20,7 @@ export const quotesRouter = createTRPCRouter({
       const { supplierId, status, search, startDate, endDate, page = 1, limit = 20 } = input ?? {};
 
       const where = {
-        supplier: { ...tenantFilter(ctx.companyId) },
+        supplier: { ...tenantFilter(ctx.companyId, false) },
         ...(supplierId && { supplierId }),
         ...(status && { status }),
         ...(search && {
@@ -90,7 +90,7 @@ export const quotesRouter = createTRPCRouter({
       return ctx.prisma.quote.findFirst({
         where: {
           id: input.id,
-          supplier: { ...tenantFilter(ctx.companyId) },
+          supplier: { ...tenantFilter(ctx.companyId, false) },
         },
         include: {
           supplier: true,
@@ -445,16 +445,16 @@ export const quotesRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const [total, byStatus, recentQuotes] = await Promise.all([
         ctx.prisma.quote.count({
-          where: { supplier: { ...tenantFilter(ctx.companyId) } },
+          where: { supplier: { ...tenantFilter(ctx.companyId, false) } },
         }),
         ctx.prisma.quote.groupBy({
           by: ["status"],
-          where: { supplier: { ...tenantFilter(ctx.companyId) } },
+          where: { supplier: { ...tenantFilter(ctx.companyId, false) } },
           _count: true,
           _sum: { totalValue: true },
         }),
         ctx.prisma.quote.findMany({
-          where: { supplier: { ...tenantFilter(ctx.companyId) } },
+          where: { supplier: { ...tenantFilter(ctx.companyId, false) } },
           include: { supplier: true },
           orderBy: { createdAt: "desc" },
           take: 5,
@@ -492,7 +492,7 @@ export const quotesRouter = createTRPCRouter({
         where: {
           ...materialFilter,
           quote: {
-            supplier: { ...tenantFilter(ctx.companyId) },
+            supplier: { ...tenantFilter(ctx.companyId, false) },
             status: { in: ["RECEIVED", "APPROVED", "PENDING"] },
           },
         },
@@ -591,7 +591,7 @@ export const quotesRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const materials = await ctx.prisma.material.findMany({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           quoteItems: {
             some: {
               quote: {

@@ -14,7 +14,7 @@ export const oeeRouter = createTRPCRouter({
       const { search, includeInactive } = input || {};
 
       const where: Prisma.WorkCenterWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { code: { contains: search, mode: "insensitive" as const } },
@@ -75,7 +75,7 @@ export const oeeRouter = createTRPCRouter({
       const { id, ...data } = input;
 
       const workCenter = await ctx.prisma.workCenter.update({
-        where: { id, ...tenantFilter(ctx.companyId) },
+        where: { id, ...tenantFilter(ctx.companyId, false) },
         data,
       });
 
@@ -273,7 +273,7 @@ export const oeeRouter = createTRPCRouter({
 
       // Buscar centros de trabalho ativos
       const workCenters = await ctx.prisma.workCenter.findMany({
-        where: { ...tenantFilter(ctx.companyId), isActive: true },
+        where: { ...tenantFilter(ctx.companyId, false), isActive: true },
       });
 
       // Calcular OEE por centro de trabalho
@@ -332,7 +332,7 @@ export const oeeRouter = createTRPCRouter({
       const stopsByType = await ctx.prisma.machineStop.groupBy({
         by: ["stopType"],
         where: {
-          workCenter: tenantFilter(ctx.companyId),
+          workCenter: tenantFilter(ctx.companyId, false),
           startTime: { gte: startDate, lte: endDate },
         },
         _count: true,
@@ -342,7 +342,7 @@ export const oeeRouter = createTRPCRouter({
       // Produção do período
       const productionSummary = await ctx.prisma.productionLog.aggregate({
         where: {
-          workCenter: tenantFilter(ctx.companyId),
+          workCenter: tenantFilter(ctx.companyId, false),
           shiftDate: { gte: startDate, lte: endDate },
         },
         _sum: {
@@ -385,7 +385,7 @@ export const oeeRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const targets = await ctx.prisma.oeeTarget.findFirst({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           workCenterId: input.workCenterId || null,
           year: input.year,
           month: input.month || null,
@@ -414,7 +414,7 @@ export const oeeRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const existing = await ctx.prisma.oeeTarget.findFirst({
         where: {
-          ...tenantFilter(ctx.companyId),
+          ...tenantFilter(ctx.companyId, false),
           workCenterId: input.workCenterId || null,
           year: input.year,
           month: input.month || null,

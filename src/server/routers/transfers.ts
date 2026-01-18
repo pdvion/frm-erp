@@ -13,7 +13,7 @@ export const transfersRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { status, page = 1, limit = 20 } = input || {};
       const where: Prisma.StockTransferWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(status && status !== "ALL" && { status }),
       };
 
@@ -67,7 +67,7 @@ export const transfersRouter = createTRPCRouter({
       }
 
       const lastTransfer = await ctx.prisma.stockTransfer.findFirst({
-        where: tenantFilter(ctx.companyId),
+        where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
 

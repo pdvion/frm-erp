@@ -16,7 +16,7 @@ export const customersRouter = createTRPCRouter({
       const { search, status, page = 1, limit = 20 } = input || {};
 
       const where: Prisma.CustomerWhereInput = {
-        ...tenantFilter(ctx.companyId),
+        ...tenantFilter(ctx.companyId, false),
         ...(search && {
           OR: [
             { code: { contains: search, mode: "insensitive" as const } },
@@ -50,7 +50,7 @@ export const customersRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const customer = await ctx.prisma.customer.findUnique({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
         include: {
           receivables: {
             orderBy: { dueDate: "desc" },
@@ -96,7 +96,7 @@ export const customersRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // Verificar código único
       const existing = await ctx.prisma.customer.findFirst({
-        where: { code: input.code, ...tenantFilter(ctx.companyId) },
+        where: { code: input.code, ...tenantFilter(ctx.companyId, false) },
       });
 
       if (existing) {
@@ -147,7 +147,7 @@ export const customersRouter = createTRPCRouter({
       const { id, ...data } = input;
 
       const customer = await ctx.prisma.customer.update({
-        where: { id, ...tenantFilter(ctx.companyId) },
+        where: { id, ...tenantFilter(ctx.companyId, false) },
         data,
       });
 
