@@ -17,6 +17,27 @@ function LoginForm() {
 
   const returnUrl = searchParams.get("returnUrl") || "/dashboard";
 
+  // Verificar erros no hash da URL (vindo de links de convite/reset expirados)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      const errorCode = params.get("error_code");
+      const errorDescription = params.get("error_description");
+      
+      if (errorCode === "otp_expired") {
+        setError("O link expirou ou já foi utilizado. Por favor, solicite um novo.");
+      } else if (errorCode === "access_denied") {
+        setError(errorDescription?.replace(/\+/g, " ") || "Acesso negado. Tente novamente.");
+      } else if (errorCode) {
+        setError(errorDescription?.replace(/\+/g, " ") || "Erro de autenticação.");
+      }
+      
+      // Limpar o hash da URL
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
   // Redirecionar se já autenticado
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
