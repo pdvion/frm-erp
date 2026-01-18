@@ -123,6 +123,7 @@ model Company {
   jobPositions     JobPosition[]
   employees        Employee[]
   payrolls         Payroll[]
+  materialReceivings MaterialReceiving[]
 
   @@map("companies")
 }
@@ -360,6 +361,7 @@ model Material {
   locationInventory   LocationInventory[]
   stockTransferItems  StockTransferItem[]
   inventoryCounts     InventoryCount[]
+  receivingItems      MaterialReceivingItem[]
 
   @@map("materials")
 }
@@ -406,6 +408,7 @@ model Supplier {
   purchaseOrders    PurchaseOrder[]
   receivedInvoices  ReceivedInvoice[]
   accountsPayable   AccountsPayable[]
+  materialReceivings MaterialReceiving[]
 
   @@map("suppliers")
 }
@@ -565,6 +568,7 @@ model PurchaseOrder {
 
   items                 PurchaseOrderItem[]
   receivedInvoices      ReceivedInvoice[]
+  materialReceivings    MaterialReceiving[]
 
   @@index([supplierId])
   @@index([companyId])
@@ -590,6 +594,7 @@ model PurchaseOrderItem {
   updatedAt       DateTime      @updatedAt
   
   receivedInvoiceItems ReceivedInvoiceItem[]
+  materialReceivingItems MaterialReceivingItem[]
 
   @@index([purchaseOrderId])
   @@index([materialId])
@@ -727,6 +732,7 @@ model ReceivedInvoice {
   
   // Títulos a pagar gerados
   accountsPayable AccountsPayable[]
+  materialReceivings MaterialReceiving[]
   
   @@index([status])
   @@index([companyId])
@@ -1991,6 +1997,8 @@ model StockLocation {
   transfersTo          StockTransfer[]      @relation("TransferTo")
   physicalInventories  PhysicalInventory[]
   inventoryCounts      InventoryCount[]
+  materialReceivings   MaterialReceiving[]
+  receivingItems       MaterialReceivingItem[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2452,4 +2460,162 @@ model PayrollEvent {
   
   @@index([payrollItemId])
   @@map("payroll_events")
+}
+
+// =============================================================================
+// MÓDULO CP14 - ENTRADA DE MATERIAIS / NFe
+// =============================================================================
+
+enum ReceivingStatus {
+  PENDING       // Aguardando conferência
+  IN_PROGRESS   // Em conferência
+  COMPLETED     // Conferido e entrada realizada
+  REJECTED      // Rejeitado
+  PARTIAL       // Entrada parcial
+  CANCELLED     // Cancelado
+}
+
+enum ReceivingItemStatus {
+  PENDING   // Aguardando
+  APPROVED  // Aprovado
+  REJECTED  // Rejeitado
+  PARTIAL   // Parcial
+}
+
+// =============================================================================
+// RECEBIMENTOS (CABEÇALHO)
+// =============================================================================
+model MaterialReceiving {
+  id               String          @id @default(uuid()) @db.Uuid
+  code             Int
+  companyId        String?         @db.Uuid
+  company          Company?        @relation(fields: [companyId], references: [id])
+  supplierId       String          @db.Uuid
+  supplier         Supplier        @relation(fields: [supplierId], references: [id])
+  purchaseOrderId  String?         @db.Uuid
+  purchaseOrder    PurchaseOrder?  @relation(fields: [purchaseOrderId], references: [id])
+  invoiceId        String?         @db.Uuid
+  invoice          ReceivedInvoice? @relation(fields: [invoiceId], references: [id])
+  status           ReceivingStatus @default(PENDING)
+  receivingDate    DateTime        @default(now())
+  expectedDate     DateTime?
+  nfeNumber        String?
+  nfeSeries        String?
+  nfeKey           String?         @unique
+  nfeXml           String?
+  nfeIssueDate     DateTime?
+  totalValue       Float           @default(0)
+  freightValue     Float           @default(0)
+  insuranceValue   Float           @default(0)
+  discountValue    Float           @default(0)
+  otherExpenses    Float           @default(0)
+  locationId       String?         @db.Uuid
+  location         StockLocation?  @relation(fields: [locationId], references: [id])
+  notes            String?
+  internalNotes    String?
+  conferredBy      String?         @db.Uuid
+  conferredAt      DateTime?
+  approvedBy       String?         @db.Uuid
+  approvedAt       DateTime?
+  rejectedBy       String?         @db.Uuid
+  rejectedAt       DateTime?
+  rejectionReason  String?
+  createdBy        String?         @db.Uuid
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  
+  items MaterialReceivingItem[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([supplierId])
+  @@index([status])
+  @@index([receivingDate])
+  @@map("material_receivings")
+}
+
+// =============================================================================
+// ITENS DO RECEBIMENTO
+// =============================================================================
+model MaterialReceivingItem {
+  id                  String              @id @default(uuid()) @db.Uuid
+  receivingId         String              @db.Uuid
+  receiving           MaterialReceiving   @relation(fields: [receivingId], references: [id], onDelete: Cascade)
+  materialId          String              @db.Uuid
+  material            Material            @relation(fields: [materialId], references: [id])
+  purchaseOrderItemId String?             @db.Uuid
+  purchaseOrderItem   PurchaseOrderItem?  @relation(fields: [purchaseOrderItemId], references: [id])
+  nfeItemNumber       Int?
+  description         String?
+  unit                String              @default("UN")
+  nfeQuantity         Float
+  receivedQuantity    Float               @default(0)
+  approvedQuantity    Float               @default(0)
+  rejectedQuantity    Float               @default(0)
+  unitPrice           Float
+  totalPrice          Float
+  icmsBase            Float               @default(0)
+  icmsValue           Float               @default(0)
+  ipiBase             Float               @default(0)
+  ipiValue            Float               @default(0)
+  status              ReceivingItemStatus @default(PENDING)
+  rejectionReason     String?
+  batchNumber         String?
+  expirationDate      DateTime?
+  certificateNumber   String?
+  qualityStatus       String?
+  qualityNotes        String?
+  locationId          String?             @db.Uuid
+  location            StockLocation?      @relation(fields: [locationId], references: [id])
+  conferredBy         String?             @db.Uuid
+  conferredAt         DateTime?
+  notes               String?
+  createdAt           DateTime            @default(now())
+  
+  divergences  ReceivingDivergence[]
+  certificates QualityCertificate[]
+  
+  @@index([receivingId])
+  @@index([materialId])
+  @@index([status])
+  @@map("material_receiving_items")
+}
+
+// =============================================================================
+// DIVERGÊNCIAS DE RECEBIMENTO
+// =============================================================================
+model ReceivingDivergence {
+  id              String               @id @default(uuid()) @db.Uuid
+  receivingItemId String               @db.Uuid
+  receivingItem   MaterialReceivingItem @relation(fields: [receivingItemId], references: [id], onDelete: Cascade)
+  type            String
+  expectedValue   String?
+  receivedValue   String?
+  description     String
+  resolution      String?
+  resolvedBy      String?              @db.Uuid
+  resolvedAt      DateTime?
+  createdAt       DateTime             @default(now())
+  
+  @@index([receivingItemId])
+  @@map("receiving_divergences")
+}
+
+// =============================================================================
+// CERTIFICADOS DE QUALIDADE
+// =============================================================================
+model QualityCertificate {
+  id              String               @id @default(uuid()) @db.Uuid
+  receivingItemId String               @db.Uuid
+  receivingItem   MaterialReceivingItem @relation(fields: [receivingItemId], references: [id], onDelete: Cascade)
+  certificateNumber String
+  issueDate       DateTime?
+  expirationDate  DateTime?
+  issuer          String?
+  fileUrl         String?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  
+  @@index([receivingItemId])
+  @@map("quality_certificates")
 }
