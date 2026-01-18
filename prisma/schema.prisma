@@ -105,6 +105,11 @@ model Company {
   accountsPayable AccountsPayable[]
   materialRequisitions MaterialRequisition[]
   productionOrders ProductionOrder[]
+  costCenters      CostCenter[]
+  bankAccounts     BankAccount[]
+  customers        Customer[]
+  accountsReceivable AccountsReceivable[]
+  approvalThresholds ApprovalThreshold[]
 
   @@map("companies")
 }
@@ -129,6 +134,8 @@ model User {
   groupMemberships   UserGroupMember[]
   addedToGroups      UserGroupMember[] @relation("AddedByUser")
   settingsUpdated    SystemSetting[]
+  payableApprovals   PayableApproval[]
+  approverThresholds ApprovalThresholdApprover[]
 
   @@map("users")
 }
@@ -798,6 +805,10 @@ model AccountsPayable {
   
   // Pagamentos
   payments        PayablePayment[]
+  approvals       PayableApproval[]
+  attachments     PayableAttachment[]
+  costAllocations PayableCostAllocation[]
+  bankTransactions BankTransaction[]
   
   @@unique([companyId, code])
   @@index([supplierId])
@@ -809,23 +820,26 @@ model AccountsPayable {
 }
 
 model PayablePayment {
-  id              String         @id @default(uuid())
-  payableId       String
-  payable         AccountsPayable @relation(fields: [payableId], references: [id])
+  id                String          @id @default(uuid()) @db.Uuid
+  payableId         String          @db.Uuid
+  payable           AccountsPayable @relation(fields: [payableId], references: [id])
   
-  paymentDate     DateTime       // data do pagamento
-  value           Float          // valor pago
-  discountValue   Float          @default(0) // desconto obtido
-  interestValue   Float          @default(0) // juros pagos
-  fineValue       Float          @default(0) // multa paga
+  paymentDate       DateTime        // data do pagamento
+  value             Float           // valor pago
+  discountValue     Float           @default(0) // desconto obtido
+  interestValue     Float           @default(0) // juros pagos
+  fineValue         Float           @default(0) // multa paga
   
-  paymentMethod   String?        // forma de pagamento
-  bankAccountId   String?        // conta bancária
+  paymentMethod     String?         // forma de pagamento
+  bankAccountId     String?         @db.Uuid
+  bankAccount       BankAccount?    @relation("PaymentBankAccount", fields: [bankAccountId], references: [id])
+  bankTransactionId String?         @db.Uuid
+  bankTransaction   BankTransaction? @relation(fields: [bankTransactionId], references: [id])
   
-  notes           String?
+  notes             String?
   
-  createdBy       String?
-  createdAt       DateTime       @default(now())
+  createdBy         String?         @db.Uuid
+  createdAt         DateTime        @default(now())
   
   @@index([payableId])
   @@index([paymentDate])
@@ -1044,4 +1058,365 @@ model ProductionOrderOperation {
   
   @@index([orderId])
   @@map("production_order_operations")
+}
+
+// =============================================================================
+// MÓDULO FINANCEIRO EXPANDIDO
+// =============================================================================
+
+enum BankAccountType {
+  CHECKING    // Conta Corrente
+  SAVINGS     // Poupança
+  INVESTMENT  // Investimento
+  CASH        // Caixa
+}
+
+enum ReceivableStatus {
+  PENDING     // Pendente
+  PARTIAL     // Parcialmente pago
+  PAID        // Pago
+  OVERDUE     // Vencido
+  CANCELLED   // Cancelado
+  WRITTEN_OFF // Baixado como prejuízo
+}
+
+enum ReceivableType {
+  INVOICE     // Nota Fiscal
+  SERVICE     // Serviço
+  CONTRACT    // Contrato
+  OTHER       // Outros
+}
+
+enum ApprovalStatus {
+  PENDING     // Aguardando
+  APPROVED    // Aprovado
+  REJECTED    // Rejeitado
+  CANCELLED   // Cancelado
+}
+
+enum BankTransactionType {
+  CREDIT        // Crédito
+  DEBIT         // Débito
+  TRANSFER_IN   // Transferência entrada
+  TRANSFER_OUT  // Transferência saída
+  FEE           // Taxa
+  INTEREST      // Juros
+  ADJUSTMENT    // Ajuste
+}
+
+// =============================================================================
+// CENTRO DE CUSTO
+// =============================================================================
+model CostCenter {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String
+  name        String
+  description String?
+  parentId    String?   @db.Uuid
+  parent      CostCenter?  @relation("CostCenterHierarchy", fields: [parentId], references: [id])
+  children    CostCenter[] @relation("CostCenterHierarchy")
+  companyId   String?   @db.Uuid
+  company     Company?  @relation(fields: [companyId], references: [id])
+  isActive    Boolean   @default(true)
+  budget      Float?    @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  payableAllocations PayableCostAllocation[]
+  receivables        AccountsReceivable[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([parentId])
+  @@map("cost_centers")
+}
+
+// =============================================================================
+// CONTAS BANCÁRIAS
+// =============================================================================
+model BankAccount {
+  id              String          @id @default(uuid()) @db.Uuid
+  code            String
+  name            String
+  bankCode        String?
+  bankName        String?
+  agency          String?
+  agencyDigit     String?
+  accountNumber   String?
+  accountDigit    String?
+  accountType     BankAccountType @default(CHECKING)
+  companyId       String?         @db.Uuid
+  company         Company?        @relation(fields: [companyId], references: [id])
+  initialBalance  Float           @default(0)
+  currentBalance  Float           @default(0)
+  creditLimit     Float?          @default(0)
+  isActive        Boolean         @default(true)
+  isDefault       Boolean         @default(false)
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  transactions        BankTransaction[]
+  payablePayments     PayablePayment[]   @relation("PaymentBankAccount")
+  receivablePayments  ReceivablePayment[]
+  receivables         AccountsReceivable[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@map("bank_accounts")
+}
+
+// =============================================================================
+// TRANSAÇÕES BANCÁRIAS
+// =============================================================================
+model BankTransaction {
+  id                  String              @id @default(uuid()) @db.Uuid
+  bankAccountId       String              @db.Uuid
+  bankAccount         BankAccount         @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  transactionDate     DateTime
+  type                BankTransactionType
+  description         String
+  value               Float
+  balanceAfter        Float
+  documentNumber      String?
+  payableId           String?             @db.Uuid
+  payable             AccountsPayable?    @relation(fields: [payableId], references: [id])
+  receivableId        String?             @db.Uuid
+  receivable          AccountsReceivable? @relation(fields: [receivableId], references: [id])
+  transferToAccountId String?             @db.Uuid
+  reconciled          Boolean             @default(false)
+  reconciledAt        DateTime?
+  reconciledBy        String?             @db.Uuid
+  externalId          String?
+  notes               String?
+  createdBy           String?             @db.Uuid
+  createdAt           DateTime            @default(now())
+  
+  payablePayments     PayablePayment[]
+  receivablePayments  ReceivablePayment[]
+  
+  @@index([bankAccountId])
+  @@index([transactionDate])
+  @@index([payableId])
+  @@index([receivableId])
+  @@index([reconciled])
+  @@map("bank_transactions")
+}
+
+// =============================================================================
+// CLIENTES
+// =============================================================================
+model Customer {
+  id                    String    @id @default(uuid()) @db.Uuid
+  code                  String
+  companyId             String?   @db.Uuid
+  company               Company?  @relation(fields: [companyId], references: [id])
+  type                  String    @default("COMPANY")
+  companyName           String
+  tradeName             String?
+  cnpj                  String?
+  cpf                   String?
+  stateRegistration     String?
+  municipalRegistration String?
+  email                 String?
+  phone                 String?
+  mobile                String?
+  website               String?
+  contactName           String?
+  addressStreet         String?
+  addressNumber         String?
+  addressComplement     String?
+  addressNeighborhood   String?
+  addressCity           String?
+  addressState          String?
+  addressZipCode        String?
+  creditLimit           Float?    @default(0)
+  paymentTermDays       Int?      @default(30)
+  status                String    @default("ACTIVE")
+  notes                 String?
+  isShared              Boolean   @default(false)
+  createdBy             String?   @db.Uuid
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  receivables AccountsReceivable[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([cnpj])
+  @@index([status])
+  @@map("customers")
+}
+
+// =============================================================================
+// CONTAS A RECEBER
+// =============================================================================
+model AccountsReceivable {
+  id                String           @id @default(uuid()) @db.Uuid
+  code              Int
+  companyId         String?          @db.Uuid
+  company           Company?         @relation(fields: [companyId], references: [id])
+  customerId        String           @db.Uuid
+  customer          Customer         @relation(fields: [customerId], references: [id])
+  documentType      ReceivableType   @default(INVOICE)
+  documentNumber    String?
+  documentId        String?          @db.Uuid
+  description       String
+  dueDate           DateTime
+  issueDate         DateTime         @default(now())
+  originalValue     Float
+  discountValue     Float            @default(0)
+  interestValue     Float            @default(0)
+  fineValue         Float            @default(0)
+  paidValue         Float            @default(0)
+  netValue          Float
+  status            ReceivableStatus @default(PENDING)
+  paidAt            DateTime?
+  installmentNumber Int              @default(1)
+  totalInstallments Int              @default(1)
+  categoryId        String?          @db.Uuid
+  costCenterId      String?          @db.Uuid
+  costCenter        CostCenter?      @relation(fields: [costCenterId], references: [id])
+  bankAccountId     String?          @db.Uuid
+  bankAccount       BankAccount?     @relation(fields: [bankAccountId], references: [id])
+  boletoNumber      String?
+  boletoBarcode     String?
+  boletoUrl         String?
+  pixCode           String?
+  notes             String?
+  createdBy         String?          @db.Uuid
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  payments          ReceivablePayment[]
+  bankTransactions  BankTransaction[]
+  
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("accounts_receivable")
+}
+
+// =============================================================================
+// PAGAMENTOS DE CONTAS A RECEBER
+// =============================================================================
+model ReceivablePayment {
+  id                String             @id @default(uuid()) @db.Uuid
+  receivableId      String             @db.Uuid
+  receivable        AccountsReceivable @relation(fields: [receivableId], references: [id], onDelete: Cascade)
+  paymentDate       DateTime
+  value             Float
+  discountValue     Float              @default(0)
+  interestValue     Float              @default(0)
+  fineValue         Float              @default(0)
+  paymentMethod     String?
+  bankAccountId     String?            @db.Uuid
+  bankAccount       BankAccount?       @relation(fields: [bankAccountId], references: [id])
+  bankTransactionId String?            @db.Uuid
+  bankTransaction   BankTransaction?   @relation(fields: [bankTransactionId], references: [id])
+  notes             String?
+  createdBy         String?            @db.Uuid
+  createdAt         DateTime           @default(now())
+  
+  @@index([receivableId])
+  @@index([paymentDate])
+  @@map("receivable_payments")
+}
+
+// =============================================================================
+// APROVAÇÕES DE PAGAMENTO
+// =============================================================================
+model PayableApproval {
+  id          String          @id @default(uuid()) @db.Uuid
+  payableId   String          @db.Uuid
+  payable     AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  approverId  String          @db.Uuid
+  approver    User            @relation(fields: [approverId], references: [id])
+  level       Int             @default(1)
+  status      ApprovalStatus  @default(PENDING)
+  approvedAt  DateTime?
+  comments    String?
+  createdAt   DateTime        @default(now())
+  
+  @@index([payableId])
+  @@index([approverId])
+  @@index([status])
+  @@map("payable_approvals")
+}
+
+// =============================================================================
+// ANEXOS DE CONTAS A PAGAR
+// =============================================================================
+model PayableAttachment {
+  id          String          @id @default(uuid()) @db.Uuid
+  payableId   String          @db.Uuid
+  payable     AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileType    String
+  fileSize    Int
+  fileUrl     String
+  description String?
+  uploadedBy  String?         @db.Uuid
+  createdAt   DateTime        @default(now())
+  
+  @@index([payableId])
+  @@map("payable_attachments")
+}
+
+// =============================================================================
+// RATEIO DE CONTAS A PAGAR
+// =============================================================================
+model PayableCostAllocation {
+  id           String          @id @default(uuid()) @db.Uuid
+  payableId    String          @db.Uuid
+  payable      AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  costCenterId String          @db.Uuid
+  costCenter   CostCenter      @relation(fields: [costCenterId], references: [id])
+  percentage   Float
+  value        Float
+  createdAt    DateTime        @default(now())
+  
+  @@index([payableId])
+  @@index([costCenterId])
+  @@map("payable_cost_allocations")
+}
+
+// =============================================================================
+// ALÇADAS DE APROVAÇÃO
+// =============================================================================
+model ApprovalThreshold {
+  id                String    @id @default(uuid()) @db.Uuid
+  companyId         String?   @db.Uuid
+  company           Company?  @relation(fields: [companyId], references: [id])
+  name              String
+  minValue          Float     @default(0)
+  maxValue          Float?
+  requiredApprovers Int       @default(1)
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  approvers ApprovalThresholdApprover[]
+  
+  @@index([companyId])
+  @@map("approval_thresholds")
+}
+
+// =============================================================================
+// APROVADORES POR ALÇADA
+// =============================================================================
+model ApprovalThresholdApprover {
+  id          String            @id @default(uuid()) @db.Uuid
+  thresholdId String            @db.Uuid
+  threshold   ApprovalThreshold @relation(fields: [thresholdId], references: [id], onDelete: Cascade)
+  userId      String            @db.Uuid
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level       Int               @default(1)
+  createdAt   DateTime          @default(now())
+  
+  @@index([thresholdId])
+  @@index([userId])
+  @@map("approval_threshold_approvers")
 }
