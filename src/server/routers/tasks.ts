@@ -11,6 +11,7 @@ export const tasksRouter = createTRPCRouter({
   list: tenantProcedure
     .input(
       z.object({
+        search: z.string().optional(),
         status: z.enum(["PENDING", "ACCEPTED", "IN_PROGRESS", "ON_HOLD", "COMPLETED", "CANCELLED", "ALL"]).optional(),
         priority: z.enum(["URGENT", "HIGH", "NORMAL", "LOW"]).optional(),
         ownerId: z.string().optional(),
@@ -22,12 +23,19 @@ export const tasksRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const { status, priority, ownerId, targetType, myTasks, availableTasks, page, limit } = input;
+      const { search, status, priority, ownerId, targetType, myTasks, availableTasks, page, limit } = input;
       const skip = (page - 1) * limit;
 
       const where: Record<string, unknown> = {
         ...tenantFilter(ctx.companyId),
       };
+
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ];
+      }
 
       if (status && status !== "ALL") {
         where.status = status;
