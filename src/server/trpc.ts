@@ -62,10 +62,63 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
       };
     }
     
-    // Buscar usuário no banco local pelo email do Supabase
-    const localUser = await prisma.user.findUnique({
+    // Buscar ou criar usuário no banco local pelo email do Supabase
+    let localUser = await prisma.user.findUnique({
       where: { email: supabaseUser.email },
     });
+    
+    // Auto-provisioning: criar usuário se não existir
+    if (!localUser) {
+      // Buscar empresa padrão para novos usuários
+      const defaultCompany = await prisma.company.findFirst({
+        orderBy: { code: "asc" },
+      });
+      
+      if (defaultCompany) {
+        // Buscar próximo código de usuário
+        const lastUser = await prisma.user.findFirst({
+          orderBy: { code: "desc" },
+          select: { code: true },
+        });
+        const nextCode = (lastUser?.code ?? 0) + 1;
+        
+        // Criar usuário
+        localUser = await prisma.user.create({
+          data: {
+            code: nextCode,
+            email: supabaseUser.email,
+            name: supabaseUser.user_metadata?.name || supabaseUser.email.split("@")[0],
+            password: "supabase-auth",
+            isActive: true,
+            companyId: defaultCompany.id,
+          },
+        });
+        
+        // Vincular à empresa padrão
+        await prisma.userCompany.create({
+          data: {
+            userId: localUser.id,
+            companyId: defaultCompany.id,
+            isDefault: true,
+            isActive: true,
+          },
+        });
+        
+        // Criar permissões básicas (FULL para todos os módulos)
+        const modules: SystemModule[] = ["MATERIALS", "SUPPLIERS", "QUOTES", "RECEIVING", "MATERIAL_OUT", "INVENTORY", "REPORTS", "SETTINGS"];
+        await prisma.userCompanyPermission.createMany({
+          data: modules.map((module) => ({
+            userId: localUser!.id,
+            companyId: defaultCompany.id,
+            module,
+            permission: "FULL" as const,
+            canShare: true,
+            canClone: true,
+          })),
+        });
+      }
+    }
+    
     const userId = localUser?.id ?? null;
     
     // Fallback para header (desenvolvimento) ou null
