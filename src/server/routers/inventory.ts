@@ -230,4 +230,100 @@ export const inventoryRouter = createTRPCRouter({
         },
       };
     }),
+
+  // Verificar itens com estoque abaixo do mínimo
+  checkLowStock: tenantProcedure.query(async ({ ctx }) => {
+    // Buscar materiais com estoque abaixo do mínimo
+    const lowStockItems = await ctx.prisma.inventory.findMany({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+      },
+      include: {
+        material: {
+          include: { category: true },
+        },
+      },
+    });
+
+    // Filtrar apenas os que estão abaixo do mínimo
+    const alerts = lowStockItems
+      .filter((inv) => inv.material.minQuantity && inv.quantity < inv.material.minQuantity)
+      .map((inv) => ({
+        inventoryId: inv.id,
+        materialId: inv.material.id,
+        materialCode: inv.material.code,
+        materialDescription: inv.material.description,
+        unit: inv.material.unit,
+        category: inv.material.category?.name || "Sem categoria",
+        currentStock: inv.quantity,
+        minStock: inv.material.minQuantity || 0,
+        deficit: (inv.material.minQuantity || 0) - inv.quantity,
+        percentOfMin: inv.material.minQuantity 
+          ? Math.round((inv.quantity / inv.material.minQuantity) * 100) 
+          : 0,
+        severity: inv.quantity <= 0 
+          ? "critical" as const
+          : inv.quantity < (inv.material.minQuantity || 0) * 0.5 
+            ? "high" as const 
+            : "medium" as const,
+      }))
+      .sort((a, b) => {
+        // Ordenar por severidade e depois por déficit
+        const severityOrder = { critical: 0, high: 1, medium: 2 };
+        if (severityOrder[a.severity] !== severityOrder[b.severity]) {
+          return severityOrder[a.severity] - severityOrder[b.severity];
+        }
+        return b.deficit - a.deficit;
+      });
+
+    return {
+      totalAlerts: alerts.length,
+      critical: alerts.filter((a) => a.severity === "critical").length,
+      high: alerts.filter((a) => a.severity === "high").length,
+      medium: alerts.filter((a) => a.severity === "medium").length,
+      alerts,
+    };
+  }),
+
+  // Gerar notificações para estoque baixo
+  generateLowStockNotifications: tenantProcedure.mutation(async ({ ctx }) => {
+    // Buscar itens com estoque baixo
+    const lowStockItems = await ctx.prisma.inventory.findMany({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+      },
+      include: {
+        material: true,
+      },
+    });
+
+    const itemsToNotify = lowStockItems.filter(
+      (inv) => inv.material.minQuantity && inv.quantity < inv.material.minQuantity
+    );
+
+    if (itemsToNotify.length === 0) {
+      return { created: 0, message: "Nenhum item com estoque baixo" };
+    }
+
+    // Criar notificação consolidada
+    const notification = await ctx.prisma.notification.create({
+      data: {
+        userId: ctx.tenant.userId,
+        companyId: ctx.companyId,
+        type: "LOW_STOCK",
+        category: "INVENTORY",
+        title: `${itemsToNotify.length} material(is) com estoque baixo`,
+        message: itemsToNotify.length <= 3
+          ? itemsToNotify.map((i) => i.material.description).join(", ")
+          : `${itemsToNotify.slice(0, 3).map((i) => i.material.description).join(", ")} e mais ${itemsToNotify.length - 3}`,
+        link: "/inventory?belowMinimum=true",
+      },
+    });
+
+    return {
+      created: 1,
+      notificationId: notification.id,
+      itemCount: itemsToNotify.length,
+    };
+  }),
 });
