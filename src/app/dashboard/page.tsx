@@ -64,6 +64,13 @@ const modules = [
     color: "bg-amber-500",
   },
   {
+    title: "Produção",
+    description: "Ordens de produção e apontamentos",
+    href: "/production",
+    icon: Settings,
+    color: "bg-purple-500",
+  },
+  {
     title: "Relatórios",
     description: "Relatórios e dashboards",
     href: "/reports",

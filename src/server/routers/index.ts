@@ -14,6 +14,7 @@ import { storageRouter } from "./storage";
 import { nfeRouter } from "./nfe";
 import { payablesRouter } from "./payables";
 import { requisitionsRouter } from "./requisitions";
+import { productionRouter } from "./production";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -31,6 +32,7 @@ export const appRouter = createTRPCRouter({
   nfe: nfeRouter,
   payables: payablesRouter,
   requisitions: requisitionsRouter,
+  production: productionRouter,
 });
 
 export type AppRouter = typeof appRouter;

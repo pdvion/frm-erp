@@ -104,6 +104,7 @@ model Company {
   systemSettings SystemSetting[]
   accountsPayable AccountsPayable[]
   materialRequisitions MaterialRequisition[]
+  productionOrders ProductionOrder[]
 
   @@map("companies")
 }
@@ -321,6 +322,8 @@ model Material {
   purchaseOrderItems  PurchaseOrderItem[]
   receivedInvoiceItems ReceivedInvoiceItem[]
   requisitionItems    MaterialRequisitionItem[]
+  productionOrdersAsProduct ProductionOrder[] @relation("ProductionProduct")
+  productionOrderMaterials ProductionOrderMaterial[] @relation("ProductionMaterial")
 
   @@map("materials")
 }
@@ -923,4 +926,122 @@ model MaterialRequisitionItem {
   @@index([requisitionId])
   @@index([materialId])
   @@map("material_requisition_items")
+}
+
+// =============================================================================
+// MÓDULO OP10 - ORDENS DE PRODUÇÃO
+// =============================================================================
+
+enum ProductionOrderStatus {
+  PLANNED       // Planejada
+  RELEASED      // Liberada
+  IN_PROGRESS   // Em produção
+  COMPLETED     // Concluída
+  CANCELLED     // Cancelada
+}
+
+model ProductionOrder {
+  id              String                @id @default(uuid())
+  code            Int                   // número da OP
+  companyId       String?
+  company         Company?              @relation(fields: [companyId], references: [id])
+  
+  // Produto
+  productId       String                // material a ser produzido
+  product         Material              @relation("ProductionProduct", fields: [productId], references: [id])
+  quantity        Float                 // quantidade a produzir
+  producedQty     Float                 @default(0) // quantidade produzida
+  
+  // Datas
+  plannedStart    DateTime?             // início planejado
+  plannedEnd      DateTime?             // término planejado
+  actualStart     DateTime?             // início real
+  actualEnd       DateTime?             // término real
+  dueDate         DateTime?             // data de entrega
+  
+  // Status e controle
+  status          ProductionOrderStatus @default(PLANNED)
+  priority        Int                   @default(3) // 1=Urgente, 2=Alta, 3=Normal, 4=Baixa
+  
+  // Referências
+  salesOrderNumber String?              // pedido de venda
+  customerName    String?               // cliente
+  
+  // Observações
+  notes           String?
+  
+  // Auditoria
+  createdBy       String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  
+  // Relações
+  materials       ProductionOrderMaterial[]
+  operations      ProductionOrderOperation[]
+  
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([productId])
+  @@map("production_orders")
+}
+
+model ProductionOrderMaterial {
+  id              String            @id @default(uuid())
+  orderId         String
+  order           ProductionOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Material
+  materialId      String
+  material        Material          @relation("ProductionMaterial", fields: [materialId], references: [id])
+  
+  // Quantidades
+  requiredQty     Float             // quantidade necessária
+  consumedQty     Float             @default(0) // quantidade consumida
+  
+  // Custo
+  unitCost        Float             @default(0)
+  totalCost       Float             @default(0)
+  
+  notes           String?
+  createdAt       DateTime          @default(now())
+  
+  @@index([orderId])
+  @@index([materialId])
+  @@map("production_order_materials")
+}
+
+model ProductionOrderOperation {
+  id              String            @id @default(uuid())
+  orderId         String
+  order           ProductionOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Operação
+  sequence        Int               // sequência da operação
+  name            String            // nome da operação
+  workCenter      String?           // centro de trabalho
+  
+  // Tempos planejados (minutos)
+  setupTime       Float             @default(0) // tempo de setup
+  runTime         Float             @default(0) // tempo de execução por unidade
+  
+  // Tempos reais
+  actualSetupTime Float             @default(0)
+  actualRunTime   Float             @default(0)
+  
+  // Quantidades
+  plannedQty      Float             // quantidade planejada
+  completedQty    Float             @default(0) // quantidade concluída
+  scrapQty        Float             @default(0) // quantidade refugada
+  
+  // Status
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  notes           String?
+  createdAt       DateTime          @default(now())
+  
+  @@index([orderId])
+  @@map("production_order_operations")
 }
