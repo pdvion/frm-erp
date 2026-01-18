@@ -57,6 +57,13 @@ const modules = [
     color: "bg-red-500",
   },
   {
+    title: "Requisições",
+    description: "Saída de materiais e requisições",
+    href: "/requisitions",
+    icon: Package,
+    color: "bg-amber-500",
+  },
+  {
     title: "Relatórios",
     description: "Relatórios e dashboards",
     href: "/reports",

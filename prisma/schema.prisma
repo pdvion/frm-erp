@@ -103,6 +103,7 @@ model Company {
   userGroups   UserGroup[]
   systemSettings SystemSetting[]
   accountsPayable AccountsPayable[]
+  materialRequisitions MaterialRequisition[]
 
   @@map("companies")
 }
@@ -319,6 +320,7 @@ model Material {
   quoteItems          QuoteItem[]
   purchaseOrderItems  PurchaseOrderItem[]
   receivedInvoiceItems ReceivedInvoiceItem[]
+  requisitionItems    MaterialRequisitionItem[]
 
   @@map("materials")
 }
@@ -825,4 +827,100 @@ model PayablePayment {
   @@index([payableId])
   @@index([paymentDate])
   @@map("payable_payments")
+}
+
+// =============================================================================
+// MÓDULO CP15 - REQUISIÇÕES DE MATERIAL (SAÍDA)
+// =============================================================================
+
+enum RequisitionStatus {
+  DRAFT           // Rascunho
+  PENDING         // Aguardando aprovação
+  APPROVED        // Aprovada
+  IN_SEPARATION   // Em separação
+  PARTIAL         // Parcialmente atendida
+  COMPLETED       // Concluída
+  CANCELLED       // Cancelada
+}
+
+enum RequisitionType {
+  PRODUCTION      // Produção
+  MAINTENANCE     // Manutenção
+  ADMINISTRATIVE  // Administrativo
+  PROJECT         // Projeto
+  OTHER           // Outros
+}
+
+model MaterialRequisition {
+  id              String             @id @default(uuid())
+  code            Int                // número da requisição
+  companyId       String?
+  company         Company?           @relation(fields: [companyId], references: [id])
+  
+  // Tipo e destino
+  type            RequisitionType    @default(PRODUCTION)
+  costCenter      String?            // centro de custo
+  projectCode     String?            // código do projeto
+  orderNumber     String?            // número da OP/OS
+  
+  // Solicitante
+  requestedBy     String?
+  requestedAt     DateTime           @default(now())
+  department      String?            // departamento solicitante
+  
+  // Aprovação
+  status          RequisitionStatus  @default(DRAFT)
+  approvedBy      String?
+  approvedAt      DateTime?
+  
+  // Separação
+  separatedBy     String?
+  separatedAt     DateTime?
+  
+  // Observações
+  notes           String?
+  priority        Int                @default(3) // 1=Urgente, 2=Alta, 3=Normal, 4=Baixa
+  
+  // Auditoria
+  createdBy       String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  
+  // Itens
+  items           MaterialRequisitionItem[]
+  
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([requestedAt])
+  @@index([type])
+  @@map("material_requisitions")
+}
+
+model MaterialRequisitionItem {
+  id              String             @id @default(uuid())
+  requisitionId   String
+  requisition     MaterialRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  
+  // Material
+  materialId      String
+  material        Material           @relation(fields: [materialId], references: [id])
+  
+  // Quantidades
+  requestedQty    Float              // quantidade solicitada
+  approvedQty     Float?             // quantidade aprovada
+  separatedQty    Float              @default(0) // quantidade separada/entregue
+  
+  // Custo
+  unitCost        Float              @default(0) // custo unitário no momento da saída
+  totalCost       Float              @default(0) // custo total
+  
+  // Observações
+  notes           String?
+  
+  createdAt       DateTime           @default(now())
+  
+  @@index([requisitionId])
+  @@index([materialId])
+  @@map("material_requisition_items")
 }
