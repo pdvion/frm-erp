@@ -126,6 +126,8 @@ model Company {
   materialReceivings MaterialReceiving[]
   notifications      Notification[]
   systemLogs         SystemLog[]
+  notificationGroups NotificationGroup[]
+  tasks              Task[]
 
   @@map("companies")
 }
@@ -163,6 +165,12 @@ model User {
   notifications              Notification[]
   notificationPreferences    NotificationPreference[]
   systemLogs                 SystemLog[]
+  notificationGroupMemberships NotificationGroupMember[]
+  addedGroupMembers          NotificationGroupMember[] @relation("GroupMemberAddedBy")
+  tasksTargeted              Task[] @relation("TaskTargetUser")
+  tasksOwned                 Task[] @relation("TaskOwner")
+  tasksCreated               Task[] @relation("TaskCreatedBy")
+  taskHistory                TaskHistory[]
 
   @@map("users")
 }
@@ -2233,8 +2241,10 @@ model Department {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   
-  positions JobPosition[]
-  employees Employee[]
+  positions     JobPosition[]
+  employees     Employee[]
+  notifications Notification[]
+  tasks         Task[] @relation("TaskTargetDepartment")
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2654,23 +2664,33 @@ model Tutorial {
 // NOTIFICAÇÕES EM TEMPO REAL
 // =============================================================================
 model Notification {
-  id          String    @id @default(uuid()) @db.Uuid
-  userId      String?   @db.Uuid @map("user_id")
-  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyId   String?   @db.Uuid @map("company_id")
-  company     Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  type        String    @db.VarChar(50) // info, success, warning, error
-  category    String    @db.VarChar(50) // system, business, error
-  title       String    @db.VarChar(255)
-  message     String?
-  link        String?   @db.VarChar(500)
-  metadata    Json      @default("{}")
-  isRead      Boolean   @default(false) @map("is_read")
-  readAt      DateTime? @map("read_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id               String             @id @default(uuid()) @db.Uuid
+  userId           String?            @db.Uuid @map("user_id")
+  user             User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId        String?            @db.Uuid @map("company_id")
+  company          Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  departmentId     String?            @db.Uuid @map("department_id")
+  department       Department?        @relation(fields: [departmentId], references: [id])
+  groupId          String?            @db.Uuid @map("group_id")
+  group            NotificationGroup? @relation(fields: [groupId], references: [id])
+  targetPermission String?            @db.VarChar(100) @map("target_permission")
+  type             String             @db.VarChar(50) // info, success, warning, error
+  category         String             @db.VarChar(50) // system, business, error
+  title            String             @db.VarChar(255)
+  message          String?
+  link             String?            @db.VarChar(500)
+  metadata         Json               @default("{}")
+  isRead           Boolean            @default(false) @map("is_read")
+  readAt           DateTime?          @map("read_at")
+  isTask           Boolean            @default(false) @map("is_task")
+  taskId           String?            @db.Uuid @map("task_id")
+  task             Task?              @relation(fields: [taskId], references: [id])
+  createdAt        DateTime           @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([companyId])
+  @@index([departmentId])
+  @@index([groupId])
   @@index([isRead])
   @@index([createdAt(sort: Desc)])
   @@map("notifications")
@@ -2716,4 +2736,154 @@ model SystemLog {
   @@index([companyId])
   @@index([source])
   @@map("system_logs")
+}
+
+// =============================================================================
+// GRUPOS DE NOTIFICAÇÃO
+// =============================================================================
+model NotificationGroup {
+  id            String                     @id @default(uuid()) @db.Uuid
+  code          String                     @db.VarChar(50)
+  name          String                     @db.VarChar(255)
+  description   String?
+  companyId     String?                    @db.Uuid @map("company_id")
+  company       Company?                   @relation(fields: [companyId], references: [id])
+  isActive      Boolean                    @default(true) @map("is_active")
+  createdAt     DateTime                   @default(now()) @map("created_at")
+  updatedAt     DateTime                   @updatedAt @map("updated_at")
+  members       NotificationGroupMember[]
+  notifications Notification[]
+  tasks         Task[]
+
+  @@unique([code, companyId])
+  @@map("notification_groups")
+}
+
+model NotificationGroupMember {
+  id        String            @id @default(uuid()) @db.Uuid
+  groupId   String            @db.Uuid @map("group_id")
+  group     NotificationGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String            @db.Uuid @map("user_id")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addedAt   DateTime          @default(now()) @map("added_at")
+  addedById String?           @db.Uuid @map("added_by")
+  addedBy   User?             @relation("GroupMemberAddedBy", fields: [addedById], references: [id])
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+  @@map("notification_group_members")
+}
+
+// =============================================================================
+// SISTEMA DE TAREFAS
+// =============================================================================
+enum TaskStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  URGENT
+  HIGH
+  NORMAL
+  LOW
+}
+
+enum TaskEntityType {
+  NFE
+  REQUISITION
+  PURCHASE_ORDER
+  QUOTE
+  PAYABLE
+  RECEIVABLE
+  PRODUCTION_ORDER
+  OTHER
+}
+
+model Task {
+  id                 String            @id @default(uuid()) @db.Uuid
+  code               Int               @default(autoincrement())
+  companyId          String?           @db.Uuid @map("company_id")
+  company            Company?          @relation(fields: [companyId], references: [id])
+  
+  // Informações básicas
+  title              String            @db.VarChar(500)
+  description        String?
+  priority           TaskPriority      @default(NORMAL)
+  status             TaskStatus        @default(PENDING)
+  
+  // Destino (quem deve ver/aceitar)
+  targetType         String            @db.VarChar(50) @map("target_type") // user, department, group, permission
+  targetUserId       String?           @db.Uuid @map("target_user_id")
+  targetUser         User?             @relation("TaskTargetUser", fields: [targetUserId], references: [id])
+  targetDepartmentId String?           @db.Uuid @map("target_department_id")
+  targetDepartment   Department?       @relation("TaskTargetDepartment", fields: [targetDepartmentId], references: [id])
+  targetGroupId      String?           @db.Uuid @map("target_group_id")
+  targetGroup        NotificationGroup? @relation(fields: [targetGroupId], references: [id])
+  targetPermission   String?           @db.VarChar(100) @map("target_permission")
+  
+  // Proprietário (quem aceitou)
+  ownerId            String?           @db.Uuid @map("owner_id")
+  owner              User?             @relation("TaskOwner", fields: [ownerId], references: [id])
+  acceptedAt         DateTime?         @map("accepted_at")
+  
+  // Prazos
+  deadline           DateTime?
+  slaAcceptHours     Int               @default(24) @map("sla_accept_hours")
+  slaResolveHours    Int               @default(72) @map("sla_resolve_hours")
+  
+  // Vínculo com entidade
+  entityType         TaskEntityType?   @map("entity_type")
+  entityId           String?           @db.Uuid @map("entity_id")
+  
+  // Origem
+  notificationId     String?           @db.Uuid @map("notification_id")
+  
+  // Resolução
+  resolution         String?
+  completedAt        DateTime?         @map("completed_at")
+  
+  // Auditoria
+  createdById        String?           @db.Uuid @map("created_by")
+  createdBy          User?             @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  
+  // Relações
+  history            TaskHistory[]
+  notifications      Notification[]
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([status])
+  @@index([ownerId])
+  @@index([targetUserId])
+  @@index([targetDepartmentId])
+  @@index([deadline])
+  @@index([entityType, entityId])
+  @@map("tasks")
+}
+
+model TaskHistory {
+  id          String      @id @default(uuid()) @db.Uuid
+  taskId      String      @db.Uuid @map("task_id")
+  task        Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId      String?     @db.Uuid @map("user_id")
+  user        User?       @relation(fields: [userId], references: [id])
+  action      String      @db.VarChar(50) // created, accepted, started, delegated, completed, cancelled, comment
+  oldStatus   TaskStatus? @map("old_status")
+  newStatus   TaskStatus? @map("new_status")
+  oldOwnerId  String?     @db.Uuid @map("old_owner_id")
+  newOwnerId  String?     @db.Uuid @map("new_owner_id")
+  comment     String?
+  metadata    Json        @default("{}")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([taskId])
+  @@map("task_history")
 }

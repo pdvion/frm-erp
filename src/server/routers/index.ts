@@ -31,6 +31,7 @@ import { companiesRouter } from "./companies";
 import { tutorialsRouter } from "./tutorials";
 import { notificationsRouter } from "./notifications";
 import { systemLogsRouter } from "./systemLogs";
+import { tasksRouter } from "./tasks";
 
 export const appRouter = createTRPCRouter({
   tenant: tenantRouter,
@@ -65,6 +66,7 @@ export const appRouter = createTRPCRouter({
   tutorials: tutorialsRouter,
   notifications: notificationsRouter,
   systemLogs: systemLogsRouter,
+  tasks: tasksRouter,
 });
 
 export type AppRouter = typeof appRouter;
