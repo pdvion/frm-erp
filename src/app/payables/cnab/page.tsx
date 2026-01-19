@@ -10,14 +10,10 @@ import {
   Loader2,
   Upload,
   Download,
-  FileText,
   CheckCircle,
-  XCircle,
   AlertTriangle,
   Settings,
-  RefreshCw,
   CreditCard,
-  Banknote,
 } from "lucide-react";
 
 export default function CnabPage() {
@@ -138,7 +134,8 @@ export default function CnabPage() {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
   };
 
-  const selectedAccount = bankAccounts?.find((a: { id: string }) => a.id === selectedBankAccountId);
+  // selectedAccount used for future features
+  const _selectedAccount = bankAccounts?.find((a: { id: string }) => a.id === selectedBankAccountId);
 
   return (
     <div className="min-h-screen bg-gray-50">

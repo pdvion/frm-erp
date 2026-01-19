@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
@@ -14,7 +14,6 @@ import {
   AlertTriangle,
   Loader2,
   Building2,
-  Calendar,
   Package,
   Send,
   Ban,
@@ -34,7 +33,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 
 export default function BillingDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -589,9 +587,11 @@ function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string;
 }
 
 function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoiceId: string; totalValue: number; onClose: () => void; onSuccess: () => void }) {
-  const [installments, setInstallments] = useState([
-    { dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), value: totalValue },
-  ]);
+  const [installments, setInstallments] = useState(() => {
+    const initialDate = new Date();
+    initialDate.setDate(initialDate.getDate() + 30);
+    return [{ dueDate: initialDate, value: totalValue }];
+  });
 
   const generateMutation = trpc.billing.generateReceivables.useMutation({
     onSuccess,
