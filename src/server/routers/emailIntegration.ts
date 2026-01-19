@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { fetchXmlAttachments, testConnection, type EmailConfig } from "@/lib/email/imap-client";
 import { parseNFeXml, validateNFeXml } from "@/lib/nfe-parser";

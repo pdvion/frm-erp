@@ -18,7 +18,6 @@ import {
   DollarSign,
   TrendingUp,
   FileText,
-  Play,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {

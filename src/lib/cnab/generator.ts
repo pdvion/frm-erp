@@ -5,7 +5,6 @@
 import {
   CnabConfig,
   BoletoData,
-  PagamentoData,
   RemessaResult,
   BankCode,
 } from "./types";

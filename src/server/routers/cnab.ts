@@ -280,7 +280,7 @@ export const cnabRouter = createTRPCRouter({
             });
             baixados++;
           }
-        } catch (error) {
+        } catch (_error) {
           erros.push(`Erro ao baixar título ${titulo.nossoNumero}`);
         }
       }

@@ -337,9 +337,9 @@ export default function LandingPage() {
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 mt-6">
             Ao entrar, você concorda com nossos{" "}
-            <Link href="#" className="text-[var(--frm-light)] hover:underline">Termos de Uso</Link>
+            <Link href="/docs/terms" className="text-[var(--frm-light)] hover:underline">Termos de Uso</Link>
             {" "}e{" "}
-            <Link href="#" className="text-[var(--frm-light)] hover:underline">Política de Privacidade</Link>
+            <Link href="/docs/privacy" className="text-[var(--frm-light)] hover:underline">Política de Privacidade</Link>
           </p>
         </div>
       </div>

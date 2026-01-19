@@ -12,7 +12,6 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   RefreshCw,
-  Filter,
   Check,
   X,
   Building2,
@@ -28,7 +27,7 @@ export default function ReconciliationPage() {
 
   const { data: accounts, isLoading: loadingAccounts } = trpc.bankAccounts.list.useQuery();
   
-  const { data: transactions, isLoading: loadingTransactions, refetch } = trpc.bankAccounts.transactions.useQuery(
+  const { data: transactions, isLoading: loadingTransactions } = trpc.bankAccounts.transactions.useQuery(
     { accountId: selectedAccountId, page, limit: 50 },
     { enabled: !!selectedAccountId }
   );

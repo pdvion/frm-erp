@@ -7,7 +7,6 @@ import { PageHeader } from "@/components/PageHeader";
 import {
   ClipboardList,
   Search,
-  Filter,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -70,7 +69,7 @@ export default function TasksPage() {
     return new Date(date).toLocaleDateString("pt-BR");
   };
 
-  const formatDateTime = (date: Date | string) => {
+  const _formatDateTime = (date: Date | string) => {
     return new Date(date).toLocaleString("pt-BR");
   };
 

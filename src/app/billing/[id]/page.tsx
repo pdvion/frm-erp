@@ -45,14 +45,14 @@ export default function BillingDetailPage() {
     onSuccess: () => refetch(),
   });
 
-  const cancelMutation = trpc.billing.cancel.useMutation({
+  const _cancelMutation = trpc.billing.cancel.useMutation({
     onSuccess: () => {
       setShowCancelModal(false);
       refetch();
     },
   });
 
-  const correctionMutation = trpc.billing.correctionLetter.useMutation({
+  const _correctionMutation = trpc.billing.correctionLetter.useMutation({
     onSuccess: () => {
       setShowCorrectionModal(false);
       refetch();

@@ -4,7 +4,7 @@
  */
 
 import Imap from "imap";
-import { simpleParser, ParsedMail, Attachment } from "mailparser";
+import { simpleParser, ParsedMail } from "mailparser";
 
 export interface EmailConfig {
   host: string;

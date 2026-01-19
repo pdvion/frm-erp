@@ -7,12 +7,10 @@
 
 import { 
   SefazConfig, 
-  SefazEnvironment,
   ConsultaNFeResult, 
   DownloadNFeResult, 
   ManifestacaoResult,
   ManifestacaoTipo,
-  NFeResumo,
   SEFAZ_URLS,
   UF_CODES,
 } from "./types";
@@ -47,7 +45,7 @@ export class SefazClient {
       const nsu = ultimoNSU || "000000000000000";
 
       // Montar envelope SOAP
-      const soapEnvelope = this.buildDistDFeEnvelope(cUFAutor, this.config.cnpj, nsu);
+      const _soapEnvelope = this.buildDistDFeEnvelope(cUFAutor, this.config.cnpj, nsu);
 
       // TODO: Assinar XML com certificado digital
       // TODO: Enviar requisição SOAP
@@ -88,7 +86,7 @@ export class SefazClient {
       const cUFAutor = UF_CODES[this.config.uf];
 
       // Montar envelope SOAP para consulta por chave
-      const soapEnvelope = this.buildConsChNFeEnvelope(cUFAutor, this.config.cnpj, chaveAcesso);
+      const _soapEnvelope = this.buildConsChNFeEnvelope(cUFAutor, this.config.cnpj, chaveAcesso);
 
       // TODO: Assinar XML com certificado digital
       // TODO: Enviar requisição SOAP
@@ -136,7 +134,7 @@ export class SefazClient {
       const cUFAutor = UF_CODES[this.config.uf];
 
       // Montar envelope SOAP para evento
-      const soapEnvelope = this.buildEventoEnvelope(
+      const _soapEnvelope = this.buildEventoEnvelope(
         cUFAutor, 
         this.config.cnpj, 
         chaveAcesso, 

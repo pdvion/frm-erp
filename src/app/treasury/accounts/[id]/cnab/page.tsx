@@ -99,6 +99,7 @@ export default function CnabConfigPage() {
         cedenteDocumento: savedConfig.cedenteDocumento,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedConfig]);
 
   const handleSave = () => {

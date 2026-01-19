@@ -19,7 +19,6 @@ import {
   Calendar,
   Search,
   Download,
-  Filter,
 } from "lucide-react";
 
 const accountTypeConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {

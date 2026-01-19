@@ -28,7 +28,7 @@ interface OrderItem {
 
 export default function NewPurchaseOrderPage() {
   const router = useRouter();
-  const [supplierId, setSupplierId] = useState("");
+  const [, setSupplierIdState] = useState("");
   const [supplierSearch, setSupplierSearch] = useState("");
   const [selectedSupplier, setSelectedSupplier] = useState<{
     id: string;

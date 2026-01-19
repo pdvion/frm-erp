@@ -6,7 +6,6 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
-  Search,
   Filter,
   ChevronLeft,
   ChevronRight,

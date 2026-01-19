@@ -18,7 +18,6 @@ import {
   Loader2,
   Edit,
   Save,
-  X,
   Plus,
   Minus,
   Truck,
@@ -43,7 +42,7 @@ interface ItemConference {
 
 export default function ReceivingDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
   const id = params.id as string;
 
   const [isConferencing, setIsConferencing] = useState(false);

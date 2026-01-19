@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
-import { emitEvent } from "../services/events";
+// import { emitEvent } from "../services/events"; // TODO: Implementar eventos
 
 export const receivablesRouter = createTRPCRouter({
   // Listar títulos a receber

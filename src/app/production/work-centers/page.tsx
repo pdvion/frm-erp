@@ -10,7 +10,6 @@ import {
   Loader2,
   Plus,
   Pencil,
-  Trash2,
   CheckCircle,
   XCircle,
   Factory,

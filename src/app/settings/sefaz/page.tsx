@@ -35,7 +35,7 @@ export default function SefazConfigPage() {
   const [certificatePassword, setCertificatePassword] = useState("");
   const [chaveConsulta, setChaveConsulta] = useState("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [consultaResult, setConsultaResult] = useState<{ total: number; nfes: string[] } | null>(null);
+  const [_consultaResult, setConsultaResult] = useState<{ total: number; nfes: string[] } | null>(null);
 
   const addNotification = (type: "success" | "error" | "info", message: string) => {
     const id = Date.now();

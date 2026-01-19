@@ -14,7 +14,6 @@ import {
   Truck,
   Loader2,
   Check,
-  X,
   Search,
 } from "lucide-react";
 

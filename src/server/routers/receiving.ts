@@ -151,7 +151,7 @@ export const receivingRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { itemId, receivingId, notes, ...data } = input;
+      const { itemId, receivingId: _receivingId, notes, ...data } = input;
 
       // Se approvedQuantity não foi informado, usar receivedQuantity
       const approvedQuantity = data.approvedQuantity ?? data.receivedQuantity;

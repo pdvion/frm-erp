@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import type { SystemModule } from "../context";
