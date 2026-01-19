@@ -641,4 +641,297 @@ export const payablesRouter = createTRPCRouter({
         totalValue: duplicatas.reduce((sum, d) => sum + d.valor, 0),
       };
     }),
+
+  // Listar centros de custo
+  listCostCenters: tenantProcedure.query(async ({ ctx }) => {
+    return prisma.costCenter.findMany({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+        isActive: true,
+      },
+      orderBy: { name: "asc" },
+    });
+  }),
+
+  // Adicionar rateio por centro de custo
+  addCostAllocation: tenantProcedure
+    .input(z.object({
+      payableId: z.string(),
+      allocations: z.array(z.object({
+        costCenterId: z.string(),
+        percentage: z.number().min(0).max(100),
+      })),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payable = await prisma.accountsPayable.findFirst({
+        where: {
+          id: input.payableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!payable) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Título não encontrado",
+        });
+      }
+
+      // Validar que soma = 100%
+      const totalPercentage = input.allocations.reduce((sum, a) => sum + a.percentage, 0);
+      if (Math.abs(totalPercentage - 100) > 0.01) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Soma dos percentuais deve ser 100% (atual: ${totalPercentage}%)`,
+        });
+      }
+
+      // Remover alocações anteriores
+      await prisma.payableCostAllocation.deleteMany({
+        where: { payableId: input.payableId },
+      });
+
+      // Criar novas alocações
+      const allocations = await Promise.all(
+        input.allocations.map((a) =>
+          prisma.payableCostAllocation.create({
+            data: {
+              payableId: input.payableId,
+              costCenterId: a.costCenterId,
+              percentage: a.percentage,
+              value: (payable.netValue * a.percentage) / 100,
+            },
+          })
+        )
+      );
+
+      return allocations;
+    }),
+
+  // Buscar alocações de um título
+  getCostAllocations: tenantProcedure
+    .input(z.object({ payableId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const payable = await prisma.accountsPayable.findFirst({
+        where: {
+          id: input.payableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!payable) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Título não encontrado",
+        });
+      }
+
+      return prisma.payableCostAllocation.findMany({
+        where: { payableId: input.payableId },
+        include: { costCenter: true },
+      });
+    }),
+
+  // Solicitar aprovação
+  requestApproval: tenantProcedure
+    .input(z.object({
+      payableId: z.string(),
+      approverId: z.string(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payable = await prisma.accountsPayable.findFirst({
+        where: {
+          id: input.payableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!payable) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Título não encontrado",
+        });
+      }
+
+      // Criar solicitação de aprovação
+      const approval = await prisma.payableApproval.create({
+        data: {
+          payableId: input.payableId,
+          approverId: input.approverId,
+          status: "PENDING",
+          comments: input.notes,
+        },
+      });
+
+      return approval;
+    }),
+
+  // Aprovar/Rejeitar título
+  processApproval: tenantProcedure
+    .input(z.object({
+      approvalId: z.string(),
+      status: z.enum(["APPROVED", "REJECTED"]),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.tenant.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Usuário não autenticado",
+        });
+      }
+
+      const approval = await prisma.payableApproval.findFirst({
+        where: {
+          id: input.approvalId,
+          approverId: ctx.tenant.userId,
+        },
+        include: { payable: true },
+      });
+
+      if (!approval) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Aprovação não encontrada ou você não é o aprovador",
+        });
+      }
+
+      if (approval.status !== "PENDING") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Esta aprovação já foi processada",
+        });
+      }
+
+      return prisma.payableApproval.update({
+        where: { id: input.approvalId },
+        data: {
+          status: input.status,
+          approvedAt: new Date(),
+          comments: input.notes,
+        },
+      });
+    }),
+
+  // Listar aprovações pendentes do usuário
+  pendingApprovals: tenantProcedure.query(async ({ ctx }) => {
+    if (!ctx.tenant.userId) {
+      return [];
+    }
+
+    return prisma.payableApproval.findMany({
+      where: {
+        approverId: ctx.tenant.userId,
+        status: "PENDING",
+      },
+      include: {
+        payable: {
+          include: { supplier: true },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+  }),
+
+  // Estornar pagamento
+  reversePayment: tenantProcedure
+    .input(z.object({
+      paymentId: z.string(),
+      reason: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payment = await prisma.payablePayment.findFirst({
+        where: { id: input.paymentId },
+        include: { payable: true },
+      });
+
+      if (!payment) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Pagamento não encontrado",
+        });
+      }
+
+      // Verificar permissão
+      const payable = await prisma.accountsPayable.findFirst({
+        where: {
+          id: payment.payableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!payable) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Sem permissão para estornar este pagamento",
+        });
+      }
+
+      // Atualizar título
+      const newPaidValue = payable.paidValue - payment.value;
+      const newStatus = newPaidValue <= 0 ? "PENDING" : "PARTIAL";
+
+      await prisma.accountsPayable.update({
+        where: { id: payment.payableId },
+        data: {
+          paidValue: Math.max(0, newPaidValue),
+          discountValue: payable.discountValue - payment.discountValue,
+          interestValue: payable.interestValue - payment.interestValue,
+          fineValue: payable.fineValue - payment.fineValue,
+          status: newStatus,
+          paidAt: null,
+          notes: `${payable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${payment.value.toFixed(2)}`.trim(),
+        },
+      });
+
+      // Marcar pagamento como estornado
+      return prisma.payablePayment.update({
+        where: { id: input.paymentId },
+        data: {
+          notes: `${payment.notes || ""}\n[ESTORNADO] ${input.reason}`.trim(),
+        },
+      });
+    }),
+
+  // Reprogramar vencimento
+  reschedule: tenantProcedure
+    .input(z.object({
+      payableId: z.string(),
+      newDueDate: z.date(),
+      reason: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payable = await prisma.accountsPayable.findFirst({
+        where: {
+          id: input.payableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!payable) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Título não encontrado",
+        });
+      }
+
+      if (payable.status === "PAID" || payable.status === "CANCELLED") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Não é possível reprogramar um título pago ou cancelado",
+        });
+      }
+
+      const oldDueDate = payable.dueDate.toLocaleDateString("pt-BR");
+      const newDueDateStr = input.newDueDate.toLocaleDateString("pt-BR");
+
+      return prisma.accountsPayable.update({
+        where: { id: input.payableId },
+        data: {
+          dueDate: input.newDueDate,
+          notes: `${payable.notes || ""}\n[REPROGRAMADO] De ${oldDueDate} para ${newDueDateStr} - ${input.reason}`.trim(),
+        },
+      });
+    }),
 });
