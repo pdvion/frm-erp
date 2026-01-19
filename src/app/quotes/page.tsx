@@ -276,6 +276,7 @@ export default function QuotesPage() {
           <>
             {/* Table View */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -285,13 +286,13 @@ export default function QuotesPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fornecedor
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Data
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Itens
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Valor Total
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -320,13 +321,13 @@ export default function QuotesPage() {
                             Cód: {quote.supplier.code}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(quote.requestDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {quote._count.items} {quote._count.items === 1 ? "item" : "itens"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-medium text-gray-900">
                             {formatCurrency(quote.totalValue)}
                           </span>
@@ -353,6 +354,7 @@ export default function QuotesPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
 
             {/* Pagination */}

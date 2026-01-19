@@ -267,7 +267,11 @@ export const nfeRouter = createTRPCRouter({
         }),
       };
 
-      const [invoices, total] = await Promise.all([
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const [invoices, total, pending, approvedMonth, rejected, totalValueMonth] = await Promise.all([
         prisma.receivedInvoice.findMany({
           where,
           include: {
@@ -281,6 +285,27 @@ export const nfeRouter = createTRPCRouter({
           take: input.limit,
         }),
         prisma.receivedInvoice.count({ where }),
+        prisma.receivedInvoice.count({
+          where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" },
+        }),
+        prisma.receivedInvoice.count({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: "APPROVED",
+            approvedAt: { gte: startOfMonth },
+          },
+        }),
+        prisma.receivedInvoice.count({
+          where: { ...tenantFilter(ctx.companyId, false), status: "REJECTED" },
+        }),
+        prisma.receivedInvoice.aggregate({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: "APPROVED",
+            approvedAt: { gte: startOfMonth },
+          },
+          _sum: { totalInvoice: true },
+        }),
       ]);
 
       return {
@@ -290,6 +315,12 @@ export const nfeRouter = createTRPCRouter({
           limit: input.limit,
           total,
           totalPages: Math.ceil(total / input.limit),
+        },
+        stats: {
+          pending,
+          approvedMonth,
+          rejected,
+          totalValueMonth: totalValueMonth._sum.totalInvoice || 0,
         },
       };
     }),

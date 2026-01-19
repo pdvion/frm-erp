@@ -269,6 +269,7 @@ export default function PurchaseOrdersPage() {
           <>
             {/* Table View */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -278,16 +279,16 @@ export default function PurchaseOrdersPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fornecedor
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Data
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Cotação
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Itens
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Valor Total
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -316,10 +317,10 @@ export default function PurchaseOrdersPage() {
                             Cód: {order.supplier.code}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(order.orderDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                           {order.quote ? (
                             <Link
                               href={`/quotes/${order.quote.id}`}
@@ -331,10 +332,10 @@ export default function PurchaseOrdersPage() {
                             <span className="text-sm text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {order._count.items} {order._count.items === 1 ? "item" : "itens"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-medium text-gray-900">
                             {formatCurrency(order.totalValue)}
                           </span>
@@ -361,6 +362,7 @@ export default function PurchaseOrdersPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
 
             {/* Pagination */}

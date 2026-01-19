@@ -1,10 +1,11 @@
 /**
  * Cliente IMAP para recebimento automático de XMLs de NFe por email
  * Conecta a uma caixa de email e busca anexos XML
+ * Usa imapflow - biblioteca moderna e mantida ativamente
  */
 
-import Imap from "imap";
-import { simpleParser, ParsedMail } from "mailparser";
+import { ImapFlow } from "imapflow";
+import { simpleParser } from "mailparser";
 
 export interface EmailConfig {
   host: string;
@@ -44,77 +45,19 @@ export interface FetchResult {
   errors: string[];
 }
 
-function createImapConnection(config: EmailConfig): Imap {
-  return new Imap({
-    user: config.user,
-    password: config.password,
+function createImapClient(config: EmailConfig): ImapFlow {
+  return new ImapFlow({
     host: config.host,
     port: config.port,
-    tls: config.tls,
-    tlsOptions: { rejectUnauthorized: false },
-  });
-}
-
-function openInbox(imap: Imap, folder: string): Promise<Imap.Box> {
-  return new Promise((resolve, reject) => {
-    imap.openBox(folder, false, (err, box) => {
-      if (err) reject(err);
-      else resolve(box);
-    });
-  });
-}
-
-function searchMessages(imap: Imap, criteria: (string | string[])[]): Promise<number[]> {
-  return new Promise((resolve, reject) => {
-    imap.search(criteria, (err, results) => {
-      if (err) reject(err);
-      else resolve(results || []);
-    });
-  });
-}
-
-function fetchMessage(imap: Imap, uid: number): Promise<ParsedMail> {
-  return new Promise((resolve, reject) => {
-    const fetch = imap.fetch([uid], { bodies: "", struct: true });
-    
-    fetch.on("message", (msg) => {
-      let buffer = "";
-      
-      msg.on("body", (stream) => {
-        stream.on("data", (chunk) => {
-          buffer += chunk.toString("utf8");
-        });
-      });
-      
-      msg.once("end", async () => {
-        try {
-          const parsed = await simpleParser(buffer);
-          resolve(parsed);
-        } catch (err) {
-          reject(err);
-        }
-      });
-    });
-    
-    fetch.once("error", reject);
-  });
-}
-
-function markAsSeen(imap: Imap, uid: number): Promise<void> {
-  return new Promise((resolve, reject) => {
-    imap.addFlags([uid], ["\\Seen"], (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
-function moveToFolder(imap: Imap, uid: number, folder: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    imap.move([uid], folder, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
+    secure: config.tls,
+    auth: {
+      user: config.user,
+      pass: config.password,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+    logger: false,
   });
 }
 
@@ -141,126 +84,113 @@ export async function fetchXmlAttachments(
     errors: [],
   };
 
-  const imap = createImapConnection(config);
+  const client = createImapClient(config);
 
-  return new Promise((resolve) => {
-    imap.once("ready", async () => {
-      try {
-        const folder = config.folder || "INBOX";
-        await openInbox(imap, folder);
+  try {
+    await client.connect();
 
-        // Buscar mensagens
-        const criteria: (string | string[])[] = onlyUnread ? ["UNSEEN"] : ["ALL"];
-        const uids = await searchMessages(imap, criteria);
+    const folder = config.folder || "INBOX";
+    const lock = await client.getMailboxLock(folder);
 
-        // Limitar quantidade
-        const limitedUids = uids.slice(0, maxMessages);
+    try {
+      // Buscar mensagens
+      const searchCriteria = onlyUnread ? { seen: false } : {};
+      
+      let count = 0;
+      for await (const message of client.fetch(searchCriteria, {
+        uid: true,
+        envelope: true,
+        source: true,
+      })) {
+        if (count >= maxMessages) break;
 
-        for (const uid of limitedUids) {
-          try {
-            const parsed = await fetchMessage(imap, uid);
+        try {
+          const parsed = await simpleParser(message.source);
 
-            const message: EmailMessage = {
-              uid,
-              messageId: parsed.messageId || "",
-              from: parsed.from?.text || "",
-              subject: parsed.subject || "",
-              date: parsed.date || new Date(),
-              attachments: [],
-            };
+          const emailMessage: EmailMessage = {
+            uid: message.uid,
+            messageId: parsed.messageId || "",
+            from: parsed.from?.text || "",
+            subject: parsed.subject || "",
+            date: parsed.date || new Date(),
+            attachments: [],
+          };
 
-            // Processar anexos
-            if (parsed.attachments && parsed.attachments.length > 0) {
-              for (const att of parsed.attachments) {
-                const filename = att.filename || "";
-                const isXml = filename.toLowerCase().endsWith(".xml") ||
-                  att.contentType === "application/xml" ||
-                  att.contentType === "text/xml";
+          // Processar anexos
+          if (parsed.attachments && parsed.attachments.length > 0) {
+            for (const att of parsed.attachments) {
+              const filename = att.filename || "";
+              const isXml = filename.toLowerCase().endsWith(".xml") ||
+                att.contentType === "application/xml" ||
+                att.contentType === "text/xml";
 
-                if (isXml) {
-                  const content = att.content.toString("utf8");
-                  
-                  message.attachments.push({
-                    filename,
-                    content,
-                    contentType: att.contentType,
-                    size: att.size,
-                  });
+              if (isXml) {
+                const content = att.content.toString("utf8");
+                
+                emailMessage.attachments.push({
+                  filename,
+                  content,
+                  contentType: att.contentType,
+                  size: att.size,
+                });
 
-                  result.xmlFiles.push({
-                    filename,
-                    content,
-                    fromEmail: message.from,
-                    subject: message.subject,
-                    date: message.date,
-                  });
-                }
+                result.xmlFiles.push({
+                  filename,
+                  content,
+                  fromEmail: emailMessage.from,
+                  subject: emailMessage.subject,
+                  date: emailMessage.date,
+                });
               }
             }
-
-            if (message.attachments.length > 0) {
-              result.messages.push(message);
-
-              // Marcar como lido
-              if (markAsRead) {
-                await markAsSeen(imap, uid);
-              }
-
-              // Mover para pasta
-              if (targetFolder) {
-                await moveToFolder(imap, uid, targetFolder);
-              }
-            }
-          } catch (msgErr) {
-            result.errors.push(`Erro ao processar mensagem ${uid}: ${msgErr}`);
           }
+
+          if (emailMessage.attachments.length > 0) {
+            result.messages.push(emailMessage);
+
+            // Marcar como lido
+            if (markAsRead) {
+              await client.messageFlagsAdd({ uid: message.uid }, ["\\Seen"]);
+            }
+
+            // Mover para pasta
+            if (targetFolder) {
+              await client.messageMove({ uid: message.uid }, targetFolder);
+            }
+          }
+
+          count++;
+        } catch (msgErr) {
+          result.errors.push(`Erro ao processar mensagem ${message.uid}: ${msgErr}`);
         }
-
-        result.success = true;
-      } catch (err) {
-        result.errors.push(`Erro geral: ${err}`);
-      } finally {
-        imap.end();
-        resolve(result);
       }
-    });
 
-    imap.once("error", (err: Error) => {
-      result.errors.push(`Erro de conexão: ${err.message}`);
-      resolve(result);
-    });
+      result.success = true;
+    } finally {
+      lock.release();
+    }
+  } catch (err) {
+    result.errors.push(`Erro geral: ${err}`);
+  } finally {
+    await client.logout();
+  }
 
-    imap.connect();
-  });
+  return result;
 }
 
 export async function testConnection(config: EmailConfig): Promise<{ success: boolean; error?: string }> {
-  const imap = createImapConnection(config);
+  const client = createImapClient(config);
 
-  return new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      imap.end();
-      resolve({ success: false, error: "Timeout de conexão" });
-    }, 10000);
-
-    imap.once("ready", async () => {
-      clearTimeout(timeout);
-      try {
-        const folder = config.folder || "INBOX";
-        await openInbox(imap, folder);
-        imap.end();
-        resolve({ success: true });
-      } catch (err) {
-        imap.end();
-        resolve({ success: false, error: String(err) });
-      }
-    });
-
-    imap.once("error", (err: Error) => {
-      clearTimeout(timeout);
-      resolve({ success: false, error: err.message });
-    });
-
-    imap.connect();
-  });
+  try {
+    await client.connect();
+    
+    const folder = config.folder || "INBOX";
+    const lock = await client.getMailboxLock(folder);
+    lock.release();
+    
+    await client.logout();
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: String(err) };
+  }
 }
