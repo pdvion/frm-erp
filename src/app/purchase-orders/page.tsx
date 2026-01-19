@@ -101,7 +101,7 @@ export default function PurchaseOrdersPage() {
       color: statusColors[status] || "#6B7280",
       items: data.orders.filter((o) => o.status === status) as PurchaseOrder[],
     }));
-  }, [data?.orders]);
+  }, [data]);
 
   const handleCardClick = (order: PurchaseOrder) => {
     router.push(`/purchase-orders/${order.id}`);

@@ -101,7 +101,7 @@ export default function QuotesPage() {
       color: statusColors[status] || "#6B7280",
       items: data.quotes.filter((q) => q.status === status) as Quote[],
     }));
-  }, [data?.quotes]);
+  }, [data]);
 
   const handleCardClick = (quote: Quote) => {
     router.push(`/quotes/${quote.id}`);
