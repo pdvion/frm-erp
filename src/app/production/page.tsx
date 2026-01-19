@@ -18,6 +18,10 @@ import {
   Eye,
   Play,
   Calendar,
+  Settings,
+  BarChart3,
+  Cpu,
+  Calculator,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -89,6 +93,58 @@ export default function ProductionPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Quick Access Menu */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <Link
+            href="/production/mrp"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all"
+          >
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Calculator className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">MRP</div>
+              <div className="text-xs text-gray-500">Planejamento</div>
+            </div>
+          </Link>
+          <Link
+            href="/production/mes"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition-all"
+          >
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Cpu className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">MES</div>
+              <div className="text-xs text-gray-500">Chão de Fábrica</div>
+            </div>
+          </Link>
+          <Link
+            href="/production/oee"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all"
+          >
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <BarChart3 className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">OEE</div>
+              <div className="text-xs text-gray-500">Indicadores</div>
+            </div>
+          </Link>
+          <Link
+            href="/production/work-centers"
+            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-400 hover:shadow-sm transition-all"
+          >
+            <div className="p-2 bg-gray-100 rounded-lg">
+              <Settings className="w-5 h-5 text-gray-600" />
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">Centros</div>
+              <div className="text-xs text-gray-500">Configuração</div>
+            </div>
+          </Link>
+        </div>
+
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
