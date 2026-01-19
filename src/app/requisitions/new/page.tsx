@@ -340,10 +340,16 @@ export default function NewRequisitionPage() {
 
       {/* Material Search Modal */}
       {showMaterialSearch && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="material-search-req-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowMaterialSearch(false)}
+        >
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">Buscar Material</h3>
+              <h3 id="material-search-req-title" className="font-medium text-gray-900">Buscar Material</h3>
               <button
                 onClick={() => {
                   setShowMaterialSearch(false);

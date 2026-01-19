@@ -332,9 +332,15 @@ function AddComponentModal({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-component-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="add-component-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-indigo-600" />
           Adicionar Componente
         </h3>
@@ -514,9 +520,15 @@ function EditItemModal({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-component-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="edit-component-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <Edit2 className="w-5 h-5 text-indigo-600" />
           Editar Componente
         </h3>
@@ -630,9 +642,15 @@ function CostModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cost-modal-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="cost-modal-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <Calculator className="w-5 h-5 text-indigo-600" />
           Cálculo de Custo
         </h3>
@@ -735,9 +753,15 @@ function ExplodeModal({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="explode-modal-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="explode-modal-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <ChevronDown className="w-5 h-5 text-indigo-600" />
           Explosão da Estrutura
         </h3>
@@ -883,9 +907,15 @@ function CopyBomModal({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="copy-bom-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="copy-bom-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <Copy className="w-5 h-5 text-indigo-600" />
           Copiar Estrutura
         </h3>

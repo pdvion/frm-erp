@@ -405,9 +405,15 @@ export default function TaskDetailPage() {
 
       {/* Complete Modal */}
       {showCompleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="complete-task-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowCompleteModal(false)}
+        >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Concluir Tarefa</h3>
+            <h3 id="complete-task-title" className="text-lg font-semibold text-gray-900 mb-4">Concluir Tarefa</h3>
             <textarea
               placeholder="Descreva a resolução (opcional)..."
               value={resolution}

@@ -382,9 +382,15 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-invoice-title"
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <h3 id="new-invoice-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-indigo-600" />
           Nova Nota Fiscal
         </h3>

@@ -367,9 +367,15 @@ export default function MesPage() {
 
       {/* Modal Registrar Parada */}
       {showStopModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="stop-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowStopModal(false)}
+        >
           <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+            <h3 id="stop-modal-title" className="text-lg font-medium mb-4 flex items-center gap-2">
               <StopCircle className="w-5 h-5 text-red-500" />
               Registrar Parada
             </h3>
@@ -425,9 +431,15 @@ export default function MesPage() {
 
       {/* Modal Apontar Produção */}
       {showReportModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="report-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowReportModal(false)}
+        >
           <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+            <h3 id="report-modal-title" className="text-lg font-medium mb-4 flex items-center gap-2">
               <Plus className="w-5 h-5 text-blue-500" />
               Apontar Produção
             </h3>

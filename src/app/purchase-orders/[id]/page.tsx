@@ -473,9 +473,15 @@ export default function PurchaseOrderDetailPage() {
 
       {/* Receive Modal */}
       {showReceiveModal && selectedItemId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="receive-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowReceiveModal(false)}
+        >
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <h3 id="receive-modal-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
               <PackageCheck className="w-5 h-5 text-teal-600" />
               Registrar Recebimento
             </h3>

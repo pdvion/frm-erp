@@ -474,9 +474,15 @@ export default function PayableDetailPage() {
 
       {/* Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="payment-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowPaymentModal(false)}
+        >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Registrar Pagamento</h3>
+            <h3 id="payment-modal-title" className="text-lg font-medium text-gray-900 mb-4">Registrar Pagamento</h3>
             
             <div className="space-y-4">
               <div>
@@ -606,9 +612,15 @@ export default function PayableDetailPage() {
 
       {/* Reschedule Modal */}
       {showRescheduleModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reschedule-modal-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowRescheduleModal(false)}
+        >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Reprogramar Vencimento</h3>
+            <h3 id="reschedule-modal-title" className="text-lg font-medium text-gray-900 mb-4">Reprogramar Vencimento</h3>
             
             <div className="space-y-4">
               <div>
@@ -683,9 +695,15 @@ export default function PayableDetailPage() {
 
       {/* Cancel Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-payable-title"
+          onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
+        >
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Cancelar Título</h3>
+            <h3 id="cancel-payable-title" className="text-lg font-medium text-gray-900 mb-4">Cancelar Título</h3>
             
             <p className="text-gray-600 mb-4">
               Tem certeza que deseja cancelar este título? Esta ação não pode ser desfeita.
