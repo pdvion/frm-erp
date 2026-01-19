@@ -62,8 +62,10 @@
 #### RH/DP - 8 módulos
 | Código | Nome | Status Migração |
 |--------|------|-----------------|
-| DP00-04 | Dpto Pessoal | 🟢 Baixa prioridade |
-| FP41 | Folha Ponto | 🟢 Baixa prioridade |
+| DP00-04 | Departamentos | ✅ Migrado |
+| DP05 | Funcionários | ✅ Migrado |
+| FP41 | Folha Ponto | ✅ Migrado |
+| FP42 | Folha Pagamento | ✅ Migrado |
 
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
@@ -350,6 +352,41 @@ pnpm build
 # 4. Verificar tipos de props em componentes
 # (build já cobre isso)
 ```
+
+---
+
+## Testes E2E
+
+### Fluxo de Testes em Produção
+
+```bash
+# 1. Verificar Supabase Advisors
+mcp9_get_advisors({ project_id: "...", type: "security" })
+mcp9_get_advisors({ project_id: "...", type: "performance" })
+
+# 2. Testar páginas via Playwright
+mcp4_browser_navigate({ url: "https://frm-erp.vercel.app/..." })
+mcp4_browser_wait_for({ time: 3 })
+mcp4_browser_console_messages({ level: "error" })
+mcp4_browser_snapshot()
+
+# 3. Testar responsividade
+mcp4_browser_resize({ width: 375, height: 812 })  # Mobile
+mcp4_browser_resize({ width: 768, height: 1024 }) # Tablet
+mcp4_browser_resize({ width: 1440, height: 900 }) # Desktop
+```
+
+### Checklist de Testes
+
+- [ ] Supabase Security Advisor: 0 erros
+- [ ] Supabase Performance Advisor: 0 warnings
+- [ ] Console sem erros 500
+- [ ] Páginas carregam em < 3s
+- [ ] Responsividade OK em mobile/tablet/desktop
+
+### Relatórios
+
+Relatórios de testes são salvos em `docs/test-report-*.md`
 
 ---
 
