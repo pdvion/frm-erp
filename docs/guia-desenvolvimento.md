@@ -329,6 +329,27 @@ git push origin main
 | `Type 'null' is not assignable to 'string \| undefined'` | Usar `?? undefined` |
 | `mode 'insensitive'` lint error | Usar `as const` |
 | `Module has no exported member` | `pnpm prisma generate` |
+| Tipos de status incompatíveis | Cast explícito: `as "PENDING" \| "APPROVED" \| undefined` |
+| Props de componentes com ícones | Usar JSX: `icon={<FileText />}` não `icon={FileText}` |
+| Nomes de métodos tRPC incorretos | Verificar router: `grep -n "getById" src/server/routers/` |
+| Campos nullable sem verificação | Adicionar `if (!value) continue;` antes de usar |
+| Dependências faltando | `pnpm add <pacote>` |
+
+### Checklist Antes de Commit
+
+```bash
+# 1. Verificar lint
+pnpm lint
+
+# 2. Verificar build completo
+pnpm build
+
+# 3. Verificar imports não utilizados
+# (lint já cobre isso)
+
+# 4. Verificar tipos de props em componentes
+# (build já cobre isso)
+```
 
 ---
 

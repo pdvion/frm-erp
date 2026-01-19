@@ -4,6 +4,18 @@ import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { emitEvent } from "../services/events";
+import {
+  gerarBoleto,
+  calcularFatorVencimento,
+  gerarCampoLivreBB,
+  gerarCampoLivreBradesco,
+  gerarCampoLivreItau,
+  gerarCampoLivreSantander,
+  gerarCampoLivreCaixa,
+  gerarCampoLivreSicoob,
+  validarCodigoBarras,
+  extrairInfoCodigoBarras,
+} from "@/lib/boleto";
 
 export const payablesRouter = createTRPCRouter({
   // Listar títulos a pagar com filtros
@@ -1305,6 +1317,123 @@ export const payablesRouter = createTRPCRouter({
           totalMonth: totalMonthStats._count || 0,
           totalValueMonth: Number(totalMonthStats._sum?.netValue) || 0,
         },
+      };
+    }),
+
+  // Gerar código de barras para boleto
+  generateBarcode: tenantProcedure
+    .input(z.object({
+      bankCode: z.enum(["001", "033", "104", "237", "341", "756"]),
+      valor: z.number().positive(),
+      dataVencimento: z.date(),
+      nossoNumero: z.string(),
+      agencia: z.string(),
+      conta: z.string(),
+      convenio: z.string().optional(),
+      carteira: z.string().optional(),
+      codigoCedente: z.string().optional(),
+    }))
+    .mutation(({ input }) => {
+      const { bankCode, valor, dataVencimento, nossoNumero, agencia, conta, convenio, carteira, codigoCedente } = input;
+
+      const fatorVencimento = calcularFatorVencimento(dataVencimento);
+
+      let campoLivre: string;
+
+      switch (bankCode) {
+        case "001": // Banco do Brasil
+          campoLivre = gerarCampoLivreBB({
+            convenio: convenio || "000000",
+            nossoNumero,
+            agencia,
+            conta,
+            carteira: carteira || "17",
+          });
+          break;
+        case "237": // Bradesco
+          campoLivre = gerarCampoLivreBradesco({
+            agencia,
+            carteira: carteira || "09",
+            nossoNumero,
+            conta,
+          });
+          break;
+        case "341": // Itaú
+          campoLivre = gerarCampoLivreItau({
+            carteira: carteira || "109",
+            nossoNumero,
+            agencia,
+            conta,
+          });
+          break;
+        case "033": // Santander
+          campoLivre = gerarCampoLivreSantander({
+            codigoCedente: codigoCedente || convenio || "0000000",
+            nossoNumero,
+          });
+          break;
+        case "104": // Caixa
+          campoLivre = gerarCampoLivreCaixa({
+            codigoCedente: codigoCedente || convenio || "000000",
+            nossoNumero,
+          });
+          break;
+        case "756": // Sicoob
+          campoLivre = gerarCampoLivreSicoob({
+            carteira: carteira || "01",
+            codigoCedente: codigoCedente || convenio || "00000",
+            nossoNumero,
+            agencia,
+            conta,
+          });
+          break;
+        default:
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Banco ${bankCode} não suportado`,
+          });
+      }
+
+      const boleto = gerarBoleto({
+        bankCode,
+        fatorVencimento,
+        valor,
+        campoLivre,
+      });
+
+      return {
+        success: true,
+        codigoBarras: boleto.codigoBarras,
+        linhaDigitavel: boleto.linhaDigitavel,
+        fatorVencimento,
+        dataVencimento,
+        valor,
+      };
+    }),
+
+  // Validar código de barras
+  validateBarcode: tenantProcedure
+    .input(z.object({
+      codigoBarras: z.string(),
+    }))
+    .mutation(({ input }) => {
+      const validation = validarCodigoBarras(input.codigoBarras);
+
+      if (!validation.valid) {
+        return {
+          valid: false,
+          errors: validation.errors,
+        };
+      }
+
+      const info = extrairInfoCodigoBarras(input.codigoBarras);
+
+      return {
+        valid: true,
+        banco: info.banco,
+        valor: info.valor,
+        dataVencimento: info.dataVencimento,
+        fatorVencimento: info.fatorVencimento,
       };
     }),
 });
