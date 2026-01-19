@@ -37,12 +37,16 @@ export default function ReservationsPage() {
   const [page, setPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { data, isLoading, refetch } = trpc.inventory.listReservations.useQuery({
-    status: statusFilter as "ACTIVE" | "CONSUMED" | "RELEASED" | "EXPIRED" | undefined,
-    documentType: documentTypeFilter || undefined,
-    page,
-    limit: 20,
-  });
+  const { data, isLoading, refetch } = trpc.inventory.listReservations.useQuery(
+    statusFilter || documentTypeFilter
+      ? {
+          status: statusFilter ? statusFilter as "ACTIVE" | "CONSUMED" | "RELEASED" | "EXPIRED" : undefined,
+          documentType: documentTypeFilter || undefined,
+          page,
+          limit: 20,
+        }
+      : { page, limit: 20 }
+  );
 
   const releaseMutation = trpc.inventory.releaseReservation.useMutation({
     onSuccess: () => refetch(),
