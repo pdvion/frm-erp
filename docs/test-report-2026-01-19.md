@@ -1,4 +1,4 @@
-# Relatório de Testes E2E - 19/01/2026
+# Relatório de Testes E2E - 19/01/2026 (Atualizado)
 
 > ⚠️ **DOCUMENTO INTERNO** - Contém informações de configuração de segurança. Não compartilhar externamente.
 
@@ -7,54 +7,65 @@
 Testes E2E realizados com Playwright em ambiente de **produção** (https://frm-erp.vercel.app/).
 Verificação de logs e advisors de segurança no Supabase.
 
-**Data/Hora**: 19/01/2026 12:20 UTC-3
+**Data/Hora Inicial**: 19/01/2026 12:20 UTC-3
+**Última Atualização**: 19/01/2026 (sessão atual)
 
-## Bugs Críticos Encontrados e Corrigidos
+## Status Geral
 
-### 🔴 BUG-001: Erro de Login - NULL em auth.users (CORRIGIDO)
+| Categoria | Status |
+|-----------|--------|
+| CI/CD Build | ✅ Passando |
+| Supabase Security Advisors | ✅ Sem problemas críticos |
+| Supabase Performance Advisors | ℹ️ Índices não utilizados (INFO) |
+| API Logs | ✅ Todas requisições 200 OK |
+| Browser E2E | ✅ Páginas funcionando |
+| Console Errors | ✅ Sem erros |
 
-**Descrição**: Login falhava com erro "Database error querying schema" devido a campos NULL na tabela `auth.users`.
+## Bugs Corrigidos Nesta Sessão
 
-**Causa Raiz**: Os campos `confirmation_token`, `recovery_token`, `email_change`, etc. estavam NULL, mas o GoTrue espera strings vazias.
+### ✅ CI-001: Erros de Build no GitHub Actions
 
-**Correção Aplicada**:
-```sql
-UPDATE auth.users 
-SET 
-  confirmation_token = COALESCE(confirmation_token, ''),
-  recovery_token = COALESCE(recovery_token, ''),
-  email_change_token_new = COALESCE(email_change_token_new, ''),
-  email_change_token_current = COALESCE(email_change_token_current, ''),
-  email_change = COALESCE(email_change, ''),
-  phone_change = COALESCE(phone_change, ''),
-  phone_change_token = COALESCE(phone_change_token, ''),
-  reauthentication_token = COALESCE(reauthentication_token, '');
-```
+**Descrição**: Build falhava com múltiplos erros de tipo e lint.
+
+**Correções Aplicadas**:
+1. Instalado pacote `imapflow` que estava faltando
+2. Corrigido tipos de status em NFe, boletos e PIX
+3. Corrigido prop `icon` no PageHeader para JSX
+4. Adicionado prop `actions` ao PageHeader
+5. Corrigido nome do método `companies.getById`
+6. Corrigido campo `company.name`
+7. Adicionado verificação de null em `message.source` no IMAP client
+8. Removido imports e variáveis não utilizadas
+
+**Commit**: `fix(ci): corrigir erros de build e lint`
 
 **Status**: ✅ Corrigido
 
-### 🟡 BUG-002: Login Trava em "Entrando..." (PENDENTE)
+### ✅ BUG-001: Erro de Login - NULL em auth.users (CORRIGIDO ANTERIORMENTE)
 
-**Descrição**: Após login bem-sucedido (status 200 nos logs), a página fica travada em "Entrando..." sem redirecionar para o dashboard.
+**Descrição**: Login falhava com erro "Database error querying schema" devido a campos NULL na tabela `auth.users`.
 
-**Causa Provável**: Problema no redirecionamento após autenticação bem-sucedida.
+**Status**: ✅ Corrigido
 
-**Impacto**: Médio - usuário pode navegar manualmente para `/dashboard`.
+### ✅ BUG-002: Login Trava em "Entrando..." (CORRIGIDO)
 
-**Status**: 🔄 Pendente investigação
+**Descrição**: Após login bem-sucedido, a página ficava travada em "Entrando..." sem redirecionar.
 
-### 🟡 BUG-003: Tabelas Não Responsivas em Mobile (PENDENTE)
+**Correção**: Alterado redirecionamento para usar `window.location.href` em vez de `router.push`.
 
-**Descrição**: Tabelas de dados (Estoque, Materiais, Fornecedores) não são responsivas em telas mobile (375px). Todas as colunas são exibidas sem scroll horizontal adequado.
+**Status**: ✅ Corrigido
 
-**Páginas Afetadas**:
+### ✅ BUG-003: Tabelas Não Responsivas em Mobile (CORRIGIDO)
+
+**Descrição**: Tabelas não eram responsivas em telas mobile (375px).
+
+**Correção**: Adicionadas classes responsivas `hidden md:table-cell` nas colunas secundárias das tabelas de:
 - `/inventory`
-- `/materials`
 - `/suppliers`
+- `/quotes`
+- `/purchase-orders`
 
-**Impacto**: Médio - dificulta uso em dispositivos móveis.
-
-**Status**: 🔄 Pendente correção
+**Status**: ✅ Corrigido
 
 ## Páginas Testadas
 
