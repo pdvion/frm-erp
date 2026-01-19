@@ -129,6 +129,7 @@ model Company {
   systemLogs         SystemLog[]
   notificationGroups NotificationGroup[]
   tasks              Task[]
+  pixTransactions    PixTransaction[]
 
   @@map("companies")
 }
@@ -1252,6 +1253,7 @@ model BankAccount {
   payablePayments     PayablePayment[]   @relation("PaymentBankAccount")
   receivablePayments  ReceivablePayment[]
   receivables         AccountsReceivable[]
+  pixTransactions     PixTransaction[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -1293,6 +1295,81 @@ model BankTransaction {
   @@index([receivableId])
   @@index([reconciled])
   @@map("bank_transactions")
+}
+
+// =============================================================================
+// TRANSAÇÕES PIX
+// =============================================================================
+model PixTransaction {
+  id                  String              @id @default(uuid()) @db.Uuid
+  transactionId       String              @unique // ID único da transação (E2E ID interno)
+  e2eId               String?             // End-to-end ID do BACEN
+  type                PixTransactionType  @default(PAYMENT)
+  status              PixTransactionStatus @default(PENDING)
+  
+  // Chave PIX
+  pixKeyType          String              // CPF, CNPJ, EMAIL, PHONE, EVP
+  pixKey              String
+  
+  // Valores
+  value               Float
+  fee                 Float               @default(0)
+  
+  // Destinatário
+  recipientName       String
+  recipientDocument   String?
+  recipientBank       String?
+  recipientAgency     String?
+  recipientAccount    String?
+  
+  // Descrição
+  description         String?
+  
+  // Conta de origem
+  bankAccountId       String?             @db.Uuid
+  bankAccount         BankAccount?        @relation(fields: [bankAccountId], references: [id])
+  
+  // Vínculo com título a pagar
+  payableId           String?             @db.Uuid
+  
+  // Datas
+  scheduledAt         DateTime?           // Data agendada (se agendado)
+  completedAt         DateTime?           // Data de conclusão
+  cancelledAt         DateTime?           // Data de cancelamento
+  
+  // Erro
+  errorCode           String?
+  errorMessage        String?
+  
+  // Multi-tenant
+  companyId           String?             @db.Uuid
+  company             Company?            @relation(fields: [companyId], references: [id])
+  
+  // Auditoria
+  createdBy           String?             @db.Uuid
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([companyId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([pixKey])
+  @@map("pix_transactions")
+}
+
+enum PixTransactionType {
+  PAYMENT     // Pagamento
+  TRANSFER    // Transferência
+  REFUND      // Devolução
+}
+
+enum PixTransactionStatus {
+  PENDING     // Pendente
+  PROCESSING  // Processando
+  COMPLETED   // Concluído
+  FAILED      // Falhou
+  CANCELLED   // Cancelado
+  SCHEDULED   // Agendado
 }
 
 // =============================================================================

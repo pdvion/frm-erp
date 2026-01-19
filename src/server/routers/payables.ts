@@ -1436,4 +1436,107 @@ export const payablesRouter = createTRPCRouter({
         fatorVencimento: info.fatorVencimento,
       };
     }),
+
+  // Validar chave PIX e buscar dados do destinatário
+  validatePixKey: tenantProcedure
+    .input(z.object({
+      keyType: z.enum(["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]),
+      pixKey: z.string(),
+    }))
+    .mutation(async ({ input }) => {
+      // Validação básica do formato da chave
+      const { keyType, pixKey } = input;
+      
+      // Validar formato conforme tipo
+      if (keyType === "CPF" && !/^\d{11}$/.test(pixKey.replace(/\D/g, ""))) {
+        return { valid: false, error: "CPF inválido" };
+      }
+      if (keyType === "CNPJ" && !/^\d{14}$/.test(pixKey.replace(/\D/g, ""))) {
+        return { valid: false, error: "CNPJ inválido" };
+      }
+      if (keyType === "EMAIL" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pixKey)) {
+        return { valid: false, error: "E-mail inválido" };
+      }
+      if (keyType === "PHONE" && !/^\d{10,11}$/.test(pixKey.replace(/\D/g, ""))) {
+        return { valid: false, error: "Telefone inválido" };
+      }
+      if (keyType === "EVP" && !/^[a-f0-9-]{36}$/i.test(pixKey)) {
+        return { valid: false, error: "Chave aleatória inválida" };
+      }
+
+      // TODO: Integrar com API bancária real para validar chave
+      // Por enquanto, simular resposta de sucesso
+      const mockRecipients: Record<string, { name: string; document: string; bank: string }> = {
+        "CPF": { name: "João da Silva", document: "***.***.***-00", bank: "Banco do Brasil" },
+        "CNPJ": { name: "Empresa Exemplo LTDA", document: "**.***.***/0001-**", bank: "Itaú" },
+        "EMAIL": { name: "Maria Santos", document: "***.***.***-00", bank: "Nubank" },
+        "PHONE": { name: "Pedro Oliveira", document: "***.***.***-00", bank: "Bradesco" },
+        "EVP": { name: "Fornecedor ABC", document: "**.***.***/0001-**", bank: "Santander" },
+      };
+
+      const recipient = mockRecipients[keyType];
+
+      return {
+        valid: true,
+        recipientName: recipient.name,
+        recipientDocument: recipient.document,
+        bankName: recipient.bank,
+      };
+    }),
+
+  // Enviar PIX
+  sendPix: tenantProcedure
+    .input(z.object({
+      keyType: z.enum(["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]),
+      pixKey: z.string(),
+      value: z.number().positive(),
+      description: z.string().optional(),
+      recipientName: z.string().optional(),
+      recipientDocument: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { keyType, pixKey, value, description, recipientName, recipientDocument } = input;
+
+      // Gerar ID único para a transação
+      const transactionId = `E${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+      // Criar registro da transação PIX
+      const pixTransaction = await prisma.pixTransaction.create({
+        data: {
+          transactionId,
+          type: "PAYMENT",
+          status: "PROCESSING",
+          pixKeyType: keyType,
+          pixKey,
+          value,
+          description,
+          recipientName: recipientName || "Destinatário",
+          recipientDocument: recipientDocument || "",
+          companyId: ctx.companyId,
+          createdBy: ctx.tenant.userId,
+        },
+      });
+
+      // TODO: Integrar com API bancária real para processar o PIX
+      // Por enquanto, simular processamento assíncrono
+      // Em produção, isso seria feito via webhook do banco
+
+      // Simular conclusão após 2 segundos (em produção seria via webhook)
+      setTimeout(async () => {
+        await prisma.pixTransaction.update({
+          where: { id: pixTransaction.id },
+          data: {
+            status: "COMPLETED",
+            completedAt: new Date(),
+            e2eId: `E${Date.now()}`,
+          },
+        });
+      }, 2000);
+
+      return {
+        success: true,
+        transactionId: pixTransaction.transactionId,
+        status: "PROCESSING",
+      };
+    }),
 });
