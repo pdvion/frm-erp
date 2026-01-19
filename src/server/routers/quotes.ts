@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { emitEvent } from "../services/events";
 
 export const quotesRouter = createTRPCRouter({
   // Listar cotações
@@ -167,6 +168,17 @@ export const quotesRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      // Emitir evento de cotação criada
+      emitEvent("quote.created", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        quoteId: quote.id,
+        code: quote.code,
+        supplierName: quote.supplier.companyName,
+        totalValue: quote.totalValue,
+      });
+
       return quote;
     }),
 
@@ -212,6 +224,26 @@ export const quotesRouter = createTRPCRouter({
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
+
+      // Emitir evento se status mudou
+      if (data.status && data.status !== oldQuote.status) {
+        const eventType = data.status === "SENT" ? "quote.sent"
+          : data.status === "APPROVED" ? "quote.approved"
+          : data.status === "REJECTED" ? "quote.rejected"
+          : null;
+
+        if (eventType) {
+          emitEvent(eventType, {
+            userId: ctx.tenant.userId ?? undefined,
+            companyId: ctx.companyId ?? undefined,
+          }, {
+            quoteId: quote.id,
+            code: quote.code,
+            supplierName: quote.supplier.companyName,
+            totalValue: quote.totalValue,
+          });
+        }
+      }
 
       return quote;
     }),

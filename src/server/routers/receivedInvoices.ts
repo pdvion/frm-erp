@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { emitEvent } from "../services/events";
 
 // Parser de XML NFe
 interface NFeData {
@@ -625,6 +626,16 @@ export const receivedInvoicesRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      // Emitir evento de NFe aprovada
+      emitEvent("nfe.approved", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        invoiceId: invoice.id,
+        nfeNumber: invoice.invoiceNumber,
+        supplierName: invoice.supplierName,
+      });
+
       return updatedInvoice;
     }),
 
@@ -661,6 +672,17 @@ export const receivedInvoicesRouter = createTRPCRouter({
       await auditUpdate("ReceivedInvoice", invoice.id, invoice.accessKey, invoice, updatedInvoice, {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
+      });
+
+      // Emitir evento de NFe rejeitada
+      emitEvent("nfe.rejected", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        invoiceId: invoice.id,
+        nfeNumber: invoice.invoiceNumber,
+        supplierName: invoice.supplierName,
+        reason: input.reason,
       });
 
       return updatedInvoice;
