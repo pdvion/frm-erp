@@ -16,6 +16,7 @@ import {
   Building2,
   History,
   Receipt,
+  Calendar,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
@@ -32,7 +33,10 @@ export default function PayableDetailPage() {
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleReason, setRescheduleReason] = useState("");
 
   // Form de pagamento
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split("T")[0]);
@@ -56,6 +60,15 @@ export default function PayableDetailPage() {
   const cancelMutation = trpc.payables.cancel.useMutation({
     onSuccess: () => {
       setShowCancelModal(false);
+      refetch();
+    },
+  });
+
+  const rescheduleMutation = trpc.payables.reschedule.useMutation({
+    onSuccess: () => {
+      setShowRescheduleModal(false);
+      setRescheduleDate("");
+      setRescheduleReason("");
       refetch();
     },
   });
@@ -158,6 +171,18 @@ export default function PayableDetailPage() {
             </div>
             <div className="flex items-center gap-4">
               <CompanySwitcher />
+              {canPay && (
+                <button
+                  onClick={() => {
+                    setRescheduleDate(new Date(payable.dueDate).toISOString().split("T")[0]);
+                    setShowRescheduleModal(true);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Reprogramar
+                </button>
+              )}
               {canCancel && (
                 <button
                   onClick={() => setShowCancelModal(true)}
@@ -573,6 +598,83 @@ export default function PayableDetailPage() {
                   <CheckCircle className="w-4 h-4" />
                 )}
                 Confirmar Pagamento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Reprogramar Vencimento</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nova Data de Vencimento *
+                </label>
+                <input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Motivo da Reprogramação *
+                </label>
+                <textarea
+                  value={rescheduleReason}
+                  onChange={(e) => setRescheduleReason(e.target.value)}
+                  rows={3}
+                  placeholder="Informe o motivo da reprogramação..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+
+            {rescheduleMutation.error && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {rescheduleMutation.error.message}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowRescheduleModal(false);
+                  setRescheduleDate("");
+                  setRescheduleReason("");
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (!rescheduleDate || !rescheduleReason.trim()) {
+                    alert("Preencha todos os campos obrigatórios");
+                    return;
+                  }
+                  rescheduleMutation.mutate({
+                    payableId: id,
+                    newDueDate: new Date(rescheduleDate),
+                    reason: rescheduleReason,
+                  });
+                }}
+                disabled={rescheduleMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {rescheduleMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Calendar className="w-4 h-4" />
+                )}
+                Confirmar Reprogramação
               </button>
             </div>
           </div>
