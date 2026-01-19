@@ -1,0 +1,396 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { trpc } from "@/lib/trpc";
+import { CompanySwitcher } from "@/components/CompanySwitcher";
+import {
+  ChevronLeft,
+  Building2,
+  Settings,
+  Upload,
+  Download,
+  FileText,
+  CheckCircle,
+  AlertTriangle,
+  Loader2,
+  Save,
+  RefreshCw,
+} from "lucide-react";
+
+const BANKS = [
+  { code: "001", name: "Banco do Brasil" },
+  { code: "033", name: "Santander" },
+  { code: "104", name: "Caixa Econômica Federal" },
+  { code: "237", name: "Bradesco" },
+  { code: "341", name: "Itaú" },
+  { code: "756", name: "Sicoob" },
+];
+
+export default function CnabConfigPage() {
+  const params = useParams();
+  const accountId = params.id as string;
+
+  const [config, setConfig] = useState({
+    bankCode: "001" as "001" | "033" | "104" | "237" | "341" | "756",
+    layout: "240" as "240" | "400",
+    agencia: "",
+    agenciaDigito: "",
+    conta: "",
+    contaDigito: "",
+    convenio: "",
+    carteira: "",
+    cedente: "",
+    cedenteDocumento: "",
+  });
+
+  const [retornoFile, setRetornoFile] = useState<File | null>(null);
+  const [retornoContent, setRetornoContent] = useState("");
+
+  const { data: account, isLoading: loadingAccount } = trpc.bankAccounts.byId.useQuery(
+    { id: accountId },
+    { enabled: !!accountId }
+  );
+
+  const { data: savedConfig, isLoading: loadingConfig, refetch } = trpc.cnab.getConfig.useQuery(
+    { bankAccountId: accountId },
+    { enabled: !!accountId }
+  );
+
+  const saveConfigMutation = trpc.cnab.saveConfig.useMutation({
+    onSuccess: () => {
+      alert("Configuração salva com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      alert(`Erro ao salvar: ${error.message}`);
+    },
+  });
+
+  const processRetornoMutation = trpc.cnab.processRetorno.useMutation({
+    onSuccess: (data) => {
+      alert(
+        `Retorno processado!\n` +
+        `Banco: ${data.banco}\n` +
+        `Títulos pagos: ${data.totalPagos}\n` +
+        `Títulos rejeitados: ${data.totalRejeitados}\n` +
+        `Valor total: R$ ${data.valorTotal?.toFixed(2)}\n` +
+        `Baixados no sistema: ${data.baixados}`
+      );
+    },
+    onError: (error) => {
+      alert(`Erro ao processar retorno: ${error.message}`);
+    },
+  });
+
+  useEffect(() => {
+    if (savedConfig) {
+      setConfig({
+        bankCode: savedConfig.bankCode as typeof config.bankCode,
+        layout: savedConfig.layout as typeof config.layout,
+        agencia: savedConfig.agencia,
+        agenciaDigito: savedConfig.agenciaDigito || "",
+        conta: savedConfig.conta,
+        contaDigito: savedConfig.contaDigito,
+        convenio: savedConfig.convenio || "",
+        carteira: savedConfig.carteira || "",
+        cedente: savedConfig.cedente,
+        cedenteDocumento: savedConfig.cedenteDocumento,
+      });
+    }
+  }, [savedConfig]);
+
+  const handleSave = () => {
+    if (!config.agencia || !config.conta || !config.contaDigito || !config.cedente || !config.cedenteDocumento) {
+      alert("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    saveConfigMutation.mutate({
+      bankAccountId: accountId,
+      config,
+    });
+  };
+
+  const handleRetornoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setRetornoFile(file);
+      const content = await file.text();
+      setRetornoContent(content);
+    }
+  };
+
+  const handleProcessRetorno = () => {
+    if (!retornoContent) {
+      alert("Selecione um arquivo de retorno");
+      return;
+    }
+
+    processRetornoMutation.mutate({
+      bankAccountId: accountId,
+      content: retornoContent,
+    });
+  };
+
+  if (loadingAccount || loadingConfig) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <Link href={`/treasury/accounts/${accountId}`} className="text-gray-500 hover:text-gray-700">
+                <ChevronLeft className="w-5 h-5" />
+              </Link>
+              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <Settings className="w-5 h-5 text-blue-600" />
+                Configuração CNAB
+              </h1>
+            </div>
+            <CompanySwitcher />
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Conta Info */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <Building2 className="w-8 h-8 text-blue-600" />
+            <div>
+              <h2 className="font-medium text-gray-900">{account?.name}</h2>
+              <p className="text-sm text-gray-500">
+                {account?.bankName} • Ag: {account?.agency} • CC: {account?.accountNumber}
+              </p>
+            </div>
+            {savedConfig && (
+              <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
+                <CheckCircle className="w-3 h-3" />
+                Configurado
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Configuração */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-gray-500" />
+            Dados para Remessa/Retorno
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Banco *</label>
+              <select
+                value={config.bankCode}
+                onChange={(e) => setConfig({ ...config, bankCode: e.target.value as typeof config.bankCode })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                {BANKS.map((bank) => (
+                  <option key={bank.code} value={bank.code}>
+                    {bank.code} - {bank.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Layout *</label>
+              <select
+                value={config.layout}
+                onChange={(e) => setConfig({ ...config, layout: e.target.value as typeof config.layout })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="240">CNAB 240</option>
+                <option value="400">CNAB 400</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Carteira</label>
+              <input
+                type="text"
+                value={config.carteira}
+                onChange={(e) => setConfig({ ...config, carteira: e.target.value })}
+                placeholder="Ex: 17"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Agência *</label>
+              <input
+                type="text"
+                value={config.agencia}
+                onChange={(e) => setConfig({ ...config, agencia: e.target.value.replace(/\D/g, "") })}
+                placeholder="0000"
+                maxLength={5}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Ag.</label>
+              <input
+                type="text"
+                value={config.agenciaDigito}
+                onChange={(e) => setConfig({ ...config, agenciaDigito: e.target.value })}
+                placeholder="X"
+                maxLength={1}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Conta *</label>
+              <input
+                type="text"
+                value={config.conta}
+                onChange={(e) => setConfig({ ...config, conta: e.target.value.replace(/\D/g, "") })}
+                placeholder="000000"
+                maxLength={12}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dígito CC *</label>
+              <input
+                type="text"
+                value={config.contaDigito}
+                onChange={(e) => setConfig({ ...config, contaDigito: e.target.value })}
+                placeholder="X"
+                maxLength={1}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Convênio</label>
+              <input
+                type="text"
+                value={config.convenio}
+                onChange={(e) => setConfig({ ...config, convenio: e.target.value })}
+                placeholder="Código do convênio"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ/CPF Cedente *</label>
+              <input
+                type="text"
+                value={config.cedenteDocumento}
+                onChange={(e) => setConfig({ ...config, cedenteDocumento: e.target.value.replace(/\D/g, "") })}
+                placeholder="00000000000000"
+                maxLength={14}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Cedente *</label>
+            <input
+              type="text"
+              value={config.cedente}
+              onChange={(e) => setConfig({ ...config, cedente: e.target.value })}
+              placeholder="Razão Social da Empresa"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              disabled={saveConfigMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {saveConfigMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Salvar Configuração
+            </button>
+          </div>
+        </div>
+
+        {/* Importar Retorno */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-gray-500" />
+            Importar Arquivo de Retorno
+          </h2>
+
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-4">
+            <input
+              type="file"
+              accept=".ret,.txt,.RET,.TXT"
+              onChange={handleRetornoFileChange}
+              className="hidden"
+              id="retorno-file"
+            />
+            <label htmlFor="retorno-file" className="cursor-pointer">
+              <Download className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600">
+                {retornoFile ? (
+                  <span className="text-green-600 font-medium">{retornoFile.name}</span>
+                ) : (
+                  <>Clique para selecionar o arquivo de retorno</>
+                )}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">Formatos aceitos: .ret, .txt</p>
+            </label>
+          </div>
+
+          {retornoFile && (
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-4">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-500" />
+                <span className="text-sm text-gray-700">{retornoFile.name}</span>
+                <span className="text-xs text-gray-400">
+                  ({(retornoFile.size / 1024).toFixed(1)} KB)
+                </span>
+              </div>
+              <button
+                onClick={handleProcessRetorno}
+                disabled={processRetornoMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {processRetornoMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+                Processar Retorno
+              </button>
+            </div>
+          )}
+
+          {!savedConfig && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Configure os dados CNAB antes de processar arquivos de retorno.
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
