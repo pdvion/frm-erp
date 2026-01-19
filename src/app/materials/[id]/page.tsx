@@ -121,7 +121,7 @@ export default function MaterialDetailPage() {
                 </div>
                 <div>
                   <dt className="text-sm text-gray-500">Unidade</dt>
-                  <dd className="text-sm font-medium text-gray-900">{material.unit}</dd>
+                  <dd className="text-sm font-medium text-gray-900">{material.unit || "UN"}</dd>
                 </div>
                 <div>
                   <dt className="text-sm text-gray-500">NCM</dt>

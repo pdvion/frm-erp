@@ -292,7 +292,7 @@ export default function QuoteDetailPage() {
                           {formatCurrency(item.unitPrice)}
                         </td>
                         <td className="px-4 py-4 text-right font-medium text-gray-900">
-                          {formatCurrency(item.totalPrice)}
+                          {formatCurrency(item.totalPrice || item.quantity * item.unitPrice)}
                         </td>
                         {canEdit && (
                           <td className="px-4 py-4">

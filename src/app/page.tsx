@@ -85,7 +85,7 @@ export default function LandingPage() {
 
   // Extrair configurações com fallbacks
   const heroTitle = String(landingConfig?.hero?.title || "Gestão Industrial");
-  const heroSubtitle = String(landingConfig?.hero?.subtitle || "Completa e Moderna");
+  const heroSubtitle = String(landingConfig?.hero?.subtitle || "Completa e Moderna").trim();
   const heroDescription = String(landingConfig?.hero?.description || "ERP desenvolvido para indústrias, com módulos avançados de compras, estoque, produção e financeiro.");
   const heroImage = landingConfig?.hero?.image as string | null;
   const features: Feature[] = (landingConfig?.features as Feature[]) || DEFAULT_FEATURES;

@@ -99,7 +99,7 @@ export default function MFASetupPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
                   Configurar Autenticador
                 </h2>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-sm leading-relaxed">
                   Use um aplicativo autenticador como Google Authenticator, 
                   1Password ou Authy para gerar códigos de verificação.
                 </p>
