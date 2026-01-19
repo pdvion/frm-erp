@@ -116,6 +116,7 @@ src/
 │   ├── CompanySwitcher.tsx
 │   └── UserMenu.tsx
 ├── lib/                   # Utilitários
+│   ├── formatters.ts      # Formatadores (moeda, data, CNPJ, etc.)
 │   ├── prisma.ts          # Cliente Prisma
 │   ├── trpc.ts            # Cliente tRPC
 │   └── supabase/          # Clientes Supabase
@@ -170,6 +171,31 @@ export function MaterialCard({ material }: Props) {
   return <div>...</div>;
 }
 ```
+
+### Formatadores (src/lib/formatters.ts)
+```typescript
+import { formatCurrency, formatDate, formatCNPJ } from "@/lib/formatters";
+
+// ✅ CORRETO - Usar utilitário centralizado
+{formatCurrency(order.totalValue)}  // "R$ 1.234,56"
+{formatDate(order.createdAt)}       // "19/01/2026"
+{formatCNPJ(supplier.cnpj)}         // "12.345.678/0001-90"
+
+// ❌ EVITAR - Criar formatador local
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", {...}).format(value);
+};
+```
+
+**Funções disponíveis:**
+- `formatCurrency()` - Moeda (R$ 1.234,56)
+- `formatNumber()` - Decimal (1.234,56)
+- `formatPercent()` - Percentual (15,0%)
+- `formatDate()` - Data (19/01/2026)
+- `formatDateTime()` - Data/hora (19/01/2026 14:30)
+- `formatCNPJ()`, `formatCPF()`, `formatPhone()`, `formatCEP()`
+- `formatNFeKey()` - Chave NFe formatada
+- `formatHours()` - Horas decimais (8.5 → "08:30")
 
 ### tRPC Router
 ```typescript
