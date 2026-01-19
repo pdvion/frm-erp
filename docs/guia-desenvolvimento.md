@@ -27,7 +27,7 @@
 |--------|------|-----------------|
 | CP10 | Materiais | ✅ Migrado |
 | CP11 | Fornecedores | ✅ Migrado |
-| CP11 | Preview XML NFe | 🔴 Pendente |
+| CP14-P | Preview XML NFe | ✅ Migrado |
 | CP12 | Cotações | ✅ Migrado |
 | CP13 | Pedidos de Compra | ✅ Migrado |
 | CP14 | Entrada NFe | ✅ Migrado |

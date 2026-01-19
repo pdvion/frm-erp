@@ -4,9 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { 
   Clock, 
-  Calendar,
   Plus, 
-  Search,
   User,
   CheckCircle,
   AlertTriangle,
@@ -16,7 +14,6 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 
 export default function TimesheetPage() {
-  const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
@@ -31,8 +28,9 @@ export default function TimesheetPage() {
   });
 
   const formatHours = (hours: number) => {
-    const h = Math.floor(hours);
-    const m = Math.round((hours - h) * 60);
+    const totalMinutes = Math.round(hours * 60);
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   };
 
@@ -97,7 +95,7 @@ export default function TimesheetPage() {
               <User className="w-4 h-4" />
               <span className="text-sm">Total Funcionários</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{timeEntries?.length || 0}</p>
+            <p className="text-2xl font-bold text-gray-900">{employees?.employees?.length || 0}</p>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
             <div className="flex items-center gap-2 text-green-500 mb-2">

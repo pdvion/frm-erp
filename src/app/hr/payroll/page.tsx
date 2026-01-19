@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { 
   DollarSign, 
-  Calendar,
   Plus, 
   Search,
   FileText,
@@ -28,12 +27,11 @@ export default function PayrollPage() {
     month: selectedMonth,
   });
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }),
+    []
+  );
+  const formatCurrency = (value: number) => currencyFormatter.format(value);
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -50,16 +48,20 @@ export default function PayrollPage() {
     }
   };
 
-  // Calcular totais
-  const totals = payrolls?.reduce(
-    (acc, p) => ({
-      grossSalary: acc.grossSalary + (p.grossSalary || 0),
-      netSalary: acc.netSalary + (p.netSalary || 0),
-      inss: acc.inss + (p.inssValue || 0),
-      irrf: acc.irrf + (p.irrfValue || 0),
-    }),
-    { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 }
-  ) || { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 };
+  // Calcular totais com useMemo para evitar recálculo a cada render
+  const totals = useMemo(
+    () =>
+      payrolls?.reduce(
+        (acc, p) => ({
+          grossSalary: acc.grossSalary + (p.grossSalary || 0),
+          netSalary: acc.netSalary + (p.netSalary || 0),
+          inss: acc.inss + (p.inssValue || 0),
+          irrf: acc.irrf + (p.irrfValue || 0),
+        }),
+        { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 }
+      ) ?? { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 },
+    [payrolls]
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">

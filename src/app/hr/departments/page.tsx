@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { 
   Building2, 
-  ChevronLeft, 
   Plus, 
   Search,
   Users,
@@ -87,6 +85,7 @@ export default function DepartmentsPage() {
               <input
                 type="text"
                 placeholder="Buscar por nome ou código..."
+                aria-label="Buscar departamentos"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -171,7 +170,15 @@ export default function DepartmentsPage() {
 
         {/* Modal de Formulário */}
         {showForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div 
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setShowForm(false);
+                resetForm();
+              }
+            }}
+          >
             <div 
               className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
               role="dialog"
