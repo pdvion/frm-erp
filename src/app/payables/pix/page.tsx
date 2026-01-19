@@ -39,8 +39,8 @@ export default function PixPage() {
 
   const { data, isLoading, error } = trpc.payables.listPixTransactions.useQuery({
     search: search || undefined,
-    status: status as PixStatus | undefined,
-    type: type as "PAYMENT" | "TRANSFER" | undefined,
+    status: (status || undefined) as "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED" | "SCHEDULED" | undefined,
+    type: (type || undefined) as "PAYMENT" | "TRANSFER" | "REFUND" | undefined,
     page,
     limit: 15,
   });
@@ -90,7 +90,7 @@ export default function PixPage() {
         actions={
           <div className="flex items-center gap-2">
             <Link
-              href="/payables/pix/schedule"
+              href="/payables/pix/schedules"
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Clock className="w-5 h-5" />
