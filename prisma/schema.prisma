@@ -118,6 +118,7 @@ model Company {
   salesOrders      SalesOrder[]
   stockLocations   StockLocation[]
   stockTransfers   StockTransfer[]
+  stockReservations StockReservation[]
   physicalInventories PhysicalInventory[]
   departments      Department[]
   jobPositions     JobPosition[]
@@ -377,6 +378,7 @@ model Material {
   inventoryCounts     InventoryCount[]
   receivingItems      MaterialReceivingItem[]
   issuedInvoiceItems  IssuedInvoiceItem[]
+  stockReservations   StockReservation[]
 
   @@map("materials")
 }
@@ -459,6 +461,7 @@ model Inventory {
   companyId       String?
   company         Company?      @relation(fields: [companyId], references: [id])
   inventoryType   InventoryType @default(RAW_MATERIAL)
+  location        String?       // local de armazenamento
   quantity        Float         @default(0)
   reservedQty     Float         @default(0) // quantidade reservada
   availableQty    Float         @default(0) // quantidade disponível
@@ -468,7 +471,8 @@ model Inventory {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  movements       InventoryMovement[]
+  movements           InventoryMovement[]
+  reservations        StockReservation[]
 
   @@unique([materialId, companyId, inventoryType])
   @@map("inventory")
@@ -496,6 +500,40 @@ model InventoryMovement {
 
   @@index([inventoryId, movementDate])
   @@map("inventory_movements")
+}
+
+// =============================================================================
+// RESERVAS E TRANSFERÊNCIAS DE ESTOQUE
+// =============================================================================
+
+model StockReservation {
+  id              String    @id @default(uuid())
+  code            Int       // código sequencial
+  companyId       String?
+  company         Company?  @relation(fields: [companyId], references: [id])
+  inventoryId     String
+  inventory       Inventory @relation(fields: [inventoryId], references: [id])
+  materialId      String
+  material        Material  @relation(fields: [materialId], references: [id])
+  quantity        Float     // quantidade reservada
+  consumedQty     Float     @default(0) // quantidade já consumida
+  documentType    String    // REQUISITION, PRODUCTION_ORDER, SALES_ORDER
+  documentId      String    // ID do documento
+  documentNumber  String?   // número do documento
+  status          String    @default("ACTIVE") // ACTIVE, CONSUMED, RELEASED, EXPIRED
+  expiresAt       DateTime? // data de expiração
+  notes           String?
+  createdBy       String?
+  createdAt       DateTime  @default(now())
+  releasedAt      DateTime?
+  releasedBy      String?
+  releaseReason   String?
+  consumedAt      DateTime?
+
+  @@unique([companyId, code])
+  @@index([materialId, status])
+  @@index([documentType, documentId])
+  @@map("stock_reservations")
 }
 
 // =============================================================================

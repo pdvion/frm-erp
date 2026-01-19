@@ -224,7 +224,7 @@ export const receivingRouter = createTRPCRouter({
               materialId_companyId_inventoryType: { 
                 materialId: item.materialId, 
                 companyId: ctx.companyId!, 
-                inventoryType: "RAW_MATERIAL" 
+                inventoryType: "RAW_MATERIAL",
               },
             },
             create: {

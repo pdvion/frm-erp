@@ -325,4 +325,290 @@ export const inventoryRouter = createTRPCRouter({
       itemCount: itemsToNotify.length,
     };
   }),
+
+  // ==========================================================================
+  // RESERVAS DE ESTOQUE
+  // ==========================================================================
+
+  // Criar reserva de material
+  createReservation: tenantProcedure
+    .input(z.object({
+      materialId: z.string(),
+      quantity: z.number().positive(),
+      documentType: z.string(), // REQUISITION, PRODUCTION_ORDER, SALES_ORDER
+      documentId: z.string(),
+      documentNumber: z.string().optional(),
+      expiresAt: z.date().optional(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Buscar estoque disponível
+      const inventory = await ctx.prisma.inventory.findFirst({
+        where: {
+          materialId: input.materialId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+        include: { material: true },
+      });
+
+      if (!inventory) {
+        throw new Error("Material não encontrado no estoque");
+      }
+
+      if (inventory.availableQty < input.quantity) {
+        throw new Error(`Quantidade disponível insuficiente. Disponível: ${inventory.availableQty}`);
+      }
+
+      // Gerar código da reserva
+      const lastReservation = await ctx.prisma.stockReservation.findFirst({
+        where: tenantFilter(ctx.companyId, false),
+        orderBy: { code: "desc" },
+      });
+      const nextCode = (lastReservation?.code || 0) + 1;
+
+      // Criar reserva
+      const reservation = await ctx.prisma.stockReservation.create({
+        data: {
+          code: nextCode,
+          companyId: ctx.companyId,
+          inventoryId: inventory.id,
+          materialId: input.materialId,
+          quantity: input.quantity,
+          documentType: input.documentType,
+          documentId: input.documentId,
+          documentNumber: input.documentNumber,
+          expiresAt: input.expiresAt,
+          notes: input.notes,
+          status: "ACTIVE",
+          createdBy: ctx.tenant.userId,
+        },
+        include: {
+          material: true,
+          inventory: true,
+        },
+      });
+
+      // Atualizar quantidade reservada no estoque
+      await ctx.prisma.inventory.update({
+        where: { id: inventory.id },
+        data: {
+          reservedQty: inventory.reservedQty + input.quantity,
+          availableQty: inventory.availableQty - input.quantity,
+        },
+      });
+
+      await auditCreate("StockReservation", reservation, String(nextCode), {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      return reservation;
+    }),
+
+  // Liberar reserva
+  releaseReservation: tenantProcedure
+    .input(z.object({
+      reservationId: z.string(),
+      reason: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const reservation = await ctx.prisma.stockReservation.findFirst({
+        where: {
+          id: input.reservationId,
+          ...tenantFilter(ctx.companyId, false),
+          status: "ACTIVE",
+        },
+        include: { inventory: true },
+      });
+
+      if (!reservation) {
+        throw new Error("Reserva não encontrada ou já liberada");
+      }
+
+      // Atualizar reserva
+      const updated = await ctx.prisma.stockReservation.update({
+        where: { id: input.reservationId },
+        data: {
+          status: "RELEASED",
+          releasedAt: new Date(),
+          releasedBy: ctx.tenant.userId,
+          releaseReason: input.reason,
+        },
+      });
+
+      // Devolver quantidade ao estoque disponível
+      await ctx.prisma.inventory.update({
+        where: { id: reservation.inventoryId },
+        data: {
+          reservedQty: reservation.inventory.reservedQty - reservation.quantity,
+          availableQty: reservation.inventory.availableQty + reservation.quantity,
+        },
+      });
+
+      return updated;
+    }),
+
+  // Consumir reserva (baixa efetiva)
+  consumeReservation: tenantProcedure
+    .input(z.object({
+      reservationId: z.string(),
+      quantity: z.number().positive().optional(), // Se não informado, consome tudo
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const reservation = await ctx.prisma.stockReservation.findFirst({
+        where: {
+          id: input.reservationId,
+          ...tenantFilter(ctx.companyId, false),
+          status: "ACTIVE",
+        },
+        include: { inventory: { include: { material: true } } },
+      });
+
+      if (!reservation) {
+        throw new Error("Reserva não encontrada ou já consumida");
+      }
+
+      const quantityToConsume = input.quantity || reservation.quantity;
+      if (quantityToConsume > reservation.quantity) {
+        throw new Error("Quantidade a consumir maior que a reservada");
+      }
+
+      // Criar movimento de saída
+      await ctx.prisma.inventoryMovement.create({
+        data: {
+          inventoryId: reservation.inventoryId,
+          movementType: "EXIT",
+          quantity: quantityToConsume,
+          unitCost: reservation.inventory.unitCost,
+          totalCost: quantityToConsume * reservation.inventory.unitCost,
+          balanceAfter: reservation.inventory.quantity - quantityToConsume,
+          documentType: reservation.documentType,
+          documentNumber: reservation.documentNumber,
+          notes: `Consumo de reserva #${reservation.code}`,
+          userId: ctx.tenant.userId,
+        },
+      });
+
+      // Atualizar estoque
+      await ctx.prisma.inventory.update({
+        where: { id: reservation.inventoryId },
+        data: {
+          quantity: reservation.inventory.quantity - quantityToConsume,
+          reservedQty: reservation.inventory.reservedQty - quantityToConsume,
+          totalCost: (reservation.inventory.quantity - quantityToConsume) * reservation.inventory.unitCost,
+          lastMovementAt: new Date(),
+        },
+      });
+
+      // Atualizar ou finalizar reserva
+      const remainingQty = reservation.quantity - quantityToConsume;
+      const updated = await ctx.prisma.stockReservation.update({
+        where: { id: input.reservationId },
+        data: {
+          quantity: remainingQty,
+          consumedQty: (reservation.consumedQty || 0) + quantityToConsume,
+          status: remainingQty <= 0 ? "CONSUMED" : "ACTIVE",
+          ...(remainingQty <= 0 && { consumedAt: new Date() }),
+        },
+      });
+
+      return updated;
+    }),
+
+  // Listar reservas
+  listReservations: tenantProcedure
+    .input(z.object({
+      materialId: z.string().optional(),
+      documentType: z.string().optional(),
+      documentId: z.string().optional(),
+      status: z.enum(["ACTIVE", "CONSUMED", "RELEASED", "EXPIRED"]).optional(),
+      page: z.number().min(1).default(1),
+      limit: z.number().min(1).max(100).default(20),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const { materialId, documentType, documentId, status, page = 1, limit = 20 } = input ?? {};
+
+      const where = {
+        ...tenantFilter(ctx.companyId, false),
+        ...(materialId && { materialId }),
+        ...(documentType && { documentType }),
+        ...(documentId && { documentId }),
+        ...(status && { status }),
+      };
+
+      const [reservations, total] = await Promise.all([
+        ctx.prisma.stockReservation.findMany({
+          where,
+          include: {
+            material: { select: { id: true, code: true, description: true, unit: true } },
+            inventory: true,
+          },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        ctx.prisma.stockReservation.count({ where }),
+      ]);
+
+      return { reservations, total };
+    }),
+
+  // ==========================================================================
+  // DASHBOARD DE ESTOQUE
+  // ==========================================================================
+
+  dashboard: tenantProcedure.query(async ({ ctx }) => {
+    const [
+      totalItems,
+      totalValue,
+      lowStockCount,
+      recentMovements,
+      pendingTransfers,
+      activeReservations,
+    ] = await Promise.all([
+      // Total de itens em estoque
+      ctx.prisma.inventory.count({
+        where: { ...tenantFilter(ctx.companyId, false), quantity: { gt: 0 } },
+      }),
+      // Valor total em estoque
+      ctx.prisma.inventory.aggregate({
+        where: tenantFilter(ctx.companyId, false),
+        _sum: { totalCost: true },
+      }),
+      // Itens com estoque baixo
+      ctx.prisma.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(*) as count FROM inventory i
+        JOIN materials m ON i."materialId" = m.id
+        WHERE i."companyId" = ${ctx.companyId}::uuid
+        AND i.quantity < COALESCE(m."minQuantity", 0)
+        AND m."minQuantity" > 0
+      `,
+      // Movimentos recentes
+      ctx.prisma.inventoryMovement.findMany({
+        where: { inventory: tenantFilter(ctx.companyId, false) },
+        include: {
+          inventory: { include: { material: { select: { code: true, description: true } } } },
+        },
+        orderBy: { movementDate: "desc" },
+        take: 10,
+      }),
+      // Transferências pendentes (usando enum TransferStatus)
+      ctx.prisma.stockTransfer.count({
+        where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" as const },
+      }),
+      // Reservas ativas
+      ctx.prisma.stockReservation.count({
+        where: { ...tenantFilter(ctx.companyId, false), status: "ACTIVE" },
+      }),
+    ]);
+
+    return {
+      totalItems,
+      totalValue: totalValue._sum.totalCost || 0,
+      lowStockCount: Number(lowStockCount[0]?.count || 0),
+      pendingTransfers,
+      activeReservations,
+      recentMovements,
+    };
+  }),
 });
