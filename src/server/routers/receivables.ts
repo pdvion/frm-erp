@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { emitEvent } from "../services/events";
 
 export const receivablesRouter = createTRPCRouter({
   // Listar títulos a receber
@@ -442,4 +443,252 @@ export const receivablesRouter = createTRPCRouter({
 
       return aging;
     }),
+
+  // Reprogramar vencimento
+  reschedule: tenantProcedure
+    .input(z.object({
+      receivableId: z.string(),
+      newDueDate: z.date(),
+      reason: z.string().min(1),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const receivable = await ctx.prisma.accountsReceivable.findFirst({
+        where: {
+          id: input.receivableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!receivable) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Título não encontrado" });
+      }
+
+      if (receivable.status === "PAID" || receivable.status === "CANCELLED") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Não é possível reprogramar título pago ou cancelado" });
+      }
+
+      const oldDueDate = receivable.dueDate.toLocaleDateString("pt-BR");
+      const newDueDateStr = input.newDueDate.toLocaleDateString("pt-BR");
+
+      return ctx.prisma.accountsReceivable.update({
+        where: { id: input.receivableId },
+        data: {
+          dueDate: input.newDueDate,
+          notes: `${receivable.notes || ""}\n[REPROGRAMADO] De ${oldDueDate} para ${newDueDateStr} - ${input.reason}`.trim(),
+        },
+      });
+    }),
+
+  // Estornar recebimento
+  reversePayment: tenantProcedure
+    .input(z.object({
+      paymentId: z.string(),
+      reason: z.string().min(1),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payment = await ctx.prisma.receivablePayment.findFirst({
+        where: { id: input.paymentId },
+        include: { receivable: true },
+      });
+
+      if (!payment) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Recebimento não encontrado" });
+      }
+
+      // Verificar permissão
+      const receivable = await ctx.prisma.accountsReceivable.findFirst({
+        where: {
+          id: payment.receivableId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!receivable) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Sem permissão para estornar este recebimento" });
+      }
+
+      // Atualizar título
+      const newPaidValue = Math.max(0, receivable.paidValue - payment.value);
+      const newStatus = newPaidValue <= 0 ? "PENDING" : "PARTIAL";
+
+      await ctx.prisma.accountsReceivable.update({
+        where: { id: payment.receivableId },
+        data: {
+          paidValue: newPaidValue,
+          discountValue: receivable.discountValue - payment.discountValue,
+          interestValue: receivable.interestValue - payment.interestValue,
+          fineValue: receivable.fineValue - payment.fineValue,
+          status: newStatus,
+          paidAt: null,
+          notes: `${receivable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${payment.value.toFixed(2)}`.trim(),
+        },
+      });
+
+      // Marcar pagamento como estornado
+      return ctx.prisma.receivablePayment.update({
+        where: { id: input.paymentId },
+        data: {
+          notes: `${payment.notes || ""}\n[ESTORNADO] ${input.reason}`.trim(),
+        },
+      });
+    }),
+
+  // Top clientes por valor a receber
+  topCustomers: tenantProcedure
+    .input(z.object({ limit: z.number().default(10) }).optional())
+    .query(async ({ input, ctx }) => {
+      const limit = input?.limit || 10;
+
+      const result = await ctx.prisma.accountsReceivable.groupBy({
+        by: ["customerId"],
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+        },
+        _sum: { netValue: true, paidValue: true },
+        _count: true,
+        orderBy: { _sum: { netValue: "desc" } },
+        take: limit,
+      });
+
+      // Buscar nomes dos clientes
+      const customerIds = result.map((r) => r.customerId);
+      const customers = await ctx.prisma.customer.findMany({
+        where: { id: { in: customerIds } },
+        select: { id: true, companyName: true, tradeName: true },
+      });
+
+      const customerMap = new Map(customers.map((c) => [c.id, c]));
+
+      return result.map((r) => {
+        const customer = customerMap.get(r.customerId);
+        return {
+          customerId: r.customerId,
+          customerName: customer?.tradeName || customer?.companyName || "Desconhecido",
+          totalValue: r._sum.netValue || 0,
+          paidValue: r._sum.paidValue || 0,
+          remainingValue: (r._sum.netValue || 0) - (r._sum.paidValue || 0),
+          count: r._count,
+        };
+      });
+    }),
+
+  // Estatísticas completas
+  stats: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const [
+      totalPending,
+      totalOverdue,
+      dueToday,
+      dueThisWeek,
+      dueThisMonth,
+      receivedThisMonth,
+      byStatus,
+    ] = await Promise.all([
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PENDING",
+        },
+        _sum: { netValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PENDING",
+          dueDate: { lt: today },
+        },
+        _sum: { netValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PENDING",
+          dueDate: {
+            gte: today,
+            lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
+          },
+        },
+        _sum: { netValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PENDING",
+          dueDate: { gte: today, lte: endOfWeek },
+        },
+        _sum: { netValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PENDING",
+          dueDate: { gte: today, lte: endOfMonth },
+        },
+        _sum: { netValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.aggregate({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: "PAID",
+          paidAt: {
+            gte: new Date(today.getFullYear(), today.getMonth(), 1),
+            lte: endOfMonth,
+          },
+        },
+        _sum: { paidValue: true },
+        _count: true,
+      }),
+      ctx.prisma.accountsReceivable.groupBy({
+        by: ["status"],
+        where: tenantFilter(ctx.companyId, false),
+        _sum: { netValue: true },
+        _count: true,
+      }),
+    ]);
+
+    return {
+      totalPending: {
+        value: totalPending._sum.netValue || 0,
+        count: totalPending._count,
+      },
+      totalOverdue: {
+        value: totalOverdue._sum.netValue || 0,
+        count: totalOverdue._count,
+      },
+      dueToday: {
+        value: dueToday._sum.netValue || 0,
+        count: dueToday._count,
+      },
+      dueThisWeek: {
+        value: dueThisWeek._sum.netValue || 0,
+        count: dueThisWeek._count,
+      },
+      dueThisMonth: {
+        value: dueThisMonth._sum.netValue || 0,
+        count: dueThisMonth._count,
+      },
+      receivedThisMonth: {
+        value: receivedThisMonth._sum.paidValue || 0,
+        count: receivedThisMonth._count,
+      },
+      byStatus: byStatus.map((s) => ({
+        status: s.status,
+        value: s._sum.netValue || 0,
+        count: s._count,
+      })),
+    };
+  }),
 });
