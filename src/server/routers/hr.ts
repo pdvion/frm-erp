@@ -2,6 +2,24 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { Prisma } from "@prisma/client";
 
+// Tabela INSS 2024
+function calculateINSS(salary: number): number {
+  if (salary <= 1412.00) return salary * 0.075;
+  if (salary <= 2666.68) return 105.90 + (salary - 1412.00) * 0.09;
+  if (salary <= 4000.03) return 218.82 + (salary - 2666.68) * 0.12;
+  if (salary <= 7786.02) return 378.82 + (salary - 4000.03) * 0.14;
+  return 908.85; // Teto
+}
+
+// Tabela IRRF 2024
+function calculateIRRF(baseCalculo: number): number {
+  if (baseCalculo <= 2259.20) return 0;
+  if (baseCalculo <= 2826.65) return (baseCalculo * 0.075) - 169.44;
+  if (baseCalculo <= 3751.05) return (baseCalculo * 0.15) - 381.44;
+  if (baseCalculo <= 4664.68) return (baseCalculo * 0.225) - 662.77;
+  return (baseCalculo * 0.275) - 896.00;
+}
+
 export const hrRouter = createTRPCRouter({
   // ==========================================================================
   // DEPARTAMENTOS
@@ -215,7 +233,10 @@ export const hrRouter = createTRPCRouter({
     }),
 
   createPayroll: tenantProcedure
-    .input(z.object({ referenceMonth: z.number().min(1).max(12), referenceYear: z.number() }))
+    .input(z.object({
+      referenceMonth: z.number().min(1).max(12),
+      referenceYear: z.number(),
+    }))
     .mutation(async ({ input, ctx }) => {
       const lastPayroll = await ctx.prisma.payroll.findFirst({
         where: tenantFilter(ctx.companyId, false),
@@ -243,6 +264,207 @@ export const hrRouter = createTRPCRouter({
           },
         },
       });
+    }),
+
+  // Calcular folha de pagamento
+  calculatePayroll: tenantProcedure
+    .input(z.object({ payrollId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const payroll = await ctx.prisma.payroll.findFirst({
+        where: { id: input.payrollId, ...tenantFilter(ctx.companyId, false) },
+        include: {
+          items: {
+            include: {
+              employee: true,
+              events: true,
+            },
+          },
+        },
+      });
+
+      if (!payroll) {
+        throw new Error("Folha não encontrada");
+      }
+
+      let totalGross = 0;
+      let totalNet = 0;
+      let totalDeductions = 0;
+
+      for (const item of payroll.items) {
+        const baseSalary = item.baseSalary;
+        
+        // Calcular proventos
+        const earnings = item.events
+          .filter((e) => !e.isDeduction)
+          .reduce((sum, e) => sum + e.value, 0);
+        
+        // Calcular descontos (exceto INSS e IRRF)
+        const otherDeductions = item.events
+          .filter((e) => e.isDeduction && !["INSS", "IRRF"].includes(e.code))
+          .reduce((sum, e) => sum + e.value, 0);
+
+        const grossSalary = baseSalary + earnings;
+        
+        // Calcular INSS (tabela simplificada 2024)
+        const inss = calculateINSS(grossSalary);
+        
+        // Calcular IRRF (tabela simplificada 2024)
+        const irrf = calculateIRRF(grossSalary - inss);
+        
+        // Calcular FGTS (8%)
+        const fgts = grossSalary * 0.08;
+        
+        const itemDeductions = inss + irrf + otherDeductions;
+        const netSalary = grossSalary - itemDeductions;
+
+        // Atualizar item
+        await ctx.prisma.payrollItem.update({
+          where: { id: item.id },
+          data: {
+            grossSalary,
+            inss,
+            irrf,
+            fgts,
+            totalDeductions: itemDeductions,
+            netSalary,
+          },
+        });
+
+        totalGross += grossSalary;
+        totalNet += netSalary;
+        totalDeductions += itemDeductions;
+      }
+
+      // Atualizar totais da folha
+      return ctx.prisma.payroll.update({
+        where: { id: input.payrollId },
+        data: {
+          totalGross,
+          totalNet,
+          totalDeductions,
+          status: "PROCESSED",
+          processedAt: new Date(),
+          processedBy: ctx.tenant.userId,
+        },
+      });
+    }),
+
+  // Adicionar evento à folha de um funcionário
+  addPayrollEvent: tenantProcedure
+    .input(z.object({
+      payrollItemId: z.string(),
+      code: z.string(),
+      description: z.string(),
+      isDeduction: z.boolean().default(false),
+      value: z.number(),
+      reference: z.number().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.payrollEvent.create({
+        data: {
+          payrollItemId: input.payrollItemId,
+          code: input.code,
+          description: input.description,
+          type: input.isDeduction ? "DEDUCTION" : "ALLOWANCE",
+          isDeduction: input.isDeduction,
+          value: input.value,
+          reference: input.reference,
+        },
+      });
+    }),
+
+  // Remover evento da folha
+  removePayrollEvent: tenantProcedure
+    .input(z.object({ eventId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.payrollEvent.delete({
+        where: { id: input.eventId },
+      });
+    }),
+
+  // Aprovar folha de pagamento
+  approvePayroll: tenantProcedure
+    .input(z.object({ payrollId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const payroll = await ctx.prisma.payroll.findFirst({
+        where: { id: input.payrollId, ...tenantFilter(ctx.companyId, false) },
+      });
+
+      if (!payroll) {
+        throw new Error("Folha não encontrada");
+      }
+
+      if (payroll.status !== "PROCESSED") {
+        throw new Error("Folha precisa ser processada antes de aprovar");
+      }
+
+      return ctx.prisma.payroll.update({
+        where: { id: input.payrollId },
+        data: {
+          status: "APPROVED",
+          approvedAt: new Date(),
+          approvedBy: ctx.tenant.userId,
+        },
+      });
+    }),
+
+  // Resumo da folha
+  payrollSummary: tenantProcedure
+    .input(z.object({ payrollId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const payroll = await ctx.prisma.payroll.findFirst({
+        where: { id: input.payrollId, ...tenantFilter(ctx.companyId, false) },
+        include: {
+          items: {
+            include: {
+              employee: { select: { id: true, name: true, department: { select: { name: true } } } },
+              events: true,
+            },
+          },
+        },
+      });
+
+      if (!payroll) {
+        throw new Error("Folha não encontrada");
+      }
+
+      // Agrupar por departamento
+      const byDepartment = payroll.items.reduce((acc, item) => {
+        const dept = item.employee.department?.name || "Sem Departamento";
+        if (!acc[dept]) {
+          acc[dept] = { count: 0, gross: 0, net: 0 };
+        }
+        acc[dept].count++;
+        acc[dept].gross += item.grossSalary;
+        acc[dept].net += item.netSalary;
+        return acc;
+      }, {} as Record<string, { count: number; gross: number; net: number }>);
+
+      // Resumo de eventos
+      const allEvents = payroll.items.flatMap((i) => i.events);
+      const eventSummary = allEvents.reduce((acc, event) => {
+        if (!acc[event.code]) {
+          acc[event.code] = { description: event.description, isDeduction: event.isDeduction, total: 0, count: 0 };
+        }
+        acc[event.code].total += event.value;
+        acc[event.code].count++;
+        return acc;
+      }, {} as Record<string, { description: string; isDeduction: boolean; total: number; count: number }>);
+
+      // Totais de INSS, IRRF e FGTS
+      const totals = payroll.items.reduce((acc, item) => {
+        acc.inss += item.inss;
+        acc.irrf += item.irrf;
+        acc.fgts += item.fgts;
+        return acc;
+      }, { inss: 0, irrf: 0, fgts: 0 });
+
+      return {
+        payroll,
+        byDepartment: Object.entries(byDepartment).map(([name, data]) => ({ name, ...data })),
+        eventSummary: Object.entries(eventSummary).map(([code, data]) => ({ code, ...data })),
+        totals,
+      };
     }),
 
   // ==========================================================================
