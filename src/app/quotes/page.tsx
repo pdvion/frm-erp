@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
+import type { KanbanColumn } from "@/components/ui";
 import {
   FileText,
   Plus,
@@ -19,6 +22,7 @@ import {
   AlertCircle,
   Filter,
   BarChart3,
+  Calendar,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -31,10 +35,39 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   CANCELLED: { label: "Cancelada", color: "bg-gray-100 text-gray-500", icon: <XCircle className="w-4 h-4" /> },
 };
 
+// Status colors for Kanban
+const statusColors: Record<string, string> = {
+  DRAFT: "#9CA3AF",
+  PENDING: "#F59E0B",
+  SENT: "#3B82F6",
+  RECEIVED: "#8B5CF6",
+  APPROVED: "#10B981",
+  REJECTED: "#EF4444",
+  CANCELLED: "#6B7280",
+};
+
+interface Quote {
+  id: string;
+  code: number;
+  status: string;
+  requestDate: Date | string;
+  totalValue: number;
+  supplier: {
+    code: number;
+    companyName: string;
+    tradeName: string | null;
+  };
+  _count: {
+    items: number;
+  };
+}
+
 export default function QuotesPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(1);
+  const [view, setView] = useState<"list" | "kanban">("list");
 
   const { data, isLoading, error } = trpc.quotes.list.useQuery({
     search: search || undefined,
@@ -55,6 +88,42 @@ export default function QuotesPage() {
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("pt-BR");
   };
+
+  // Prepare Kanban columns
+  const kanbanColumns = useMemo((): KanbanColumn<Quote>[] => {
+    if (!data?.quotes) return [];
+
+    const statusOrder = ["DRAFT", "PENDING", "SENT", "RECEIVED", "APPROVED", "REJECTED"];
+    
+    return statusOrder.map((status) => ({
+      id: status,
+      title: statusConfig[status]?.label || status,
+      color: statusColors[status] || "#6B7280",
+      items: data.quotes.filter((q) => q.status === status) as Quote[],
+    }));
+  }, [data?.quotes]);
+
+  const handleCardClick = (quote: Quote) => {
+    router.push(`/quotes/${quote.id}`);
+  };
+
+  const renderQuoteCard = ({ item }: { item: Quote }) => (
+    <KanbanCard
+      title={`#${item.code.toString().padStart(6, "0")}`}
+      subtitle={item.supplier.tradeName || item.supplier.companyName}
+      footer={
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {formatDate(item.requestDate)}
+          </span>
+          <span className="font-medium text-gray-900">
+            {formatCurrency(item.totalValue)}
+          </span>
+        </div>
+      }
+    />
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -145,6 +214,7 @@ export default function QuotesPage() {
                 ))}
               </select>
             </div>
+            <ViewToggle view={view} onViewChange={setView} />
           </div>
         </div>
 
@@ -177,9 +247,17 @@ export default function QuotesPage() {
               Nova Cotação
             </Link>
           </div>
+        ) : view === "kanban" ? (
+          /* Kanban View */
+          <KanbanBoard
+            columns={kanbanColumns}
+            renderCard={renderQuoteCard}
+            onCardClick={handleCardClick}
+            emptyMessage="Nenhuma cotação encontrada"
+          />
         ) : (
           <>
-            {/* Table */}
+            {/* Table View */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
