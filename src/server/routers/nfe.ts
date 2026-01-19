@@ -554,9 +554,46 @@ export const nfeRouter = createTRPCRouter({
         }
       }
 
+      // Gerar título a pagar automaticamente
+      let payableId: string | null = null;
+      if (invoice.supplierId && invoice.totalInvoice > 0) {
+        // Gerar código sequencial para o título
+        const lastPayable = await prisma.accountsPayable.findFirst({
+          where: tenantFilter(ctx.companyId, false),
+          orderBy: { code: "desc" },
+        });
+        const nextCode = (lastPayable?.code || 0) + 1;
+
+        // Calcular data de vencimento (30 dias após emissão, ou usar duplicatas se existirem)
+        const dueDate = new Date(invoice.issueDate);
+        dueDate.setDate(dueDate.getDate() + 30);
+
+        // Criar título a pagar
+        const payable = await prisma.accountsPayable.create({
+          data: {
+            code: nextCode,
+            supplierId: invoice.supplierId,
+            description: `NFe ${invoice.invoiceNumber} - ${invoice.supplierName}`,
+            documentNumber: String(invoice.invoiceNumber),
+            documentType: "INVOICE",
+            documentId: invoice.id,
+            invoiceId: invoice.id,
+            issueDate: invoice.issueDate,
+            dueDate,
+            originalValue: invoice.totalInvoice,
+            netValue: invoice.totalInvoice,
+            status: "PENDING",
+            companyId: ctx.companyId,
+            notes: `Título gerado automaticamente a partir da NFe ${invoice.invoiceNumber}`,
+          },
+        });
+        payableId = payable.id;
+      }
+
       return {
         invoice: updated,
         movementsCreated: movements.length,
+        payableId,
       };
     }),
 
