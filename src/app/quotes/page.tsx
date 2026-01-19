@@ -69,7 +69,7 @@ export default function QuotesPage() {
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"list" | "kanban">("list");
 
-  const { data, isLoading, error } = trpc.quotes.list.useQuery({
+  const { data, isLoading, error, refetch } = trpc.quotes.list.useQuery({
     search: search || undefined,
     status: statusFilter ? (statusFilter as "DRAFT" | "PENDING" | "SENT" | "RECEIVED" | "APPROVED" | "REJECTED" | "CANCELLED") : undefined,
     page,
@@ -105,6 +105,22 @@ export default function QuotesPage() {
 
   const handleCardClick = (quote: Quote) => {
     router.push(`/quotes/${quote.id}`);
+  };
+
+  const updateStatusMutation = trpc.quotes.update.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleCardMove = (itemId: string, _fromColumnId: string, toColumnId: string) => {
+    const validStatuses = ["DRAFT", "PENDING", "SENT", "RECEIVED", "APPROVED", "REJECTED", "CANCELLED"] as const;
+    if (validStatuses.includes(toColumnId as typeof validStatuses[number])) {
+      updateStatusMutation.mutate({
+        id: itemId,
+        status: toColumnId as typeof validStatuses[number],
+      });
+    }
   };
 
   const renderQuoteCard = ({ item }: { item: Quote }) => (
@@ -253,6 +269,7 @@ export default function QuotesPage() {
             columns={kanbanColumns}
             renderCard={renderQuoteCard}
             onCardClick={handleCardClick}
+            onCardMove={handleCardMove}
             emptyMessage="Nenhuma cotação encontrada"
           />
         ) : (

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { LayoutGrid, List } from "lucide-react";
+import { useState, DragEvent } from "react";
+import { LayoutGrid, List, GripVertical } from "lucide-react";
 
 export interface KanbanColumn<T> {
   id: string;
@@ -19,6 +19,7 @@ interface KanbanBoardProps<T> {
   columns: KanbanColumn<T>[];
   renderCard: (props: KanbanCardProps<T>) => React.ReactNode;
   onCardClick?: (item: T) => void;
+  onCardMove?: (itemId: string, fromColumnId: string, toColumnId: string) => void;
   emptyMessage?: string;
 }
 
@@ -26,9 +27,45 @@ export function KanbanBoard<T extends { id: string }>({
   columns,
   renderCard,
   onCardClick,
+  onCardMove,
   emptyMessage = "Nenhum item encontrado",
 }: KanbanBoardProps<T>) {
+  const [draggedItem, setDraggedItem] = useState<{ id: string; columnId: string } | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+
   const totalItems = columns.reduce((sum, col) => sum + col.items.length, 0);
+
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, itemId: string, columnId: string) => {
+    setDraggedItem({ id: itemId, columnId });
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", JSON.stringify({ itemId, columnId }));
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverColumn(null);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, columnId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverColumn(columnId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverColumn(null);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, toColumnId: string) => {
+    e.preventDefault();
+    setDragOverColumn(null);
+
+    if (!draggedItem || !onCardMove) return;
+    if (draggedItem.columnId === toColumnId) return;
+
+    onCardMove(draggedItem.id, draggedItem.columnId, toColumnId);
+    setDraggedItem(null);
+  };
 
   if (totalItems === 0) {
     return (
@@ -38,12 +75,19 @@ export function KanbanBoard<T extends { id: string }>({
     );
   }
 
+  const isDraggable = !!onCardMove;
+
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
       {columns.map((column) => (
         <div
           key={column.id}
-          className="flex-shrink-0 w-72 bg-gray-50 rounded-lg"
+          className={`flex-shrink-0 w-72 bg-gray-50 rounded-lg transition-all ${
+            dragOverColumn === column.id ? "ring-2 ring-blue-400 bg-blue-50" : ""
+          }`}
+          onDragOver={(e) => isDraggable && handleDragOver(e, column.id)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => isDraggable && handleDrop(e, column.id)}
         >
           {/* Column Header */}
           <div
@@ -62,18 +106,28 @@ export function KanbanBoard<T extends { id: string }>({
           </div>
 
           {/* Column Content */}
-          <div className="p-2 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto">
+          <div className="p-2 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto min-h-[100px]">
             {column.items.length === 0 ? (
               <div className="p-4 text-center text-sm text-gray-400">
-                Nenhum item
+                {dragOverColumn === column.id ? "Solte aqui" : "Nenhum item"}
               </div>
             ) : (
               column.items.map((item) => (
                 <div
                   key={item.id}
+                  draggable={isDraggable}
+                  onDragStart={(e) => isDraggable && handleDragStart(e, item.id, column.id)}
+                  onDragEnd={handleDragEnd}
                   onClick={() => onCardClick?.(item)}
-                  className="cursor-pointer"
+                  className={`cursor-pointer transition-opacity ${
+                    draggedItem?.id === item.id ? "opacity-50" : ""
+                  } ${isDraggable ? "cursor-grab active:cursor-grabbing" : ""}`}
                 >
+                  {isDraggable && (
+                    <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-gray-400">
+                      <GripVertical className="w-4 h-4" />
+                    </div>
+                  )}
                   {renderCard({ item, onClick: onCardClick })}
                 </div>
               ))

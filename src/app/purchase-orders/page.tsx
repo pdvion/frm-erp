@@ -69,7 +69,7 @@ export default function PurchaseOrdersPage() {
   const [page, setPage] = useState(1);
   const [view, setView] = useState<"list" | "kanban">("list");
 
-  const { data, isLoading, error } = trpc.purchaseOrders.list.useQuery({
+  const { data, isLoading, error, refetch } = trpc.purchaseOrders.list.useQuery({
     search: search || undefined,
     status: statusFilter ? (statusFilter as "DRAFT" | "PENDING" | "APPROVED" | "SENT" | "PARTIAL" | "COMPLETED" | "CANCELLED") : undefined,
     page,
@@ -105,6 +105,22 @@ export default function PurchaseOrdersPage() {
 
   const handleCardClick = (order: PurchaseOrder) => {
     router.push(`/purchase-orders/${order.id}`);
+  };
+
+  const updateStatusMutation = trpc.purchaseOrders.updateStatus.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleCardMove = (itemId: string, _fromColumnId: string, toColumnId: string) => {
+    const validStatuses = ["DRAFT", "PENDING", "APPROVED", "SENT", "PARTIAL", "COMPLETED", "CANCELLED"] as const;
+    if (validStatuses.includes(toColumnId as typeof validStatuses[number])) {
+      updateStatusMutation.mutate({
+        id: itemId,
+        status: toColumnId as typeof validStatuses[number],
+      });
+    }
   };
 
   const renderOrderCard = ({ item }: { item: PurchaseOrder }) => (
@@ -246,6 +262,7 @@ export default function PurchaseOrdersPage() {
             columns={kanbanColumns}
             renderCard={renderOrderCard}
             onCardClick={handleCardClick}
+            onCardMove={handleCardMove}
             emptyMessage="Nenhum pedido encontrado"
           />
         ) : (
