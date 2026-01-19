@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate } from "../services/audit";
+import { emitEvent } from "../services/events";
 
 export const inventoryRouter = createTRPCRouter({
   // Listar estoque (com filtro de tenant)
@@ -305,24 +306,22 @@ export const inventoryRouter = createTRPCRouter({
       return { created: 0, message: "Nenhum item com estoque baixo" };
     }
 
-    // Criar notificação consolidada
-    const notification = await ctx.prisma.notification.create({
-      data: {
-        userId: ctx.tenant.userId,
-        companyId: ctx.companyId,
-        type: "LOW_STOCK",
-        category: "INVENTORY",
-        title: `${itemsToNotify.length} material(is) com estoque baixo`,
-        message: itemsToNotify.length <= 3
-          ? itemsToNotify.map((i) => i.material.description).join(", ")
-          : `${itemsToNotify.slice(0, 3).map((i) => i.material.description).join(", ")} e mais ${itemsToNotify.length - 3}`,
-        link: "/inventory?belowMinimum=true",
-      },
-    });
+    // Emitir eventos de estoque baixo para cada item
+    for (const item of itemsToNotify) {
+      const isCritical = item.quantity <= (item.material.minQuantity || 0) * 0.5;
+      emitEvent(isCritical ? "inventory.criticalStock" : "inventory.lowStock", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        materialId: item.materialId,
+        materialName: item.material.description,
+        currentQty: item.quantity,
+        minQty: item.material.minQuantity || 0,
+      });
+    }
 
     return {
-      created: 1,
-      notificationId: notification.id,
+      created: itemsToNotify.length,
       itemCount: itemsToNotify.length,
     };
   }),
