@@ -42,8 +42,11 @@
 #### PRODUÇÃO (OP) - 10 módulos
 | Código | Nome | Status Migração |
 |--------|------|-----------------|
-| OP10 | Ordens Produção | 🔴 Pendente |
-| OP15-50 | Apontamento/Gestão | 🔴 Pendente |
+| OP10 | Ordens Produção | ✅ Migrado |
+| OP15 | MRP Planejamento | ✅ Migrado |
+| OP20 | MES Chão de Fábrica | ✅ Migrado |
+| OP30 | OEE Indicadores | ✅ Migrado |
+| OP40 | Centros de Trabalho | ✅ Migrado |
 
 #### VENDAS (PV/VD) - 4 módulos
 | Código | Nome | Status Migração |
