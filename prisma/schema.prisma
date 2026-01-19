@@ -376,6 +376,7 @@ model Material {
   stockTransferItems  StockTransferItem[]
   inventoryCounts     InventoryCount[]
   receivingItems      MaterialReceivingItem[]
+  issuedInvoiceItems  IssuedInvoiceItem[]
 
   @@map("materials")
 }
@@ -1292,10 +1293,11 @@ model Customer {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   
-  receivables  AccountsReceivable[]
-  leads        Lead[]
-  salesQuotes  SalesQuote[]
-  salesOrders  SalesOrder[]
+  receivables     AccountsReceivable[]
+  leads           Lead[]
+  salesQuotes     SalesQuote[]
+  salesOrders     SalesOrder[]
+  issuedInvoices  IssuedInvoice[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -1346,6 +1348,8 @@ model AccountsReceivable {
   
   payments          ReceivablePayment[]
   bankTransactions  BankTransaction[]
+  issuedInvoice     IssuedInvoice?     @relation(fields: [issuedInvoiceId], references: [id])
+  issuedInvoiceId   String?            @db.Uuid
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -1930,8 +1934,9 @@ model SalesOrder {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   
-  items       SalesOrderItem[]
-  sourceQuote SalesQuote?      @relation("QuoteToOrder")
+  items          SalesOrderItem[]
+  sourceQuote    SalesQuote?      @relation("QuoteToOrder")
+  issuedInvoices IssuedInvoice[]  @relation("IssuedInvoiceOrder")
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2886,4 +2891,83 @@ model TaskHistory {
 
   @@index([taskId])
   @@map("task_history")
+}
+
+// =============================================================================
+// NOTAS FISCAIS EMITIDAS (SAÍDA)
+// =============================================================================
+model IssuedInvoice {
+  id                String              @id @default(uuid()) @db.Uuid
+  code              Int
+  invoiceNumber     String
+  series            String              @default("1")
+  model             String              @default("55")
+  accessKey         String?             @unique
+  protocolNumber    String?
+  companyId         String?             @db.Uuid
+  customerId        String              @db.Uuid
+  customer          Customer            @relation(fields: [customerId], references: [id])
+  salesOrderId      String?             @db.Uuid
+  salesOrder        SalesOrder?         @relation("IssuedInvoiceOrder", fields: [salesOrderId], references: [id])
+  issueDate         DateTime            @default(now())
+  operationType     String              @default("SALE")
+  status            String              @default("DRAFT")
+  subtotal          Float               @default(0)
+  discountValue     Float               @default(0)
+  shippingValue     Float               @default(0)
+  icmsBase          Float?              @default(0)
+  icmsValue         Float?              @default(0)
+  ipiValue          Float?              @default(0)
+  pisValue          Float?              @default(0)
+  cofinsValue       Float?              @default(0)
+  totalValue        Float               @default(0)
+  paymentTerms      String?
+  notes             String?
+  xmlContent        String?
+  authorizedAt      DateTime?
+  cancelledAt       DateTime?
+  cancellationReason String?
+  correctionSeq     Int?                @default(0)
+  lastCorrection    String?
+  lastCorrectionAt  DateTime?
+  createdBy         String?             @db.Uuid
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  items             IssuedInvoiceItem[]
+  receivables       AccountsReceivable[]
+
+  @@index([companyId])
+  @@index([customerId])
+  @@index([salesOrderId])
+  @@index([status])
+  @@index([issueDate])
+  @@map("issued_invoices")
+}
+
+model IssuedInvoiceItem {
+  id              String        @id @default(uuid()) @db.Uuid
+  invoiceId       String        @db.Uuid
+  invoice         IssuedInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  materialId      String        @db.Uuid
+  material        Material      @relation(fields: [materialId], references: [id])
+  description     String?
+  quantity        Float
+  unit            String        @default("UN")
+  unitPrice       Float
+  discountPercent Float?        @default(0)
+  totalPrice      Float
+  sequence        Int           @default(0)
+  cfop            String?
+  ncm             String?
+  icmsBase        Float?        @default(0)
+  icmsRate        Float?        @default(0)
+  icmsValue       Float?        @default(0)
+  ipiBase         Float?        @default(0)
+  ipiRate         Float?        @default(0)
+  ipiValue        Float?        @default(0)
+  createdAt       DateTime      @default(now())
+
+  @@index([invoiceId])
+  @@map("issued_invoice_items")
 }

@@ -34,6 +34,7 @@ import { systemLogsRouter } from "./systemLogs";
 import { tasksRouter } from "./tasks";
 import { dashboardRouter } from "./dashboard";
 import { sefazRouter } from "./sefaz";
+import { billingRouter } from "./billing";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -71,6 +72,7 @@ export const appRouter = createTRPCRouter({
   systemLogs: systemLogsRouter,
   tasks: tasksRouter,
   sefaz: sefazRouter,
+  billing: billingRouter,
 });
 
 export type AppRouter = typeof appRouter;

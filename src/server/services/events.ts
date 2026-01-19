@@ -30,6 +30,9 @@ export type EventType =
   | "receivable.dueSoon"
   | "receivable.overdue"
   | "receivable.received"
+  | "invoice.created"
+  | "invoice.authorized"
+  | "invoice.cancelled"
   | "user.created"
   | "user.invited"
   | "system.error";
