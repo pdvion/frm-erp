@@ -1219,84 +1219,91 @@ export const payablesRouter = createTRPCRouter({
   // Listar transações PIX (pagamentos realizados)
   listPixTransactions: tenantProcedure
     .input(z.object({
-      status: z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED"]).optional(),
-      type: z.enum(["PAYMENT", "TRANSFER"]).optional(),
+      status: z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED", "SCHEDULED"]).optional(),
+      type: z.enum(["PAYMENT", "TRANSFER", "REFUND"]).optional(),
       search: z.string().optional(),
       page: z.number().default(1),
       limit: z.number().default(15),
     }).optional())
     .query(async ({ input, ctx }) => {
-      const { status, search, page = 1, limit = 15 } = input || {};
+      const { status, type, search, page = 1, limit = 15 } = input || {};
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-      // Buscar pagamentos (todos os títulos pagos recentemente)
-      const where: Prisma.AccountsPayableWhereInput = {
-        ...tenantFilter(ctx.companyId, false),
+      // Buscar transações PIX
+      const where: Prisma.PixTransactionWhereInput = {
+        companyId: ctx.companyId,
       };
 
       if (status) {
-        if (status === "COMPLETED") {
-          where.status = "PAID";
-        } else if (status === "PENDING" || status === "PROCESSING") {
-          where.status = "PENDING";
-        }
+        where.status = status;
+      }
+
+      if (type) {
+        where.type = type;
       }
 
       if (search) {
         where.OR = [
+          { recipientName: { contains: search, mode: "insensitive" as const } },
+          { pixKey: { contains: search, mode: "insensitive" as const } },
           { description: { contains: search, mode: "insensitive" as const } },
-          { supplier: { companyName: { contains: search, mode: "insensitive" as const } } },
         ];
       }
 
-      const baseWhere = tenantFilter(ctx.companyId, false);
+      const baseWhere = { companyId: ctx.companyId };
 
-      const [payables, total] = await Promise.all([
-        prisma.accountsPayable.findMany({
+      const [pixTransactions, total] = await Promise.all([
+        prisma.pixTransaction.findMany({
           where,
-          include: {
-            supplier: { select: { id: true, companyName: true, cnpj: true } },
-          },
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.accountsPayable.count({ where }),
+        prisma.pixTransaction.count({ where }),
       ]);
 
       // Estatísticas
-      const [pendingStats, completedTodayStats, totalMonthStats] = await Promise.all([
-        prisma.accountsPayable.aggregate({
+      const [pendingStats, processingStats, completedTodayStats, totalMonthStats] = await Promise.all([
+        prisma.pixTransaction.aggregate({
           where: { ...baseWhere, status: "PENDING" },
           _count: true,
-          _sum: { netValue: true },
+          _sum: { value: true },
         }),
-        prisma.accountsPayable.aggregate({
-          where: { ...baseWhere, status: "PAID", paidAt: { gte: today } },
+        prisma.pixTransaction.aggregate({
+          where: { ...baseWhere, status: "PROCESSING" },
           _count: true,
-          _sum: { netValue: true },
+          _sum: { value: true },
         }),
-        prisma.accountsPayable.aggregate({
-          where: { ...baseWhere, paidAt: { gte: startOfMonth } },
+        prisma.pixTransaction.aggregate({
+          where: { ...baseWhere, status: "COMPLETED", completedAt: { gte: today } },
           _count: true,
-          _sum: { netValue: true },
+          _sum: { value: true },
+        }),
+        prisma.pixTransaction.aggregate({
+          where: { ...baseWhere, completedAt: { gte: startOfMonth } },
+          _count: true,
+          _sum: { value: true },
         }),
       ]);
 
-      const transactions = payables.map((p) => ({
+      const transactions = pixTransactions.map((p) => ({
         id: p.id,
+        transactionId: p.transactionId,
         createdAt: p.createdAt,
-        type: "PAYMENT" as const,
-        recipientName: p.supplier?.companyName || "N/A",
-        recipientDocument: p.supplier?.cnpj || "",
-        pixKey: p.supplier?.cnpj || "",
-        pixKeyType: "CNPJ",
-        value: Number(p.netValue),
-        status: p.status === "PAID" ? "COMPLETED" : "PENDING",
-        e2eId: `E${Date.now()}${p.id.slice(0, 8)}`,
+        type: p.type,
+        recipientName: p.recipientName,
+        recipientDocument: p.recipientDocument || "",
+        pixKey: p.pixKey,
+        pixKeyType: p.pixKeyType,
+        value: Number(p.value),
+        status: p.status,
+        e2eId: p.e2eId || "",
+        description: p.description || "",
+        scheduledAt: p.scheduledAt,
+        completedAt: p.completedAt,
       }));
 
       return {
@@ -1309,13 +1316,13 @@ export const payablesRouter = createTRPCRouter({
         },
         stats: {
           pending: pendingStats._count || 0,
-          pendingValue: Number(pendingStats._sum?.netValue) || 0,
-          processing: 0,
-          processingValue: 0,
+          pendingValue: Number(pendingStats._sum?.value) || 0,
+          processing: processingStats._count || 0,
+          processingValue: Number(processingStats._sum?.value) || 0,
           completedToday: completedTodayStats._count || 0,
-          completedValueToday: Number(completedTodayStats._sum?.netValue) || 0,
+          completedValueToday: Number(completedTodayStats._sum?.value) || 0,
           totalMonth: totalMonthStats._count || 0,
-          totalValueMonth: Number(totalMonthStats._sum?.netValue) || 0,
+          totalValueMonth: Number(totalMonthStats._sum?.value) || 0,
         },
       };
     }),
@@ -1538,5 +1545,58 @@ export const payablesRouter = createTRPCRouter({
         transactionId: pixTransaction.transactionId,
         status: "PROCESSING",
       };
+    }),
+
+  // Cancelar agendamento PIX
+  cancelPixSchedule: tenantProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const transaction = await prisma.pixTransaction.findFirst({
+        where: {
+          id: input.id,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Agendamento não encontrado",
+        });
+      }
+
+      if (transaction.status !== "SCHEDULED") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Apenas agendamentos pendentes podem ser cancelados",
+        });
+      }
+
+      // Verificar se falta menos de 1 hora para execução
+      if (transaction.scheduledAt) {
+        const now = new Date();
+        const scheduledTime = new Date(transaction.scheduledAt);
+        const diffMs = scheduledTime.getTime() - now.getTime();
+        const diffHours = diffMs / (1000 * 60 * 60);
+
+        if (diffHours < 1) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Não é possível cancelar agendamentos com menos de 1 hora para execução",
+          });
+        }
+      }
+
+      await prisma.pixTransaction.update({
+        where: { id: input.id },
+        data: {
+          status: "CANCELLED",
+          cancelledAt: new Date(),
+        },
+      });
+
+      return { success: true, message: "Agendamento cancelado com sucesso" };
     }),
 });
