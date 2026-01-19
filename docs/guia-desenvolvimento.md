@@ -30,7 +30,7 @@
 | CP11 | Preview XML NFe | 🔴 Pendente |
 | CP12 | Cotações | ✅ Migrado |
 | CP13 | Pedidos de Compra | ✅ Migrado |
-| CP14 | Entrada NFe | 🔴 **CRÍTICO** |
+| CP14 | Entrada NFe | ✅ Migrado |
 | CP15 | Saída Materiais | 🔴 Pendente |
 | CP16 | Ativos | 🟡 Baixa prioridade |
 
@@ -54,7 +54,10 @@
 #### FINANCEIRO (FN)
 | Código | Nome | Status Migração |
 |--------|------|-----------------|
-| FN10 | Contas a Pagar | 🔴 Pendente |
+| FN10 | Contas a Pagar | ✅ Migrado |
+| FN11 | Boletos | ✅ Migrado |
+| FN12 | PIX | ✅ Migrado |
+| FN13 | Fluxo de Caixa | ✅ Migrado |
 
 #### RH/DP - 8 módulos
 | Código | Nome | Status Migração |
