@@ -246,4 +246,243 @@ export const bankAccountsRouter = createTRPCRouter({
 
       return transaction;
     }),
+
+  // Transferência entre contas
+  transfer: tenantProcedure
+    .input(z.object({
+      fromAccountId: z.string(),
+      toAccountId: z.string(),
+      value: z.number().positive(),
+      transferDate: z.date(),
+      description: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const [fromAccount, toAccount] = await Promise.all([
+        ctx.prisma.bankAccount.findUnique({ where: { id: input.fromAccountId } }),
+        ctx.prisma.bankAccount.findUnique({ where: { id: input.toAccountId } }),
+      ]);
+
+      if (!fromAccount || !toAccount) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Conta não encontrada" });
+      }
+
+      const newFromBalance = fromAccount.currentBalance - input.value;
+      const newToBalance = toAccount.currentBalance + input.value;
+      const desc = input.description || `Transferência para ${toAccount.name}`;
+
+      const [outTransaction] = await ctx.prisma.$transaction([
+        ctx.prisma.bankTransaction.create({
+          data: {
+            bankAccountId: input.fromAccountId,
+            transactionDate: input.transferDate,
+            type: "TRANSFER_OUT",
+            description: desc,
+            value: input.value,
+            balanceAfter: newFromBalance,
+            createdBy: ctx.tenant.userId,
+          },
+        }),
+        ctx.prisma.bankTransaction.create({
+          data: {
+            bankAccountId: input.toAccountId,
+            transactionDate: input.transferDate,
+            type: "TRANSFER_IN",
+            description: `Transferência de ${fromAccount.name}`,
+            value: input.value,
+            balanceAfter: newToBalance,
+            createdBy: ctx.tenant.userId,
+          },
+        }),
+        ctx.prisma.bankAccount.update({
+          where: { id: input.fromAccountId },
+          data: { currentBalance: newFromBalance },
+        }),
+        ctx.prisma.bankAccount.update({
+          where: { id: input.toAccountId },
+          data: { currentBalance: newToBalance },
+        }),
+      ]);
+
+      return outTransaction;
+    }),
+
+  // Fluxo de caixa projetado
+  cashFlow: tenantProcedure
+    .input(z.object({
+      startDate: z.date(),
+      endDate: z.date(),
+      groupBy: z.enum(["day", "week", "month"]).default("day"),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { startDate, endDate } = input;
+
+      // Saldo atual
+      const accounts = await ctx.prisma.bankAccount.findMany({
+        where: { ...tenantFilter(ctx.companyId, false), isActive: true },
+        select: { currentBalance: true },
+      });
+      const currentBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
+
+      // Contas a pagar no período
+      const payables = await ctx.prisma.accountsPayable.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+          dueDate: { gte: startDate, lte: endDate },
+        },
+        select: { dueDate: true, netValue: true, paidValue: true },
+      });
+
+      // Contas a receber no período
+      const receivables = await ctx.prisma.accountsReceivable.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+          dueDate: { gte: startDate, lte: endDate },
+        },
+        select: { dueDate: true, netValue: true, paidValue: true },
+      });
+
+      // Agrupar por data
+      const flowByDate = new Map<string, { date: string; inflow: number; outflow: number; balance: number }>();
+      
+      let runningBalance = currentBalance;
+      const current = new Date(startDate);
+      
+      while (current <= endDate) {
+        const dateKey = current.toISOString().split("T")[0];
+        flowByDate.set(dateKey, { date: dateKey, inflow: 0, outflow: 0, balance: runningBalance });
+        current.setDate(current.getDate() + 1);
+      }
+
+      // Somar recebíveis
+      for (const r of receivables) {
+        const dateKey = new Date(r.dueDate).toISOString().split("T")[0];
+        const entry = flowByDate.get(dateKey);
+        if (entry) {
+          entry.inflow += r.netValue - r.paidValue;
+        }
+      }
+
+      // Somar pagáveis
+      for (const p of payables) {
+        const dateKey = new Date(p.dueDate).toISOString().split("T")[0];
+        const entry = flowByDate.get(dateKey);
+        if (entry) {
+          entry.outflow += p.netValue - p.paidValue;
+        }
+      }
+
+      // Calcular saldo acumulado
+      const sortedDates = Array.from(flowByDate.keys()).sort();
+      for (let i = 0; i < sortedDates.length; i++) {
+        const entry = flowByDate.get(sortedDates[i])!;
+        if (i === 0) {
+          entry.balance = currentBalance + entry.inflow - entry.outflow;
+        } else {
+          const prevEntry = flowByDate.get(sortedDates[i - 1])!;
+          entry.balance = prevEntry.balance + entry.inflow - entry.outflow;
+        }
+      }
+
+      // Totais
+      const totalInflow = Array.from(flowByDate.values()).reduce((sum, e) => sum + e.inflow, 0);
+      const totalOutflow = Array.from(flowByDate.values()).reduce((sum, e) => sum + e.outflow, 0);
+      const finalBalance = currentBalance + totalInflow - totalOutflow;
+
+      return {
+        currentBalance,
+        totalInflow,
+        totalOutflow,
+        finalBalance,
+        flow: Array.from(flowByDate.values()),
+      };
+    }),
+
+  // Dashboard de tesouraria
+  dashboard: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    // Saldo total
+    const accounts = await ctx.prisma.bankAccount.findMany({
+      where: { ...tenantFilter(ctx.companyId, false), isActive: true },
+      select: { id: true, code: true, name: true, currentBalance: true, accountType: true },
+    });
+    const totalBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
+
+    // Contas a pagar próximos 7 dias
+    const payablesWeek = await ctx.prisma.accountsPayable.aggregate({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+        status: { in: ["PENDING", "PARTIAL"] },
+        dueDate: { gte: today, lte: endOfWeek },
+      },
+      _sum: { netValue: true },
+      _count: true,
+    });
+
+    // Contas a receber próximos 7 dias
+    const receivablesWeek = await ctx.prisma.accountsReceivable.aggregate({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+        status: { in: ["PENDING", "PARTIAL"] },
+        dueDate: { gte: today, lte: endOfWeek },
+      },
+      _sum: { netValue: true },
+      _count: true,
+    });
+
+    // Transações não conciliadas
+    const pendingReconciliation = await ctx.prisma.bankTransaction.count({
+      where: {
+        bankAccount: tenantFilter(ctx.companyId, false),
+        reconciled: false,
+      },
+    });
+
+    // Projeção saldo fim do mês
+    const payablesMonth = await ctx.prisma.accountsPayable.aggregate({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+        status: { in: ["PENDING", "PARTIAL"] },
+        dueDate: { gte: today, lte: endOfMonth },
+      },
+      _sum: { netValue: true },
+    });
+
+    const receivablesMonth = await ctx.prisma.accountsReceivable.aggregate({
+      where: {
+        ...tenantFilter(ctx.companyId, false),
+        status: { in: ["PENDING", "PARTIAL"] },
+        dueDate: { gte: today, lte: endOfMonth },
+      },
+      _sum: { netValue: true },
+    });
+
+    const projectedBalance = totalBalance 
+      + (receivablesMonth._sum.netValue || 0) 
+      - (payablesMonth._sum.netValue || 0);
+
+    return {
+      accounts,
+      totalBalance,
+      payablesWeek: {
+        value: payablesWeek._sum.netValue || 0,
+        count: payablesWeek._count,
+      },
+      receivablesWeek: {
+        value: receivablesWeek._sum.netValue || 0,
+        count: receivablesWeek._count,
+      },
+      pendingReconciliation,
+      projectedBalance,
+      netFlowWeek: (receivablesWeek._sum.netValue || 0) - (payablesWeek._sum.netValue || 0),
+    };
+  }),
 });
