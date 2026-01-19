@@ -25,6 +25,13 @@ const settingsItems = [
     color: "bg-blue-500",
   },
   {
+    title: "Integração SEFAZ",
+    description: "Configurar certificado digital e consulta de NFe",
+    href: "/settings/sefaz",
+    icon: Shield,
+    color: "bg-green-500",
+  },
+  {
     title: "Tutoriais",
     description: "Criar e editar tutoriais de ajuda do sistema",
     href: "/settings/tutorials",
