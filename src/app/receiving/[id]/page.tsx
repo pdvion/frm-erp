@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
@@ -42,7 +42,7 @@ interface ItemConference {
 
 export default function ReceivingDetailPage() {
   const params = useParams();
-  const _router = useRouter();
+  // Router disponível para navegação futura
   const id = params.id as string;
 
   const [isConferencing, setIsConferencing] = useState(false);

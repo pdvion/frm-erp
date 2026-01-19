@@ -69,9 +69,8 @@ export default function TasksPage() {
     return new Date(date).toLocaleDateString("pt-BR");
   };
 
-  const _formatDateTime = (date: Date | string) => {
-    return new Date(date).toLocaleString("pt-BR");
-  };
+  // formatDateTime disponível para uso futuro
+  // const formatDateTime = (date: Date | string) => new Date(date).toLocaleString("pt-BR");
 
   const isOverdue = (deadline: Date | string | null) => {
     if (!deadline) return false;

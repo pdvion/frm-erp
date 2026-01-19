@@ -66,7 +66,7 @@ function LoginForm() {
       
       // Forçar navegação com window.location para garantir redirecionamento
       window.location.href = returnUrl;
-    } catch (_err) {
+    } catch {
       setError("Erro ao fazer login. Tente novamente.");
       setIsLoading(false);
     }

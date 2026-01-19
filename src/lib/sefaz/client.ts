@@ -107,8 +107,9 @@ export class SefazClient {
       const cUFAutor = UF_CODES[this.config.uf];
       const nsu = ultimoNSU || "000000000000000";
 
-      // Montar envelope SOAP
-      const _soapEnvelope = this.buildDistDFeEnvelope(cUFAutor, this.config.cnpj, nsu);
+      // Montar envelope SOAP (preparado para implementação futura)
+      // const soapEnvelope = this.buildDistDFeEnvelope(cUFAutor, this.config.cnpj, nsu);
+      void this.buildDistDFeEnvelope(cUFAutor, this.config.cnpj, nsu);
 
       // TODO: Assinar XML com certificado digital
       // TODO: Enviar requisição SOAP
@@ -148,8 +149,8 @@ export class SefazClient {
 
       const cUFAutor = UF_CODES[this.config.uf];
 
-      // Montar envelope SOAP para consulta por chave
-      const _soapEnvelope = this.buildConsChNFeEnvelope(cUFAutor, this.config.cnpj, chaveAcesso);
+      // Montar envelope SOAP para consulta por chave (preparado para implementação futura)
+      void this.buildConsChNFeEnvelope(cUFAutor, this.config.cnpj, chaveAcesso);
 
       // TODO: Assinar XML com certificado digital
       // TODO: Enviar requisição SOAP
@@ -196,8 +197,8 @@ export class SefazClient {
       const codigoEvento = MANIFESTACAO_CODES[tipo];
       const cUFAutor = UF_CODES[this.config.uf];
 
-      // Montar envelope SOAP para evento
-      const _soapEnvelope = this.buildEventoEnvelope(
+      // Montar envelope SOAP para evento (preparado para implementação futura)
+      void this.buildEventoEnvelope(
         cUFAutor, 
         this.config.cnpj, 
         chaveAcesso, 
