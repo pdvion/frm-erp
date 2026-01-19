@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
+import { CategoryQuickForm } from "@/components/forms/CategoryQuickForm";
 
 interface MaterialFormData {
   code: number;
@@ -244,25 +246,22 @@ export default function EditMaterialPage() {
             </div>
 
             {/* Categoria */}
-            <div>
-              <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-1">
-                Categoria
-              </label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Selecione uma categoria</option>
-                {categories?.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectWithAdd
+              id="categoryId"
+              name="categoryId"
+              label="Categoria"
+              value={formData.categoryId}
+              onChange={handleChange}
+              options={categories?.map((cat) => ({
+                value: cat.id,
+                label: cat.name,
+              })) || []}
+              placeholder="Selecione uma categoria"
+              drawerTitle="Nova Categoria"
+              drawerDescription="Cadastre uma nova categoria para materiais"
+              drawerSize="sm"
+              FormComponent={CategoryQuickForm}
+            />
 
             {/* Status */}
             <div>
