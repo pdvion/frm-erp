@@ -51,8 +51,10 @@
 #### VENDAS (PV/VD) - 4 módulos
 | Código | Nome | Status Migração |
 |--------|------|-----------------|
-| PV10 | Pedido Vendas | 🔴 Pendente |
-| VD10 | Orçamentos Venda | 🔴 Pendente |
+| PV10 | Pedido Vendas | ✅ Migrado |
+| VD10 | Orçamentos Venda | ✅ Migrado |
+| VD11 | Leads/CRM | ✅ Migrado |
+| VD12 | Dashboard Vendas | ✅ Migrado |
 
 #### FINANCEIRO (FN)
 | Código | Nome | Status Migração |
