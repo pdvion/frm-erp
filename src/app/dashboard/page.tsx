@@ -12,6 +12,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 
 const modules = [
   { title: "Materiais", description: "Cadastro e gestão", href: "/materials", icon: Package, color: "bg-blue-500" },
@@ -27,11 +28,6 @@ const modules = [
   { title: "Configurações", description: "Sistema", href: "/settings", icon: Settings, color: "bg-gray-500" },
   { title: "Auditoria", description: "Logs e governança", href: "/audit", icon: Shield, color: "bg-indigo-500" },
 ];
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-};
-
 
 export default function DashboardPage() {
   const { user } = useAuth();

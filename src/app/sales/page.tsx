@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ShoppingCart,
@@ -39,13 +40,6 @@ const leadStatusLabels: Record<string, string> = {
 
 export default function SalesDashboardPage() {
   const { data: dashboard, isLoading } = trpc.sales.dashboard.useQuery();
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

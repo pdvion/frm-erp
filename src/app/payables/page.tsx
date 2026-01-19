@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   DollarSign,
@@ -48,17 +49,6 @@ export default function PayablesPage() {
 
   const { data: stats } = trpc.payables.stats.useQuery();
   const { data: aging } = trpc.payables.aging.useQuery();
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
