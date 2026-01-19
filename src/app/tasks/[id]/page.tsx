@@ -14,15 +14,8 @@ import {
   Loader2,
   Play,
   User,
-  Building2,
-  Users,
-  Shield,
-  Calendar,
-  MessageSquare,
   History,
   Send,
-  UserPlus,
-  Pause,
   X,
 } from "lucide-react";
 
@@ -54,7 +47,7 @@ const actionConfig: Record<string, { label: string; color: string }> = {
 
 export default function TaskDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  useRouter(); // Keep for potential future navigation
   const taskId = params.id as string;
 
   const [comment, setComment] = useState("");

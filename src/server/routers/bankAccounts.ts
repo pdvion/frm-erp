@@ -347,12 +347,11 @@ export const bankAccountsRouter = createTRPCRouter({
       // Agrupar por data
       const flowByDate = new Map<string, { date: string; inflow: number; outflow: number; balance: number }>();
       
-      let runningBalance = currentBalance;
       const current = new Date(startDate);
       
       while (current <= endDate) {
         const dateKey = current.toISOString().split("T")[0];
-        flowByDate.set(dateKey, { date: dateKey, inflow: 0, outflow: 0, balance: runningBalance });
+        flowByDate.set(dateKey, { date: dateKey, inflow: 0, outflow: 0, balance: currentBalance });
         current.setDate(current.getDate() + 1);
       }
 

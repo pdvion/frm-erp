@@ -27,13 +27,29 @@ export default function ImportOFXPage() {
   const { data: accounts, isLoading: loadingAccounts } = trpc.bankAccounts.list.useQuery();
 
   const importMutation = trpc.bankAccounts.importOFX.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Redirecionar para conciliação após sucesso
       setTimeout(() => {
         router.push("/treasury/reconciliation");
       }, 3000);
     },
   });
+
+  const processFile = useCallback((file: File) => {
+    if (!file.name.toLowerCase().endsWith(".ofx")) {
+      alert("Por favor, selecione um arquivo OFX válido");
+      return;
+    }
+
+    setFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setFileContent(content);
+    };
+    reader.readAsText(file, "ISO-8859-1");
+  }, []);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -51,30 +67,14 @@ export default function ImportOFXPage() {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+      processFile(e.dataTransfer.files[0]);
     }
-  }, []);
+  }, [processFile]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+      processFile(e.target.files[0]);
     }
-  };
-
-  const handleFile = (file: File) => {
-    if (!file.name.toLowerCase().endsWith(".ofx")) {
-      alert("Por favor, selecione um arquivo OFX válido");
-      return;
-    }
-
-    setFile(file);
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      setFileContent(content);
-    };
-    reader.readAsText(file, "ISO-8859-1"); // OFX geralmente usa ISO-8859-1
   };
 
   const handleImport = async () => {

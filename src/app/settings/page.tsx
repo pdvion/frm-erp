@@ -8,12 +8,7 @@ import {
   Building2,
   BookOpen,
   Layout,
-  Users,
   Shield,
-  Bell,
-  Palette,
-  Database,
-  Key,
   Wallet,
 } from "lucide-react";
 
