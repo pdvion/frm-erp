@@ -3,6 +3,7 @@ import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { emitEvent } from "../services/events";
 
 export const payablesRouter = createTRPCRouter({
   // Listar títulos a pagar com filtros
@@ -202,7 +203,7 @@ export const payablesRouter = createTRPCRouter({
       const newPaidValue = payable.paidValue + input.value;
       const isPaid = Math.abs(newPaidValue - payable.netValue) < 0.01;
 
-      await prisma.accountsPayable.update({
+      const updatedPayable = await prisma.accountsPayable.update({
         where: { id: input.payableId },
         data: {
           paidValue: newPaidValue,
@@ -212,7 +213,20 @@ export const payablesRouter = createTRPCRouter({
           status: isPaid ? "PAID" : "PARTIAL",
           paidAt: isPaid ? input.paymentDate : null,
         },
+        include: { supplier: true },
       });
+
+      // Emitir evento se título foi pago completamente
+      if (isPaid) {
+        emitEvent("payable.paid", {
+          userId: ctx.tenant.userId ?? undefined,
+          companyId: ctx.companyId ?? undefined,
+        }, {
+          payableId: updatedPayable.id,
+          supplierName: updatedPayable.supplier?.companyName || "Fornecedor",
+          value: updatedPayable.netValue,
+        });
+      }
 
       return payment;
     }),
@@ -496,7 +510,7 @@ export const payablesRouter = createTRPCRouter({
       });
       const nextCode = (lastPayable?.code || 0) + 1;
 
-      return prisma.accountsPayable.create({
+      const payable = await prisma.accountsPayable.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -514,7 +528,21 @@ export const payablesRouter = createTRPCRouter({
           barcode: input.barcode,
           createdBy: ctx.tenant.userId,
         },
+        include: { supplier: true },
       });
+
+      // Emitir evento de título criado
+      emitEvent("payable.created", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        payableId: payable.id,
+        supplierName: payable.supplier?.companyName || "Fornecedor",
+        value: payable.netValue,
+        dueDate: payable.dueDate.toISOString(),
+      });
+
+      return payable;
     }),
 
   // Atualizar título

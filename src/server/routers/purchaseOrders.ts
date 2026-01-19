@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { emitEvent } from "../services/events";
 
 export const purchaseOrdersRouter = createTRPCRouter({
   // Listar pedidos de compra
@@ -231,6 +232,17 @@ export const purchaseOrdersRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      // Emitir evento de pedido criado
+      emitEvent("purchaseOrder.created", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        orderId: order.id,
+        code: order.code,
+        supplierName: order.supplier.companyName,
+        totalValue: order.totalValue,
+      });
+
       return order;
     }),
 
@@ -263,6 +275,28 @@ export const purchaseOrdersRouter = createTRPCRouter({
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
+
+      // Emitir evento se status mudou para APPROVED ou SENT
+      if (input.status !== oldOrder.status) {
+        const eventType = input.status === "APPROVED" ? "purchaseOrder.approved"
+          : input.status === "SENT" ? "purchaseOrder.sent"
+          : null;
+
+        if (eventType) {
+          const supplier = await ctx.prisma.supplier.findUnique({
+            where: { id: order.supplierId },
+          });
+          emitEvent(eventType, {
+            userId: ctx.tenant.userId ?? undefined,
+            companyId: ctx.companyId ?? undefined,
+          }, {
+            orderId: order.id,
+            code: order.code,
+            supplierName: supplier?.companyName || "Fornecedor",
+            totalValue: order.totalValue,
+          });
+        }
+      }
 
       return order;
     }),
