@@ -1,0 +1,712 @@
+"use client";
+
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { trpc } from "@/lib/trpc";
+import { CompanySwitcher } from "@/components/CompanySwitcher";
+import {
+  FileText,
+  ChevronLeft,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Loader2,
+  Building2,
+  Calendar,
+  Package,
+  Send,
+  Ban,
+  FileEdit,
+  DollarSign,
+  Printer,
+  Download,
+  CreditCard,
+} from "lucide-react";
+
+const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
+  AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
+  DENIED: { label: "Denegada", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
+};
+
+export default function BillingDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCorrectionModal, setShowCorrectionModal] = useState(false);
+  const [showReceivablesModal, setShowReceivablesModal] = useState(false);
+
+  const { data: invoice, isLoading, refetch } = trpc.billing.byId.useQuery({ id });
+
+  const authorizeMutation = trpc.billing.authorize.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const cancelMutation = trpc.billing.cancel.useMutation({
+    onSuccess: () => {
+      setShowCancelModal(false);
+      refetch();
+    },
+  });
+
+  const correctionMutation = trpc.billing.correctionLetter.useMutation({
+    onSuccess: () => {
+      setShowCorrectionModal(false);
+      refetch();
+    },
+  });
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  const formatDate = (date: Date | string) => {
+    return new Date(date).toLocaleDateString("pt-BR");
+  };
+
+  const formatDateTime = (date: Date | string) => {
+    return new Date(date).toLocaleString("pt-BR");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!invoice) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Nota fiscal não encontrada</h3>
+          <Link href="/billing" className="text-indigo-600 hover:text-indigo-800">
+            Voltar para lista
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const config = statusConfig[invoice.status] || statusConfig.DRAFT;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <Link href="/billing" className="text-gray-500 hover:text-gray-700">
+                <ChevronLeft className="w-5 h-5" />
+              </Link>
+              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-indigo-600" />
+                NFe {invoice.invoiceNumber}
+              </h1>
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                {config.icon}
+                {config.label}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <CompanySwitcher />
+              {invoice.status === "DRAFT" && (
+                <button
+                  onClick={() => authorizeMutation.mutate({ id })}
+                  disabled={authorizeMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                >
+                  <Send className="w-4 h-4" />
+                  {authorizeMutation.isPending ? "Autorizando..." : "Autorizar NFe"}
+                </button>
+              )}
+              {invoice.status === "AUTHORIZED" && (
+                <>
+                  <button
+                    onClick={() => setShowReceivablesModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Gerar Títulos
+                  </button>
+                  <button
+                    onClick={() => setShowCorrectionModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  >
+                    <FileEdit className="w-4 h-4" />
+                    Carta Correção
+                  </button>
+                  <button
+                    onClick={() => setShowCancelModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                  >
+                    <Ban className="w-4 h-4" />
+                    Cancelar
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Invoice Info */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Dados da Nota</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-sm text-gray-500">Número</label>
+                  <p className="font-medium text-gray-900">{invoice.invoiceNumber}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Série</label>
+                  <p className="font-medium text-gray-900">{invoice.series}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Modelo</label>
+                  <p className="font-medium text-gray-900">{invoice.model}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Emissão</label>
+                  <p className="font-medium text-gray-900">{formatDateTime(invoice.issueDate)}</p>
+                </div>
+              </div>
+
+              {invoice.accessKey && (
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <label className="text-sm text-gray-500">Chave de Acesso</label>
+                  <p className="font-mono text-sm text-gray-900 break-all">{invoice.accessKey}</p>
+                </div>
+              )}
+
+              {invoice.protocolNumber && (
+                <div className="mt-4">
+                  <label className="text-sm text-gray-500">Protocolo de Autorização</label>
+                  <p className="font-medium text-gray-900">{invoice.protocolNumber}</p>
+                  {invoice.authorizedAt && (
+                    <p className="text-sm text-gray-500">
+                      Autorizada em {formatDateTime(invoice.authorizedAt)}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {invoice.cancellationReason && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <label className="text-sm text-red-600 font-medium">Motivo do Cancelamento</label>
+                  <p className="text-red-700">{invoice.cancellationReason}</p>
+                  {invoice.cancelledAt && (
+                    <p className="text-sm text-red-500">
+                      Cancelada em {formatDateTime(invoice.cancelledAt)}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {invoice.lastCorrection && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <label className="text-sm text-yellow-600 font-medium">
+                    Carta de Correção #{invoice.correctionSeq}
+                  </label>
+                  <p className="text-yellow-700">{invoice.lastCorrection}</p>
+                  {invoice.lastCorrectionAt && (
+                    <p className="text-sm text-yellow-500">
+                      Registrada em {formatDateTime(invoice.lastCorrectionAt)}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Customer */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-gray-400" />
+                Cliente
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-gray-500">Razão Social</label>
+                  <p className="font-medium text-gray-900">{invoice.customer?.companyName}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">CNPJ/CPF</label>
+                  <p className="font-medium text-gray-900">{invoice.customer?.cnpj || invoice.customer?.cpf}</p>
+                </div>
+                {invoice.customer?.email && (
+                  <div>
+                    <label className="text-sm text-gray-500">Email</label>
+                    <p className="font-medium text-gray-900">{invoice.customer.email}</p>
+                  </div>
+                )}
+                {invoice.customer?.phone && (
+                  <div>
+                    <label className="text-sm text-gray-500">Telefone</label>
+                    <p className="font-medium text-gray-900">{invoice.customer.phone}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Items */}
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-gray-400" />
+                  Itens ({invoice.items?.length || 0})
+                </h2>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Item
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Descrição
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        Qtd
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        Unitário
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {invoice.items?.map((item, index) => (
+                      <tr key={item.id}>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">
+                            {item.material?.description || item.description}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {item.material?.code && `Cód: ${item.material.code}`}
+                            {item.ncm && ` | NCM: ${item.ncm}`}
+                            {item.cfop && ` | CFOP: ${item.cfop}`}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right text-gray-900">
+                          {item.quantity} {item.unit}
+                        </td>
+                        <td className="px-6 py-4 text-right text-gray-900">
+                          {formatCurrency(item.unitPrice)}
+                        </td>
+                        <td className="px-6 py-4 text-right font-medium text-gray-900">
+                          {formatCurrency(item.totalPrice)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Totals */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-gray-400" />
+                Valores
+              </h2>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="font-medium text-gray-900">{formatCurrency(invoice.subtotal)}</span>
+                </div>
+                {invoice.discountValue > 0 && (
+                  <div className="flex justify-between text-red-600">
+                    <span>Desconto</span>
+                    <span>-{formatCurrency(invoice.discountValue)}</span>
+                  </div>
+                )}
+                {invoice.shippingValue > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Frete</span>
+                    <span className="font-medium text-gray-900">{formatCurrency(invoice.shippingValue)}</span>
+                  </div>
+                )}
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="flex justify-between text-lg">
+                    <span className="font-medium text-gray-900">Total</span>
+                    <span className="font-bold text-gray-900">{formatCurrency(invoice.totalValue)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Taxes */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Impostos</h2>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Base ICMS</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.icmsBase || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Valor ICMS</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.icmsValue || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Valor IPI</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.ipiValue || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Valor PIS</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.pisValue || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Valor COFINS</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.cofinsValue || 0)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sales Order */}
+            {invoice.salesOrder && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Pedido de Venda</h2>
+                <Link
+                  href={`/sales-orders/${invoice.salesOrder.id}`}
+                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+                >
+                  Pedido #{invoice.salesOrder.code}
+                </Link>
+              </div>
+            )}
+
+            {/* Receivables */}
+            {invoice.receivables && invoice.receivables.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Títulos a Receber</h2>
+                <div className="space-y-2">
+                  {invoice.receivables.map((rec) => (
+                    <div key={rec.id} className="flex justify-between text-sm">
+                      <span className="text-gray-600">{formatDate(rec.dueDate)}</span>
+                      <span className="font-medium text-gray-900">{formatCurrency(rec.netValue)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Ações</h2>
+              <div className="space-y-2">
+                <button className="w-full flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  <Printer className="w-4 h-4" />
+                  Imprimir DANFE
+                </button>
+                <button className="w-full flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                  <Download className="w-4 h-4" />
+                  Baixar XML
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Cancel Modal */}
+      {showCancelModal && (
+        <CancelModal
+          invoiceId={id}
+          onClose={() => setShowCancelModal(false)}
+          onSuccess={() => {
+            setShowCancelModal(false);
+            refetch();
+          }}
+        />
+      )}
+
+      {/* Correction Modal */}
+      {showCorrectionModal && (
+        <CorrectionModal
+          invoiceId={id}
+          onClose={() => setShowCorrectionModal(false)}
+          onSuccess={() => {
+            setShowCorrectionModal(false);
+            refetch();
+          }}
+        />
+      )}
+
+      {/* Receivables Modal */}
+      {showReceivablesModal && (
+        <ReceivablesModal
+          invoiceId={id}
+          totalValue={invoice.totalValue}
+          onClose={() => setShowReceivablesModal(false)}
+          onSuccess={() => {
+            setShowReceivablesModal(false);
+            refetch();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onClose: () => void; onSuccess: () => void }) {
+  const [reason, setReason] = useState("");
+
+  const cancelMutation = trpc.billing.cancel.useMutation({
+    onSuccess,
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <Ban className="w-5 h-5 text-red-600" />
+          Cancelar Nota Fiscal
+        </h3>
+
+        <p className="text-sm text-gray-500 mb-4">
+          O cancelamento só é permitido em até 24 horas após a autorização.
+        </p>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Motivo do Cancelamento (mínimo 15 caracteres)
+          </label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+            placeholder="Descreva o motivo do cancelamento..."
+          />
+        </div>
+
+        {cancelMutation.error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {cancelMutation.error.message}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Voltar
+          </button>
+          <button
+            onClick={() => cancelMutation.mutate({ id: invoiceId, reason })}
+            disabled={reason.length < 15 || cancelMutation.isPending}
+            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+          >
+            {cancelMutation.isPending ? "Cancelando..." : "Confirmar Cancelamento"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onClose: () => void; onSuccess: () => void }) {
+  const [correction, setCorrection] = useState("");
+
+  const correctionMutation = trpc.billing.correctionLetter.useMutation({
+    onSuccess,
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <FileEdit className="w-5 h-5 text-yellow-600" />
+          Carta de Correção
+        </h3>
+
+        <p className="text-sm text-gray-500 mb-4">
+          A carta de correção não pode alterar valores, quantidades ou dados do destinatário.
+        </p>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Texto da Correção (mínimo 15 caracteres)
+          </label>
+          <textarea
+            value={correction}
+            onChange={(e) => setCorrection(e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+            placeholder="Descreva a correção a ser feita..."
+          />
+        </div>
+
+        {correctionMutation.error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {correctionMutation.error.message}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => correctionMutation.mutate({ id: invoiceId, correction })}
+            disabled={correction.length < 15 || correctionMutation.isPending}
+            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+          >
+            {correctionMutation.isPending ? "Enviando..." : "Enviar Correção"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoiceId: string; totalValue: number; onClose: () => void; onSuccess: () => void }) {
+  const [installments, setInstallments] = useState([
+    { dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), value: totalValue },
+  ]);
+
+  const generateMutation = trpc.billing.generateReceivables.useMutation({
+    onSuccess,
+  });
+
+  const addInstallment = () => {
+    const lastDate = installments[installments.length - 1]?.dueDate || new Date();
+    const newDate = new Date(lastDate);
+    newDate.setDate(newDate.getDate() + 30);
+    
+    const newValue = totalValue / (installments.length + 1);
+    const newInstallments = installments.map((i) => ({ ...i, value: newValue }));
+    newInstallments.push({ dueDate: newDate, value: newValue });
+    setInstallments(newInstallments);
+  };
+
+  const removeInstallment = (index: number) => {
+    if (installments.length > 1) {
+      const newInstallments = installments.filter((_, i) => i !== index);
+      const newValue = totalValue / newInstallments.length;
+      setInstallments(newInstallments.map((i) => ({ ...i, value: newValue })));
+    }
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <CreditCard className="w-5 h-5 text-blue-600" />
+          Gerar Títulos a Receber
+        </h3>
+
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="text-sm text-blue-700">
+            Valor total: <span className="font-bold">{formatCurrency(totalValue)}</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 mb-4">
+          {installments.map((inst, index) => (
+            <div key={index} className="flex items-center gap-3">
+              <div className="flex-1">
+                <label className="text-xs text-gray-500">Vencimento</label>
+                <input
+                  type="date"
+                  value={inst.dueDate.toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    const newInstallments = [...installments];
+                    newInstallments[index].dueDate = new Date(e.target.value);
+                    setInstallments(newInstallments);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs text-gray-500">Valor</label>
+                <input
+                  type="number"
+                  value={inst.value.toFixed(2)}
+                  onChange={(e) => {
+                    const newInstallments = [...installments];
+                    newInstallments[index].value = parseFloat(e.target.value) || 0;
+                    setInstallments(newInstallments);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+              {installments.length > 1 && (
+                <button
+                  onClick={() => removeInstallment(index)}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg mt-4"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={addInstallment}
+          className="w-full mb-4 px-4 py-2 border border-dashed border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50"
+        >
+          + Adicionar Parcela
+        </button>
+
+        {generateMutation.error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {generateMutation.error.message}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => generateMutation.mutate({ invoiceId, installments })}
+            disabled={generateMutation.isPending}
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {generateMutation.isPending ? "Gerando..." : "Gerar Títulos"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
