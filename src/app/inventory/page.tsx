@@ -215,22 +215,22 @@ export default function InventoryPage() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Material
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Tipo
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Quantidade
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Reservado
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Disponível
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Custo Unit.
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Custo Total
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -262,7 +262,7 @@ export default function InventoryPage() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${inventoryTypeColors[item.inventoryType]}`}>
                               {inventoryTypeLabels[item.inventoryType]}
                             </span>
@@ -277,22 +277,22 @@ export default function InventoryPage() {
                               </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-right">
                             <div className="text-sm text-gray-600">
                               {formatNumber(item.reservedQty)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-right">
                             <div className="text-sm font-medium text-gray-900">
                               {formatNumber(item.availableQty)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap text-right">
                             <div className="text-sm text-gray-600">
                               {formatCurrency(item.unitCost)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap text-right">
                             <div className="text-sm font-medium text-gray-900">
                               {formatCurrency(item.totalCost)}
                             </div>

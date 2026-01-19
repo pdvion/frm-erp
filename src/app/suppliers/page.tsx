@@ -142,19 +142,19 @@ export default function SuppliersPage() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Razão Social / Fantasia
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       CNPJ
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Cidade/UF
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Contato
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden xl:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       IQF
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -187,19 +187,19 @@ export default function SuppliersPage() {
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <div className="text-sm text-gray-600 font-mono">
                             {formatCNPJ(supplier.cnpj)}
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
                           <div className="text-sm text-gray-600">
                             {supplier.city && supplier.state 
                               ? `${supplier.city}/${supplier.state}`
                               : supplier.city || supplier.state || "-"}
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap">
                           <div className="flex flex-col gap-1">
                             {supplier.phone && (
                               <div className="flex items-center gap-1 text-xs text-gray-600">
@@ -218,7 +218,7 @@ export default function SuppliersPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             supplier.status === "ACTIVE" 
                               ? "bg-green-100 text-green-800"
@@ -234,7 +234,7 @@ export default function SuppliersPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="hidden xl:table-cell px-4 py-3 whitespace-nowrap">
                           {supplier.qualityIndex !== null ? (
                             <div className={`text-sm font-medium ${
                               supplier.qualityIndex >= 80 

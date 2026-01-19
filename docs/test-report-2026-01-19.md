@@ -4,8 +4,57 @@
 
 ## Resumo Executivo
 
-Testes E2E realizados com Playwright em ambiente de desenvolvimento local.
+Testes E2E realizados com Playwright em ambiente de **produção** (https://frm-erp.vercel.app/).
 Verificação de logs e advisors de segurança no Supabase.
+
+**Data/Hora**: 19/01/2026 12:20 UTC-3
+
+## Bugs Críticos Encontrados e Corrigidos
+
+### 🔴 BUG-001: Erro de Login - NULL em auth.users (CORRIGIDO)
+
+**Descrição**: Login falhava com erro "Database error querying schema" devido a campos NULL na tabela `auth.users`.
+
+**Causa Raiz**: Os campos `confirmation_token`, `recovery_token`, `email_change`, etc. estavam NULL, mas o GoTrue espera strings vazias.
+
+**Correção Aplicada**:
+```sql
+UPDATE auth.users 
+SET 
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change_token_current = COALESCE(email_change_token_current, ''),
+  email_change = COALESCE(email_change, ''),
+  phone_change = COALESCE(phone_change, ''),
+  phone_change_token = COALESCE(phone_change_token, ''),
+  reauthentication_token = COALESCE(reauthentication_token, '');
+```
+
+**Status**: ✅ Corrigido
+
+### 🟡 BUG-002: Login Trava em "Entrando..." (PENDENTE)
+
+**Descrição**: Após login bem-sucedido (status 200 nos logs), a página fica travada em "Entrando..." sem redirecionar para o dashboard.
+
+**Causa Provável**: Problema no redirecionamento após autenticação bem-sucedida.
+
+**Impacto**: Médio - usuário pode navegar manualmente para `/dashboard`.
+
+**Status**: 🔄 Pendente investigação
+
+### 🟡 BUG-003: Tabelas Não Responsivas em Mobile (PENDENTE)
+
+**Descrição**: Tabelas de dados (Estoque, Materiais, Fornecedores) não são responsivas em telas mobile (375px). Todas as colunas são exibidas sem scroll horizontal adequado.
+
+**Páginas Afetadas**:
+- `/inventory`
+- `/materials`
+- `/suppliers`
+
+**Impacto**: Médio - dificulta uso em dispositivos móveis.
+
+**Status**: 🔄 Pendente correção
 
 ## Páginas Testadas
 

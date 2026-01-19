@@ -50,18 +50,26 @@ function LoginForm() {
     setError(null);
     setIsLoading(true);
 
-    const { error } = await signIn(email, password);
+    try {
+      const { error } = await signIn(email, password);
 
-    if (error) {
-      setError(error.message === "Invalid login credentials" 
-        ? "E-mail ou senha inválidos" 
-        : error.message);
+      if (error) {
+        setError(error.message === "Invalid login credentials" 
+          ? "E-mail ou senha inválidos" 
+          : error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      // Aguardar um momento para a sessão ser estabelecida
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Forçar navegação com window.location para garantir redirecionamento
+      window.location.href = returnUrl;
+    } catch (err) {
+      setError("Erro ao fazer login. Tente novamente.");
       setIsLoading(false);
-      return;
     }
-
-    router.push(returnUrl);
-    router.refresh();
   };
 
   return (
