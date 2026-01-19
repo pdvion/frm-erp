@@ -14,6 +14,7 @@ import {
   Palette,
   Database,
   Key,
+  Wallet,
 } from "lucide-react";
 
 const settingsItems = [
@@ -30,6 +31,13 @@ const settingsItems = [
     href: "/settings/sefaz",
     icon: Shield,
     color: "bg-green-500",
+  },
+  {
+    title: "Contas Bancárias",
+    description: "Gerenciar contas bancárias e integrações",
+    href: "/settings/bank-accounts",
+    icon: Wallet,
+    color: "bg-emerald-500",
   },
   {
     title: "Tutoriais",
