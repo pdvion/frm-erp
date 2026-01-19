@@ -18,6 +18,7 @@ import {
   Building2,
   Calendar,
   FileText,
+  Upload,
 } from "lucide-react";
 
 export default function ReconciliationPage() {
@@ -79,7 +80,16 @@ export default function ReconciliationPage() {
                 Conciliação Bancária
               </h1>
             </div>
-            <CompanySwitcher />
+            <div className="flex items-center gap-4">
+              <Link
+                href="/treasury/import-ofx"
+                className="flex items-center gap-2 px-3 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm"
+              >
+                <Upload className="w-4 h-4" />
+                Importar OFX
+              </Link>
+              <CompanySwitcher />
+            </div>
           </div>
         </div>
       </header>

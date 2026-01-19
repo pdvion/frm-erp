@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { parseOFX, ofxTypeToSystemType } from "@/lib/ofx-parser";
 
 export const bankAccountsRouter = createTRPCRouter({
   // Listar contas bancárias
@@ -485,4 +486,105 @@ export const bankAccountsRouter = createTRPCRouter({
       netFlowWeek: (receivablesWeek._sum.netValue || 0) - (payablesWeek._sum.netValue || 0),
     };
   }),
+
+  // Importar extrato OFX
+  importOFX: tenantProcedure
+    .input(z.object({
+      bankAccountId: z.string(),
+      ofxContent: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { bankAccountId, ofxContent } = input;
+
+      // Verificar se a conta existe
+      const account = await ctx.prisma.bankAccount.findUnique({
+        where: { id: bankAccountId, ...tenantFilter(ctx.companyId, false) },
+      });
+
+      if (!account) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Conta bancária não encontrada" });
+      }
+
+      // Parsear o arquivo OFX
+      const parseResult = parseOFX(ofxContent);
+
+      if (!parseResult.success || !parseResult.statement) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: parseResult.error || "Erro ao processar arquivo OFX" 
+        });
+      }
+
+      const { statement } = parseResult;
+
+      // Buscar transações já importadas (pelo fitId)
+      const existingFitIds = await ctx.prisma.bankTransaction.findMany({
+        where: {
+          bankAccountId,
+          documentNumber: { in: statement.transactions.map(t => t.fitId) },
+        },
+        select: { documentNumber: true },
+      });
+
+      const existingSet = new Set(existingFitIds.map(t => t.documentNumber));
+
+      // Filtrar transações novas
+      const newTransactions = statement.transactions.filter(
+        t => !existingSet.has(t.fitId)
+      );
+
+      if (newTransactions.length === 0) {
+        return {
+          imported: 0,
+          skipped: statement.transactions.length,
+          message: "Todas as transações já foram importadas anteriormente",
+        };
+      }
+
+      // Calcular saldo atual
+      let currentBalance = Number(account.currentBalance);
+
+      // Criar transações em batch
+      const transactionsToCreate = newTransactions.map(t => {
+        const type = ofxTypeToSystemType(t.type, t.amount);
+        const isCredit = ["CREDIT", "TRANSFER_IN", "INTEREST"].includes(type);
+        const valueChange = isCredit ? Math.abs(t.amount) : -Math.abs(t.amount);
+        currentBalance += valueChange;
+
+        return {
+          bankAccountId,
+          transactionDate: t.datePosted,
+          type,
+          description: t.name,
+          value: Math.abs(t.amount),
+          balanceAfter: currentBalance,
+          documentNumber: t.fitId,
+          notes: t.memo || undefined,
+          reconciled: false,
+          createdBy: ctx.tenant.userId,
+        };
+      });
+
+      // Inserir transações e atualizar saldo
+      await ctx.prisma.$transaction([
+        ctx.prisma.bankTransaction.createMany({
+          data: transactionsToCreate,
+        }),
+        ctx.prisma.bankAccount.update({
+          where: { id: bankAccountId },
+          data: { currentBalance },
+        }),
+      ]);
+
+      return {
+        imported: newTransactions.length,
+        skipped: statement.transactions.length - newTransactions.length,
+        newBalance: currentBalance,
+        period: {
+          start: statement.startDate,
+          end: statement.endDate,
+        },
+        message: `${newTransactions.length} transação(ões) importada(s) com sucesso`,
+      };
+    }),
 });
