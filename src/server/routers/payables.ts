@@ -934,4 +934,153 @@ export const payablesRouter = createTRPCRouter({
         },
       });
     }),
+
+  // Fluxo de Caixa Projetado
+  cashflow: tenantProcedure
+    .input(z.object({
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
+      groupBy: z.enum(["day", "week", "month"]).default("day"),
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const startDate = input?.startDate || today;
+      const endDate = input?.endDate || new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 dias
+
+      // Buscar contas a pagar pendentes
+      const payables = await prisma.accountsPayable.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+          dueDate: { gte: startDate, lte: endDate },
+        },
+        select: {
+          id: true,
+          dueDate: true,
+          netValue: true,
+          paidValue: true,
+          description: true,
+          supplier: { select: { companyName: true } },
+        },
+        orderBy: { dueDate: "asc" },
+      });
+
+      // Buscar contas a receber pendentes
+      const receivables = await prisma.accountsReceivable.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+          dueDate: { gte: startDate, lte: endDate },
+        },
+        select: {
+          id: true,
+          dueDate: true,
+          netValue: true,
+          paidValue: true,
+          description: true,
+          customer: { select: { companyName: true } },
+        },
+        orderBy: { dueDate: "asc" },
+      });
+
+      // Buscar saldo atual das contas bancárias
+      const bankAccounts = await prisma.bankAccount.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId, false),
+          isActive: true,
+        },
+        select: { id: true, name: true, currentBalance: true },
+      });
+
+      const initialBalance = bankAccounts.reduce((sum, acc) => sum + (Number(acc.currentBalance) || 0), 0);
+
+      // Agrupar por período
+      const cashflowMap = new Map<string, { 
+        date: string; 
+        inflows: number; 
+        outflows: number; 
+        balance: number;
+        details: { type: "in" | "out"; description: string; value: number; entity: string }[];
+      }>();
+
+      // Função para obter chave do período
+      const getDateKey = (date: Date): string => {
+        const d = new Date(date);
+        if (input?.groupBy === "week") {
+          const weekStart = new Date(d);
+          weekStart.setDate(d.getDate() - d.getDay());
+          return weekStart.toISOString().split("T")[0];
+        } else if (input?.groupBy === "month") {
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+        }
+        return d.toISOString().split("T")[0];
+      };
+
+      // Processar recebíveis (entradas)
+      for (const r of receivables) {
+        const key = getDateKey(r.dueDate);
+        const remaining = (Number(r.netValue) || 0) - (Number(r.paidValue) || 0);
+        
+        if (!cashflowMap.has(key)) {
+          cashflowMap.set(key, { date: key, inflows: 0, outflows: 0, balance: 0, details: [] });
+        }
+        const entry = cashflowMap.get(key)!;
+        entry.inflows += remaining;
+        entry.details.push({
+          type: "in",
+          description: r.description || "Recebível",
+          value: remaining,
+          entity: r.customer?.companyName || "Cliente",
+        });
+      }
+
+      // Processar pagáveis (saídas)
+      for (const p of payables) {
+        const key = getDateKey(p.dueDate);
+        const remaining = (Number(p.netValue) || 0) - (Number(p.paidValue) || 0);
+        
+        if (!cashflowMap.has(key)) {
+          cashflowMap.set(key, { date: key, inflows: 0, outflows: 0, balance: 0, details: [] });
+        }
+        const entry = cashflowMap.get(key)!;
+        entry.outflows += remaining;
+        entry.details.push({
+          type: "out",
+          description: p.description || "Pagável",
+          value: remaining,
+          entity: p.supplier?.companyName || "Fornecedor",
+        });
+      }
+
+      // Ordenar e calcular saldo acumulado
+      const sortedEntries = Array.from(cashflowMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+      
+      let runningBalance = initialBalance;
+      for (const entry of sortedEntries) {
+        runningBalance += entry.inflows - entry.outflows;
+        entry.balance = runningBalance;
+      }
+
+      // Calcular totais
+      const totalInflows = sortedEntries.reduce((sum, e) => sum + e.inflows, 0);
+      const totalOutflows = sortedEntries.reduce((sum, e) => sum + e.outflows, 0);
+      const projectedBalance = initialBalance + totalInflows - totalOutflows;
+
+      // Identificar dias com saldo negativo
+      const negativeDays = sortedEntries.filter(e => e.balance < 0);
+
+      return {
+        initialBalance,
+        projectedBalance,
+        totalInflows,
+        totalOutflows,
+        netCashflow: totalInflows - totalOutflows,
+        entries: sortedEntries,
+        negativeDays: negativeDays.length,
+        lowestBalance: Math.min(...sortedEntries.map(e => e.balance), initialBalance),
+        bankAccounts,
+      };
+    }),
 });
