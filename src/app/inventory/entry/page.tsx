@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
+import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
 
 interface MovementFormData {
   materialId: string;
@@ -208,25 +210,22 @@ export default function InventoryEntryPage() {
             </div>
 
             {/* Fornecedor */}
-            <div>
-              <label htmlFor="supplierId" className="block text-sm font-medium text-gray-700 mb-1">
-                Fornecedor
-              </label>
-              <select
-                id="supplierId"
-                name="supplierId"
-                value={formData.supplierId}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="">Selecione um fornecedor</option>
-                {suppliersData?.suppliers.map((supplier) => (
-                  <option key={supplier.id} value={supplier.id}>
-                    {supplier.code} - {supplier.companyName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectWithAdd
+              id="supplierId"
+              name="supplierId"
+              label="Fornecedor"
+              value={formData.supplierId}
+              onChange={handleChange}
+              options={suppliersData?.suppliers.map((supplier) => ({
+                value: supplier.id,
+                label: `${supplier.code} - ${supplier.companyName}`,
+              })) || []}
+              placeholder="Selecione um fornecedor"
+              drawerTitle="Novo Fornecedor"
+              drawerDescription="Cadastre um novo fornecedor rapidamente"
+              drawerSize="lg"
+              FormComponent={SupplierQuickForm}
+            />
 
             {/* Quantidade */}
             <div>
