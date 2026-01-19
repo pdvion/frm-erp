@@ -1083,4 +1083,243 @@ export const payablesRouter = createTRPCRouter({
         bankAccounts,
       };
     }),
+
+  // Listar boletos
+  listBoletos: tenantProcedure
+    .input(z.object({
+      status: z.enum(["PENDING", "REGISTERED", "PAID", "CANCELLED", "OVERDUE"]).optional(),
+      search: z.string().optional(),
+      page: z.number().default(1),
+      limit: z.number().default(15),
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      const { status, search, page = 1, limit = 15 } = input || {};
+
+      // Simular dados de boletos (em produção, viria de tabela específica)
+      const today = new Date();
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+      // Buscar títulos a pagar que podem ter boletos
+      const where: Prisma.AccountsPayableWhereInput = {
+        ...tenantFilter(ctx.companyId, false),
+        paymentMethod: "BOLETO",
+      };
+
+      if (status === "OVERDUE") {
+        where.status = "PENDING";
+        where.dueDate = { lt: today };
+      } else if (status && status !== "OVERDUE") {
+        where.status = status === "REGISTERED" ? "PENDING" : status;
+      }
+
+      if (search) {
+        where.OR = [
+          { description: { contains: search, mode: "insensitive" as const } },
+          { documentNumber: { contains: search, mode: "insensitive" as const } },
+          { supplier: { companyName: { contains: search, mode: "insensitive" as const } } },
+        ];
+      }
+
+      const [payables, total, pendingCount, registeredCount, paidCount, overdueCount] = await Promise.all([
+        prisma.accountsPayable.findMany({
+          where,
+          include: {
+            supplier: { select: { id: true, companyName: true, cnpj: true } },
+          },
+          orderBy: { dueDate: "asc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        prisma.accountsPayable.count({ where }),
+        prisma.accountsPayable.count({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING", dueDate: { gte: today } },
+        }),
+        prisma.accountsPayable.count({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING" },
+        }),
+        prisma.accountsPayable.count({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PAID", paidAt: { gte: startOfMonth } },
+        }),
+        prisma.accountsPayable.count({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING", dueDate: { lt: today } },
+        }),
+      ]);
+
+      // Calcular valores
+      const pendingValue = await prisma.accountsPayable.aggregate({
+        where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING", dueDate: { gte: today } },
+        _sum: { netValue: true },
+      });
+
+      const registeredValue = await prisma.accountsPayable.aggregate({
+        where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING" },
+        _sum: { netValue: true },
+      });
+
+      const paidValueMonth = await prisma.accountsPayable.aggregate({
+        where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PAID", paidAt: { gte: startOfMonth } },
+        _sum: { netValue: true },
+      });
+
+      const overdueValue = await prisma.accountsPayable.aggregate({
+        where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO", status: "PENDING", dueDate: { lt: today } },
+        _sum: { netValue: true },
+      });
+
+      const totalValue = await prisma.accountsPayable.aggregate({
+        where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "BOLETO" },
+        _sum: { netValue: true },
+      });
+
+      const boletos = payables.map((p) => {
+        const isOverdue = p.status === "PENDING" && new Date(p.dueDate) < today;
+        const daysOverdue = isOverdue
+          ? Math.floor((today.getTime() - new Date(p.dueDate).getTime()) / (1000 * 60 * 60 * 24))
+          : 0;
+
+        return {
+          id: p.id,
+          ourNumber: p.documentNumber || `${p.code}`.padStart(10, "0"),
+          documentNumber: p.documentNumber || String(p.code),
+          payerName: p.supplier?.companyName || "N/A",
+          payerDocument: p.supplier?.cnpj || "",
+          dueDate: p.dueDate,
+          value: Number(p.netValue),
+          status: isOverdue ? "OVERDUE" : p.status,
+          isOverdue,
+          daysOverdue,
+          barcode: `23793.38128 60000.000003 ${p.code.toString().padStart(5, "0")}0 1 ${Math.floor(Number(p.netValue) * 100).toString().padStart(10, "0")}`,
+        };
+      });
+
+      return {
+        boletos,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+        stats: {
+          pending: pendingCount,
+          pendingValue: Number(pendingValue._sum.netValue) || 0,
+          registered: registeredCount,
+          registeredValue: Number(registeredValue._sum.netValue) || 0,
+          paidMonth: paidCount,
+          paidValueMonth: Number(paidValueMonth._sum.netValue) || 0,
+          overdue: overdueCount,
+          overdueValue: Number(overdueValue._sum.netValue) || 0,
+          total: total,
+          totalValue: Number(totalValue._sum.netValue) || 0,
+        },
+      };
+    }),
+
+  // Listar transações PIX
+  listPixTransactions: tenantProcedure
+    .input(z.object({
+      status: z.enum(["PENDING", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED"]).optional(),
+      type: z.enum(["PAYMENT", "TRANSFER"]).optional(),
+      search: z.string().optional(),
+      page: z.number().default(1),
+      limit: z.number().default(15),
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      const { status, type, search, page = 1, limit = 15 } = input || {};
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+      // Buscar pagamentos via PIX
+      const where: Prisma.AccountsPayableWhereInput = {
+        ...tenantFilter(ctx.companyId, false),
+        paymentMethod: "PIX",
+      };
+
+      if (status) {
+        if (status === "COMPLETED") {
+          where.status = "PAID";
+        } else if (status === "PENDING" || status === "PROCESSING") {
+          where.status = "PENDING";
+        }
+      }
+
+      if (search) {
+        where.OR = [
+          { description: { contains: search, mode: "insensitive" as const } },
+          { supplier: { companyName: { contains: search, mode: "insensitive" as const } } },
+        ];
+      }
+
+      const [payables, total] = await Promise.all([
+        prisma.accountsPayable.findMany({
+          where,
+          include: {
+            supplier: { select: { id: true, companyName: true, cnpj: true, pixKey: true, pixKeyType: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        prisma.accountsPayable.count({ where }),
+      ]);
+
+      // Estatísticas
+      const [pendingStats, processingStats, completedTodayStats, totalMonthStats] = await Promise.all([
+        prisma.accountsPayable.aggregate({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "PIX", status: "PENDING" },
+          _count: true,
+          _sum: { netValue: true },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "PIX", status: "PENDING" },
+          _count: true,
+          _sum: { netValue: true },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "PIX", status: "PAID", paidAt: { gte: today } },
+          _count: true,
+          _sum: { netValue: true },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: { ...tenantFilter(ctx.companyId, false), paymentMethod: "PIX", paidAt: { gte: startOfMonth } },
+          _count: true,
+          _sum: { netValue: true },
+        }),
+      ]);
+
+      const transactions = payables.map((p) => ({
+        id: p.id,
+        createdAt: p.createdAt,
+        type: "PAYMENT" as const,
+        recipientName: p.supplier?.companyName || "N/A",
+        recipientDocument: p.supplier?.cnpj || "",
+        pixKey: p.supplier?.pixKey || "",
+        pixKeyType: p.supplier?.pixKeyType || "CNPJ",
+        value: Number(p.netValue),
+        status: p.status === "PAID" ? "COMPLETED" : "PENDING",
+        e2eId: `E${Date.now()}${p.id.slice(0, 8)}`,
+      }));
+
+      return {
+        transactions,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+        stats: {
+          pending: pendingStats._count || 0,
+          pendingValue: Number(pendingStats._sum.netValue) || 0,
+          processing: 0,
+          processingValue: 0,
+          completedToday: completedTodayStats._count || 0,
+          completedValueToday: Number(completedTodayStats._sum.netValue) || 0,
+          totalMonth: totalMonthStats._count || 0,
+          totalValueMonth: Number(totalMonthStats._sum.netValue) || 0,
+        },
+      };
+    }),
 });
