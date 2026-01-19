@@ -146,10 +146,19 @@ export default function MFASetupPage() {
               </h2>
               
               <div className="flex justify-center mb-4">
-                <div 
-                  className="p-4 bg-white border-2 border-gray-200 rounded-xl"
-                  dangerouslySetInnerHTML={{ __html: enrollData.qrCode }}
-                />
+                {/* QR Code renderizado como imagem base64 para evitar XSS */}
+                <div className="p-4 bg-white border-2 border-gray-200 rounded-xl">
+                  {enrollData.qrCode.startsWith('data:') ? (
+                    <img src={enrollData.qrCode} alt="QR Code para autenticação" width={200} height={200} />
+                  ) : (
+                    <div 
+                      className="w-[200px] h-[200px] flex items-center justify-center text-gray-400"
+                      aria-label="QR Code indisponível"
+                    >
+                      QR Code indisponível
+                    </div>
+                  )}
+                </div>
               </div>
 
               <p className="text-sm text-gray-600 text-center mb-4">

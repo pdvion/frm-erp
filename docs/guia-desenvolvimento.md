@@ -15,10 +15,10 @@
 ## Sistema Original (Delphi)
 
 ### Código Fonte
-- **Localização**: `/Users/pdv/Downloads/FRM SUITE/`
+- **Localização**: `<diretório_local>/FRM SUITE/` (configurar localmente)
 - **Arquivos**: 682 .pas + 616 .dfm
 - **Módulos**: 57 módulos organizados por área
-- **Análise**: `/Users/pdv/Downloads/FRM_SUITE_extracted/ANALISE_FRM_SUITE.md`
+- **Análise**: Ver documentação interna
 
 ### Módulos por Área
 

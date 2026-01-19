@@ -46,6 +46,12 @@ export default function InventoryExitPage() {
     enabled: materialSearch.length >= 2,
   });
 
+  // Buscar inventário do material selecionado para obter o custo
+  const { data: inventoryData } = trpc.inventory.byMaterialId.useQuery(
+    { materialId: selectedMaterial?.id ?? "" },
+    { enabled: !!selectedMaterial?.id }
+  );
+
   const createMovementMutation = trpc.inventory.createMovement.useMutation({
     onSuccess: () => {
       router.push("/inventory");
@@ -65,6 +71,11 @@ export default function InventoryExitPage() {
       return;
     }
 
+    // Usar o custo unitário do inventário existente para saídas (COGS correto)
+    // inventoryData é um array, pegar o primeiro item do tipo selecionado ou o primeiro disponível
+    const inventoryItem = inventoryData?.find(inv => inv.inventoryType === formData.inventoryType) ?? inventoryData?.[0];
+    const unitCost = (inventoryItem as { unitCost?: number } | undefined)?.unitCost ?? 0;
+
     setIsSubmitting(true);
 
     createMovementMutation.mutate({
@@ -72,7 +83,7 @@ export default function InventoryExitPage() {
       inventoryType: formData.inventoryType,
       movementType: "EXIT",
       quantity: formData.quantity,
-      unitCost: 0,
+      unitCost, // Usar custo do inventário, não zero
       documentType: formData.documentType || undefined,
       documentNumber: formData.documentNumber || undefined,
       notes: formData.notes || undefined,

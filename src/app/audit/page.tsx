@@ -101,7 +101,7 @@ export default function AuditPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/" className="text-gray-400 hover:text-gray-600">
+              <Link href="/" className="text-gray-400 hover:text-gray-600" aria-label="Voltar">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -126,7 +126,9 @@ export default function AuditPage() {
           {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <label htmlFor="audit-search" className="sr-only">Buscar logs</label>
             <input
+              id="audit-search"
               type="text"
               placeholder="Buscar por descrição, código ou usuário..."
               value={search}
@@ -134,6 +136,7 @@ export default function AuditPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
+              aria-label="Buscar logs"
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
@@ -141,12 +144,15 @@ export default function AuditPage() {
           {/* Action Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-gray-400" />
+            <label htmlFor="action-filter" className="sr-only">Filtrar por ação</label>
             <select
+              id="action-filter"
               value={actionFilter ?? ""}
               onChange={(e) => {
                 setActionFilter(e.target.value || undefined);
                 setPage(1);
               }}
+              aria-label="Filtrar por ação"
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">Todas as ações</option>
@@ -162,12 +168,15 @@ export default function AuditPage() {
           </div>
 
           {/* Entity Type Filter */}
+          <label htmlFor="entity-filter" className="sr-only">Filtrar por entidade</label>
           <select
+            id="entity-filter"
             value={entityTypeFilter ?? ""}
             onChange={(e) => {
               setEntityTypeFilter(e.target.value || undefined);
               setPage(1);
             }}
+            aria-label="Filtrar por entidade"
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Todas as entidades</option>
@@ -240,6 +249,15 @@ export default function AuditPage() {
                               key={log.id} 
                               className={`hover:bg-gray-50 cursor-pointer ${isSelected ? "bg-indigo-50" : ""}`}
                               onClick={() => setSelectedLog(log.id)}
+                              role="row"
+                              tabIndex={0}
+                              aria-current={isSelected ? "true" : undefined}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  setSelectedLog(log.id);
+                                }
+                              }}
                             >
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -298,6 +316,8 @@ export default function AuditPage() {
                         onClick={() => setPage(page - 1)}
                         disabled={page === 1}
                         className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        aria-label="Página anterior"
+                        type="button"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -308,6 +328,8 @@ export default function AuditPage() {
                         onClick={() => setPage(page + 1)}
                         disabled={page === pagination.totalPages}
                         className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        aria-label="Próxima página"
+                        type="button"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>

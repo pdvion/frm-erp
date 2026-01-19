@@ -276,10 +276,38 @@ function MarkdownContent({ content }: { content: string }) {
 }
 
 function formatInline(text: string): React.ReactNode {
-  text = text.replace(/\*\*(.+?)\*\*/g, "<strong class='font-semibold'>$1</strong>");
-  text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
-  text = text.replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800">$1</code>');
-  text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>');
+  const elements: React.ReactNode[] = [];
+  let lastIndex = 0;
+  
+  // Combinar todos os padrões em um único regex
+  const combinedRegex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(`(.+?)`)|(\[(.+?)\]\((.+?)\))/g;
+  let match;
+  let keyCounter = 0;
 
-  return <span dangerouslySetInnerHTML={{ __html: text }} />;
+  while ((match = combinedRegex.exec(text)) !== null) {
+    // Adicionar texto antes do match
+    if (match.index > lastIndex) {
+      elements.push(text.slice(lastIndex, match.index));
+    }
+
+    // Determinar qual padrão foi encontrado e renderizar
+    if (match[1]) { // **bold**
+      elements.push(<strong key={keyCounter++} className="font-semibold">{match[2]}</strong>);
+    } else if (match[3]) { // *italic*
+      elements.push(<em key={keyCounter++}>{match[4]}</em>);
+    } else if (match[5]) { // `code`
+      elements.push(<code key={keyCounter++} className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800">{match[6]}</code>);
+    } else if (match[7]) { // [link](url)
+      elements.push(<a key={keyCounter++} href={match[9]} className="text-blue-600 hover:underline" rel="noopener noreferrer">{match[8]}</a>);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Adicionar texto restante
+  if (lastIndex < text.length) {
+    elements.push(text.slice(lastIndex));
+  }
+
+  return elements.length > 0 ? <>{elements}</> : text;
 }

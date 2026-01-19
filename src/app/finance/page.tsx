@@ -23,11 +23,12 @@ import {
 } from "lucide-react";
 
 export default function FinanceDashboardPage() {
-  const { data: treasuryData, isLoading: loadingTreasury } = trpc.bankAccounts.dashboard.useQuery();
-  const { data: payablesStats, isLoading: loadingPayables } = trpc.payables.stats.useQuery();
-  const { data: receivablesStats, isLoading: loadingReceivables } = trpc.receivables.stats.useQuery();
+  const { data: treasuryData, isLoading: loadingTreasury, error: errorTreasury } = trpc.bankAccounts.dashboard.useQuery();
+  const { data: payablesStats, isLoading: loadingPayables, error: errorPayables } = trpc.payables.stats.useQuery();
+  const { data: receivablesStats, isLoading: loadingReceivables, error: errorReceivables } = trpc.receivables.stats.useQuery();
 
   const isLoading = loadingTreasury || loadingPayables || loadingReceivables;
+  const hasError = errorTreasury || errorPayables || errorReceivables;
 
   const formatCurrency = (value: number | undefined | null) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -66,6 +67,14 @@ export default function FinanceDashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {hasError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <p className="text-red-800">Erro ao carregar dados financeiros. Tente novamente mais tarde.</p>
+            </div>
+          </div>
+        )}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-green-600" />

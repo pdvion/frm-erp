@@ -189,10 +189,22 @@ export default function EmployeesPage() {
                 <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
                   <div className="text-sm text-gray-500">Página {page} de {data.pages}</div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button 
+                      onClick={() => setPage(page - 1)} 
+                      disabled={page === 1} 
+                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      aria-label="Página anterior"
+                      type="button"
+                    >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button 
+                      onClick={() => setPage(page + 1)} 
+                      disabled={page === data.pages} 
+                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      aria-label="Próxima página"
+                      type="button"
+                    >
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>

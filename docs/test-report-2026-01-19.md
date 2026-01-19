@@ -1,5 +1,7 @@
 # Relatório de Testes E2E - 19/01/2026
 
+> ⚠️ **DOCUMENTO INTERNO** - Contém informações de configuração de segurança. Não compartilhar externamente.
+
 ## Resumo Executivo
 
 Testes E2E realizados com Playwright em ambiente de desenvolvimento local.

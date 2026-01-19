@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
@@ -487,11 +487,27 @@ function EditItemModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [quantity, setQuantity] = useState("1");
-  const [unit, setUnit] = useState("UN");
-  const [scrapPercentage, setScrapPercentage] = useState("0");
-  const [leadTimeDays, setLeadTimeDays] = useState("0");
-  const [sequence, setSequence] = useState("0");
+  // Buscar dados do item existente para inicializar o formulário
+  const { data: itemData } = trpc.bom.getItem.useQuery({ id: itemId });
+
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("");
+  const [scrapPercentage, setScrapPercentage] = useState("");
+  const [leadTimeDays, setLeadTimeDays] = useState("");
+  const [sequence, setSequence] = useState("");
+  const [initialized, setInitialized] = useState(false);
+
+  // Inicializar com valores do item quando carregado
+  useEffect(() => {
+    if (itemData && !initialized) {
+      setQuantity(itemData.quantity?.toString() ?? "1");
+      setUnit(itemData.unit ?? "UN");
+      setScrapPercentage(itemData.scrapPercentage?.toString() ?? "0");
+      setLeadTimeDays(itemData.leadTimeDays?.toString() ?? "0");
+      setSequence(itemData.sequence?.toString() ?? "0");
+      setInitialized(true);
+    }
+  }, [itemData, initialized]);
 
   const updateMutation = trpc.bom.updateItem.useMutation({
     onSuccess,

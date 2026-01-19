@@ -48,12 +48,26 @@ export default function ReservationsPage() {
       : { page, limit: 20 }
   );
 
+  const [mutationError, setMutationError] = useState<string | null>(null);
+
   const releaseMutation = trpc.inventory.releaseReservation.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      setMutationError(null);
+      refetch();
+    },
+    onError: (error) => {
+      setMutationError(`Erro ao liberar reserva: ${error.message}`);
+    },
   });
 
   const consumeMutation = trpc.inventory.consumeReservation.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      setMutationError(null);
+      refetch();
+    },
+    onError: (error) => {
+      setMutationError(`Erro ao consumir reserva: ${error.message}`);
+    },
   });
 
   const formatNumber = (value: number) => {
@@ -94,30 +108,57 @@ export default function ReservationsPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Erro de mutation */}
+        {mutationError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <p className="text-red-800">{mutationError}</p>
+              <button 
+                onClick={() => setMutationError(null)}
+                className="ml-auto text-red-600 hover:text-red-800"
+                aria-label="Fechar mensagem de erro"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">Todos os status</option>
-              {Object.entries(statusConfig).map(([value, config]) => (
-                <option key={value} value={value}>{config.label}</option>
-              ))}
-            </select>
+            <div>
+              <label htmlFor="status-filter" className="sr-only">Filtrar por status</label>
+              <select
+                id="status-filter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                aria-label="Filtrar por status"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Todos os status</option>
+                {Object.entries(statusConfig).map(([value, config]) => (
+                  <option key={value} value={value}>{config.label}</option>
+                ))}
+              </select>
+            </div>
 
-            <select
-              value={documentTypeFilter}
-              onChange={(e) => setDocumentTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">Todos os tipos</option>
-              {Object.entries(documentTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+            <div>
+              <label htmlFor="doctype-filter" className="sr-only">Filtrar por tipo de documento</label>
+              <select
+                id="doctype-filter"
+                value={documentTypeFilter}
+                onChange={(e) => setDocumentTypeFilter(e.target.value)}
+                aria-label="Filtrar por tipo de documento"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Todos os tipos</option>
+                {Object.entries(documentTypeLabels).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

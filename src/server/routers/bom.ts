@@ -102,6 +102,27 @@ export const bomRouter = createTRPCRouter({
       };
     }),
 
+  // Buscar item específico da BOM
+  getItem: tenantProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.bomItem.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          quantity: true,
+          unit: true,
+          scrapPercentage: true,
+          leadTimeDays: true,
+          sequence: true,
+          notes: true,
+          childMaterial: {
+            select: { id: true, code: true, description: true, unit: true },
+          },
+        },
+      });
+    }),
+
   // Adicionar item à BOM
   addItem: tenantProcedure
     .input(
