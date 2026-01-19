@@ -38,7 +38,7 @@ export default function BoletosPage() {
 
   const { data, isLoading, error } = trpc.payables.listBoletos.useQuery({
     search: search || undefined,
-    status: status as BoletoStatus | undefined,
+    status: (status || undefined) as "PENDING" | "PAID" | "CANCELLED" | undefined,
     page,
     limit: 15,
   });
@@ -68,7 +68,7 @@ export default function BoletosPage() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title="Boletos Bancários"
-        icon={FileText}
+        icon={<FileText className="w-6 h-6 text-indigo-600" />}
         actions={
           <div className="flex items-center gap-2">
             <Link

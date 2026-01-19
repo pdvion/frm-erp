@@ -22,7 +22,7 @@ export default function CompanyUsersPage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   // Query para buscar empresa
-  const { data: company, isLoading: loadingCompany } = trpc.companies.byId.useQuery(
+  const { data: company, isLoading: loadingCompany } = trpc.companies.getById.useQuery(
     { id: companyId },
     { enabled: !!companyId }
   );
@@ -93,7 +93,7 @@ export default function CompanyUsersPage() {
                   <h1 className="text-xl font-semibold text-gray-900">
                     Usuários da Empresa
                   </h1>
-                  <p className="text-sm text-gray-500">{company.tradeName || company.companyName}</p>
+                  <p className="text-sm text-gray-500">{company.tradeName || company.name}</p>
                 </div>
               </div>
             </div>

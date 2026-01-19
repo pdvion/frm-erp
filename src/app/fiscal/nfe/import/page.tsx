@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   Upload, 
-  FileText, 
   CheckCircle, 
   XCircle, 
   AlertTriangle,
@@ -20,7 +19,7 @@ import { PageHeader } from "@/components/PageHeader";
 interface ImportResult {
   success: boolean;
   invoiceId?: string;
-  invoiceNumber?: string;
+  invoiceNumber?: number;
   supplierName?: string;
   totalValue?: number;
   itemsCount?: number;
@@ -117,8 +116,8 @@ export default function NFeImportPage() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title="Importar NFe"
-        icon={Upload}
-        backUrl="/fiscal/nfe"
+        icon={<Upload className="w-6 h-6 text-blue-600" />}
+        backHref="/fiscal/nfe"
         actions={
           <Link
             href="/fiscal/nfe"

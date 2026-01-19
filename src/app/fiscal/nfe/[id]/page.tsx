@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   FileText, 
-  ArrowLeft, 
   CheckCircle, 
   XCircle, 
   Clock,
@@ -34,7 +33,7 @@ const statusConfig: Record<NFeStatus, { label: string; color: string; bgColor: s
 
 export default function NFeDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  useRouter();
   const id = params.id as string;
 
   const [isApproving, setIsApproving] = useState(false);
@@ -129,8 +128,8 @@ export default function NFeDetailPage() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title={`NFe ${invoice.invoiceNumber}`}
-        icon={FileText}
-        backUrl="/fiscal/nfe"
+        icon={<FileText className="w-6 h-6 text-blue-600" />}
+        backHref="/fiscal/nfe"
         actions={
           <div className="flex items-center gap-2">
             {invoice.status === "PENDING" && (
@@ -395,14 +394,12 @@ export default function NFeDetailPage() {
                     <p className="text-sm text-green-600 mt-1">
                       Estoque atualizado e título financeiro gerado.
                     </p>
-                    {invoice.payableId && (
-                      <Link
-                        href={`/payables/${invoice.payableId}`}
-                        className="text-sm text-green-700 hover:underline mt-2 inline-block"
-                      >
-                        Ver título a pagar →
-                      </Link>
-                    )}
+                    <Link
+                      href="/payables"
+                      className="text-sm text-green-700 hover:underline mt-2 inline-block"
+                    >
+                      Ver contas a pagar →
+                    </Link>
                   </div>
                 </div>
               </div>

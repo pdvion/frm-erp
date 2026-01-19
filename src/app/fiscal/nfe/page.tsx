@@ -34,7 +34,7 @@ export default function NFePage() {
 
   const { data, isLoading, error } = trpc.nfe.list.useQuery({
     search: search || undefined,
-    status: status as NFeStatus | undefined,
+    status: (status || undefined) as "PENDING" | "APPROVED" | "REJECTED" | "VALIDATED" | "CANCELLED" | undefined,
     page,
     limit: 15,
   });
@@ -58,7 +58,7 @@ export default function NFePage() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title="Notas Fiscais Eletrônicas"
-        icon={FileText}
+        icon={<FileText className="w-6 h-6 text-blue-600" />}
         actions={
           <Link
             href="/fiscal/nfe/import"

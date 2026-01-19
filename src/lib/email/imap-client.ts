@@ -105,6 +105,7 @@ export async function fetchXmlAttachments(
         if (count >= maxMessages) break;
 
         try {
+          if (!message.source) continue;
           const parsed = await simpleParser(message.source);
 
           const emailMessage: EmailMessage = {

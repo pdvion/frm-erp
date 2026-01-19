@@ -86,7 +86,7 @@ export default function PixPage() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title="Transações PIX"
-        icon={QrCode}
+        icon={<QrCode className="w-6 h-6 text-purple-600" />}
         actions={
           <div className="flex items-center gap-2">
             <Link
