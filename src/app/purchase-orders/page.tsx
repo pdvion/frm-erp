@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
+import type { KanbanColumn } from "@/components/ui";
 import {
   ShoppingCart,
   Plus,
@@ -20,6 +23,7 @@ import {
   Filter,
   Package,
   FileText,
+  Calendar,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -32,10 +36,38 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
 };
 
+const statusColors: Record<string, string> = {
+  DRAFT: "#9CA3AF",
+  PENDING: "#F59E0B",
+  APPROVED: "#3B82F6",
+  SENT: "#8B5CF6",
+  PARTIAL: "#F97316",
+  COMPLETED: "#10B981",
+  CANCELLED: "#EF4444",
+};
+
+interface PurchaseOrder {
+  id: string;
+  code: number;
+  status: string;
+  createdAt: Date | string;
+  totalValue: number;
+  supplier: {
+    code: number;
+    companyName: string;
+    tradeName: string | null;
+  };
+  _count: {
+    items: number;
+  };
+}
+
 export default function PurchaseOrdersPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(1);
+  const [view, setView] = useState<"list" | "kanban">("list");
 
   const { data, isLoading, error } = trpc.purchaseOrders.list.useQuery({
     search: search || undefined,
@@ -56,6 +88,42 @@ export default function PurchaseOrdersPage() {
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString("pt-BR");
   };
+
+  // Prepare Kanban columns
+  const kanbanColumns = useMemo((): KanbanColumn<PurchaseOrder>[] => {
+    if (!data?.orders) return [];
+
+    const statusOrder = ["DRAFT", "PENDING", "APPROVED", "SENT", "PARTIAL", "COMPLETED"];
+    
+    return statusOrder.map((status) => ({
+      id: status,
+      title: statusConfig[status]?.label || status,
+      color: statusColors[status] || "#6B7280",
+      items: data.orders.filter((o) => o.status === status) as PurchaseOrder[],
+    }));
+  }, [data?.orders]);
+
+  const handleCardClick = (order: PurchaseOrder) => {
+    router.push(`/purchase-orders/${order.id}`);
+  };
+
+  const renderOrderCard = ({ item }: { item: PurchaseOrder }) => (
+    <KanbanCard
+      title={`#${item.code.toString().padStart(6, "0")}`}
+      subtitle={item.supplier.tradeName || item.supplier.companyName}
+      footer={
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {formatDate(item.createdAt)}
+          </span>
+          <span className="font-medium text-gray-900">
+            {formatCurrency(item.totalValue)}
+          </span>
+        </div>
+      }
+    />
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,6 +207,7 @@ export default function PurchaseOrdersPage() {
                 ))}
               </select>
             </div>
+            <ViewToggle view={view} onViewChange={setView} />
           </div>
         </div>
 
@@ -171,9 +240,17 @@ export default function PurchaseOrdersPage() {
               Novo Pedido
             </Link>
           </div>
+        ) : view === "kanban" ? (
+          /* Kanban View */
+          <KanbanBoard
+            columns={kanbanColumns}
+            renderCard={renderOrderCard}
+            onCardClick={handleCardClick}
+            emptyMessage="Nenhum pedido encontrado"
+          />
         ) : (
           <>
-            {/* Table */}
+            {/* Table View */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
