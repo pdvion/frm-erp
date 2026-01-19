@@ -166,6 +166,37 @@ export const hrRouter = createTRPCRouter({
   // ==========================================================================
   // PONTO
   // ==========================================================================
+  listTimeEntries: tenantProcedure
+    .input(z.object({
+      date: z.string().optional(),
+      employeeId: z.string().optional(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const dateFilter = input?.date ? new Date(input.date) : new Date();
+      const startOfDay = new Date(dateFilter);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(dateFilter);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      return ctx.prisma.timesheetDay.findMany({
+        where: {
+          date: { gte: startOfDay, lte: endOfDay },
+          ...(input?.employeeId && { employeeId: input.employeeId }),
+          employee: tenantFilter(ctx.companyId, false),
+        },
+        include: {
+          employee: {
+            select: {
+              id: true,
+              name: true,
+              department: { select: { id: true, name: true } },
+            },
+          },
+        },
+        orderBy: { employee: { name: "asc" } },
+      });
+    }),
+
   clockIn: tenantProcedure
     .input(z.object({
       employeeId: z.string(),
@@ -210,12 +241,54 @@ export const hrRouter = createTRPCRouter({
   // FOLHA DE PAGAMENTO
   // ==========================================================================
   listPayrolls: tenantProcedure
-    .input(z.object({ year: z.number().optional() }).optional())
+    .input(z.object({ 
+      year: z.number().optional(),
+      month: z.string().optional(), // formato: "YYYY-MM"
+    }).optional())
     .query(async ({ input, ctx }) => {
-      return ctx.prisma.payroll.findMany({
-        where: { ...tenantFilter(ctx.companyId, false), ...(input?.year && { referenceYear: input.year }) },
-        orderBy: [{ referenceYear: "desc" }, { referenceMonth: "desc" }],
+      let yearFilter: number | undefined;
+      let monthFilter: number | undefined;
+      
+      if (input?.month) {
+        const [year, month] = input.month.split("-").map(Number);
+        yearFilter = year;
+        monthFilter = month;
+      } else if (input?.year) {
+        yearFilter = input.year;
+      }
+
+      const payrollItems = await ctx.prisma.payrollItem.findMany({
+        where: {
+          payroll: {
+            ...tenantFilter(ctx.companyId, false),
+            ...(yearFilter && { referenceYear: yearFilter }),
+            ...(monthFilter && { referenceMonth: monthFilter }),
+          },
+        },
+        include: {
+          employee: {
+            select: {
+              id: true,
+              name: true,
+              position: { select: { id: true, name: true } },
+            },
+          },
+          payroll: {
+            select: { status: true, referenceMonth: true, referenceYear: true },
+          },
+        },
+        orderBy: { employee: { name: "asc" } },
       });
+
+      return payrollItems.map((item) => ({
+        id: item.id,
+        employee: item.employee,
+        grossSalary: item.grossSalary,
+        netSalary: item.netSalary,
+        inssValue: item.inss,
+        irrfValue: item.irrf,
+        status: item.payroll.status,
+      }));
     }),
 
   getPayroll: tenantProcedure

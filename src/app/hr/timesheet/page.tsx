@@ -1,0 +1,213 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { 
+  Clock, 
+  Calendar,
+  Plus, 
+  Search,
+  User,
+  CheckCircle,
+  AlertTriangle,
+  Filter
+} from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
+
+export default function TimesheetPage() {
+  const [search, setSearch] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
+
+  const { data: employees } = trpc.hr.listEmployees.useQuery({
+    status: "ACTIVE",
+    limit: 100,
+  });
+
+  const { data: timeEntries, isLoading } = trpc.hr.listTimeEntries.useQuery({
+    date: selectedDate,
+    employeeId: selectedEmployee || undefined,
+  });
+
+  const formatHours = (hours: number) => {
+    const h = Math.floor(hours);
+    const m = Math.round((hours - h) * 60);
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader
+        title="Folha de Ponto"
+        icon={<Clock className="w-6 h-6 text-blue-600" />}
+        backHref="/hr"
+        actions={
+          <Link
+            href="/hr/timesheet/register"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Registrar Ponto</span>
+          </Link>
+        }
+      />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filtros */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Funcionário</label>
+              <select
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Todos os funcionários</option>
+                {employees?.employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                <Filter className="w-5 h-5" />
+                <span>Mais Filtros</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Resumo */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-center gap-2 text-gray-500 mb-2">
+              <User className="w-4 h-4" />
+              <span className="text-sm">Total Funcionários</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-900">{timeEntries?.length || 0}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-center gap-2 text-green-500 mb-2">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-sm">Presentes</span>
+            </div>
+            <p className="text-2xl font-bold text-green-600">
+              {timeEntries?.filter((e) => e.workedHours > 0).length || 0}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-center gap-2 text-yellow-500 mb-2">
+              <AlertTriangle className="w-4 h-4" />
+              <span className="text-sm">Pendentes</span>
+            </div>
+            <p className="text-2xl font-bold text-yellow-600">
+              {timeEntries?.filter((e) => e.status === "PENDING").length || 0}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-center gap-2 text-blue-500 mb-2">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm">Horas Totais</span>
+            </div>
+            <p className="text-2xl font-bold text-blue-600">--:--</p>
+          </div>
+        </div>
+
+        {/* Lista */}
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : !timeEntries || timeEntries.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum registro encontrado</h3>
+            <p className="text-gray-500">Não há registros de ponto para esta data</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Funcionário
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    Previsto
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    Trabalhado
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    Hora Extra
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    Falta
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {timeEntries.map((entry) => (
+                  <tr key={entry.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{entry.employee.name}</p>
+                          <p className="text-sm text-gray-500">{entry.employee.department?.name || "-"}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 text-right">{formatHours(entry.scheduledHours)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900 text-right">{formatHours(entry.workedHours)}</td>
+                    <td className="px-6 py-4 text-sm text-green-600 text-right">
+                      {entry.overtimeHours > 0 ? `+${formatHours(entry.overtimeHours)}` : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-red-600 text-right">
+                      {entry.absenceHours > 0 ? `-${formatHours(entry.absenceHours)}` : "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {entry.status === "APPROVED" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                          <CheckCircle className="w-3 h-3" />
+                          Aprovado
+                        </span>
+                      ) : entry.status === "PENDING" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
+                          <Clock className="w-3 h-3" />
+                          Pendente
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                          {entry.status}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
