@@ -45,20 +45,6 @@ export default function BillingDetailPage() {
     onSuccess: () => refetch(),
   });
 
-  const _cancelMutation = trpc.billing.cancel.useMutation({
-    onSuccess: () => {
-      setShowCancelModal(false);
-      refetch();
-    },
-  });
-
-  const _correctionMutation = trpc.billing.correctionLetter.useMutation({
-    onSuccess: () => {
-      setShowCorrectionModal(false);
-      refetch();
-    },
-  });
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",

@@ -7,7 +7,7 @@
 | **DeepWiki** | https://deepwiki.com/pdvion/frm-erp |
 | **GitHub** | https://github.com/pdvion/frm-erp |
 | **Vercel** | https://frm-erp-vion-projects.vercel.app |
-| **Supabase** | https://supabase.com/dashboard/project/jewutjydoyaimusaxvyg |
+| **Supabase** | https://supabase.com/dashboard/project/<PROJECT_ID> |
 | **Linear** | https://linear.app/vion/project/poc-delphi-frm-migracao-erp |
 
 ---
@@ -237,7 +237,7 @@ const material = await ctx.prisma.material.create({
 # NUNCA usar prisma migrate diretamente
 # Usar Supabase MCP:
 mcp9_apply_migration({
-  project_id: "jewutjydoyaimusaxvyg",
+  project_id: process.env.SUPABASE_PROJECT_ID,
   name: "nome_descritivo",
   query: "SQL da migration"
 })

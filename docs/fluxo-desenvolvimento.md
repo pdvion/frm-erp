@@ -185,7 +185,7 @@ O CodeRabbit está configurado para revisar automaticamente PRs. Configuração 
 ## Supabase
 
 - **Projeto**: POC Delphi FRM
-- **ID**: jewutjydoyaimusaxvyg
+- **ID**: `<PROJECT_ID>` (ver .env)
 - **Região**: sa-east-1
 
 ### Migrations
