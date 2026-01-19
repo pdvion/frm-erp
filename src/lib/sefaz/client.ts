@@ -14,6 +14,7 @@ import {
   SEFAZ_URLS,
   UF_CODES,
 } from "./types";
+import { signXml } from "./xml-signer";
 
 // Códigos de evento de manifestação
 const MANIFESTACAO_CODES: Record<ManifestacaoTipo, number> = {
@@ -29,10 +30,72 @@ const MANIFESTACAO_CODES: Record<ManifestacaoTipo, number> = {
 export class SefazClient {
   private config: SefazConfig;
   private urls: typeof SEFAZ_URLS.producao;
+  private privateKey?: string;
+  private certificate?: string;
 
   constructor(config: SefazConfig) {
     this.config = config;
     this.urls = SEFAZ_URLS[config.environment];
+  }
+
+  /**
+   * Configura certificado digital para assinatura
+   */
+  setCertificate(privateKey: string, certificate: string): void {
+    this.privateKey = privateKey;
+    this.certificate = certificate;
+  }
+
+  /**
+   * Verifica se certificado está configurado
+   */
+  hasCertificate(): boolean {
+    return !!this.privateKey && !!this.certificate;
+  }
+
+  /**
+   * Assina XML usando certificado configurado
+   */
+  private signXmlContent(xml: string, tagToSign: string): string {
+    if (!this.privateKey || !this.certificate) {
+      throw new Error("Certificado digital não configurado");
+    }
+
+    const result = signXml(xml, this.privateKey, this.certificate, tagToSign);
+    if (!result.success || !result.signedXml) {
+      throw new Error(result.error || "Erro ao assinar XML");
+    }
+
+    return result.signedXml;
+  }
+
+  /**
+   * Envia requisição SOAP para SEFAZ
+   */
+  private async sendSoapRequest(url: string, soapEnvelope: string, soapAction: string): Promise<string> {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/soap+xml; charset=utf-8",
+        "SOAPAction": soapAction,
+      },
+      body: soapEnvelope,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.text();
+  }
+
+  /**
+   * Extrai valor de uma tag XML
+   */
+  private extractTagValue(xml: string, tagName: string): string | null {
+    const regex = new RegExp(`<${tagName}[^>]*>([^<]*)</${tagName}>`, "i");
+    const match = xml.match(regex);
+    return match ? match[1] : null;
   }
 
   /**
