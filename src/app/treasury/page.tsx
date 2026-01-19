@@ -16,6 +16,7 @@ import {
   CreditCard,
   PiggyBank,
   Banknote,
+  RefreshCw,
 } from "lucide-react";
 
 const accountTypeConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
@@ -63,6 +64,13 @@ export default function TreasuryPage() {
             </div>
             <div className="flex items-center gap-4">
               <CompanySwitcher />
+              <Link
+                href="/treasury/reconciliation"
+                className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Conciliação
+              </Link>
               <Link
                 href="/treasury/accounts/new"
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
