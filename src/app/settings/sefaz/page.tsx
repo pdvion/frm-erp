@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
@@ -18,7 +18,14 @@ import {
   Search,
   FileText,
   Loader2,
+  X,
 } from "lucide-react";
+
+interface Notification {
+  id: number;
+  type: "success" | "error" | "info";
+  message: string;
+}
 
 export default function SefazConfigPage() {
   const [cnpj, setCnpj] = useState("");
@@ -27,53 +34,78 @@ export default function SefazConfigPage() {
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
   const [certificatePassword, setCertificatePassword] = useState("");
   const [chaveConsulta, setChaveConsulta] = useState("");
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [consultaResult, setConsultaResult] = useState<{ total: number; nfes: string[] } | null>(null);
+
+  const addNotification = (type: "success" | "error" | "info", message: string) => {
+    const id = Date.now();
+    setNotifications((prev) => [...prev, { id, type, message }]);
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 5000);
+  };
+
+  const removeNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
   const { data: status, isLoading, refetch } = trpc.sefaz.status.useQuery();
+  const { data: currentConfig } = trpc.sefaz.getConfig.useQuery();
+
+  useEffect(() => {
+    if (currentConfig) {
+      setCnpj(currentConfig.cnpj || "");
+      setUf(currentConfig.uf || "SP");
+      setEnvironment(currentConfig.environment as "homologacao" | "producao" || "homologacao");
+    }
+  }, [currentConfig]);
 
   const consultarMutation = trpc.sefaz.consultarNFeDestinadas.useMutation({
     onSuccess: (data) => {
-      alert(`Consulta realizada! ${data.totalRegistros} NFe encontradas.`);
+      addNotification("success", `Consulta realizada! ${data.totalRegistros} NFe encontradas.`);
+      if (data.totalRegistros > 0) {
+        setConsultaResult({ total: data.totalRegistros, nfes: [] });
+      }
     },
     onError: (error) => {
-      alert(`Erro: ${error.message}`);
+      addNotification("error", error.message);
     },
   });
 
   const consultarChaveMutation = trpc.sefaz.consultarPorChave.useMutation({
     onSuccess: (data) => {
-      alert(`NFe encontrada: ${data.message}`);
+      addNotification("success", `NFe encontrada: ${data.message}`);
     },
     onError: (error) => {
-      alert(`Erro: ${error.message}`);
+      addNotification("error", error.message);
     },
   });
 
   const saveConfigMutation = trpc.sefaz.saveConfig.useMutation({
     onSuccess: () => {
-      alert("Configuração salva com sucesso!");
+      addNotification("success", "Configuração salva com sucesso!");
       refetch();
     },
     onError: (error) => {
-      alert(`Erro ao salvar: ${error.message}`);
+      addNotification("error", `Erro ao salvar: ${error.message}`);
     },
   });
-
-  const { data: currentConfig } = trpc.sefaz.getConfig.useQuery();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.name.endsWith(".pfx") && !file.name.endsWith(".p12")) {
-        alert("Selecione um arquivo de certificado .pfx ou .p12");
+        addNotification("error", "Selecione um arquivo de certificado .pfx ou .p12");
         return;
       }
       setCertificateFile(file);
+      addNotification("info", `Certificado "${file.name}" selecionado`);
     }
   };
 
   const handleSave = async () => {
     if (!cnpj || !uf) {
-      alert("Preencha CNPJ e UF");
+      addNotification("error", "Preencha CNPJ e UF");
       return;
     }
 
@@ -124,6 +156,33 @@ export default function SefazConfigPage() {
           </div>
         </div>
       </header>
+
+      {/* Notifications */}
+      <div className="fixed top-20 right-4 z-50 space-y-2 max-w-md">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className={`flex items-center gap-3 p-4 rounded-lg shadow-lg border ${
+              notification.type === "success"
+                ? "bg-green-50 border-green-200 text-green-800"
+                : notification.type === "error"
+                ? "bg-red-50 border-red-200 text-red-800"
+                : "bg-blue-50 border-blue-200 text-blue-800"
+            }`}
+          >
+            {notification.type === "success" && <CheckCircle className="w-5 h-5 flex-shrink-0" />}
+            {notification.type === "error" && <XCircle className="w-5 h-5 flex-shrink-0" />}
+            {notification.type === "info" && <AlertTriangle className="w-5 h-5 flex-shrink-0" />}
+            <span className="text-sm flex-1">{notification.message}</span>
+            <button
+              onClick={() => removeNotification(notification.id)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ))}
+      </div>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Status Card */}
