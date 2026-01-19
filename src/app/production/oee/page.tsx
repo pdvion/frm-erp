@@ -10,13 +10,11 @@ import {
   Loader2,
   TrendingUp,
   TrendingDown,
-  Clock,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Factory,
   Settings,
-  Calendar,
   RefreshCw,
   Target,
 } from "lucide-react";

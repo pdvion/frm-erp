@@ -13,12 +13,10 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Package,
   ShoppingCart,
   Factory,
   Calendar,
   TrendingUp,
-  Settings,
   FileText,
   RefreshCw,
 } from "lucide-react";

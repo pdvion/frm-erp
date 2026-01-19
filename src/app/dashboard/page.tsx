@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { 
-  Package, Users, Warehouse, FileText, Settings, BarChart3, Shield, 
+  Package, Users, Warehouse, FileText, Settings, Shield, 
   ShoppingCart, FileInput, DollarSign, User, BookOpen, AlertTriangle,
   TrendingUp, TrendingDown, Clock, CheckCircle, ClipboardList, ArrowRight,
   Loader2
@@ -32,9 +32,6 @@ const formatCurrency = (value: number) => {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 };
 
-const formatNumber = (value: number) => {
-  return new Intl.NumberFormat("pt-BR").format(value);
-};
 
 export default function DashboardPage() {
   const { user } = useAuth();

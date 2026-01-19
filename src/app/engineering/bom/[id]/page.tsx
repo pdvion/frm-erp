@@ -16,7 +16,6 @@ import {
   Calculator,
   Search,
   ChevronDown,
-  ChevronRight,
   Package,
   AlertTriangle,
 } from "lucide-react";

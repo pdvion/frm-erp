@@ -9,17 +9,14 @@ import {
   ChevronLeft,
   Loader2,
   Play,
-  Pause,
   StopCircle,
   AlertTriangle,
   CheckCircle,
   Clock,
   Package,
-  Wrench,
   Settings,
   BarChart3,
   Plus,
-  XCircle,
   RefreshCw,
 } from "lucide-react";
 

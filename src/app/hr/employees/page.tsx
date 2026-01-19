@@ -16,8 +16,6 @@ import {
   Building2,
   Briefcase,
   Calendar,
-  Mail,
-  Phone,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -53,10 +51,7 @@ export default function EmployeesPage() {
     return new Date(date).toLocaleDateString("pt-BR");
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-  };
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">

@@ -19,11 +19,9 @@ import {
   Calendar,
   Package,
   Eye,
-  DollarSign,
   TrendingUp,
   AlertTriangle,
   FileCheck,
-  Ban,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {

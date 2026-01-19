@@ -63,10 +63,7 @@ export default function ReservationsPage() {
     }).format(value);
   };
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}

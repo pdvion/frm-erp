@@ -8,7 +8,6 @@ import {
   ChevronLeft,
   Loader2,
   Building2,
-  Briefcase,
   Clock,
   DollarSign,
   UserPlus,
