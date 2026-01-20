@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   TrendingUp,
@@ -29,13 +30,6 @@ export default function CashflowPage() {
   const { data, isLoading, error } = trpc.payables.cashflow.useQuery({
     groupBy,
   });
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr + "T12:00:00");

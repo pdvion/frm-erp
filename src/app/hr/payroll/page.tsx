@@ -14,6 +14,7 @@ import {
   Users
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 export default function PayrollPage() {
@@ -26,12 +27,6 @@ export default function PayrollPage() {
   const { data: payrolls, isLoading } = trpc.hr.listPayrolls.useQuery({
     month: selectedMonth,
   });
-
-  const currencyFormatter = useMemo(
-    () => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }),
-    []
-  );
-  const formatCurrency = (value: number) => currencyFormatter.format(value);
 
   const getStatusConfig = (status: string) => {
     switch (status) {
