@@ -142,6 +142,7 @@ model Company {
   budgetAlerts       BudgetAlert[]
   workflowDefinitions WorkflowDefinition[]
   workflowInstances   WorkflowInstance[]
+  pickingLists        PickingList[]
 
   @@map("companies")
 }
@@ -199,6 +200,10 @@ model User {
   workflowInstancesCancelled WorkflowInstance[] @relation("WorkflowCanceller")
   workflowStepsAssigned      WorkflowStepHistory[] @relation("StepAssignee")
   workflowStepsCompleted     WorkflowStepHistory[] @relation("StepCompleter")
+  pickingListsAssigned       PickingList[] @relation("PickingAssignee")
+  pickingListsCreated        PickingList[] @relation("PickingCreator")
+  pickingItemsPicked         PickingListItem[]
+  pickingVerifications       PickingVerification[]
 
   @@map("users")
 }
@@ -406,6 +411,7 @@ model Material {
   receivingItems      MaterialReceivingItem[]
   issuedInvoiceItems  IssuedInvoiceItem[]
   stockReservations   StockReservation[]
+  pickingListItems    PickingListItem[]
 
   @@map("materials")
 }
@@ -2162,6 +2168,7 @@ model StockLocation {
   inventoryCounts      InventoryCount[]
   materialReceivings   MaterialReceiving[]
   receivingItems       MaterialReceivingItem[]
+  pickingListItems     PickingListItem[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -3723,4 +3730,114 @@ model WorkflowStepHistory {
   @@index([instanceId])
   @@index([assignedTo])
   @@map("workflow_step_history")
+}
+
+// =============================================================================
+// PICKING LIST - LISTA DE SEPARAÇÃO (WMS BÁSICO)
+// =============================================================================
+
+enum PickingListStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PickingPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum PickingSourceType {
+  REQUISITION
+  SALES_ORDER
+  PRODUCTION_ORDER
+  TRANSFER
+}
+
+enum PickingItemStatus {
+  PENDING
+  PARTIAL
+  PICKED
+  NOT_FOUND
+}
+
+enum PickingVerificationStatus {
+  APPROVED
+  REJECTED
+  PARTIAL
+}
+
+model PickingList {
+  id          String            @id @default(uuid()) @db.Uuid
+  companyId   String            @db.Uuid
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code        String            @db.VarChar(50)
+  status      PickingListStatus @default(PENDING)
+  priority    PickingPriority   @default(NORMAL)
+  type        PickingSourceType @default(REQUISITION)
+  sourceId    String?           @db.Uuid
+  sourceType  String?           @db.VarChar(50)
+  assignedTo  String?           @db.Uuid
+  assignee    User?             @relation("PickingAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
+  startedAt   DateTime?
+  completedAt DateTime?
+  notes       String?
+  createdBy   String?           @db.Uuid
+  creator     User?             @relation("PickingCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  items         PickingListItem[]
+  verifications PickingVerification[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([sourceId])
+  @@map("picking_lists")
+}
+
+model PickingListItem {
+  id             String            @id @default(uuid()) @db.Uuid
+  pickingListId  String            @db.Uuid
+  pickingList    PickingList       @relation(fields: [pickingListId], references: [id], onDelete: Cascade)
+  materialId     String            @db.Uuid
+  material       Material          @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  locationId     String?           @db.Uuid
+  location       StockLocation?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  requestedQty   Float
+  pickedQty      Float             @default(0)
+  status         PickingItemStatus @default(PENDING)
+  sequence       Int               @default(0)
+  lotNumber      String?           @db.VarChar(100)
+  serialNumber   String?           @db.VarChar(100)
+  expirationDate DateTime?         @db.Date
+  notes          String?
+  pickedAt       DateTime?
+  pickedBy       String?           @db.Uuid
+  picker         User?             @relation(fields: [pickedBy], references: [id], onDelete: SetNull)
+
+  @@index([pickingListId])
+  @@index([materialId])
+  @@index([locationId])
+  @@map("picking_list_items")
+}
+
+model PickingVerification {
+  id            String                    @id @default(uuid()) @db.Uuid
+  pickingListId String                    @db.Uuid
+  pickingList   PickingList               @relation(fields: [pickingListId], references: [id], onDelete: Cascade)
+  verifiedBy    String                    @db.Uuid
+  verifier      User                      @relation(fields: [verifiedBy], references: [id], onDelete: Cascade)
+  verifiedAt    DateTime                  @default(now())
+  status        PickingVerificationStatus
+  discrepancies Json                      @default("[]")
+  notes         String?
+
+  @@index([pickingListId])
+  @@map("picking_verifications")
 }

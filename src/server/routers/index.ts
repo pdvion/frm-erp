@@ -42,6 +42,7 @@ import { biRouter } from "./bi";
 import { gpdRouter } from "./gpd";
 import { budgetRouter } from "./budget";
 import { workflowRouter } from "./workflow";
+import { pickingRouter } from "./picking";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -87,6 +88,7 @@ export const appRouter = createTRPCRouter({
   gpd: gpdRouter,
   budget: budgetRouter,
   workflow: workflowRouter,
+  picking: pickingRouter,
 });
 
 export type AppRouter = typeof appRouter;
