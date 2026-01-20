@@ -133,6 +133,9 @@ model Company {
   dashboards         Dashboard[]
   kpis               Kpi[]
   kpiValues          KpiValue[]
+  strategicGoals     StrategicGoal[]
+  goalIndicators     GoalIndicator[]
+  actionPlans        ActionPlan[]
 
   @@map("companies")
 }
@@ -177,6 +180,10 @@ model User {
   tasksCreated               Task[] @relation("TaskCreatedBy")
   taskHistory                TaskHistory[]
   dashboardsCreated          Dashboard[]
+  strategicGoalsOwned        StrategicGoal[]
+  actionPlansResponsible     ActionPlan[] @relation("ActionPlanResponsible")
+  actionPlansCreated         ActionPlan[] @relation("ActionPlanCreator")
+  actionPlanTasks            ActionPlanTask[]
 
   @@map("users")
 }
@@ -2365,10 +2372,11 @@ model Department {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   
-  positions     JobPosition[]
-  employees     Employee[]
-  notifications Notification[]
-  tasks         Task[] @relation("TaskTargetDepartment")
+  positions       JobPosition[]
+  employees       Employee[]
+  notifications   Notification[]
+  tasks           Task[] @relation("TaskTargetDepartment")
+  strategicGoals  StrategicGoal[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -3113,6 +3121,7 @@ enum KpiFrequency {
   DAILY
   WEEKLY
   MONTHLY
+  QUARTERLY
 }
 
 enum KpiStatus {
@@ -3214,4 +3223,165 @@ model DashboardWidget {
 
   @@index([dashboardId])
   @@map("dashboard_widgets")
+}
+
+// =============================================================================
+// GPD - GESTÃO POR DIRETRIZES
+// =============================================================================
+
+enum GoalCategory {
+  FINANCIAL
+  OPERATIONAL
+  CUSTOMER
+  GROWTH
+  PEOPLE
+}
+
+enum GoalStatus {
+  ACTIVE
+  ACHIEVED
+  NOT_ACHIEVED
+  CANCELLED
+}
+
+enum ActionPlanType {
+  CORRECTIVE
+  PREVENTIVE
+  IMPROVEMENT
+}
+
+enum ActionPlanStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model StrategicGoal {
+  id            String       @id @default(uuid()) @db.Uuid
+  companyId     String       @db.Uuid
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year          Int
+  title         String       @db.VarChar(255)
+  description   String?
+  category      GoalCategory
+  targetValue   Float?
+  unit          String?      @db.VarChar(20)
+  weight        Float        @default(1.0)
+  status        GoalStatus   @default(ACTIVE)
+  ownerId       String?      @db.Uuid
+  owner         User?        @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  departmentId  String?      @db.Uuid
+  department    Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  parentId      String?      @db.Uuid
+  parent        StrategicGoal?  @relation("GoalHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children      StrategicGoal[] @relation("GoalHierarchy")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  indicators    GoalIndicator[]
+  actionPlans   ActionPlan[]
+
+  @@index([companyId])
+  @@index([year])
+  @@index([parentId])
+  @@map("strategic_goals")
+}
+
+model GoalIndicator {
+  id              String       @id @default(uuid()) @db.Uuid
+  goalId          String       @db.Uuid
+  goal            StrategicGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  companyId       String       @db.Uuid
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name            String       @db.VarChar(255)
+  description     String?
+  formula         String?
+  unit            String?      @db.VarChar(20)
+  polarity        KpiPolarity  @default(HIGHER)
+  frequency       KpiFrequency @default(MONTHLY)
+  targetMin       Float?
+  targetExpected  Float?
+  targetMax       Float?
+  currentValue    Float?
+  lastUpdated     DateTime?
+  dataSource      String?      @db.VarChar(100)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  history         IndicatorHistory[]
+  actionPlans     ActionPlan[]
+
+  @@index([goalId])
+  @@map("goal_indicators")
+}
+
+model IndicatorHistory {
+  id          String        @id @default(uuid()) @db.Uuid
+  indicatorId String        @db.Uuid
+  indicator   GoalIndicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  period      DateTime      @db.Date
+  value       Float
+  target      Float?
+  status      KpiStatus     @default(ON_TARGET)
+  notes       String?
+  createdAt   DateTime      @default(now())
+
+  @@unique([indicatorId, period])
+  @@index([indicatorId])
+  @@index([period])
+  @@map("indicator_history")
+}
+
+model ActionPlan {
+  id              String           @id @default(uuid()) @db.Uuid
+  companyId       String           @db.Uuid
+  company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  goalId          String?          @db.Uuid
+  goal            StrategicGoal?   @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  indicatorId     String?          @db.Uuid
+  indicator       GoalIndicator?   @relation(fields: [indicatorId], references: [id], onDelete: SetNull)
+  title           String           @db.VarChar(255)
+  description     String?
+  type            ActionPlanType   @default(CORRECTIVE)
+  priority        Int              @default(3)
+  status          ActionPlanStatus @default(PENDING)
+  responsibleId   String?          @db.Uuid
+  responsible     User?            @relation("ActionPlanResponsible", fields: [responsibleId], references: [id], onDelete: SetNull)
+  dueDate         DateTime?        @db.Date
+  completedAt     DateTime?
+  progress        Int              @default(0)
+  rootCause       String?
+  expectedResult  String?
+  actualResult    String?
+  createdBy       String?          @db.Uuid
+  creator         User?            @relation("ActionPlanCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  tasks           ActionPlanTask[]
+
+  @@index([companyId])
+  @@index([goalId])
+  @@index([status])
+  @@map("action_plans")
+}
+
+model ActionPlanTask {
+  id            String       @id @default(uuid()) @db.Uuid
+  actionPlanId  String       @db.Uuid
+  actionPlan    ActionPlan   @relation(fields: [actionPlanId], references: [id], onDelete: Cascade)
+  title         String       @db.VarChar(255)
+  description   String?
+  responsibleId String?      @db.Uuid
+  responsible   User?        @relation(fields: [responsibleId], references: [id], onDelete: SetNull)
+  dueDate       DateTime?    @db.Date
+  completedAt   DateTime?
+  status        ActionPlanStatus @default(PENDING)
+  sequence      Int          @default(0)
+  createdAt     DateTime     @default(now())
+
+  @@index([actionPlanId])
+  @@map("action_plan_tasks")
 }

@@ -1,0 +1,380 @@
+"use client";
+
+import Link from "next/link";
+import { trpc } from "@/lib/trpc";
+import { formatPercent } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
+import {
+  Target,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  Loader2,
+  Plus,
+  Calendar,
+  Users,
+  Flag,
+  Activity,
+} from "lucide-react";
+
+type StatusBadgeProps = {
+  status: "BELOW" | "ON_TARGET" | "ABOVE";
+};
+
+function StatusBadge({ status }: StatusBadgeProps) {
+  const config = {
+    BELOW: { color: "bg-red-100 text-red-800", icon: TrendingDown, label: "Abaixo" },
+    ON_TARGET: { color: "bg-green-100 text-green-800", icon: CheckCircle, label: "Na Meta" },
+    ABOVE: { color: "bg-blue-100 text-blue-800", icon: TrendingUp, label: "Acima" },
+  };
+
+  const { color, icon: Icon, label } = config[status];
+
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+      <Icon className="h-3 w-3" />
+      {label}
+    </span>
+  );
+}
+
+function PriorityBadge({ priority }: { priority: number }) {
+  const config: Record<number, { color: string; label: string }> = {
+    1: { color: "bg-red-100 text-red-800", label: "Urgente" },
+    2: { color: "bg-orange-100 text-orange-800", label: "Alta" },
+    3: { color: "bg-blue-100 text-blue-800", label: "Normal" },
+    4: { color: "bg-gray-100 text-gray-800", label: "Baixa" },
+  };
+
+  const { color, label } = config[priority] || config[3];
+
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+      {label}
+    </span>
+  );
+}
+
+export default function GpdDashboardPage() {
+  const currentYear = new Date().getFullYear();
+  const { data: dashboard, isLoading } = trpc.gpd.getDashboard.useQuery(
+    { year: currentYear },
+    { refetchInterval: 60000 }
+  );
+
+  const { data: goals } = trpc.gpd.listGoals.useQuery(
+    { year: currentYear, parentId: null },
+    { enabled: !isLoading }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  const goalsData = dashboard?.goals || { total: 0, byStatus: {} };
+  const indicatorsData = dashboard?.indicators || { total: 0, belowTarget: 0, onTarget: 0, aboveTarget: 0, list: [] };
+  const actionsData = dashboard?.actionPlans || { total: 0, byStatus: {} };
+  const pendingActions = dashboard?.pendingActions || [];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader
+        title="Gestão por Diretrizes"
+        icon={<Target className="h-6 w-6 text-purple-600" />}
+        module="REPORTS"
+      >
+        <Link
+          href="/gpd/goals"
+          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+        >
+          <Flag className="h-4 w-4" />
+          Metas
+        </Link>
+        <Link
+          href="/gpd/actions"
+          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+        >
+          <Activity className="h-4 w-4" />
+          Planos de Ação
+        </Link>
+        <Link
+          href="/gpd/goals/new"
+          className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+        >
+          <Plus className="h-4 w-4" />
+          Nova Meta
+        </Link>
+      </PageHeader>
+
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="space-y-8">
+          {/* Cards de Resumo */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-purple-100 p-3">
+                  <Target className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Metas {currentYear}</p>
+                  <p className="text-2xl font-bold text-gray-900">{goalsData.total}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2 text-xs">
+                <span className="text-green-600">
+                  {(goalsData.byStatus as Record<string, number>)?.ACHIEVED || 0} atingidas
+                </span>
+                <span className="text-gray-400">•</span>
+                <span className="text-blue-600">
+                  {(goalsData.byStatus as Record<string, number>)?.ACTIVE || 0} ativas
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-green-100 p-3">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Indicadores</p>
+                  <p className="text-2xl font-bold text-gray-900">{indicatorsData.total}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2 text-xs">
+                <span className="text-green-600">{indicatorsData.onTarget} na meta</span>
+                <span className="text-gray-400">•</span>
+                <span className="text-red-600">{indicatorsData.belowTarget} abaixo</span>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-blue-100 p-3">
+                  <Activity className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Planos de Ação</p>
+                  <p className="text-2xl font-bold text-gray-900">{actionsData.total}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2 text-xs">
+                <span className="text-yellow-600">
+                  {(actionsData.byStatus as Record<string, number>)?.IN_PROGRESS || 0} em andamento
+                </span>
+                <span className="text-gray-400">•</span>
+                <span className="text-green-600">
+                  {(actionsData.byStatus as Record<string, number>)?.COMPLETED || 0} concluídos
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-orange-100 p-3">
+                  <AlertTriangle className="h-6 w-6 text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Ações Pendentes</p>
+                  <p className="text-2xl font-bold text-gray-900">{pendingActions.length}</p>
+                </div>
+              </div>
+              <div className="mt-4 text-xs text-orange-600">
+                Próximos 7 dias
+              </div>
+            </div>
+          </div>
+
+          {/* Indicadores com Faróis */}
+          <section>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Faróis dos Indicadores</h2>
+              <Link href="/gpd/indicators" className="text-sm text-purple-600 hover:text-purple-800">
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {indicatorsData.list.slice(0, 6).map((indicator) => (
+                <div
+                  key={indicator.id}
+                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">{indicator.name}</p>
+                      <p className="mt-1 text-xs text-gray-500">{indicator.goal?.title}</p>
+                    </div>
+                    <StatusBadge status={indicator.status as "BELOW" | "ON_TARGET" | "ABOVE"} />
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {indicator.currentValue !== null ? indicator.currentValue.toLocaleString("pt-BR") : "-"}
+                      </span>
+                      {indicator.targetExpected !== null && (
+                        <span className="text-sm text-gray-500">
+                          / {indicator.targetExpected.toLocaleString("pt-BR")}
+                        </span>
+                      )}
+                    </div>
+                    {indicator.targetExpected !== null && indicator.currentValue !== null && (
+                      <div className="mt-2">
+                        <div className="h-2 w-full rounded-full bg-gray-200">
+                          <div
+                            className={`h-2 rounded-full ${
+                              indicator.status === "BELOW"
+                                ? "bg-red-500"
+                                : indicator.status === "ABOVE"
+                                ? "bg-blue-500"
+                                : "bg-green-500"
+                            }`}
+                            style={{
+                              width: `${Math.min(100, (indicator.currentValue / indicator.targetExpected) * 100)}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {formatPercent(indicator.currentValue / indicator.targetExpected)} da meta
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Metas Estratégicas */}
+            <section>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">Metas Estratégicas {currentYear}</h2>
+                <Link href="/gpd/goals" className="text-sm text-purple-600 hover:text-purple-800">
+                  Ver todas →
+                </Link>
+              </div>
+              <div className="space-y-3">
+                {goals?.slice(0, 5).map((goal) => (
+                  <Link
+                    key={goal.id}
+                    href={`/gpd/goals/${goal.id}`}
+                    className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-block h-2 w-2 rounded-full ${
+                              goal.category === "FINANCIAL"
+                                ? "bg-green-500"
+                                : goal.category === "OPERATIONAL"
+                                ? "bg-blue-500"
+                                : goal.category === "CUSTOMER"
+                                ? "bg-purple-500"
+                                : goal.category === "GROWTH"
+                                ? "bg-orange-500"
+                                : "bg-teal-500"
+                            }`}
+                          />
+                          <p className="font-medium text-gray-900">{goal.title}</p>
+                        </div>
+                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                          {goal.owner && (
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {goal.owner.name}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Activity className="h-3 w-3" />
+                            {goal._count.indicators} indicadores
+                          </span>
+                        </div>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </Link>
+                ))}
+                {(!goals || goals.length === 0) && (
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                    <Target className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-500">Nenhuma meta cadastrada</p>
+                    <Link
+                      href="/gpd/goals/new"
+                      className="mt-4 inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Criar primeira meta
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Ações Pendentes */}
+            <section>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">Ações Próximas do Vencimento</h2>
+                <Link href="/gpd/actions" className="text-sm text-purple-600 hover:text-purple-800">
+                  Ver todas →
+                </Link>
+              </div>
+              <div className="space-y-3">
+                {pendingActions.map((action) => (
+                  <Link
+                    key={action.id}
+                    href={`/gpd/actions/${action.id}`}
+                    className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{action.title}</p>
+                        {action.goal && (
+                          <p className="mt-1 text-xs text-gray-500">{action.goal.title}</p>
+                        )}
+                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                          {action.responsible && (
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {action.responsible.name}
+                            </span>
+                          )}
+                          {action.dueDate && (
+                            <span className="flex items-center gap-1 text-orange-600">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(action.dueDate).toLocaleDateString("pt-BR")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <PriorityBadge priority={action.priority} />
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Clock className="h-3 w-3" />
+                          {action.progress}%
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+                {pendingActions.length === 0 && (
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                    <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
+                    <p className="mt-2 text-sm text-gray-500">Nenhuma ação pendente</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

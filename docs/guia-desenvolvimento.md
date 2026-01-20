@@ -72,6 +72,14 @@
 | FP41 | Folha Ponto | ✅ Migrado |
 | FP42 | Folha Pagamento | ✅ Migrado |
 
+#### MÓDULOS AVANÇADOS (Novos)
+| Código | Nome | Status Migração |
+|--------|------|-----------------|
+| BI10 | Business Intelligence | ✅ Migrado |
+| GPD10 | Gestão por Diretrizes | ✅ Migrado |
+| ORC10 | Orçamento/Budget | 🔴 Pendente |
+| WF10 | Workflow/BPM | 🔴 Pendente |
+
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
 - **Banco**: MySQL via Zeos (ZConnection)

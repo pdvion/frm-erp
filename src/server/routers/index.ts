@@ -39,6 +39,7 @@ import { bomRouter } from "./bom";
 import { cnabRouter } from "./cnab";
 import { mesRouter } from "./mes";
 import { biRouter } from "./bi";
+import { gpdRouter } from "./gpd";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -81,6 +82,7 @@ export const appRouter = createTRPCRouter({
   cnab: cnabRouter,
   mes: mesRouter,
   bi: biRouter,
+  gpd: gpdRouter,
 });
 
 export type AppRouter = typeof appRouter;
