@@ -79,6 +79,8 @@
 | GPD10 | Gestão por Diretrizes | ✅ Migrado |
 | ORC10 | Orçamento/Budget | ✅ Migrado |
 | WF10 | Workflow/BPM | ✅ Migrado |
+| WMS10 | Picking List | ✅ Migrado |
+| ALC10 | Alçadas de Aprovação | ✅ Migrado |
 
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
