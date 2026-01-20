@@ -130,6 +130,9 @@ model Company {
   notificationGroups NotificationGroup[]
   tasks              Task[]
   pixTransactions    PixTransaction[]
+  dashboards         Dashboard[]
+  kpis               Kpi[]
+  kpiValues          KpiValue[]
 
   @@map("companies")
 }
@@ -173,6 +176,7 @@ model User {
   tasksOwned                 Task[] @relation("TaskOwner")
   tasksCreated               Task[] @relation("TaskCreatedBy")
   taskHistory                TaskHistory[]
+  dashboardsCreated          Dashboard[]
 
   @@map("users")
 }
@@ -3085,4 +3089,129 @@ model IssuedInvoiceItem {
 
   @@index([invoiceId])
   @@map("issued_invoice_items")
+}
+
+// =============================================================================
+// BI - BUSINESS INTELLIGENCE
+// =============================================================================
+
+enum KpiCategory {
+  FINANCIAL
+  PURCHASING
+  INVENTORY
+  PRODUCTION
+  SALES
+  HR
+}
+
+enum KpiPolarity {
+  HIGHER  // Maior é melhor
+  LOWER   // Menor é melhor
+}
+
+enum KpiFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum KpiStatus {
+  BELOW
+  ON_TARGET
+  ABOVE
+}
+
+enum WidgetType {
+  KPI_CARD
+  LINE_CHART
+  BAR_CHART
+  PIE_CHART
+  TABLE
+  GAUGE
+}
+
+model Dashboard {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @db.Uuid
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String   @db.VarChar(255)
+  description String?
+  isDefault   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  layout      Json     @default("[]")
+  filters     Json     @default("{}")
+  createdBy   String?  @db.Uuid
+  creator     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  widgets     DashboardWidget[]
+
+  @@index([companyId])
+  @@map("dashboards")
+}
+
+model Kpi {
+  id              String       @id @default(uuid()) @db.Uuid
+  companyId       String       @db.Uuid
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code            String       @db.VarChar(50)
+  name            String       @db.VarChar(255)
+  description     String?
+  category        KpiCategory
+  unit            String?      @db.VarChar(20)
+  formula         String?
+  targetMin       Float?
+  targetExpected  Float?
+  targetMax       Float?
+  polarity        KpiPolarity  @default(HIGHER)
+  frequency       KpiFrequency @default(DAILY)
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  values          KpiValue[]
+  widgets         DashboardWidget[]
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([category])
+  @@map("kpis")
+}
+
+model KpiValue {
+  id        String    @id @default(uuid()) @db.Uuid
+  kpiId     String    @db.Uuid
+  kpi       Kpi       @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  companyId String    @db.Uuid
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  period    DateTime  @db.Date
+  value     Float
+  target    Float?
+  status    KpiStatus @default(ON_TARGET)
+  metadata  Json      @default("{}")
+  createdAt DateTime  @default(now())
+
+  @@unique([kpiId, period])
+  @@index([kpiId])
+  @@index([period])
+  @@map("kpi_values")
+}
+
+model DashboardWidget {
+  id          String     @id @default(uuid()) @db.Uuid
+  dashboardId String     @db.Uuid
+  dashboard   Dashboard  @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  type        WidgetType
+  title       String     @db.VarChar(255)
+  config      Json       @default("{}")
+  position    Json       @default("{\"x\": 0, \"y\": 0, \"w\": 4, \"h\": 2}")
+  kpiId       String?    @db.Uuid
+  kpi         Kpi?       @relation(fields: [kpiId], references: [id], onDelete: SetNull)
+  dataSource  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([dashboardId])
+  @@map("dashboard_widgets")
 }
