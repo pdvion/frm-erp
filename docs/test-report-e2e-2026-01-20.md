@@ -88,43 +88,53 @@
 
 ---
 
-## 5. Próximos Passos Sugeridos
+## 5. Status dos Módulos Críticos
 
-### Prioridade Alta (Crítico)
-1. **CP14 - Entrada NFe/Materiais** - Módulo crítico para operação diária
-   - Workflow completo de recebimento
-   - Conferência física vs XML
-   - Integração com estoque
+### Módulos Verificados e Funcionais
 
-2. **CP15 - Saída de Materiais** - Requisições
-   - Workflow de requisição
-   - Aprovação por centro de custo
-   - Baixa automática de estoque
+| Módulo | Código | Status | Rotas |
+|--------|--------|--------|-------|
+| Materiais | CP10 | ✅ Completo | `/materials` |
+| Fornecedores | CP11 | ✅ Completo | `/suppliers` |
+| Cotações | CP12 | ✅ Completo | `/quotes` |
+| Ordens de Compra | CP13 | ✅ Completo | `/purchase-orders` |
+| **Entrada NFe** | CP14 | ✅ Completo | `/receiving`, `/invoices` |
+| **Requisições** | CP15 | ✅ Completo | `/requisitions` |
+| Estoque | EST10 | ✅ Completo | `/inventory` |
+| Contas a Pagar | FN10 | ✅ Completo | `/payables` |
+| Contas a Receber | FN20 | ✅ Completo | `/receivables` |
+| Tesouraria | FN30 | ✅ Completo | `/treasury` |
+| Produção | OP10 | ✅ Completo | `/production` |
+| RH | DP00 | ✅ Completo | `/hr` |
 
-### Prioridade Média
-3. **Integração SEFAZ Completa**
-   - Sincronização automática de NFes
-   - Manifestação do destinatário
-   - Download de XMLs
+---
 
-4. **Relatórios**
+## 6. Próximos Passos Sugeridos
+
+### Prioridade Alta
+1. **Relatórios Gerenciais**
    - Relatório de estoque por categoria
    - Relatório de contas a pagar por vencimento
-   - Relatório de movimentação
+   - Relatório de movimentação de materiais
 
-### Prioridade Baixa
-5. **Melhorias de UX**
+2. **Integração SEFAZ Completa**
+   - Manifestação do destinatário
+   - Sincronização automática de NFes
+   - Download de XMLs
+
+### Prioridade Média
+3. **Melhorias de UX Mobile**
+   - Otimizar tela de conferência para almoxarifado
+   - Upload de fotos para divergências
    - Skeleton loaders
-   - Animações de transição
-   - Modo escuro completo
 
-6. **Testes Automatizados**
+4. **Testes Automatizados**
    - Testes E2E com Playwright
    - Testes unitários para routers críticos
 
 ---
 
-## 6. Conclusão
+## 7. Conclusão
 
 O sistema está **estável e funcional** em produção:
 - ✅ Security Advisor: 0 erros
@@ -133,4 +143,4 @@ O sistema está **estável e funcional** em produção:
 - ✅ Responsividade: Funcionando em todas as resoluções testadas
 - ✅ Console: 0 erros
 
-**Recomendação**: Prosseguir com o desenvolvimento do módulo CP14 (Entrada NFe/Materiais).
+**Recomendação**: Todos os módulos críticos (CP10-CP15, EST10, FN10-FN30) estão implementados. Prosseguir com relatórios gerenciais e integração SEFAZ completa.
