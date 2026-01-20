@@ -77,8 +77,8 @@
 |--------|------|-----------------|
 | BI10 | Business Intelligence | ✅ Migrado |
 | GPD10 | Gestão por Diretrizes | ✅ Migrado |
-| ORC10 | Orçamento/Budget | 🔴 Pendente |
-| WF10 | Workflow/BPM | 🔴 Pendente |
+| ORC10 | Orçamento/Budget | ✅ Migrado |
+| WF10 | Workflow/BPM | ✅ Migrado |
 
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
