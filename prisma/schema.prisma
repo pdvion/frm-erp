@@ -136,6 +136,10 @@ model Company {
   strategicGoals     StrategicGoal[]
   goalIndicators     GoalIndicator[]
   actionPlans        ActionPlan[]
+  budgetAccounts     BudgetAccount[]
+  budgetVersions     BudgetVersion[]
+  budgetActuals      BudgetActual[]
+  budgetAlerts       BudgetAlert[]
 
   @@map("companies")
 }
@@ -184,6 +188,9 @@ model User {
   actionPlansResponsible     ActionPlan[] @relation("ActionPlanResponsible")
   actionPlansCreated         ActionPlan[] @relation("ActionPlanCreator")
   actionPlanTasks            ActionPlanTask[]
+  budgetVersionsApproved     BudgetVersion[] @relation("BudgetApprover")
+  budgetVersionsCreated      BudgetVersion[] @relation("BudgetCreator")
+  budgetAlertsResolved       BudgetAlert[]
 
   @@map("users")
 }
@@ -1228,6 +1235,9 @@ model CostCenter {
   payableAllocations PayableCostAllocation[]
   receivables        AccountsReceivable[]
   departments        Department[]
+  budgetEntries      BudgetEntry[]
+  budgetActuals      BudgetActual[]
+  budgetAlerts       BudgetAlert[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -3384,4 +3394,150 @@ model ActionPlanTask {
 
   @@index([actionPlanId])
   @@map("action_plan_tasks")
+}
+
+// =============================================================================
+// ORÇAMENTO - GESTÃO ORÇAMENTÁRIA
+// =============================================================================
+
+enum BudgetAccountType {
+  REVENUE
+  EXPENSE
+  INVESTMENT
+}
+
+enum BudgetVersionType {
+  ORIGINAL
+  REVISED
+  FORECAST
+}
+
+enum BudgetVersionStatus {
+  DRAFT
+  APPROVED
+  LOCKED
+}
+
+enum BudgetAlertType {
+  WARNING
+  EXCEEDED
+  BLOCKED
+}
+
+model BudgetAccount {
+  id          String            @id @default(uuid()) @db.Uuid
+  companyId   String            @db.Uuid
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code        String            @db.VarChar(20)
+  name        String            @db.VarChar(255)
+  description String?
+  type        BudgetAccountType @default(EXPENSE)
+  parentId    String?           @db.Uuid
+  parent      BudgetAccount?    @relation("BudgetAccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    BudgetAccount[]   @relation("BudgetAccountHierarchy")
+  level       Int               @default(1)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  entries     BudgetEntry[]
+  actuals     BudgetActual[]
+  alerts      BudgetAlert[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([parentId])
+  @@map("budget_accounts")
+}
+
+model BudgetVersion {
+  id          String              @id @default(uuid()) @db.Uuid
+  companyId   String              @db.Uuid
+  company     Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year        Int
+  name        String              @db.VarChar(100)
+  type        BudgetVersionType   @default(ORIGINAL)
+  status      BudgetVersionStatus @default(DRAFT)
+  description String?
+  approvedBy  String?             @db.Uuid
+  approver    User?               @relation("BudgetApprover", fields: [approvedBy], references: [id], onDelete: SetNull)
+  approvedAt  DateTime?
+  createdBy   String?             @db.Uuid
+  creator     User?               @relation("BudgetCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  entries     BudgetEntry[]
+  alerts      BudgetAlert[]
+
+  @@index([companyId, year])
+  @@map("budget_versions")
+}
+
+model BudgetEntry {
+  id           String        @id @default(uuid()) @db.Uuid
+  versionId    String        @db.Uuid
+  version      BudgetVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  accountId    String        @db.Uuid
+  account      BudgetAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  costCenterId String?       @db.Uuid
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  month        Int
+  amount       Float         @default(0)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([versionId, accountId, costCenterId, month])
+  @@index([versionId])
+  @@index([accountId])
+  @@map("budget_entries")
+}
+
+model BudgetActual {
+  id           String        @id @default(uuid()) @db.Uuid
+  companyId    String        @db.Uuid
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  accountId    String        @db.Uuid
+  account      BudgetAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  costCenterId String?       @db.Uuid
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  date         DateTime      @db.Date
+  amount       Float
+  description  String?
+  documentType String?       @db.VarChar(50)
+  documentId   String?       @db.Uuid
+  createdAt    DateTime      @default(now())
+
+  @@index([companyId, date])
+  @@index([accountId])
+  @@map("budget_actuals")
+}
+
+model BudgetAlert {
+  id              String          @id @default(uuid()) @db.Uuid
+  companyId       String          @db.Uuid
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  versionId       String          @db.Uuid
+  version         BudgetVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  accountId       String          @db.Uuid
+  account         BudgetAccount   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  costCenterId    String?         @db.Uuid
+  costCenter      CostCenter?     @relation(fields: [costCenterId], references: [id], onDelete: SetNull)
+  month           Int
+  type            BudgetAlertType
+  budgetAmount    Float
+  actualAmount    Float
+  variance        Float
+  variancePercent Float
+  isResolved      Boolean         @default(false)
+  resolvedBy      String?         @db.Uuid
+  resolver        User?           @relation(fields: [resolvedBy], references: [id], onDelete: SetNull)
+  resolvedAt      DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+
+  @@index([companyId])
+  @@index([isResolved])
+  @@map("budget_alerts")
 }

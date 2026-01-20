@@ -40,6 +40,7 @@ import { cnabRouter } from "./cnab";
 import { mesRouter } from "./mes";
 import { biRouter } from "./bi";
 import { gpdRouter } from "./gpd";
+import { budgetRouter } from "./budget";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -83,6 +84,7 @@ export const appRouter = createTRPCRouter({
   mes: mesRouter,
   bi: biRouter,
   gpd: gpdRouter,
+  budget: budgetRouter,
 });
 
 export type AppRouter = typeof appRouter;
