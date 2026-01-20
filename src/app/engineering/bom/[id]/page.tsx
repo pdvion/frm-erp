@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Layers,
@@ -35,20 +36,6 @@ export default function BomDetailPage() {
   const removeMutation = trpc.bom.removeItem.useMutation({
     onSuccess: () => refetch(),
   });
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 4,
-    }).format(value);
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   if (isLoading) {
     return (

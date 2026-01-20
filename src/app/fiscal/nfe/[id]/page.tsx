@@ -20,6 +20,7 @@ import {
   Printer
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
@@ -72,24 +73,6 @@ export default function NFeDetailPage() {
     } finally {
       setIsRejecting(false);
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 4,
-    }).format(value);
   };
 
   if (isLoading) {
