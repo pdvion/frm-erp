@@ -4,11 +4,11 @@
 
 | Recurso | URL |
 |---------|-----|
-| **DeepWiki** | https://deepwiki.com/pdvion/frm-erp |
-| **GitHub** | https://github.com/pdvion/frm-erp |
-| **Vercel** | https://frm-erp-vion-projects.vercel.app |
-| **Supabase** | https://supabase.com/dashboard/project/<PROJECT_ID> |
-| **Linear** | https://linear.app/vion/project/poc-delphi-frm-migracao-erp |
+| **DeepWiki** | [deepwiki.com/pdvion/frm-erp](https://deepwiki.com/pdvion/frm-erp) |
+| **GitHub** | [github.com/pdvion/frm-erp](https://github.com/pdvion/frm-erp) |
+| **Vercel** | [frm-erp-vion-projects.vercel.app](https://frm-erp-vion-projects.vercel.app) |
+| **Supabase** | [supabase.com/dashboard](https://supabase.com/dashboard/project/jewutjydoyaimusaxvyg) |
+| **Linear** | [linear.app/vion/project](https://linear.app/vion/project/poc-delphi-frm-migracao-erp) |
 
 ---
 
@@ -111,7 +111,7 @@
 
 ## Estrutura de Pastas
 
-```
+```text
 src/
 ├── app/                    # Next.js App Router
 │   ├── api/trpc/          # API tRPC endpoint
