@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCProvider } from "@/lib/trpc-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { EnsureUserProvider } from "@/components/EnsureUserProvider";
+import { AppLayout } from "@/components/AppLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <TRPCProvider>
-            <EnsureUserProvider>{children}</EnsureUserProvider>
+            <EnsureUserProvider>
+              <AppLayout>{children}</AppLayout>
+            </EnsureUserProvider>
           </TRPCProvider>
         </AuthProvider>
       </body>

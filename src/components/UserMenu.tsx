@@ -4,15 +4,23 @@ import { useState, useRef, useEffect } from "react";
 import { User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserMenuProps {
-  user: {
+  user?: {
     email?: string;
     name?: string;
   } | null;
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user: propUser }: UserMenuProps) {
+  const { user: authUser } = useAuth();
+  
+  // Normalizar user para ter email e name
+  const user = propUser || (authUser ? {
+    email: authUser.email,
+    name: authUser.user_metadata?.name || authUser.user_metadata?.full_name,
+  } : null);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
