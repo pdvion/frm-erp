@@ -81,6 +81,7 @@
 | WF10 | Workflow/BPM | ✅ Migrado |
 | WMS10 | Picking List | ✅ Migrado |
 | ALC10 | Alçadas de Aprovação | ✅ Migrado |
+| REL10 | Relatórios Gerenciais | ✅ Migrado |
 
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
