@@ -140,6 +140,8 @@ model Company {
   budgetVersions     BudgetVersion[]
   budgetActuals      BudgetActual[]
   budgetAlerts       BudgetAlert[]
+  workflowDefinitions WorkflowDefinition[]
+  workflowInstances   WorkflowInstance[]
 
   @@map("companies")
 }
@@ -191,6 +193,12 @@ model User {
   budgetVersionsApproved     BudgetVersion[] @relation("BudgetApprover")
   budgetVersionsCreated      BudgetVersion[] @relation("BudgetCreator")
   budgetAlertsResolved       BudgetAlert[]
+  workflowDefinitionsCreated WorkflowDefinition[]
+  workflowStepEscalations    WorkflowStep[] @relation("StepEscalation")
+  workflowInstancesStarted   WorkflowInstance[] @relation("WorkflowStarter")
+  workflowInstancesCancelled WorkflowInstance[] @relation("WorkflowCanceller")
+  workflowStepsAssigned      WorkflowStepHistory[] @relation("StepAssignee")
+  workflowStepsCompleted     WorkflowStepHistory[] @relation("StepCompleter")
 
   @@map("users")
 }
@@ -3540,4 +3548,179 @@ model BudgetAlert {
   @@index([companyId])
   @@index([isResolved])
   @@map("budget_alerts")
+}
+
+// =============================================================================
+// WORKFLOW - AUTOMAÇÃO DE PROCESSOS
+// =============================================================================
+
+enum WorkflowCategory {
+  PURCHASE
+  PAYMENT
+  HR
+  PRODUCTION
+  SALES
+  GENERAL
+}
+
+enum WorkflowTriggerType {
+  MANUAL
+  AUTOMATIC
+  SCHEDULED
+}
+
+enum WorkflowStepType {
+  START
+  APPROVAL
+  TASK
+  DECISION
+  NOTIFICATION
+  END
+}
+
+enum WorkflowAssigneeType {
+  USER
+  ROLE
+  DEPARTMENT
+  DYNAMIC
+}
+
+enum WorkflowInstanceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum WorkflowStepAction {
+  APPROVED
+  REJECTED
+  COMPLETED
+  DELEGATED
+  SKIPPED
+}
+
+model WorkflowDefinition {
+  id            String              @id @default(uuid()) @db.Uuid
+  companyId     String              @db.Uuid
+  company       Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code          String              @db.VarChar(50)
+  name          String              @db.VarChar(255)
+  description   String?
+  category      WorkflowCategory
+  triggerType   WorkflowTriggerType
+  triggerConfig Json                @default("{}")
+  isActive      Boolean             @default(true)
+  version       Int                 @default(1)
+  createdBy     String?             @db.Uuid
+  creator       User?               @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  steps         WorkflowStep[]
+  transitions   WorkflowTransition[]
+  instances     WorkflowInstance[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([category])
+  @@map("workflow_definitions")
+}
+
+model WorkflowStep {
+  id                  String               @id @default(uuid()) @db.Uuid
+  definitionId        String               @db.Uuid
+  definition          WorkflowDefinition   @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  code                String               @db.VarChar(50)
+  name                String               @db.VarChar(255)
+  type                WorkflowStepType
+  sequence            Int                  @default(0)
+  config              Json                 @default("{}")
+  assigneeType        WorkflowAssigneeType?
+  assigneeId          String?              @db.Uuid
+  assigneeExpression  String?
+  slaHours            Int?
+  escalationUserId    String?              @db.Uuid
+  escalationUser      User?                @relation("StepEscalation", fields: [escalationUserId], references: [id], onDelete: SetNull)
+  isRequired          Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+
+  transitionsFrom     WorkflowTransition[] @relation("TransitionFrom")
+  transitionsTo       WorkflowTransition[] @relation("TransitionTo")
+  currentInstances    WorkflowInstance[]
+  stepHistory         WorkflowStepHistory[]
+
+  @@index([definitionId])
+  @@map("workflow_steps")
+}
+
+model WorkflowTransition {
+  id            String             @id @default(uuid()) @db.Uuid
+  definitionId  String             @db.Uuid
+  definition    WorkflowDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  fromStepId    String             @db.Uuid
+  fromStep      WorkflowStep       @relation("TransitionFrom", fields: [fromStepId], references: [id], onDelete: Cascade)
+  toStepId      String             @db.Uuid
+  toStep        WorkflowStep       @relation("TransitionTo", fields: [toStepId], references: [id], onDelete: Cascade)
+  condition     String?
+  conditionType String             @default("ALWAYS") @db.VarChar(50)
+  label         String?            @db.VarChar(100)
+  createdAt     DateTime           @default(now())
+
+  @@index([definitionId])
+  @@map("workflow_transitions")
+}
+
+model WorkflowInstance {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  definitionId        String                 @db.Uuid
+  definition          WorkflowDefinition     @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  companyId           String                 @db.Uuid
+  company             Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code                String                 @db.VarChar(50)
+  status              WorkflowInstanceStatus @default(PENDING)
+  currentStepId       String?                @db.Uuid
+  currentStep         WorkflowStep?          @relation(fields: [currentStepId], references: [id], onDelete: SetNull)
+  entityType          String?                @db.VarChar(100)
+  entityId            String?                @db.Uuid
+  data                Json                   @default("{}")
+  startedBy           String?                @db.Uuid
+  starter             User?                  @relation("WorkflowStarter", fields: [startedBy], references: [id], onDelete: SetNull)
+  startedAt           DateTime               @default(now())
+  completedAt         DateTime?
+  cancelledAt         DateTime?
+  cancelledBy         String?                @db.Uuid
+  canceller           User?                  @relation("WorkflowCanceller", fields: [cancelledBy], references: [id], onDelete: SetNull)
+  cancellationReason  String?
+
+  stepHistory         WorkflowStepHistory[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([entityType, entityId])
+  @@map("workflow_instances")
+}
+
+model WorkflowStepHistory {
+  id          String              @id @default(uuid()) @db.Uuid
+  instanceId  String              @db.Uuid
+  instance    WorkflowInstance    @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  stepId      String              @db.Uuid
+  step        WorkflowStep        @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  status      WorkflowInstanceStatus @default(PENDING)
+  action      WorkflowStepAction?
+  assignedTo  String?             @db.Uuid
+  assignee    User?               @relation("StepAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
+  completedBy String?             @db.Uuid
+  completer   User?               @relation("StepCompleter", fields: [completedBy], references: [id], onDelete: SetNull)
+  startedAt   DateTime            @default(now())
+  completedAt DateTime?
+  dueAt       DateTime?
+  comments    String?
+  data        Json                @default("{}")
+
+  @@index([instanceId])
+  @@index([assignedTo])
+  @@map("workflow_step_history")
 }
