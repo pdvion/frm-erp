@@ -621,13 +621,6 @@ function CostModal({
     quantity: parseFloat(quantity) || 1,
   });
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
   return (
     <div 
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"

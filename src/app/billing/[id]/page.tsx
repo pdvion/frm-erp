@@ -600,13 +600,6 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
   return (
     <div 
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
