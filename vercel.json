@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/sefaz-sync",
+      "schedule": "0 */4 * * *"
+    }
+  ]
+}
