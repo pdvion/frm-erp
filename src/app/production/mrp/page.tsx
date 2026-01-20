@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate, formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Calculator,
@@ -88,14 +89,6 @@ export default function MrpPage() {
     if (reason) {
       rejectMutation.mutate({ id, reason });
     }
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
   };
 
   if (loadingDashboard) {

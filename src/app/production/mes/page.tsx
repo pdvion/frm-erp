@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Factory,
@@ -112,10 +113,6 @@ export default function MesPage() {
     const hours = Math.floor(diff / 60);
     const minutes = diff % 60;
     return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
-  };
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value);
   };
 
   if (loadingDashboard) {

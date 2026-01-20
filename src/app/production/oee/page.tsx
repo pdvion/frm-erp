@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   BarChart3,
@@ -55,10 +56,6 @@ export default function OeeDashboardPage() {
   const { data: dashboard, isLoading, refetch } = trpc.oee.dashboard.useQuery(getDateRange());
   const currentYear = new Date().getFullYear();
   const { data: targets } = trpc.oee.getTargets.useQuery({ year: currentYear });
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
-  };
 
   const formatPercent = (value: number) => {
     return `${formatNumber(value)}%`;
