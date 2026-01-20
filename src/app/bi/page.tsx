@@ -102,7 +102,7 @@ export default function BiDashboardPage() {
   const isLoading = loadingFinancial || loadingInventory || loadingPurchasing || loadingProduction || loadingSales;
 
   const handleRefresh = () => {
-    setRefreshKey((k) => k + 1);
+    // Refresh handled by React Query refetch
   };
 
   const calculateTrend = (current: number, previous: number) => {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 
 export const biRouter = createTRPCRouter({
   // ============================================================================
@@ -170,7 +170,7 @@ export const biRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.kpi.findMany({
         where: {
-          ...tenantFilter(ctx.companyId, false),
+          companyId: ctx.companyId,
           ...(input?.category && { category: input.category }),
           ...(input?.isActive !== undefined && { isActive: input.isActive }),
         },
@@ -184,7 +184,7 @@ export const biRouter = createTRPCRouter({
       return ctx.prisma.kpi.findFirst({
         where: {
           id: input.id,
-          ...tenantFilter(ctx.companyId, false),
+          companyId: ctx.companyId,
         },
         include: {
           values: {
@@ -397,7 +397,7 @@ export const biRouter = createTRPCRouter({
     const [totalItems, lowStock, movements30d] = await Promise.all([
       ctx.prisma.inventory.aggregate({
         where: { companyId: ctx.companyId },
-        _sum: { quantity: true, totalValue: true },
+        _sum: { quantity: true, totalCost: true },
         _count: true,
       }),
       ctx.prisma.$queryRaw<[{ count: bigint }]>`
@@ -416,8 +416,8 @@ export const biRouter = createTRPCRouter({
 
     return {
       totalItems: totalItems._count,
-      totalQuantity: totalItems._sum.quantity || 0,
-      totalValue: totalItems._sum.totalValue || 0,
+      totalQuantity: totalItems._sum?.quantity || 0,
+      totalValue: totalItems._sum?.totalCost || 0,
       lowStockCount: Number(lowStock[0]?.count || 0),
       movements30d,
     };
@@ -468,7 +468,7 @@ export const biRouter = createTRPCRouter({
         where: { companyId: ctx.companyId, status: { in: ["PLANNED", "IN_PROGRESS"] } },
       }),
       ctx.prisma.productionOrder.count({
-        where: { companyId: ctx.companyId, status: "COMPLETED", completedAt: { gte: startOfMonth } },
+        where: { companyId: ctx.companyId, status: "COMPLETED", actualEnd: { gte: startOfMonth } },
       }),
       ctx.prisma.$queryRaw<[{ avg_oee: number }]>`
         SELECT AVG(oee) as avg_oee FROM oee_records
