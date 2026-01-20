@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ChevronLeft,
@@ -29,13 +30,6 @@ export default function FinanceDashboardPage() {
 
   const isLoading = loadingTreasury || loadingPayables || loadingReceivables;
   const hasError = errorTreasury || errorPayables || errorReceivables;
-
-  const formatCurrency = (value: number | undefined | null) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value || 0);
-  };
 
   const quickLinks = [
     { href: "/payables", label: "Contas a Pagar", icon: TrendingDown, color: "text-red-600 bg-red-50" },

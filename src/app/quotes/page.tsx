@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
@@ -78,16 +79,6 @@ export default function QuotesPage() {
 
   const { data: stats } = trpc.quotes.stats.useQuery();
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   // Prepare Kanban columns
   const kanbanColumns = useMemo((): KanbanColumn<Quote>[] => {

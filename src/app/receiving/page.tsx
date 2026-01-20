@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
@@ -42,15 +43,6 @@ export default function ReceivingPage() {
   });
 
   const { data: dashboard } = trpc.receiving.dashboard.useQuery();
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-  };
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
