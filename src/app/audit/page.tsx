@@ -21,7 +21,7 @@ import {
   Clock
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { formatDateTime } from "@/lib/formatters";
+import { formatDate, formatDateTime } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const actionConfig = {
@@ -74,14 +74,6 @@ export default function AuditPage() {
     return new Intl.DateTimeFormat("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(date));
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
     }).format(new Date(date));
   };
 

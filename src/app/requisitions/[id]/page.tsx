@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDateTime } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Package,
@@ -66,17 +67,6 @@ export default function RequisitionDetailPage() {
       refetch();
     },
   });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
-  const formatDateTime = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleString("pt-BR");
-  };
 
   if (isLoading) {
     return (
