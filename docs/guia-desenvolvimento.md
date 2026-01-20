@@ -31,7 +31,7 @@
 | CP12 | Cotações | ✅ Migrado |
 | CP13 | Pedidos de Compra | ✅ Migrado |
 | CP14 | Entrada NFe | ✅ Migrado |
-| CP15 | Saída Materiais | 🔴 Pendente |
+| CP15 | Saída Materiais/Requisições | ✅ Migrado |
 | CP16 | Ativos | 🟡 Baixa prioridade |
 
 #### ESTOQUE (EST)
