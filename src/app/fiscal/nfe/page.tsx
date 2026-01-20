@@ -16,6 +16,7 @@ import {
   Filter
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
@@ -42,17 +43,6 @@ export default function NFePage() {
   const invoices = data?.invoices ?? [];
   const pagination = data?.pagination;
   const stats = data?.stats;
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -18,6 +18,7 @@ import {
   Building2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type BoletoStatus = "PENDING" | "REGISTERED" | "PAID" | "CANCELLED" | "OVERDUE";
@@ -47,16 +48,6 @@ export default function BoletosPage() {
   const pagination = data?.pagination;
   const stats = data?.stats;
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   const copyToClipboard = async (code: string) => {
     await navigator.clipboard.writeText(code);

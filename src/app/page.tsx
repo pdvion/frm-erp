@@ -280,8 +280,13 @@ export default function LandingPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" />
+                <label htmlFor="remember-me" className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    id="remember-me"
+                    aria-label="Lembrar-me neste dispositivo"
+                    className="w-4 h-4 rounded border-gray-300 text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" 
+                  />
                   <span className="text-sm text-gray-600">Lembrar-me</span>
                 </label>
                 <Link 

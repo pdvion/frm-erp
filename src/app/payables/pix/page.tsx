@@ -18,6 +18,7 @@ import {
   Building2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type PixStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
@@ -48,23 +49,6 @@ export default function PixPage() {
   const transactions = data?.transactions ?? [];
   const pagination = data?.pagination;
   const stats = data?.stats;
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDateTime = (date: string | Date) => {
-    return new Date(date).toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const copyToClipboard = async (key: string) => {
     await navigator.clipboard.writeText(key);
