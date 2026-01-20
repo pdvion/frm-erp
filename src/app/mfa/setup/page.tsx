@@ -53,6 +53,7 @@ export default function MFASetupPage() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!enrollData) return;
+    if (code.length !== 6) return; // VIO-538: Validar código de 6 dígitos
 
     const success = await verifyTOTP(enrollData.id, code);
     if (success) {
@@ -60,11 +61,15 @@ export default function MFASetupPage() {
     }
   };
 
-  const copySecret = () => {
+  const copySecret = async () => {
     if (enrollData?.secret) {
-      navigator.clipboard.writeText(enrollData.secret);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(enrollData.secret);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Falha ao copiar:', err);
+      }
     }
   };
 
@@ -177,6 +182,7 @@ export default function MFASetupPage() {
                     onClick={copySecret}
                     className="p-2 text-gray-500 hover:text-[var(--frm-primary)] transition-colors"
                     title="Copiar"
+                    aria-label={copied ? "Copiado" : "Copiar segredo"}
                   >
                     {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                   </button>
@@ -216,6 +222,7 @@ export default function MFASetupPage() {
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="000000"
                   maxLength={6}
+                  aria-label="Código de verificação MFA"
                   className="w-full text-center text-3xl font-mono tracking-[0.5em] py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] mb-4"
                   autoFocus
                 />

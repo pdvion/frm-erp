@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
@@ -45,27 +46,6 @@ function ActionBadge({ action }: { action: string }) {
   const { color, label } = config[action] || { color: "text-gray-600", label: action };
 
   return <span className={`text-sm font-medium ${color}`}>{label}</span>;
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
-}
-
-function formatDate(date: Date | string) {
-  return new Date(date).toLocaleDateString("pt-BR");
-}
-
-function formatDateTime(date: Date | string) {
-  return new Date(date).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 export default function ApprovalsPage() {
