@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ChevronLeft,
@@ -39,17 +40,6 @@ export default function ReconciliationPage() {
       utils.bankAccounts.transactions.invalidate();
     },
   });
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   const handleReconcile = async (transactionId: string, reconciled: boolean) => {
     await reconcileMutation.mutateAsync({ transactionId, reconciled });
