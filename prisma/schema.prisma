@@ -145,6 +145,9 @@ model Company {
   pickingLists        PickingList[]
   approvalLevels      ApprovalLevel[]
   paymentRequests     PaymentRequest[]
+  sefazSyncConfig     SefazSyncConfig?
+  sefazSyncLogs       SefazSyncLog[]
+  sefazPendingNfes    SefazPendingNfe[]
 
   @@map("companies")
 }
@@ -825,6 +828,7 @@ model ReceivedInvoice {
   // Títulos a pagar gerados
   accountsPayable AccountsPayable[]
   materialReceivings MaterialReceiving[]
+  sefazPendingNfes SefazPendingNfe[]
   
   @@index([status])
   @@index([companyId])
@@ -3962,4 +3966,102 @@ model PaymentApproval {
   @@index([requestId])
   @@index([approverId])
   @@map("payment_approvals")
+}
+
+// =============================================================================
+// INTEGRAÇÃO SEFAZ - SINCRONIZAÇÃO AUTOMÁTICA
+// =============================================================================
+
+enum SefazSyncType {
+  MANUAL
+  SCHEDULED
+  WEBHOOK
+}
+
+enum SefazSyncStatus {
+  STARTED
+  SUCCESS
+  ERROR
+  PARTIAL
+}
+
+enum SefazNfeSituacao {
+  PENDENTE
+  PROCESSANDO
+  IMPORTADA
+  IGNORADA
+  ERRO
+}
+
+enum SefazManifestacao {
+  CIENCIA
+  CONFIRMACAO
+  DESCONHECIMENTO
+  NAO_REALIZADA
+}
+
+model SefazSyncConfig {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyId       String    @unique @db.Uuid
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isEnabled       Boolean   @default(false)
+  syncInterval    Int       @default(60) // minutos
+  lastSyncAt      DateTime?
+  nextSyncAt      DateTime?
+  autoManifest    Boolean   @default(false)
+  manifestType    SefazManifestacao @default(CIENCIA)
+  notifyOnNewNfe  Boolean   @default(true)
+  notifyEmail     String?   @db.VarChar(255)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([companyId])
+  @@map("sefaz_sync_configs")
+}
+
+model SefazSyncLog {
+  id           String          @id @default(uuid()) @db.Uuid
+  companyId    String          @db.Uuid
+  company      Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  syncType     SefazSyncType
+  status       SefazSyncStatus
+  startedAt    DateTime        @default(now())
+  completedAt  DateTime?
+  nfesFound    Int             @default(0)
+  nfesImported Int             @default(0)
+  nfesSkipped  Int             @default(0)
+  nfesError    Int             @default(0)
+  errorMessage String?
+  details      Json            @default("{}")
+
+  @@index([companyId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("sefaz_sync_logs")
+}
+
+model SefazPendingNfe {
+  id                String            @id @default(uuid()) @db.Uuid
+  companyId         String            @db.Uuid
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  chaveAcesso       String            @db.VarChar(44)
+  cnpjEmitente      String            @db.VarChar(14)
+  nomeEmitente      String?           @db.VarChar(255)
+  dataEmissao       DateTime?         @db.Date
+  valorTotal        Float?
+  situacao          SefazNfeSituacao  @default(PENDENTE)
+  manifestacao      SefazManifestacao?
+  manifestadaEm     DateTime?
+  xmlContent        String?
+  errorMessage      String?
+  receivedInvoiceId String?           @db.Uuid
+  receivedInvoice   ReceivedInvoice?  @relation(fields: [receivedInvoiceId], references: [id], onDelete: SetNull)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([companyId, chaveAcesso])
+  @@index([companyId])
+  @@index([situacao])
+  @@index([chaveAcesso])
+  @@map("sefaz_pending_nfes")
 }

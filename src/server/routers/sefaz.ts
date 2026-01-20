@@ -316,6 +316,345 @@ export const sefazRouter = createTRPCRouter({
         },
       };
     }),
+
+  // ==========================================================================
+  // SINCRONIZAÇÃO AUTOMÁTICA
+  // ==========================================================================
+
+  // Obter configuração de sincronização
+  getSyncConfig: tenantProcedure.query(async ({ ctx }) => {
+    const config = await ctx.prisma.sefazSyncConfig.findUnique({
+      where: { companyId: ctx.companyId },
+    });
+
+    return config;
+  }),
+
+  // Salvar configuração de sincronização
+  saveSyncConfig: tenantProcedure
+    .input(z.object({
+      isEnabled: z.boolean(),
+      syncInterval: z.number().min(15).max(1440).default(60), // 15 min a 24h
+      autoManifest: z.boolean().default(false),
+      manifestType: z.enum(["CIENCIA", "CONFIRMACAO", "DESCONHECIMENTO", "NAO_REALIZADA"]).default("CIENCIA"),
+      notifyOnNewNfe: z.boolean().default(true),
+      notifyEmail: z.string().email().optional().nullable(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const nextSyncAt = input.isEnabled
+        ? new Date(Date.now() + input.syncInterval * 60 * 1000)
+        : null;
+
+      return ctx.prisma.sefazSyncConfig.upsert({
+        where: { companyId: ctx.companyId },
+        create: {
+          companyId: ctx.companyId,
+          ...input,
+          nextSyncAt,
+        },
+        update: {
+          ...input,
+          nextSyncAt,
+        },
+      });
+    }),
+
+  // Listar NFes pendentes
+  listPendingNfes: tenantProcedure
+    .input(z.object({
+      situacao: z.enum(["PENDENTE", "PROCESSANDO", "IMPORTADA", "IGNORADA", "ERRO"]).optional(),
+      page: z.number().default(1),
+      limit: z.number().default(20),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const { situacao, page = 1, limit = 20 } = input || {};
+
+      const where = {
+        companyId: ctx.companyId,
+        ...(situacao && { situacao }),
+      };
+
+      const [nfes, total] = await Promise.all([
+        ctx.prisma.sefazPendingNfe.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        ctx.prisma.sefazPendingNfe.count({ where }),
+      ]);
+
+      return { nfes, total, pages: Math.ceil(total / limit) };
+    }),
+
+  // Importar NFe pendente (criar ReceivedInvoice)
+  importPendingNfe: tenantProcedure
+    .input(z.object({
+      pendingNfeId: z.string().uuid(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const pendingNfe = await ctx.prisma.sefazPendingNfe.findFirst({
+        where: { id: input.pendingNfeId, companyId: ctx.companyId },
+      });
+
+      if (!pendingNfe) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe pendente não encontrada" });
+      }
+
+      if (pendingNfe.situacao === "IMPORTADA") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "NFe já foi importada" });
+      }
+
+      if (!pendingNfe.xmlContent) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "XML da NFe não disponível" });
+      }
+
+      // Marcar como processando
+      await ctx.prisma.sefazPendingNfe.update({
+        where: { id: input.pendingNfeId },
+        data: { situacao: "PROCESSANDO" },
+      });
+
+      try {
+        // TODO: Parsear XML e criar ReceivedInvoice
+        // Por enquanto, apenas simular a criação
+        const receivedInvoice = await ctx.prisma.receivedInvoice.create({
+          data: {
+            accessKey: pendingNfe.chaveAcesso,
+            invoiceNumber: parseInt(pendingNfe.chaveAcesso.substring(25, 34)),
+            series: parseInt(pendingNfe.chaveAcesso.substring(22, 25)),
+            issueDate: pendingNfe.dataEmissao || new Date(),
+            supplierCnpj: pendingNfe.cnpjEmitente,
+            supplierName: pendingNfe.nomeEmitente || "Fornecedor",
+            totalInvoice: pendingNfe.valorTotal || 0,
+            totalProducts: pendingNfe.valorTotal || 0,
+            status: "PENDING",
+            companyId: ctx.companyId,
+            xmlContent: pendingNfe.xmlContent,
+          },
+        });
+
+        // Atualizar NFe pendente
+        await ctx.prisma.sefazPendingNfe.update({
+          where: { id: input.pendingNfeId },
+          data: {
+            situacao: "IMPORTADA",
+            receivedInvoiceId: receivedInvoice.id,
+          },
+        });
+
+        return { success: true, receivedInvoiceId: receivedInvoice.id };
+      } catch (error) {
+        // Marcar erro
+        await ctx.prisma.sefazPendingNfe.update({
+          where: { id: input.pendingNfeId },
+          data: {
+            situacao: "ERRO",
+            errorMessage: error instanceof Error ? error.message : "Erro desconhecido",
+          },
+        });
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Erro ao importar NFe",
+        });
+      }
+    }),
+
+  // Ignorar NFe pendente
+  ignorePendingNfe: tenantProcedure
+    .input(z.object({
+      pendingNfeId: z.string().uuid(),
+      motivo: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const pendingNfe = await ctx.prisma.sefazPendingNfe.findFirst({
+        where: { id: input.pendingNfeId, companyId: ctx.companyId },
+      });
+
+      if (!pendingNfe) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe pendente não encontrada" });
+      }
+
+      return ctx.prisma.sefazPendingNfe.update({
+        where: { id: input.pendingNfeId },
+        data: {
+          situacao: "IGNORADA",
+          errorMessage: input.motivo,
+        },
+      });
+    }),
+
+  // Executar sincronização manual
+  executarSincronizacao: tenantProcedure
+    .mutation(async ({ ctx }) => {
+      // Verificar se há configuração SEFAZ
+      const sefazConfig = await getSefazConfig(ctx.companyId!, ctx.prisma);
+      
+      if (!sefazConfig) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Configuração SEFAZ não encontrada",
+        });
+      }
+
+      // Criar log de sincronização
+      const syncLog = await ctx.prisma.sefazSyncLog.create({
+        data: {
+          companyId: ctx.companyId,
+          syncType: "MANUAL",
+          status: "STARTED",
+        },
+      });
+
+      try {
+        // Consultar NFes destinadas
+        const client = createSefazClient(sefazConfig);
+        const result = await client.consultarNFeDestinadas();
+
+        if (!result.success) {
+          await ctx.prisma.sefazSyncLog.update({
+            where: { id: syncLog.id },
+            data: {
+              status: "ERROR",
+              completedAt: new Date(),
+              errorMessage: result.message,
+            },
+          });
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: result.message || "Erro ao consultar SEFAZ",
+          });
+        }
+
+        // Processar NFes encontradas (simulado)
+        const nfesFound = result.nfes?.length || 0;
+        let nfesImported = 0;
+        let nfesSkipped = 0;
+
+        for (const nfe of result.nfes || []) {
+          // Verificar se já existe
+          const existing = await ctx.prisma.sefazPendingNfe.findFirst({
+            where: { companyId: ctx.companyId, chaveAcesso: nfe.chaveAcesso },
+          });
+
+          if (existing) {
+            nfesSkipped++;
+            continue;
+          }
+
+          // Criar registro pendente
+          await ctx.prisma.sefazPendingNfe.create({
+            data: {
+              companyId: ctx.companyId,
+              chaveAcesso: nfe.chaveAcesso,
+              cnpjEmitente: nfe.cnpjEmitente || "",
+              nomeEmitente: nfe.nomeEmitente,
+              dataEmissao: nfe.dataEmissao ? new Date(nfe.dataEmissao) : null,
+              valorTotal: nfe.valorNota,
+              situacao: "PENDENTE",
+            },
+          });
+
+          nfesImported++;
+        }
+
+        // Atualizar log
+        await ctx.prisma.sefazSyncLog.update({
+          where: { id: syncLog.id },
+          data: {
+            status: "SUCCESS",
+            completedAt: new Date(),
+            nfesFound,
+            nfesImported,
+            nfesSkipped,
+          },
+        });
+
+        // Atualizar última sincronização
+        await ctx.prisma.sefazSyncConfig.upsert({
+          where: { companyId: ctx.companyId },
+          create: {
+            companyId: ctx.companyId,
+            lastSyncAt: new Date(),
+          },
+          update: {
+            lastSyncAt: new Date(),
+          },
+        });
+
+        return {
+          success: true,
+          nfesFound,
+          nfesImported,
+          nfesSkipped,
+        };
+      } catch (error) {
+        await ctx.prisma.sefazSyncLog.update({
+          where: { id: syncLog.id },
+          data: {
+            status: "ERROR",
+            completedAt: new Date(),
+            errorMessage: error instanceof Error ? error.message : "Erro desconhecido",
+          },
+        });
+
+        throw error;
+      }
+    }),
+
+  // Listar logs de sincronização
+  listSyncLogs: tenantProcedure
+    .input(z.object({
+      page: z.number().default(1),
+      limit: z.number().default(20),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const { page = 1, limit = 20 } = input || {};
+
+      const [logs, total] = await Promise.all([
+        ctx.prisma.sefazSyncLog.findMany({
+          where: { companyId: ctx.companyId },
+          orderBy: { startedAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        ctx.prisma.sefazSyncLog.count({ where: { companyId: ctx.companyId } }),
+      ]);
+
+      return { logs, total, pages: Math.ceil(total / limit) };
+    }),
+
+  // Dashboard de sincronização
+  getSyncDashboard: tenantProcedure.query(async ({ ctx }) => {
+    const [config, pendingCounts, lastLogs] = await Promise.all([
+      ctx.prisma.sefazSyncConfig.findUnique({
+        where: { companyId: ctx.companyId },
+      }),
+      ctx.prisma.sefazPendingNfe.groupBy({
+        by: ["situacao"],
+        where: { companyId: ctx.companyId },
+        _count: true,
+      }),
+      ctx.prisma.sefazSyncLog.findMany({
+        where: { companyId: ctx.companyId },
+        orderBy: { startedAt: "desc" },
+        take: 5,
+      }),
+    ]);
+
+    const situacaoMap = pendingCounts.reduce(
+      (acc, item) => ({ ...acc, [item.situacao]: item._count }),
+      { PENDENTE: 0, PROCESSANDO: 0, IMPORTADA: 0, IGNORADA: 0, ERRO: 0 }
+    );
+
+    return {
+      config,
+      pendingNfes: situacaoMap,
+      lastLogs,
+    };
+  }),
 });
 
 interface SefazConfigStored {
