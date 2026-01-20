@@ -446,7 +446,6 @@ export const budgetRouter = createTRPCRouter({
         select: { id: true, code: true, name: true, type: true },
       });
 
-      const accountMap = new Map(accounts.map((a) => [a.id, a]));
       const budgetMap = new Map(entries.map((e) => [e.accountId, e._sum.amount || 0]));
       const actualMap = new Map(actuals.map((a) => [a.accountId, a._sum.amount || 0]));
 

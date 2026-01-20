@@ -15,7 +15,6 @@ import {
   Plus,
   Settings,
   ClipboardList,
-  Users,
 } from "lucide-react";
 
 type StatusBadgeProps = {

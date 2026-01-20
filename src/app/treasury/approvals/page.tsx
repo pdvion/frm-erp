@@ -11,36 +11,12 @@ import {
   AlertTriangle,
   ArrowRight,
   Loader2,
-  Plus,
   Settings,
   DollarSign,
   User,
   Calendar,
   FileText,
 } from "lucide-react";
-
-type StatusBadgeProps = {
-  status: string;
-};
-
-function StatusBadge({ status }: StatusBadgeProps) {
-  const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-amber-100 text-amber-800", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    APPROVED: { color: "bg-green-100 text-green-800", label: "Aprovado", icon: <CheckCircle className="h-3 w-3" /> },
-    REJECTED: { color: "bg-red-100 text-red-800", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-gray-100 text-gray-800", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
-    PAID: { color: "bg-blue-100 text-blue-800", label: "Pago", icon: <DollarSign className="h-3 w-3" /> },
-  };
-
-  const { color, label, icon } = config[status] || config.PENDING;
-
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${color}`}>
-      {icon}
-      {label}
-    </span>
-  );
-}
 
 function UrgencyBadge({ urgency }: { urgency: string }) {
   const config: Record<string, { color: string; label: string }> = {

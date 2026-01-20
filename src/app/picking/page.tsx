@@ -79,7 +79,8 @@ export default function PickingDashboardPage() {
     refetchInterval: 30000,
   });
 
-  const { data: pickingLists } = trpc.picking.list.useQuery(
+  // Lista de picking para uso futuro
+  trpc.picking.list.useQuery(
     { limit: 10 },
     { enabled: !isLoading }
   );
