@@ -12,6 +12,7 @@ import {
   Filter
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const movementTypeConfig = {
@@ -36,28 +37,11 @@ export default function MovementsHistoryPage() {
   const movements = data?.movements ?? [];
   const pagination = data?.pagination;
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
   const formatNumber = (value: number, decimals = 2) => {
     return new Intl.NumberFormat("pt-BR", {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }).format(value);
-  };
-
-  const formatDateTime = (date: Date | string) => {
-    return new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(date));
   };
 
   return (

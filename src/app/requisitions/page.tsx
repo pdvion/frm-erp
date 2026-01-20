@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
@@ -65,14 +66,6 @@ export default function RequisitionsPage() {
 
   const { data: stats } = trpc.requisitions.stats.useQuery();
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const formatDateTime = (date: Date | string) => {
-    return new Date(date).toLocaleString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
