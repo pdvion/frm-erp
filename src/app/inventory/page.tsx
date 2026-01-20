@@ -15,7 +15,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 interface InventoryItem {
@@ -76,13 +76,6 @@ export default function InventoryPage() {
 
   const inventory = (data?.inventory ?? []) as InventoryItem[];
   const pagination = data?.pagination;
-
-  const formatNumber = (value: number, decimals = 2) => {
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }).format(value);
-  };
 
   const getStockStatus = (item: InventoryItem) => {
     const min = item.material.minQuantity ?? 0;

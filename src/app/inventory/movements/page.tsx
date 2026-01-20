@@ -12,7 +12,7 @@ import {
   Filter
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { formatCurrency, formatDateTime } from "@/lib/formatters";
+import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const movementTypeConfig = {
@@ -37,12 +37,6 @@ export default function MovementsHistoryPage() {
   const movements = data?.movements ?? [];
   const pagination = data?.pagination;
 
-  const formatNumber = (value: number, decimals = 2) => {
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }).format(value);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -75,12 +69,15 @@ export default function MovementsHistoryPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-gray-400" />
+            <label htmlFor="movement-type-filter" className="sr-only">Filtrar por tipo de movimento</label>
             <select
+              id="movement-type-filter"
               value={movementType ?? ""}
               onChange={(e) => {
                 setMovementType(e.target.value || undefined);
                 setPage(1);
               }}
+              aria-label="Filtrar por tipo de movimento"
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">Todos os tipos</option>
@@ -218,6 +215,7 @@ export default function MovementsHistoryPage() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
+                    aria-label="Página anterior"
                     className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -228,6 +226,7 @@ export default function MovementsHistoryPage() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
+                    aria-label="Próxima página"
                     className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
                     <ChevronRight className="w-4 h-4" />
