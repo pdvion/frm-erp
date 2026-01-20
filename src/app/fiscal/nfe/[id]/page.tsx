@@ -20,7 +20,7 @@ import {
   Printer
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatCurrency, formatDate, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
