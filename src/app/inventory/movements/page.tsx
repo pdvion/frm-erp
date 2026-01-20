@@ -165,12 +165,16 @@ export default function MovementsHistoryPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <Link 
-                              href={`/materials/${movement.inventory.material.id}`}
-                              className="text-sm font-medium text-gray-900 hover:text-indigo-600"
-                            >
-                              {movement.inventory.material.code} - {movement.inventory.material.description}
-                            </Link>
+                            {movement.inventory?.material?.id ? (
+                              <Link 
+                                href={`/materials/${movement.inventory.material.id}`}
+                                className="text-sm font-medium text-gray-900 hover:text-indigo-600"
+                              >
+                                {movement.inventory.material.code ?? "—"} - {movement.inventory.material.description ?? "—"}
+                              </Link>
+                            ) : (
+                              <span className="text-sm text-gray-500">—</span>
+                            )}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-right">
                             <span className={`text-sm font-medium ${isEntry ? "text-green-600" : "text-red-600"}`}>
