@@ -17,6 +17,7 @@ import {
   Eye
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 type ScheduleStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FAILED";
@@ -54,23 +55,6 @@ export default function PixSchedulesPage() {
     const matchesStatus = !statusFilter || schedule.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const handleCancel = async (id: string) => {
     if (confirm("Deseja cancelar este agendamento?")) {

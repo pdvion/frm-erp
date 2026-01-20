@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Building2,
@@ -128,10 +129,6 @@ export default function CnabPage() {
     a.download = remessaResult.filename;
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
   };
 
   // selectedAccount disponível para uso futuro
