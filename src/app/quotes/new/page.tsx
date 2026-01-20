@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
@@ -130,13 +131,6 @@ export default function NewQuotePage() {
         notes: item.notes,
       })),
     });
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
   };
 
   return (

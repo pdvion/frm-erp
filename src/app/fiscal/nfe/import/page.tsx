@@ -14,6 +14,7 @@ import {
   FileUp
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
 interface ImportResult {
@@ -103,13 +104,6 @@ export default function NFeImportPage() {
       setXmlContent("");
       setFileName("");
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
   };
 
   return (
