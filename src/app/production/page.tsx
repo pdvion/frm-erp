@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Factory,
@@ -52,11 +53,6 @@ export default function ProductionPage() {
   });
 
   const { data: stats } = trpc.production.stats.useQuery();
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   const isLate = (dueDate: Date | string | null, status: string) => {
     if (!dueDate || ["COMPLETED", "CANCELLED"].includes(status)) return false;

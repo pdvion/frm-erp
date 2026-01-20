@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ChevronLeft,
@@ -64,16 +65,6 @@ export default function ReceivingDetailPage() {
       setIsConferencing(false);
     },
   });
-
-  const formatCurrency = (value: number | null) => {
-    if (value === null) return "-";
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
-  };
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   const handleStartConference = () => {
     startConferenceMutation.mutate({ id });
