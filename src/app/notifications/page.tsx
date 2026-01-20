@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDateTime } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ChevronLeft,
@@ -65,16 +66,6 @@ export default function NotificationsPage() {
       utils.notifications.countUnread.invalidate();
     },
   });
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -193,7 +184,7 @@ export default function NotificationsPage() {
                             </div>
                             <div className="text-right flex-shrink-0">
                               <p className="text-xs text-gray-400">
-                                {formatDate(notification.createdAt)}
+                                {formatDateTime(notification.createdAt)}
                               </p>
                               <span className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${
                                 notification.category === "error"
