@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatNumber } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Package,
@@ -69,13 +70,6 @@ export default function ReservationsPage() {
       setMutationError(`Erro ao consumir reserva: ${error.message}`);
     },
   });
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
 
   
   return (

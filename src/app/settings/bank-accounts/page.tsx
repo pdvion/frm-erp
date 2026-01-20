@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Building2,
@@ -112,10 +113,6 @@ export default function BankAccountsPage() {
 
   const handleToggleActive = (id: string, isActive: boolean) => {
     updateMutation.mutate({ id, isActive: !isActive });
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
   };
 
   if (isLoading) {

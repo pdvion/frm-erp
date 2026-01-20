@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Users,
@@ -33,10 +34,6 @@ const statusColors: Record<string, string> = {
 
 export default function HRDashboardPage() {
   const { data: dashboard, isLoading } = trpc.hr.dashboard.useQuery();
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

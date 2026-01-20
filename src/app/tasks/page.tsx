@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   ClipboardList,
@@ -64,13 +65,6 @@ export default function TasksPage() {
   });
 
   const { data: stats } = trpc.tasks.stats.useQuery();
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
-
-  // formatDateTime disponível para uso futuro
-  // const formatDateTime = (date: Date | string) => new Date(date).toLocaleString("pt-BR");
 
   const isOverdue = (deadline: Date | string | null) => {
     if (!deadline) return false;

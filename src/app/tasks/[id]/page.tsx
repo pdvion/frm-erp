@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   ClipboardList,
@@ -83,10 +84,6 @@ export default function TaskDetailPage() {
       setComment("");
     },
   });
-
-  const formatDateTime = (date: Date | string) => {
-    return new Date(date).toLocaleString("pt-BR");
-  };
 
   const formatDuration = (hours: number | null) => {
     if (hours === null) return "-";

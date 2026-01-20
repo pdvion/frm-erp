@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { formatDate } from "@/lib/formatters";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ArrowRightLeft,
@@ -38,11 +39,6 @@ export default function TransfersPage() {
     page,
     limit: 20,
   });
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
