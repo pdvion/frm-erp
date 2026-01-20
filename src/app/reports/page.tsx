@@ -1,0 +1,168 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { trpc } from "@/lib/trpc";
+import { CompanySwitcher } from "@/components/CompanySwitcher";
+import {
+  FileText,
+  ChevronLeft,
+  Package,
+  ArrowLeftRight,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+  Users,
+  Search,
+  Loader2,
+  BarChart3,
+} from "lucide-react";
+
+const iconMap: Record<string, React.ReactNode> = {
+  Package: <Package className="w-6 h-6" />,
+  ArrowLeftRight: <ArrowLeftRight className="w-6 h-6" />,
+  TrendingDown: <TrendingDown className="w-6 h-6" />,
+  TrendingUp: <TrendingUp className="w-6 h-6" />,
+  Wallet: <Wallet className="w-6 h-6" />,
+  Users: <Users className="w-6 h-6" />,
+};
+
+const categoryColors: Record<string, string> = {
+  Estoque: "bg-blue-100 text-blue-800",
+  Financeiro: "bg-green-100 text-green-800",
+  Compras: "bg-purple-100 text-purple-800",
+};
+
+export default function ReportsPage() {
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const { data: reports, isLoading } = trpc.reports.available.useQuery();
+
+  const filteredReports = reports?.filter((report) => {
+    const matchesSearch =
+      report.name.toLowerCase().includes(search.toLowerCase()) ||
+      report.description.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = !selectedCategory || report.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = reports ? [...new Set(reports.map((r) => r.category))] : [];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link href="/dashboard" className="text-gray-400 hover:text-gray-600" aria-label="Voltar ao dashboard">
+                <ChevronLeft className="w-5 h-5" />
+              </Link>
+              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Relatórios Gerenciais</h1>
+                <p className="text-sm text-gray-500">Análises e indicadores do sistema</p>
+              </div>
+            </div>
+            <CompanySwitcher />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar relatórios..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                !selectedCategory
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              Todos
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  selectedCategory === category
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          </div>
+        )}
+
+        {/* Reports Grid */}
+        {!isLoading && filteredReports && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredReports.map((report) => (
+              <Link
+                key={report.id}
+                href={`/reports/${report.id}`}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-indigo-300 transition-all group"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                    {iconMap[report.icon] || <FileText className="w-6 h-6" />}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                        {report.name}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-3">{report.description}</p>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        categoryColors[report.category] || "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {report.category}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredReports?.length === 0 && (
+          <div className="text-center py-12">
+            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum relatório encontrado</h3>
+            <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
