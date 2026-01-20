@@ -43,6 +43,7 @@ import { gpdRouter } from "./gpd";
 import { budgetRouter } from "./budget";
 import { workflowRouter } from "./workflow";
 import { pickingRouter } from "./picking";
+import { approvalsRouter } from "./approvals";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -89,6 +90,7 @@ export const appRouter = createTRPCRouter({
   budget: budgetRouter,
   workflow: workflowRouter,
   picking: pickingRouter,
+  approvals: approvalsRouter,
 });
 
 export type AppRouter = typeof appRouter;

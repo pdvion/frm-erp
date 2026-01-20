@@ -143,6 +143,8 @@ model Company {
   workflowDefinitions WorkflowDefinition[]
   workflowInstances   WorkflowInstance[]
   pickingLists        PickingList[]
+  approvalLevels      ApprovalLevel[]
+  paymentRequests     PaymentRequest[]
 
   @@map("companies")
 }
@@ -204,6 +206,10 @@ model User {
   pickingListsCreated        PickingList[] @relation("PickingCreator")
   pickingItemsPicked         PickingListItem[]
   pickingVerifications       PickingVerification[]
+  approvalLevelApprovers     ApprovalLevelApprover[]
+  paymentRequestsCreated     PaymentRequest[] @relation("PaymentRequester")
+  paymentApprovalsGiven      PaymentApproval[] @relation("PaymentApprover")
+  paymentApprovalsDelegated  PaymentApproval[] @relation("PaymentDelegate")
 
   @@map("users")
 }
@@ -930,6 +936,7 @@ model AccountsPayable {
   attachments     PayableAttachment[]
   costAllocations PayableCostAllocation[]
   bankTransactions BankTransaction[]
+  paymentRequests  PaymentRequest[]
   
   @@unique([companyId, code])
   @@index([supplierId])
@@ -3840,4 +3847,119 @@ model PickingVerification {
 
   @@index([pickingListId])
   @@map("picking_verifications")
+}
+
+// =============================================================================
+// ALÇADAS DE APROVAÇÃO - PAGAMENTOS
+// =============================================================================
+
+enum PaymentRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  PAID
+}
+
+enum PaymentUrgency {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ApprovalAction {
+  APPROVED
+  REJECTED
+  DELEGATED
+}
+
+model ApprovalLevel {
+  id                  String                   @id @default(uuid()) @db.Uuid
+  companyId           String                   @db.Uuid
+  company             Company                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code                String                   @db.VarChar(50)
+  name                String                   @db.VarChar(100)
+  description         String?
+  minValue            Float                    @default(0)
+  maxValue            Float?
+  requiresAllApprovers Boolean                 @default(false)
+  sequence            Int                      @default(0)
+  isActive            Boolean                  @default(true)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  approvers           ApprovalLevelApprover[]
+  paymentRequests     PaymentRequest[]         @relation("CurrentLevel")
+  paymentApprovals    PaymentApproval[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@map("approval_levels")
+}
+
+model ApprovalLevelApprover {
+  id         String        @id @default(uuid()) @db.Uuid
+  levelId    String        @db.Uuid
+  level      ApprovalLevel @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  userId     String        @db.Uuid
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canApprove Boolean       @default(true)
+  canReject  Boolean       @default(true)
+  sequence   Int           @default(0)
+  createdAt  DateTime      @default(now())
+
+  @@unique([levelId, userId])
+  @@index([levelId])
+  @@index([userId])
+  @@map("approval_level_approvers")
+}
+
+model PaymentRequest {
+  id             String               @id @default(uuid()) @db.Uuid
+  companyId      String               @db.Uuid
+  company        Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code           String               @db.VarChar(50)
+  payableId      String               @db.Uuid
+  payable        AccountsPayable      @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  amount         Float
+  dueDate        DateTime             @db.Date
+  status         PaymentRequestStatus @default(PENDING)
+  currentLevelId String?              @db.Uuid
+  currentLevel   ApprovalLevel?       @relation("CurrentLevel", fields: [currentLevelId], references: [id], onDelete: SetNull)
+  requestedBy    String               @db.Uuid
+  requester      User                 @relation("PaymentRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
+  requestedAt    DateTime             @default(now())
+  justification  String?
+  urgency        PaymentUrgency       @default(NORMAL)
+  completedAt    DateTime?
+  notes          String?
+
+  approvals PaymentApproval[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([payableId])
+  @@index([requestedBy])
+  @@map("payment_requests")
+}
+
+model PaymentApproval {
+  id          String         @id @default(uuid()) @db.Uuid
+  requestId   String         @db.Uuid
+  request     PaymentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  levelId     String         @db.Uuid
+  level       ApprovalLevel  @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  approverId  String         @db.Uuid
+  approver    User           @relation("PaymentApprover", fields: [approverId], references: [id], onDelete: Cascade)
+  action      ApprovalAction
+  comments    String?
+  delegatedTo String?        @db.Uuid
+  delegate    User?          @relation("PaymentDelegate", fields: [delegatedTo], references: [id], onDelete: SetNull)
+  actionAt    DateTime       @default(now())
+
+  @@index([requestId])
+  @@index([approverId])
+  @@map("payment_approvals")
 }
