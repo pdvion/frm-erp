@@ -27,14 +27,14 @@ import {
   PackageCheck,
 } from "lucide-react";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-zinc-700 text-zinc-300", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "bg-yellow-900/30 text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-blue-900/30 text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "bg-purple-900/30 text-purple-400", icon: <Truck className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-900/30 text-orange-400", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-green-900/30 text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-900/30 text-red-400", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", color: "text-zinc-300", bgColor: "bg-zinc-700", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "text-yellow-400", bgColor: "bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "text-blue-400", bgColor: "bg-blue-900/30", icon: <CheckCircle className="w-4 h-4" /> },
+  SENT: { label: "Enviado", color: "text-purple-400", bgColor: "bg-purple-900/30", icon: <Truck className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", color: "text-orange-400", bgColor: "bg-orange-900/30", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", color: "text-green-400", bgColor: "bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "text-red-400", bgColor: "bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function PurchaseOrderDetailPage() {
@@ -114,9 +114,7 @@ export default function PurchaseOrderDetailPage() {
         title={`PC-${order.code.toString().padStart(6, "0")}`}
         icon={<ShoppingCart className="w-6 h-6" />}
         backHref="/purchase-orders"
-        badges={[
-          { label: config.label, color: config.color }
-        ]}
+        badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
       >
         {canSend && order.status !== "SENT" && (
           <button
