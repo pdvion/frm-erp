@@ -38,18 +38,18 @@ export default function TreasuryPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Landmark className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Tesouraria</h1>
+                <h1 className="text-xl font-semibold text-theme">Tesouraria</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -97,11 +97,11 @@ export default function TreasuryPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Lista de Contas */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <h2 className="font-medium text-gray-900">Contas Bancárias</h2>
+                <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+                  <div className="px-4 py-3 border-b border-theme">
+                    <h2 className="font-medium text-theme">Contas Bancárias</h2>
                   </div>
-                  <div className="divide-y divide-gray-200">
+                  <div className="divide-y divide-theme-table">
                     {accounts?.map((account) => {
                       const config = accountTypeConfig[account.accountType] || accountTypeConfig.CHECKING;
                       const isSelected = selectedAccount === account.id;
@@ -110,7 +110,7 @@ export default function TreasuryPage() {
                         <button
                           key={account.id}
                           onClick={() => setSelectedAccount(account.id)}
-                          className={`w-full px-4 py-3 text-left hover:bg-gray-50 ${
+                          className={`w-full px-4 py-3 text-left hover:bg-theme-hover ${
                             isSelected ? "bg-indigo-50 border-l-4 border-indigo-600" : ""
                           }`}
                         >
@@ -118,8 +118,8 @@ export default function TreasuryPage() {
                             <div className="flex items-center gap-3">
                               <div className={config.color}>{config.icon}</div>
                               <div>
-                                <div className="font-medium text-gray-900">{account.name}</div>
-                                <div className="text-xs text-gray-500">
+                                <div className="font-medium text-theme">{account.name}</div>
+                                <div className="text-xs text-theme-muted">
                                   {account.bankName} {account.agency && `• Ag ${account.agency}`}
                                 </div>
                               </div>
@@ -133,7 +133,7 @@ export default function TreasuryPage() {
                     })}
 
                     {!accounts?.length && (
-                      <div className="px-4 py-8 text-center text-gray-500">
+                      <div className="px-4 py-8 text-center text-theme-muted">
                         <Landmark className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                         <p>Nenhuma conta cadastrada</p>
                       </div>
@@ -144,9 +144,9 @@ export default function TreasuryPage() {
 
               {/* Extrato */}
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                    <h2 className="font-medium text-gray-900">
+                <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+                  <div className="px-4 py-3 border-b border-theme flex items-center justify-between">
+                    <h2 className="font-medium text-theme">
                       {selectedAccount ? "Extrato" : "Selecione uma conta"}
                     </h2>
                     {selectedAccount && (
@@ -161,16 +161,16 @@ export default function TreasuryPage() {
                   </div>
 
                   {!selectedAccount ? (
-                    <div className="px-4 py-12 text-center text-gray-500">
+                    <div className="px-4 py-12 text-center text-theme-muted">
                       <Landmark className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                       <p>Selecione uma conta para ver o extrato</p>
                     </div>
                   ) : !transactions?.transactions.length ? (
-                    <div className="px-4 py-12 text-center text-gray-500">
+                    <div className="px-4 py-12 text-center text-theme-muted">
                       <p>Nenhuma transação encontrada</p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-gray-200">
+                    <div className="divide-y divide-theme-table">
                       {transactions.transactions.map((tx) => {
                         const isCredit = ["CREDIT", "TRANSFER_IN", "INTEREST"].includes(tx.type);
 
@@ -185,8 +185,8 @@ export default function TreasuryPage() {
                                 )}
                               </div>
                               <div>
-                                <div className="text-sm font-medium text-gray-900">{tx.description}</div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-sm font-medium text-theme">{tx.description}</div>
+                                <div className="text-xs text-theme-muted">
                                   {formatDate(tx.transactionDate)}
                                   {tx.documentNumber && ` • ${tx.documentNumber}`}
                                 </div>
@@ -196,7 +196,7 @@ export default function TreasuryPage() {
                               <div className={`font-medium ${isCredit ? "text-green-600" : "text-red-600"}`}>
                                 {isCredit ? "+" : "-"}{formatCurrency(tx.value)}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-theme-muted">
                                 Saldo: {formatCurrency(tx.balanceAfter)}
                               </div>
                             </div>

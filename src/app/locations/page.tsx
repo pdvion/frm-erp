@@ -27,7 +27,7 @@ const typeLabels: Record<string, string> = {
 
 const typeColors: Record<string, string> = {
   WAREHOUSE: "bg-blue-100 text-blue-800",
-  SHELF: "bg-gray-100 text-gray-800",
+  SHELF: "bg-theme-tertiary text-theme",
   BIN: "bg-purple-100 text-purple-800",
   ZONE: "bg-green-100 text-green-800",
   PRODUCTION: "bg-orange-100 text-orange-800",
@@ -40,17 +40,17 @@ export default function LocationsPage() {
   const { data: locations, isLoading } = trpc.stockLocations.list.useQuery({});
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <MapPin className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Locais de Estoque</h1>
+                <h1 className="text-xl font-semibold text-theme">Locais de Estoque</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -72,46 +72,46 @@ export default function LocationsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Link
             href="/transfers"
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
+            className="bg-theme-card rounded-lg border border-theme p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
           >
             <div className="p-3 bg-green-100 rounded-lg">
               <ArrowRightLeft className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <h3 className="font-medium text-gray-900">Transferências</h3>
-              <p className="text-sm text-gray-500">Movimentar entre locais</p>
+              <h3 className="font-medium text-theme">Transferências</h3>
+              <p className="text-sm text-theme-muted">Movimentar entre locais</p>
             </div>
           </Link>
 
           <Link
             href="/inventory"
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
+            className="bg-theme-card rounded-lg border border-theme p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
           >
             <div className="p-3 bg-purple-100 rounded-lg">
               <Package className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <h3 className="font-medium text-gray-900">Estoque</h3>
-              <p className="text-sm text-gray-500">Consultar saldos</p>
+              <h3 className="font-medium text-theme">Estoque</h3>
+              <p className="text-sm text-theme-muted">Consultar saldos</p>
             </div>
           </Link>
 
           <Link
             href="/inventory-count"
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
+            className="bg-theme-card rounded-lg border border-theme p-4 hover:border-blue-300 hover:shadow-sm transition-all flex items-center gap-4"
           >
             <div className="p-3 bg-orange-100 rounded-lg">
               <Warehouse className="w-6 h-6 text-orange-600" />
             </div>
             <div>
-              <h3 className="font-medium text-gray-900">Inventário Físico</h3>
-              <p className="text-sm text-gray-500">Contagem de estoque</p>
+              <h3 className="font-medium text-theme">Inventário Físico</h3>
+              <p className="text-sm text-theme-muted">Contagem de estoque</p>
             </div>
           </Link>
         </div>
 
         {/* Lista de Locais */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -119,40 +119,40 @@ export default function LocationsPage() {
           ) : !locations?.length ? (
             <div className="text-center py-12">
               <MapPin className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhum local cadastrado</p>
+              <p className="text-theme-muted">Nenhum local cadastrado</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Local Pai</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Código</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Nome</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Tipo</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Local Pai</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {locations.map((loc) => (
-                    <tr key={loc.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-900">{loc.code}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{loc.name}</td>
+                    <tr key={loc.id} className="hover:bg-theme-hover">
+                      <td className="px-4 py-3 font-medium text-theme">{loc.code}</td>
+                      <td className="px-4 py-3 text-sm text-theme-secondary">{loc.name}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${typeColors[loc.type] || "bg-gray-100"}`}>
+                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${typeColors[loc.type] || "bg-theme-tertiary"}`}>
                           {typeLabels[loc.type] || loc.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
+                      <td className="px-4 py-3 text-sm text-theme-secondary">
                         {loc.parent ? (
                           <div className="flex items-center gap-1">
-                            <FolderTree className="w-3 h-3 text-gray-400" />
+                            <FolderTree className="w-3 h-3 text-theme-muted" />
                             {loc.parent.name}
                           </div>
                         ) : "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${loc.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${loc.isActive ? "bg-green-100 text-green-800" : "bg-theme-tertiary text-theme"}`}>
                           {loc.isActive ? "Ativo" : "Inativo"}
                         </span>
                       </td>

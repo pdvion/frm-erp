@@ -28,7 +28,7 @@ const targetTypeConfig = {
 const priorityOptions = [
   { value: "URGENT", label: "Urgente", color: "text-red-600" },
   { value: "HIGH", label: "Alta", color: "text-orange-600" },
-  { value: "NORMAL", label: "Normal", color: "text-gray-600" },
+  { value: "NORMAL", label: "Normal", color: "text-theme-secondary" },
   { value: "LOW", label: "Baixa", color: "text-blue-600" },
 ];
 
@@ -94,21 +94,21 @@ export default function NewTaskPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link
                 href="/tasks"
-                className="text-gray-500 hover:text-gray-700"
+                className="text-theme-muted hover:text-theme-secondary"
                 aria-label="Voltar para tarefas"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <ClipboardList className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-theme">
                   Nova Tarefa
                 </h1>
               </div>
@@ -130,13 +130,13 @@ export default function NewTaskPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informações Básicas */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">
               Informações Básicas
             </h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-theme-secondary mb-1">
                   Título *
                 </label>
                 <input
@@ -145,12 +145,12 @@ export default function NewTaskPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Descreva a tarefa..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="description" className="block text-sm font-medium text-theme-secondary mb-1">
                   Descrição
                 </label>
                 <textarea
@@ -159,18 +159,18 @@ export default function NewTaskPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Detalhes adicionais..."
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div>
-                <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="priority" className="block text-sm font-medium text-theme-secondary mb-1">
                   Prioridade
                 </label>
                 <select
                   id="priority"
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as "URGENT" | "HIGH" | "NORMAL" | "LOW")}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 >
                   {priorityOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -183,8 +183,8 @@ export default function NewTaskPage() {
           </div>
 
           {/* Destinatário */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">
               Destinatário
             </h2>
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -202,12 +202,12 @@ export default function NewTaskPage() {
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Icon className={`w-5 h-5 ${targetType === key ? "text-purple-600" : "text-gray-400"}`} />
-                      <span className={`font-medium ${targetType === key ? "text-purple-900" : "text-gray-900"}`}>
+                      <Icon className={`w-5 h-5 ${targetType === key ? "text-purple-600" : "text-theme-muted"}`} />
+                      <span className={`font-medium ${targetType === key ? "text-purple-900" : "text-theme"}`}>
                         {config.label}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500">{config.description}</p>
+                    <p className="text-sm text-theme-muted">{config.description}</p>
                   </button>
                 );
               })}
@@ -215,7 +215,7 @@ export default function NewTaskPage() {
 
             {targetType === "user" && (
               <div>
-                <label htmlFor="targetUserId" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="targetUserId" className="block text-sm font-medium text-theme-secondary mb-1">
                   ID do Usuário
                 </label>
                 <input
@@ -224,20 +224,20 @@ export default function NewTaskPage() {
                   value={targetUserId}
                   onChange={(e) => setTargetUserId(e.target.value)}
                   placeholder="ID do usuário destinatário"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
             )}
           </div>
 
           {/* Prazos e SLA */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">
               Prazos e SLA
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="deadline" className="block text-sm font-medium text-theme-secondary mb-1">
                   <Calendar className="w-4 h-4 inline mr-1" />
                   Prazo Final
                 </label>
@@ -246,11 +246,11 @@ export default function NewTaskPage() {
                   type="datetime-local"
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div>
-                <label htmlFor="slaAccept" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="slaAccept" className="block text-sm font-medium text-theme-secondary mb-1">
                   SLA Aceite (horas)
                 </label>
                 <input
@@ -260,11 +260,11 @@ export default function NewTaskPage() {
                   onChange={(e) => setSlaAcceptHours(e.target.value)}
                   placeholder="Ex: 4"
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div>
-                <label htmlFor="slaResolve" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="slaResolve" className="block text-sm font-medium text-theme-secondary mb-1">
                   SLA Resolução (horas)
                 </label>
                 <input
@@ -274,27 +274,27 @@ export default function NewTaskPage() {
                   onChange={(e) => setSlaResolveHours(e.target.value)}
                   placeholder="Ex: 24"
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Vínculo com Entidade */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">
               Vínculo com Entidade (Opcional)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="entityType" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="entityType" className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Entidade
                 </label>
                 <select
                   id="entityType"
                   value={entityType}
                   onChange={(e) => setEntityType(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                 >
                   {entityTypeOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -305,7 +305,7 @@ export default function NewTaskPage() {
               </div>
               {entityType && (
                 <div>
-                  <label htmlFor="entityId" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="entityId" className="block text-sm font-medium text-theme-secondary mb-1">
                     ID da Entidade
                   </label>
                   <input
@@ -314,7 +314,7 @@ export default function NewTaskPage() {
                     value={entityId}
                     onChange={(e) => setEntityId(e.target.value)}
                     placeholder="ID da entidade vinculada"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
               )}
@@ -325,7 +325,7 @@ export default function NewTaskPage() {
           <div className="flex justify-end gap-4">
             <Link
               href="/tasks"
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
             >
               Cancelar
             </Link>

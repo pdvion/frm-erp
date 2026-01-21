@@ -153,10 +153,10 @@ export default function MobileReceivingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <p className="mt-4 text-theme-secondary">Carregando...</p>
         </div>
       </div>
     );
@@ -164,10 +164,10 @@ export default function MobileReceivingPage() {
 
   if (!receiving) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="space-y-6 flex items-center justify-center p-4">
         <div className="text-center">
           <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 text-lg">Recebimento não encontrado</p>
+          <p className="text-theme-muted text-lg">Recebimento não encontrado</p>
           <Link 
             href="/receiving" 
             className="mt-4 inline-block px-6 py-3 bg-blue-600 text-white rounded-xl"
@@ -186,15 +186,15 @@ export default function MobileReceivingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-24">
+    <div className="space-y-6 pb-24">
       {/* Header Mobile */}
-      <header className="bg-white sticky top-0 z-20 shadow-sm">
+      <header className="bg-theme-card sticky top-0 z-20 shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/receiving" className="p-2 -ml-2 text-gray-600">
+          <Link href="/receiving" className="p-2 -ml-2 text-theme-secondary">
             <ChevronLeft className="w-6 h-6" />
           </Link>
           <div className="text-center flex-1">
-            <h1 className="text-lg font-bold text-gray-900">
+            <h1 className="text-lg font-bold text-theme">
               Entrada #{receiving.code}
             </h1>
             <span className={`text-sm ${config.color}`}>
@@ -205,16 +205,16 @@ export default function MobileReceivingPage() {
         </div>
 
         {/* Info resumida */}
-        <div className="px-4 pb-3 border-b border-gray-200">
+        <div className="px-4 pb-3 border-b border-theme">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Fornecedor</span>
-            <span className="font-medium text-gray-900 truncate max-w-[200px]">
+            <span className="text-theme-muted">Fornecedor</span>
+            <span className="font-medium text-theme truncate max-w-[200px]">
               {receiving.supplier?.companyName || receiving.supplier?.tradeName || "-"}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1">
-            <span className="text-gray-500">NFe</span>
-            <span className="font-medium text-gray-900">
+            <span className="text-theme-muted">NFe</span>
+            <span className="font-medium text-theme">
               {receiving.nfeNumber || "-"} / {receiving.nfeSeries || "-"}
             </span>
           </div>
@@ -229,7 +229,7 @@ export default function MobileReceivingPage() {
                 ref={barcodeInputRef}
                 type="text"
                 placeholder="Escanear código de barras..."
-                className="flex-1 px-3 py-2 bg-white border border-blue-200 rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 bg-theme-card border border-blue-200 rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleBarcodeScanned((e.target as HTMLInputElement).value);
@@ -253,7 +253,7 @@ export default function MobileReceivingPage() {
           return (
             <div
               key={item.id}
-              className={`bg-white rounded-xl shadow-sm overflow-hidden transition-all ${
+              className={`bg-theme-card rounded-xl shadow-sm overflow-hidden transition-all ${
                 isExpanded ? "ring-2 ring-blue-500" : ""
               } ${hasIssue ? "border-l-4 border-orange-500" : ""}`}
             >
@@ -271,27 +271,27 @@ export default function MobileReceivingPage() {
                       {hasIssue && !isItemConferred && (
                         <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0" />
                       )}
-                      <span className="font-medium text-gray-900 truncate">
+                      <span className="font-medium text-theme truncate">
                         {item.material?.description || "Material não identificado"}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-theme-muted mt-1">
                       Código: {item.material?.code || "-"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 ml-2">
                     <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">
+                      <p className="text-lg font-bold text-theme">
                         {conf?.receivedQuantity ?? item.nfeQuantity}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-theme-muted">
                         de {item.nfeQuantity} {item.material?.unit || "UN"}
                       </p>
                     </div>
                     {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
+                      <ChevronUp className="w-5 h-5 text-theme-muted" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                      <ChevronDown className="w-5 h-5 text-theme-muted" />
                     )}
                   </div>
                 </div>
@@ -323,7 +323,7 @@ export default function MobileReceivingPage() {
                   </div>
 
                   {/* Valor unitário e total */}
-                  <div className="flex justify-between text-sm text-gray-600 mb-4">
+                  <div className="flex justify-between text-sm text-theme-secondary mb-4">
                     <span>Valor unitário: {formatCurrency(item.unitPrice)}</span>
                     <span className="font-medium">
                       Total: {formatCurrency((conf?.receivedQuantity ?? item.nfeQuantity) * item.unitPrice)}
@@ -340,7 +340,7 @@ export default function MobileReceivingPage() {
                         [item.id]: { ...prev[item.id], notes: e.target.value },
                       }))
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl text-base resize-none"
+                    className="w-full px-4 py-3 border border-theme-input rounded-xl text-base resize-none"
                     rows={2}
                   />
 
@@ -348,7 +348,7 @@ export default function MobileReceivingPage() {
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => handleTakePhoto()}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-gray-100 text-gray-700 rounded-xl active:bg-gray-200"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-theme-tertiary text-theme-secondary rounded-xl active:bg-gray-200"
                     >
                       <Camera className="w-5 h-5" />
                       Foto
@@ -374,7 +374,7 @@ export default function MobileReceivingPage() {
       </main>
 
       {/* Footer Fixo - Ações */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 safe-area-inset-bottom">
+      <footer className="fixed bottom-0 left-0 right-0 bg-theme-card border-t border-theme p-4 safe-area-inset-bottom">
         {receiving.status === "PENDING" && (
           <button
             onClick={handleStartConference}
@@ -394,7 +394,7 @@ export default function MobileReceivingPage() {
           <div className="flex gap-3">
             <Link
               href={`/receiving/${id}`}
-              className="flex-1 py-4 bg-gray-100 text-gray-700 text-lg font-semibold rounded-xl text-center active:bg-gray-200"
+              className="flex-1 py-4 bg-theme-tertiary text-theme-secondary text-lg font-semibold rounded-xl text-center active:bg-gray-200"
             >
               Versão Desktop
             </Link>
@@ -424,20 +424,20 @@ export default function MobileReceivingPage() {
       {/* Modal de Câmera (placeholder) */}
       {showCamera && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
+          <div className="bg-theme-card rounded-2xl p-6 w-full max-w-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Tirar Foto</h3>
               <button
                 onClick={() => setShowCamera(false)}
-                className="p-2 text-gray-500"
+                className="p-2 text-theme-muted"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="aspect-square bg-gray-200 rounded-xl flex items-center justify-center mb-4">
-              <Camera className="w-16 h-16 text-gray-400" />
+              <Camera className="w-16 h-16 text-theme-muted" />
             </div>
-            <p className="text-sm text-gray-500 text-center mb-4">
+            <p className="text-sm text-theme-muted text-center mb-4">
               Funcionalidade de câmera será implementada com integração nativa.
             </p>
             <button

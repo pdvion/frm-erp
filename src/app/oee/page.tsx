@@ -27,8 +27,8 @@ const stopTypeLabels: Record<string, { label: string; color: string }> = {
   SETUP: { label: "Setup", color: "bg-yellow-100 text-yellow-800" },
   MAINTENANCE: { label: "Manutenção", color: "bg-orange-100 text-orange-800" },
   QUALITY: { label: "Qualidade", color: "bg-purple-100 text-purple-800" },
-  MATERIAL: { label: "Material", color: "bg-gray-100 text-gray-800" },
-  OTHER: { label: "Outros", color: "bg-gray-100 text-gray-600" },
+  MATERIAL: { label: "Material", color: "bg-theme-tertiary text-theme" },
+  OTHER: { label: "Outros", color: "bg-theme-tertiary text-theme-secondary" },
 };
 
 function OeeGauge({ value, target, label }: { value: number; target: number; label: string }) {
@@ -65,8 +65,8 @@ function OeeGauge({ value, target, label }: { value: number; target: number; lab
           </span>
         </div>
       </div>
-      <div className="text-sm font-medium text-gray-700">{label}</div>
-      <div className="text-xs text-gray-500">Meta: {target}%</div>
+      <div className="text-sm font-medium text-theme-secondary">{label}</div>
+      <div className="text-xs text-theme-muted">Meta: {target}%</div>
     </div>
   );
 }
@@ -95,18 +95,18 @@ export default function OeeDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Activity className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Dashboard OEE</h1>
+                <h1 className="text-xl font-semibold text-theme">Dashboard OEE</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -115,14 +115,14 @@ export default function OeeDashboardPage() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                  className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
                 />
-                <span className="text-gray-500">até</span>
+                <span className="text-theme-muted">até</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                  className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
                 />
               </div>
               <CompanySwitcher />
@@ -139,13 +139,13 @@ export default function OeeDashboardPage() {
         ) : !dashboard ? (
           <div className="text-center py-12">
             <Activity className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">Nenhum dado disponível</p>
+            <p className="text-theme-muted">Nenhum dado disponível</p>
           </div>
         ) : (
           <>
             {/* OEE Geral */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-6 flex items-center gap-2">
+            <div className="bg-theme-card rounded-lg border border-theme p-6 mb-8">
+              <h2 className="text-lg font-medium text-theme mb-6 flex items-center gap-2">
                 <Gauge className="w-5 h-5 text-indigo-600" />
                 OEE Geral do Período
               </h2>
@@ -156,8 +156,8 @@ export default function OeeDashboardPage() {
                   }`}>
                     {dashboard.averageOee.toFixed(1)}%
                   </div>
-                  <div className="text-sm text-gray-500">OEE Médio</div>
-                  <div className="text-xs text-gray-400 mt-1">Meta: {targets?.oeeTarget || 85}%</div>
+                  <div className="text-sm text-theme-muted">OEE Médio</div>
+                  <div className="text-xs text-theme-muted mt-1">Meta: {targets?.oeeTarget || 85}%</div>
                 </div>
                 <OeeGauge
                   value={dashboard.oeeByWorkCenter.length > 0
@@ -185,42 +185,42 @@ export default function OeeDashboardPage() {
 
             {/* Cards de Resumo */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-blue-600 mb-2">
                   <Timer className="w-4 h-4" />
                   <span className="text-sm font-medium">Tempo Planejado</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {formatMinutes(dashboard.productionSummary.totalPlannedTime)}
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-red-600 mb-2">
                   <XCircle className="w-4 h-4" />
                   <span className="text-sm font-medium">Tempo Parado</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {formatMinutes(dashboard.productionSummary.totalStopTime)}
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-green-600 mb-2">
                   <CheckCircle className="w-4 h-4" />
                   <span className="text-sm font-medium">Produção Boa</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {dashboard.productionSummary.totalGood.toLocaleString("pt-BR")}
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-orange-600 mb-2">
                   <AlertTriangle className="w-4 h-4" />
                   <span className="text-sm font-medium">Refugo</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {dashboard.productionSummary.totalScrap.toLocaleString("pt-BR")}
                 </div>
               </div>
@@ -228,13 +228,13 @@ export default function OeeDashboardPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* OEE por Centro de Trabalho */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                  <Factory className="w-5 h-5 text-gray-400" />
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+                  <Factory className="w-5 h-5 text-theme-muted" />
                   OEE por Centro de Trabalho
                 </h3>
                 {dashboard.oeeByWorkCenter.length === 0 ? (
-                  <p className="text-center text-gray-500 py-4">Nenhum centro de trabalho</p>
+                  <p className="text-center text-theme-muted py-4">Nenhum centro de trabalho</p>
                 ) : (
                   <div className="space-y-4">
                     {dashboard.oeeByWorkCenter.map((item) => {
@@ -243,7 +243,7 @@ export default function OeeDashboardPage() {
                         <div key={item.workCenter.id} className="flex items-center gap-4">
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-theme">
                                 {item.workCenter.name}
                               </span>
                               <span className={`font-bold ${isGood ? "text-green-600" : "text-red-600"}`}>
@@ -256,7 +256,7 @@ export default function OeeDashboardPage() {
                                 style={{ width: `${Math.min(item.oee, 100)}%` }}
                               />
                             </div>
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <div className="flex justify-between text-xs text-theme-muted mt-1">
                               <span>D: {item.availability.toFixed(0)}%</span>
                               <span>P: {item.performance.toFixed(0)}%</span>
                               <span>Q: {item.quality.toFixed(0)}%</span>
@@ -275,13 +275,13 @@ export default function OeeDashboardPage() {
               </div>
 
               {/* Paradas por Tipo */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                  <Wrench className="w-5 h-5 text-gray-400" />
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+                  <Wrench className="w-5 h-5 text-theme-muted" />
                   Paradas por Tipo
                 </h3>
                 {dashboard.stopsByType.length === 0 ? (
-                  <p className="text-center text-gray-500 py-4">Nenhuma parada registrada</p>
+                  <p className="text-center text-theme-muted py-4">Nenhuma parada registrada</p>
                 ) : (
                   <div className="space-y-3">
                     {dashboard.stopsByType.map((stop) => {
@@ -289,16 +289,16 @@ export default function OeeDashboardPage() {
                       const totalMinutes = stop._sum.durationMinutes || 0;
 
                       return (
-                        <div key={stop.stopType} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={stop.stopType} className="flex items-center justify-between p-3 bg-theme-tertiary rounded-lg">
                           <div className="flex items-center gap-3">
                             <span className={`px-2 py-1 rounded text-xs font-medium ${config.color}`}>
                               {config.label}
                             </span>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-theme-secondary">
                               {stop._count} ocorrências
                             </span>
                           </div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-theme">
                             {formatMinutes(totalMinutes)}
                           </div>
                         </div>
@@ -313,45 +313,45 @@ export default function OeeDashboardPage() {
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link
                 href="/oee/work-centers"
-                className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <Factory className="w-8 h-8 text-indigo-600" />
                 <div>
-                  <div className="font-medium text-gray-900">Centros de Trabalho</div>
-                  <div className="text-sm text-gray-500">Gerenciar</div>
+                  <div className="font-medium text-theme">Centros de Trabalho</div>
+                  <div className="text-sm text-theme-muted">Gerenciar</div>
                 </div>
               </Link>
 
               <Link
                 href="/oee/production-logs"
-                className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <Package className="w-8 h-8 text-green-600" />
                 <div>
-                  <div className="font-medium text-gray-900">Registros</div>
-                  <div className="text-sm text-gray-500">Apontamentos</div>
+                  <div className="font-medium text-theme">Registros</div>
+                  <div className="text-sm text-theme-muted">Apontamentos</div>
                 </div>
               </Link>
 
               <Link
                 href="/oee/stops"
-                className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <Clock className="w-8 h-8 text-red-600" />
                 <div>
-                  <div className="font-medium text-gray-900">Paradas</div>
-                  <div className="text-sm text-gray-500">Histórico</div>
+                  <div className="font-medium text-theme">Paradas</div>
+                  <div className="text-sm text-theme-muted">Histórico</div>
                 </div>
               </Link>
 
               <Link
                 href="/mrp"
-                className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <Activity className="w-8 h-8 text-purple-600" />
                 <div>
-                  <div className="font-medium text-gray-900">MRP</div>
-                  <div className="text-sm text-gray-500">Planejamento</div>
+                  <div className="font-medium text-theme">MRP</div>
+                  <div className="text-sm text-theme-muted">Planejamento</div>
                 </div>
               </Link>
             </div>

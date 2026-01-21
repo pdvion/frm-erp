@@ -31,7 +31,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   PARTIAL: { label: "Parcial", color: "bg-blue-100 text-blue-800", icon: <CreditCard className="w-4 h-4" /> },
   PAID: { label: "Pago", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   OVERDUE: { label: "Vencido", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-500", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function PayablesPage() {
@@ -51,7 +51,7 @@ export default function PayablesPage() {
   const { data: aging } = trpc.payables.aging.useQuery();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader 
         title="Contas a Pagar" 
         icon={<DollarSign className="w-6 h-6 text-indigo-600" />}
@@ -66,7 +66,7 @@ export default function PayablesPage() {
         </Link>
         <Link
           href="/payables/cnab"
-          className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
         >
           <Building2 className="w-4 h-4" />
           CNAB
@@ -84,78 +84,78 @@ export default function PayablesPage() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-red-600 mb-2">
                 <AlertTriangle className="w-5 h-5" />
                 <span className="text-sm font-medium">Vencidos</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.totalOverdue.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.totalOverdue.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.totalOverdue.count} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-orange-600 mb-2">
                 <Calendar className="w-5 h-5" />
                 <span className="text-sm font-medium">Vence Hoje</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.dueToday.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.dueToday.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.dueToday.count} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-yellow-600 mb-2">
                 <TrendingUp className="w-5 h-5" />
                 <span className="text-sm font-medium">Esta Semana</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.dueThisWeek.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.dueThisWeek.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.dueThisWeek.count} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <Clock className="w-5 h-5" />
                 <span className="text-sm font-medium">Este Mês</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.dueThisMonth.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.dueThisMonth.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.dueThisMonth.count} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-indigo-600 mb-2">
                 <DollarSign className="w-5 h-5" />
                 <span className="text-sm font-medium">Total Pendente</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.totalPending.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.totalPending.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.totalPending.count} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-green-600 mb-2">
                 <CheckCircle className="w-5 h-5" />
                 <span className="text-sm font-medium">Pago no Mês</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(stats.paidThisMonth.value)}
               </div>
-              <div className="text-sm text-gray-500">{stats.paidThisMonth.count} títulos</div>
+              <div className="text-sm text-theme-muted">{stats.paidThisMonth.count} títulos</div>
             </div>
           </div>
         )}
 
         {/* Aging Chart */}
         {aging && aging.some(a => a.count > 0) && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Aging - Vencimentos</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6 mb-8">
+            <h3 className="text-lg font-medium text-theme mb-4">Aging - Vencimentos</h3>
             <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
               {aging.map((item, index) => (
                 <div
@@ -164,11 +164,11 @@ export default function PayablesPage() {
                     index < 4 ? "bg-red-50" : "bg-green-50"
                   }`}
                 >
-                  <div className="text-xs text-gray-600 mb-1">{item.label}</div>
+                  <div className="text-xs text-theme-secondary mb-1">{item.label}</div>
                   <div className={`text-lg font-bold ${index < 4 ? "text-red-700" : "text-green-700"}`}>
                     {item.count}
                   </div>
-                  <div className="text-xs text-gray-500">{formatCurrency(item.value)}</div>
+                  <div className="text-xs text-theme-muted">{formatCurrency(item.value)}</div>
                 </div>
               ))}
             </div>
@@ -176,10 +176,10 @@ export default function PayablesPage() {
         )}
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar por descrição, documento ou fornecedor..."
@@ -188,7 +188,7 @@ export default function PayablesPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function PayablesPage() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="ALL">Todos os Status</option>
                 <option value="PENDING">Pendentes</option>
@@ -212,7 +212,7 @@ export default function PayablesPage() {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
-                  showFilters ? "bg-indigo-50 border-indigo-300 text-indigo-700" : "border-gray-300 text-gray-700"
+                  showFilters ? "bg-indigo-50 border-indigo-300 text-indigo-700" : "border-gray-300 text-theme-secondary"
                 }`}
               >
                 <Filter className="w-4 h-4" />
@@ -223,7 +223,7 @@ export default function PayablesPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -231,8 +231,8 @@ export default function PayablesPage() {
           ) : !data?.payables.length ? (
             <div className="text-center py-12">
               <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum título encontrado</h3>
-              <p className="text-gray-500">
+              <h3 className="text-lg font-medium text-theme mb-2">Nenhum título encontrado</h3>
+              <p className="text-theme-muted">
                 {search || statusFilter !== "ALL"
                   ? "Tente ajustar os filtros de busca"
                   : "Títulos serão gerados automaticamente ao aprovar NFes"}
@@ -241,73 +241,73 @@ export default function PayablesPage() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Código
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Fornecedor
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Descrição
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Vencimento
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Valor
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Pago
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Saldo
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.payables.map((payable) => {
                       const displayStatus = payable.isOverdue ? "OVERDUE" : payable.status;
                       const config = statusConfig[displayStatus];
                       const balance = payable.netValue - payable.paidValue;
 
                       return (
-                        <tr key={payable.id} className="hover:bg-gray-50">
+                        <tr key={payable.id} className="hover:bg-theme-hover">
                           <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">#{payable.code}</div>
+                            <div className="font-medium text-theme">#{payable.code}</div>
                             {payable.documentNumber && (
-                              <div className="text-xs text-gray-500">NF {payable.documentNumber}</div>
+                              <div className="text-xs text-theme-muted">NF {payable.documentNumber}</div>
                             )}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <div>
-                                <div className="font-medium text-gray-900">
+                                <div className="font-medium text-theme">
                                   {payable.supplier.tradeName || payable.supplier.companyName}
                                 </div>
-                                <div className="text-xs text-gray-500">Cód: {payable.supplier.code}</div>
+                                <div className="text-xs text-theme-muted">Cód: {payable.supplier.code}</div>
                               </div>
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="text-gray-900">{payable.description}</div>
+                            <div className="text-theme">{payable.description}</div>
                             {payable.totalInstallments > 1 && (
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-theme-muted">
                                 Parcela {payable.installmentNumber}/{payable.totalInstallments}
                               </div>
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className={`font-medium ${payable.isOverdue ? "text-red-600" : "text-gray-900"}`}>
+                            <div className={`font-medium ${payable.isOverdue ? "text-red-600" : "text-theme"}`}>
                               {formatDate(payable.dueDate)}
                             </div>
                             {payable.isOverdue && (
@@ -316,13 +316,13 @@ export default function PayablesPage() {
                               </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-right font-medium text-gray-900">
+                          <td className="px-4 py-3 text-right font-medium text-theme">
                             {formatCurrency(payable.netValue)}
                           </td>
                           <td className="px-4 py-3 text-right text-green-600">
                             {payable.paidValue > 0 ? formatCurrency(payable.paidValue) : "-"}
                           </td>
-                          <td className="px-4 py-3 text-right font-medium text-gray-900">
+                          <td className="px-4 py-3 text-right font-medium text-theme">
                             {formatCurrency(balance)}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -335,7 +335,7 @@ export default function PayablesPage() {
                             <div className="flex items-center justify-center gap-2">
                               <Link
                                 href={`/payables/${payable.id}`}
-                                className="p-1 text-gray-400 hover:text-indigo-600"
+                                className="p-1 text-theme-muted hover:text-indigo-600"
                                 title="Ver detalhes"
                               >
                                 <Eye className="w-4 h-4" />
@@ -343,7 +343,7 @@ export default function PayablesPage() {
                               {payable.status !== "PAID" && payable.status !== "CANCELLED" && (
                                 <Link
                                   href={`/payables/${payable.id}/pay`}
-                                  className="p-1 text-gray-400 hover:text-green-600"
+                                  className="p-1 text-theme-muted hover:text-green-600"
                                   title="Registrar pagamento"
                                 >
                                   <CreditCard className="w-4 h-4" />
@@ -352,7 +352,7 @@ export default function PayablesPage() {
                               {payable.invoice && (
                                 <Link
                                   href={`/invoices/${payable.invoice.id}`}
-                                  className="p-1 text-gray-400 hover:text-blue-600"
+                                  className="p-1 text-theme-muted hover:text-blue-600"
                                   title="Ver NFe"
                                 >
                                   <FileText className="w-4 h-4" />
@@ -369,25 +369,25 @@ export default function PayablesPage() {
 
               {/* Pagination */}
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total} títulos
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-theme-secondary">
                       Página {page} de {data.pages}
                     </span>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
-                      className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>

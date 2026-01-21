@@ -65,21 +65,21 @@ export default function InventoryPositionReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-theme-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-gray-400 hover:text-gray-600" aria-label="Voltar aos relatórios">
+              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar aos relatórios">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Posição de Estoque</h1>
-                <p className="text-sm text-gray-500">Visão geral do estoque atual</p>
+                <h1 className="text-xl font-bold text-theme">Posição de Estoque</h1>
+                <p className="text-sm text-theme-muted">Visão geral do estoque atual</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -102,41 +102,41 @@ export default function InventoryPositionReportPage() {
         {/* Summary Cards */}
         {data && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <p className="text-sm text-gray-500">Total de Itens</p>
-              <p className="text-2xl font-bold text-gray-900">{data.totals.totalItems.toLocaleString("pt-BR")}</p>
+            <div className="bg-theme-card rounded-lg shadow-sm border p-4">
+              <p className="text-sm text-theme-muted">Total de Itens</p>
+              <p className="text-2xl font-bold text-theme">{data.totals.totalItems.toLocaleString("pt-BR")}</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <p className="text-sm text-gray-500">Quantidade Total</p>
-              <p className="text-2xl font-bold text-gray-900">{formatNumber(data.totals.totalQuantity)}</p>
+            <div className="bg-theme-card rounded-lg shadow-sm border p-4">
+              <p className="text-sm text-theme-muted">Quantidade Total</p>
+              <p className="text-2xl font-bold text-theme">{formatNumber(data.totals.totalQuantity)}</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <p className="text-sm text-gray-500">Valor Total</p>
+            <div className="bg-theme-card rounded-lg shadow-sm border p-4">
+              <p className="text-sm text-theme-muted">Valor Total</p>
               <p className="text-2xl font-bold text-green-600">{formatCurrency(data.totals.totalValue)}</p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <p className="text-sm text-gray-500">Abaixo do Mínimo</p>
+            <div className="bg-theme-card rounded-lg shadow-sm border p-4">
+              <p className="text-sm text-theme-muted">Abaixo do Mínimo</p>
               <p className="text-2xl font-bold text-red-600">{data.totals.belowMinimum.toLocaleString("pt-BR")}</p>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+        <div className="bg-theme-card rounded-lg shadow-sm border p-4 mb-6">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Filtros:</span>
+              <Filter className="w-5 h-5 text-theme-muted" />
+              <span className="text-sm font-medium text-theme-secondary">Filtros:</span>
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar material..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9 pr-4 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
@@ -145,7 +145,7 @@ export default function InventoryPositionReportPage() {
               id="inventory-type"
               value={inventoryType}
               onChange={(e) => setInventoryType(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos os tipos</option>
               {Object.entries(inventoryTypeLabels).map(([value, label]) => (
@@ -160,7 +160,7 @@ export default function InventoryPositionReportPage() {
                 onChange={(e) => setBelowMinimum(e.target.checked)}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">Apenas abaixo do mínimo</span>
+              <span className="text-sm text-theme-secondary">Apenas abaixo do mínimo</span>
             </label>
           </div>
         </div>
@@ -174,57 +174,57 @@ export default function InventoryPositionReportPage() {
 
         {/* Table */}
         {!isLoading && filteredItems && (
-          <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="bg-theme-card rounded-lg shadow-sm border overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Quantidade</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Disponível</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Custo Unit.</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Custo Total</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Código</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Descrição</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Categoria</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Tipo</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Quantidade</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Disponível</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Custo Unit.</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Custo Total</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {filteredItems.map((item) => (
-                    <tr key={item.id} className={`hover:bg-gray-50 ${item.isBelowMinimum ? "bg-red-50" : ""}`}>
+                    <tr key={item.id} className={`hover:bg-theme-hover ${item.isBelowMinimum ? "bg-red-50" : ""}`}>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">{item.materialCode}</span>
+                        <span className="text-sm font-medium text-theme">{item.materialCode}</span>
                       </td>
                       <td className="px-4 py-3">
                         <Link
                           href={`/materials/${item.id}`}
-                          className="text-sm text-gray-900 hover:text-blue-600"
+                          className="text-sm text-theme hover:text-blue-600"
                         >
                           {item.materialDescription}
                         </Link>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">{item.category}</span>
+                        <span className="text-sm text-theme-secondary">{item.category}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-theme-muted">
                           {inventoryTypeLabels[item.inventoryType] || item.inventoryType}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className="text-sm text-gray-900">{formatNumber(item.quantity)} {item.unit}</span>
+                        <span className="text-sm text-theme">{formatNumber(item.quantity)} {item.unit}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className={`text-sm font-medium ${item.isBelowMinimum ? "text-red-600" : "text-gray-900"}`}>
+                        <span className={`text-sm font-medium ${item.isBelowMinimum ? "text-red-600" : "text-theme"}`}>
                           {formatNumber(item.availableQty)} {item.unit}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className="text-sm text-gray-600">{formatCurrency(item.unitCost)}</span>
+                        <span className="text-sm text-theme-secondary">{formatCurrency(item.unitCost)}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className="text-sm font-medium text-gray-900">{formatCurrency(item.totalCost)}</span>
+                        <span className="text-sm font-medium text-theme">{formatCurrency(item.totalCost)}</span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         {item.isBelowMinimum ? (
@@ -247,7 +247,7 @@ export default function InventoryPositionReportPage() {
             {filteredItems.length === 0 && (
               <div className="text-center py-12">
                 <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Nenhum item encontrado</p>
+                <p className="text-theme-muted">Nenhum item encontrado</p>
               </div>
             )}
           </div>

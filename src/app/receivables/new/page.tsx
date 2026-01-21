@@ -80,18 +80,18 @@ export default function NewReceivablePage() {
   const selectedCustomer = customers?.customers.find(c => c.id === customerId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/receivables" className="text-gray-500 hover:text-gray-700">
+              <Link href="/receivables" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Novo Título a Receber</h1>
+                <h1 className="text-xl font-semibold text-theme">Novo Título a Receber</h1>
               </div>
             </div>
             <CompanySwitcher />
@@ -102,38 +102,38 @@ export default function NewReceivablePage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Cliente */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Cliente</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Cliente</h2>
             
             {!customerId ? (
               <div className="space-y-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                   <input
                     type="text"
                     placeholder="Buscar cliente por nome, código ou CNPJ..."
                     value={customerSearch}
                     onChange={(e) => setCustomerSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 
                 {loadingCustomers ? (
                   <div className="flex justify-center py-4">
-                    <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                    <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
                   </div>
                 ) : customers?.customers.length ? (
-                  <div className="border border-gray-200 rounded-lg divide-y">
+                  <div className="border border-theme rounded-lg divide-y">
                     {customers.customers.map((customer) => (
                       <button
                         key={customer.id}
                         type="button"
                         onClick={() => setCustomerId(customer.id)}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex justify-between items-center"
+                        className="w-full px-4 py-3 text-left hover:bg-theme-hover flex justify-between items-center"
                       >
                         <div>
-                          <div className="font-medium text-gray-900">{customer.companyName}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="font-medium text-theme">{customer.companyName}</div>
+                          <div className="text-sm text-theme-muted">
                             {customer.code} {customer.cnpj && `• ${customer.cnpj}`}
                           </div>
                         </div>
@@ -141,14 +141,14 @@ export default function NewReceivablePage() {
                     ))}
                   </div>
                 ) : customerSearch ? (
-                  <p className="text-center text-gray-500 py-4">Nenhum cliente encontrado</p>
+                  <p className="text-center text-theme-muted py-4">Nenhum cliente encontrado</p>
                 ) : null}
               </div>
             ) : (
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-theme-tertiary rounded-lg">
                 <div>
-                  <div className="font-medium text-gray-900">{selectedCustomer?.companyName}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-medium text-theme">{selectedCustomer?.companyName}</div>
+                  <div className="text-sm text-theme-muted">
                     {selectedCustomer?.code} {selectedCustomer?.cnpj && `• ${selectedCustomer.cnpj}`}
                   </div>
                 </div>
@@ -164,18 +164,18 @@ export default function NewReceivablePage() {
           </div>
 
           {/* Dados do Título */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Dados do Título</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Dados do Título</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Documento
                 </label>
                 <select
                   value={documentType}
                   onChange={(e) => setDocumentType(e.target.value as typeof documentType)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 >
                   <option value="INVOICE">Nota Fiscal</option>
                   <option value="SERVICE">Serviço</option>
@@ -185,7 +185,7 @@ export default function NewReceivablePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Número do Documento
                 </label>
                 <input
@@ -193,12 +193,12 @@ export default function NewReceivablePage() {
                   value={documentNumber}
                   onChange={(e) => setDocumentNumber(e.target.value)}
                   placeholder="Ex: NF-001234"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Descrição *
                 </label>
                 <input
@@ -207,19 +207,19 @@ export default function NewReceivablePage() {
                   onChange={(e) => setDescription(e.target.value)}
                   required
                   placeholder="Descrição do título"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
           </div>
 
           {/* Valores e Vencimento */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Valores e Vencimento</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Valores e Vencimento</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Valor Total *
                 </label>
                 <input
@@ -229,12 +229,12 @@ export default function NewReceivablePage() {
                   onChange={(e) => setOriginalValue(e.target.value)}
                   required
                   placeholder="0,00"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Desconto
                 </label>
                 <input
@@ -243,12 +243,12 @@ export default function NewReceivablePage() {
                   value={discountValue}
                   onChange={(e) => setDiscountValue(e.target.value)}
                   placeholder="0,00"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Data de Vencimento *
                 </label>
                 <input
@@ -256,12 +256,12 @@ export default function NewReceivablePage() {
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Número de Parcelas
                 </label>
                 <input
@@ -270,13 +270,13 @@ export default function NewReceivablePage() {
                   max="60"
                   value={installments}
                   onChange={(e) => setInstallments(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               {parseInt(installments) > 1 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Intervalo (dias)
                   </label>
                   <input
@@ -284,7 +284,7 @@ export default function NewReceivablePage() {
                     min="1"
                     value={intervalDays}
                     onChange={(e) => setIntervalDays(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 </div>
               )}
@@ -306,14 +306,14 @@ export default function NewReceivablePage() {
           </div>
 
           {/* Observações */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Observações</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Observações</h2>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Observações adicionais..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-theme-input rounded-lg px-3 py-2"
             />
           </div>
 
@@ -321,7 +321,7 @@ export default function NewReceivablePage() {
           <div className="flex justify-end gap-4">
             <Link
               href="/receivables"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
             >
               Cancelar
             </Link>

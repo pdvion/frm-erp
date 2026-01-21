@@ -27,7 +27,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-500", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function InvoicesPage() {
@@ -72,16 +72,16 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-gray-500 hover:text-gray-700">
+              <Link href="/" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <FileText className="w-5 h-5 text-indigo-600" />
                 NFe Recebidas
               </h1>
@@ -119,25 +119,25 @@ export default function InvoicesPage() {
                 className={`p-4 rounded-lg border-2 transition-all ${
                   statusFilter === status
                     ? "border-indigo-500 bg-indigo-50"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    : "border-gray-200 bg-theme-card hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                  <span className="text-sm font-medium text-gray-600">{config.label}</span>
+                  <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{stat?.count ?? 0}</div>
-                <div className="text-sm text-gray-500">{formatCurrency(stat?.total ?? 0)}</div>
+                <div className="text-2xl font-bold text-theme">{stat?.count ?? 0}</div>
+                <div className="text-sm text-theme-muted">{formatCurrency(stat?.total ?? 0)}</div>
               </button>
             );
           })}
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por chave, número ou fornecedor..."
@@ -146,13 +146,13 @@ export default function InvoicesPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter("")}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                className="px-4 py-2 text-sm text-theme-secondary hover:text-theme"
               >
                 Limpar filtro
               </button>
@@ -161,7 +161,7 @@ export default function InvoicesPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -169,8 +169,8 @@ export default function InvoicesPage() {
           ) : data?.invoices.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma NFe encontrada</h3>
-              <p className="text-gray-500 mb-4">Importe um XML para começar</p>
+              <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
+              <p className="text-theme-muted mb-4">Importe um XML para começar</p>
               <button
                 onClick={() => setShowUploadModal(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -182,70 +182,70 @@ export default function InvoicesPage() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Número
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Fornecedor
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Emissão
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Valor
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Itens
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data?.invoices.map((invoice) => {
                       const config = statusConfig[invoice.status];
                       return (
-                        <tr key={invoice.id} className="hover:bg-gray-50">
+                        <tr key={invoice.id} className="hover:bg-theme-hover">
                           <td className="px-6 py-4">
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-theme">
                               {invoice.invoiceNumber}
                             </div>
-                            <div className="text-xs text-gray-500 font-mono">
+                            <div className="text-xs text-theme-muted font-mono">
                               {invoice.accessKey.slice(0, 20)}...
                             </div>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <div>
-                                <div className="font-medium text-gray-900">
+                                <div className="font-medium text-theme">
                                   {invoice.supplier?.companyName || invoice.supplierName}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-theme-muted">
                                   {invoice.supplierCnpj}
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Calendar className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center gap-2 text-theme-secondary">
+                              <Calendar className="w-4 h-4 text-theme-muted" />
                               {formatDate(invoice.issueDate)}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-right font-medium text-gray-900">
+                          <td className="px-6 py-4 text-right font-medium text-theme">
                             {formatCurrency(invoice.totalInvoice)}
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <div className="flex items-center justify-center gap-1 text-gray-600">
-                              <Package className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center justify-center gap-1 text-theme-secondary">
+                              <Package className="w-4 h-4 text-theme-muted" />
                               {invoice._count.items}
                             </div>
                           </td>
@@ -273,8 +273,8 @@ export default function InvoicesPage() {
 
               {/* Pagination */}
               {data && data.pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Mostrando {(page - 1) * 20 + 1} a{" "}
                     {Math.min(page * 20, data.pagination.total)} de {data.pagination.total}
                   </div>
@@ -282,17 +282,17 @@ export default function InvoicesPage() {
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-600">
+                    <span className="px-4 py-2 text-sm text-theme-secondary">
                       {page} / {data.pagination.totalPages}
                     </span>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pagination.totalPages}
-                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -313,21 +313,21 @@ export default function InvoicesPage() {
           aria-labelledby="upload-xml-title"
           onKeyDown={(e) => e.key === "Escape" && setShowUploadModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-            <h3 id="upload-xml-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
+            <h3 id="upload-xml-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
               <Upload className="w-5 h-5 text-indigo-600" />
               Importar XML NFe
             </h3>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Arquivo XML
               </label>
               <input
                 type="file"
                 accept=".xml"
                 onChange={handleFileUpload}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -361,7 +361,7 @@ export default function InvoicesPage() {
                   setShowUploadModal(false);
                   setXmlContent("");
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Cancelar
               </button>

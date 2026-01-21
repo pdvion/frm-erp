@@ -39,7 +39,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-theme">
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
         <div
@@ -71,13 +71,13 @@ export function AppLayout({ children }: AppLayoutProps) {
           isMobile ? "pl-0" : "pl-64"
         }`}
       >
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-800 bg-zinc-900/95 px-4 md:px-6 backdrop-blur">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-theme-header bg-theme-header/95 px-4 md:px-6 backdrop-blur">
           <div className="flex items-center gap-4">
             {/* Mobile menu button */}
             {isMobile && (
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme"
                 aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
               >
                 {sidebarOpen ? (

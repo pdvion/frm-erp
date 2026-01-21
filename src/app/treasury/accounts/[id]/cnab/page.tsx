@@ -137,23 +137,23 @@ export default function CnabConfigPage() {
 
   if (loadingAccount || loadingConfig) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href={`/treasury/accounts/${accountId}`} className="text-gray-500 hover:text-gray-700">
+              <Link href={`/treasury/accounts/${accountId}`} className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Settings className="w-5 h-5 text-blue-600" />
                 Configuração CNAB
               </h1>
@@ -165,12 +165,12 @@ export default function CnabConfigPage() {
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Conta Info */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-3">
             <Building2 className="w-8 h-8 text-blue-600" />
             <div>
-              <h2 className="font-medium text-gray-900">{account?.name}</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="font-medium text-theme">{account?.name}</h2>
+              <p className="text-sm text-theme-muted">
                 {account?.bankName} • Ag: {account?.agency} • CC: {account?.accountNumber}
               </p>
             </div>
@@ -184,19 +184,19 @@ export default function CnabConfigPage() {
         </div>
 
         {/* Configuração */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-theme-muted" />
             Dados para Remessa/Retorno
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Banco *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Banco *</label>
               <select
                 value={config.bankCode}
                 onChange={(e) => setConfig({ ...config, bankCode: e.target.value as typeof config.bankCode })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 {BANKS.map((bank) => (
                   <option key={bank.code} value={bank.code}>
@@ -207,11 +207,11 @@ export default function CnabConfigPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Layout *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Layout *</label>
               <select
                 value={config.layout}
                 onChange={(e) => setConfig({ ...config, layout: e.target.value as typeof config.layout })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="240">CNAB 240</option>
                 <option value="400">CNAB 400</option>
@@ -219,100 +219,100 @@ export default function CnabConfigPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Carteira</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Carteira</label>
               <input
                 type="text"
                 value={config.carteira}
                 onChange={(e) => setConfig({ ...config, carteira: e.target.value })}
                 placeholder="Ex: 17"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Agência *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Agência *</label>
               <input
                 type="text"
                 value={config.agencia}
                 onChange={(e) => setConfig({ ...config, agencia: e.target.value.replace(/\D/g, "") })}
                 placeholder="0000"
                 maxLength={5}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Ag.</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
               <input
                 type="text"
                 value={config.agenciaDigito}
                 onChange={(e) => setConfig({ ...config, agenciaDigito: e.target.value })}
                 placeholder="X"
                 maxLength={1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Conta *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Conta *</label>
               <input
                 type="text"
                 value={config.conta}
                 onChange={(e) => setConfig({ ...config, conta: e.target.value.replace(/\D/g, "") })}
                 placeholder="000000"
                 maxLength={12}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dígito CC *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito CC *</label>
               <input
                 type="text"
                 value={config.contaDigito}
                 onChange={(e) => setConfig({ ...config, contaDigito: e.target.value })}
                 placeholder="X"
                 maxLength={1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Convênio</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Convênio</label>
               <input
                 type="text"
                 value={config.convenio}
                 onChange={(e) => setConfig({ ...config, convenio: e.target.value })}
                 placeholder="Código do convênio"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ/CPF Cedente *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">CNPJ/CPF Cedente *</label>
               <input
                 type="text"
                 value={config.cedenteDocumento}
                 onChange={(e) => setConfig({ ...config, cedenteDocumento: e.target.value.replace(/\D/g, "") })}
                 placeholder="00000000000000"
                 maxLength={14}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Cedente *</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Cedente *</label>
             <input
               type="text"
               value={config.cedente}
               onChange={(e) => setConfig({ ...config, cedente: e.target.value })}
               placeholder="Razão Social da Empresa"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -333,9 +333,9 @@ export default function CnabConfigPage() {
         </div>
 
         {/* Importar Retorno */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-theme-muted" />
             Importar Arquivo de Retorno
           </h2>
 
@@ -348,24 +348,24 @@ export default function CnabConfigPage() {
               id="retorno-file"
             />
             <label htmlFor="retorno-file" className="cursor-pointer">
-              <Download className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">
+              <Download className="w-10 h-10 text-theme-muted mx-auto mb-2" />
+              <p className="text-sm text-theme-secondary">
                 {retornoFile ? (
                   <span className="text-green-600 font-medium">{retornoFile.name}</span>
                 ) : (
                   <>Clique para selecionar o arquivo de retorno</>
                 )}
               </p>
-              <p className="text-xs text-gray-400 mt-1">Formatos aceitos: .ret, .txt</p>
+              <p className="text-xs text-theme-muted mt-1">Formatos aceitos: .ret, .txt</p>
             </label>
           </div>
 
           {retornoFile && (
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-4">
+            <div className="flex items-center justify-between p-3 bg-theme-tertiary rounded-lg mb-4">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-gray-500" />
-                <span className="text-sm text-gray-700">{retornoFile.name}</span>
-                <span className="text-xs text-gray-400">
+                <FileText className="w-5 h-5 text-theme-muted" />
+                <span className="text-sm text-theme-secondary">{retornoFile.name}</span>
+                <span className="text-xs text-theme-muted">
                   ({(retornoFile.size / 1024).toFixed(1)} KB)
                 </span>
               </div>

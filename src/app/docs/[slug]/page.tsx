@@ -28,7 +28,7 @@ export default function TutorialPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
@@ -36,10 +36,10 @@ export default function TutorialPage() {
 
   if (error || !tutorial) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 mb-4">Tutorial não encontrado</p>
+          <p className="text-theme-muted mb-4">Tutorial não encontrado</p>
           <Link href="/docs" className="text-blue-600 hover:underline">
             Ver todos os tutoriais
           </Link>
@@ -49,17 +49,17 @@ export default function TutorialPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/docs" className="text-gray-500 hover:text-gray-700">
+              <Link href="/docs" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">{tutorial.title}</h1>
+                <h1 className="text-xl font-semibold text-theme">{tutorial.title}</h1>
               </div>
             </div>
             {tutorial.module && (
@@ -72,9 +72,9 @@ export default function TutorialPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <article className="bg-white rounded-lg border border-gray-200 p-8">
+        <article className="bg-theme-card rounded-lg border border-theme p-8">
           {tutorial.description && (
-            <p className="text-lg text-gray-600 mb-6 pb-6 border-b border-gray-200">
+            <p className="text-lg text-theme-secondary mb-6 pb-6 border-b border-theme">
               {tutorial.description}
             </p>
           )}
@@ -83,7 +83,7 @@ export default function TutorialPage() {
             <MarkdownContent content={tutorial.content} />
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
+          <div className="mt-8 pt-6 border-t border-theme flex items-center justify-between text-sm text-theme-muted">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               Atualizado em {new Date(tutorial.updatedAt).toLocaleDateString("pt-BR")}
@@ -96,12 +96,12 @@ export default function TutorialPage() {
           {prevTutorial ? (
             <Link
               href={`/docs/${prevTutorial.slug}`}
-              className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+              className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-blue-300 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-400" />
+              <ArrowLeft className="w-5 h-5 text-theme-muted" />
               <div>
-                <p className="text-xs text-gray-500">Anterior</p>
-                <p className="font-medium text-gray-900">{prevTutorial.title}</p>
+                <p className="text-xs text-theme-muted">Anterior</p>
+                <p className="font-medium text-theme">{prevTutorial.title}</p>
               </div>
             </Link>
           ) : (
@@ -110,13 +110,13 @@ export default function TutorialPage() {
           {nextTutorial && (
             <Link
               href={`/docs/${nextTutorial.slug}`}
-              className="flex items-center justify-end gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors text-right"
+              className="flex items-center justify-end gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-blue-300 transition-colors text-right"
             >
               <div>
-                <p className="text-xs text-gray-500">Próximo</p>
-                <p className="font-medium text-gray-900">{nextTutorial.title}</p>
+                <p className="text-xs text-theme-muted">Próximo</p>
+                <p className="font-medium text-theme">{nextTutorial.title}</p>
               </div>
-              <ArrowRight className="w-5 h-5 text-gray-400" />
+              <ArrowRight className="w-5 h-5 text-theme-muted" />
             </Link>
           )}
         </div>
@@ -140,7 +140,7 @@ function MarkdownContent({ content }: { content: string }) {
       elements.push(
         <ul key={`list-${elements.length}`} className="list-disc pl-6 my-4 space-y-2">
           {listItems.map((item, i) => (
-            <li key={i} className="text-gray-700">{formatInline(item)}</li>
+            <li key={i} className="text-theme-secondary">{formatInline(item)}</li>
           ))}
         </ul>
       );
@@ -155,9 +155,9 @@ function MarkdownContent({ content }: { content: string }) {
         <div key={`table-${elements.length}`} className="overflow-x-auto my-6">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-theme-tertiary">
                 {header.map((cell, i) => (
-                  <th key={i} className="border border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-900">
+                  <th key={i} className="border border-theme px-4 py-2 text-left text-sm font-semibold text-theme">
                     {cell}
                   </th>
                 ))}
@@ -165,9 +165,9 @@ function MarkdownContent({ content }: { content: string }) {
             </thead>
             <tbody>
               {body.filter(row => !row.every(cell => cell.match(/^-+$/))).map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50">
+                <tr key={i} className="hover:bg-theme-hover">
                   {row.map((cell, j) => (
-                    <td key={j} className="border border-gray-200 px-4 py-2 text-sm text-gray-700">
+                    <td key={j} className="border border-theme px-4 py-2 text-sm text-theme-secondary">
                       {formatInline(cell)}
                     </td>
                   ))}
@@ -222,7 +222,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("# ")) {
       flushList();
       elements.push(
-        <h1 key={`h1-${elements.length}`} className="text-3xl font-bold text-gray-900 mt-8 mb-4">
+        <h1 key={`h1-${elements.length}`} className="text-3xl font-bold text-theme mt-8 mb-4">
           {line.slice(2)}
         </h1>
       );
@@ -231,7 +231,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h2 key={`h2-${elements.length}`} className="text-2xl font-semibold text-gray-900 mt-6 mb-3">
+        <h2 key={`h2-${elements.length}`} className="text-2xl font-semibold text-theme mt-6 mb-3">
           {line.slice(3)}
         </h2>
       );
@@ -240,7 +240,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("### ")) {
       flushList();
       elements.push(
-        <h3 key={`h3-${elements.length}`} className="text-xl font-medium text-gray-900 mt-5 mb-2">
+        <h3 key={`h3-${elements.length}`} className="text-xl font-medium text-theme mt-5 mb-2">
           {line.slice(4)}
         </h3>
       );
@@ -263,7 +263,7 @@ function MarkdownContent({ content }: { content: string }) {
     }
 
     elements.push(
-      <p key={`p-${elements.length}`} className="my-3 text-gray-700 leading-relaxed">
+      <p key={`p-${elements.length}`} className="my-3 text-theme-secondary leading-relaxed">
         {formatInline(line)}
       </p>
     );
@@ -296,7 +296,7 @@ function formatInline(text: string): React.ReactNode {
     } else if (match[3]) { // *italic*
       elements.push(<em key={keyCounter++}>{match[4]}</em>);
     } else if (match[5]) { // `code`
-      elements.push(<code key={keyCounter++} className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800">{match[6]}</code>);
+      elements.push(<code key={keyCounter++} className="bg-theme-tertiary px-1.5 py-0.5 rounded text-sm font-mono text-theme">{match[6]}</code>);
     } else if (match[7]) { // [link](url)
       elements.push(<a key={keyCounter++} href={match[9]} className="text-blue-600 hover:underline" rel="noopener noreferrer">{match[8]}</a>);
     }

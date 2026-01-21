@@ -93,23 +93,23 @@ export default function MrpPage() {
 
   if (loadingDashboard) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/production" className="text-gray-500 hover:text-gray-700">
+              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Calculator className="w-5 h-5 text-purple-600" />
                 MRP - Planejamento de Necessidades
               </h1>
@@ -122,8 +122,8 @@ export default function MrpPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Cards de Resumo */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
+            <div className="flex items-center gap-2 text-theme-muted mb-2">
               <Clock className="w-4 h-4" />
               <span className="text-sm">Última Execução</span>
             </div>
@@ -131,13 +131,13 @@ export default function MrpPage() {
               {dashboard?.lastRun ? formatDate(dashboard.lastRun.runDate) : "Nunca"}
             </p>
             {dashboard?.lastRun && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-theme-muted">
                 {dashboard.lastRun.totalSuggestions} sugestões
               </p>
             )}
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-purple-600 mb-2">
               <Factory className="w-4 h-4" />
               <span className="text-sm">Produção Pendente</span>
@@ -145,10 +145,10 @@ export default function MrpPage() {
             <p className="text-lg font-semibold">
               {dashboard?.pendingSuggestions?.find(s => s.type === "PRODUCTION")?._count || 0}
             </p>
-            <p className="text-sm text-gray-500">ordens sugeridas</p>
+            <p className="text-sm text-theme-muted">ordens sugeridas</p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-blue-600 mb-2">
               <ShoppingCart className="w-4 h-4" />
               <span className="text-sm">Compras Pendentes</span>
@@ -156,10 +156,10 @@ export default function MrpPage() {
             <p className="text-lg font-semibold">
               {dashboard?.pendingSuggestions?.find(s => s.type === "PURCHASE")?._count || 0}
             </p>
-            <p className="text-sm text-gray-500">ordens sugeridas</p>
+            <p className="text-sm text-theme-muted">ordens sugeridas</p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-yellow-600 mb-2">
               <AlertTriangle className="w-4 h-4" />
               <span className="text-sm">Alertas</span>
@@ -167,21 +167,21 @@ export default function MrpPage() {
             <p className="text-lg font-semibold">
               {(dashboard?.materialsWithoutBom || 0) + (dashboard?.materialsWithoutParams || 0)}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-theme-muted">
               {dashboard?.materialsWithoutBom || 0} sem BOM, {dashboard?.materialsWithoutParams || 0} sem parâmetros
             </p>
           </div>
         </div>
 
         {/* Executar MRP */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
             <Play className="w-5 h-5 text-green-600" />
             Executar MRP
           </h2>
           <div className="flex items-end gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Horizonte de Planejamento (dias)
               </label>
               <input
@@ -190,7 +190,7 @@ export default function MrpPage() {
                 onChange={(e) => setHorizonDays(parseInt(e.target.value) || 30)}
                 min={1}
                 max={365}
-                className="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <button
@@ -209,37 +209,37 @@ export default function MrpPage() {
         </div>
 
         {/* Histórico de Execuções */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-theme-muted" />
             Histórico de Execuções
           </h2>
           
           {loadingRuns ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
             </div>
           ) : runsData?.runs.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">Nenhuma execução encontrada</p>
+            <p className="text-theme-muted text-center py-8">Nenhuma execução encontrada</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Data</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Horizonte</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Status</th>
-                    <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">Produção</th>
-                    <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">Compras</th>
-                    <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">Total</th>
-                    <th className="text-center py-2 px-3 text-sm font-medium text-gray-500">Ações</th>
+                  <tr className="border-b border-theme">
+                    <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Data</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Horizonte</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Status</th>
+                    <th className="text-right py-2 px-3 text-sm font-medium text-theme-muted">Produção</th>
+                    <th className="text-right py-2 px-3 text-sm font-medium text-theme-muted">Compras</th>
+                    <th className="text-right py-2 px-3 text-sm font-medium text-theme-muted">Total</th>
+                    <th className="text-center py-2 px-3 text-sm font-medium text-theme-muted">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {runsData?.runs.map((run) => (
                     <tr 
                       key={run.id} 
-                      className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedRunId === run.id ? 'bg-purple-50' : ''}`}
+                      className={`border-b border-gray-100 hover:bg-theme-hover cursor-pointer ${selectedRunId === run.id ? 'bg-purple-50' : ''}`}
                       onClick={() => setSelectedRunId(run.id)}
                     >
                       <td className="py-3 px-3 text-sm">{formatDate(run.runDate)}</td>
@@ -277,9 +277,9 @@ export default function MrpPage() {
 
         {/* Sugestões da Execução Selecionada */}
         {selectedRunId && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+              <h2 className="text-lg font-medium text-theme flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-purple-600" />
                 Sugestões do MRP
               </h2>
@@ -287,7 +287,7 @@ export default function MrpPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="px-3 py-1.5 border border-theme-input rounded-lg text-sm"
                 >
                   <option value="ALL">Todos os tipos</option>
                   <option value="PRODUCTION">Produção</option>
@@ -296,7 +296,7 @@ export default function MrpPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="px-3 py-1.5 border border-theme-input rounded-lg text-sm"
                 >
                   <option value="ALL">Todos os status</option>
                   <option value="PENDING">Pendente</option>
@@ -309,23 +309,23 @@ export default function MrpPage() {
 
             {loadingSuggestions ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
               </div>
             ) : suggestions?.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">Nenhuma sugestão encontrada</p>
+              <p className="text-theme-muted text-center py-8">Nenhuma sugestão encontrada</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Tipo</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Material</th>
-                      <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">Quantidade</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Data Sugerida</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Data Necessária</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Status</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Motivo</th>
-                      <th className="text-center py-2 px-3 text-sm font-medium text-gray-500">Ações</th>
+                    <tr className="border-b border-theme">
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Tipo</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Material</th>
+                      <th className="text-right py-2 px-3 text-sm font-medium text-theme-muted">Quantidade</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Data Sugerida</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Data Necessária</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Status</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-theme-muted">Motivo</th>
+                      <th className="text-center py-2 px-3 text-sm font-medium text-theme-muted">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -334,7 +334,7 @@ export default function MrpPage() {
                       const statusInfo = statusConfig[suggestion.status] || statusConfig.PENDING;
                       
                       return (
-                        <tr key={suggestion.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <tr key={suggestion.id} className="border-b border-gray-100 hover:bg-theme-hover">
                           <td className="py-3 px-3">
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${typeInfo.color}`}>
                               {typeInfo.icon}
@@ -343,7 +343,7 @@ export default function MrpPage() {
                           </td>
                           <td className="py-3 px-3">
                             <div className="text-sm font-medium">{suggestion.material?.code}</div>
-                            <div className="text-xs text-gray-500">{suggestion.material?.description}</div>
+                            <div className="text-xs text-theme-muted">{suggestion.material?.description}</div>
                           </td>
                           <td className="py-3 px-3 text-sm text-right">
                             {formatNumber(suggestion.quantity)} {suggestion.material?.unit}
@@ -356,7 +356,7 @@ export default function MrpPage() {
                               {statusInfo.label}
                             </span>
                           </td>
-                          <td className="py-3 px-3 text-xs text-gray-500 max-w-xs truncate">
+                          <td className="py-3 px-3 text-xs text-theme-muted max-w-xs truncate">
                             {suggestion.reason}
                           </td>
                           <td className="py-3 px-3 text-center">

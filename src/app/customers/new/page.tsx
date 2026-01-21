@@ -72,18 +72,18 @@ export default function NewCustomerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/customers" className="text-gray-500 hover:text-gray-700">
+              <Link href="/customers" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Users className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Novo Cliente</h1>
+                <h1 className="text-xl font-semibold text-theme">Novo Cliente</h1>
               </div>
             </div>
             <CompanySwitcher />
@@ -94,12 +94,12 @@ export default function NewCustomerPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Identificação */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Identificação</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Identificação</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Código *
                 </label>
                 <input
@@ -107,18 +107,18 @@ export default function NewCustomerPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo
                 </label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as typeof type)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 >
                   <option value="COMPANY">Pessoa Jurídica</option>
                   <option value="PERSON">Pessoa Física</option>
@@ -126,7 +126,7 @@ export default function NewCustomerPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   {type === "COMPANY" ? "CNPJ" : "CPF"}
                 </label>
                 {type === "COMPANY" ? (
@@ -135,7 +135,7 @@ export default function NewCustomerPage() {
                     value={cnpj}
                     onChange={(e) => setCnpj(e.target.value)}
                     placeholder="00.000.000/0000-00"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 ) : (
                   <input
@@ -143,13 +143,13 @@ export default function NewCustomerPage() {
                     value={cpf}
                     onChange={(e) => setCpf(e.target.value)}
                     placeholder="000.000.000-00"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   {type === "COMPANY" ? "Razão Social" : "Nome"} *
                 </label>
                 <input
@@ -157,32 +157,32 @@ export default function NewCustomerPage() {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   {type === "COMPANY" ? "Nome Fantasia" : "Apelido"}
                 </label>
                 <input
                   type="text"
                   value={tradeName}
                   onChange={(e) => setTradeName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               {type === "COMPANY" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Inscrição Estadual
                   </label>
                   <input
                     type="text"
                     value={stateRegistration}
                     onChange={(e) => setStateRegistration(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 </div>
               )}
@@ -190,139 +190,139 @@ export default function NewCustomerPage() {
           </div>
 
           {/* Contato */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Contato</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Contato</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Email
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Contato
                 </label>
                 <input
                   type="text"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Telefone
                 </label>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Celular
                 </label>
                 <input
                   type="text"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
           </div>
 
           {/* Endereço */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Endereço</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Endereço</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   CEP
                 </label>
                 <input
                   type="text"
                   value={addressZipCode}
                   onChange={(e) => setAddressZipCode(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Logradouro
                 </label>
                 <input
                   type="text"
                   value={addressStreet}
                   onChange={(e) => setAddressStreet(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Número
                 </label>
                 <input
                   type="text"
                   value={addressNumber}
                   onChange={(e) => setAddressNumber(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Complemento
                 </label>
                 <input
                   type="text"
                   value={addressComplement}
                   onChange={(e) => setAddressComplement(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Bairro
                 </label>
                 <input
                   type="text"
                   value={addressNeighborhood}
                   onChange={(e) => setAddressNeighborhood(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Cidade
                 </label>
                 <input
                   type="text"
                   value={addressCity}
                   onChange={(e) => setAddressCity(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Estado
                 </label>
                 <input
@@ -330,19 +330,19 @@ export default function NewCustomerPage() {
                   value={addressState}
                   onChange={(e) => setAddressState(e.target.value)}
                   maxLength={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
           </div>
 
           {/* Comercial */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Dados Comerciais</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Dados Comerciais</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Limite de Crédito
                 </label>
                 <input
@@ -351,32 +351,32 @@ export default function NewCustomerPage() {
                   value={creditLimit}
                   onChange={(e) => setCreditLimit(e.target.value)}
                   placeholder="0,00"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Prazo de Pagamento (dias)
                 </label>
                 <input
                   type="number"
                   value={paymentTermDays}
                   onChange={(e) => setPaymentTermDays(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
           </div>
 
           {/* Observações */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Observações</h2>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4">Observações</h2>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border border-theme-input rounded-lg px-3 py-2"
             />
           </div>
 
@@ -384,7 +384,7 @@ export default function NewCustomerPage() {
           <div className="flex justify-end gap-4">
             <Link
               href="/customers"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
             >
               Cancelar
             </Link>

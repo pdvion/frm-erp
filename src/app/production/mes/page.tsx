@@ -27,8 +27,8 @@ const stopTypeConfig: Record<string, { label: string; color: string }> = {
   SETUP: { label: "Setup", color: "bg-yellow-100 text-yellow-800" },
   MAINTENANCE: { label: "Manutenção", color: "bg-orange-100 text-orange-800" },
   QUALITY: { label: "Qualidade", color: "bg-purple-100 text-purple-800" },
-  MATERIAL: { label: "Material", color: "bg-gray-100 text-gray-800" },
-  OTHER: { label: "Outro", color: "bg-gray-100 text-gray-800" },
+  MATERIAL: { label: "Material", color: "bg-theme-tertiary text-theme" },
+  OTHER: { label: "Outro", color: "bg-theme-tertiary text-theme" },
 };
 
 export default function MesPage() {
@@ -130,7 +130,7 @@ export default function MesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/production" className="text-gray-400 hover:text-white">
+              <Link href="/production" className="text-theme-muted hover:text-white">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <h1 className="text-xl font-semibold flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function MesPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => { refetchDashboard(); refetchStops(); refetchStatus(); }}
-                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-700"
+                className="p-2 text-theme-muted hover:text-white rounded-lg hover:bg-gray-700"
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
@@ -155,7 +155,7 @@ export default function MesPage() {
         {/* Dashboard Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-            <div className="flex items-center gap-2 text-gray-400 mb-2">
+            <div className="flex items-center gap-2 text-theme-muted mb-2">
               <Factory className="w-4 h-4" />
               <span className="text-sm">Centros de Trabalho</span>
             </div>
@@ -186,7 +186,7 @@ export default function MesPage() {
             <p className="text-2xl font-bold text-green-400">
               {formatNumber(dashboard?.todayProduction?.qualityRate || 100)}%
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-theme-muted">
               {formatNumber(dashboard?.todayProduction?.good || 0)} boas / {formatNumber(dashboard?.todayProduction?.produced || 0)} total
             </p>
           </div>
@@ -201,7 +201,7 @@ export default function MesPage() {
             </h2>
             
             {openStops?.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">Nenhuma parada ativa</p>
+              <p className="text-theme-muted text-center py-4">Nenhuma parada ativa</p>
             ) : (
               <div className="space-y-3">
                 {openStops?.map((stop) => (
@@ -212,7 +212,7 @@ export default function MesPage() {
                         {stopTypeConfig[stop.stopType]?.label || stop.stopType}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">{stop.reason}</p>
+                    <p className="text-sm text-theme-muted mb-2">{stop.reason}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-red-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
@@ -241,8 +241,8 @@ export default function MesPage() {
 
             {!selectedWorkCenter ? (
               <div className="text-center py-8">
-                <Factory className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">Selecione um centro de trabalho para iniciar</p>
+                <Factory className="w-12 h-12 text-theme-secondary mx-auto mb-4" />
+                <p className="text-theme-muted mb-4">Selecione um centro de trabalho para iniciar</p>
                 <Link
                   href="/production/work-centers"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
@@ -253,7 +253,7 @@ export default function MesPage() {
               </div>
             ) : loadingStatus ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
               </div>
             ) : (
               <div>
@@ -262,7 +262,7 @@ export default function MesPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-medium">{workCenterStatus?.workCenter?.name}</h3>
-                      <p className="text-sm text-gray-400">{workCenterStatus?.workCenter?.code}</p>
+                      <p className="text-sm text-theme-muted">{workCenterStatus?.workCenter?.code}</p>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                       workCenterStatus?.status === "RUNNING" ? "bg-green-600" :
@@ -292,7 +292,7 @@ export default function MesPage() {
                         </span>
                       </div>
                       {/* Barra de progresso */}
-                      <div className="mt-2 h-2 bg-gray-500 rounded-full overflow-hidden">
+                      <div className="mt-2 h-2 bg-theme-tertiary0 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-green-500 transition-all"
                           style={{ width: `${Math.min(100, (workCenterStatus.activeOrder.producedQty / workCenterStatus.activeOrder.quantity) * 100)}%` }}
@@ -352,7 +352,7 @@ export default function MesPage() {
 
                 <button
                   onClick={() => setSelectedWorkCenter(null)}
-                  className="mt-4 w-full text-center text-gray-400 hover:text-white py-2"
+                  className="mt-4 w-full text-center text-theme-muted hover:text-white py-2"
                 >
                   Trocar Centro de Trabalho
                 </button>
@@ -379,7 +379,7 @@ export default function MesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Tipo de Parada</label>
+                <label className="block text-sm text-theme-muted mb-1">Tipo de Parada</label>
                 <select
                   value={stopType}
                   onChange={(e) => setStopType(e.target.value)}
@@ -396,7 +396,7 @@ export default function MesPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Motivo *</label>
+                <label className="block text-sm text-theme-muted mb-1">Motivo *</label>
                 <textarea
                   value={stopReason}
                   onChange={(e) => setStopReason(e.target.value)}
@@ -410,7 +410,7 @@ export default function MesPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowStopModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg"
+                className="flex-1 px-4 py-2 bg-gray-600 hover:bg-theme-hover0 rounded-lg"
               >
                 Cancelar
               </button>
@@ -443,7 +443,7 @@ export default function MesPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Quantidade Produzida *</label>
+                <label className="block text-sm text-theme-muted mb-1">Quantidade Produzida *</label>
                 <input
                   type="number"
                   value={reportQty}
@@ -454,7 +454,7 @@ export default function MesPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Quantidade Refugo</label>
+                <label className="block text-sm text-theme-muted mb-1">Quantidade Refugo</label>
                 <input
                   type="number"
                   value={scrapQty}
@@ -467,7 +467,7 @@ export default function MesPage() {
 
               {scrapQty > 0 && (
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Motivo do Refugo</label>
+                  <label className="block text-sm text-theme-muted mb-1">Motivo do Refugo</label>
                   <input
                     type="text"
                     value={scrapReason}
@@ -482,7 +482,7 @@ export default function MesPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowReportModal(false)}
-                className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg"
+                className="flex-1 px-4 py-2 bg-gray-600 hover:bg-theme-hover0 rounded-lg"
               >
                 Cancelar
               </button>

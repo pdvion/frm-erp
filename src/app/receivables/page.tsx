@@ -29,8 +29,8 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   PARTIAL: { label: "Parcial", color: "bg-blue-100 text-blue-800", icon: <CreditCard className="w-4 h-4" /> },
   PAID: { label: "Recebido", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   OVERDUE: { label: "Vencido", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-600", icon: <XCircle className="w-4 h-4" /> },
-  WRITTEN_OFF: { label: "Baixado", color: "bg-gray-100 text-gray-600", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
+  WRITTEN_OFF: { label: "Baixado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function ReceivablesPage() {
@@ -49,18 +49,18 @@ export default function ReceivablesPage() {
   const { data: aging } = trpc.receivables.aging.useQuery();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Contas a Receber</h1>
+                <h1 className="text-xl font-semibold text-theme">Contas a Receber</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -81,64 +81,64 @@ export default function ReceivablesPage() {
         {/* Dashboard Cards */}
         {dashboard && (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-red-600 mb-2">
                 <AlertTriangle className="w-4 h-4" />
                 <span className="text-sm font-medium">Vencidos</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(dashboard.overdueValue)}
               </div>
-              <div className="text-xs text-gray-500">{dashboard.overdueCount} títulos</div>
+              <div className="text-xs text-theme-muted">{dashboard.overdueCount} títulos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-orange-600 mb-2">
                 <Calendar className="w-4 h-4" />
                 <span className="text-sm font-medium">Vence Hoje</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(dashboard.dueTodayValue)}
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-yellow-600 mb-2">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Próx. 7 dias</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(dashboard.dueNext7DaysValue)}
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <Calendar className="w-4 h-4" />
                 <span className="text-sm font-medium">Próx. 30 dias</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(dashboard.dueNext30DaysValue)}
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-green-600 mb-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm font-medium">Recebido (mês)</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(dashboard.monthReceivedValue)}
               </div>
-              <div className="text-xs text-gray-500">{dashboard.monthReceivedCount} recebimentos</div>
+              <div className="text-xs text-theme-muted">{dashboard.monthReceivedCount} recebimentos</div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-purple-600 mb-2">
                 <DollarSign className="w-4 h-4" />
                 <span className="text-sm font-medium">Total a Receber</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-theme">
                 {formatCurrency(
                   dashboard.overdueValue + 
                   dashboard.dueTodayValue + 
@@ -152,27 +152,27 @@ export default function ReceivablesPage() {
 
         {/* Aging */}
         {aging && (
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-8">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Aging de Recebíveis</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-4 mb-8">
+            <h3 className="text-sm font-medium text-theme-secondary mb-3">Aging de Recebíveis</h3>
             <div className="grid grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">A Vencer</div>
+                <div className="text-xs text-theme-muted mb-1">A Vencer</div>
                 <div className="text-lg font-semibold text-green-600">{formatCurrency(aging.current)}</div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">1-30 dias</div>
+                <div className="text-xs text-theme-muted mb-1">1-30 dias</div>
                 <div className="text-lg font-semibold text-yellow-600">{formatCurrency(aging.days1to30)}</div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">31-60 dias</div>
+                <div className="text-xs text-theme-muted mb-1">31-60 dias</div>
                 <div className="text-lg font-semibold text-orange-600">{formatCurrency(aging.days31to60)}</div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">61-90 dias</div>
+                <div className="text-xs text-theme-muted mb-1">61-90 dias</div>
                 <div className="text-lg font-semibold text-red-500">{formatCurrency(aging.days61to90)}</div>
               </div>
               <div className="text-center">
-                <div className="text-xs text-gray-500 mb-1">+90 dias</div>
+                <div className="text-xs text-theme-muted mb-1">+90 dias</div>
                 <div className="text-lg font-semibold text-red-700">{formatCurrency(aging.over90)}</div>
               </div>
             </div>
@@ -180,10 +180,10 @@ export default function ReceivablesPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por descrição, documento ou cliente..."
@@ -192,18 +192,18 @@ export default function ReceivablesPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
+              <Filter className="w-4 h-4 text-theme-muted" />
               <select
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="ALL">Todos os status</option>
                 <option value="PENDING">Pendentes</option>
@@ -217,7 +217,7 @@ export default function ReceivablesPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-green-600" />
@@ -225,73 +225,73 @@ export default function ReceivablesPage() {
           ) : !data?.receivables.length ? (
             <div className="text-center py-12">
               <DollarSign className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhum título encontrado</p>
+              <p className="text-theme-muted">Nenhum título encontrado</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Código
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Cliente
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Descrição
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Vencimento
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Valor
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Recebido
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.receivables.map((receivable) => {
                       const status = receivable.isOverdue ? "OVERDUE" : receivable.status;
                       const config = statusConfig[status] || statusConfig.PENDING;
 
                       return (
-                        <tr key={receivable.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        <tr key={receivable.id} className="hover:bg-theme-hover">
+                          <td className="px-4 py-3 text-sm font-medium text-theme">
                             {receivable.code}
                             {receivable.totalInstallments > 1 && (
-                              <span className="text-gray-500 text-xs ml-1">
+                              <span className="text-theme-muted text-xs ml-1">
                                 ({receivable.installmentNumber}/{receivable.totalInstallments})
                               </span>
                             )}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-theme">
                                   {receivable.customer.companyName}
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-theme-muted">
                                   {receivable.customer.code}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                          <td className="px-4 py-3 text-sm text-theme-secondary max-w-xs truncate">
                             {receivable.description}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className={`text-sm ${receivable.isOverdue ? "text-red-600 font-medium" : "text-gray-600"}`}>
+                            <div className={`text-sm ${receivable.isOverdue ? "text-red-600 font-medium" : "text-theme-secondary"}`}>
                               {formatDate(receivable.dueDate)}
                             </div>
                             {receivable.isOverdue && receivable.daysOverdue > 0 && (
@@ -300,7 +300,7 @@ export default function ReceivablesPage() {
                               </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
+                          <td className="px-4 py-3 text-right text-sm font-medium text-theme">
                             {formatCurrency(receivable.netValue)}
                           </td>
                           <td className="px-4 py-3 text-right text-sm text-green-600">
@@ -330,22 +330,22 @@ export default function ReceivablesPage() {
 
               {/* Pagination */}
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Página {page} de {data.pages} ({data.total} títulos)
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
-                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

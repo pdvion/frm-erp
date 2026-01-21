@@ -117,23 +117,23 @@ export default function BankAccountsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-gray-500 hover:text-gray-700">
+              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-600" />
                 Contas Bancárias
               </h1>
@@ -155,40 +155,40 @@ export default function BankAccountsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Formulário */}
         {showForm && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+            <h2 className="text-lg font-medium text-theme mb-4">
               {editingId ? "Editar Conta Bancária" : "Nova Conta Bancária"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Código *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Código *</label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="001"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Nome *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Banco do Brasil - CC"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
                   <select
                     value={formData.accountType}
                     onChange={(e) => setFormData({ ...formData, accountType: e.target.value as typeof formData.accountType })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="CHECKING">Conta Corrente</option>
                     <option value="SAVINGS">Poupança</option>
@@ -200,23 +200,23 @@ export default function BankAccountsPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cód. Banco</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Cód. Banco</label>
                   <input
                     type="text"
                     value={formData.bankCode}
                     onChange={(e) => setFormData({ ...formData, bankCode: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="001"
                     maxLength={3}
                   />
                 </div>
                 <div className="md:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Banco</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Banco</label>
                   <input
                     type="text"
                     value={formData.bankName}
                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Banco do Brasil S.A."
                   />
                 </div>
@@ -224,45 +224,45 @@ export default function BankAccountsPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Agência</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Agência</label>
                   <input
                     type="text"
                     value={formData.agency}
                     onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="1234"
                     maxLength={5}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Ag.</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
                   <input
                     type="text"
                     value={formData.agencyDigit}
                     onChange={(e) => setFormData({ ...formData, agencyDigit: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="X"
                     maxLength={1}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Conta</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Conta</label>
                   <input
                     type="text"
                     value={formData.accountNumber}
                     onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="12345678"
                     maxLength={12}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Conta</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Conta</label>
                   <input
                     type="text"
                     value={formData.accountDigit}
                     onChange={(e) => setFormData({ ...formData, accountDigit: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="X"
                     maxLength={1}
                   />
@@ -271,22 +271,22 @@ export default function BankAccountsPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Saldo Inicial</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Saldo Inicial</label>
                   <input
                     type="number"
                     value={formData.initialBalance}
                     onChange={(e) => setFormData({ ...formData, initialBalance: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     step="0.01"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Limite de Crédito</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Limite de Crédito</label>
                   <input
                     type="number"
                     value={formData.creditLimit}
                     onChange={(e) => setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     step="0.01"
                   />
                 </div>
@@ -298,18 +298,18 @@ export default function BankAccountsPage() {
                       onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
                       className="w-4 h-4 text-blue-600 rounded border-gray-300"
                     />
-                    <span className="text-sm text-gray-700">Conta Padrão</span>
+                    <span className="text-sm text-theme-secondary">Conta Padrão</span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Observações</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -317,7 +317,7 @@ export default function BankAccountsPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
                 >
                   Cancelar
                 </button>
@@ -335,9 +335,9 @@ export default function BankAccountsPage() {
 
         {/* Lista */}
         {accounts?.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+          <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
             <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">Nenhuma conta bancária cadastrada</p>
+            <p className="text-theme-muted mb-4">Nenhuma conta bancária cadastrada</p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -347,17 +347,17 @@ export default function BankAccountsPage() {
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-theme-tertiary">
                 <tr>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Código</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Nome</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Banco</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Tipo</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Saldo Atual</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Ações</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Código</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Nome</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Banco</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Tipo</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-theme-muted">Saldo Atual</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Status</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -365,10 +365,10 @@ export default function BankAccountsPage() {
                   const typeConfig = accountTypeConfig[account.accountType];
                   const TypeIcon = typeConfig.icon;
                   return (
-                    <tr key={account.id} className="border-t border-gray-100 hover:bg-gray-50">
+                    <tr key={account.id} className="border-t border-gray-100 hover:bg-theme-hover">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{account.code}</span>
+                          <span className="font-mono text-sm bg-theme-tertiary px-2 py-1 rounded">{account.code}</span>
                           {account.isDefault && (
                             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                           )}
@@ -376,19 +376,19 @@ export default function BankAccountsPage() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="font-medium">{account.name}</div>
-                        {account.notes && <div className="text-xs text-gray-500">{account.notes}</div>}
+                        {account.notes && <div className="text-xs text-theme-muted">{account.notes}</div>}
                       </td>
                       <td className="py-3 px-4">
                         {account.bankName ? (
                           <div>
                             <div className="text-sm">{account.bankName}</div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-theme-muted">
                               Ag: {account.agency}{account.agencyDigit ? `-${account.agencyDigit}` : ""} | 
                               Conta: {account.accountNumber}{account.accountDigit ? `-${account.accountDigit}` : ""}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-theme-muted">-</span>
                         )}
                       </td>
                       <td className="py-3 px-4 text-center">
@@ -398,7 +398,7 @@ export default function BankAccountsPage() {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className={`font-medium ${account.currentBalance < 0 ? "text-red-600" : "text-gray-900"}`}>
+                        <span className={`font-medium ${account.currentBalance < 0 ? "text-red-600" : "text-theme"}`}>
                           {formatCurrency(account.currentBalance)}
                         </span>
                       </td>
@@ -408,7 +408,7 @@ export default function BankAccountsPage() {
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
                             account.isActive
                               ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-600"
+                              : "bg-theme-tertiary text-theme-secondary"
                           }`}
                         >
                           {account.isActive ? (

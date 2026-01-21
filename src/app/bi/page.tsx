@@ -39,13 +39,13 @@ function KpiCard({ title, value, subtitle, trend, trendLabel, status = "neutral"
     success: "border-l-green-500 bg-green-50",
     warning: "border-l-yellow-500 bg-yellow-50",
     danger: "border-l-red-500 bg-red-50",
-    neutral: "border-l-blue-500 bg-white",
+    neutral: "border-l-blue-500 bg-theme-card",
   };
 
   const trendColors = {
     positive: "text-green-600",
     negative: "text-red-600",
-    neutral: "text-gray-500",
+    neutral: "text-theme-muted",
   };
 
   const trendDirection = trend === undefined ? "neutral" : trend >= 0 ? "positive" : "negative";
@@ -54,9 +54,9 @@ function KpiCard({ title, value, subtitle, trend, trendLabel, status = "neutral"
     <div className={`rounded-lg border-l-4 p-4 shadow-sm ${statusColors[status]}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="mt-1 text-xs text-gray-500">{subtitle}</p>}
+          <p className="text-sm font-medium text-theme-secondary">{title}</p>
+          <p className="mt-1 text-2xl font-bold text-theme">{value}</p>
+          {subtitle && <p className="mt-1 text-xs text-theme-muted">{subtitle}</p>}
           {trend !== undefined && (
             <div className={`mt-2 flex items-center gap-1 text-sm ${trendColors[trendDirection]}`}>
               {trendDirection === "positive" ? (
@@ -65,11 +65,11 @@ function KpiCard({ title, value, subtitle, trend, trendLabel, status = "neutral"
                 <ArrowDownRight className="h-4 w-4" />
               ) : null}
               <span>{Math.abs(trend).toFixed(1)}%</span>
-              {trendLabel && <span className="text-gray-500">{trendLabel}</span>}
+              {trendLabel && <span className="text-theme-muted">{trendLabel}</span>}
             </div>
           )}
         </div>
-        {icon && <div className="text-gray-400">{icon}</div>}
+        {icon && <div className="text-theme-muted">{icon}</div>}
       </div>
     </div>
   );
@@ -111,7 +111,7 @@ export default function BiDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Business Intelligence"
         icon={<BarChart3 className="h-6 w-6 text-indigo-600" />}
@@ -119,14 +119,14 @@ export default function BiDashboardPage() {
       >
         <button
           onClick={handleRefresh}
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           Atualizar
         </button>
         <Link
           href="/bi/dashboards"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <Settings className="h-4 w-4" />
           Dashboards
@@ -151,7 +151,7 @@ export default function BiDashboardPage() {
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-green-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Financeiro</h2>
+                <h2 className="text-lg font-semibold text-theme">Financeiro</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiCard
@@ -192,7 +192,7 @@ export default function BiDashboardPage() {
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <Package className="h-5 w-5 text-orange-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Estoque</h2>
+                <h2 className="text-lg font-semibold text-theme">Estoque</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiCard
@@ -229,7 +229,7 @@ export default function BiDashboardPage() {
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Compras</h2>
+                <h2 className="text-lg font-semibold text-theme">Compras</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiCard
@@ -265,7 +265,7 @@ export default function BiDashboardPage() {
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <Factory className="h-5 w-5 text-purple-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Produção</h2>
+                <h2 className="text-lg font-semibold text-theme">Produção</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <KpiCard
@@ -293,7 +293,7 @@ export default function BiDashboardPage() {
             <section>
               <div className="mb-4 flex items-center gap-2">
                 <Users className="h-5 w-5 text-teal-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Vendas</h2>
+                <h2 className="text-lg font-semibold text-theme">Vendas</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiCard
@@ -332,7 +332,7 @@ export default function BiDashboardPage() {
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-indigo-600" />
-                    <h2 className="text-lg font-semibold text-gray-900">Meus Dashboards</h2>
+                    <h2 className="text-lg font-semibold text-theme">Meus Dashboards</h2>
                   </div>
                   <Link href="/bi/dashboards" className="text-sm text-indigo-600 hover:text-indigo-800">
                     Ver todos →
@@ -343,13 +343,13 @@ export default function BiDashboardPage() {
                     <Link
                       key={dashboard.id}
                       href={`/bi/dashboards/${dashboard.id}`}
-                      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                      className="rounded-lg border border-theme bg-theme-card p-4 shadow-sm transition-shadow hover:shadow-md"
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-medium text-gray-900">{dashboard.name}</h3>
+                          <h3 className="font-medium text-theme">{dashboard.name}</h3>
                           {dashboard.description && (
-                            <p className="mt-1 text-sm text-gray-500">{dashboard.description}</p>
+                            <p className="mt-1 text-sm text-theme-muted">{dashboard.description}</p>
                           )}
                         </div>
                         {dashboard.isDefault && (
@@ -358,7 +358,7 @@ export default function BiDashboardPage() {
                           </span>
                         )}
                       </div>
-                      <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                      <div className="mt-3 flex items-center gap-4 text-xs text-theme-muted">
                         <span>{dashboard._count.widgets} widgets</span>
                         {dashboard.creator && <span>por {dashboard.creator.name}</span>}
                       </div>

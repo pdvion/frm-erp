@@ -68,17 +68,17 @@ export default function NotificationsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Bell className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Notificações</h1>
+                <h1 className="text-xl font-semibold text-theme">Notificações</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -102,17 +102,17 @@ export default function NotificationsPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">Filtros:</span>
+              <Filter className="w-4 h-4 text-theme-muted" />
+              <span className="text-sm text-theme-secondary">Filtros:</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCategory(undefined)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  !category ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:bg-gray-100"
+                  !category ? "bg-blue-100 text-blue-700" : "text-theme-secondary hover:bg-theme-hover"
                 }`}
               >
                 Todas
@@ -122,7 +122,7 @@ export default function NotificationsPage() {
                   key={key}
                   onClick={() => setCategory(key)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    category === key ? "bg-blue-100 text-blue-700" : "text-gray-600 hover:bg-gray-100"
+                    category === key ? "bg-blue-100 text-blue-700" : "text-theme-secondary hover:bg-theme-hover"
                   }`}
                 >
                   {label}
@@ -136,13 +136,13 @@ export default function NotificationsPage() {
                 onChange={(e) => setUnreadOnly(e.target.checked)}
                 className="rounded border-gray-300"
               />
-              <span className="text-sm text-gray-600">Apenas não lidas</span>
+              <span className="text-sm text-theme-secondary">Apenas não lidas</span>
             </label>
           </div>
         </div>
 
         {/* Lista */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -150,7 +150,7 @@ export default function NotificationsPage() {
           ) : !data?.notifications?.length ? (
             <div className="text-center py-12">
               <Bell className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhuma notificação encontrada</p>
+              <p className="text-theme-muted">Nenhuma notificação encontrada</p>
             </div>
           ) : (
             <>
@@ -162,7 +162,7 @@ export default function NotificationsPage() {
                   return (
                     <div
                       key={notification.id}
-                      className={`p-4 hover:bg-gray-50 transition-colors ${
+                      className={`p-4 hover:bg-theme-hover transition-colors ${
                         !notification.isRead ? "bg-blue-50/30" : ""
                       }`}
                     >
@@ -173,17 +173,17 @@ export default function NotificationsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-theme">
                                 {notification.title}
                               </p>
                               {notification.message && (
-                                <p className="text-sm text-gray-600 mt-1">
+                                <p className="text-sm text-theme-secondary mt-1">
                                   {notification.message}
                                 </p>
                               )}
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <p className="text-xs text-gray-400">
+                              <p className="text-xs text-theme-muted">
                                 {formatDateTime(notification.createdAt)}
                               </p>
                               <span className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${
@@ -191,7 +191,7 @@ export default function NotificationsPage() {
                                   ? "bg-red-100 text-red-700"
                                   : notification.category === "business"
                                     ? "bg-blue-100 text-blue-700"
-                                    : "bg-gray-100 text-gray-700"
+                                    : "bg-theme-tertiary text-theme-secondary"
                               }`}>
                                 {categoryLabels[notification.category as keyof typeof categoryLabels] || notification.category}
                               </span>
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
                             {!notification.isRead && (
                               <button
                                 onClick={() => markAsReadMutation.mutate({ id: notification.id })}
-                                className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                                className="text-sm text-theme-muted hover:text-theme-secondary flex items-center gap-1"
                               >
                                 <Check className="w-4 h-4" />
                                 Marcar como lida
@@ -227,22 +227,22 @@ export default function NotificationsPage() {
 
               {/* Paginação */}
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
-                  <p className="text-sm text-gray-600">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme bg-theme-tertiary">
+                  <p className="text-sm text-theme-secondary">
                     Página {data.page} de {data.pages} ({data.total} notificações)
                   </p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                      className="px-3 py-1.5 text-sm border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
                     >
                       Anterior
                     </button>
                     <button
                       onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                       disabled={page === data.pages}
-                      className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                      className="px-3 py-1.5 text-sm border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
                     >
                       Próxima
                     </button>

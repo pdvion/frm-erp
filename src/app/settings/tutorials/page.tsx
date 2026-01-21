@@ -152,24 +152,24 @@ export default function TutorialsAdminPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-gray-500 hover:text-gray-700">
+              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Tutoriais</h1>
+                <h1 className="text-xl font-semibold text-theme">Tutoriais</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <Link
                 href="/docs"
                 target="_blank"
-                className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
+                className="flex items-center gap-2 text-theme-secondary hover:text-blue-600"
               >
                 <ExternalLink className="w-4 h-4" />
                 Ver Documentação
@@ -190,14 +190,14 @@ export default function TutorialsAdminPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Formulário */}
         {showForm && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+            <h2 className="text-lg font-semibold text-theme mb-4">
               {editingId ? "Editar Tutorial" : "Novo Tutorial"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Título *
                   </label>
                   <input
@@ -210,43 +210,43 @@ export default function TutorialsAdminPage() {
                         slug: editingId ? formData.slug : generateSlug(e.target.value),
                       });
                     }}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Slug (URL) *
                   </label>
                   <input
                     type="text"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2 font-mono text-sm"
                     required
                     pattern="[a-z0-9-]+"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição
                   </label>
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                     placeholder="Breve descrição do tutorial"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Módulo
                   </label>
                   <select
                     value={formData.module}
                     onChange={(e) => setFormData({ ...formData, module: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   >
                     {moduleOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -254,13 +254,13 @@ export default function TutorialsAdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Categoria
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   >
                     {categoryOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -268,13 +268,13 @@ export default function TutorialsAdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Ícone
                   </label>
                   <select
                     value={formData.icon}
                     onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   >
                     {iconOptions.map((icon) => (
                       <option key={icon} value={icon}>{icon}</option>
@@ -282,34 +282,34 @@ export default function TutorialsAdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Ordem
                   </label>
                   <input
                     type="number"
                     value={formData.orderIndex}
                     onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Conteúdo (Markdown) *
                   </label>
                   <textarea
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 font-mono text-sm"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2 font-mono text-sm"
                     rows={15}
                     required
                     placeholder="# Título&#10;&#10;## Seção 1&#10;&#10;Conteúdo em Markdown..."
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-theme-muted mt-1">
                     Suporta: # Títulos, **negrito**, *itálico*, `código`, listas, tabelas
                   </p>
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-4 border-t border-theme">
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -317,13 +317,13 @@ export default function TutorialsAdminPage() {
                     onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
                     className="rounded border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">Publicado</span>
+                  <span className="text-sm text-theme-secondary">Publicado</span>
                 </label>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    className="px-4 py-2 text-theme-secondary hover:text-theme"
                   >
                     Cancelar
                   </button>
@@ -346,9 +346,9 @@ export default function TutorialsAdminPage() {
         )}
 
         {/* Busca */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-gray-400" />
+            <Search className="w-4 h-4 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por título, descrição ou módulo..."
@@ -360,7 +360,7 @@ export default function TutorialsAdminPage() {
         </div>
 
         {/* Lista */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -368,44 +368,44 @@ export default function TutorialsAdminPage() {
           ) : !filteredTutorials?.length ? (
             <div className="text-center py-12">
               <BookOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhum tutorial encontrado</p>
+              <p className="text-theme-muted">Nenhum tutorial encontrado</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ordem</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Título</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Módulo</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Ordem</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Título</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Slug</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Módulo</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Categoria</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {filteredTutorials.map((tutorial) => (
-                    <tr key={tutorial.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-500">
+                    <tr key={tutorial.id} className="hover:bg-theme-hover">
+                      <td className="px-4 py-3 text-sm text-theme-muted">
                         {tutorial.orderIndex}
                       </td>
                       <td className="px-4 py-3">
                         <div>
-                          <p className="font-medium text-gray-900">{tutorial.title}</p>
+                          <p className="font-medium text-theme">{tutorial.title}</p>
                           {tutorial.description && (
-                            <p className="text-sm text-gray-500 truncate max-w-xs">
+                            <p className="text-sm text-theme-muted truncate max-w-xs">
                               {tutorial.description}
                             </p>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm font-mono text-gray-500">
+                      <td className="px-4 py-3 text-sm font-mono text-theme-muted">
                         {tutorial.slug}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
+                      <td className="px-4 py-3 text-sm text-theme-muted">
                         {tutorial.module || "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
+                      <td className="px-4 py-3 text-sm text-theme-muted">
                         {tutorial.category || "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -413,21 +413,21 @@ export default function TutorialsAdminPage() {
                           <Link
                             href={`/docs/${tutorial.slug}`}
                             target="_blank"
-                            className="p-1 text-gray-400 hover:text-blue-600"
+                            className="p-1 text-theme-muted hover:text-blue-600"
                             title="Visualizar"
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
                           <button
                             onClick={() => handleEdit(tutorial.id)}
-                            className="p-1 text-gray-400 hover:text-blue-600"
+                            className="p-1 text-theme-muted hover:text-blue-600"
                             title="Editar"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(tutorial.id)}
-                            className="p-1 text-gray-400 hover:text-red-600"
+                            className="p-1 text-theme-muted hover:text-red-600"
                             title="Excluir"
                           >
                             <Trash2 className="w-4 h-4" />

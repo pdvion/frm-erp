@@ -116,7 +116,7 @@ export default function LandingPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-theme-tertiary">
         <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)]" />
       </div>
     );
@@ -153,7 +153,7 @@ export default function LandingPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-theme-card/20 backdrop-blur rounded-xl flex items-center justify-center">
               <svg viewBox="0 0 100 60" className="w-8 h-5">
                 <text x="50" y="45" textAnchor="middle" fill="white" fontSize="32" fontWeight="bold" fontFamily="Arial, sans-serif">FRM</text>
               </svg>
@@ -181,7 +181,7 @@ export default function LandingPage() {
               {features.map((feature, index) => {
                 const IconComponent = ICON_MAP[feature.icon] || Package;
                 return (
-                  <div key={index} className="bg-white/10 backdrop-blur rounded-xl p-4">
+                  <div key={index} className="bg-theme-card/10 backdrop-blur rounded-xl p-4">
                     <IconComponent className="w-8 h-8 text-white/90 mb-3" />
                     <h3 className="font-semibold text-white">{feature.title}</h3>
                     <p className="text-sm text-white/60 mt-1">{feature.description}</p>
@@ -215,7 +215,7 @@ export default function LandingPage() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-theme-tertiary">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
@@ -225,14 +225,14 @@ export default function LandingPage() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-[var(--frm-primary)]">FRM ERP</h1>
-            <p className="text-gray-600 mt-1">Sistema de Gestão Industrial</p>
+            <p className="text-theme-secondary mt-1">Sistema de Gestão Industrial</p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="bg-theme-card rounded-2xl shadow-xl p-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Bem-vindo de volta</h2>
-              <p className="text-gray-600 mt-1">Entre com suas credenciais para acessar o sistema</p>
+              <h2 className="text-2xl font-bold text-theme">Bem-vindo de volta</h2>
+              <p className="text-theme-secondary mt-1">Entre com suas credenciais para acessar o sistema</p>
             </div>
 
             {error && (
@@ -244,11 +244,11 @@ export default function LandingPage() {
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="email" className="block text-sm font-medium text-theme-secondary mb-1.5">
                   E-mail
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                   <input
                     type="email"
                     id="email"
@@ -256,17 +256,17 @@ export default function LandingPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="seu@email.com"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
+                    className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-theme-secondary mb-1.5">
                   Senha
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                   <input
                     type="password"
                     id="password"
@@ -274,7 +274,7 @@ export default function LandingPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
+                    className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-xl focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)] transition-colors"
                   />
                 </div>
               </div>
@@ -287,7 +287,7 @@ export default function LandingPage() {
                     aria-label="Lembrar-me neste dispositivo"
                     className="w-4 h-4 rounded border-gray-300 text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" 
                   />
-                  <span className="text-sm text-gray-600">Lembrar-me</span>
+                  <span className="text-sm text-theme-secondary">Lembrar-me</span>
                 </label>
                 <Link 
                   href="/forgot-password" 
@@ -319,16 +319,16 @@ export default function LandingPage() {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
+                <div className="w-full border-t border-theme"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">ou</span>
+                <span className="px-4 bg-theme-card text-theme-muted">ou</span>
               </div>
             </div>
 
             {/* Demo Access */}
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-3">Quer conhecer o sistema?</p>
+              <p className="text-sm text-theme-secondary mb-3">Quer conhecer o sistema?</p>
               <Link
                 href="/login"
                 className="inline-flex items-center gap-2 text-[var(--frm-primary)] hover:text-[var(--frm-dark)] font-medium"
@@ -340,7 +340,7 @@ export default function LandingPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-theme-muted mt-6">
             Ao entrar, você concorda com nossos{" "}
             <Link href="/docs/terms" className="text-[var(--frm-light)] hover:underline">Termos de Uso</Link>
             {" "}e{" "}

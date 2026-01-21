@@ -46,7 +46,7 @@ function PriorityBadge({ priority }: { priority: number }) {
     1: { color: "bg-red-100 text-red-800", label: "Urgente" },
     2: { color: "bg-orange-100 text-orange-800", label: "Alta" },
     3: { color: "bg-blue-100 text-blue-800", label: "Normal" },
-    4: { color: "bg-gray-100 text-gray-800", label: "Baixa" },
+    4: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
   };
 
   const { color, label } = config[priority] || config[3];
@@ -84,7 +84,7 @@ export default function GpdDashboardPage() {
   const pendingActions = dashboard?.pendingActions || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Gestão por Diretrizes"
         icon={<Target className="h-6 w-6 text-purple-600" />}
@@ -92,14 +92,14 @@ export default function GpdDashboardPage() {
       >
         <Link
           href="/gpd/goals"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <Flag className="h-4 w-4" />
           Metas
         </Link>
         <Link
           href="/gpd/actions"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <Activity className="h-4 w-4" />
           Planos de Ação
@@ -117,73 +117,73 @@ export default function GpdDashboardPage() {
         <div className="space-y-8">
           {/* Cards de Resumo */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-purple-100 p-3">
                   <Target className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Metas {currentYear}</p>
-                  <p className="text-2xl font-bold text-gray-900">{goalsData.total}</p>
+                  <p className="text-sm text-theme-muted">Metas {currentYear}</p>
+                  <p className="text-2xl font-bold text-theme">{goalsData.total}</p>
                 </div>
               </div>
               <div className="mt-4 flex gap-2 text-xs">
                 <span className="text-green-600">
                   {(goalsData.byStatus as Record<string, number>)?.ACHIEVED || 0} atingidas
                 </span>
-                <span className="text-gray-400">•</span>
+                <span className="text-theme-muted">•</span>
                 <span className="text-blue-600">
                   {(goalsData.byStatus as Record<string, number>)?.ACTIVE || 0} ativas
                 </span>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-3">
                   <TrendingUp className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Indicadores</p>
-                  <p className="text-2xl font-bold text-gray-900">{indicatorsData.total}</p>
+                  <p className="text-sm text-theme-muted">Indicadores</p>
+                  <p className="text-2xl font-bold text-theme">{indicatorsData.total}</p>
                 </div>
               </div>
               <div className="mt-4 flex gap-2 text-xs">
                 <span className="text-green-600">{indicatorsData.onTarget} na meta</span>
-                <span className="text-gray-400">•</span>
+                <span className="text-theme-muted">•</span>
                 <span className="text-red-600">{indicatorsData.belowTarget} abaixo</span>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-blue-100 p-3">
                   <Activity className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Planos de Ação</p>
-                  <p className="text-2xl font-bold text-gray-900">{actionsData.total}</p>
+                  <p className="text-sm text-theme-muted">Planos de Ação</p>
+                  <p className="text-2xl font-bold text-theme">{actionsData.total}</p>
                 </div>
               </div>
               <div className="mt-4 flex gap-2 text-xs">
                 <span className="text-yellow-600">
                   {(actionsData.byStatus as Record<string, number>)?.IN_PROGRESS || 0} em andamento
                 </span>
-                <span className="text-gray-400">•</span>
+                <span className="text-theme-muted">•</span>
                 <span className="text-green-600">
                   {(actionsData.byStatus as Record<string, number>)?.COMPLETED || 0} concluídos
                 </span>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-orange-100 p-3">
                   <AlertTriangle className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Ações Pendentes</p>
-                  <p className="text-2xl font-bold text-gray-900">{pendingActions.length}</p>
+                  <p className="text-sm text-theme-muted">Ações Pendentes</p>
+                  <p className="text-2xl font-bold text-theme">{pendingActions.length}</p>
                 </div>
               </div>
               <div className="mt-4 text-xs text-orange-600">
@@ -195,7 +195,7 @@ export default function GpdDashboardPage() {
           {/* Indicadores com Faróis */}
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Faróis dos Indicadores</h2>
+              <h2 className="text-lg font-semibold text-theme">Faróis dos Indicadores</h2>
               <Link href="/gpd/indicators" className="text-sm text-purple-600 hover:text-purple-800">
                 Ver todos →
               </Link>
@@ -204,22 +204,22 @@ export default function GpdDashboardPage() {
               {indicatorsData.list.slice(0, 6).map((indicator) => (
                 <div
                   key={indicator.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                  className="rounded-lg border border-theme bg-theme-card p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{indicator.name}</p>
-                      <p className="mt-1 text-xs text-gray-500">{indicator.goal?.title}</p>
+                      <p className="text-sm font-medium text-theme">{indicator.name}</p>
+                      <p className="mt-1 text-xs text-theme-muted">{indicator.goal?.title}</p>
                     </div>
                     <StatusBadge status={indicator.status as "BELOW" | "ON_TARGET" | "ABOVE"} />
                   </div>
                   <div className="mt-4">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">
+                      <span className="text-2xl font-bold text-theme">
                         {indicator.currentValue !== null ? indicator.currentValue.toLocaleString("pt-BR") : "-"}
                       </span>
                       {indicator.targetExpected !== null && (
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-theme-muted">
                           / {indicator.targetExpected.toLocaleString("pt-BR")}
                         </span>
                       )}
@@ -240,7 +240,7 @@ export default function GpdDashboardPage() {
                             }}
                           />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-theme-muted">
                           {formatPercent(indicator.currentValue / indicator.targetExpected)} da meta
                         </p>
                       </div>
@@ -255,7 +255,7 @@ export default function GpdDashboardPage() {
             {/* Metas Estratégicas */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Metas Estratégicas {currentYear}</h2>
+                <h2 className="text-lg font-semibold text-theme">Metas Estratégicas {currentYear}</h2>
                 <Link href="/gpd/goals" className="text-sm text-purple-600 hover:text-purple-800">
                   Ver todas →
                 </Link>
@@ -265,7 +265,7 @@ export default function GpdDashboardPage() {
                   <Link
                     key={goal.id}
                     href={`/gpd/goals/${goal.id}`}
-                    className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                    className="block rounded-lg border border-theme bg-theme-card p-4 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -283,9 +283,9 @@ export default function GpdDashboardPage() {
                                 : "bg-teal-500"
                             }`}
                           />
-                          <p className="font-medium text-gray-900">{goal.title}</p>
+                          <p className="font-medium text-theme">{goal.title}</p>
                         </div>
-                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                        <div className="mt-2 flex items-center gap-4 text-xs text-theme-muted">
                           {goal.owner && (
                             <span className="flex items-center gap-1">
                               <Users className="h-3 w-3" />
@@ -298,14 +298,14 @@ export default function GpdDashboardPage() {
                           </span>
                         </div>
                       </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400" />
+                      <ArrowRight className="h-5 w-5 text-theme-muted" />
                     </div>
                   </Link>
                 ))}
                 {(!goals || goals.length === 0) && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-                    <Target className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhuma meta cadastrada</p>
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                    <Target className="mx-auto h-12 w-12 text-theme-muted" />
+                    <p className="mt-2 text-sm text-theme-muted">Nenhuma meta cadastrada</p>
                     <Link
                       href="/gpd/goals/new"
                       className="mt-4 inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800"
@@ -321,7 +321,7 @@ export default function GpdDashboardPage() {
             {/* Ações Pendentes */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Ações Próximas do Vencimento</h2>
+                <h2 className="text-lg font-semibold text-theme">Ações Próximas do Vencimento</h2>
                 <Link href="/gpd/actions" className="text-sm text-purple-600 hover:text-purple-800">
                   Ver todas →
                 </Link>
@@ -331,15 +331,15 @@ export default function GpdDashboardPage() {
                   <Link
                     key={action.id}
                     href={`/gpd/actions/${action.id}`}
-                    className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                    className="block rounded-lg border border-theme bg-theme-card p-4 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{action.title}</p>
+                        <p className="font-medium text-theme">{action.title}</p>
                         {action.goal && (
-                          <p className="mt-1 text-xs text-gray-500">{action.goal.title}</p>
+                          <p className="mt-1 text-xs text-theme-muted">{action.goal.title}</p>
                         )}
-                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                        <div className="mt-2 flex items-center gap-4 text-xs text-theme-muted">
                           {action.responsible && (
                             <span className="flex items-center gap-1">
                               <Users className="h-3 w-3" />
@@ -356,7 +356,7 @@ export default function GpdDashboardPage() {
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <PriorityBadge priority={action.priority} />
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-theme-muted">
                           <Clock className="h-3 w-3" />
                           {action.progress}%
                         </div>
@@ -365,9 +365,9 @@ export default function GpdDashboardPage() {
                   </Link>
                 ))}
                 {pendingActions.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhuma ação pendente</p>
+                    <p className="mt-2 text-sm text-theme-muted">Nenhuma ação pendente</p>
                   </div>
                 )}
               </div>

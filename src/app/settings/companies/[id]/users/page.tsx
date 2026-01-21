@@ -54,7 +54,7 @@ export default function CompanyUsersPage() {
 
   if (loadingCompany) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -62,10 +62,10 @@ export default function CompanyUsersPage() {
 
   if (!company) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900">Empresa não encontrada</h2>
+          <h2 className="text-xl font-semibold text-theme">Empresa não encontrada</h2>
           <Link href="/settings/companies" className="text-indigo-600 hover:underline mt-2 inline-block">
             Voltar para empresas
           </Link>
@@ -75,14 +75,14 @@ export default function CompanyUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link
                 href="/settings/companies"
-                className="text-gray-500 hover:text-gray-700"
+                className="text-theme-muted hover:text-theme-secondary"
                 aria-label="Voltar para empresas"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -90,10 +90,10 @@ export default function CompanyUsersPage() {
               <div className="flex items-center gap-2">
                 <Building2 className="w-6 h-6 text-indigo-600" />
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">
+                  <h1 className="text-xl font-semibold text-theme">
                     Usuários da Empresa
                   </h1>
-                  <p className="text-sm text-gray-500">{company.tradeName || company.name}</p>
+                  <p className="text-sm text-theme-muted">{company.tradeName || company.name}</p>
                 </div>
               </div>
             </div>
@@ -121,12 +121,12 @@ export default function CompanyUsersPage() {
         )}
 
         {/* Lista de Usuários */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">
+        <div className="bg-theme-card rounded-lg border border-theme">
+          <div className="px-6 py-4 border-b border-theme">
+            <h2 className="text-lg font-medium text-theme">
               Usuários Vinculados ({users?.length ?? 0})
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-theme-muted mt-1">
               Para adicionar novos usuários, utilize o cadastro de usuários do sistema.
             </p>
           </div>
@@ -136,7 +136,7 @@ export default function CompanyUsersPage() {
               <Loader2 className="w-6 h-6 animate-spin text-indigo-600 mx-auto" />
             </div>
           ) : users && users.length > 0 ? (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-theme-table">
               {users.map((userCompany) => (
                 <div key={userCompany.id} className="px-6 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -146,10 +146,10 @@ export default function CompanyUsersPage() {
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-theme">
                         {userCompany.user?.name || userCompany.user?.email || "Usuário"}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-theme-muted">
                         {userCompany.user?.email}
                       </p>
                     </div>
@@ -158,7 +158,7 @@ export default function CompanyUsersPage() {
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       userCompany.isDefault 
                         ? "bg-green-100 text-green-800" 
-                        : "bg-gray-100 text-gray-600"
+                        : "bg-theme-tertiary text-theme-secondary"
                     }`}>
                       {userCompany.isDefault ? "Empresa Padrão" : "Vinculado"}
                     </span>
@@ -175,7 +175,7 @@ export default function CompanyUsersPage() {
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-theme-muted">
               <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>Nenhum usuário vinculado a esta empresa</p>
             </div>

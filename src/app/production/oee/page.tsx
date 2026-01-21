@@ -63,7 +63,7 @@ export default function OeeDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
@@ -89,45 +89,45 @@ export default function OeeDashboardPage() {
   const oeeTarget = targets?.oeeTarget || 85;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/production" className="text-gray-500 hover:text-gray-700">
+              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-purple-600" />
                 Dashboard OEE
               </h1>
             </div>
             <div className="flex items-center gap-4">
               {/* Seletor de período */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-theme-tertiary rounded-lg p-1">
                 <button
                   onClick={() => setDateRange("today")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "today" ? "bg-white shadow" : ""}`}
+                  className={`px-3 py-1 rounded text-sm ${dateRange === "today" ? "bg-theme-card shadow" : ""}`}
                 >
                   Hoje
                 </button>
                 <button
                   onClick={() => setDateRange("week")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "week" ? "bg-white shadow" : ""}`}
+                  className={`px-3 py-1 rounded text-sm ${dateRange === "week" ? "bg-theme-card shadow" : ""}`}
                 >
                   Semana
                 </button>
                 <button
                   onClick={() => setDateRange("month")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "month" ? "bg-white shadow" : ""}`}
+                  className={`px-3 py-1 rounded text-sm ${dateRange === "month" ? "bg-theme-card shadow" : ""}`}
                 >
                   Mês
                 </button>
               </div>
               <button
                 onClick={() => refetch()}
-                className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                className="p-2 text-theme-muted hover:text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
@@ -139,10 +139,10 @@ export default function OeeDashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* OEE Consolidado */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-theme-card rounded-xl border border-theme p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-medium text-gray-900">OEE Consolidado</h2>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <h2 className="text-lg font-medium text-theme">OEE Consolidado</h2>
+            <div className="flex items-center gap-2 text-sm text-theme-muted">
               <Target className="w-4 h-4" />
               Meta: {formatPercent(oeeTarget)}
             </div>
@@ -178,8 +178,8 @@ export default function OeeDashboardPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-900">OEE</p>
-              <p className="text-xs text-gray-500">Overall Equipment Effectiveness</p>
+              <p className="text-sm font-medium text-theme">OEE</p>
+              <p className="text-xs text-theme-muted">Overall Equipment Effectiveness</p>
             </div>
 
             {/* Disponibilidade */}
@@ -202,8 +202,8 @@ export default function OeeDashboardPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-900">Disponibilidade</p>
-              <p className="text-xs text-gray-500">Tempo operacional / Tempo planejado</p>
+              <p className="text-sm font-medium text-theme">Disponibilidade</p>
+              <p className="text-xs text-theme-muted">Tempo operacional / Tempo planejado</p>
             </div>
 
             {/* Performance */}
@@ -226,8 +226,8 @@ export default function OeeDashboardPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-900">Performance</p>
-              <p className="text-xs text-gray-500">Produção real / Produção planejada</p>
+              <p className="text-sm font-medium text-theme">Performance</p>
+              <p className="text-xs text-theme-muted">Produção real / Produção planejada</p>
             </div>
 
             {/* Qualidade */}
@@ -250,23 +250,23 @@ export default function OeeDashboardPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-900">Qualidade</p>
-              <p className="text-xs text-gray-500">Peças boas / Total produzido</p>
+              <p className="text-sm font-medium text-theme">Qualidade</p>
+              <p className="text-xs text-theme-muted">Peças boas / Total produzido</p>
             </div>
           </div>
         </div>
 
         {/* Resumo de Produção */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
+            <div className="flex items-center gap-2 text-theme-muted mb-2">
               <Factory className="w-4 h-4" />
               <span className="text-sm">Centros de Trabalho</span>
             </div>
             <p className="text-2xl font-bold">{dashboard?.oeeByWorkCenter?.length || 0}</p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-blue-500 mb-2">
               <TrendingUp className="w-4 h-4" />
               <span className="text-sm">Total Produzido</span>
@@ -276,7 +276,7 @@ export default function OeeDashboardPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-green-500 mb-2">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm">Peças Boas</span>
@@ -286,7 +286,7 @@ export default function OeeDashboardPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <div className="flex items-center gap-2 text-red-500 mb-2">
               <XCircle className="w-4 h-4" />
               <span className="text-sm">Refugo</span>
@@ -298,16 +298,16 @@ export default function OeeDashboardPage() {
         </div>
 
         {/* OEE por Centro de Trabalho */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Settings className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-theme-muted" />
             OEE por Centro de Trabalho
           </h2>
 
           {!dashboard?.oeeByWorkCenter?.length ? (
             <div className="text-center py-8">
               <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Nenhum dado de produção no período selecionado</p>
+              <p className="text-theme-muted">Nenhum dado de produção no período selecionado</p>
               <Link
                 href="/production/work-centers"
                 className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800"
@@ -320,21 +320,21 @@ export default function OeeDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Centro de Trabalho</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">OEE</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Disponibilidade</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Performance</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Qualidade</th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                  <tr className="border-b border-theme">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Centro de Trabalho</th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">OEE</th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Disponibilidade</th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Performance</th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Qualidade</th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dashboard.oeeByWorkCenter.map((wc) => (
-                    <tr key={wc.workCenter.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={wc.workCenter.id} className="border-b border-gray-100 hover:bg-theme-hover">
                       <td className="py-3 px-4">
                         <div className="font-medium">{wc.workCenter.name}</div>
-                        <div className="text-xs text-gray-500">{wc.workCenter.code}</div>
+                        <div className="text-xs text-theme-muted">{wc.workCenter.code}</div>
                       </td>
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-2">

@@ -108,18 +108,18 @@ export default function NewRequisitionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/requisitions" className="text-gray-500 hover:text-gray-700">
+              <Link href="/requisitions" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Package className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Nova Requisição</h1>
+                <h1 className="text-xl font-semibold text-theme">Nova Requisição</h1>
               </div>
             </div>
             <CompanySwitcher />
@@ -130,18 +130,18 @@ export default function NewRequisitionPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* Form */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="font-medium text-gray-900 mb-4">Dados da Requisição</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Dados da Requisição</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo *
                 </label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as typeof type)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="PRODUCTION">Produção</option>
                   <option value="MAINTENANCE">Manutenção</option>
@@ -152,13 +152,13 @@ export default function NewRequisitionPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Prioridade
                 </label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value={1}>Urgente</option>
                   <option value={2}>Alta</option>
@@ -168,7 +168,7 @@ export default function NewRequisitionPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Número OP/OS
                 </label>
                 <input
@@ -176,12 +176,12 @@ export default function NewRequisitionPage() {
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   placeholder="Ex: OP-12345"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Centro de Custo
                 </label>
                 <input
@@ -189,12 +189,12 @@ export default function NewRequisitionPage() {
                   value={costCenter}
                   onChange={(e) => setCostCenter(e.target.value)}
                   placeholder="Ex: CC-001"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Departamento
                 </label>
                 <input
@@ -202,12 +202,12 @@ export default function NewRequisitionPage() {
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
                   placeholder="Ex: Produção"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Código do Projeto
                 </label>
                 <input
@@ -215,13 +215,13 @@ export default function NewRequisitionPage() {
                   value={projectCode}
                   onChange={(e) => setProjectCode(e.target.value)}
                   placeholder="Ex: PRJ-2024-001"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Observações
               </label>
               <textarea
@@ -229,15 +229,15 @@ export default function NewRequisitionPage() {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="Observações adicionais..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           {/* Items */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-gray-900">Itens</h3>
+              <h3 className="font-medium text-theme">Itens</h3>
               <button
                 onClick={() => setShowMaterialSearch(true)}
                 className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm"
@@ -248,38 +248,38 @@ export default function NewRequisitionPage() {
             </div>
 
             {items.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-theme-muted">
                 <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                 <p>Nenhum item adicionado</p>
                 <p className="text-sm">Clique em &quot;Adicionar Material&quot; para começar</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Material
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Unidade
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Quantidade
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ação
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {items.map((item) => (
                       <tr key={item.materialId}>
                         <td className="px-4 py-3">
-                          <div className="font-medium text-gray-900">{item.materialDescription}</div>
-                          <div className="text-sm text-gray-500">Cód: {item.materialCode}</div>
+                          <div className="font-medium text-theme">{item.materialDescription}</div>
+                          <div className="text-sm text-theme-muted">Cód: {item.materialCode}</div>
                         </td>
-                        <td className="px-4 py-3 text-center text-gray-600">
+                        <td className="px-4 py-3 text-center text-theme-secondary">
                           {item.unit}
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -289,7 +289,7 @@ export default function NewRequisitionPage() {
                             onChange={(e) => updateItemQty(item.materialId, Number(e.target.value))}
                             min={0.01}
                             step={0.01}
-                            className="w-24 px-2 py-1 border border-gray-300 rounded text-center"
+                            className="w-24 px-2 py-1 border border-theme-input rounded text-center"
                           />
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -312,7 +312,7 @@ export default function NewRequisitionPage() {
           <div className="flex justify-end gap-4">
             <Link
               href="/requisitions"
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
             >
               Cancelar
             </Link>
@@ -347,29 +347,29 @@ export default function NewRequisitionPage() {
           aria-labelledby="material-search-req-title"
           onKeyDown={(e) => e.key === "Escape" && setShowMaterialSearch(false)}
         >
-          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 id="material-search-req-title" className="font-medium text-gray-900">Buscar Material</h3>
+          <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="p-4 border-b border-theme flex items-center justify-between">
+              <h3 id="material-search-req-title" className="font-medium text-theme">Buscar Material</h3>
               <button
                 onClick={() => {
                   setShowMaterialSearch(false);
                   setMaterialSearch("");
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-theme-muted hover:text-theme-secondary"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-theme">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
                 <input
                   type="text"
                   value={materialSearch}
                   onChange={(e) => setMaterialSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                   autoFocus
                 />
               </div>
@@ -381,24 +381,24 @@ export default function NewRequisitionPage() {
                   <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
                 </div>
               ) : materialSearch.length < 2 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-theme-muted">
                   Digite pelo menos 2 caracteres para buscar
                 </div>
               ) : !materials?.materials.length ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-theme-muted">
                   Nenhum material encontrado
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-theme-table">
                   {materials.materials.map((material) => (
                     <button
                       key={material.id}
                       onClick={() => addItem(material)}
                       disabled={items.some((i) => i.materialId === material.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <div className="font-medium text-gray-900">{material.description}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-theme">{material.description}</div>
+                      <div className="text-sm text-theme-muted">
                         Cód: {material.code} | {material.unit}
                         {items.some((i) => i.materialId === material.id) && (
                           <span className="ml-2 text-indigo-600">(já adicionado)</span>

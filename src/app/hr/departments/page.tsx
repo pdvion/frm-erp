@@ -60,7 +60,7 @@ export default function DepartmentsPage() {
   ) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Departamentos"
         icon={<Building2 className="w-6 h-6 text-purple-600" />}
@@ -78,17 +78,17 @@ export default function DepartmentsPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar por nome ou código..."
                 aria-label="Buscar departamentos"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -98,7 +98,7 @@ export default function DepartmentsPage() {
                 onChange={(e) => setShowInactive(e.target.checked)}
                 className="rounded border-gray-300"
               />
-              <span className="text-sm text-gray-600">Mostrar inativos</span>
+              <span className="text-sm text-theme-secondary">Mostrar inativos</span>
             </label>
           </div>
         </div>
@@ -109,10 +109,10 @@ export default function DepartmentsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : filteredDepartments.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-12 text-center">
             <FolderTree className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum departamento encontrado</h3>
-            <p className="text-gray-500 mb-4">Crie o primeiro departamento da empresa</p>
+            <h3 className="text-lg font-medium text-theme mb-2">Nenhum departamento encontrado</h3>
+            <p className="text-theme-muted mb-4">Crie o primeiro departamento da empresa</p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)]"
@@ -126,7 +126,7 @@ export default function DepartmentsPage() {
             {filteredDepartments.map((dept) => (
               <div
                 key={dept.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+                className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -134,31 +134,31 @@ export default function DepartmentsPage() {
                       <Building2 className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{dept.name}</h3>
-                      <p className="text-sm text-gray-500">{dept.code}</p>
+                      <h3 className="font-semibold text-theme">{dept.name}</h3>
+                      <p className="text-sm text-theme-muted">{dept.code}</p>
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded">
+                    <button className="p-1.5 text-theme-muted hover:text-blue-600 hover:bg-blue-50 rounded">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded">
+                    <button className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
                 {dept.description && (
-                  <p className="text-sm text-gray-600 mb-4">{dept.description}</p>
+                  <p className="text-sm text-theme-secondary mb-4">{dept.description}</p>
                 )}
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-theme-muted">
                     <Users className="w-4 h-4" />
                     <span>{dept._count.employees} funcionário(s)</span>
                   </div>
                   {dept.parent && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    <span className="text-xs bg-theme-tertiary text-theme-secondary px-2 py-1 rounded">
                       {dept.parent.name}
                     </span>
                   )}
@@ -180,7 +180,7 @@ export default function DepartmentsPage() {
             }}
           >
             <div 
-              className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+              className="bg-theme-card rounded-xl shadow-xl max-w-md w-full p-6"
               role="dialog"
               aria-modal="true"
               aria-labelledby="form-title"
@@ -191,51 +191,51 @@ export default function DepartmentsPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Código *
                   </label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Nome *
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Departamento Pai
                   </label>
                   <select
                     value={formData.parentId}
                     onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Nenhum (raiz)</option>
                     {departments?.map((dept) => (
@@ -253,7 +253,7 @@ export default function DepartmentsPage() {
                       setShowForm(false);
                       resetForm();
                     }}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
                   >
                     Cancelar
                   </button>

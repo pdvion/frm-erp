@@ -50,25 +50,25 @@ export default function ManifestacaoHistoryPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/invoices/pending"
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
             aria-label="Voltar"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+            <ArrowLeft className="w-5 h-5 text-theme-secondary" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-theme flex items-center gap-2">
               <History className="w-6 h-6 text-purple-600" />
               Histórico de Manifestações
             </h1>
-            <p className="text-gray-600">Registro de todas as manifestações do destinatário enviadas à SEFAZ</p>
+            <p className="text-theme-secondary">Registro de todas as manifestações do destinatário enviadas à SEFAZ</p>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
+      <div className="bg-theme-card rounded-xl shadow-sm border p-4 mb-6">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-theme-secondary">
             <Filter className="w-4 h-4" />
             <span className="text-sm font-medium">Filtrar por tipo:</span>
           </div>
@@ -78,7 +78,7 @@ export default function ManifestacaoHistoryPage() {
               setTipoFilter(e.target.value as ManifestacaoTipo | "");
               setPage(1);
             }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
           >
             <option value="">Todos os tipos</option>
             {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => (
@@ -91,7 +91,7 @@ export default function ManifestacaoHistoryPage() {
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-theme-card rounded-xl shadow-sm border overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -102,7 +102,7 @@ export default function ManifestacaoHistoryPage() {
             <p>Erro ao carregar histórico</p>
           </div>
         ) : !data?.manifestacoes?.length ? (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+          <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
             <FileText className="w-12 h-12 mb-2 text-gray-300" />
             <p className="font-medium">Nenhuma manifestação encontrada</p>
             <p className="text-sm">As manifestações registradas aparecerão aqui</p>
@@ -111,51 +111,51 @@ export default function ManifestacaoHistoryPage() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-theme-tertiary border-b">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Data/Hora
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Chave de Acesso
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Emitente
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Valor
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Tipo
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Protocolo
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {data.manifestacoes.map((manifestacao) => {
                     const config = manifestacaoConfig[manifestacao.tipo as ManifestacaoTipo];
                     return (
-                      <tr key={manifestacao.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                      <tr key={manifestacao.id} className="hover:bg-theme-hover">
+                        <td className="px-4 py-3 text-sm text-theme-secondary">
                           {formatDateTime(manifestacao.dataManifestacao)}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-xs font-mono text-gray-600">
+                          <div className="text-xs font-mono text-theme-secondary">
                             {formatChaveAcesso(manifestacao.chaveAcesso)}
                           </div>
                         </td>
                         <td className="px-4 py-3">
                           {manifestacao.pendingNfe ? (
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-theme">
                                 {manifestacao.pendingNfe.nomeEmitente || "N/A"}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-theme-muted">
                                 {manifestacao.pendingNfe.cnpjEmitente?.replace(
                                   /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
                                   "$1.$2.$3/$4-$5"
@@ -163,10 +163,10 @@ export default function ManifestacaoHistoryPage() {
                               </div>
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-400">-</span>
+                            <span className="text-sm text-theme-muted">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">
+                        <td className="px-4 py-3 text-sm text-right font-medium text-theme">
                           {manifestacao.pendingNfe?.valorTotal
                             ? formatCurrency(manifestacao.pendingNfe.valorTotal)
                             : "-"}
@@ -195,7 +195,7 @@ export default function ManifestacaoHistoryPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600 font-mono">
+                        <td className="px-4 py-3 text-sm text-theme-secondary font-mono">
                           {manifestacao.protocolo || "-"}
                         </td>
                       </tr>
@@ -207,8 +207,8 @@ export default function ManifestacaoHistoryPage() {
 
             {/* Pagination */}
             {data.pages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
-                <div className="text-sm text-gray-600">
+              <div className="flex items-center justify-between px-4 py-3 border-t bg-theme-tertiary">
+                <div className="text-sm text-theme-secondary">
                   Página {page} de {data.pages} ({data.total} registros)
                 </div>
                 <div className="flex items-center gap-2">

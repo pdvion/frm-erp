@@ -180,16 +180,16 @@ export default function SefazConfigPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-gray-500 hover:text-gray-700">
+              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Shield className="w-5 h-5 text-indigo-600" />
                 Configuração SEFAZ
               </h1>
@@ -218,7 +218,7 @@ export default function SefazConfigPage() {
             <span className="text-sm flex-1">{notification.message}</span>
             <button
               onClick={() => removeNotification(notification.id)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-theme-muted hover:text-theme-secondary"
             >
               <X className="w-4 h-4" />
             </button>
@@ -228,14 +228,14 @@ export default function SefazConfigPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Status Card */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Globe className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Globe className="w-5 h-5 text-theme-muted" />
             Status da Integração
           </h2>
 
           {isLoading ? (
-            <div className="flex items-center gap-2 text-gray-500">
+            <div className="flex items-center gap-2 text-theme-muted">
               <Loader2 className="w-4 h-4 animate-spin" />
               Verificando...
             </div>
@@ -248,10 +248,10 @@ export default function SefazConfigPage() {
                   <XCircle className="w-5 h-5 text-red-500" />
                 )}
                 <div>
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-theme">
                     {status?.configured ? "Configurado" : "Não Configurado"}
                   </div>
-                  <div className="text-xs text-gray-500">Status</div>
+                  <div className="text-xs text-theme-muted">Status</div>
                 </div>
               </div>
 
@@ -262,20 +262,20 @@ export default function SefazConfigPage() {
                   <AlertTriangle className="w-5 h-5 text-yellow-500" />
                 )}
                 <div>
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-theme">
                     {status?.hasCertificate ? "Certificado OK" : "Sem Certificado"}
                   </div>
-                  <div className="text-xs text-gray-500">Certificado Digital</div>
+                  <div className="text-xs text-theme-muted">Certificado Digital</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-blue-500" />
                 <div>
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-theme">
                     {status?.environment === "producao" ? "Produção" : "Homologação"}
                   </div>
-                  <div className="text-xs text-gray-500">Ambiente</div>
+                  <div className="text-xs text-theme-muted">Ambiente</div>
                 </div>
               </div>
             </div>
@@ -283,15 +283,15 @@ export default function SefazConfigPage() {
         </div>
 
         {/* Configuration Form */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-theme-muted" />
             Dados da Empresa
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 CNPJ *
               </label>
               <input
@@ -300,18 +300,18 @@ export default function SefazConfigPage() {
                 onChange={(e) => setCnpj(e.target.value.replace(/\D/g, ""))}
                 placeholder="00000000000000"
                 maxLength={14}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 UF *
               </label>
               <select
                 value={uf}
                 onChange={(e) => setUf(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               >
                 {UF_OPTIONS.map((estado) => (
                   <option key={estado} value={estado}>{estado}</option>
@@ -321,7 +321,7 @@ export default function SefazConfigPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               Ambiente *
             </label>
             <div className="flex gap-4">
@@ -334,7 +334,7 @@ export default function SefazConfigPage() {
                   onChange={() => setEnvironment("homologacao")}
                   className="text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-gray-700">Homologação (Testes)</span>
+                <span className="text-sm text-theme-secondary">Homologação (Testes)</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -345,19 +345,19 @@ export default function SefazConfigPage() {
                   onChange={() => setEnvironment("producao")}
                   className="text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-gray-700">Produção</span>
+                <span className="text-sm text-theme-secondary">Produção</span>
               </label>
             </div>
           </div>
 
-          <h3 className="text-md font-medium text-gray-900 mb-3 flex items-center gap-2">
-            <Key className="w-4 h-4 text-gray-500" />
+          <h3 className="text-md font-medium text-theme mb-3 flex items-center gap-2">
+            <Key className="w-4 h-4 text-theme-muted" />
             Certificado Digital A1
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Arquivo .pfx / .p12 *
               </label>
               <div className="relative">
@@ -370,10 +370,10 @@ export default function SefazConfigPage() {
                 />
                 <label
                   htmlFor="certificate-file"
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+                  className="flex items-center gap-2 px-4 py-2 border border-theme-input rounded-lg cursor-pointer hover:bg-theme-hover"
                 >
-                  <Upload className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">
+                  <Upload className="w-4 h-4 text-theme-muted" />
+                  <span className="text-sm text-theme-secondary">
                     {certificateFile ? certificateFile.name : "Selecionar arquivo"}
                   </span>
                 </label>
@@ -381,7 +381,7 @@ export default function SefazConfigPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Senha do Certificado *
               </label>
               <input
@@ -389,7 +389,7 @@ export default function SefazConfigPage() {
                 value={certificatePassword}
                 onChange={(e) => setCertificatePassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -416,13 +416,13 @@ export default function SefazConfigPage() {
         </div>
 
         {/* Sincronização Automática */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-theme-muted" />
             Sincronização Automática
           </h2>
 
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-theme-secondary mb-4">
             Configure a sincronização automática de NFe destinadas. O sistema consultará a SEFAZ periodicamente.
           </p>
 
@@ -436,8 +436,8 @@ export default function SefazConfigPage() {
                 className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               <div>
-                <span className="text-sm font-medium text-gray-900">Habilitar sincronização automática</span>
-                <p className="text-xs text-gray-500">Executa a cada 4 horas via Vercel Cron</p>
+                <span className="text-sm font-medium text-theme">Habilitar sincronização automática</span>
+                <p className="text-xs text-theme-muted">Executa a cada 4 horas via Vercel Cron</p>
               </div>
             </label>
 
@@ -453,17 +453,17 @@ export default function SefazConfigPage() {
                       className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div>
-                      <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <span className="text-sm font-medium text-theme flex items-center gap-2">
                         <Send className="w-4 h-4" />
                         Manifestação automática
                       </span>
-                      <p className="text-xs text-gray-500">Registrar manifestação automaticamente para novas NFe</p>
+                      <p className="text-xs text-theme-muted">Registrar manifestação automaticamente para novas NFe</p>
                     </div>
                   </label>
 
                   {autoManifest && (
                     <div className="ml-8 mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Tipo de manifestação
                       </label>
                       <div className="flex gap-4">
@@ -476,7 +476,7 @@ export default function SefazConfigPage() {
                             onChange={() => setManifestType("CIENCIA")}
                             className="text-indigo-600 focus:ring-indigo-500"
                           />
-                          <span className="text-sm text-gray-700">Ciência da Operação</span>
+                          <span className="text-sm text-theme-secondary">Ciência da Operação</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -487,7 +487,7 @@ export default function SefazConfigPage() {
                             onChange={() => setManifestType("CONFIRMACAO")}
                             className="text-indigo-600 focus:ring-indigo-500"
                           />
-                          <span className="text-sm text-gray-700">Confirmação da Operação</span>
+                          <span className="text-sm text-theme-secondary">Confirmação da Operação</span>
                         </label>
                       </div>
                     </div>
@@ -504,17 +504,17 @@ export default function SefazConfigPage() {
                       className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div>
-                      <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                      <span className="text-sm font-medium text-theme flex items-center gap-2">
                         <Bell className="w-4 h-4" />
                         Notificar novas NFe
                       </span>
-                      <p className="text-xs text-gray-500">Receber notificação quando novas NFe forem encontradas</p>
+                      <p className="text-xs text-theme-muted">Receber notificação quando novas NFe forem encontradas</p>
                     </div>
                   </label>
 
                   {notifyOnNewNfe && (
                     <div className="ml-8">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">
                         E-mail para notificações (opcional)
                       </label>
                       <input
@@ -522,7 +522,7 @@ export default function SefazConfigPage() {
                         value={notifyEmail}
                         onChange={(e) => setNotifyEmail(e.target.value)}
                         placeholder="email@empresa.com.br"
-                        className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-full max-w-md px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
                   )}
@@ -552,7 +552,7 @@ export default function SefazConfigPage() {
           </div>
 
           {syncConfig?.lastSyncAt && (
-            <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+            <div className="mt-4 p-3 bg-theme-tertiary border border-theme rounded-lg text-sm text-theme-secondary">
               <strong>Última sincronização:</strong>{" "}
               {new Date(syncConfig.lastSyncAt).toLocaleString("pt-BR")}
             </div>
@@ -560,19 +560,19 @@ export default function SefazConfigPage() {
         </div>
 
         {/* Consulta NFe */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-theme-muted" />
             Consultar NFe
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Consulta por período */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+            <div className="border border-theme rounded-lg p-4">
+              <h3 className="text-sm font-medium text-theme mb-3">
                 NFe Destinadas (Últimas)
               </h3>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-xs text-theme-muted mb-4">
                 Busca todas as NFe destinadas ao CNPJ da empresa nos últimos dias.
               </p>
               <button
@@ -590,8 +590,8 @@ export default function SefazConfigPage() {
             </div>
 
             {/* Consulta por chave */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-3">
+            <div className="border border-theme rounded-lg p-4">
+              <h3 className="text-sm font-medium text-theme mb-3">
                 Consultar por Chave
               </h3>
               <input
@@ -600,7 +600,7 @@ export default function SefazConfigPage() {
                 onChange={(e) => setChaveConsulta(e.target.value.replace(/\D/g, ""))}
                 placeholder="Chave de acesso (44 dígitos)"
                 maxLength={44}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 mb-3"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 mb-3"
               />
               <button
                 onClick={() => consultarChaveMutation.mutate({ chaveAcesso: chaveConsulta })}

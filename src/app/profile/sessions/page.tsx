@@ -129,14 +129,14 @@ export default function SessionsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200">
+        <header className="bg-theme-card border-b border-theme">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center h-16">
               <Link
                 href="/profile"
-                className="flex items-center gap-2 text-gray-600 hover:text-[var(--frm-primary)]"
+                className="flex items-center gap-2 text-theme-secondary hover:text-[var(--frm-primary)]"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span>Voltar ao Perfil</span>
@@ -147,8 +147,8 @@ export default function SessionsPage() {
 
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Sessões Ativas</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl font-bold text-theme">Sessões Ativas</h1>
+            <p className="text-theme-secondary mt-1">
               Gerencie os dispositivos conectados à sua conta
             </p>
           </div>
@@ -168,14 +168,14 @@ export default function SessionsPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)]" />
               </div>
             ) : (
               <>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-theme-table">
                   {sessions.map((session) => {
                     const { device, browser, icon: DeviceIcon } = parseUserAgent(session.userAgent);
                     
@@ -185,14 +185,14 @@ export default function SessionsPage() {
                           <div className={`p-3 rounded-xl ${
                             session.isCurrent 
                               ? "bg-green-100 text-green-600" 
-                              : "bg-gray-100 text-gray-600"
+                              : "bg-theme-tertiary text-theme-secondary"
                           }`}>
                             <DeviceIcon className="w-6 h-6" />
                           </div>
                           
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900">
+                              <span className="font-medium text-theme">
                                 {device} - {browser}
                               </span>
                               {session.isCurrent && (
@@ -202,7 +202,7 @@ export default function SessionsPage() {
                               )}
                             </div>
                             
-                            <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                            <div className="flex items-center gap-4 mt-1 text-sm text-theme-muted">
                               <span className="flex items-center gap-1">
                                 <Globe className="w-4 h-4" />
                                 {session.ip}
@@ -235,7 +235,7 @@ export default function SessionsPage() {
                 </div>
 
                 {sessions.length > 0 && (
-                  <div className="p-6 bg-gray-50 border-t border-gray-200">
+                  <div className="p-6 bg-theme-tertiary border-t border-theme">
                     <button
                       onClick={revokeAllSessions}
                       disabled={revoking === "all"}
@@ -248,7 +248,7 @@ export default function SessionsPage() {
                       )}
                       Encerrar todas as sessões (incluindo esta)
                     </button>
-                    <p className="text-sm text-gray-500 text-center mt-2">
+                    <p className="text-sm text-theme-muted text-center mt-2">
                       Você será desconectado de todos os dispositivos
                     </p>
                   </div>

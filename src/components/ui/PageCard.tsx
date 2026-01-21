@@ -20,17 +20,17 @@ export function PageCard({
   className = "",
 }: PageCardProps) {
   return (
-    <div className={`bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden ${className}`}>
+    <div className={`bg-theme-card rounded-lg border border-theme overflow-hidden ${className}`}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-theme">
           <div>
             {title && (
-              <h3 className="text-base sm:text-lg font-semibold text-white">
+              <h3 className="text-base sm:text-lg font-semibold text-theme">
                 {title}
               </h3>
             )}
             {subtitle && (
-              <p className="text-sm text-zinc-400 mt-0.5">{subtitle}</p>
+              <p className="text-sm text-theme-muted mt-0.5">{subtitle}</p>
             )}
           </div>
           {actions && (

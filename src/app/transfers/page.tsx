@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
   IN_TRANSIT: { label: "Em Trânsito", color: "bg-purple-100 text-purple-800", icon: <Truck className="w-4 h-4" /> },
@@ -41,17 +41,17 @@ export default function TransfersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/locations" className="text-gray-500 hover:text-gray-700">
+              <Link href="/locations" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <ArrowRightLeft className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Transferências de Estoque</h1>
+                <h1 className="text-xl font-semibold text-theme">Transferências de Estoque</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -69,12 +69,12 @@ export default function TransfersPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-4">
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="border border-gray-300 rounded-lg px-3 py-2"
+              className="border border-theme-input rounded-lg px-3 py-2"
             >
               <option value="ALL">Todos os status</option>
               <option value="DRAFT">Rascunho</option>
@@ -86,7 +86,7 @@ export default function TransfersPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-green-600" />
@@ -94,49 +94,49 @@ export default function TransfersPage() {
           ) : !data?.transfers.length ? (
             <div className="text-center py-12">
               <ArrowRightLeft className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhuma transferência encontrada</p>
+              <p className="text-theme-muted">Nenhuma transferência encontrada</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Origem</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Destino</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Itens</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Data</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Código</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Origem</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Destino</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Itens</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Data</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Status</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Ações</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.transfers.map((transfer) => {
                       const config = statusConfig[transfer.status] || statusConfig.DRAFT;
                       return (
-                        <tr key={transfer.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium text-gray-900">#{transfer.code}</td>
+                        <tr key={transfer.id} className="hover:bg-theme-hover">
+                          <td className="px-4 py-3 font-medium text-theme">#{transfer.code}</td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-theme-secondary">
                               <MapPin className="w-4 h-4 text-red-400" />
                               {transfer.fromLocation.name}
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-theme-secondary">
                               <MapPin className="w-4 h-4 text-green-400" />
                               {transfer.toLocation.name}
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                            <div className="flex items-center justify-center gap-1 text-sm text-theme-secondary">
                               <Package className="w-3 h-3" />
                               {transfer._count.items}
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                            <div className="flex items-center justify-center gap-1 text-sm text-theme-secondary">
                               <Calendar className="w-3 h-3" />
                               {formatDate(transfer.createdAt)}
                             </div>
@@ -163,13 +163,13 @@ export default function TransfersPage() {
                 </table>
               </div>
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">Página {page} de {data.pages}</div>
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">Página {page} de {data.pages}</div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>

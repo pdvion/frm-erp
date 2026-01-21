@@ -49,21 +49,21 @@ export default function PayablesAgingReportPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-theme-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-gray-400 hover:text-gray-600" aria-label="Voltar aos relatórios">
+              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar aos relatórios">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
                 <TrendingDown className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Aging Contas a Pagar</h1>
-                <p className="text-sm text-gray-500">Análise de vencimentos</p>
+                <h1 className="text-xl font-bold text-theme">Aging Contas a Pagar</h1>
+                <p className="text-sm text-theme-muted">Análise de vencimentos</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -84,10 +84,10 @@ export default function PayablesAgingReportPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Date Filter */}
-        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+        <div className="bg-theme-card rounded-lg shadow-sm border p-4 mb-6">
           <div className="flex items-center gap-4">
-            <Calendar className="w-5 h-5 text-gray-400" />
-            <label htmlFor="as-of-date" className="text-sm font-medium text-gray-700">
+            <Calendar className="w-5 h-5 text-theme-muted" />
+            <label htmlFor="as-of-date" className="text-sm font-medium text-theme-secondary">
               Data de Referência:
             </label>
             <input
@@ -95,7 +95,7 @@ export default function PayablesAgingReportPage() {
               type="date"
               value={asOfDate}
               onChange={(e) => setAsOfDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
+              className="px-3 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-red-500"
             />
           </div>
         </div>
@@ -111,15 +111,15 @@ export default function PayablesAgingReportPage() {
         {data && (
           <>
             {/* Total Card */}
-            <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+            <div className="bg-theme-card rounded-lg shadow-sm border p-6 mb-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total em Aberto</p>
+                  <p className="text-sm text-theme-muted">Total em Aberto</p>
                   <p className="text-3xl font-bold text-red-600">{formatCurrency(data.total)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">Títulos</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-theme-muted">Títulos</p>
+                  <p className="text-2xl font-bold text-theme">
                     {Object.values(data.aging).reduce((acc, b) => acc + b.count, 0)}
                   </p>
                 </div>
@@ -132,17 +132,17 @@ export default function PayablesAgingReportPage() {
                 const agingData = data.aging[bucket.key as keyof typeof data.aging];
                 const percentage = data.total > 0 ? (agingData.value / data.total) * 100 : 0;
                 return (
-                  <div key={bucket.key} className="bg-white rounded-lg shadow-sm border p-4">
+                  <div key={bucket.key} className="bg-theme-card rounded-lg shadow-sm border p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <div className={`w-3 h-3 rounded-full ${bucket.color}`} />
-                      <span className="text-sm font-medium text-gray-700">{bucket.label}</span>
+                      <span className="text-sm font-medium text-theme-secondary">{bucket.label}</span>
                     </div>
-                    <p className="text-xl font-bold text-gray-900">{formatCurrency(agingData.value)}</p>
+                    <p className="text-xl font-bold text-theme">{formatCurrency(agingData.value)}</p>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-500">{agingData.count} títulos</span>
-                      <span className="text-xs font-medium text-gray-600">{percentage.toFixed(1)}%</span>
+                      <span className="text-xs text-theme-muted">{agingData.count} títulos</span>
+                      <span className="text-xs font-medium text-theme-secondary">{percentage.toFixed(1)}%</span>
                     </div>
-                    <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="mt-2 h-2 bg-theme-tertiary rounded-full overflow-hidden">
                       <div
                         className={`h-full ${bucket.color}`}
                         style={{ width: `${percentage}%` }}
@@ -154,32 +154,32 @@ export default function PayablesAgingReportPage() {
             </div>
 
             {/* Details Table */}
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-              <div className="px-4 py-3 border-b bg-gray-50">
-                <h3 className="font-medium text-gray-900">Detalhamento</h3>
+            <div className="bg-theme-card rounded-lg shadow-sm border overflow-hidden">
+              <div className="px-4 py-3 border-b bg-theme-tertiary">
+                <h3 className="font-medium text-theme">Detalhamento</h3>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fornecedor</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Vencimento</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Dias Vencido</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Valor</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Fornecedor</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Descrição</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Vencimento</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Dias Vencido</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Valor</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.details.map((item: { id: string; supplier: string; description: string; dueDate: Date; amount: number; daysOverdue: number }) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
+                      <tr key={item.id} className="hover:bg-theme-hover">
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-sm font-medium text-gray-900">{item.supplier}</span>
+                          <span className="text-sm font-medium text-theme">{item.supplier}</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-gray-600">{item.description}</span>
+                          <span className="text-sm text-theme-secondary">{item.description}</span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-center">
-                          <span className="text-sm text-gray-600">{formatDate(item.dueDate)}</span>
+                          <span className="text-sm text-theme-secondary">{formatDate(item.dueDate)}</span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-center">
                           {item.daysOverdue > 0 ? (
@@ -198,7 +198,7 @@ export default function PayablesAgingReportPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
-                          <span className="text-sm font-medium text-gray-900">{formatCurrency(item.amount)}</span>
+                          <span className="text-sm font-medium text-theme">{formatCurrency(item.amount)}</span>
                         </td>
                       </tr>
                     ))}
@@ -209,7 +209,7 @@ export default function PayablesAgingReportPage() {
               {data.details.length === 0 && (
                 <div className="text-center py-12">
                   <TrendingDown className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">Nenhuma conta a pagar em aberto</p>
+                  <p className="text-theme-muted">Nenhuma conta a pagar em aberto</p>
                 </div>
               )}
             </div>

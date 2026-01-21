@@ -114,8 +114,8 @@ export default function SetPasswordPage() {
 
   if (isCheckingSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex items-center gap-3 text-gray-600">
+      <div className="min-h-screen flex items-center justify-center bg-theme-tertiary">
+        <div className="flex items-center gap-3 text-theme-secondary">
           <Loader2 className="w-6 h-6 animate-spin" />
           <span>Verificando sessão...</span>
         </div>
@@ -125,15 +125,15 @@ export default function SetPasswordPage() {
 
   if (!userEmail) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-theme-tertiary px-4">
+        <div className="max-w-md w-full bg-theme-card rounded-xl shadow-lg p-8 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl font-bold text-theme mb-2">
             Link inválido ou expirado
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-theme-secondary mb-6">
             O link de convite pode ter expirado ou já foi utilizado. 
             Por favor, solicite um novo convite ao administrador.
           </p>
@@ -149,18 +149,18 @@ export default function SetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-theme-tertiary px-4">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="bg-theme-card rounded-xl shadow-lg p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-indigo-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-theme mb-2">
               Bem-vindo ao FRM ERP
             </h1>
-            <p className="text-gray-600">
+            <p className="text-theme-secondary">
               Defina sua senha para acessar o sistema
             </p>
             <p className="text-sm text-indigo-600 mt-2 font-medium">
@@ -174,7 +174,7 @@ export default function SetPasswordPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-theme-secondary mb-1"
               >
                 Nova Senha
               </label>
@@ -184,7 +184,7 @@ export default function SetPasswordPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
+                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
                   placeholder="Mínimo 8 caracteres"
                   required
                   minLength={8}
@@ -192,7 +192,7 @@ export default function SetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-secondary"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -207,7 +207,7 @@ export default function SetPasswordPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-theme-secondary mb-1"
               >
                 Confirmar Senha
               </label>
@@ -217,14 +217,14 @@ export default function SetPasswordPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
+                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
                   placeholder="Repita a senha"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-secondary"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -236,16 +236,16 @@ export default function SetPasswordPage() {
             </div>
 
             {/* Password Requirements */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">
+            <div className="bg-theme-tertiary rounded-lg p-4">
+              <p className="text-sm font-medium text-theme-secondary mb-2">
                 Requisitos da senha:
               </p>
               <ul className="space-y-1 text-sm">
-                <li className={`flex items-center gap-2 ${password.length >= 8 ? "text-green-600" : "text-gray-500"}`}>
+                <li className={`flex items-center gap-2 ${password.length >= 8 ? "text-green-600" : "text-theme-muted"}`}>
                   <CheckCircle className={`w-4 h-4 ${password.length >= 8 ? "opacity-100" : "opacity-30"}`} />
                   Mínimo 8 caracteres
                 </li>
-                <li className={`flex items-center gap-2 ${password && password === confirmPassword ? "text-green-600" : "text-gray-500"}`}>
+                <li className={`flex items-center gap-2 ${password && password === confirmPassword ? "text-green-600" : "text-theme-muted"}`}>
                   <CheckCircle className={`w-4 h-4 ${password && password === confirmPassword ? "opacity-100" : "opacity-30"}`} />
                   Senhas coincidem
                 </li>
@@ -289,7 +289,7 @@ export default function SetPasswordPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-theme-muted mt-6">
           Já tem uma conta?{" "}
           <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
             Fazer login

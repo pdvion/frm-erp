@@ -42,18 +42,18 @@ export default function SalesDashboardPage() {
   const { data: dashboard, isLoading } = trpc.sales.dashboard.useQuery();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <ShoppingCart className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Vendas</h1>
+                <h1 className="text-xl font-semibold text-theme">Vendas</h1>
               </div>
             </div>
             <CompanySwitcher />
@@ -69,64 +69,64 @@ export default function SalesDashboardPage() {
         ) : !dashboard ? (
           <div className="text-center py-12">
             <ShoppingCart className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">Nenhum dado disponível</p>
+            <p className="text-theme-muted">Nenhum dado disponível</p>
           </div>
         ) : (
           <>
             {/* KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-green-600 mb-2">
                   <DollarSign className="w-4 h-4" />
                   <span className="text-sm font-medium">Vendas do Mês</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {formatCurrency(dashboard.monthOrders.value)}
                 </div>
-                <div className="text-xs text-gray-500">{dashboard.monthOrders.count} pedidos</div>
+                <div className="text-xs text-theme-muted">{dashboard.monthOrders.count} pedidos</div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-blue-600 mb-2">
                   <FileText className="w-4 h-4" />
                   <span className="text-sm font-medium">Orçamentos Pendentes</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {formatCurrency(dashboard.pendingQuotes.value)}
                 </div>
-                <div className="text-xs text-gray-500">{dashboard.pendingQuotes.count} orçamentos</div>
+                <div className="text-xs text-theme-muted">{dashboard.pendingQuotes.count} orçamentos</div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-purple-600 mb-2">
                   <Target className="w-4 h-4" />
                   <span className="text-sm font-medium">Taxa de Conversão</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {dashboard.conversionRate.toFixed(1)}%
                 </div>
-                <div className="text-xs text-gray-500">orçamentos aceitos</div>
+                <div className="text-xs text-theme-muted">orçamentos aceitos</div>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="bg-theme-card rounded-lg border border-theme p-4">
                 <div className="flex items-center gap-2 text-orange-600 mb-2">
                   <Users className="w-4 h-4" />
                   <span className="text-sm font-medium">Leads Ativos</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-theme">
                   {dashboard.leadsByStatus
                     .filter(l => !["WON", "LOST"].includes(l.status))
                     .reduce((sum, l) => sum + l._count, 0)}
                 </div>
-                <div className="text-xs text-gray-500">em negociação</div>
+                <div className="text-xs text-theme-muted">em negociação</div>
               </div>
             </div>
 
             {/* Pipeline de Leads */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+            <div className="bg-theme-card rounded-lg border border-theme p-6 mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-gray-400" />
+                <h2 className="text-lg font-medium text-theme flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-theme-muted" />
                   Pipeline de Leads
                 </h2>
                 <Link
@@ -149,7 +149,7 @@ export default function SalesDashboardPage() {
                         <div className="text-xs">{leadStatusLabels[status]}</div>
                       </div>
                       {value > 0 && (
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-theme-muted mt-1">
                           {formatCurrency(value)}
                         </div>
                       )}
@@ -163,45 +163,45 @@ export default function SalesDashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Link
                 href="/sales/leads"
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition-all"
+                className="bg-theme-card rounded-lg border border-theme p-6 hover:border-blue-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-orange-100 rounded-lg">
                     <Users className="w-8 h-8 text-orange-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Leads / CRM</h3>
-                    <p className="text-sm text-gray-500">Gerenciar oportunidades</p>
+                    <h3 className="font-medium text-theme">Leads / CRM</h3>
+                    <p className="text-sm text-theme-muted">Gerenciar oportunidades</p>
                   </div>
                 </div>
               </Link>
 
               <Link
                 href="/sales/quotes"
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition-all"
+                className="bg-theme-card rounded-lg border border-theme p-6 hover:border-blue-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-100 rounded-lg">
                     <FileText className="w-8 h-8 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Orçamentos</h3>
-                    <p className="text-sm text-gray-500">Propostas comerciais</p>
+                    <h3 className="font-medium text-theme">Orçamentos</h3>
+                    <p className="text-sm text-theme-muted">Propostas comerciais</p>
                   </div>
                 </div>
               </Link>
 
               <Link
                 href="/sales/orders"
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition-all"
+                className="bg-theme-card rounded-lg border border-theme p-6 hover:border-blue-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-100 rounded-lg">
                     <Package className="w-8 h-8 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Pedidos</h3>
-                    <p className="text-sm text-gray-500">Pedidos de venda</p>
+                    <h3 className="font-medium text-theme">Pedidos</h3>
+                    <p className="text-sm text-theme-muted">Pedidos de venda</p>
                   </div>
                 </div>
               </Link>
@@ -209,17 +209,17 @@ export default function SalesDashboardPage() {
 
             {/* Pedidos por Status */}
             {dashboard.ordersByStatus.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 mt-8">
-                <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-gray-400" />
+              <div className="bg-theme-card rounded-lg border border-theme p-6 mt-8">
+                <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-theme-muted" />
                   Pedidos por Status
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                   {dashboard.ordersByStatus.map((item) => (
-                    <div key={item.status} className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-xl font-bold text-gray-900">{item._count}</div>
-                      <div className="text-xs text-gray-500">{item.status}</div>
-                      <div className="text-xs text-gray-400 mt-1">
+                    <div key={item.status} className="text-center p-3 bg-theme-tertiary rounded-lg">
+                      <div className="text-xl font-bold text-theme">{item._count}</div>
+                      <div className="text-xs text-theme-muted">{item.status}</div>
+                      <div className="text-xs text-theme-muted mt-1">
                         {formatCurrency(item._sum.totalValue || 0)}
                       </div>
                     </div>

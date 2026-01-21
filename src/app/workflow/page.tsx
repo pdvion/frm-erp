@@ -23,10 +23,10 @@ type StatusBadgeProps = {
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-gray-100 text-gray-800", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    PENDING: { color: "bg-theme-tertiary text-theme", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
     IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
     COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-gray-100 text-gray-800", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
+    CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
     REJECTED: { color: "bg-red-100 text-red-800", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
   };
 
@@ -47,7 +47,7 @@ function CategoryBadge({ category }: { category: string }) {
     HR: { color: "bg-blue-100 text-blue-800", label: "RH" },
     PRODUCTION: { color: "bg-orange-100 text-orange-800", label: "Produção" },
     SALES: { color: "bg-cyan-100 text-cyan-800", label: "Vendas" },
-    GENERAL: { color: "bg-gray-100 text-gray-800", label: "Geral" },
+    GENERAL: { color: "bg-theme-tertiary text-theme", label: "Geral" },
   };
 
   const { color, label } = config[category] || config.GENERAL;
@@ -86,7 +86,7 @@ export default function WorkflowDashboardPage() {
   const pendingTasks = myTasks || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Workflow & Automação"
         icon={<GitBranch className="h-6 w-6 text-violet-600" />}
@@ -94,14 +94,14 @@ export default function WorkflowDashboardPage() {
       >
         <Link
           href="/workflow/definitions"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <Settings className="h-4 w-4" />
           Configurar
         </Link>
         <Link
           href="/workflow/instances"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <ClipboardList className="h-4 w-4" />
           Execuções
@@ -119,62 +119,62 @@ export default function WorkflowDashboardPage() {
         <div className="space-y-8">
           {/* Cards de Resumo */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-violet-100 p-3">
                   <GitBranch className="h-6 w-6 text-violet-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Workflows Ativos</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboard?.activeDefinitions || 0}</p>
+                  <p className="text-sm text-theme-muted">Workflows Ativos</p>
+                  <p className="text-2xl font-bold text-theme">{dashboard?.activeDefinitions || 0}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-blue-100 p-3">
                   <Play className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Em Andamento</p>
-                  <p className="text-2xl font-bold text-gray-900">{instances.inProgress}</p>
+                  <p className="text-sm text-theme-muted">Em Andamento</p>
+                  <p className="text-2xl font-bold text-theme">{instances.inProgress}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Concluídos</p>
-                  <p className="text-2xl font-bold text-gray-900">{instances.completed}</p>
+                  <p className="text-sm text-theme-muted">Concluídos</p>
+                  <p className="text-2xl font-bold text-theme">{instances.completed}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-red-100 p-3">
                   <XCircle className="h-6 w-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Rejeitados</p>
-                  <p className="text-2xl font-bold text-gray-900">{instances.rejected}</p>
+                  <p className="text-sm text-theme-muted">Rejeitados</p>
+                  <p className="text-2xl font-bold text-theme">{instances.rejected}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`rounded-lg p-3 ${pendingTasks.length > 0 ? "bg-orange-100" : "bg-gray-100"}`}>
-                  <AlertTriangle className={`h-6 w-6 ${pendingTasks.length > 0 ? "text-orange-600" : "text-gray-400"}`} />
+                <div className={`rounded-lg p-3 ${pendingTasks.length > 0 ? "bg-orange-100" : "bg-theme-tertiary"}`}>
+                  <AlertTriangle className={`h-6 w-6 ${pendingTasks.length > 0 ? "text-orange-600" : "text-theme-muted"}`} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Minhas Pendências</p>
-                  <p className="text-2xl font-bold text-gray-900">{pendingTasks.length}</p>
+                  <p className="text-sm text-theme-muted">Minhas Pendências</p>
+                  <p className="text-2xl font-bold text-theme">{pendingTasks.length}</p>
                 </div>
               </div>
             </div>
@@ -184,7 +184,7 @@ export default function WorkflowDashboardPage() {
             {/* Minhas Tarefas Pendentes */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Minhas Tarefas Pendentes</h2>
+                <h2 className="text-lg font-semibold text-theme">Minhas Tarefas Pendentes</h2>
                 <Link href="/workflow/my-tasks" className="text-sm text-violet-600 hover:text-violet-800">
                   Ver todas →
                 </Link>
@@ -216,9 +216,9 @@ export default function WorkflowDashboardPage() {
                   </Link>
                 ))}
                 {pendingTasks.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhuma tarefa pendente</p>
+                    <p className="mt-2 text-sm text-theme-muted">Nenhuma tarefa pendente</p>
                   </div>
                 )}
               </div>
@@ -227,7 +227,7 @@ export default function WorkflowDashboardPage() {
             {/* Workflows Disponíveis */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Workflows Disponíveis</h2>
+                <h2 className="text-lg font-semibold text-theme">Workflows Disponíveis</h2>
                 <Link href="/workflow/definitions" className="text-sm text-violet-600 hover:text-violet-800">
                   Gerenciar →
                 </Link>
@@ -236,15 +236,15 @@ export default function WorkflowDashboardPage() {
                 {definitions?.slice(0, 5).map((def) => (
                   <div
                     key={def.id}
-                    className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                    className="rounded-lg border border-theme bg-theme-card p-4 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900">{def.name}</p>
+                          <p className="font-medium text-theme">{def.name}</p>
                           <CategoryBadge category={def.category} />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-theme-muted">
                           {def.code} • {def._count.steps} etapas • {def._count.instances} execuções
                         </p>
                       </div>
@@ -258,9 +258,9 @@ export default function WorkflowDashboardPage() {
                   </div>
                 ))}
                 {(!definitions || definitions.length === 0) && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-                    <GitBranch className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhum workflow configurado</p>
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                    <GitBranch className="mx-auto h-12 w-12 text-theme-muted" />
+                    <p className="mt-2 text-sm text-theme-muted">Nenhum workflow configurado</p>
                     <Link
                       href="/workflow/definitions/new"
                       className="mt-4 inline-flex items-center gap-2 text-sm text-violet-600 hover:text-violet-800"
@@ -277,31 +277,31 @@ export default function WorkflowDashboardPage() {
           {/* Execuções Recentes */}
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Execuções Recentes</h2>
+              <h2 className="text-lg font-semibold text-theme">Execuções Recentes</h2>
               <Link href="/workflow/instances" className="text-sm text-violet-600 hover:text-violet-800">
                 Ver todas →
               </Link>
             </div>
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-hidden rounded-lg border border-theme bg-theme-card shadow-sm">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Código
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Workflow
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Etapa Atual
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Iniciado por
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Data
                     </th>
                     <th className="relative px-6 py-3">
@@ -309,28 +309,28 @@ export default function WorkflowDashboardPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-theme-table bg-theme-card">
                   {recentInstances.map((instance) => (
-                    <tr key={instance.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    <tr key={instance.id} className="hover:bg-theme-hover">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-theme">
                         {instance.code}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-900">{instance.definition.name}</span>
+                          <span className="text-sm text-theme">{instance.definition.name}</span>
                           <CategoryBadge category={instance.definition.category} />
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-theme-muted">
                         {instance.currentStep?.name || "-"}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-theme-muted">
                         {instance.starter?.name || "-"}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <StatusBadge status={instance.status} />
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-theme-muted">
                         {new Date(instance.startedAt).toLocaleDateString("pt-BR")}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
@@ -345,7 +345,7 @@ export default function WorkflowDashboardPage() {
                   ))}
                   {recentInstances.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={7} className="px-6 py-8 text-center text-sm text-theme-muted">
                         Nenhuma execução encontrada
                       </td>
                     </tr>

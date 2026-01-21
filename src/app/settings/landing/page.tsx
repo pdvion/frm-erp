@@ -263,7 +263,7 @@ export default function LandingSettingsPage() {
   if (permissionsLoading || isLoading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-theme-tertiary">
           <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)]" />
         </div>
       </ProtectedRoute>
@@ -273,11 +273,11 @@ export default function LandingSettingsPage() {
   if (!canEdit) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-theme-tertiary">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Acesso Negado</h1>
-            <p className="text-gray-600 mb-4">
+            <h1 className="text-2xl font-bold text-theme mb-2">Acesso Negado</h1>
+            <p className="text-theme-secondary mb-4">
               Você não tem permissão para editar as configurações da landing page.
             </p>
             <Link
@@ -294,15 +294,15 @@ export default function LandingSettingsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b">
+        <header className="bg-theme-card shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Link
                   href="/dashboard"
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </Link>
@@ -311,10 +311,10 @@ export default function LandingSettingsPage() {
                     <Settings className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-gray-900">
+                    <h1 className="text-xl font-bold text-theme">
                       Configurações da Landing Page
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-theme-muted">
                       Personalize a página inicial do sistema
                     </p>
                   </div>
@@ -323,7 +323,7 @@ export default function LandingSettingsPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Restaurar
@@ -373,7 +373,7 @@ export default function LandingSettingsPage() {
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                 activeTab === "hero"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
               }`}
             >
               <ImageIcon className="w-4 h-4" />
@@ -384,7 +384,7 @@ export default function LandingSettingsPage() {
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                 activeTab === "features"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
               }`}
             >
               <Layout className="w-4 h-4" />
@@ -395,7 +395,7 @@ export default function LandingSettingsPage() {
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
                 activeTab === "preview"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
               }`}
             >
               <Eye className="w-4 h-4" />
@@ -410,8 +410,8 @@ export default function LandingSettingsPage() {
           {activeTab === "hero" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Imagem do Hero */}
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-theme-card rounded-xl shadow-sm border p-6">
+                <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
                   <ImageIcon className="w-5 h-5" />
                   Imagem de Fundo
                 </h2>
@@ -463,22 +463,22 @@ export default function LandingSettingsPage() {
                     className="hidden"
                   />
                   
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-theme-muted">
                     Formatos: JPG, PNG, WebP, GIF. Tamanho máximo: 5MB.
                   </p>
                 </div>
               </div>
 
               {/* Textos */}
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-theme-card rounded-xl shadow-sm border p-6">
+                <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
                   <Type className="w-5 h-5" />
                   Textos
                 </h2>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Título Principal
                     </label>
                     <input
@@ -490,12 +490,12 @@ export default function LandingSettingsPage() {
                           hero: { ...prev.hero, title: e.target.value },
                         }))
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                      className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Subtítulo
                     </label>
                     <input
@@ -507,12 +507,12 @@ export default function LandingSettingsPage() {
                           hero: { ...prev.hero, subtitle: e.target.value },
                         }))
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                      className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Descrição
                     </label>
                     <textarea
@@ -524,7 +524,7 @@ export default function LandingSettingsPage() {
                         }))
                       }
                       rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                      className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
                   </div>
                 </div>
@@ -534,9 +534,9 @@ export default function LandingSettingsPage() {
 
           {/* Features Tab */}
           {activeTab === "features" && (
-            <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="bg-theme-card rounded-xl shadow-sm border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-theme flex items-center gap-2">
                   <Layout className="w-5 h-5" />
                   Features Destacadas
                 </h2>
@@ -555,9 +555,9 @@ export default function LandingSettingsPage() {
                   return (
                     <div
                       key={index}
-                      className="flex items-start gap-4 p-4 border border-gray-200 rounded-lg"
+                      className="flex items-start gap-4 p-4 border border-theme rounded-lg"
                     >
-                      <div className="cursor-move text-gray-400">
+                      <div className="cursor-move text-theme-muted">
                         <GripVertical className="w-5 h-5" />
                       </div>
                       
@@ -568,7 +568,7 @@ export default function LandingSettingsPage() {
                       <div className="flex-1 space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                            <label className="block text-xs font-medium text-theme-muted mb-1">
                               Ícone
                             </label>
                             <select
@@ -576,7 +576,7 @@ export default function LandingSettingsPage() {
                               onChange={(e) =>
                                 updateFeature(index, "icon", e.target.value)
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                              className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                             >
                               {Object.keys(AVAILABLE_ICONS).map((iconName) => (
                                 <option key={iconName} value={iconName}>
@@ -586,7 +586,7 @@ export default function LandingSettingsPage() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                            <label className="block text-xs font-medium text-theme-muted mb-1">
                               Título
                             </label>
                             <input
@@ -595,12 +595,12 @@ export default function LandingSettingsPage() {
                               onChange={(e) =>
                                 updateFeature(index, "title", e.target.value)
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                              className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                             />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                          <label className="block text-xs font-medium text-theme-muted mb-1">
                             Descrição
                           </label>
                           <input
@@ -609,7 +609,7 @@ export default function LandingSettingsPage() {
                             onChange={(e) =>
                               updateFeature(index, "description", e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                           />
                         </div>
                       </div>
@@ -625,7 +625,7 @@ export default function LandingSettingsPage() {
                 })}
 
                 {config.features.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-theme-muted">
                     <Layout className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p>Nenhuma feature configurada</p>
                     <p className="text-sm">Clique em &quot;Adicionar&quot; para criar uma</p>
@@ -637,9 +637,9 @@ export default function LandingSettingsPage() {
 
           {/* Preview Tab */}
           {activeTab === "preview" && (
-            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-              <div className="p-4 border-b bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <div className="bg-theme-card rounded-xl shadow-sm border overflow-hidden">
+              <div className="p-4 border-b bg-theme-tertiary">
+                <h2 className="text-lg font-semibold text-theme flex items-center gap-2">
                   <Eye className="w-5 h-5" />
                   Preview da Landing Page
                 </h2>
@@ -674,7 +674,7 @@ export default function LandingSettingsPage() {
                           {config.features.slice(0, 4).map((feature, index) => {
                             const IconComponent = AVAILABLE_ICONS[feature.icon] || Package;
                             return (
-                              <div key={index} className="bg-white/10 backdrop-blur rounded-lg p-3">
+                              <div key={index} className="bg-theme-card/10 backdrop-blur rounded-lg p-3">
                                 <IconComponent className="w-6 h-6 mb-2" />
                                 <h3 className="font-semibold text-sm">{feature.title}</h3>
                                 <p className="text-xs opacity-60">{feature.description}</p>
@@ -686,13 +686,13 @@ export default function LandingSettingsPage() {
                     </div>
                     
                     {/* Right Side - Login Form Preview */}
-                    <div className="w-1/2 bg-gray-50 p-8 flex items-center justify-center">
-                      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-1">Bem-vindo de volta</h3>
-                        <p className="text-gray-500 text-sm mb-4">Entre com suas credenciais</p>
+                    <div className="w-1/2 bg-theme-tertiary p-8 flex items-center justify-center">
+                      <div className="w-full max-w-sm bg-theme-card rounded-xl shadow-lg p-6">
+                        <h3 className="text-xl font-bold text-theme mb-1">Bem-vindo de volta</h3>
+                        <p className="text-theme-muted text-sm mb-4">Entre com suas credenciais</p>
                         <div className="space-y-3">
-                          <div className="h-10 bg-gray-100 rounded-lg" />
-                          <div className="h-10 bg-gray-100 rounded-lg" />
+                          <div className="h-10 bg-theme-tertiary rounded-lg" />
+                          <div className="h-10 bg-theme-tertiary rounded-lg" />
                           <div className="h-10 bg-[var(--frm-primary)] rounded-lg" />
                         </div>
                       </div>

@@ -26,24 +26,24 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   IN_PROGRESS: { label: "Em Andamento", color: "bg-purple-100 text-purple-800", icon: <Play className="w-4 h-4" /> },
   ON_HOLD: { label: "Em Espera", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
   COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-gray-100 text-gray-500", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const priorityConfig: Record<string, { label: string; color: string }> = {
   URGENT: { label: "Urgente", color: "text-red-600 bg-red-50 border-red-200" },
   HIGH: { label: "Alta", color: "text-orange-600 bg-orange-50 border-orange-200" },
-  NORMAL: { label: "Normal", color: "text-gray-600 bg-gray-50 border-gray-200" },
+  NORMAL: { label: "Normal", color: "text-theme-secondary bg-theme-tertiary border-gray-200" },
   LOW: { label: "Baixa", color: "text-blue-600 bg-blue-50 border-blue-200" },
 };
 
 const actionConfig: Record<string, { label: string; color: string }> = {
-  created: { label: "Criada", color: "text-gray-600" },
+  created: { label: "Criada", color: "text-theme-secondary" },
   accepted: { label: "Aceita", color: "text-blue-600" },
   started: { label: "Iniciada", color: "text-purple-600" },
   delegated: { label: "Delegada", color: "text-orange-600" },
   completed: { label: "Concluída", color: "text-green-600" },
   cancelled: { label: "Cancelada", color: "text-red-600" },
-  comment: { label: "Comentário", color: "text-gray-600" },
+  comment: { label: "Comentário", color: "text-theme-secondary" },
 };
 
 export default function TaskDetailPage() {
@@ -94,7 +94,7 @@ export default function TaskDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -102,10 +102,10 @@ export default function TaskDetailPage() {
 
   if (!task) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <ClipboardList className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Tarefa não encontrada</p>
+          <p className="text-theme-muted">Tarefa não encontrada</p>
           <Link href="/tasks" className="text-indigo-600 hover:underline mt-2 inline-block">
             Voltar para tarefas
           </Link>
@@ -122,7 +122,7 @@ export default function TaskDetailPage() {
   const canCancel = task.status !== "COMPLETED" && task.status !== "CANCELLED";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title={`Tarefa #${task.code}`}
         icon={<ClipboardList className="w-6 h-6 text-indigo-600" />}
@@ -135,7 +135,7 @@ export default function TaskDetailPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Task Info */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -147,18 +147,18 @@ export default function TaskDetailPage() {
                       {status.label}
                     </span>
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900">{task.title}</h2>
+                  <h2 className="text-xl font-semibold text-theme">{task.title}</h2>
                 </div>
               </div>
 
               {task.description && (
-                <div className="prose prose-sm max-w-none text-gray-600 mb-6">
+                <div className="prose prose-sm max-w-none text-theme-secondary mb-6">
                   <p>{task.description}</p>
                 </div>
               )}
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+              <div className="flex flex-wrap gap-3 pt-4 border-t border-theme">
                 {canAccept && (
                   <button
                     onClick={() => acceptMutation.mutate({ taskId })}
@@ -221,35 +221,35 @@ export default function TaskDetailPage() {
             </div>
 
             {/* History */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
                 <History className="w-5 h-5" />
                 Histórico
               </h3>
 
               <div className="space-y-4">
                 {task.history.map((entry) => {
-                  const action = actionConfig[entry.action] || { label: entry.action, color: "text-gray-600" };
+                  const action = actionConfig[entry.action] || { label: entry.action, color: "text-theme-secondary" };
 
                   return (
                     <div key={entry.id} className="flex gap-4">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-500" />
+                        <div className="w-8 h-8 bg-theme-tertiary rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-theme-muted" />
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-theme">
                             {entry.user?.name || "Sistema"}
                           </span>
                           <span className={`text-sm ${action.color}`}>{action.label}</span>
-                          <span className="text-sm text-gray-400">
+                          <span className="text-sm text-theme-muted">
                             {formatDateTime(entry.createdAt)}
                           </span>
                         </div>
                         {entry.comment && (
-                          <p className="text-sm text-gray-600 mt-1">{entry.comment}</p>
+                          <p className="text-sm text-theme-secondary mt-1">{entry.comment}</p>
                         )}
                       </div>
                     </div>
@@ -258,14 +258,14 @@ export default function TaskDetailPage() {
               </div>
 
               {/* Add Comment */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="mt-6 pt-4 border-t border-theme">
                 <div className="flex gap-3">
                   <input
                     type="text"
                     placeholder="Adicionar comentário..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="flex-1 px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
                   <button
                     onClick={() => {
@@ -290,35 +290,35 @@ export default function TaskDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Details */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Detalhes</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-semibold text-theme mb-4">Detalhes</h3>
 
               <dl className="space-y-4">
                 <div>
-                  <dt className="text-sm text-gray-500">Criada por</dt>
-                  <dd className="text-sm font-medium text-gray-900">
+                  <dt className="text-sm text-theme-muted">Criada por</dt>
+                  <dd className="text-sm font-medium text-theme">
                     {task.createdBy?.name || "-"}
                   </dd>
                 </div>
 
                 <div>
-                  <dt className="text-sm text-gray-500">Criada em</dt>
-                  <dd className="text-sm font-medium text-gray-900">
+                  <dt className="text-sm text-theme-muted">Criada em</dt>
+                  <dd className="text-sm font-medium text-theme">
                     {formatDateTime(task.createdAt)}
                   </dd>
                 </div>
 
                 <div>
-                  <dt className="text-sm text-gray-500">Proprietário</dt>
-                  <dd className="text-sm font-medium text-gray-900">
+                  <dt className="text-sm text-theme-muted">Proprietário</dt>
+                  <dd className="text-sm font-medium text-theme">
                     {task.owner?.name || "Não atribuída"}
                   </dd>
                 </div>
 
                 {task.acceptedAt && (
                   <div>
-                    <dt className="text-sm text-gray-500">Aceita em</dt>
-                    <dd className="text-sm font-medium text-gray-900">
+                    <dt className="text-sm text-theme-muted">Aceita em</dt>
+                    <dd className="text-sm font-medium text-theme">
                       {formatDateTime(task.acceptedAt)}
                     </dd>
                   </div>
@@ -326,9 +326,9 @@ export default function TaskDetailPage() {
 
                 {task.deadline && (
                   <div>
-                    <dt className="text-sm text-gray-500">Prazo</dt>
+                    <dt className="text-sm text-theme-muted">Prazo</dt>
                     <dd className={`text-sm font-medium ${
-                      new Date(task.deadline) < new Date() ? "text-red-600" : "text-gray-900"
+                      new Date(task.deadline) < new Date() ? "text-red-600" : "text-theme"
                     }`}>
                       {formatDateTime(task.deadline)}
                     </dd>
@@ -337,7 +337,7 @@ export default function TaskDetailPage() {
 
                 {task.completedAt && (
                   <div>
-                    <dt className="text-sm text-gray-500">Concluída em</dt>
+                    <dt className="text-sm text-theme-muted">Concluída em</dt>
                     <dd className="text-sm font-medium text-green-600">
                       {formatDateTime(task.completedAt)}
                     </dd>
@@ -348,14 +348,14 @@ export default function TaskDetailPage() {
 
             {/* SLA Metrics */}
             {task.slaMetrics && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Métricas SLA</h3>
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="text-lg font-semibold text-theme mb-4">Métricas SLA</h3>
 
                 <dl className="space-y-4">
                   <div>
-                    <dt className="text-sm text-gray-500">Tempo para Aceitar</dt>
+                    <dt className="text-sm text-theme-muted">Tempo para Aceitar</dt>
                     <dd className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-theme">
                         {formatDuration(task.slaMetrics.timeToAcceptHours)}
                       </span>
                       {task.slaMetrics.slaAcceptMet !== null && (
@@ -368,15 +368,15 @@ export default function TaskDetailPage() {
                         </span>
                       )}
                     </dd>
-                    <dd className="text-xs text-gray-400">
+                    <dd className="text-xs text-theme-muted">
                       Meta: {task.slaMetrics.slaAcceptHours}h
                     </dd>
                   </div>
 
                   <div>
-                    <dt className="text-sm text-gray-500">Tempo para Resolver</dt>
+                    <dt className="text-sm text-theme-muted">Tempo para Resolver</dt>
                     <dd className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-theme">
                         {formatDuration(task.slaMetrics.timeToCompleteHours)}
                       </span>
                       {task.slaMetrics.slaResolveMet !== null && (
@@ -389,7 +389,7 @@ export default function TaskDetailPage() {
                         </span>
                       )}
                     </dd>
-                    <dd className="text-xs text-gray-400">
+                    <dd className="text-xs text-theme-muted">
                       Meta: {task.slaMetrics.slaResolveHours}h
                     </dd>
                   </div>
@@ -409,19 +409,19 @@ export default function TaskDetailPage() {
           aria-labelledby="complete-task-title"
           onKeyDown={(e) => e.key === "Escape" && setShowCompleteModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="complete-task-title" className="text-lg font-semibold text-gray-900 mb-4">Concluir Tarefa</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="complete-task-title" className="text-lg font-semibold text-theme mb-4">Concluir Tarefa</h3>
             <textarea
               placeholder="Descreva a resolução (opcional)..."
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 mb-4"
+              className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 mb-4"
             />
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowCompleteModal(false)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg"
               >
                 Cancelar
               </button>

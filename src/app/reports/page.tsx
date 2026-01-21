@@ -50,21 +50,21 @@ export default function ReportsPage() {
   const categories = reports ? [...new Set(reports.map((r) => r.category))] : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-theme-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard" className="text-gray-400 hover:text-gray-600" aria-label="Voltar ao dashboard">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar ao dashboard">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Relatórios Gerenciais</h1>
-                <p className="text-sm text-gray-500">Análises e indicadores do sistema</p>
+                <h1 className="text-xl font-bold text-theme">Relatórios Gerenciais</h1>
+                <p className="text-sm text-theme-muted">Análises e indicadores do sistema</p>
               </div>
             </div>
             <CompanySwitcher />
@@ -77,13 +77,13 @@ export default function ReportsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar relatórios..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
           <div className="flex gap-2">
@@ -92,7 +92,7 @@ export default function ReportsPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 !selectedCategory
                   ? "bg-indigo-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                  : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
               }`}
             >
               Todos
@@ -104,7 +104,7 @@ export default function ReportsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedCategory === category
                     ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                    : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
                 }`}
               >
                 {category}
@@ -127,7 +127,7 @@ export default function ReportsPage() {
               <Link
                 key={report.id}
                 href={`/reports/${report.id}`}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-indigo-300 transition-all group"
+                className="bg-theme-card rounded-xl border border-theme p-6 hover:shadow-md hover:border-indigo-300 transition-all group"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
@@ -135,14 +135,14 @@ export default function ReportsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                      <h3 className="font-semibold text-theme group-hover:text-indigo-600 transition-colors">
                         {report.name}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-500 mb-3">{report.description}</p>
+                    <p className="text-sm text-theme-muted mb-3">{report.description}</p>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        categoryColors[report.category] || "bg-gray-100 text-gray-800"
+                        categoryColors[report.category] || "bg-theme-tertiary text-theme"
                       }`}
                     >
                       {report.category}
@@ -158,8 +158,8 @@ export default function ReportsPage() {
         {!isLoading && filteredReports?.length === 0 && (
           <div className="text-center py-12">
             <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum relatório encontrado</h3>
-            <p className="text-gray-500">Tente ajustar os filtros de busca</p>
+            <h3 className="text-lg font-medium text-theme mb-2">Nenhum relatório encontrado</h3>
+            <p className="text-theme-muted">Tente ajustar os filtros de busca</p>
           </div>
         )}
       </main>

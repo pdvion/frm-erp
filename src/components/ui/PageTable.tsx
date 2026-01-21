@@ -43,7 +43,7 @@ export function PageTable<T>({
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12 text-zinc-400">
+      <div className="flex items-center justify-center py-12 text-theme-muted">
         {emptyMessage}
       </div>
     );
@@ -51,24 +51,24 @@ export function PageTable<T>({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-zinc-800">
-        <thead className="bg-zinc-800/50">
+      <table className="min-w-full divide-y divide-theme-table">
+        <thead className="bg-theme-table-header">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-3 text-xs font-medium text-zinc-400 uppercase tracking-wider ${alignClass[col.align || "left"]} ${col.className || ""}`}
+                className={`px-4 py-3 text-xs font-medium text-theme-muted uppercase tracking-wider ${alignClass[col.align || "left"]} ${col.className || ""}`}
               >
                 {col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-zinc-800">
+        <tbody className="divide-y divide-theme-table">
           {data.map((item) => (
             <tr
               key={keyExtractor(item)}
-              className={`hover:bg-zinc-800/50 transition-colors ${rowClassName?.(item) || ""}`}
+              className={`hover:bg-theme-table-hover transition-colors ${rowClassName?.(item) || ""}`}
             >
               {columns.map((col) => (
                 <td
