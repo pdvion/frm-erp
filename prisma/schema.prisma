@@ -151,6 +151,8 @@ model Company {
   vacations           Vacation[]
   thirteenthSalaries  ThirteenthSalary[]
   terminations        Termination[]
+  workSchedules       WorkSchedule[]
+  holidays            Holiday[]
 
   @@map("companies")
 }
@@ -2567,6 +2569,155 @@ model TimesheetDay {
   @@index([employeeId])
   @@index([date])
   @@map("timesheet_days")
+}
+
+// =============================================================================
+// ESCALAS DE TRABALHO
+// =============================================================================
+enum WorkScheduleType {
+  FIXED       // Escala fixa (seg-sex)
+  ROTATING    // Escala rotativa (12x36, 6x1, etc)
+  FLEXIBLE    // Horário flexível
+  SHIFT       // Turnos
+}
+
+model WorkSchedule {
+  id              String           @id @default(uuid()) @db.Uuid
+  companyId       String?          @db.Uuid
+  company         Company?         @relation(fields: [companyId], references: [id])
+  name            String
+  code            String?
+  type            WorkScheduleType @default(FIXED)
+  description     String?
+  weeklyHours     Float            @default(44)
+  dailyHours      Float            @default(8)
+  toleranceMinutes Int             @default(10)
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  shifts          WorkShift[]
+  employees       EmployeeSchedule[]
+  
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@map("work_schedules")
+}
+
+model WorkShift {
+  id              String       @id @default(uuid()) @db.Uuid
+  scheduleId      String       @db.Uuid
+  schedule        WorkSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  dayOfWeek       Int          // 0=Dom, 1=Seg, ..., 6=Sab
+  startTime       String       // HH:mm
+  endTime         String       // HH:mm
+  breakStartTime  String?      // HH:mm
+  breakEndTime    String?      // HH:mm
+  breakDuration   Int          @default(60) // minutos
+  isWorkDay       Boolean      @default(true)
+  
+  @@unique([scheduleId, dayOfWeek])
+  @@map("work_shifts")
+}
+
+model EmployeeSchedule {
+  id           String       @id @default(uuid()) @db.Uuid
+  employeeId   String       @db.Uuid
+  scheduleId   String       @db.Uuid
+  schedule     WorkSchedule @relation(fields: [scheduleId], references: [id])
+  startDate    DateTime     @db.Date
+  endDate      DateTime?    @db.Date
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  
+  @@index([employeeId])
+  @@index([scheduleId])
+  @@map("employee_schedules")
+}
+
+// =============================================================================
+// BANCO DE HORAS
+// =============================================================================
+enum HoursBankType {
+  CREDIT      // Crédito (horas extras)
+  DEBIT       // Débito (horas devidas)
+  COMPENSATION // Compensação
+  EXPIRATION  // Expiração
+  ADJUSTMENT  // Ajuste manual
+}
+
+model HoursBank {
+  id           String        @id @default(uuid()) @db.Uuid
+  companyId    String?       @db.Uuid
+  employeeId   String        @db.Uuid
+  type         HoursBankType
+  date         DateTime      @db.Date
+  hours        Float         // positivo=crédito, negativo=débito
+  balance      Float         // saldo após movimento
+  referenceId  String?       @db.Uuid // ID do registro de origem
+  description  String?
+  expiresAt    DateTime?     @db.Date
+  approvedBy   String?       @db.Uuid
+  approvedAt   DateTime?
+  createdAt    DateTime      @default(now())
+  
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([date])
+  @@map("hours_bank")
+}
+
+// =============================================================================
+// AJUSTES DE PONTO
+// =============================================================================
+enum TimeClockAdjustmentStatus {
+  PENDING   // Pendente aprovação
+  APPROVED  // Aprovado
+  REJECTED  // Rejeitado
+}
+
+model TimeClockAdjustment {
+  id              String                    @id @default(uuid()) @db.Uuid
+  companyId       String?                   @db.Uuid
+  employeeId      String                    @db.Uuid
+  date            DateTime                  @db.Date
+  originalEntryId String?                   @db.Uuid
+  adjustmentType  String                    // ADD, MODIFY, DELETE
+  clockType       TimeClockType
+  originalTime    DateTime?
+  newTime         DateTime?
+  reason          String
+  status          TimeClockAdjustmentStatus @default(PENDING)
+  requestedBy     String?                   @db.Uuid
+  requestedAt     DateTime                  @default(now())
+  reviewedBy      String?                   @db.Uuid
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([date])
+  @@index([status])
+  @@map("time_clock_adjustments")
+}
+
+// =============================================================================
+// FERIADOS
+// =============================================================================
+model Holiday {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String?  @db.Uuid
+  company     Company? @relation(fields: [companyId], references: [id])
+  date        DateTime @db.Date
+  name        String
+  type        String   @default("NATIONAL") // NATIONAL, STATE, MUNICIPAL, COMPANY
+  isOptional  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  @@unique([companyId, date])
+  @@index([companyId])
+  @@index([date])
+  @@map("holidays")
 }
 
 // =============================================================================
