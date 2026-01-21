@@ -139,20 +139,62 @@ Botão padronizado com variantes.
 **Variantes:** `primary`, `secondary`, `danger`, `success`, `warning`, `ghost`
 **Tamanhos:** `sm`, `md`, `lg`
 
-## Tema de Cores
+## Sistema de Temas
 
-O sistema usa tema **dark** baseado em `zinc`:
+O sistema suporta **3 modos de tema**:
+- **Claro** - Tema light
+- **Escuro** - Tema dark  
+- **Sistema** - Segue preferência do SO
+
+O usuário pode alternar via `ThemeSwitcher` no header.
+
+### Classes de Tema (CSS Variables)
+
+Use classes de tema em vez de cores hardcoded para garantir compatibilidade:
 
 | Elemento | Classe |
 |----------|--------|
-| Fundo página | `bg-zinc-950` (via AppLayout) |
-| Card | `bg-zinc-900 border-zinc-800` |
-| Texto primário | `text-white` |
-| Texto secundário | `text-zinc-400` |
-| Texto terciário | `text-zinc-500` |
-| Hover | `hover:bg-zinc-800` |
-| Borda | `border-zinc-800` |
-| Accent | `text-blue-500`, `bg-blue-600` |
+| Background principal | `bg-theme` |
+| Background secundário | `bg-theme-secondary` |
+| Background terciário | `bg-theme-tertiary` |
+| Card | `bg-theme-card` |
+| Input | `bg-theme-input` |
+| Header tabela | `bg-theme-table-header` |
+| Texto primário | `text-theme` |
+| Texto secundário | `text-theme-secondary` |
+| Texto muted | `text-theme-muted` |
+| Borda padrão | `border-theme` |
+| Borda input | `border-theme-input` |
+| Borda tabela | `border-theme-table` |
+| Hover | `hover:bg-theme-hover` |
+| Hover tabela | `hover:bg-theme-table-hover` |
+
+### Exemplo de Input com Tema
+
+```tsx
+<input
+  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500"
+/>
+```
+
+### Exemplo de Tabela com Tema
+
+```tsx
+<table className="w-full">
+  <thead className="bg-theme-table-header border-b border-theme">
+    <tr>
+      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
+        Coluna
+      </th>
+    </tr>
+  </thead>
+  <tbody className="divide-y divide-theme-table">
+    <tr className="hover:bg-theme-table-hover transition-colors">
+      <td className="px-4 py-3 text-sm text-theme">Valor</td>
+    </tr>
+  </tbody>
+</table>
+```
 
 ## Responsividade
 
@@ -170,10 +212,11 @@ Use classes Tailwind para ajustes específicos:
 
 ## Checklist de Nova Página
 
-- [ ] Não usar `min-h-screen` ou `bg-gray-*`
+- [ ] Não usar `min-h-screen` ou cores fixas (`bg-gray-*`, `bg-zinc-*`)
 - [ ] Não criar `<header>` próprio
 - [ ] Não duplicar `CompanySwitcher`
 - [ ] Usar `PageHeader` para título e ações
 - [ ] Usar `PageCard` para seções
-- [ ] Usar cores do tema dark (`zinc-*`)
+- [ ] Usar classes de tema (`bg-theme-*`, `text-theme-*`, `border-theme-*`)
 - [ ] Testar em mobile
+- [ ] Testar alternância de tema (Light/Dark)
