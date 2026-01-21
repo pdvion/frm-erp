@@ -1,0 +1,245 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "FRM ERP" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e6]
+          - generic [ref=e10]: FRM ERP
+        - button "Colapsar menu" [ref=e11]:
+          - img [ref=e12]
+      - navigation [ref=e14]:
+        - list [ref=e15]:
+          - listitem [ref=e16]:
+            - link "Dashboard" [ref=e17] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e18]
+              - generic [ref=e21]: Dashboard
+          - listitem [ref=e22]:
+            - button "Compras" [ref=e23]:
+              - generic [ref=e24]:
+                - img [ref=e25]
+                - generic [ref=e29]: Compras
+              - img [ref=e30]
+          - listitem [ref=e32]:
+            - button "Estoque" [ref=e33]:
+              - generic [ref=e34]:
+                - img [ref=e35]
+                - generic [ref=e38]: Estoque
+              - img [ref=e39]
+          - listitem [ref=e41]:
+            - button "Vendas" [ref=e42]:
+              - generic [ref=e43]:
+                - img [ref=e44]
+                - generic [ref=e47]: Vendas
+              - img [ref=e48]
+          - listitem [ref=e50]:
+            - button "Financeiro" [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - generic [ref=e55]: Financeiro
+              - img [ref=e56]
+          - listitem [ref=e58]:
+            - button "Fiscal" [ref=e59]:
+              - generic [ref=e60]:
+                - img [ref=e61]
+                - generic [ref=e64]: Fiscal
+              - img [ref=e65]
+          - listitem [ref=e67]:
+            - button "Produção" [ref=e68]:
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e72]: Produção
+              - img [ref=e73]
+          - listitem [ref=e75]:
+            - button "RH" [ref=e76]:
+              - generic [ref=e77]:
+                - img [ref=e78]
+                - generic [ref=e83]: RH
+              - img [ref=e84]
+          - listitem [ref=e86]:
+            - button "Relatórios" [ref=e87]:
+              - generic [ref=e88]:
+                - img [ref=e89]
+                - generic [ref=e91]: Relatórios
+              - img [ref=e92]
+          - listitem [ref=e94]:
+            - button "BI & Gestão" [ref=e95]:
+              - generic [ref=e96]:
+                - img [ref=e97]
+                - generic [ref=e100]: BI & Gestão
+              - img [ref=e101]
+          - listitem [ref=e103]:
+            - button "Sistema" [ref=e104]:
+              - generic [ref=e105]:
+                - img [ref=e106]
+                - generic [ref=e109]: Sistema
+              - img [ref=e110]
+    - generic [ref=e112]:
+      - banner [ref=e113]:
+        - generic [ref=e118]:
+          - button [ref=e120]:
+            - img [ref=e121]
+          - generic [ref=e124]:
+            - button "paulo.vion paulo.vion@me.com" [active] [ref=e125]:
+              - img [ref=e127]
+              - generic [ref=e130]:
+                - generic [ref=e131]: paulo.vion
+                - generic [ref=e132]: paulo.vion@me.com
+              - img [ref=e133]
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - generic [ref=e137]: Usuário
+                - generic [ref=e138]: paulo.vion@me.com
+              - button "Configurações" [ref=e139]:
+                - img [ref=e140]
+                - text: Configurações
+              - separator [ref=e143]
+              - button "Sair" [ref=e144]:
+                - img [ref=e145]
+                - text: Sair
+      - main [ref=e148]:
+        - generic [ref=e149]:
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - img [ref=e155]
+              - generic [ref=e159]:
+                - heading "FRM ERP" [level=1] [ref=e160]
+                - paragraph [ref=e161]: Sistema de Gestão Industrial
+            - generic [ref=e162]:
+              - link "Documentação" [ref=e166] [cursor=pointer]:
+                - /url: /docs
+                - img [ref=e167]
+              - button [ref=e170]:
+                - img [ref=e171]
+              - link "paulo.vion" [ref=e174] [cursor=pointer]:
+                - /url: /profile
+                - img [ref=e176]
+                - generic [ref=e179]: paulo.vion
+          - main [ref=e180]:
+            - img [ref=e182]
+            - generic [ref=e184]:
+              - heading "Atividade Recente" [level=3] [ref=e186]
+              - generic [ref=e187]:
+                - heading "Acesso Rápido" [level=3] [ref=e188]
+                - generic [ref=e189]:
+                  - link "Materiais Cadastro e gestão" [ref=e190] [cursor=pointer]:
+                    - /url: /materials
+                    - img [ref=e192]
+                    - generic [ref=e196]:
+                      - text: Materiais
+                      - paragraph [ref=e197]: Cadastro e gestão
+                    - img [ref=e198]
+                  - link "Fornecedores Cadastro de fornecedores" [ref=e200] [cursor=pointer]:
+                    - /url: /suppliers
+                    - img [ref=e202]
+                    - generic [ref=e207]:
+                      - text: Fornecedores
+                      - paragraph [ref=e208]: Cadastro de fornecedores
+                    - img [ref=e209]
+                  - link "Estoque Controle de estoque" [ref=e211] [cursor=pointer]:
+                    - /url: /inventory
+                    - img [ref=e213]
+                    - generic [ref=e216]:
+                      - text: Estoque
+                      - paragraph [ref=e217]: Controle de estoque
+                    - img [ref=e218]
+                  - link "Cotações Orçamentos de compra" [ref=e220] [cursor=pointer]:
+                    - /url: /quotes
+                    - img [ref=e222]
+                    - generic [ref=e225]:
+                      - text: Cotações
+                      - paragraph [ref=e226]: Orçamentos de compra
+                    - img [ref=e227]
+                  - link "Pedidos Pedidos de compra" [ref=e229] [cursor=pointer]:
+                    - /url: /purchase-orders
+                    - img [ref=e231]
+                    - generic [ref=e235]:
+                      - text: Pedidos
+                      - paragraph [ref=e236]: Pedidos de compra
+                    - img [ref=e237]
+                  - link "NFe Notas fiscais" [ref=e239] [cursor=pointer]:
+                    - /url: /invoices
+                    - img [ref=e241]
+                    - generic [ref=e245]:
+                      - text: NFe
+                      - paragraph [ref=e246]: Notas fiscais
+                    - img [ref=e247]
+                  - link "Financeiro Contas a pagar" [ref=e249] [cursor=pointer]:
+                    - /url: /payables
+                    - img [ref=e251]
+                    - generic [ref=e253]:
+                      - text: Financeiro
+                      - paragraph [ref=e254]: Contas a pagar
+                    - img [ref=e255]
+                  - link "Requisições Saída de materiais" [ref=e257] [cursor=pointer]:
+                    - /url: /requisitions
+                    - img [ref=e259]
+                    - generic [ref=e263]:
+                      - text: Requisições
+                      - paragraph [ref=e264]: Saída de materiais
+                    - img [ref=e265]
+            - generic [ref=e267]:
+              - heading "Todos os Módulos" [level=3] [ref=e268]
+              - generic [ref=e269]:
+                - link "Materiais" [ref=e270] [cursor=pointer]:
+                  - /url: /materials
+                  - img [ref=e272]
+                  - generic [ref=e276]: Materiais
+                - link "Fornecedores" [ref=e277] [cursor=pointer]:
+                  - /url: /suppliers
+                  - img [ref=e279]
+                  - generic [ref=e284]: Fornecedores
+                - link "Estoque" [ref=e285] [cursor=pointer]:
+                  - /url: /inventory
+                  - img [ref=e287]
+                  - generic [ref=e290]: Estoque
+                - link "Cotações" [ref=e291] [cursor=pointer]:
+                  - /url: /quotes
+                  - img [ref=e293]
+                  - generic [ref=e296]: Cotações
+                - link "Pedidos" [ref=e297] [cursor=pointer]:
+                  - /url: /purchase-orders
+                  - img [ref=e299]
+                  - generic [ref=e303]: Pedidos
+                - link "NFe" [ref=e304] [cursor=pointer]:
+                  - /url: /invoices
+                  - img [ref=e306]
+                  - generic [ref=e310]: NFe
+                - link "Financeiro" [ref=e311] [cursor=pointer]:
+                  - /url: /payables
+                  - img [ref=e313]
+                  - generic [ref=e315]: Financeiro
+                - link "Requisições" [ref=e316] [cursor=pointer]:
+                  - /url: /requisitions
+                  - img [ref=e318]
+                  - generic [ref=e322]: Requisições
+                - link "Tarefas" [ref=e323] [cursor=pointer]:
+                  - /url: /tasks
+                  - img [ref=e325]
+                  - generic [ref=e328]: Tarefas
+                - link "Produção" [ref=e329] [cursor=pointer]:
+                  - /url: /production
+                  - img [ref=e331]
+                  - generic [ref=e334]: Produção
+                - link "Configurações" [ref=e335] [cursor=pointer]:
+                  - /url: /settings
+                  - img [ref=e337]
+                  - generic [ref=e340]: Configurações
+                - link "Auditoria" [ref=e341] [cursor=pointer]:
+                  - /url: /audit
+                  - img [ref=e343]
+                  - generic [ref=e345]: Auditoria
+          - paragraph [ref=e348]: FRM ERP © 2026 - Sistema de Gestão Industrial
+  - button "Open Next.js Dev Tools" [ref=e354] [cursor=pointer]:
+    - generic [ref=e357]:
+      - text: Compiling
+      - generic [ref=e358]:
+        - generic [ref=e359]: .
+        - generic [ref=e360]: .
+        - generic [ref=e361]: .
+  - alert [ref=e362]
+```

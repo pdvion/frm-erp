@@ -1,0 +1,274 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "FRM ERP" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e6]
+          - generic [ref=e10]: FRM ERP
+        - button "Colapsar menu" [ref=e11]:
+          - img [ref=e12]
+      - navigation [ref=e14]:
+        - list [ref=e15]:
+          - listitem [ref=e16]:
+            - link "Dashboard" [ref=e17] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e18]
+              - generic [ref=e21]: Dashboard
+          - listitem [ref=e22]:
+            - button "Compras" [ref=e23]:
+              - generic [ref=e24]:
+                - img [ref=e25]
+                - generic [ref=e29]: Compras
+              - img [ref=e30]
+          - listitem [ref=e32]:
+            - button "Estoque" [ref=e33]:
+              - generic [ref=e34]:
+                - img [ref=e35]
+                - generic [ref=e38]: Estoque
+              - img [ref=e39]
+            - list [ref=e41]:
+              - listitem [ref=e42]:
+                - link "Inventário" [ref=e43] [cursor=pointer]:
+                  - /url: /inventory
+              - listitem [ref=e44]:
+                - link "Localizações" [ref=e45] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e46]:
+                - link "Transferências" [ref=e47] [cursor=pointer]:
+                  - /url: /transfers
+              - listitem [ref=e48]:
+                - link "Picking List" [ref=e49] [cursor=pointer]:
+                  - /url: /picking
+          - listitem [ref=e50]:
+            - button "Vendas" [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - generic [ref=e56]: Vendas
+              - img [ref=e57]
+          - listitem [ref=e59]:
+            - button "Financeiro" [ref=e60]:
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - generic [ref=e64]: Financeiro
+              - img [ref=e65]
+          - listitem [ref=e67]:
+            - button "Fiscal" [ref=e68]:
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e73]: Fiscal
+              - img [ref=e74]
+          - listitem [ref=e76]:
+            - button "Produção" [ref=e77]:
+              - generic [ref=e78]:
+                - img [ref=e79]
+                - generic [ref=e81]: Produção
+              - img [ref=e82]
+          - listitem [ref=e84]:
+            - button "RH" [ref=e85]:
+              - generic [ref=e86]:
+                - img [ref=e87]
+                - generic [ref=e92]: RH
+              - img [ref=e93]
+          - listitem [ref=e95]:
+            - button "Relatórios" [ref=e96]:
+              - generic [ref=e97]:
+                - img [ref=e98]
+                - generic [ref=e100]: Relatórios
+              - img [ref=e101]
+          - listitem [ref=e103]:
+            - button "BI & Gestão" [ref=e104]:
+              - generic [ref=e105]:
+                - img [ref=e106]
+                - generic [ref=e109]: BI & Gestão
+              - img [ref=e110]
+          - listitem [ref=e112]:
+            - button "Sistema" [ref=e113]:
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - generic [ref=e118]: Sistema
+              - img [ref=e119]
+    - generic [ref=e121]:
+      - banner [ref=e122]:
+        - button "FRM Indústria e Comércio Ltda" [ref=e125]:
+          - img [ref=e126]
+          - generic [ref=e130]: FRM Indústria e Comércio Ltda
+          - img [ref=e131]
+        - generic [ref=e133]:
+          - button "2" [ref=e135]:
+            - img [ref=e136]
+            - generic [ref=e139]: "2"
+          - button "paulo.vion paulo.vion@me.com" [ref=e141]:
+            - img [ref=e143]
+            - generic [ref=e146]:
+              - generic [ref=e147]: paulo.vion
+              - generic [ref=e148]: paulo.vion@me.com
+            - img [ref=e149]
+      - main [ref=e151]:
+        - generic [ref=e152]:
+          - generic [ref=e155]:
+            - generic [ref=e156]:
+              - link [ref=e157] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e158]
+              - generic [ref=e160]:
+                - img [ref=e161]
+                - heading "Estoque" [level=1] [ref=e164]
+            - generic [ref=e165]:
+              - button "FRM Indústria e Comércio Ltda" [ref=e167]:
+                - img [ref=e168]
+                - generic [ref=e172]: FRM Indústria e Comércio Ltda
+                - img [ref=e173]
+              - link "Documentação" [ref=e175] [cursor=pointer]:
+                - /url: /docs
+                - img [ref=e176]
+              - button "Ajuda" [ref=e178]:
+                - img [ref=e179]
+              - button "2" [ref=e183]:
+                - img [ref=e184]
+                - generic [ref=e187]: "2"
+          - main [ref=e188]:
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - img [ref=e191]
+                - textbox "Buscar por descrição ou código do material..." [ref=e194]
+              - generic [ref=e195]:
+                - img [ref=e196]
+                - combobox [ref=e198]:
+                  - option "Todos os tipos" [selected]
+                  - option "Matéria Prima"
+                  - option "Semi-Acabado"
+                  - option "Acabado"
+                  - option "Crítico"
+                  - option "Morto"
+                  - option "Sucata"
+              - generic [ref=e199] [cursor=pointer]:
+                - checkbox "Abaixo do mínimo" [ref=e200]
+                - generic [ref=e201]: Abaixo do mínimo
+                - img [ref=e202]
+              - generic [ref=e204]:
+                - link "Histórico" [ref=e205] [cursor=pointer]:
+                  - /url: /inventory/movements
+                  - generic [ref=e206]: Histórico
+                - link "Entrada" [ref=e207] [cursor=pointer]:
+                  - /url: /inventory/entry
+                  - img [ref=e208]
+                  - generic [ref=e211]: Entrada
+                - link "Saída" [ref=e212] [cursor=pointer]:
+                  - /url: /inventory/exit
+                  - img [ref=e213]
+                  - generic [ref=e216]: Saída
+            - table [ref=e219]:
+              - rowgroup [ref=e220]:
+                - row "Material Tipo Quantidade Reservado Disponível Custo Unit. Custo Total Status" [ref=e221]:
+                  - columnheader "Material" [ref=e222]
+                  - columnheader "Tipo" [ref=e223]
+                  - columnheader "Quantidade" [ref=e224]
+                  - columnheader "Reservado" [ref=e225]
+                  - columnheader "Disponível" [ref=e226]
+                  - columnheader "Custo Unit." [ref=e227]
+                  - columnheader "Custo Total" [ref=e228]
+                  - columnheader "Status" [ref=e229]
+              - rowgroup [ref=e230]:
+                - 'row "1001 - Aço Carbono 1020 - Barra Redonda 1\" Matéria Prima • KG Matéria Prima 250,00 Mín: 100,00 0,00 250,00 R$ 8,50 R$ 2.125,00 OK" [ref=e231]':
+                  - cell "1001 - Aço Carbono 1020 - Barra Redonda 1\" Matéria Prima • KG" [ref=e232]:
+                    - generic [ref=e234]:
+                      - generic [ref=e235]: 1001 - Aço Carbono 1020 - Barra Redonda 1"
+                      - generic [ref=e236]: Matéria Prima • KG
+                  - cell "Matéria Prima" [ref=e237]:
+                    - generic [ref=e238]: Matéria Prima
+                  - 'cell "250,00 Mín: 100,00" [ref=e239]':
+                    - generic [ref=e240]: 250,00
+                    - generic [ref=e241]: "Mín: 100,00"
+                  - cell "0,00" [ref=e242]:
+                    - generic [ref=e243]: 0,00
+                  - cell "250,00" [ref=e244]:
+                    - generic [ref=e245]: 250,00
+                  - cell "R$ 8,50" [ref=e246]:
+                    - generic [ref=e247]: R$ 8,50
+                  - cell "R$ 2.125,00" [ref=e248]:
+                    - generic [ref=e249]: R$ 2.125,00
+                  - cell "OK" [ref=e250]
+                - 'row "1002 - Alumínio 6061 - Chapa 3mm Matéria Prima • KG Matéria Prima 75,00 Mín: 50,00 10,00 65,00 R$ 25,00 R$ 1.875,00 OK" [ref=e251]':
+                  - cell "1002 - Alumínio 6061 - Chapa 3mm Matéria Prima • KG" [ref=e252]:
+                    - generic [ref=e254]:
+                      - generic [ref=e255]: 1002 - Alumínio 6061 - Chapa 3mm
+                      - generic [ref=e256]: Matéria Prima • KG
+                  - cell "Matéria Prima" [ref=e257]:
+                    - generic [ref=e258]: Matéria Prima
+                  - 'cell "75,00 Mín: 50,00" [ref=e259]':
+                    - generic [ref=e260]: 75,00
+                    - generic [ref=e261]: "Mín: 50,00"
+                  - cell "10,00" [ref=e262]:
+                    - generic [ref=e263]: 10,00
+                  - cell "65,00" [ref=e264]:
+                    - generic [ref=e265]: 65,00
+                  - cell "R$ 25,00" [ref=e266]:
+                    - generic [ref=e267]: R$ 25,00
+                  - cell "R$ 1.875,00" [ref=e268]:
+                    - generic [ref=e269]: R$ 1.875,00
+                  - cell "OK" [ref=e270]
+                - 'row "1005 - Caixa Papelão 30x20x15 Embalagens • UN Matéria Prima 1.200,00 Mín: 500,00 200,00 1.000,00 R$ 2,50 R$ 3.000,00 OK" [ref=e271]':
+                  - cell "1005 - Caixa Papelão 30x20x15 Embalagens • UN" [ref=e272]:
+                    - generic [ref=e274]:
+                      - generic [ref=e275]: 1005 - Caixa Papelão 30x20x15
+                      - generic [ref=e276]: Embalagens • UN
+                  - cell "Matéria Prima" [ref=e277]:
+                    - generic [ref=e278]: Matéria Prima
+                  - 'cell "1.200,00 Mín: 500,00" [ref=e279]':
+                    - generic [ref=e280]: 1.200,00
+                    - generic [ref=e281]: "Mín: 500,00"
+                  - cell "200,00" [ref=e282]:
+                    - generic [ref=e283]: 200,00
+                  - cell "1.000,00" [ref=e284]:
+                    - generic [ref=e285]: 1.000,00
+                  - cell "R$ 2,50" [ref=e286]:
+                    - generic [ref=e287]: R$ 2,50
+                  - cell "R$ 3.000,00" [ref=e288]:
+                    - generic [ref=e289]: R$ 3.000,00
+                  - cell "OK" [ref=e290]
+                - 'row "1003 - Capacitor Cerâmico 100nF Componentes Eletrônicos • UN Matéria Prima 3.500,00 Mín: 1.000,00 500,00 3.000,00 R$ 0,15 R$ 525,00 OK" [ref=e291]':
+                  - cell "1003 - Capacitor Cerâmico 100nF Componentes Eletrônicos • UN" [ref=e292]:
+                    - generic [ref=e294]:
+                      - generic [ref=e295]: 1003 - Capacitor Cerâmico 100nF
+                      - generic [ref=e296]: Componentes Eletrônicos • UN
+                  - cell "Matéria Prima" [ref=e297]:
+                    - generic [ref=e298]: Matéria Prima
+                  - 'cell "3.500,00 Mín: 1.000,00" [ref=e299]':
+                    - generic [ref=e300]: 3.500,00
+                    - generic [ref=e301]: "Mín: 1.000,00"
+                  - cell "500,00" [ref=e302]:
+                    - generic [ref=e303]: 500,00
+                  - cell "3.000,00" [ref=e304]:
+                    - generic [ref=e305]: 3.000,00
+                  - cell "R$ 0,15" [ref=e306]:
+                    - generic [ref=e307]: R$ 0,15
+                  - cell "R$ 525,00" [ref=e308]:
+                    - generic [ref=e309]: R$ 525,00
+                  - cell "OK" [ref=e310]
+                - 'row "1004 - Resistor 10K 1/4W Componentes Eletrônicos • UN Matéria Prima 8.000,00 Mín: 2.000,00 0,00 8.000,00 R$ 0,05 R$ 400,00 OK" [ref=e311]':
+                  - cell "1004 - Resistor 10K 1/4W Componentes Eletrônicos • UN" [ref=e312]:
+                    - generic [ref=e314]:
+                      - generic [ref=e315]: 1004 - Resistor 10K 1/4W
+                      - generic [ref=e316]: Componentes Eletrônicos • UN
+                  - cell "Matéria Prima" [ref=e317]:
+                    - generic [ref=e318]: Matéria Prima
+                  - 'cell "8.000,00 Mín: 2.000,00" [ref=e319]':
+                    - generic [ref=e320]: 8.000,00
+                    - generic [ref=e321]: "Mín: 2.000,00"
+                  - cell "0,00" [ref=e322]:
+                    - generic [ref=e323]: 0,00
+                  - cell "8.000,00" [ref=e324]:
+                    - generic [ref=e325]: 8.000,00
+                  - cell "R$ 0,05" [ref=e326]:
+                    - generic [ref=e327]: R$ 0,05
+                  - cell "R$ 400,00" [ref=e328]:
+                    - generic [ref=e329]: R$ 400,00
+                  - cell "OK" [ref=e330]
+  - button "Open Next.js Dev Tools" [ref=e336] [cursor=pointer]:
+    - img [ref=e337]
+  - alert [ref=e340]
+```

@@ -1,0 +1,168 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "FRM ERP" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e6]
+          - generic [ref=e10]: FRM ERP
+        - button "Colapsar menu" [ref=e11]:
+          - img [ref=e12]
+      - navigation [ref=e14]:
+        - list [ref=e15]:
+          - listitem [ref=e16]:
+            - link "Dashboard" [ref=e17] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e18]
+              - generic [ref=e21]: Dashboard
+          - listitem [ref=e22]:
+            - button "Compras" [ref=e23]:
+              - generic [ref=e24]:
+                - img [ref=e25]
+                - generic [ref=e29]: Compras
+              - img [ref=e30]
+          - listitem [ref=e32]:
+            - button "Estoque" [ref=e33]:
+              - generic [ref=e34]:
+                - img [ref=e35]
+                - generic [ref=e38]: Estoque
+              - img [ref=e39]
+            - list [ref=e41]:
+              - listitem [ref=e42]:
+                - link "Inventário" [ref=e43] [cursor=pointer]:
+                  - /url: /inventory
+              - listitem [ref=e44]:
+                - link "Localizações" [ref=e45] [cursor=pointer]:
+                  - /url: /locations
+              - listitem [ref=e46]:
+                - link "Transferências" [ref=e47] [cursor=pointer]:
+                  - /url: /transfers
+              - listitem [ref=e48]:
+                - link "Picking List" [ref=e49] [cursor=pointer]:
+                  - /url: /picking
+          - listitem [ref=e50]:
+            - button "Vendas" [ref=e51]:
+              - generic [ref=e52]:
+                - img [ref=e53]
+                - generic [ref=e56]: Vendas
+              - img [ref=e57]
+          - listitem [ref=e59]:
+            - button "Financeiro" [ref=e60]:
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - generic [ref=e64]: Financeiro
+              - img [ref=e65]
+          - listitem [ref=e67]:
+            - button "Fiscal" [ref=e68]:
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e73]: Fiscal
+              - img [ref=e74]
+          - listitem [ref=e76]:
+            - button "Produção" [ref=e77]:
+              - generic [ref=e78]:
+                - img [ref=e79]
+                - generic [ref=e81]: Produção
+              - img [ref=e82]
+          - listitem [ref=e84]:
+            - button "RH" [ref=e85]:
+              - generic [ref=e86]:
+                - img [ref=e87]
+                - generic [ref=e92]: RH
+              - img [ref=e93]
+          - listitem [ref=e95]:
+            - button "Relatórios" [ref=e96]:
+              - generic [ref=e97]:
+                - img [ref=e98]
+                - generic [ref=e100]: Relatórios
+              - img [ref=e101]
+          - listitem [ref=e103]:
+            - button "BI & Gestão" [ref=e104]:
+              - generic [ref=e105]:
+                - img [ref=e106]
+                - generic [ref=e109]: BI & Gestão
+              - img [ref=e110]
+          - listitem [ref=e112]:
+            - button "Sistema" [ref=e113]:
+              - generic [ref=e114]:
+                - img [ref=e115]
+                - generic [ref=e118]: Sistema
+              - img [ref=e119]
+    - generic [ref=e121]:
+      - banner [ref=e122]:
+        - button "FRM Indústria e Comércio Ltda" [ref=e125]:
+          - img [ref=e126]
+          - generic [ref=e130]: FRM Indústria e Comércio Ltda
+          - img [ref=e131]
+        - generic [ref=e133]:
+          - button "2" [ref=e135]:
+            - img [ref=e136]
+            - generic [ref=e139]: "2"
+          - button "paulo.vion paulo.vion@me.com" [ref=e141]:
+            - img [ref=e143]
+            - generic [ref=e146]:
+              - generic [ref=e147]: paulo.vion
+              - generic [ref=e148]: paulo.vion@me.com
+            - img [ref=e149]
+      - main [ref=e151]:
+        - generic [ref=e152]:
+          - generic [ref=e155]:
+            - generic [ref=e156]:
+              - link [ref=e157] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e158]
+              - generic [ref=e160]:
+                - img [ref=e161]
+                - heading "Estoque" [level=1] [ref=e164]
+            - generic [ref=e165]:
+              - button "FRM Indústria e Comércio Ltda" [ref=e167]:
+                - img [ref=e168]
+                - generic [ref=e172]: FRM Indústria e Comércio Ltda
+                - img [ref=e173]
+              - link "Documentação" [ref=e175] [cursor=pointer]:
+                - /url: /docs
+                - img [ref=e176]
+              - button "Ajuda" [ref=e178]:
+                - img [ref=e179]
+              - button "2" [ref=e183]:
+                - img [ref=e184]
+                - generic [ref=e187]: "2"
+          - main [ref=e188]:
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - img [ref=e191]
+                - textbox "Buscar por descrição ou código do material..." [ref=e194]
+              - generic [ref=e195]:
+                - img [ref=e196]
+                - combobox [ref=e198]:
+                  - option "Todos os tipos"
+                  - option "Matéria Prima" [selected]
+                  - option "Semi-Acabado"
+                  - option "Acabado"
+                  - option "Crítico"
+                  - option "Morto"
+                  - option "Sucata"
+              - generic [ref=e199] [cursor=pointer]:
+                - checkbox "Abaixo do mínimo" [ref=e200]
+                - generic [ref=e201]: Abaixo do mínimo
+                - img [ref=e202]
+              - generic [ref=e204]:
+                - link "Histórico" [ref=e205] [cursor=pointer]:
+                  - /url: /inventory/movements
+                  - generic [ref=e206]: Histórico
+                - link "Entrada" [ref=e207] [cursor=pointer]:
+                  - /url: /inventory/entry
+                  - img [ref=e208]
+                  - generic [ref=e211]: Entrada
+                - link "Saída" [ref=e212] [cursor=pointer]:
+                  - /url: /inventory/exit
+                  - img [ref=e213]
+                  - generic [ref=e216]: Saída
+            - generic [ref=e220]: Carregando estoque...
+  - button "Open Next.js Dev Tools" [ref=e226] [cursor=pointer]:
+    - img [ref=e227]
+  - alert [ref=e230]
+```
