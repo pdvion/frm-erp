@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ShoppingCart,
-  ChevronLeft,
   Plus,
   Trash2,
   Search,
@@ -148,355 +146,337 @@ export default function NewPurchaseOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/purchase-orders"
-                className="text-gray-500 hover:text-gray-700"
-                aria-label="Voltar para pedidos de compra"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="w-6 h-6 text-teal-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Novo Pedido de Compra
-                </h1>
-              </div>
-            </div>
-            <CompanySwitcher />
+    <div className="space-y-6">
+      <PageHeader
+        title="Novo Pedido de Compra"
+        subtitle="Cadastre um novo pedido de compra"
+        icon={<ShoppingCart className="w-6 h-6" />}
+        backHref="/purchase-orders"
+      />
+
+      {error && (
+        <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-red-400" />
+            <p className="text-red-400">{error}</p>
           </div>
         </div>
-      </header>
+      )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              <p className="text-red-800">{error}</p>
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Dados do Pedido */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Fornecedor */}
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+              <h2 className="text-lg font-medium text-white mb-4">
+                Fornecedor
+              </h2>
+              <div className="relative">
+                <label htmlFor="supplier-search" className="sr-only">
+                  Buscar fornecedor
+                </label>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <input
+                  id="supplier-search"
+                  type="text"
+                  value={selectedSupplier ? selectedSupplier.companyName : supplierSearch}
+                  onChange={(e) => {
+                    setSupplierSearch(e.target.value);
+                    setSelectedSupplier(null);
+                  }}
+                  placeholder="Buscar fornecedor..."
+                  className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                  aria-label="Buscar fornecedor"
+                />
+                {suppliersData?.suppliers && supplierSearch && !selectedSupplier && (
+                  <div className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {suppliersData.suppliers.map((supplier) => (
+                      <button
+                        key={supplier.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSupplier({
+                            id: supplier.id,
+                            code: supplier.code,
+                            companyName: supplier.companyName,
+                          });
+                          setSupplierSearch("");
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-zinc-700"
+                      >
+                        <div className="font-medium text-white">{supplier.companyName}</div>
+                        <div className="text-sm text-zinc-500">
+                          Código: {supplier.code}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Dados do Pedido */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Fornecedor */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Fornecedor
-                </h2>
-                <div className="relative">
-                  <label htmlFor="supplier-search" className="sr-only">
-                    Buscar fornecedor
-                  </label>
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    id="supplier-search"
-                    type="text"
-                    value={selectedSupplier ? selectedSupplier.companyName : supplierSearch}
-                    onChange={(e) => {
-                      setSupplierSearch(e.target.value);
-                      setSelectedSupplier(null);
-                    }}
-                    placeholder="Buscar fornecedor..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                    aria-label="Buscar fornecedor"
-                  />
-                  {suppliersData?.suppliers && supplierSearch && !selectedSupplier && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                      {suppliersData.suppliers.map((supplier) => (
+            {/* Itens */}
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-medium text-white">Itens</h2>
+                <button
+                  type="button"
+                  onClick={() => setShowMaterialSearch(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                >
+                  <Plus className="w-4 h-4" />
+                  Adicionar Item
+                </button>
+              </div>
+
+              {showMaterialSearch && (
+                <div className="mb-4 p-4 bg-zinc-800 rounded-lg">
+                  <div className="relative">
+                    <label htmlFor="material-search" className="sr-only">
+                      Buscar material
+                    </label>
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <input
+                      id="material-search"
+                      type="text"
+                      value={materialSearch}
+                      onChange={(e) => setMaterialSearch(e.target.value)}
+                      placeholder="Buscar material..."
+                      className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                      autoFocus
+                      aria-label="Buscar material"
+                    />
+                  </div>
+                  {materialsData?.materials && materialSearch && (
+                    <div className="mt-2 border border-zinc-700 rounded-lg max-h-40 overflow-y-auto">
+                      {materialsData.materials.map((material) => (
                         <button
-                          key={supplier.id}
+                          key={material.id}
                           type="button"
-                          onClick={() => {
-                            setSelectedSupplier({
-                              id: supplier.id,
-                              code: supplier.code,
-                              companyName: supplier.companyName,
-                            });
-                            setSupplierSearch("");
-                          }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-50"
+                          onClick={() => handleAddItem(material)}
+                          className="w-full px-4 py-2 text-left hover:bg-zinc-700"
                         >
-                          <div className="font-medium">{supplier.companyName}</div>
-                          <div className="text-sm text-gray-500">
-                            Código: {supplier.code}
+                          <div className="font-medium text-white">{material.description}</div>
+                          <div className="text-sm text-zinc-500">
+                            Código: {material.code} | Último preço:{" "}
+                            {formatCurrency(material.lastPurchasePrice ?? 0)}
                           </div>
                         </button>
                       ))}
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* Itens */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">Itens</h2>
                   <button
                     type="button"
-                    onClick={() => setShowMaterialSearch(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                    onClick={() => {
+                      setShowMaterialSearch(false);
+                      setMaterialSearch("");
+                    }}
+                    className="mt-2 text-sm text-zinc-500 hover:text-zinc-300"
                   >
-                    <Plus className="w-4 h-4" />
-                    Adicionar Item
+                    Cancelar
                   </button>
                 </div>
+              )}
 
-                {showMaterialSearch && (
-                  <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="relative">
-                      <label htmlFor="material-search" className="sr-only">
-                        Buscar material
-                      </label>
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        id="material-search"
-                        type="text"
-                        value={materialSearch}
-                        onChange={(e) => setMaterialSearch(e.target.value)}
-                        placeholder="Buscar material..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                        autoFocus
-                        aria-label="Buscar material"
-                      />
-                    </div>
-                    {materialsData?.materials && materialSearch && (
-                      <div className="mt-2 border border-gray-200 rounded-lg max-h-40 overflow-y-auto">
-                        {materialsData.materials.map((material) => (
-                          <button
-                            key={material.id}
-                            type="button"
-                            onClick={() => handleAddItem(material)}
-                            className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                          >
-                            <div className="font-medium">{material.description}</div>
-                            <div className="text-sm text-gray-500">
-                              Código: {material.code} | Último preço:{" "}
-                              {formatCurrency(material.lastPurchasePrice ?? 0)}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowMaterialSearch(false);
-                        setMaterialSearch("");
-                      }}
-                      className="mt-2 text-sm text-gray-500 hover:text-gray-700"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                )}
-
-                {items.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    Nenhum item adicionado
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-2 text-sm font-medium text-gray-500">
-                            Material
-                          </th>
-                          <th className="text-right py-2 text-sm font-medium text-gray-500 w-24">
-                            Qtd
-                          </th>
-                          <th className="text-right py-2 text-sm font-medium text-gray-500 w-32">
-                            Preço Unit.
-                          </th>
-                          <th className="text-right py-2 text-sm font-medium text-gray-500 w-32">
-                            Total
-                          </th>
-                          <th className="w-10"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map((item) => (
-                          <tr key={item.materialId} className="border-b border-gray-100">
-                            <td className="py-3">
-                              <div className="font-medium text-sm">
-                                {item.materialDescription}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                Código: {item.materialCode}
-                              </div>
-                            </td>
-                            <td className="py-3">
-                              <input
-                                type="number"
-                                value={item.quantity}
-                                onChange={(e) =>
-                                  handleUpdateItem(
-                                    item.materialId,
-                                    "quantity",
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                className="w-full text-right px-2 py-1 border border-gray-300 rounded"
-                                min="0.01"
-                                step="0.01"
-                                aria-label={`Quantidade de ${item.materialDescription}`}
-                              />
-                            </td>
-                            <td className="py-3">
-                              <input
-                                type="number"
-                                value={item.unitPrice}
-                                onChange={(e) =>
-                                  handleUpdateItem(
-                                    item.materialId,
-                                    "unitPrice",
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                className="w-full text-right px-2 py-1 border border-gray-300 rounded"
-                                min="0"
-                                step="0.01"
-                                aria-label={`Preço unitário de ${item.materialDescription}`}
-                              />
-                            </td>
-                            <td className="py-3 text-right text-sm font-medium">
-                              {formatCurrency(item.quantity * item.unitPrice)}
-                            </td>
-                            <td className="py-3">
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveItem(item.materialId)}
-                                className="p-1 text-red-500 hover:text-red-700"
-                                aria-label={`Remover ${item.materialDescription}`}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot>
-                        <tr className="border-t-2 border-gray-200">
-                          <td colSpan={3} className="py-3 text-right font-medium">
-                            Total:
-                          </td>
-                          <td className="py-3 text-right text-lg font-bold text-teal-600">
-                            {formatCurrency(totalValue)}
-                          </td>
-                          <td></td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Condições */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Condições
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="delivery-date"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Previsão de Entrega
-                    </label>
-                    <input
-                      id="delivery-date"
-                      type="date"
-                      value={expectedDeliveryDate}
-                      onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="payment-terms"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Condição de Pagamento
-                    </label>
-                    <input
-                      id="payment-terms"
-                      type="text"
-                      value={paymentTerms}
-                      onChange={(e) => setPaymentTerms(e.target.value)}
-                      placeholder="Ex: 30/60/90 dias"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="delivery-terms"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Condição de Entrega
-                    </label>
-                    <input
-                      id="delivery-terms"
-                      type="text"
-                      value={deliveryTerms}
-                      onChange={(e) => setDeliveryTerms(e.target.value)}
-                      placeholder="Ex: CIF, FOB"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="notes"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Observações
-                    </label>
-                    <textarea
-                      id="notes"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
+              {items.length === 0 ? (
+                <div className="text-center py-8 text-zinc-500">
+                  Nenhum item adicionado
                 </div>
-              </div>
-
-              {/* Ações */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <button
-                  type="submit"
-                  disabled={createMutation.isPending || items.length === 0}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {createMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Criando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Criar Pedido
-                    </>
-                  )}
-                </button>
-              </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-zinc-800">
+                        <th className="text-left py-2 text-sm font-medium text-zinc-400">
+                          Material
+                        </th>
+                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-24">
+                          Qtd
+                        </th>
+                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-32">
+                          Preço Unit.
+                        </th>
+                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-32">
+                          Total
+                        </th>
+                        <th className="w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr key={item.materialId} className="border-b border-zinc-800">
+                          <td className="py-3">
+                            <div className="font-medium text-sm text-white">
+                              {item.materialDescription}
+                            </div>
+                            <div className="text-xs text-zinc-500">
+                              Código: {item.materialCode}
+                            </div>
+                          </td>
+                          <td className="py-3">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleUpdateItem(
+                                  item.materialId,
+                                  "quantity",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="w-full text-right px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white"
+                              min="0.01"
+                              step="0.01"
+                              aria-label={`Quantidade de ${item.materialDescription}`}
+                            />
+                          </td>
+                          <td className="py-3">
+                            <input
+                              type="number"
+                              value={item.unitPrice}
+                              onChange={(e) =>
+                                handleUpdateItem(
+                                  item.materialId,
+                                  "unitPrice",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="w-full text-right px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white"
+                              min="0"
+                              step="0.01"
+                              aria-label={`Preço unitário de ${item.materialDescription}`}
+                            />
+                          </td>
+                          <td className="py-3 text-right text-sm font-medium text-white">
+                            {formatCurrency(item.quantity * item.unitPrice)}
+                          </td>
+                          <td className="py-3">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(item.materialId)}
+                              className="p-1 text-red-400 hover:text-red-300"
+                              aria-label={`Remover ${item.materialDescription}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="border-t-2 border-zinc-700">
+                        <td colSpan={3} className="py-3 text-right font-medium text-white">
+                          Total:
+                        </td>
+                        <td className="py-3 text-right text-lg font-bold text-teal-400">
+                          {formatCurrency(totalValue)}
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
-        </form>
-      </main>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Condições */}
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+              <h2 className="text-lg font-medium text-white mb-4">
+                Condições
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="delivery-date"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    Previsão de Entrega
+                  </label>
+                  <input
+                    id="delivery-date"
+                    type="date"
+                    value={expectedDeliveryDate}
+                    onChange={(e) => setExpectedDeliveryDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="payment-terms"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    Condição de Pagamento
+                  </label>
+                  <input
+                    id="payment-terms"
+                    type="text"
+                    value={paymentTerms}
+                    onChange={(e) => setPaymentTerms(e.target.value)}
+                    placeholder="Ex: 30/60/90 dias"
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="delivery-terms"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    Condição de Entrega
+                  </label>
+                  <input
+                    id="delivery-terms"
+                    type="text"
+                    value={deliveryTerms}
+                    onChange={(e) => setDeliveryTerms(e.target.value)}
+                    placeholder="Ex: CIF, FOB"
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="notes"
+                    className="block text-sm font-medium text-zinc-300 mb-1"
+                  >
+                    Observações
+                  </label>
+                  <textarea
+                    id="notes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Ações */}
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+              <button
+                type="submit"
+                disabled={createMutation.isPending || items.length === 0}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {createMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Criando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Criar Pedido
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
