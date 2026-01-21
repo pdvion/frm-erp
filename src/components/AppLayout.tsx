@@ -7,6 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { UserMenu } from "./UserMenu";
 import { NotificationBell } from "./NotificationBell";
 import { CompanySwitcher } from "./CompanySwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { SessionTimeout } from "./SessionTimeout";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 
@@ -89,6 +90,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <CompanySwitcher />
           </div>
           <div className="flex items-center gap-4">
+            <ThemeSwitcher />
             <NotificationBell />
             <UserMenu />
           </div>
