@@ -30,6 +30,14 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   CANCELLED: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
 };
 
+const typeLabels: Record<string, string> = {
+  PRODUCTION: "Produção",
+  MAINTENANCE: "Manutenção",
+  ADMINISTRATIVE: "Administrativo",
+  PROJECT: "Projeto",
+  OTHER: "Outro",
+};
+
 export default function RequisitionDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -100,26 +108,29 @@ export default function RequisitionDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Responsivo */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/requisitions" className="text-gray-500 hover:text-gray-700">
+          {/* Mobile Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:h-16 gap-2 sm:gap-0">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <Link href="/requisitions" className="text-gray-500 hover:text-gray-700 flex-shrink-0">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <div className="flex items-center gap-2">
-                <Package className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+              <div className="flex items-center gap-2 min-w-0">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 flex-shrink-0" />
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                   Requisição #{requisition.code}
                 </h1>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
+              <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap flex-shrink-0 ${config.bgColor} ${config.color}`}>
                 {config.label}
               </span>
             </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
+            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
+              <div className="hidden sm:block">
+                <CompanySwitcher />
+              </div>
               
               {canCancel && (
                 <button
@@ -177,6 +188,10 @@ export default function RequisitionDetailPage() {
               )}
             </div>
           </div>
+          {/* Mobile Company Switcher */}
+          <div className="sm:hidden pb-2">
+            <CompanySwitcher />
+          </div>
         </div>
       </header>
 
@@ -186,8 +201,8 @@ export default function RequisitionDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Items Table */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="font-medium text-gray-900">Itens da Requisição</h3>
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Itens da Requisição</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -225,11 +240,11 @@ export default function RequisitionDetailPage() {
 
                       return (
                         <tr key={item.id} className={isComplete ? "bg-green-50" : ""}>
-                          <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">
+                          <td className="px-4 py-3 min-w-[120px]">
+                            <div className="font-medium text-gray-900 text-sm sm:text-base break-words">
                               {item.material.description}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-xs sm:text-sm text-gray-500">
                               Cód: {item.material.code}
                             </div>
                           </td>
@@ -333,12 +348,12 @@ export default function RequisitionDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Informações</h3>
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Informações</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Tipo</span>
-                  <span className="font-medium text-gray-900">{requisition.type}</span>
+                  <span className="font-medium text-gray-900">{typeLabels[requisition.type] || requisition.type}</span>
                 </div>
                 {requisition.orderNumber && (
                   <div className="flex justify-between">
@@ -370,39 +385,75 @@ export default function RequisitionDetailPage() {
             </div>
 
             {/* Timeline */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Histórico</h3>
+            <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Histórico</h3>
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Clock className="w-4 h-4 text-gray-500" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="font-medium text-gray-900">Criada</div>
                     <div className="text-sm text-gray-500">{formatDateTime(requisition.createdAt)}</div>
+                    {requisition.createdBy && (
+                      <div className="text-xs text-gray-400">por {requisition.createdBy}</div>
+                    )}
                   </div>
                 </div>
 
+                {requisition.status === "PENDING" && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Send className="w-4 h-4 text-yellow-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-gray-900">Enviada para Aprovação</div>
+                      <div className="text-sm text-gray-500">{formatDateTime(requisition.requestedAt)}</div>
+                      {requisition.requestedBy && (
+                        <div className="text-xs text-gray-400">por {requisition.requestedBy}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {requisition.approvedAt && (
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="font-medium text-gray-900">Aprovada</div>
                       <div className="text-sm text-gray-500">{formatDateTime(requisition.approvedAt)}</div>
+                      {requisition.approvedBy && (
+                        <div className="text-xs text-gray-400">por {requisition.approvedBy}</div>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {requisition.separatedAt && (
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <Package className="w-4 h-4 text-purple-600" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="font-medium text-gray-900">Separação Concluída</div>
                       <div className="text-sm text-gray-500">{formatDateTime(requisition.separatedAt)}</div>
+                      {requisition.separatedBy && (
+                        <div className="text-xs text-gray-400">por {requisition.separatedBy}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {requisition.status === "CANCELLED" && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Ban className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-red-700">Cancelada</div>
+                      <div className="text-sm text-gray-500">{formatDateTime(requisition.updatedAt)}</div>
                     </div>
                   </div>
                 )}
