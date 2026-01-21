@@ -167,10 +167,14 @@ export function Sidebar({ onClose }: SidebarProps) {
     return null;
   };
 
-  const activeModule = getActiveModule();
-  if (activeModule && !expandedItems.includes(activeModule)) {
-    setExpandedItems((prev) => [...prev, activeModule]);
-  }
+  // Mover para useEffect para evitar setState durante render
+  useEffect(() => {
+    const activeModule = getActiveModule();
+    if (activeModule && !expandedItems.includes(activeModule)) {
+      setExpandedItems((prev) => [...prev, activeModule]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const toggleExpand = (label: string) => {
     setExpandedItems((prev) =>
@@ -194,22 +198,26 @@ export function Sidebar({ onClose }: SidebarProps) {
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
-        <nav className="flex flex-col gap-1 p-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href || item.children?.[0]?.href || "#"}
-              className={`flex items-center justify-center rounded-lg p-3 transition-colors ${
-                (item.href && isActive(item.href)) ||
-                item.children?.some((c) => isActive(c.href))
-                  ? "bg-blue-600 text-white"
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-              }`}
-              title={item.label}
-            >
-              {item.icon}
-            </Link>
-          ))}
+        <nav className="flex flex-col gap-1 p-2" data-testid="sidebar-nav-collapsed">
+          {menuItems.map((item) => {
+            const targetHref = item.href || item.children?.[0]?.href || "/dashboard";
+            return (
+              <Link
+                key={item.label}
+                href={targetHref}
+                className={`flex items-center justify-center rounded-lg p-3 transition-colors ${
+                  (item.href && isActive(item.href)) ||
+                  item.children?.some((c) => isActive(c.href))
+                    ? "bg-blue-600 text-white"
+                    : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                }`}
+                title={item.label}
+                data-testid={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                {item.icon}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
     );
@@ -231,7 +239,7 @@ export function Sidebar({ onClose }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="h-[calc(100vh-3.5rem)] overflow-y-auto p-3">
+      <nav className="h-[calc(100vh-3.5rem)] overflow-y-auto p-3" data-testid="sidebar-nav">
         <ul className="space-y-1">
           {menuItems.map((item) => (
             <li key={item.label}>

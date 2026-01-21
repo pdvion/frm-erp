@@ -42,8 +42,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm"
+          role="button"
+          tabIndex={0}
+          aria-label="Fechar menu lateral"
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm cursor-pointer"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setSidebarOpen(false)}
         />
       )}
 
