@@ -48,6 +48,7 @@ import { reportsRouter } from "./reports";
 import { vacationsRouter } from "./vacations";
 import { thirteenthRouter } from "./thirteenth";
 import { terminationsRouter } from "./terminations";
+import { timeclockRouter } from "./timeclock";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -99,6 +100,7 @@ export const appRouter = createTRPCRouter({
   vacations: vacationsRouter,
   thirteenth: thirteenthRouter,
   terminations: terminationsRouter,
+  timeclock: timeclockRouter,
 });
 
 export type AppRouter = typeof appRouter;
