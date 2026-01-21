@@ -148,6 +148,9 @@ model Company {
   sefazSyncConfig     SefazSyncConfig?
   sefazSyncLogs       SefazSyncLog[]
   sefazPendingNfes    SefazPendingNfe[]
+  vacations           Vacation[]
+  thirteenthSalaries  ThirteenthSalary[]
+  terminations        Termination[]
 
   @@map("companies")
 }
@@ -2502,6 +2505,9 @@ model Employee {
   timeClockEntries TimeClockEntry[]
   timesheetDays    TimesheetDay[]
   payrollItems     PayrollItem[]
+  vacations        Vacation[]
+  thirteenthSalaries ThirteenthSalary[]
+  terminations     Termination[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2644,6 +2650,189 @@ model PayrollEvent {
   
   @@index([payrollItemId])
   @@map("payroll_events")
+}
+
+// =============================================================================
+// FÉRIAS
+// =============================================================================
+enum VacationStatus {
+  SCHEDULED   // Programada
+  APPROVED    // Aprovada
+  IN_PROGRESS // Em andamento
+  COMPLETED   // Concluída
+  CANCELLED   // Cancelada
+}
+
+model Vacation {
+  id                String         @id @default(uuid()) @db.Uuid
+  companyId         String?        @db.Uuid
+  company           Company?       @relation(fields: [companyId], references: [id])
+  employeeId        String         @db.Uuid
+  employee          Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  acquisitionStart  DateTime       @db.Date // Início do período aquisitivo
+  acquisitionEnd    DateTime       @db.Date // Fim do período aquisitivo
+  startDate         DateTime       @db.Date // Data início das férias
+  endDate           DateTime       @db.Date // Data fim das férias
+  totalDays         Int            @default(30) // Dias de férias
+  soldDays          Int            @default(0)  // Abono pecuniário (máx 10)
+  enjoyedDays       Int            @default(30) // Dias efetivos de gozo
+  status            VacationStatus @default(SCHEDULED)
+  baseSalary        Float          @default(0)
+  vacationPay       Float          @default(0) // Valor das férias
+  oneThirdBonus     Float          @default(0) // 1/3 constitucional
+  soldDaysValue     Float          @default(0) // Valor do abono pecuniário
+  totalGross        Float          @default(0) // Total bruto
+  inssDeduction     Float          @default(0) // Desconto INSS
+  irrfDeduction     Float          @default(0) // Desconto IRRF
+  otherDeductions   Float          @default(0) // Outros descontos
+  totalNet          Float          @default(0) // Valor líquido
+  paymentDate       DateTime?      @db.Date // Data de pagamento
+  noticeDate        DateTime?      @db.Date // Data do aviso de férias
+  isCollective      Boolean        @default(false) // Férias coletivas
+  collectiveGroupId String?        @db.Uuid // Grupo de férias coletivas
+  notes             String?
+  approvedBy        String?        @db.Uuid
+  approvedAt        DateTime?
+  createdBy         String?        @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@index([startDate])
+  @@map("vacations")
+}
+
+// =============================================================================
+// 13º SALÁRIO
+// =============================================================================
+enum ThirteenthType {
+  FIRST_INSTALLMENT  // 1ª Parcela
+  SECOND_INSTALLMENT // 2ª Parcela
+  FULL               // Integral
+  PROPORTIONAL       // Proporcional (rescisão)
+}
+
+enum ThirteenthStatus {
+  PENDING   // Pendente
+  CALCULATED // Calculado
+  PAID      // Pago
+  CANCELLED // Cancelado
+}
+
+model ThirteenthSalary {
+  id              String           @id @default(uuid()) @db.Uuid
+  companyId       String?          @db.Uuid
+  company         Company?         @relation(fields: [companyId], references: [id])
+  employeeId      String           @db.Uuid
+  employee        Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  year            Int              // Ano de referência
+  type            ThirteenthType
+  status          ThirteenthStatus @default(PENDING)
+  monthsWorked    Int              @default(12) // Meses trabalhados (avos)
+  baseSalary      Float            @default(0)
+  averageVariable Float            @default(0) // Média de variáveis
+  grossValue      Float            @default(0)
+  inssDeduction   Float            @default(0)
+  irrfDeduction   Float            @default(0)
+  otherDeductions Float            @default(0)
+  netValue        Float            @default(0)
+  paymentDate     DateTime?        @db.Date
+  notes           String?
+  createdBy       String?          @db.Uuid
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([employeeId, year, type])
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([year])
+  @@map("thirteenth_salaries")
+}
+
+// =============================================================================
+// RESCISÕES
+// =============================================================================
+enum TerminationType {
+  RESIGNATION           // Pedido de demissão
+  DISMISSAL_WITH_CAUSE  // Demissão por justa causa
+  DISMISSAL_NO_CAUSE    // Demissão sem justa causa
+  MUTUAL_AGREEMENT      // Acordo mútuo (reforma trabalhista)
+  CONTRACT_END          // Término de contrato
+  RETIREMENT            // Aposentadoria
+  DEATH                 // Falecimento
+}
+
+enum TerminationStatus {
+  DRAFT       // Rascunho
+  CALCULATED  // Calculado
+  APPROVED    // Aprovado
+  PAID        // Pago
+  HOMOLOGATED // Homologado
+  CANCELLED   // Cancelado
+}
+
+model Termination {
+  id                    String            @id @default(uuid()) @db.Uuid
+  companyId             String?           @db.Uuid
+  company               Company?          @relation(fields: [companyId], references: [id])
+  employeeId            String            @db.Uuid
+  employee              Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type                  TerminationType
+  status                TerminationStatus @default(DRAFT)
+  noticeDate            DateTime?         @db.Date // Data do aviso prévio
+  terminationDate       DateTime          @db.Date // Data do desligamento
+  lastWorkDay           DateTime?         @db.Date // Último dia trabalhado
+  noticePeriodDays      Int               @default(30) // Dias de aviso prévio
+  noticePeriodWorked    Boolean           @default(false) // Aviso trabalhado?
+  noticePeriodIndemnity Boolean           @default(false) // Aviso indenizado?
+  
+  // Valores
+  baseSalary            Float             @default(0)
+  salaryBalance         Float             @default(0) // Saldo de salário
+  noticePeriodValue     Float             @default(0) // Aviso prévio
+  vacationBalance       Float             @default(0) // Férias vencidas
+  vacationProportional  Float             @default(0) // Férias proporcionais
+  vacationOneThird      Float             @default(0) // 1/3 férias
+  thirteenthProportional Float            @default(0) // 13º proporcional
+  fgtsBalance           Float             @default(0) // Saldo FGTS
+  fgtsFine              Float             @default(0) // Multa 40% ou 20% FGTS
+  otherEarnings         Float             @default(0) // Outros proventos
+  totalGross            Float             @default(0) // Total bruto
+  
+  // Descontos
+  inssDeduction         Float             @default(0)
+  irrfDeduction         Float             @default(0)
+  advanceDeduction      Float             @default(0) // Adiantamentos
+  otherDeductions       Float             @default(0)
+  totalDeductions       Float             @default(0)
+  totalNet              Float             @default(0) // Valor líquido
+  
+  // Datas e documentos
+  paymentDate           DateTime?         @db.Date
+  homologationDate      DateTime?         @db.Date
+  trctNumber            String?           // Número do TRCT
+  grffGenerated         Boolean           @default(false)
+  grffDate              DateTime?         @db.Date
+  
+  // Seguro desemprego
+  eligibleForUnemployment Boolean         @default(false)
+  unemploymentGuides    Int               @default(0) // Quantidade de guias
+  
+  notes                 String?
+  reason                String?           // Motivo da rescisão
+  approvedBy            String?           @db.Uuid
+  approvedAt            DateTime?
+  createdBy             String?           @db.Uuid
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@index([terminationDate])
+  @@map("terminations")
 }
 
 // =============================================================================
