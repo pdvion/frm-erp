@@ -154,6 +154,13 @@ export default function ReceivingDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <Link
+                href={`/receiving/${id}/mobile`}
+                className="hidden sm:flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                <Package className="w-4 h-4" />
+                Versão Mobile
+              </Link>
               <CompanySwitcher />
               {receiving.status === "PENDING" && !isConferencing && (
                 <button
