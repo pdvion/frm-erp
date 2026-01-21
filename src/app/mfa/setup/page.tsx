@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMFA } from "@/hooks/useMFA";
 import { 
@@ -154,7 +155,7 @@ export default function MFASetupPage() {
                 {/* QR Code renderizado como imagem base64 para evitar XSS */}
                 <div className="p-4 bg-white border-2 border-gray-200 rounded-xl">
                   {enrollData.qrCode.startsWith('data:') ? (
-                    <img src={enrollData.qrCode} alt="QR Code para autenticação" width={200} height={200} />
+                    <Image src={enrollData.qrCode} alt="QR Code para autenticação" width={200} height={200} unoptimized />
                   ) : (
                     <div 
                       className="w-[200px] h-[200px] flex items-center justify-center text-gray-400"
