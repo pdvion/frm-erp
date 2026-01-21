@@ -1,5 +1,6 @@
 "use client";
 
+import React, { memo } from "react";
 import {
   LineChart,
   Line,
@@ -47,7 +48,8 @@ interface LineChartProps extends BaseChartProps {
   showLegend?: boolean;
 }
 
-export function SimpleLineChart({
+// VIO-557: Memoizar componentes de gráficos para evitar re-renders desnecessários
+export const SimpleLineChart = memo(function SimpleLineChart({
   data,
   dataKeys,
   height = 300,
@@ -87,7 +89,7 @@ export function SimpleLineChart({
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 interface BarChartProps extends BaseChartProps {
   dataKeys: { key: string; color?: string; name?: string; stackId?: string }[];
@@ -96,7 +98,7 @@ interface BarChartProps extends BaseChartProps {
   layout?: "horizontal" | "vertical";
 }
 
-export function SimpleBarChart({
+export const SimpleBarChart = memo(function SimpleBarChart({
   data,
   dataKeys,
   height = 300,
@@ -148,7 +150,7 @@ export function SimpleBarChart({
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 interface PieChartProps extends BaseChartProps {
   dataKey: string;
@@ -158,7 +160,7 @@ interface PieChartProps extends BaseChartProps {
   outerRadius?: number;
 }
 
-export function SimplePieChart({
+export const SimplePieChart = memo(function SimplePieChart({
   data,
   dataKey,
   nameKey = "name",
@@ -200,11 +202,11 @@ export function SimplePieChart({
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
-export function DonutChart(props: PieChartProps) {
+export const DonutChart = memo(function DonutChart(props: PieChartProps) {
   return <SimplePieChart {...props} innerRadius={60} outerRadius={80} />;
-}
+});
 
 interface AreaChartProps extends BaseChartProps {
   dataKeys: { key: string; color?: string; name?: string; stackId?: string }[];
@@ -212,7 +214,7 @@ interface AreaChartProps extends BaseChartProps {
   showLegend?: boolean;
 }
 
-export function SimpleAreaChart({
+export const SimpleAreaChart = memo(function SimpleAreaChart({
   data,
   dataKeys,
   height = 300,
@@ -252,7 +254,7 @@ export function SimpleAreaChart({
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 // Componente de Card com Gráfico
 interface ChartCardProps {
@@ -263,7 +265,7 @@ interface ChartCardProps {
   actions?: React.ReactNode;
 }
 
-export function ChartCard({ title, subtitle, children, className, actions }: ChartCardProps) {
+export const ChartCard = memo(function ChartCard({ title, subtitle, children, className, actions }: ChartCardProps) {
   return (
     <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
       <div className="flex items-center justify-between mb-4">
@@ -276,7 +278,7 @@ export function ChartCard({ title, subtitle, children, className, actions }: Cha
       {children}
     </div>
   );
-}
+});
 
 // Componente de KPI com mini gráfico
 interface KpiCardProps {
@@ -289,7 +291,7 @@ interface KpiCardProps {
   className?: string;
 }
 
-export function KpiCard({
+export const KpiCard = memo(function KpiCard({
   title,
   value,
   change,
@@ -332,6 +334,6 @@ export function KpiCard({
       )}
     </div>
   );
-}
+});
 
 export { COLORS };

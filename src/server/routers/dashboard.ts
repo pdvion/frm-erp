@@ -329,11 +329,14 @@ export const dashboardRouter = createTRPCRouter({
   }),
 
   // Dados para gráficos do dashboard
+  // NOTA: As queries abaixo usam Prisma tagged template literals ($queryRaw`...`)
+  // que são SEGURAS contra SQL injection pois usam prepared statements.
+  // Os parâmetros ${...} são automaticamente escapados pelo Prisma.
   chartData: tenantProcedure.query(async ({ ctx }) => {
     const today = new Date();
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
-    // Pagamentos por mês (últimos 6 meses)
+    // Pagamentos por mês (últimos 6 meses) - SQL seguro via prepared statements
     const paymentsByMonth = await prisma.$queryRaw<Array<{ month: string; paid: number; pending: number }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "dueDate"), 'Mon') as month,
