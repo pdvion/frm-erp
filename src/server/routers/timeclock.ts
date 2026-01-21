@@ -1,5 +1,20 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+
+// Helper para validar que funcionário pertence à empresa
+async function validateEmployee(prisma: typeof import("@/lib/prisma").prisma, employeeId: string, companyId: string | null) {
+  if (!companyId) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Empresa não selecionada" });
+  }
+  const employee = await prisma.employee.findFirst({
+    where: { id: employeeId, companyId },
+  });
+  if (!employee) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Funcionário não encontrado" });
+  }
+  return employee;
+}
 
 export const timeclockRouter = createTRPCRouter({
   // ============================================================================
@@ -16,6 +31,9 @@ export const timeclockRouter = createTRPCRouter({
       deviceId: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+      // VIO-558: Validar que funcionário pertence à empresa
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+
       return ctx.prisma.timeClockEntry.create({
         data: {
           employeeId: input.employeeId,
@@ -39,6 +57,9 @@ export const timeclockRouter = createTRPCRouter({
       justification: z.string().min(10),
     }))
     .mutation(async ({ ctx, input }) => {
+      // VIO-558: Validar que funcionário pertence à empresa
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+
       return ctx.prisma.timeClockEntry.create({
         data: {
           employeeId: input.employeeId,
@@ -59,7 +80,9 @@ export const timeclockRouter = createTRPCRouter({
       limit: z.number().default(50),
     }))
     .query(async ({ ctx, input }) => {
+      // VIO-554: Aplicar filtro multi-tenant via employee.companyId
       const where = {
+        employee: { companyId: ctx.tenant.companyId },
         timestamp: {
           gte: input.startDate,
           lte: input.endDate,
@@ -223,13 +246,16 @@ export const timeclockRouter = createTRPCRouter({
       employeeId: z.string().uuid(),
     }))
     .query(async ({ ctx, input }) => {
+      // VIO-559: Validar que funcionário pertence à empresa
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+
       const lastEntry = await ctx.prisma.hoursBank.findFirst({
-        where: { employeeId: input.employeeId },
+        where: { employeeId: input.employeeId, companyId: ctx.tenant.companyId },
         orderBy: { date: "desc" },
       });
 
       const movements = await ctx.prisma.hoursBank.findMany({
-        where: { employeeId: input.employeeId },
+        where: { employeeId: input.employeeId, companyId: ctx.tenant.companyId },
         orderBy: { date: "desc" },
         take: 30,
       });
@@ -601,19 +627,21 @@ export const timeclockRouter = createTRPCRouter({
         });
       }
 
-      // Upsert dos dias
-      for (const day of daysToUpsert) {
-        await ctx.prisma.timesheetDay.upsert({
-          where: {
-            employeeId_date: {
-              employeeId: day.employeeId,
-              date: day.date,
+      // VIO-555: Usar transaction para batch de upserts (mais eficiente)
+      await ctx.prisma.$transaction(
+        daysToUpsert.map((day) =>
+          ctx.prisma.timesheetDay.upsert({
+            where: {
+              employeeId_date: {
+                employeeId: day.employeeId,
+                date: day.date,
+              },
             },
-          },
-          create: day,
-          update: day,
-        });
-      }
+            create: day,
+            update: day,
+          })
+        )
+      );
 
       return { processed: daysToUpsert.length };
     }),
