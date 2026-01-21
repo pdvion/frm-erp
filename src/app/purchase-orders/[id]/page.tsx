@@ -93,7 +93,7 @@ export default function PurchaseOrderDetailPage() {
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 flex items-center gap-3">
           <AlertCircle className="w-6 h-6 text-red-400" />
           <div>
-            <h3 className="font-medium text-white">Erro ao carregar pedido</h3>
+            <h3 className="font-medium text-theme">Erro ao carregar pedido</h3>
             <p className="text-red-400 text-sm">
               {error?.message || "Pedido não encontrado"}
             </p>
@@ -132,49 +132,49 @@ export default function PurchaseOrderDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Supplier Info */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-zinc-500" />
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-theme-muted" />
               Fornecedor
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-zinc-500">Razão Social</div>
-                <div className="font-medium text-white">
+                <div className="text-sm text-theme-muted">Razão Social</div>
+                <div className="font-medium text-theme">
                   {order.supplier.companyName}
                 </div>
               </div>
               {order.supplier.tradeName && (
                 <div>
-                  <div className="text-sm text-zinc-500">Nome Fantasia</div>
-                  <div className="font-medium text-white">
+                  <div className="text-sm text-theme-muted">Nome Fantasia</div>
+                  <div className="font-medium text-theme">
                     {order.supplier.tradeName}
                   </div>
                 </div>
               )}
               {order.supplier.cnpj && (
                 <div>
-                  <div className="text-sm text-zinc-500">CNPJ</div>
-                  <div className="font-medium text-white">
+                  <div className="text-sm text-theme-muted">CNPJ</div>
+                  <div className="font-medium text-theme">
                     {order.supplier.cnpj}
                   </div>
                 </div>
               )}
               {order.supplier.phone && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <Phone className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <Phone className="w-4 h-4 text-theme-muted" />
                   <span>{order.supplier.phone}</span>
                 </div>
               )}
               {order.supplier.email && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <Mail className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <Mail className="w-4 h-4 text-theme-muted" />
                   <span>{order.supplier.email}</span>
                 </div>
               )}
               {order.supplier.city && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <MapPin className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <MapPin className="w-4 h-4 text-theme-muted" />
                   <span>
                     {order.supplier.city}
                     {order.supplier.state && ` - ${order.supplier.state}`}
@@ -185,10 +185,10 @@ export default function PurchaseOrderDetailPage() {
           </div>
 
           {/* Items */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-white flex items-center gap-2">
-                <Package className="w-5 h-5 text-zinc-500" />
+              <h2 className="text-lg font-medium text-theme flex items-center gap-2">
+                <Package className="w-5 h-5 text-theme-muted" />
                 Itens ({order.items.length})
               </h2>
               {canReceive && (
@@ -199,43 +199,43 @@ export default function PurchaseOrderDetailPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-zinc-800">
-                <thead className="bg-zinc-800/50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-table-header">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                       Material
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Qtd Pedida
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Qtd Recebida
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Preço Unit.
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Total
                     </th>
                     {canReceive && (
-                      <th className="px-4 py-3 text-center text-xs font-medium text-zinc-400 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ação
                       </th>
                     )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800">
+                <tbody className="divide-y divide-theme-table">
                   {order.items.map((item) => {
                     const pendingQty = item.quantity - item.receivedQty;
                     const isComplete = pendingQty <= 0;
 
                     return (
-                      <tr key={item.id} className={`hover:bg-zinc-800/50 ${isComplete ? "bg-green-900/20" : ""}`}>
+                      <tr key={item.id} className={`hover:bg-theme-table-hover ${isComplete ? "bg-green-900/20" : ""}`}>
                         <td className="px-4 py-4">
-                          <div className="font-medium text-white">
+                          <div className="font-medium text-theme">
                             {item.material.code} - {item.material.description}
                           </div>
-                          <div className="text-sm text-zinc-500">
+                          <div className="text-sm text-theme-muted">
                             {item.material.category?.name || "Sem categoria"} •{" "}
                             {item.material.unit}
                           </div>
@@ -245,7 +245,7 @@ export default function PurchaseOrderDetailPage() {
                             </div>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-right text-white">
+                        <td className="px-4 py-4 text-right text-theme">
                           {item.quantity}
                         </td>
                         <td className="px-4 py-4 text-right">
@@ -253,15 +253,15 @@ export default function PurchaseOrderDetailPage() {
                             {item.receivedQty}
                           </span>
                           {!isComplete && (
-                            <span className="text-zinc-500 text-sm ml-1">
+                            <span className="text-theme-muted text-sm ml-1">
                               ({pendingQty} pendente)
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-right text-white">
+                        <td className="px-4 py-4 text-right text-theme">
                           {formatCurrency(item.unitPrice)}
                         </td>
-                        <td className="px-4 py-4 text-right font-medium text-white">
+                        <td className="px-4 py-4 text-right font-medium text-theme">
                           {formatCurrency(item.totalPrice)}
                         </td>
                         {canReceive && (
@@ -286,22 +286,22 @@ export default function PurchaseOrderDetailPage() {
                     );
                   })}
                 </tbody>
-                <tfoot className="bg-zinc-800/50">
+                <tfoot className="bg-theme-table-header">
                   <tr>
-                    <td colSpan={canReceive ? 4 : 3} className="px-4 py-3 text-right font-medium text-white">
+                    <td colSpan={canReceive ? 4 : 3} className="px-4 py-3 text-right font-medium text-theme">
                       Subtotal:
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white">
+                    <td className="px-4 py-3 text-right font-bold text-theme">
                       {formatCurrency(order.totalValue)}
                     </td>
                     {canReceive && <td></td>}
                   </tr>
                   {order.freightValue > 0 && (
                     <tr>
-                      <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-zinc-400">
+                      <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Frete:
                       </td>
-                      <td className="px-4 py-2 text-right text-white">
+                      <td className="px-4 py-2 text-right text-theme">
                         {formatCurrency(order.freightValue)}
                       </td>
                       {canReceive && <td></td>}
@@ -309,7 +309,7 @@ export default function PurchaseOrderDetailPage() {
                   )}
                   {order.discountPercent > 0 && (
                     <tr>
-                      <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-zinc-400">
+                      <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Desconto ({order.discountPercent}%):
                       </td>
                       <td className="px-4 py-2 text-right text-green-400">
@@ -325,11 +325,11 @@ export default function PurchaseOrderDetailPage() {
 
           {/* Notes */}
           {order.notes && (
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-3">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-3">
                 Observações
               </h2>
-              <p className="text-zinc-300 whitespace-pre-wrap">{order.notes}</p>
+              <p className="text-theme-secondary whitespace-pre-wrap">{order.notes}</p>
             </div>
           )}
         </div>
@@ -337,8 +337,8 @@ export default function PurchaseOrderDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status & Actions */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4">Status</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Status</h3>
             {canEdit ? (
               <select
                 value={order.status}
@@ -347,7 +347,7 @@ export default function PurchaseOrderDetailPage() {
                   status: e.target.value as "DRAFT" | "PENDING" | "APPROVED" | "SENT" | "PARTIAL" | "COMPLETED" | "CANCELLED"
                 })}
                 disabled={updateStatusMutation.isPending}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-teal-500"
+                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
               >
                 <option value="DRAFT">Rascunho</option>
                 <option value="PENDING">Pendente</option>
@@ -378,23 +378,23 @@ export default function PurchaseOrderDetailPage() {
           )}
 
           {/* Dates */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-zinc-500" />
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-theme-muted" />
               Datas
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-500">Pedido:</span>
-                <span className="font-medium text-white">{formatDate(order.orderDate)}</span>
+                <span className="text-theme-muted">Pedido:</span>
+                <span className="font-medium text-theme">{formatDate(order.orderDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Previsão Entrega:</span>
-                <span className="font-medium text-white">{formatDate(order.expectedDeliveryDate)}</span>
+                <span className="text-theme-muted">Previsão Entrega:</span>
+                <span className="font-medium text-theme">{formatDate(order.expectedDeliveryDate)}</span>
               </div>
               {order.actualDeliveryDate && (
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Entrega Real:</span>
+                  <span className="text-theme-muted">Entrega Real:</span>
                   <span className="font-medium text-green-400">{formatDate(order.actualDeliveryDate)}</span>
                 </div>
               )}
@@ -402,21 +402,21 @@ export default function PurchaseOrderDetailPage() {
           </div>
 
           {/* Terms */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4">Condições</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Condições</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
-                <CreditCard className="w-4 h-4 text-zinc-500 mt-0.5" />
+                <CreditCard className="w-4 h-4 text-theme-muted mt-0.5" />
                 <div>
-                  <div className="text-zinc-500">Pagamento</div>
-                  <div className="font-medium text-white">{order.paymentTerms || "-"}</div>
+                  <div className="text-theme-muted">Pagamento</div>
+                  <div className="font-medium text-theme">{order.paymentTerms || "-"}</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-zinc-500 mt-0.5" />
+                <Truck className="w-4 h-4 text-theme-muted mt-0.5" />
                 <div>
-                  <div className="text-zinc-500">Entrega</div>
-                  <div className="font-medium text-white">{order.deliveryTerms || "-"}</div>
+                  <div className="text-theme-muted">Entrega</div>
+                  <div className="font-medium text-theme">{order.deliveryTerms || "-"}</div>
                 </div>
               </div>
             </div>
@@ -449,13 +449,13 @@ export default function PurchaseOrderDetailPage() {
           aria-labelledby="receive-modal-title"
           onKeyDown={(e) => e.key === "Escape" && setShowReceiveModal(false)}
         >
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="receive-modal-title" className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 id="receive-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
               <PackageCheck className="w-5 h-5 text-teal-500" />
               Registrar Recebimento
             </h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-zinc-300 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Quantidade Recebida
               </label>
               <input
@@ -464,7 +464,7 @@ export default function PurchaseOrderDetailPage() {
                 step="0.01"
                 value={receiveQty}
                 onChange={(e) => setReceiveQty(parseFloat(e.target.value) || 0)}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-teal-500"
+                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
               />
             </div>
             <div className="flex gap-3">
@@ -473,7 +473,7 @@ export default function PurchaseOrderDetailPage() {
                   setShowReceiveModal(false);
                   setSelectedItemId(null);
                 }}
-                className="flex-1 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800"
+                className="flex-1 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Cancelar
               </button>

@@ -97,7 +97,7 @@ export default function QuoteDetailPage() {
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 flex items-center gap-3">
           <AlertCircle className="w-6 h-6 text-red-400" />
           <div>
-            <h3 className="font-medium text-white">Erro ao carregar cotação</h3>
+            <h3 className="font-medium text-theme">Erro ao carregar cotação</h3>
             <p className="text-red-400 text-sm">
               {error?.message || "Cotação não encontrada"}
             </p>
@@ -122,7 +122,7 @@ export default function QuoteDetailPage() {
         {canEdit && (
           <Link
             href={`/quotes/${id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800"
+            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             <Edit className="w-4 h-4" />
             Editar
@@ -153,49 +153,49 @@ export default function QuoteDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Supplier Info */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-zinc-500" />
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-theme-muted" />
               Fornecedor
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-zinc-500">Razão Social</div>
-                <div className="font-medium text-white">
+                <div className="text-sm text-theme-muted">Razão Social</div>
+                <div className="font-medium text-theme">
                   {quote.supplier.companyName}
                 </div>
               </div>
               {quote.supplier.tradeName && (
                 <div>
-                  <div className="text-sm text-zinc-500">Nome Fantasia</div>
-                  <div className="font-medium text-white">
+                  <div className="text-sm text-theme-muted">Nome Fantasia</div>
+                  <div className="font-medium text-theme">
                     {quote.supplier.tradeName}
                   </div>
                 </div>
               )}
               {quote.supplier.cnpj && (
                 <div>
-                  <div className="text-sm text-zinc-500">CNPJ</div>
-                  <div className="font-medium text-white">
+                  <div className="text-sm text-theme-muted">CNPJ</div>
+                  <div className="font-medium text-theme">
                     {quote.supplier.cnpj}
                   </div>
                 </div>
               )}
               {quote.supplier.phone && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <Phone className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <Phone className="w-4 h-4 text-theme-muted" />
                   <span>{quote.supplier.phone}</span>
                 </div>
               )}
               {quote.supplier.email && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <Mail className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <Mail className="w-4 h-4 text-theme-muted" />
                   <span>{quote.supplier.email}</span>
                 </div>
               )}
               {quote.supplier.city && (
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <MapPin className="w-4 h-4 text-zinc-500" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <MapPin className="w-4 h-4 text-theme-muted" />
                   <span>
                     {quote.supplier.city}
                     {quote.supplier.state && ` - ${quote.supplier.state}`}
@@ -206,10 +206,10 @@ export default function QuoteDetailPage() {
           </div>
 
           {/* Items */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-white flex items-center gap-2">
-                <Package className="w-5 h-5 text-zinc-500" />
+              <h2 className="text-lg font-medium text-theme flex items-center gap-2">
+                <Package className="w-5 h-5 text-theme-muted" />
                 Itens ({quote.items.length})
               </h2>
               {canEdit && (
@@ -221,48 +221,48 @@ export default function QuoteDetailPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-zinc-800">
-                <thead className="bg-zinc-800/50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-table-header">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                       Material
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Quantidade
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Preço Unit.
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Total
                     </th>
                     {canEdit && <th className="px-4 py-3 w-12"></th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800">
+                <tbody className="divide-y divide-theme-table">
                   {quote.items.map((item) => (
-                    <tr key={item.id} className="hover:bg-zinc-800/50">
+                    <tr key={item.id} className="hover:bg-theme-table-hover">
                       <td className="px-4 py-4">
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-theme">
                           {item.material.code} - {item.material.description}
                         </div>
-                        <div className="text-sm text-zinc-500">
+                        <div className="text-sm text-theme-muted">
                           {item.material.category?.name || "Sem categoria"} •{" "}
                           {item.material.unit}
                         </div>
                         {item.notes && (
-                          <div className="text-sm text-zinc-600 mt-1">
+                          <div className="text-sm text-theme-muted mt-1">
                             {item.notes}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-4 text-right text-white">
+                      <td className="px-4 py-4 text-right text-theme">
                         {item.quantity}
                       </td>
-                      <td className="px-4 py-4 text-right text-white">
+                      <td className="px-4 py-4 text-right text-theme">
                         {formatCurrency(item.unitPrice)}
                       </td>
-                      <td className="px-4 py-4 text-right font-medium text-white">
+                      <td className="px-4 py-4 text-right font-medium text-theme">
                         {formatCurrency(item.totalPrice || item.quantity * item.unitPrice)}
                       </td>
                       {canEdit && (
@@ -275,22 +275,22 @@ export default function QuoteDetailPage() {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-zinc-800/50">
+                <tfoot className="bg-theme-table-header">
                   <tr>
-                    <td colSpan={3} className="px-4 py-3 text-right font-medium text-white">
+                    <td colSpan={3} className="px-4 py-3 text-right font-medium text-theme">
                       Subtotal:
                     </td>
-                    <td className="px-4 py-3 text-right font-bold text-white">
+                    <td className="px-4 py-3 text-right font-bold text-theme">
                       {formatCurrency(quote.totalValue)}
                     </td>
                     {canEdit && <td></td>}
                   </tr>
                   {quote.freightValue > 0 && (
                     <tr>
-                      <td colSpan={3} className="px-4 py-2 text-right text-sm text-zinc-400">
+                      <td colSpan={3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Frete:
                       </td>
-                      <td className="px-4 py-2 text-right text-white">
+                      <td className="px-4 py-2 text-right text-theme">
                         {formatCurrency(quote.freightValue)}
                       </td>
                       {canEdit && <td></td>}
@@ -298,7 +298,7 @@ export default function QuoteDetailPage() {
                   )}
                   {quote.discountPercent > 0 && (
                     <tr>
-                      <td colSpan={3} className="px-4 py-2 text-right text-sm text-zinc-400">
+                      <td colSpan={3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Desconto ({quote.discountPercent}%):
                       </td>
                       <td className="px-4 py-2 text-right text-green-400">
@@ -314,11 +314,11 @@ export default function QuoteDetailPage() {
 
           {/* Notes */}
           {quote.notes && (
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-3">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-3">
                 Observações
               </h2>
-              <p className="text-zinc-300 whitespace-pre-wrap">{quote.notes}</p>
+              <p className="text-theme-secondary whitespace-pre-wrap">{quote.notes}</p>
             </div>
           )}
         </div>
@@ -326,14 +326,14 @@ export default function QuoteDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status & Actions */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4">Status</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Status</h3>
             {canEdit ? (
               <select
                 value={quote.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
                 disabled={updateMutation.isPending}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500"
               >
                 <option value="DRAFT">Rascunho</option>
                 <option value="PENDING">Pendente</option>
@@ -349,43 +349,43 @@ export default function QuoteDetailPage() {
           </div>
 
           {/* Dates */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-zinc-500" />
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-theme-muted" />
               Datas
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-500">Solicitação:</span>
-                <span className="font-medium text-white">{formatDate(quote.requestDate)}</span>
+                <span className="text-theme-muted">Solicitação:</span>
+                <span className="font-medium text-theme">{formatDate(quote.requestDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Resposta:</span>
-                <span className="font-medium text-white">{formatDate(quote.responseDate)}</span>
+                <span className="text-theme-muted">Resposta:</span>
+                <span className="font-medium text-theme">{formatDate(quote.responseDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Válida até:</span>
-                <span className="font-medium text-white">{formatDate(quote.validUntil)}</span>
+                <span className="text-theme-muted">Válida até:</span>
+                <span className="font-medium text-theme">{formatDate(quote.validUntil)}</span>
               </div>
             </div>
           </div>
 
           {/* Terms */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-            <h3 className="font-medium text-white mb-4">Condições</h3>
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Condições</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
-                <CreditCard className="w-4 h-4 text-zinc-500 mt-0.5" />
+                <CreditCard className="w-4 h-4 text-theme-muted mt-0.5" />
                 <div>
-                  <div className="text-zinc-500">Pagamento</div>
-                  <div className="font-medium text-white">{quote.paymentTerms || "-"}</div>
+                  <div className="text-theme-muted">Pagamento</div>
+                  <div className="font-medium text-theme">{quote.paymentTerms || "-"}</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-zinc-500 mt-0.5" />
+                <Truck className="w-4 h-4 text-theme-muted mt-0.5" />
                 <div>
-                  <div className="text-zinc-500">Entrega</div>
-                  <div className="font-medium text-white">{quote.deliveryTerms || "-"}</div>
+                  <div className="text-theme-muted">Entrega</div>
+                  <div className="font-medium text-theme">{quote.deliveryTerms || "-"}</div>
                 </div>
               </div>
             </div>
@@ -418,26 +418,26 @@ export default function QuoteDetailPage() {
           aria-labelledby="reject-quote-title"
           onKeyDown={(e) => e.key === "Escape" && setShowRejectModal(false)}
         >
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="reject-quote-title" className="text-lg font-medium text-white mb-4">
+          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 id="reject-quote-title" className="text-lg font-medium text-theme mb-4">
               Rejeitar Cotação
             </h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-zinc-300 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo da rejeição (opcional)
               </label>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-red-500"
+                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-red-500"
                 placeholder="Informe o motivo..."
               />
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="flex-1 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800"
+                className="flex-1 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Cancelar
               </button>
