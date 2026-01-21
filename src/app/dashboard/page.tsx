@@ -5,7 +5,7 @@ import {
   Package, Users, Warehouse, FileText, Settings, Shield, 
   ShoppingCart, FileInput, DollarSign, User, BookOpen, AlertTriangle,
   TrendingUp, TrendingDown, Clock, CheckCircle, ClipboardList, ArrowRight,
-  Loader2
+  Loader2, BarChart3
 } from "lucide-react";
 import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { SimpleBarChart, SimpleAreaChart, DonutChart, ChartCard } from "@/components/charts";
 
 const modules = [
   { title: "Materiais", description: "Cadastro e gestão", href: "/materials", icon: Package, color: "bg-blue-500" },
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const { data: kpis, isLoading: kpisLoading } = trpc.dashboard.kpis.useQuery();
   const { data: alerts } = trpc.dashboard.alerts.useQuery();
   const { data: activity } = trpc.dashboard.recentActivity.useQuery();
+  const { data: chartData } = trpc.dashboard.chartData.useQuery();
 
   return (
     <ProtectedRoute>
@@ -190,6 +192,85 @@ export default function DashboardPage() {
                 <div className="text-2xl font-bold text-gray-900">{kpis.requisitions.pending}</div>
                 <div className="text-xs text-gray-500">em andamento</div>
               </div>
+            </div>
+          )}
+
+          {/* Charts Section */}
+          {chartData && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <ChartCard 
+                title="Fluxo de Caixa Projetado" 
+                subtitle="Próximos 30 dias"
+                actions={
+                  <Link href="/treasury" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                    <BarChart3 className="w-4 h-4" />
+                    Ver mais
+                  </Link>
+                }
+              >
+                <SimpleAreaChart
+                  data={chartData.cashFlowProjection}
+                  dataKeys={[
+                    { key: "A Receber", color: "#10B981" },
+                    { key: "A Pagar", color: "#EF4444" },
+                  ]}
+                  height={250}
+                />
+              </ChartCard>
+
+              <ChartCard 
+                title="Pagamentos por Mês" 
+                subtitle="Últimos 6 meses"
+                actions={
+                  <Link href="/payables" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                    <BarChart3 className="w-4 h-4" />
+                    Ver mais
+                  </Link>
+                }
+              >
+                <SimpleBarChart
+                  data={chartData.paymentsByMonth}
+                  dataKeys={[
+                    { key: "Pago", color: "#10B981" },
+                    { key: "Pendente", color: "#F59E0B" },
+                  ]}
+                  height={250}
+                />
+              </ChartCard>
+
+              <ChartCard 
+                title="Estoque por Categoria" 
+                subtitle="Valor em estoque"
+                actions={
+                  <Link href="/inventory" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                    <BarChart3 className="w-4 h-4" />
+                    Ver mais
+                  </Link>
+                }
+              >
+                <DonutChart
+                  data={chartData.inventoryByCategory}
+                  dataKey="value"
+                  height={250}
+                />
+              </ChartCard>
+
+              <ChartCard 
+                title="Requisições por Mês" 
+                subtitle="Últimos 6 meses"
+                actions={
+                  <Link href="/requisitions" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                    <BarChart3 className="w-4 h-4" />
+                    Ver mais
+                  </Link>
+                }
+              >
+                <SimpleBarChart
+                  data={chartData.requisitionsByMonth}
+                  dataKeys={[{ key: "Requisições", color: "#8B5CF6" }]}
+                  height={250}
+                />
+              </ChartCard>
             </div>
           )}
 
