@@ -91,7 +91,9 @@ const menuItems: MenuItem[] = [
     children: [
       { label: "Ordens de Produção", href: "/production" },
       { label: "BOM/Estrutura", href: "/engineering/bom" },
-      { label: "OEE", href: "/oee" },
+      { label: "MRP", href: "/production/mrp" },
+      { label: "MES", href: "/production/mes" },
+      { label: "OEE", href: "/production/oee" },
     ],
   },
   {
@@ -102,6 +104,9 @@ const menuItems: MenuItem[] = [
       { label: "Departamentos", href: "/hr/departments" },
       { label: "Folha de Ponto", href: "/hr/timesheet" },
       { label: "Folha de Pagamento", href: "/hr/payroll" },
+      { label: "13º Salário", href: "/hr/thirteenth" },
+      { label: "Férias", href: "/hr/vacations" },
+      { label: "Rescisões", href: "/hr/terminations" },
     ],
   },
   {
@@ -132,6 +137,8 @@ const menuItems: MenuItem[] = [
       { label: "Workflow", href: "/workflow" },
       { label: "Auditoria", href: "/audit" },
       { label: "Configurações", href: "/settings" },
+      { label: "Empresas", href: "/settings/companies" },
+      { label: "Design System", href: "/docs" },
     ],
   },
 ];
