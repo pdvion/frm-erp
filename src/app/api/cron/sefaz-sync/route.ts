@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createSefazClient, SefazConfig } from "@/lib/sefaz";
+import { createSefazClient, SefazConfig, ManifestacaoTipo } from "@/lib/sefaz";
 
 // Vercel Cron - executar a cada 4 horas
 // Configurado em vercel.json: "0 */4 * * *"
@@ -14,6 +14,16 @@ interface SefazConfigStored {
   uf: string;
   environment: string;
   certificateId?: string;
+}
+
+interface SyncResult {
+  companyId: string;
+  companyName: string;
+  success: boolean;
+  nfesFound: number;
+  nfesImported: number;
+  nfesManifested: number;
+  error?: string;
 }
 
 // Verificar se a requisição vem do Vercel Cron
@@ -49,6 +59,35 @@ async function getSefazConfig(companyId: string): Promise<SefazConfig | null> {
   } as SefazConfig;
 }
 
+// Enviar notificação de novas NFes (placeholder para integração futura)
+async function sendNewNfeNotification(
+  companyId: string,
+  email: string | null,
+  nfesCount: number
+): Promise<void> {
+  if (!email || nfesCount === 0) return;
+  
+  // TODO: Integrar com serviço de email (Resend, SendGrid, etc.)
+  console.log(`[SEFAZ Cron] Notificação: ${nfesCount} novas NFes para ${email} (empresa ${companyId})`);
+  
+  // Criar notificação no sistema
+  try {
+    await prisma.notification.create({
+      data: {
+        companyId,
+        type: "info",
+        category: "business",
+        title: `${nfesCount} nova(s) NFe(s) recebida(s)`,
+        message: `Foram encontradas ${nfesCount} nova(s) NFe(s) destinadas à sua empresa. Acesse o sistema para verificar.`,
+        link: "/invoices/pending",
+        metadata: { nfesCount, source: "sefaz_sync" },
+      },
+    });
+  } catch {
+    // Ignorar erro se tabela de notificações não existir
+  }
+}
+
 export async function GET(request: Request) {
   // Validar autenticação
   if (!isValidCronRequest(request)) {
@@ -56,14 +95,7 @@ export async function GET(request: Request) {
   }
 
   const startTime = Date.now();
-  const results: Array<{
-    companyId: string;
-    companyName: string;
-    success: boolean;
-    nfesFound: number;
-    nfesImported: number;
-    error?: string;
-  }> = [];
+  const results: SyncResult[] = [];
 
   try {
     // Buscar todas as empresas com sincronização SEFAZ habilitada
@@ -99,6 +131,7 @@ export async function GET(request: Request) {
             success: false,
             nfesFound: 0,
             nfesImported: 0,
+            nfesManifested: 0,
             error: "Configuração SEFAZ não encontrada",
           });
           continue;
@@ -133,6 +166,7 @@ export async function GET(request: Request) {
             success: false,
             nfesFound: 0,
             nfesImported: 0,
+            nfesManifested: 0,
             error: result.message,
           });
           continue;
@@ -141,6 +175,8 @@ export async function GET(request: Request) {
         // Processar NFes encontradas
         const nfesFound = result.nfes?.length || 0;
         let nfesImported = 0;
+        let nfesManifested = 0;
+        const newNfeIds: string[] = [];
 
         for (const nfe of result.nfes || []) {
           // Verificar se já existe
@@ -153,7 +189,7 @@ export async function GET(request: Request) {
           }
 
           // Criar registro pendente
-          await prisma.sefazPendingNfe.create({
+          const pendingNfe = await prisma.sefazPendingNfe.create({
             data: {
               companyId,
               chaveAcesso: nfe.chaveAcesso,
@@ -165,7 +201,62 @@ export async function GET(request: Request) {
             },
           });
 
+          newNfeIds.push(pendingNfe.id);
           nfesImported++;
+        }
+
+        // Manifestação automática se habilitada
+        if (syncConfig.autoManifest && nfesImported > 0) {
+          const manifestType = syncConfig.manifestType as ManifestacaoTipo;
+          
+          for (const nfeId of newNfeIds) {
+            try {
+              const pendingNfe = await prisma.sefazPendingNfe.findUnique({
+                where: { id: nfeId },
+              });
+
+              if (!pendingNfe) continue;
+
+              // Registrar manifestação
+              const manifestResult = await client.manifestar(
+                pendingNfe.chaveAcesso,
+                manifestType
+              );
+
+              if (manifestResult.success) {
+                // Atualizar NFe pendente
+                await prisma.sefazPendingNfe.update({
+                  where: { id: nfeId },
+                  data: {
+                    manifestacao: manifestType,
+                    manifestadaEm: new Date(),
+                  },
+                });
+
+                // Registrar log de manifestação
+                await prisma.sefazManifestacaoLog.create({
+                  data: {
+                    companyId,
+                    chaveAcesso: pendingNfe.chaveAcesso,
+                    tipo: manifestType,
+                    protocolo: manifestResult.protocolo,
+                    dataManifestacao: manifestResult.dataRecebimento || new Date(),
+                    status: "SUCESSO",
+                    pendingNfeId: nfeId,
+                  },
+                });
+
+                nfesManifested++;
+              }
+            } catch (manifestError) {
+              console.error(`[SEFAZ Cron] Erro ao manifestar NFe ${nfeId}:`, manifestError);
+            }
+          }
+        }
+
+        // Enviar notificação se habilitada
+        if (syncConfig.notifyOnNewNfe && nfesImported > 0) {
+          await sendNewNfeNotification(companyId, syncConfig.notifyEmail, nfesImported);
         }
 
         // Atualizar data da última sincronização
@@ -194,9 +285,10 @@ export async function GET(request: Request) {
           success: true,
           nfesFound,
           nfesImported,
+          nfesManifested,
         });
 
-        console.log(`[SEFAZ Cron] ${companyName}: ${nfesFound} NFes encontradas, ${nfesImported} importadas`);
+        console.log(`[SEFAZ Cron] ${companyName}: ${nfesFound} NFes encontradas, ${nfesImported} importadas, ${nfesManifested} manifestadas`);
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
@@ -208,6 +300,7 @@ export async function GET(request: Request) {
           success: false,
           nfesFound: 0,
           nfesImported: 0,
+          nfesManifested: 0,
           error: errorMessage,
         });
       }

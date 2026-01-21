@@ -19,6 +19,9 @@ import {
   FileText,
   Loader2,
   X,
+  Clock,
+  Bell,
+  Send,
 } from "lucide-react";
 
 interface Notification {
@@ -39,6 +42,13 @@ export default function SefazConfigPage() {
   // Usar consultaResult para exibir resultado da consulta
   void consultaResult;
 
+  // Sync config states
+  const [syncEnabled, setSyncEnabled] = useState(false);
+  const [autoManifest, setAutoManifest] = useState(false);
+  const [manifestType, setManifestType] = useState<"CIENCIA" | "CONFIRMACAO">("CIENCIA");
+  const [notifyOnNewNfe, setNotifyOnNewNfe] = useState(true);
+  const [notifyEmail, setNotifyEmail] = useState("");
+
   const addNotification = (type: "success" | "error" | "info", message: string) => {
     const id = Date.now();
     setNotifications((prev) => [...prev, { id, type, message }]);
@@ -53,6 +63,7 @@ export default function SefazConfigPage() {
 
   const { data: status, isLoading, refetch } = trpc.sefaz.status.useQuery();
   const { data: currentConfig } = trpc.sefaz.getConfig.useQuery();
+  const { data: syncConfig } = trpc.sefaz.getSyncConfig.useQuery();
 
   useEffect(() => {
     if (currentConfig) {
@@ -61,6 +72,16 @@ export default function SefazConfigPage() {
       setEnvironment(currentConfig.environment as "homologacao" | "producao" || "homologacao");
     }
   }, [currentConfig]);
+
+  useEffect(() => {
+    if (syncConfig) {
+      setSyncEnabled(syncConfig.isEnabled);
+      setAutoManifest(syncConfig.autoManifest);
+      setManifestType(syncConfig.manifestType as "CIENCIA" | "CONFIRMACAO");
+      setNotifyOnNewNfe(syncConfig.notifyOnNewNfe);
+      setNotifyEmail(syncConfig.notifyEmail || "");
+    }
+  }, [syncConfig]);
 
   const consultarMutation = trpc.sefaz.consultarNFeDestinadas.useMutation({
     onSuccess: (data) => {
@@ -92,6 +113,25 @@ export default function SefazConfigPage() {
       addNotification("error", `Erro ao salvar: ${error.message}`);
     },
   });
+
+  const saveSyncConfigMutation = trpc.sefaz.saveSyncConfig.useMutation({
+    onSuccess: () => {
+      addNotification("success", "Configuração de sincronização salva!");
+    },
+    onError: (error) => {
+      addNotification("error", `Erro ao salvar: ${error.message}`);
+    },
+  });
+
+  const handleSaveSyncConfig = () => {
+    saveSyncConfigMutation.mutate({
+      isEnabled: syncEnabled,
+      autoManifest,
+      manifestType,
+      notifyOnNewNfe,
+      notifyEmail: notifyEmail || undefined,
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -373,6 +413,150 @@ export default function SefazConfigPage() {
               )}
             </button>
           </div>
+        </div>
+
+        {/* Sincronização Automática */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-gray-500" />
+            Sincronização Automática
+          </h2>
+
+          <p className="text-sm text-gray-600 mb-4">
+            Configure a sincronização automática de NFe destinadas. O sistema consultará a SEFAZ periodicamente.
+          </p>
+
+          <div className="space-y-4">
+            {/* Habilitar sincronização */}
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={syncEnabled}
+                onChange={(e) => setSyncEnabled(e.target.checked)}
+                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-900">Habilitar sincronização automática</span>
+                <p className="text-xs text-gray-500">Executa a cada 4 horas via Vercel Cron</p>
+              </div>
+            </label>
+
+            {syncEnabled && (
+              <>
+                {/* Manifestação automática */}
+                <div className="border-t pt-4">
+                  <label className="flex items-center gap-3 cursor-pointer mb-3">
+                    <input
+                      type="checkbox"
+                      checked={autoManifest}
+                      onChange={(e) => setAutoManifest(e.target.checked)}
+                      className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                        <Send className="w-4 h-4" />
+                        Manifestação automática
+                      </span>
+                      <p className="text-xs text-gray-500">Registrar manifestação automaticamente para novas NFe</p>
+                    </div>
+                  </label>
+
+                  {autoManifest && (
+                    <div className="ml-8 mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Tipo de manifestação
+                      </label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="manifestType"
+                            value="CIENCIA"
+                            checked={manifestType === "CIENCIA"}
+                            onChange={() => setManifestType("CIENCIA")}
+                            className="text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm text-gray-700">Ciência da Operação</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="manifestType"
+                            value="CONFIRMACAO"
+                            checked={manifestType === "CONFIRMACAO"}
+                            onChange={() => setManifestType("CONFIRMACAO")}
+                            className="text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm text-gray-700">Confirmação da Operação</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Notificações */}
+                <div className="border-t pt-4">
+                  <label className="flex items-center gap-3 cursor-pointer mb-3">
+                    <input
+                      type="checkbox"
+                      checked={notifyOnNewNfe}
+                      onChange={(e) => setNotifyOnNewNfe(e.target.checked)}
+                      className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                        <Bell className="w-4 h-4" />
+                        Notificar novas NFe
+                      </span>
+                      <p className="text-xs text-gray-500">Receber notificação quando novas NFe forem encontradas</p>
+                    </div>
+                  </label>
+
+                  {notifyOnNewNfe && (
+                    <div className="ml-8">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        E-mail para notificações (opcional)
+                      </label>
+                      <input
+                        type="email"
+                        value={notifyEmail}
+                        onChange={(e) => setNotifyEmail(e.target.value)}
+                        placeholder="email@empresa.com.br"
+                        className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={handleSaveSyncConfig}
+              disabled={saveSyncConfigMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            >
+              {saveSyncConfigMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Salvar Configuração
+                </>
+              )}
+            </button>
+          </div>
+
+          {syncConfig?.lastSyncAt && (
+            <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+              <strong>Última sincronização:</strong>{" "}
+              {new Date(syncConfig.lastSyncAt).toLocaleString("pt-BR")}
+            </div>
+          )}
         </div>
 
         {/* Consulta NFe */}
