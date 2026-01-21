@@ -52,6 +52,8 @@ export function UserMenu({ user: propUser }: UserMenuProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+        data-testid="user-menu-button"
+        aria-label="Menu do usuário"
       >
         <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
           <User className="w-4 h-4 text-white" />
@@ -90,6 +92,7 @@ export function UserMenu({ user: propUser }: UserMenuProps) {
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            data-testid="logout-button"
           >
             <LogOut className="w-4 h-4" />
             Sair

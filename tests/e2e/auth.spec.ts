@@ -37,10 +37,10 @@ test.describe('Autenticação', () => {
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
     
     // Fazer logout via menu do usuário
-    await page.getByRole('button', { name: /paulo/i }).click();
-    await page.getByRole('menuitem', { name: /sair/i }).click();
+    await page.getByTestId('user-menu-button').click();
+    await page.getByTestId('logout-button').click();
     
     // Verificar redirecionamento para login
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
   });
 });

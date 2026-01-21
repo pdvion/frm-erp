@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
   Home,
-  Package,
   Users,
   FileText,
   ShoppingCart,
@@ -17,18 +17,8 @@ import {
   Factory,
   BarChart3,
   Settings,
-  ClipboardList,
-  Truck,
   Receipt,
-  CreditCard,
-  Wallet,
-  UserCheck,
-  Calendar,
-  Target,
   TrendingUp,
-  Bell,
-  CheckSquare,
-  FileSearch,
   Building2,
 } from "lucide-react";
 
@@ -146,10 +136,22 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
+  const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Em mobile, fechar sidebar ao navegar
+  useEffect(() => {
+    if (isMobile && onClose) {
+      onClose();
+    }
+  }, [pathname, isMobile, onClose]);
 
   // Auto-expand menu based on current path
   const getActiveModule = () => {
