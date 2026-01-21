@@ -4059,9 +4059,34 @@ model SefazPendingNfe {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
+  manifestacoes     SefazManifestacaoLog[]
+
   @@unique([companyId, chaveAcesso])
   @@index([companyId])
   @@index([situacao])
   @@index([chaveAcesso])
   @@map("sefaz_pending_nfes")
+}
+
+// Histórico de manifestações do destinatário
+model SefazManifestacaoLog {
+  id                String            @id @default(uuid()) @db.Uuid
+  companyId         String            @db.Uuid
+  chaveAcesso       String            @db.VarChar(44)
+  tipo              SefazManifestacao
+  justificativa     String?           @db.VarChar(255)
+  protocolo         String?           @db.VarChar(50)
+  dataManifestacao  DateTime          @default(now())
+  status            String            @db.VarChar(20) // SUCESSO, ERRO
+  errorMessage      String?
+  pendingNfeId      String?           @db.Uuid
+  pendingNfe        SefazPendingNfe?  @relation(fields: [pendingNfeId], references: [id], onDelete: SetNull)
+  userId            String?           @db.Uuid
+  createdAt         DateTime          @default(now())
+
+  @@index([companyId])
+  @@index([chaveAcesso])
+  @@index([tipo])
+  @@index([dataManifestacao])
+  @@map("sefaz_manifestacao_logs")
 }

@@ -69,6 +69,7 @@ export const sefazRouter = createTRPCRouter({
       chaveAcesso: z.string().length(44),
       tipo: z.enum(["CIENCIA", "CONFIRMACAO", "DESCONHECIMENTO", "NAO_REALIZADA"]),
       justificativa: z.string().optional(),
+      pendingNfeId: z.string().uuid().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const config = await getSefazConfig(ctx.companyId!, ctx.prisma);
@@ -94,7 +95,168 @@ export const sefazRouter = createTRPCRouter({
         });
       }
 
+      // Registrar histórico de manifestação
+      await ctx.prisma.sefazManifestacaoLog.create({
+        data: {
+          companyId: ctx.companyId,
+          chaveAcesso: input.chaveAcesso,
+          tipo: input.tipo,
+          justificativa: input.justificativa,
+          protocolo: result.protocolo,
+          dataManifestacao: result.dataRecebimento || new Date(),
+          status: "SUCESSO",
+          pendingNfeId: input.pendingNfeId,
+          userId: ctx.tenant.userId,
+        },
+      });
+
+      // Atualizar NFe pendente se informada
+      if (input.pendingNfeId) {
+        await ctx.prisma.sefazPendingNfe.update({
+          where: { id: input.pendingNfeId },
+          data: {
+            manifestacao: input.tipo,
+            manifestadaEm: new Date(),
+          },
+        });
+      }
+
       return result;
+    }),
+
+  // Manifestação em lote
+  manifestarEmLote: tenantProcedure
+    .input(z.object({
+      nfeIds: z.array(z.string().uuid()),
+      tipo: z.enum(["CIENCIA", "CONFIRMACAO", "DESCONHECIMENTO", "NAO_REALIZADA"]),
+      justificativa: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const config = await getSefazConfig(ctx.companyId!, ctx.prisma);
+      
+      if (!config) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Configuração SEFAZ não encontrada",
+        });
+      }
+
+      // Buscar NFes pendentes
+      const nfes = await ctx.prisma.sefazPendingNfe.findMany({
+        where: {
+          id: { in: input.nfeIds },
+          companyId: ctx.companyId,
+        },
+      });
+
+      if (nfes.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nenhuma NFe encontrada",
+        });
+      }
+
+      const client = createSefazClient(config);
+      const results: { chaveAcesso: string; success: boolean; message?: string }[] = [];
+
+      for (const nfe of nfes) {
+        try {
+          const result = await client.manifestar(
+            nfe.chaveAcesso,
+            input.tipo as ManifestacaoTipo,
+            input.justificativa
+          );
+
+          // Registrar histórico
+          await ctx.prisma.sefazManifestacaoLog.create({
+            data: {
+              companyId: ctx.companyId,
+              chaveAcesso: nfe.chaveAcesso,
+              tipo: input.tipo,
+              justificativa: input.justificativa,
+              protocolo: result.protocolo,
+              dataManifestacao: result.dataRecebimento || new Date(),
+              status: result.success ? "SUCESSO" : "ERRO",
+              errorMessage: result.message,
+              pendingNfeId: nfe.id,
+              userId: ctx.tenant.userId,
+            },
+          });
+
+          // Atualizar NFe pendente
+          if (result.success) {
+            await ctx.prisma.sefazPendingNfe.update({
+              where: { id: nfe.id },
+              data: {
+                manifestacao: input.tipo,
+                manifestadaEm: new Date(),
+              },
+            });
+          }
+
+          results.push({
+            chaveAcesso: nfe.chaveAcesso,
+            success: result.success,
+            message: result.message,
+          });
+        } catch (error) {
+          results.push({
+            chaveAcesso: nfe.chaveAcesso,
+            success: false,
+            message: error instanceof Error ? error.message : "Erro desconhecido",
+          });
+        }
+      }
+
+      const successCount = results.filter((r) => r.success).length;
+      const errorCount = results.filter((r) => !r.success).length;
+
+      return {
+        success: errorCount === 0,
+        message: `${successCount} manifestações realizadas, ${errorCount} erros`,
+        results,
+        successCount,
+        errorCount,
+      };
+    }),
+
+  // Histórico de manifestações
+  listManifestacoes: tenantProcedure
+    .input(z.object({
+      chaveAcesso: z.string().optional(),
+      tipo: z.enum(["CIENCIA", "CONFIRMACAO", "DESCONHECIMENTO", "NAO_REALIZADA"]).optional(),
+      page: z.number().default(1),
+      limit: z.number().default(20),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const { chaveAcesso, tipo, page = 1, limit = 20 } = input || {};
+
+      const where = {
+        companyId: ctx.companyId,
+        ...(chaveAcesso && { chaveAcesso }),
+        ...(tipo && { tipo }),
+      };
+
+      const [manifestacoes, total] = await Promise.all([
+        ctx.prisma.sefazManifestacaoLog.findMany({
+          where,
+          orderBy: { dataManifestacao: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+          include: {
+            pendingNfe: {
+              select: {
+                nomeEmitente: true,
+                cnpjEmitente: true,
+                valorTotal: true,
+              },
+            },
+          },
+        }),
+        ctx.prisma.sefazManifestacaoLog.count({ where }),
+      ]);
+
+      return { manifestacoes, total, pages: Math.ceil(total / limit) };
     }),
 
   // Verificar status da configuração SEFAZ

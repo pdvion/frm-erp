@@ -19,6 +19,11 @@ import {
   Loader2,
   Eye,
   Ban,
+  Send,
+  CheckCheck,
+  HelpCircle,
+  XOctagon,
+  History,
 } from "lucide-react";
 
 type SituacaoNfe = "PENDENTE" | "PROCESSANDO" | "IMPORTADA" | "IGNORADA" | "ERRO";
@@ -31,12 +36,27 @@ const situacaoConfig: Record<SituacaoNfe, { label: string; color: string; icon: 
   ERRO: { label: "Erro", color: "bg-red-100 text-red-800", icon: <AlertCircle className="w-3 h-3" /> },
 };
 
+type ManifestacaoTipo = "CIENCIA" | "CONFIRMACAO" | "DESCONHECIMENTO" | "NAO_REALIZADA";
+
+const manifestacaoConfig: Record<ManifestacaoTipo, { label: string; color: string; icon: React.ReactNode; description: string }> = {
+  CIENCIA: { label: "Ciência", color: "bg-blue-100 text-blue-800", icon: <Eye className="w-3 h-3" />, description: "Ciência da operação - Você tomou conhecimento da NFe" },
+  CONFIRMACAO: { label: "Confirmação", color: "bg-green-100 text-green-800", icon: <CheckCheck className="w-3 h-3" />, description: "Confirmação da operação - Você confirma o recebimento" },
+  DESCONHECIMENTO: { label: "Desconhecimento", color: "bg-amber-100 text-amber-800", icon: <HelpCircle className="w-3 h-3" />, description: "Desconhecimento da operação - Você não reconhece a NFe" },
+  NAO_REALIZADA: { label: "Não Realizada", color: "bg-red-100 text-red-800", icon: <XOctagon className="w-3 h-3" />, description: "Operação não realizada - A operação não foi concluída" },
+};
+
 export default function PendingInvoicesPage() {
   const [situacaoFilter, setSituacaoFilter] = useState<SituacaoNfe | "">("");
   const [page, setPage] = useState(1);
   const [selectedNfe, setSelectedNfe] = useState<string | null>(null);
+  const [selectedNfeChave, setSelectedNfeChave] = useState<string>("");
   const [ignoreMotivo, setIgnoreMotivo] = useState("");
   const [showIgnoreModal, setShowIgnoreModal] = useState(false);
+  const [showManifestModal, setShowManifestModal] = useState(false);
+  const [manifestTipo, setManifestTipo] = useState<ManifestacaoTipo>("CIENCIA");
+  const [manifestJustificativa, setManifestJustificativa] = useState("");
+  const [selectedNfes, setSelectedNfes] = useState<string[]>([]);
+  const [showBatchManifestModal, setShowBatchManifestModal] = useState(false);
 
   const utils = trpc.useUtils();
 
@@ -69,6 +89,27 @@ export default function PendingInvoicesPage() {
     },
   });
 
+  const manifestMutation = trpc.sefaz.manifestar.useMutation({
+    onSuccess: () => {
+      utils.sefaz.listPendingNfes.invalidate();
+      setShowManifestModal(false);
+      setSelectedNfe(null);
+      setSelectedNfeChave("");
+      setManifestTipo("CIENCIA");
+      setManifestJustificativa("");
+    },
+  });
+
+  const batchManifestMutation = trpc.sefaz.manifestarEmLote.useMutation({
+    onSuccess: () => {
+      utils.sefaz.listPendingNfes.invalidate();
+      setShowBatchManifestModal(false);
+      setSelectedNfes([]);
+      setManifestTipo("CIENCIA");
+      setManifestJustificativa("");
+    },
+  });
+
   const handleImport = (nfeId: string) => {
     importMutation.mutate({ pendingNfeId: nfeId });
   };
@@ -82,6 +123,44 @@ export default function PendingInvoicesPage() {
   const openIgnoreModal = (nfeId: string) => {
     setSelectedNfe(nfeId);
     setShowIgnoreModal(true);
+  };
+
+  const openManifestModal = (nfeId: string, chaveAcesso: string) => {
+    setSelectedNfe(nfeId);
+    setSelectedNfeChave(chaveAcesso);
+    setShowManifestModal(true);
+  };
+
+  const handleManifest = () => {
+    if (selectedNfe && selectedNfeChave) {
+      manifestMutation.mutate({
+        chaveAcesso: selectedNfeChave,
+        tipo: manifestTipo,
+        justificativa: manifestTipo === "NAO_REALIZADA" ? manifestJustificativa : undefined,
+        pendingNfeId: selectedNfe,
+      });
+    }
+  };
+
+  const handleBatchManifest = () => {
+    if (selectedNfes.length > 0) {
+      batchManifestMutation.mutate({
+        nfeIds: selectedNfes,
+        tipo: manifestTipo,
+        justificativa: manifestTipo === "NAO_REALIZADA" ? manifestJustificativa : undefined,
+      });
+    }
+  };
+
+  const toggleNfeSelection = (nfeId: string) => {
+    setSelectedNfes((prev) =>
+      prev.includes(nfeId) ? prev.filter((id) => id !== nfeId) : [...prev, nfeId]
+    );
+  };
+
+  const selectAllPending = () => {
+    const pendingIds = data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).map((n) => n.id) || [];
+    setSelectedNfes(pendingIds);
   };
 
   const formatChaveAcesso = (chave: string) => {
@@ -110,6 +189,22 @@ export default function PendingInvoicesPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {selectedNfes.length > 0 && (
+            <button
+              onClick={() => setShowBatchManifestModal(true)}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              Manifestar ({selectedNfes.length})
+            </button>
+          )}
+          <Link
+            href="/invoices/manifestacoes"
+            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <History className="w-4 h-4" />
+            Histórico
+          </Link>
           {!syncStatus?.configured && (
             <Link
               href="/settings/sefaz"
@@ -254,6 +349,15 @@ export default function PendingInvoicesPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
+                    <th className="px-4 py-3 text-center w-10">
+                      <input
+                        type="checkbox"
+                        checked={selectedNfes.length > 0 && selectedNfes.length === (data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).length || 0)}
+                        onChange={(e) => e.target.checked ? selectAllPending() : setSelectedNfes([])}
+                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        aria-label="Selecionar todas"
+                      />
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Chave de Acesso
                     </th>
@@ -267,6 +371,9 @@ export default function PendingInvoicesPage() {
                       Valor
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Manifestação
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Situação
                     </th>
                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -276,9 +383,22 @@ export default function PendingInvoicesPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {data?.nfes?.map((nfe) => {
-                    const config = situacaoConfig[nfe.situacao as SituacaoNfe];
+                    const sitConfig = situacaoConfig[nfe.situacao as SituacaoNfe];
+                    const manConfig = nfe.manifestacao ? manifestacaoConfig[nfe.manifestacao as ManifestacaoTipo] : null;
+                    const canSelect = nfe.situacao === "PENDENTE" && !nfe.manifestacao;
                     return (
-                      <tr key={nfe.id} className="hover:bg-gray-50">
+                      <tr key={nfe.id} className={`hover:bg-gray-50 ${selectedNfes.includes(nfe.id) ? "bg-indigo-50" : ""}`}>
+                        <td className="px-4 py-3 text-center">
+                          {canSelect && (
+                            <input
+                              type="checkbox"
+                              checked={selectedNfes.includes(nfe.id)}
+                              onChange={() => toggleNfeSelection(nfe.id)}
+                              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              aria-label={`Selecionar NFe ${nfe.chaveAcesso}`}
+                            />
+                          )}
+                        </td>
                         <td className="px-4 py-3">
                           <div className="text-xs font-mono text-gray-600">
                             {formatChaveAcesso(nfe.chaveAcesso)}
@@ -302,11 +422,32 @@ export default function PendingInvoicesPage() {
                           {nfe.valorTotal ? formatCurrency(nfe.valorTotal) : "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
+                          {manConfig ? (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${manConfig.color}`}
+                              title={manConfig.description}
+                            >
+                              {manConfig.icon}
+                              {manConfig.label}
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => openManifestModal(nfe.id, nfe.chaveAcesso)}
+                              disabled={nfe.situacao !== "PENDENTE"}
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-purple-100 hover:text-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Registrar manifestação"
+                            >
+                              <Send className="w-3 h-3" />
+                              Manifestar
+                            </button>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${sitConfig.color}`}
                           >
-                            {config.icon}
-                            {config.label}
+                            {sitConfig.icon}
+                            {sitConfig.label}
                           </span>
                           {nfe.situacao === "ERRO" && nfe.errorMessage && (
                             <div className="text-xs text-red-600 mt-1" title={nfe.errorMessage}>
@@ -432,6 +573,203 @@ export default function PendingInvoicesPage() {
               >
                 {ignoreMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Ignorar NFe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manifest Modal - Individual */}
+      {showManifestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Send className="w-5 h-5 text-purple-600" />
+              Manifestação do Destinatário
+            </h3>
+            <p className="text-gray-600 mb-4 text-sm">
+              Selecione o tipo de manifestação para registrar na SEFAZ.
+            </p>
+            
+            <div className="space-y-3 mb-4">
+              {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
+                const config = manifestacaoConfig[tipo];
+                return (
+                  <label
+                    key={tipo}
+                    className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                      manifestTipo === tipo
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="manifestTipo"
+                      value={tipo}
+                      checked={manifestTipo === tipo}
+                      onChange={() => setManifestTipo(tipo)}
+                      className="mt-1 text-purple-600 focus:ring-purple-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+                          {config.icon}
+                          {config.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{config.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+
+            {manifestTipo === "NAO_REALIZADA" && (
+              <div className="mb-4">
+                <label htmlFor="manifest-justificativa" className="block text-sm font-medium text-gray-700 mb-1">
+                  Justificativa <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="manifest-justificativa"
+                  value={manifestJustificativa}
+                  onChange={(e) => setManifestJustificativa(e.target.value)}
+                  placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  rows={3}
+                />
+                {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Mínimo 15 caracteres ({manifestJustificativa.length}/15)
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowManifestModal(false);
+                  setSelectedNfe(null);
+                  setSelectedNfeChave("");
+                  setManifestTipo("CIENCIA");
+                  setManifestJustificativa("");
+                }}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleManifest}
+                disabled={
+                  manifestMutation.isPending ||
+                  (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
+                }
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {manifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                Registrar Manifestação
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Manifest Modal */}
+      {showBatchManifestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Send className="w-5 h-5 text-purple-600" />
+              Manifestação em Lote
+            </h3>
+            <p className="text-gray-600 mb-4 text-sm">
+              Você está prestes a manifestar <strong>{selectedNfes.length}</strong> NFe(s).
+              Selecione o tipo de manifestação.
+            </p>
+            
+            <div className="space-y-3 mb-4">
+              {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
+                const config = manifestacaoConfig[tipo];
+                return (
+                  <label
+                    key={tipo}
+                    className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                      manifestTipo === tipo
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="batchManifestTipo"
+                      value={tipo}
+                      checked={manifestTipo === tipo}
+                      onChange={() => setManifestTipo(tipo)}
+                      className="mt-1 text-purple-600 focus:ring-purple-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+                          {config.icon}
+                          {config.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{config.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+
+            {manifestTipo === "NAO_REALIZADA" && (
+              <div className="mb-4">
+                <label htmlFor="batch-manifest-justificativa" className="block text-sm font-medium text-gray-700 mb-1">
+                  Justificativa <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="batch-manifest-justificativa"
+                  value={manifestJustificativa}
+                  onChange={(e) => setManifestJustificativa(e.target.value)}
+                  placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  rows={3}
+                />
+                {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Mínimo 15 caracteres ({manifestJustificativa.length}/15)
+                  </p>
+                )}
+              </div>
+            )}
+
+            {batchManifestMutation.isError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                Erro ao processar manifestações. Tente novamente.
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowBatchManifestModal(false);
+                  setManifestTipo("CIENCIA");
+                  setManifestJustificativa("");
+                }}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleBatchManifest}
+                disabled={
+                  batchManifestMutation.isPending ||
+                  (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
+                }
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {batchManifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                Manifestar {selectedNfes.length} NFe(s)
               </button>
             </div>
           </div>
