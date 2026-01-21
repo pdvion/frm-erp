@@ -1,0 +1,251 @@
+"use client";
+
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { formatCurrency } from "@/lib/formatters";
+import {
+  Calculator,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Users,
+  CheckCircle,
+} from "lucide-react";
+
+const typeLabels: Record<string, string> = {
+  FIRST_INSTALLMENT: "1ª Parcela",
+  SECOND_INSTALLMENT: "2ª Parcela",
+  FULL: "Integral",
+  PROPORTIONAL: "Proporcional",
+};
+
+const statusConfig: Record<string, { label: string; color: string }> = {
+  PENDING: { label: "Pendente", color: "bg-gray-100 text-gray-800" },
+  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800" },
+  PAID: { label: "Pago", color: "bg-green-100 text-green-800" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800" },
+};
+
+export default function ThirteenthPage() {
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [page, setPage] = useState(1);
+
+  const utils = trpc.useUtils();
+
+  const { data, isLoading } = trpc.thirteenth.list.useQuery({
+    type: typeFilter as "FIRST_INSTALLMENT" | "SECOND_INSTALLMENT" | "FULL" | "PROPORTIONAL" | "ALL",
+    status: statusFilter as "PENDING" | "CALCULATED" | "PAID" | "CANCELLED" | "ALL",
+    year,
+    page,
+    limit: 20,
+  });
+
+  const { data: summary } = trpc.thirteenth.summary.useQuery({ year });
+
+  const calculateFirstMutation = trpc.thirteenth.calculateFirstInstallment.useMutation({
+    onSuccess: () => utils.thirteenth.list.invalidate(),
+  });
+
+  const calculateSecondMutation = trpc.thirteenth.calculateSecondInstallment.useMutation({
+    onSuccess: () => utils.thirteenth.list.invalidate(),
+  });
+
+  const filteredItems = data?.items.filter((item) =>
+    item.employee.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Calculator className="w-8 h-8 text-green-600" />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">13º Salário</h1>
+            <p className="text-sm text-gray-500">Cálculo e pagamento do décimo terceiro</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => calculateFirstMutation.mutate({ year })}
+            disabled={calculateFirstMutation.isPending}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <Calculator className="w-4 h-4" />
+            Calcular 1ª Parcela
+          </button>
+          <button
+            onClick={() => calculateSecondMutation.mutate({ year })}
+            disabled={calculateSecondMutation.isPending}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+          >
+            <Calculator className="w-4 h-4" />
+            Calcular 2ª Parcela
+          </button>
+        </div>
+      </div>
+
+      {summary && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <Users className="w-4 h-4" />
+              1ª Parcela
+            </div>
+            <div className="text-2xl font-bold">{summary.firstInstallment.count}</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="text-gray-500 text-sm mb-1">Total 1ª Parcela</div>
+            <div className="text-2xl font-bold text-green-600">{formatCurrency(summary.firstInstallment.totalNet)}</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="text-gray-500 text-sm mb-1">Total 2ª Parcela</div>
+            <div className="text-2xl font-bold text-blue-600">{formatCurrency(summary.secondInstallment.totalNet)}</div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+              <CheckCircle className="w-4 h-4" />
+              Pagos
+            </div>
+            <div className="text-2xl font-bold">{summary.firstInstallment.paid + summary.secondInstallment.paid}</div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar por funcionário..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="ALL">Todos os Tipos</option>
+              <option value="FIRST_INSTALLMENT">1ª Parcela</option>
+              <option value="SECOND_INSTALLMENT">2ª Parcela</option>
+              <option value="FULL">Integral</option>
+              <option value="PROPORTIONAL">Proporcional</option>
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="ALL">Todos os Status</option>
+              <option value="PENDING">Pendente</option>
+              <option value="CALCULATED">Calculado</option>
+              <option value="PAID">Pago</option>
+              <option value="CANCELLED">Cancelado</option>
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+            >
+              {[2024, 2025, 2026, 2027].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Funcionário</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Meses</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Bruto</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">INSS</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IRRF</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Líquido</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredItems?.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                      {item.employee.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">
+                        {typeLabels[item.type] || item.type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {item.monthsWorked}/12
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatCurrency(item.grossValue)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                      {item.inssDeduction > 0 ? `-${formatCurrency(item.inssDeduction)}` : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                      {item.irrfDeduction > 0 ? `-${formatCurrency(item.irrfDeduction)}` : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      {formatCurrency(item.netValue)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[item.status]?.color}`}>
+                        {statusConfig[item.status]?.label || item.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {(!filteredItems || filteredItems.length === 0) && (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                      Nenhum registro encontrado
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {data && data.pages > 1 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-200">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-2 rounded hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm text-gray-600">Página {page} de {data.pages}</span>
+            <button
+              onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
+              disabled={page === data.pages}
+              className="p-2 rounded hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
