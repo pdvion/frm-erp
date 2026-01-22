@@ -55,7 +55,7 @@ export default function MaterialsPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por descrição ou código..."
@@ -64,20 +64,20 @@ export default function MaterialsPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-zinc-500" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <select
               value={statusFilter ?? ""}
               onChange={(e) => {
                 setStatusFilter(e.target.value as typeof statusFilter || undefined);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Todos os status</option>
               <option value="ACTIVE">Ativos</option>
@@ -96,76 +96,76 @@ export default function MaterialsPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8">
+          <div className="bg-theme-card rounded-xl border border-theme p-8">
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <span className="ml-3 text-zinc-400">Carregando materiais...</span>
+              <span className="ml-3 text-theme-secondary">Carregando materiais...</span>
             </div>
           </div>
         )}
 
         {/* Materials Table */}
         {!isLoading && !error && (
-          <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-zinc-800/50 border-b border-zinc-800">
+                <thead className="bg-theme-table-header border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Código
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Descrição
                     </th>
-                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Categoria
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Unidade
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Compartilhado
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800">
+                <tbody className="divide-y divide-theme-table">
                   {materials.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-theme-muted">
                         Nenhum material encontrado.
                       </td>
                     </tr>
                   ) : (
                     materials.map((material: typeof materials[number]) => (
-                      <tr key={material.id} className="hover:bg-zinc-800/50 transition-colors">
+                      <tr key={material.id} className="hover:bg-theme-table-hover transition-colors">
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-white">
+                          <div className="text-sm font-medium text-theme">
                             {material.code}
                           </div>
                           {material.internalCode && (
-                            <div className="text-xs text-zinc-500">
+                            <div className="text-xs text-theme-muted">
                               {material.internalCode}
                             </div>
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm text-zinc-200 max-w-xs truncate">
+                          <div className="text-sm text-theme max-w-xs truncate">
                             {material.description}
                           </div>
                         </td>
                         <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-zinc-400">
+                          <div className="text-sm text-theme-secondary">
                             {material.category?.name ?? "-"}
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-zinc-400">
+                          <div className="text-sm text-theme-secondary">
                             {material.unit}
                           </div>
                         </td>
@@ -174,7 +174,7 @@ export default function MaterialsPage() {
                             material.status === "ACTIVE" 
                               ? "bg-green-900/50 text-green-400"
                               : material.status === "INACTIVE"
-                              ? "bg-zinc-800 text-zinc-400"
+                              ? "bg-theme-secondary text-theme-secondary"
                               : "bg-red-900/50 text-red-400"
                           }`}>
                             {material.status === "ACTIVE" ? "Ativo" : material.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
@@ -187,27 +187,27 @@ export default function MaterialsPage() {
                               Sim
                             </span>
                           ) : (
-                            <span className="text-xs text-zinc-500">Não</span>
+                            <span className="text-xs text-theme-muted">Não</span>
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Link
                               href={`/materials/${material.id}`}
-                              className="p-1 text-zinc-500 hover:text-blue-400 transition-colors"
+                              className="p-1 text-theme-muted hover:text-blue-400 transition-colors"
                               title="Visualizar"
                             >
                               <Eye className="w-4 h-4" />
                             </Link>
                             <Link
                               href={`/materials/${material.id}/edit`}
-                              className="p-1 text-zinc-500 hover:text-green-400 transition-colors"
+                              className="p-1 text-theme-muted hover:text-green-400 transition-colors"
                               title="Editar"
                             >
                               <Edit className="w-4 h-4" />
                             </Link>
                             <button
-                              className="p-1 text-zinc-500 hover:text-red-400 transition-colors"
+                              className="p-1 text-theme-muted hover:text-red-400 transition-colors"
                               title="Excluir"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -223,8 +223,8 @@ export default function MaterialsPage() {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-zinc-800 flex items-center justify-between">
-                <div className="text-sm text-zinc-400">
+              <div className="px-4 py-3 border-t border-theme flex items-center justify-between">
+                <div className="text-sm text-theme-secondary">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
                   {pagination.total} materiais
@@ -233,17 +233,17 @@ export default function MaterialsPage() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-zinc-700 rounded-lg text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-800 hover:text-white transition-colors"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-zinc-400">
+                  <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 border border-zinc-700 rounded-lg text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-800 hover:text-white transition-colors"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

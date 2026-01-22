@@ -158,26 +158,26 @@ export default function QuotesPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          <div className="bg-zinc-900 rounded-lg p-4 border border-zinc-800">
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <div className="text-sm text-zinc-400">Total</div>
+          <div className="bg-theme-card rounded-lg p-4 border border-theme">
+            <div className="text-2xl font-bold text-theme">{stats.total}</div>
+            <div className="text-sm text-theme-secondary">Total</div>
           </div>
           {stats.byStatus.map((s) => {
             const config = statusConfig[s.status];
             return (
               <div
                 key={s.status}
-                className={`bg-zinc-900 rounded-lg p-4 border cursor-pointer transition-colors ${statusFilter === s.status ? "border-blue-500" : "border-zinc-800 hover:border-zinc-700"}`}
+                className={`bg-theme-card rounded-lg p-4 border cursor-pointer transition-colors ${statusFilter === s.status ? "border-blue-500" : "border-theme hover:border-theme-hover"}`}
                 onClick={() => setStatusFilter(statusFilter === s.status ? "" : s.status)}
               >
                 <div className="flex items-center gap-2">
                   <span className={`p-1 rounded ${config.color}`}>
                     {config.icon}
                   </span>
-                  <div className="text-xl font-bold text-white">{s.count}</div>
+                  <div className="text-xl font-bold text-theme">{s.count}</div>
                 </div>
-                <div className="text-sm text-zinc-400">{config.label}</div>
-                <div className="text-xs text-zinc-500 mt-1">
+                <div className="text-sm text-theme-secondary">{config.label}</div>
+                <div className="text-xs text-theme-muted mt-1">
                   {formatCurrency(s.totalValue)}
                 </div>
               </div>
@@ -187,10 +187,10 @@ export default function QuotesPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+      <div className="bg-theme-card rounded-lg border border-theme p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por fornecedor ou observações..."
@@ -199,18 +199,18 @@ export default function QuotesPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-zinc-500" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <select
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Todos os status</option>
               {Object.entries(statusConfig).map(([key, config]) => (
@@ -235,12 +235,12 @@ export default function QuotesPage() {
           <span className="text-red-400">Erro ao carregar cotações</span>
         </div>
       ) : data?.quotes.length === 0 ? (
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-12 text-center">
-          <FileText className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-12 text-center">
+          <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-theme mb-2">
             Nenhuma cotação encontrada
           </h3>
-          <p className="text-zinc-400 mb-4">
+          <p className="text-theme-secondary mb-4">
             {search || statusFilter
               ? "Tente ajustar os filtros de busca"
               : "Comece criando sua primeira cotação"}
@@ -265,60 +265,60 @@ export default function QuotesPage() {
       ) : (
         <>
           {/* Table View */}
-          <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden">
+          <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
             <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-zinc-800">
-              <thead className="bg-zinc-800/50">
+            <table className="min-w-full divide-y divide-theme-table">
+              <thead className="bg-theme-table-header">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Código
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Fornecedor
                   </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Itens
                   </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Valor Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800">
+              <tbody className="divide-y divide-theme-table">
                 {data?.quotes.map((quote) => {
                   const config = statusConfig[quote.status];
                   return (
-                    <tr key={quote.id} className="hover:bg-zinc-800/50">
+                    <tr key={quote.id} className="hover:bg-theme-table-hover">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-mono text-sm font-medium text-white">
+                        <span className="font-mono text-sm font-medium text-theme">
                           #{quote.code.toString().padStart(6, "0")}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-white">
+                        <div className="text-sm font-medium text-theme">
                           {quote.supplier.tradeName || quote.supplier.companyName}
                         </div>
-                        <div className="text-sm text-zinc-500">
+                        <div className="text-sm text-theme-muted">
                           Cód: {quote.supplier.code}
                         </div>
                       </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
+                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {formatDate(quote.requestDate)}
                       </td>
-                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {quote._count.items} {quote._count.items === 1 ? "item" : "itens"}
                       </td>
                       <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-white">
+                        <span className="text-sm font-medium text-theme">
                           {formatCurrency(quote.totalValue)}
                         </span>
                       </td>
@@ -350,7 +350,7 @@ export default function QuotesPage() {
           {/* Pagination */}
           {data?.pagination && data.pagination.totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <div className="text-sm text-zinc-400">
+              <div className="text-sm text-theme-secondary">
                 Mostrando {((page - 1) * 20) + 1} a{" "}
                 {Math.min(page * 20, data.pagination.total)} de{" "}
                 {data.pagination.total} cotações
@@ -359,17 +359,17 @@ export default function QuotesPage() {
                 <button
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="p-2 rounded-lg border border-zinc-700 text-zinc-400 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="px-4 py-2 text-sm text-zinc-400">
+                <span className="px-4 py-2 text-sm text-theme-secondary">
                   {page} / {data.pagination.totalPages}
                 </span>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={page === data.pagination.totalPages}
-                  className="p-2 rounded-lg border border-zinc-700 text-zinc-400 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
