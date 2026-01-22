@@ -1,12 +1,12 @@
 ---
-description: Validação pré-commit para evitar problemas do CodeRabbit
+description: Validação pré-commit para evitar problemas do CI/CodeRabbit
 ---
 
 # Workflow: Pre-Commit Check
 
-Execute este workflow antes de fazer commit para evitar problemas recorrentes.
+Execute este workflow **ANTES** de fazer commit para evitar falhas no CI.
 
-## Passos
+## Passos Obrigatórios
 
 ### 1. Verificar Lint
 // turbo
@@ -20,22 +20,36 @@ pnpm lint
 pnpm type-check
 ```
 
-### 3. Verificar Build
+Se houver erros, corrija antes de continuar.
+
+### 3. Verificar Build (opcional mas recomendado)
 ```bash
 pnpm build
 ```
 
-### 4. Revisar Checklist de Segurança
+## Checklist de Erros Comuns
 
-Antes de commitar, verifique:
+### TypeScript - Campos do Prisma Schema
+- [ ] Verificar se campos usados existem no schema (`prisma/schema.prisma`)
+- [ ] Usar `ie` em vez de `stateRegistration` para Company
+- [ ] Usar `hireDate` em vez de `admissionDate` para Employee
+- [ ] Converter `code` (number) para String quando necessário
 
-- [ ] Não há `dangerouslySetInnerHTML` sem sanitização
-- [ ] Não há `any` no código TypeScript
-- [ ] Todas as mutations tRPC têm `onError`
-- [ ] Inputs têm labels ou aria-labels
-- [ ] Queries filtram por `companyId` (multi-tenant)
+### TypeScript - tRPC Routers
+- [ ] Verificar se métodos chamados existem no router
+- [ ] Verificar tipos de retorno (ex: `items` vs array direto)
+- [ ] Usar tipos corretos nos inputs do mutation
 
-### 5. Commit com Conventional Commits
+### TypeScript - Arquivos de Serviço
+- [ ] Garantir que arquivos `.ts` têm exports válidos
+- [ ] Verificar imports de tipos do Prisma
+- [ ] Usar `as const` para literais de tipo
+
+### React/Next.js
+- [ ] `"use client"` no topo de componentes com hooks
+- [ ] Não usar hooks em Server Components
+
+## Commit com Conventional Commits
 
 ```bash
 git add -A
@@ -48,10 +62,16 @@ Tipos válidos:
 - `docs` - documentação
 - `chore` - manutenção
 - `refactor` - refatoração
-- `test` - testes
 
-### 6. Push
+## Push
 
 ```bash
 git push origin main
 ```
+
+## Se o CI Falhar
+
+1. Verificar logs do GitHub Actions
+2. Executar `pnpm type-check` localmente
+3. Corrigir erros e fazer novo commit
+4. **NUNCA** fazer push sem passar no type-check local
