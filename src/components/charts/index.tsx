@@ -58,8 +58,8 @@ export const SimpleLineChart = memo(function SimpleLineChart({
   className,
 }: LineChartProps) {
   return (
-    <div className={className} style={{ width: "100%", height }}>
-      <ResponsiveContainer>
+    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
@@ -108,8 +108,8 @@ export const SimpleBarChart = memo(function SimpleBarChart({
   className,
 }: BarChartProps) {
   return (
-    <div className={className} style={{ width: "100%", height }}>
-      <ResponsiveContainer>
+    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
           layout={layout}
@@ -171,8 +171,8 @@ export const SimplePieChart = memo(function SimplePieChart({
   className,
 }: PieChartProps) {
   return (
-    <div className={className} style={{ width: "100%", height }}>
-      <ResponsiveContainer>
+    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -223,8 +223,8 @@ export const SimpleAreaChart = memo(function SimpleAreaChart({
   className,
 }: AreaChartProps) {
   return (
-    <div className={className} style={{ width: "100%", height }}>
-      <ResponsiveContainer>
+    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
