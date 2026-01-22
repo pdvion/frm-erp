@@ -6,11 +6,22 @@
  * Referências:
  * - Manual de Orientação do Contribuinte (MOC)
  * - Portal Nacional da NF-e: https://www.nfe.fazenda.gov.br
+ * 
+ * @module sefaz/nfe-emitter
+ * @see VIO-566 - Emissão de NF-e
  */
 
 import { XMLBuilder } from "fast-xml-parser";
 
-// Tipos para NF-e
+// Constantes para cálculo do dígito verificador (Módulo 11)
+const PESOS_MODULO_11 = [2, 3, 4, 5, 6, 7, 8, 9];
+const DIVISOR_MODULO_11 = 11;
+const LIMITE_RESTO_DV = 2;
+
+/**
+ * Dados do emitente da NF-e
+ * @see Manual de Orientação do Contribuinte - Grupo C
+ */
 export interface NFeEmitente {
   cnpj: string;
   ie: string;
@@ -32,6 +43,10 @@ export interface NFeEmitente {
   crt: "1" | "2" | "3"; // 1=Simples Nacional, 2=SN Excesso, 3=Regime Normal
 }
 
+/**
+ * Dados do destinatário da NF-e
+ * @see Manual de Orientação do Contribuinte - Grupo E
+ */
 export interface NFeDestinatario {
   cpfCnpj: string;
   ie?: string;
@@ -53,6 +68,10 @@ export interface NFeDestinatario {
   indIEDest: "1" | "2" | "9"; // 1=Contribuinte, 2=Isento, 9=Não contribuinte
 }
 
+/**
+ * Item da NF-e com dados do produto e impostos
+ * @see Manual de Orientação do Contribuinte - Grupo I
+ */
 export interface NFeItem {
   numero: number;
   codigo: string;
@@ -91,6 +110,10 @@ export interface NFeItem {
   };
 }
 
+/**
+ * Dados completos para emissão de uma NF-e
+ * @see Manual de Orientação do Contribuinte - Layout 4.00
+ */
 export interface NFeData {
   // Identificação
   naturezaOperacao: string;
@@ -167,8 +190,11 @@ export interface NFeData {
   };
 }
 
+/**
+ * Resposta da emissão/consulta de NF-e
+ */
 export interface NFeResponse {
-  success: boolean;
+  sucesso: boolean;
   chaveAcesso?: string;
   protocolo?: string;
   dataAutorizacao?: Date;
@@ -179,7 +205,9 @@ export interface NFeResponse {
   };
 }
 
-// Configuração do ambiente
+/**
+ * Configuração para conexão com SEFAZ
+ */
 export interface SefazConfig {
   ambiente: "1" | "2"; // 1=Produção, 2=Homologação
   uf: string;
@@ -218,32 +246,100 @@ const WS_URLS_PRODUCAO: Record<string, Record<string, string>> = {
 
 /**
  * Gera o código numérico aleatório da NF-e (8 dígitos)
+ * @returns Código numérico com 8 dígitos
  */
 function gerarCodigoNumerico(): string {
-  return String(Math.floor(Math.random() * 100000000)).padStart(8, "0");
+  const MAX_CODIGO = 100000000;
+  return String(Math.floor(Math.random() * MAX_CODIGO)).padStart(8, "0");
 }
 
 /**
- * Calcula o dígito verificador da chave de acesso
+ * Calcula o dígito verificador da chave de acesso usando Módulo 11
+ * 
+ * Algoritmo:
+ * 1. Multiplica cada dígito da chave (da direita para esquerda) pelos pesos 2,3,4,5,6,7,8,9 (cíclico)
+ * 2. Soma todos os resultados
+ * 3. Calcula o resto da divisão por 11
+ * 4. Se resto < 2, DV = 0; senão DV = 11 - resto
+ * 
+ * @param chave - Chave de acesso sem o dígito verificador (43 dígitos)
+ * @returns Dígito verificador (1 dígito)
  */
 function calcularDigitoVerificador(chave: string): string {
-  const pesos = [2, 3, 4, 5, 6, 7, 8, 9];
   let soma = 0;
   let pesoIndex = 0;
   
+  // Percorre da direita para esquerda aplicando os pesos
   for (let i = chave.length - 1; i >= 0; i--) {
-    soma += parseInt(chave[i]) * pesos[pesoIndex];
-    pesoIndex = (pesoIndex + 1) % 8;
+    soma += parseInt(chave[i]) * PESOS_MODULO_11[pesoIndex];
+    pesoIndex = (pesoIndex + 1) % PESOS_MODULO_11.length;
   }
   
-  const resto = soma % 11;
-  const dv = resto < 2 ? 0 : 11 - resto;
+  const resto = soma % DIVISOR_MODULO_11;
+  const dv = resto < LIMITE_RESTO_DV ? 0 : DIVISOR_MODULO_11 - resto;
   
   return String(dv);
 }
 
 /**
- * Gera a chave de acesso da NF-e
+ * Valida os parâmetros de entrada para geração da chave de acesso
+ * @throws Error se algum parâmetro for inválido
+ */
+function validarParametrosChaveAcesso(
+  uf: string,
+  cnpj: string,
+  modelo: string,
+  serie: string,
+  numero: number
+): void {
+  // Validar UF
+  const codigoUF = getCodigoUF(uf);
+  if (codigoUF === "00") {
+    throw new Error(`UF inválida: ${uf}. Use sigla de 2 letras (ex: SP, RJ, MG)`);
+  }
+  
+  // Validar CNPJ
+  const cnpjLimpo = cnpj.replace(/\D/g, "");
+  if (cnpjLimpo.length !== 14) {
+    throw new Error(`CNPJ inválido: deve ter 14 dígitos. Recebido: ${cnpjLimpo.length} dígitos`);
+  }
+  
+  // Validar modelo
+  if (modelo !== "55" && modelo !== "65") {
+    throw new Error(`Modelo inválido: ${modelo}. Use 55 (NF-e) ou 65 (NFC-e)`);
+  }
+  
+  // Validar série
+  const serieNum = parseInt(serie);
+  if (isNaN(serieNum) || serieNum < 0 || serieNum > 999) {
+    throw new Error(`Série inválida: ${serie}. Use valor entre 0 e 999`);
+  }
+  
+  // Validar número
+  if (numero < 1 || numero > 999999999) {
+    throw new Error(`Número inválido: ${numero}. Use valor entre 1 e 999999999`);
+  }
+}
+
+/**
+ * Gera a chave de acesso da NF-e (44 dígitos)
+ * 
+ * Formato: cUF + AAMM + CNPJ + mod + serie + nNF + tpEmis + cNF + cDV
+ * 
+ * @param uf - Sigla da UF do emitente (2 letras)
+ * @param dataEmissao - Data de emissão da NF-e
+ * @param cnpj - CNPJ do emitente (14 dígitos)
+ * @param modelo - Modelo do documento (55=NF-e, 65=NFC-e)
+ * @param serie - Série do documento (1-999)
+ * @param numero - Número do documento (1-999999999)
+ * @param tipoEmissao - Tipo de emissão (1=Normal, etc)
+ * @param codigoNumerico - Código numérico opcional (8 dígitos)
+ * @returns Chave de acesso com 44 dígitos
+ * @throws Error se algum parâmetro for inválido
+ * 
+ * @example
+ * const chave = gerarChaveAcesso('SP', new Date(), '12345678000199', '55', '1', 123);
+ * // Retorna: '35260112345678000199550010000001231xxxxxxxx9'
  */
 export function gerarChaveAcesso(
   uf: string,
@@ -255,6 +351,9 @@ export function gerarChaveAcesso(
   tipoEmissao: string = "1",
   codigoNumerico?: string
 ): string {
+  // Validar parâmetros de entrada (CR-002)
+  validarParametrosChaveAcesso(uf, cnpj, modelo, serie, numero);
+  
   const cUF = getCodigoUF(uf);
   const aamm = `${String(dataEmissao.getFullYear()).slice(2)}${String(dataEmissao.getMonth() + 1).padStart(2, "0")}`;
   const cnpjLimpo = cnpj.replace(/\D/g, "").padStart(14, "0");
@@ -271,22 +370,31 @@ export function gerarChaveAcesso(
 }
 
 /**
+ * Códigos IBGE das UFs brasileiras
+ */
+const CODIGOS_UF: Record<string, string> = {
+  AC: "12", AL: "27", AP: "16", AM: "13", BA: "29",
+  CE: "23", DF: "53", ES: "32", GO: "52", MA: "21",
+  MT: "51", MS: "50", MG: "31", PA: "15", PB: "25",
+  PR: "41", PE: "26", PI: "22", RJ: "33", RN: "24",
+  RS: "43", RO: "11", RR: "14", SC: "42", SP: "35",
+  SE: "28", TO: "17",
+};
+
+/**
  * Retorna o código IBGE da UF
+ * @param uf - Sigla da UF (2 letras maiúsculas)
+ * @returns Código IBGE da UF ou "00" se não encontrado
  */
 function getCodigoUF(uf: string): string {
-  const codigos: Record<string, string> = {
-    AC: "12", AL: "27", AP: "16", AM: "13", BA: "29",
-    CE: "23", DF: "53", ES: "32", GO: "52", MA: "21",
-    MT: "51", MS: "50", MG: "31", PA: "15", PB: "25",
-    PR: "41", PE: "26", PI: "22", RJ: "33", RN: "24",
-    RS: "43", RO: "11", RR: "14", SC: "42", SP: "35",
-    SE: "28", TO: "17",
-  };
-  return codigos[uf] || "35";
+  return CODIGOS_UF[uf.toUpperCase()] || "00";
 }
 
 /**
  * Formata valor numérico para o padrão da NF-e
+ * @param valor - Valor numérico a formatar
+ * @param casasDecimais - Número de casas decimais (padrão: 2)
+ * @returns Valor formatado como string
  */
 function formatarValor(valor: number, casasDecimais: number = 2): string {
   return valor.toFixed(casasDecimais);
@@ -485,16 +593,31 @@ export function gerarXmlNFe(data: NFeData, chaveAcesso: string): string {
 
 /**
  * Classe principal para emissão de NF-e
+ * @see VIO-566 - Emissão de NF-e
  */
 export class NFeEmitter {
-  private config: SefazConfig;
-  private wsUrls: Record<string, string>;
+  private readonly config: SefazConfig;
+  private readonly wsUrls: Record<string, string>;
 
   constructor(config: SefazConfig) {
     this.config = config;
     this.wsUrls = config.ambiente === "1"
       ? WS_URLS_PRODUCAO[config.uf] || WS_URLS_PRODUCAO.SP
       : WS_URLS_HOMOLOGACAO[config.uf] || WS_URLS_HOMOLOGACAO.SP;
+  }
+
+  /**
+   * Retorna a configuração atual
+   */
+  getConfig(): SefazConfig {
+    return this.config;
+  }
+
+  /**
+   * Retorna as URLs dos Web Services
+   */
+  getWsUrls(): Record<string, string> {
+    return this.wsUrls;
   }
 
   /**
@@ -521,9 +644,10 @@ export class NFeEmitter {
       // TODO: Transmitir para SEFAZ
       // const resposta = await this.transmitir(xmlAssinado);
 
+      // TODO(VIO-566): Implementar assinatura e transmissão real para SEFAZ
       // Por enquanto, retornar simulação
       return {
-        success: true,
+        sucesso: true,
         chaveAcesso,
         protocolo: `${Date.now()}`,
         dataAutorizacao: new Date(),
@@ -531,7 +655,7 @@ export class NFeEmitter {
       };
     } catch (error) {
       return {
-        success: false,
+        sucesso: false,
         erro: {
           codigo: "999",
           mensagem: error instanceof Error ? error.message : "Erro desconhecido",
@@ -541,13 +665,14 @@ export class NFeEmitter {
   }
 
   /**
-   * Consulta status do serviço
+   * Consulta status do serviço SEFAZ
    */
   async consultarStatus(): Promise<{ online: boolean; mensagem: string }> {
-    // TODO: Implementar consulta real
+    // TODO(VIO-566): Implementar consulta real usando this.wsUrls.status
+    console.log(`Consultando status em: ${this.wsUrls.status}`);
     return {
       online: true,
-      mensagem: "Serviço em operação (simulado)",
+      mensagem: `Serviço em operação (simulado) - Ambiente: ${this.config.ambiente === "1" ? "Produção" : "Homologação"}`,
     };
   }
 
@@ -555,9 +680,10 @@ export class NFeEmitter {
    * Consulta NF-e pela chave de acesso
    */
   async consultar(chaveAcesso: string): Promise<NFeResponse> {
-    // TODO: Implementar consulta real
+    // TODO(VIO-566): Implementar consulta real usando this.wsUrls.consulta
+    console.log(`Consultando NF-e em: ${this.wsUrls.consulta}`);
     return {
-      success: true,
+      sucesso: true,
       chaveAcesso,
       protocolo: "SIMULADO",
       dataAutorizacao: new Date(),
@@ -565,12 +691,14 @@ export class NFeEmitter {
   }
 
   /**
-   * Cancela uma NF-e
+   * Cancela uma NF-e autorizada
+   * @param chaveAcesso - Chave de acesso da NF-e (44 dígitos)
+   * @param justificativa - Motivo do cancelamento (mín. 15 caracteres)
    */
   async cancelar(chaveAcesso: string, justificativa: string): Promise<NFeResponse> {
     if (justificativa.length < 15) {
       return {
-        success: false,
+        sucesso: false,
         erro: {
           codigo: "999",
           mensagem: "Justificativa deve ter no mínimo 15 caracteres",
@@ -578,9 +706,10 @@ export class NFeEmitter {
       };
     }
 
-    // TODO: Implementar cancelamento real
+    // TODO(VIO-566): Implementar cancelamento real usando this.wsUrls.evento
+    console.log(`Cancelando NF-e em: ${this.wsUrls.evento}`);
     return {
-      success: true,
+      sucesso: true,
       chaveAcesso,
       protocolo: `CANC${Date.now()}`,
       dataAutorizacao: new Date(),
@@ -588,13 +717,15 @@ export class NFeEmitter {
   }
 
   /**
-   * Emite carta de correção
+   * Emite carta de correção (CC-e)
+   * @param chaveAcesso - Chave de acesso da NF-e (44 dígitos)
+   * @param correcao - Texto da correção (mín. 15 caracteres)
+   * @param sequencia - Número sequencial da correção (1-20)
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async cartaCorrecao(chaveAcesso: string, correcao: string, sequencia: number): Promise<NFeResponse> {
     if (correcao.length < 15) {
       return {
-        success: false,
+        sucesso: false,
         erro: {
           codigo: "999",
           mensagem: "Correção deve ter no mínimo 15 caracteres",
@@ -602,9 +733,20 @@ export class NFeEmitter {
       };
     }
 
-    // TODO: Implementar CC-e real
+    if (sequencia < 1 || sequencia > 20) {
+      return {
+        sucesso: false,
+        erro: {
+          codigo: "999",
+          mensagem: "Sequência deve estar entre 1 e 20",
+        },
+      };
+    }
+
+    // TODO(VIO-566): Implementar CC-e real usando this.wsUrls.evento
+    console.log(`Emitindo CC-e sequência ${sequencia} em: ${this.wsUrls.evento}`);
     return {
-      success: true,
+      sucesso: true,
       chaveAcesso,
       protocolo: `CCE${Date.now()}`,
       dataAutorizacao: new Date(),
@@ -612,7 +754,11 @@ export class NFeEmitter {
   }
 
   /**
-   * Inutiliza numeração
+   * Inutiliza numeração de NF-e
+   * @param serie - Série do documento (1-999)
+   * @param numeroInicial - Número inicial a inutilizar
+   * @param numeroFinal - Número final a inutilizar
+   * @param justificativa - Motivo da inutilização (mín. 15 caracteres)
    */
   async inutilizar(
     serie: string,
@@ -622,7 +768,7 @@ export class NFeEmitter {
   ): Promise<NFeResponse> {
     if (justificativa.length < 15) {
       return {
-        success: false,
+        sucesso: false,
         erro: {
           codigo: "999",
           mensagem: "Justificativa deve ter no mínimo 15 caracteres",
@@ -630,9 +776,20 @@ export class NFeEmitter {
       };
     }
 
-    // TODO: Implementar inutilização real
+    if (numeroInicial > numeroFinal) {
+      return {
+        sucesso: false,
+        erro: {
+          codigo: "999",
+          mensagem: "Número inicial deve ser menor ou igual ao número final",
+        },
+      };
+    }
+
+    // TODO(VIO-566): Implementar inutilização real usando this.wsUrls.inutilizacao
+    console.log(`Inutilizando série ${serie}, números ${numeroInicial}-${numeroFinal} em: ${this.wsUrls.inutilizacao}`);
     return {
-      success: true,
+      sucesso: true,
       protocolo: `INUT${Date.now()}`,
       dataAutorizacao: new Date(),
     };
