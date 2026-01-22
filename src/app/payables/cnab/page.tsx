@@ -135,16 +135,16 @@ export default function CnabPage() {
   // const selectedAccount = bankAccounts?.find((a: { id: string }) => a.id === selectedBankAccountId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/payables" className="text-gray-500 hover:text-gray-700">
+              <Link href="/payables" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-600" />
                 Integração Bancária - CNAB
               </h1>
@@ -156,20 +156,20 @@ export default function CnabPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Seleção de Conta Bancária */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-gray-500" />
+        <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
+          <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-theme-muted" />
             Selecione a Conta Bancária
           </h2>
 
           {loadingAccounts ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
             </div>
           ) : !bankAccounts?.length ? (
             <div className="text-center py-4">
               <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500">Nenhuma conta bancária cadastrada</p>
+              <p className="text-theme-muted">Nenhuma conta bancária cadastrada</p>
               <Link
                 href="/settings/bank-accounts"
                 className="inline-flex items-center gap-2 mt-2 text-blue-600 hover:text-blue-800"
@@ -194,9 +194,9 @@ export default function CnabPage() {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className="font-medium text-gray-900">{account.name}</div>
-                  <div className="text-sm text-gray-500">{account.bankName}</div>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="font-medium text-theme">{account.name}</div>
+                  <div className="text-sm text-theme-muted">{account.bankName}</div>
+                  <div className="text-xs text-theme-muted mt-1">
                     Ag: {account.agency} | Conta: {account.accountNumber}
                   </div>
                 </button>
@@ -208,10 +208,10 @@ export default function CnabPage() {
         {selectedBankAccountId && (
           <>
             {/* Configuração CNAB */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-gray-500" />
+                <h2 className="text-lg font-medium text-theme flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-theme-muted" />
                   Configuração CNAB
                 </h2>
                 <button
@@ -241,7 +241,7 @@ export default function CnabPage() {
               {!cnabConfig && !showConfigForm ? (
                 <div className="text-center py-4">
                   <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
-                  <p className="text-gray-500">Configuração CNAB não encontrada</p>
+                  <p className="text-theme-muted">Configuração CNAB não encontrada</p>
                   <button
                     onClick={() => setShowConfigForm(true)}
                     className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -254,11 +254,11 @@ export default function CnabPage() {
                 <form onSubmit={handleSaveConfig} className="space-y-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Banco</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Banco</label>
                       <select
                         value={configForm.bankCode}
                         onChange={(e) => setConfigForm({ ...configForm, bankCode: e.target.value as typeof configForm.bankCode })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                       >
                         {banks?.map((bank) => (
                           <option key={bank.code} value={bank.code}>{bank.name}</option>
@@ -266,34 +266,34 @@ export default function CnabPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Layout</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Layout</label>
                       <select
                         value={configForm.layout}
                         onChange={(e) => setConfigForm({ ...configForm, layout: e.target.value as typeof configForm.layout })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                       >
                         <option value="240">CNAB 240</option>
                         <option value="400">CNAB 400</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Agência</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Agência</label>
                       <input
                         type="text"
                         value={configForm.agencia}
                         onChange={(e) => setConfigForm({ ...configForm, agencia: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         maxLength={5}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Ag.</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
                       <input
                         type="text"
                         value={configForm.agenciaDigito}
                         onChange={(e) => setConfigForm({ ...configForm, agenciaDigito: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         maxLength={1}
                       />
                     </div>
@@ -301,65 +301,65 @@ export default function CnabPage() {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Conta</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Conta</label>
                       <input
                         type="text"
                         value={configForm.conta}
                         onChange={(e) => setConfigForm({ ...configForm, conta: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         maxLength={12}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Dígito Conta</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Conta</label>
                       <input
                         type="text"
                         value={configForm.contaDigito}
                         onChange={(e) => setConfigForm({ ...configForm, contaDigito: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         maxLength={1}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Convênio</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Convênio</label>
                       <input
                         type="text"
                         value={configForm.convenio}
                         onChange={(e) => setConfigForm({ ...configForm, convenio: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Carteira</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Carteira</label>
                       <input
                         type="text"
                         value={configForm.carteira}
                         onChange={(e) => setConfigForm({ ...configForm, carteira: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Cedente</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Cedente</label>
                       <input
                         type="text"
                         value={configForm.cedente}
                         onChange={(e) => setConfigForm({ ...configForm, cedente: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ/CPF do Cedente</label>
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">CNPJ/CPF do Cedente</label>
                       <input
                         type="text"
                         value={configForm.cedenteDocumento}
                         onChange={(e) => setConfigForm({ ...configForm, cedenteDocumento: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
                         required
                       />
                     </div>
@@ -378,19 +378,19 @@ export default function CnabPage() {
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-500">Banco:</span>
+                    <span className="text-theme-muted">Banco:</span>
                     <span className="ml-2 font-medium">{banks?.find(b => b.code === cnabConfig?.bankCode)?.name}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Layout:</span>
+                    <span className="text-theme-muted">Layout:</span>
                     <span className="ml-2 font-medium">CNAB {cnabConfig?.layout}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Agência:</span>
+                    <span className="text-theme-muted">Agência:</span>
                     <span className="ml-2 font-medium">{cnabConfig?.agencia}-{cnabConfig?.agenciaDigito}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Conta:</span>
+                    <span className="text-theme-muted">Conta:</span>
                     <span className="ml-2 font-medium">{cnabConfig?.conta}-{cnabConfig?.contaDigito}</span>
                   </div>
                 </div>
@@ -401,18 +401,18 @@ export default function CnabPage() {
             {cnabConfig && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Gerar Remessa */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                <div className="bg-theme-card rounded-lg border border-theme p-6">
+                  <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
                     <Download className="w-5 h-5 text-green-600" />
                     Gerar Remessa de Cobrança
                   </h2>
 
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-theme-muted mb-4">
                     Gera arquivo CNAB para envio ao banco com os títulos a receber pendentes.
                   </p>
 
-                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-sm text-gray-600">
+                  <div className="mb-4 p-3 bg-theme-tertiary rounded-lg">
+                    <div className="text-sm text-theme-secondary">
                       Títulos pendentes: <span className="font-medium">{receivables?.receivables?.filter((r: { status: string }) => r.status === "PENDING").length || 0}</span>
                     </div>
                   </div>
@@ -453,13 +453,13 @@ export default function CnabPage() {
                 </div>
 
                 {/* Processar Retorno */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                <div className="bg-theme-card rounded-lg border border-theme p-6">
+                  <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
                     <Upload className="w-5 h-5 text-blue-600" />
                     Processar Retorno Bancário
                   </h2>
 
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-theme-muted mb-4">
                     Processa arquivo de retorno do banco para baixar títulos pagos automaticamente.
                   </p>
 

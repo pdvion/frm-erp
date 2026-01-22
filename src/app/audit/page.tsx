@@ -28,7 +28,7 @@ const actionConfig = {
   CREATE: { label: "Criação", color: "bg-green-100 text-green-800", icon: Plus },
   UPDATE: { label: "Atualização", color: "bg-blue-100 text-blue-800", icon: Pencil },
   DELETE: { label: "Exclusão", color: "bg-red-100 text-red-800", icon: Trash2 },
-  VIEW: { label: "Visualização", color: "bg-gray-100 text-gray-800", icon: Eye },
+  VIEW: { label: "Visualização", color: "bg-theme-tertiary text-theme", icon: Eye },
   LOGIN: { label: "Login", color: "bg-purple-100 text-purple-800", icon: LogIn },
   LOGOUT: { label: "Logout", color: "bg-purple-100 text-purple-800", icon: LogOut },
   EXPORT: { label: "Exportação", color: "bg-orange-100 text-orange-800", icon: Download },
@@ -78,21 +78,21 @@ export default function AuditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-theme-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/" className="text-gray-400 hover:text-gray-600" aria-label="Voltar">
+              <Link href="/" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Auditoria</h1>
-                <p className="text-sm text-gray-500">Histórico de ações do sistema</p>
+                <h1 className="text-xl font-bold text-theme">Auditoria</h1>
+                <p className="text-sm text-theme-muted">Histórico de ações do sistema</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -108,7 +108,7 @@ export default function AuditPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <label htmlFor="audit-search" className="sr-only">Buscar logs</label>
             <input
               id="audit-search"
@@ -120,13 +120,13 @@ export default function AuditPage() {
                 setPage(1);
               }}
               aria-label="Buscar logs"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
 
           {/* Action Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <label htmlFor="action-filter" className="sr-only">Filtrar por ação</label>
             <select
               id="action-filter"
@@ -136,7 +136,7 @@ export default function AuditPage() {
                 setPage(1);
               }}
               aria-label="Filtrar por ação"
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="">Todas as ações</option>
               <option value="CREATE">Criação</option>
@@ -160,7 +160,7 @@ export default function AuditPage() {
               setPage(1);
             }}
             aria-label="Filtrar por entidade"
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Todas as entidades</option>
             <option value="Material">Material</option>
@@ -182,10 +182,10 @@ export default function AuditPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="bg-theme-card rounded-xl border border-theme p-8">
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <span className="ml-3 text-gray-600">Carregando logs...</span>
+              <span className="ml-3 text-theme-secondary">Carregando logs...</span>
             </div>
           </div>
         )}
@@ -195,29 +195,29 @@ export default function AuditPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Lista de Logs */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
+                    <thead className="bg-theme-table-header border-b border-theme">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                           Data/Hora
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                           Ação
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                           Descrição
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                           Usuário
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-theme-table">
                       {logs.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={4} className="px-4 py-8 text-center text-theme-muted">
                             Nenhum log de auditoria encontrado.
                           </td>
                         </tr>
@@ -230,7 +230,7 @@ export default function AuditPage() {
                           return (
                             <tr 
                               key={log.id} 
-                              className={`hover:bg-gray-50 cursor-pointer ${isSelected ? "bg-indigo-50" : ""}`}
+                              className={`hover:bg-theme-hover cursor-pointer ${isSelected ? "bg-indigo-50" : ""}`}
                               onClick={() => setSelectedLog(log.id)}
                               role="row"
                               tabIndex={0}
@@ -243,38 +243,38 @@ export default function AuditPage() {
                               }}
                             >
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <Calendar className="w-4 h-4 text-gray-400" />
+                                <div className="flex items-center gap-2 text-sm text-theme-secondary">
+                                  <Calendar className="w-4 h-4 text-theme-muted" />
                                   {formatDate(log.createdAt)}
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-gray-400">
+                                <div className="flex items-center gap-2 text-xs text-theme-muted">
                                   <Clock className="w-3 h-3" />
                                   {formatTime(log.createdAt)}
                                 </div>
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${config?.color ?? "bg-gray-100 text-gray-800"}`}>
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${config?.color ?? "bg-theme-tertiary text-theme"}`}>
                                   <Icon className="w-3.5 h-3.5" />
                                   {config?.label ?? log.action}
                                 </span>
                               </td>
                               <td className="px-4 py-3">
-                                <div className="text-sm text-gray-900">
+                                <div className="text-sm text-theme">
                                   {log.description || "-"}
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-theme-muted">
                                   {entityTypeLabels[log.entityType] || log.entityType}
                                   {log.entityCode && ` • ${log.entityCode}`}
                                 </div>
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <div className="flex items-center gap-2">
-                                  <User className="w-4 h-4 text-gray-400" />
+                                  <User className="w-4 h-4 text-theme-muted" />
                                   <div>
-                                    <div className="text-sm text-gray-900">
+                                    <div className="text-sm text-theme">
                                       {log.userName || log.user?.name || "-"}
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-theme-muted">
                                       {log.userEmail || log.user?.email || ""}
                                     </div>
                                   </div>
@@ -290,27 +290,27 @@ export default function AuditPage() {
 
                 {/* Pagination */}
                 {pagination && pagination.totalPages > 1 && (
-                  <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
+                  <div className="px-4 py-3 border-t border-theme flex items-center justify-between">
+                    <div className="text-sm text-theme-secondary">
                       {pagination.total} registros
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setPage(page - 1)}
                         disabled={page === 1}
-                        className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                         aria-label="Página anterior"
                         type="button"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-theme-secondary">
                         {pagination.page} / {pagination.totalPages}
                       </span>
                       <button
                         onClick={() => setPage(page + 1)}
                         disabled={page === pagination.totalPages}
-                        className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                         aria-label="Próxima página"
                         type="button"
                       >
@@ -324,11 +324,11 @@ export default function AuditPage() {
 
             {/* Detalhes do Log */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Detalhes</h3>
+              <div className="bg-theme-card rounded-xl border border-theme p-6 sticky top-6">
+                <h3 className="text-lg font-semibold text-theme mb-4">Detalhes</h3>
                 
                 {!selectedLog ? (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-theme-muted">
                     Selecione um registro para ver os detalhes.
                   </p>
                 ) : !logDetail ? (
@@ -338,12 +338,12 @@ export default function AuditPage() {
                 ) : (
                   <div className="space-y-4">
                     <div>
-                      <dt className="text-xs text-gray-500 uppercase">Data/Hora</dt>
-                      <dd className="text-sm text-gray-900">{formatDateTime(logDetail.createdAt)}</dd>
+                      <dt className="text-xs text-theme-muted uppercase">Data/Hora</dt>
+                      <dd className="text-sm text-theme">{formatDateTime(logDetail.createdAt)}</dd>
                     </div>
                     
                     <div>
-                      <dt className="text-xs text-gray-500 uppercase">Ação</dt>
+                      <dt className="text-xs text-theme-muted uppercase">Ação</dt>
                       <dd className="text-sm">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${actionConfig[logDetail.action as keyof typeof actionConfig]?.color}`}>
                           {actionConfig[logDetail.action as keyof typeof actionConfig]?.label || logDetail.action}
@@ -352,28 +352,28 @@ export default function AuditPage() {
                     </div>
 
                     <div>
-                      <dt className="text-xs text-gray-500 uppercase">Entidade</dt>
-                      <dd className="text-sm text-gray-900">
+                      <dt className="text-xs text-theme-muted uppercase">Entidade</dt>
+                      <dd className="text-sm text-theme">
                         {entityTypeLabels[logDetail.entityType] || logDetail.entityType}
                         {logDetail.entityId && (
-                          <span className="text-gray-500 ml-1">({logDetail.entityId.slice(0, 8)}...)</span>
+                          <span className="text-theme-muted ml-1">({logDetail.entityId.slice(0, 8)}...)</span>
                         )}
                       </dd>
                     </div>
 
                     {logDetail.entityCode && (
                       <div>
-                        <dt className="text-xs text-gray-500 uppercase">Código</dt>
-                        <dd className="text-sm text-gray-900">{logDetail.entityCode}</dd>
+                        <dt className="text-xs text-theme-muted uppercase">Código</dt>
+                        <dd className="text-sm text-theme">{logDetail.entityCode}</dd>
                       </div>
                     )}
 
                     <div>
-                      <dt className="text-xs text-gray-500 uppercase">Usuário</dt>
-                      <dd className="text-sm text-gray-900">
+                      <dt className="text-xs text-theme-muted uppercase">Usuário</dt>
+                      <dd className="text-sm text-theme">
                         {logDetail.userName || logDetail.user?.name || "-"}
                         {(logDetail.userEmail || logDetail.user?.email) && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-theme-muted">
                             {logDetail.userEmail || logDetail.user?.email}
                           </div>
                         )}
@@ -382,17 +382,17 @@ export default function AuditPage() {
 
                     {logDetail.ipAddress && (
                       <div>
-                        <dt className="text-xs text-gray-500 uppercase">IP</dt>
-                        <dd className="text-sm text-gray-900 font-mono">{logDetail.ipAddress}</dd>
+                        <dt className="text-xs text-theme-muted uppercase">IP</dt>
+                        <dd className="text-sm text-theme font-mono">{logDetail.ipAddress}</dd>
                       </div>
                     )}
 
                     {logDetail.changedFields && logDetail.changedFields.length > 0 && (
                       <div>
-                        <dt className="text-xs text-gray-500 uppercase mb-1">Campos Alterados</dt>
+                        <dt className="text-xs text-theme-muted uppercase mb-1">Campos Alterados</dt>
                         <dd className="flex flex-wrap gap-1">
                           {logDetail.changedFields.map((field) => (
-                            <span key={field} className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs">
+                            <span key={field} className="px-2 py-0.5 bg-theme-tertiary text-theme-secondary rounded text-xs">
                               {field}
                             </span>
                           ))}
@@ -402,7 +402,7 @@ export default function AuditPage() {
 
                     {(logDetail.oldValues || logDetail.newValues) && (
                       <div>
-                        <dt className="text-xs text-gray-500 uppercase mb-1">Valores</dt>
+                        <dt className="text-xs text-theme-muted uppercase mb-1">Valores</dt>
                         <dd className="text-xs">
                           {logDetail.oldValues && (
                             <details className="mb-2">

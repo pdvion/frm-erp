@@ -24,13 +24,13 @@ export default function BomListPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Layers className="w-5 h-5 text-indigo-600" />
                 Estrutura de Produto (BOM)
               </h1>
@@ -44,21 +44,21 @@ export default function BomListPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar produto por código ou descrição..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
 
         {/* Products List */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -66,10 +66,10 @@ export default function BomListPage() {
           ) : !data?.products.length ? (
             <div className="text-center py-12">
               <Layers className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-theme mb-2">
                 Nenhum produto com estrutura
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-theme-muted mb-4">
                 Adicione componentes a um produto para criar sua estrutura.
               </p>
               <Link
@@ -81,36 +81,36 @@ export default function BomListPage() {
               </Link>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-theme-table">
               {data.products.map((product) => (
                 <Link
                   key={product.id}
                   href={`/engineering/bom/${product.id}`}
-                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-theme-hover transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                       <Package className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-theme">
                         {product.description}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-theme-muted">
                         Código: {product.code} • {product.category?.name || "Sem categoria"}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-theme">
                         {product.bomItemCount} componentes
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-theme-muted">
                         {product.unit}
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                    <ChevronRight className="w-5 h-5 text-theme-muted" />
                   </div>
                 </Link>
               ))}
@@ -121,21 +121,21 @@ export default function BomListPage() {
         {/* Pagination */}
         {data && data.total > 20 && (
           <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-theme-muted">
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Anterior
               </button>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page * 20 >= data.total}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Próximo
               </button>

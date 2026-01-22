@@ -21,13 +21,21 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  DRAFT: { label: "Rascunho", color: "text-gray-600", bgColor: "bg-gray-100" },
+  DRAFT: { label: "Rascunho", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
   PENDING: { label: "Aguardando Aprovação", color: "text-yellow-800", bgColor: "bg-yellow-100" },
   APPROVED: { label: "Aprovada", color: "text-blue-800", bgColor: "bg-blue-100" },
   IN_SEPARATION: { label: "Em Separação", color: "text-purple-800", bgColor: "bg-purple-100" },
   PARTIAL: { label: "Parcialmente Atendida", color: "text-orange-800", bgColor: "bg-orange-100" },
   COMPLETED: { label: "Concluída", color: "text-green-800", bgColor: "bg-green-100" },
   CANCELLED: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
+};
+
+const typeLabels: Record<string, string> = {
+  PRODUCTION: "Produção",
+  MAINTENANCE: "Manutenção",
+  ADMINISTRATIVE: "Administrativo",
+  PROJECT: "Projeto",
+  OTHER: "Outro",
 };
 
 export default function RequisitionDetailPage() {
@@ -70,7 +78,7 @@ export default function RequisitionDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -78,10 +86,10 @@ export default function RequisitionDetailPage() {
 
   if (!requisition) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Requisição não encontrada</h3>
+          <h3 className="text-lg font-medium text-theme mb-2">Requisição não encontrada</h3>
           <Link href="/requisitions" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
@@ -99,27 +107,30 @@ export default function RequisitionDetailPage() {
     !requisition.items.some((i) => i.separatedQty > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      {/* Header - Responsivo */}
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/requisitions" className="text-gray-500 hover:text-gray-700">
+          {/* Mobile Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:h-16 gap-2 sm:gap-0">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <Link href="/requisitions" className="text-theme-muted hover:text-theme-secondary flex-shrink-0">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <div className="flex items-center gap-2">
-                <Package className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+              <div className="flex items-center gap-2 min-w-0">
+                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 flex-shrink-0" />
+                <h1 className="text-lg sm:text-xl font-semibold text-theme truncate">
                   Requisição #{requisition.code}
                 </h1>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
+              <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap flex-shrink-0 ${config.bgColor} ${config.color}`}>
                 {config.label}
               </span>
             </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
+            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
+              <div className="hidden sm:block">
+                <CompanySwitcher />
+              </div>
               
               {canCancel && (
                 <button
@@ -177,6 +188,10 @@ export default function RequisitionDetailPage() {
               )}
             </div>
           </div>
+          {/* Mobile Company Switcher */}
+          <div className="sm:hidden pb-2">
+            <CompanySwitcher />
+          </div>
         </div>
       </header>
 
@@ -185,37 +200,37 @@ export default function RequisitionDetailPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Items Table */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="font-medium text-gray-900">Itens da Requisição</h3>
+            <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+              <div className="px-4 sm:px-6 py-4 border-b border-theme">
+                <h3 className="text-base sm:text-lg font-semibold text-theme">Itens da Requisição</h3>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Material
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Solicitado
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Aprovado
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Separado
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Estoque
                       </th>
                       {canSeparate && (
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                           Ação
                         </th>
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {requisition.items.map((item) => {
                       const approved = item.approvedQty ?? item.requestedQty;
                       const remaining = approved - item.separatedQty;
@@ -225,32 +240,32 @@ export default function RequisitionDetailPage() {
 
                       return (
                         <tr key={item.id} className={isComplete ? "bg-green-50" : ""}>
-                          <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">
+                          <td className="px-4 py-3 min-w-[120px]">
+                            <div className="font-medium text-theme text-sm sm:text-base break-words">
                               {item.material.description}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-xs sm:text-sm text-theme-muted">
                               Cód: {item.material.code}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-right font-medium text-gray-900">
+                          <td className="px-4 py-3 text-right font-medium text-theme">
                             {item.requestedQty}
                           </td>
-                          <td className="px-4 py-3 text-right text-gray-600">
+                          <td className="px-4 py-3 text-right text-theme-secondary">
                             {item.approvedQty ?? "-"}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className={isComplete ? "text-green-600 font-medium" : "text-gray-900"}>
+                            <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
                               {item.separatedQty}
                             </span>
                             {!isComplete && remaining > 0 && (
-                              <span className="text-gray-400 text-sm ml-1">
+                              <span className="text-theme-muted text-sm ml-1">
                                 (falta {remaining})
                               </span>
                             )}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className={available < remaining ? "text-red-600" : "text-gray-600"}>
+                            <span className={available < remaining ? "text-red-600" : "text-theme-secondary"}>
                               {available}
                             </span>
                           </td>
@@ -264,7 +279,7 @@ export default function RequisitionDetailPage() {
                                       value={separateQty}
                                       onChange={(e) => setSeparateQty(e.target.value)}
                                       placeholder={String(Math.min(remaining, available))}
-                                      className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                                      className="w-20 px-2 py-1 border border-theme-input rounded text-sm"
                                       max={Math.min(remaining, available)}
                                       min={0}
                                     />
@@ -292,7 +307,7 @@ export default function RequisitionDetailPage() {
                                         setSeparatingItem(null);
                                         setSeparateQty("");
                                       }}
-                                      className="p-1 text-gray-400 hover:text-gray-600"
+                                      className="p-1 text-theme-muted hover:text-theme-secondary"
                                     >
                                       <XCircle className="w-4 h-4" />
                                     </button>
@@ -333,34 +348,34 @@ export default function RequisitionDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Informações</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-theme mb-4">Informações</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Tipo</span>
-                  <span className="font-medium text-gray-900">{requisition.type}</span>
+                  <span className="text-theme-muted">Tipo</span>
+                  <span className="font-medium text-theme">{typeLabels[requisition.type] || requisition.type}</span>
                 </div>
                 {requisition.orderNumber && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">OP/OS</span>
-                    <span className="font-medium text-gray-900">{requisition.orderNumber}</span>
+                    <span className="text-theme-muted">OP/OS</span>
+                    <span className="font-medium text-theme">{requisition.orderNumber}</span>
                   </div>
                 )}
                 {requisition.costCenter && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Centro de Custo</span>
-                    <span className="font-medium text-gray-900">{requisition.costCenter}</span>
+                    <span className="text-theme-muted">Centro de Custo</span>
+                    <span className="font-medium text-theme">{requisition.costCenter}</span>
                   </div>
                 )}
                 {requisition.department && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Departamento</span>
-                    <span className="font-medium text-gray-900">{requisition.department}</span>
+                    <span className="text-theme-muted">Departamento</span>
+                    <span className="font-medium text-theme">{requisition.department}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Prioridade</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-theme-muted">Prioridade</span>
+                  <span className="font-medium text-theme">
                     {requisition.priority === 1 ? "Urgente" : 
                      requisition.priority === 2 ? "Alta" :
                      requisition.priority === 3 ? "Normal" : "Baixa"}
@@ -370,39 +385,75 @@ export default function RequisitionDetailPage() {
             </div>
 
             {/* Timeline */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Histórico</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-theme mb-4">Histórico</h3>
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-gray-500" />
+                  <div className="w-8 h-8 bg-theme-tertiary rounded-full flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-4 h-4 text-theme-muted" />
                   </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Criada</div>
-                    <div className="text-sm text-gray-500">{formatDateTime(requisition.createdAt)}</div>
+                  <div className="min-w-0">
+                    <div className="font-medium text-theme">Criada</div>
+                    <div className="text-sm text-theme-muted">{formatDateTime(requisition.createdAt)}</div>
+                    {requisition.createdBy && (
+                      <div className="text-xs text-theme-muted">por {requisition.createdBy}</div>
+                    )}
                   </div>
                 </div>
 
+                {requisition.status === "PENDING" && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Send className="w-4 h-4 text-yellow-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-theme">Enviada para Aprovação</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(requisition.requestedAt)}</div>
+                      {requisition.requestedBy && (
+                        <div className="text-xs text-theme-muted">por {requisition.requestedBy}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {requisition.approvedAt && (
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Aprovada</div>
-                      <div className="text-sm text-gray-500">{formatDateTime(requisition.approvedAt)}</div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-theme">Aprovada</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(requisition.approvedAt)}</div>
+                      {requisition.approvedBy && (
+                        <div className="text-xs text-theme-muted">por {requisition.approvedBy}</div>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {requisition.separatedAt && (
                   <div className="flex gap-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <Package className="w-4 h-4 text-purple-600" />
                     </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Separação Concluída</div>
-                      <div className="text-sm text-gray-500">{formatDateTime(requisition.separatedAt)}</div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-theme">Separação Concluída</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(requisition.separatedAt)}</div>
+                      {requisition.separatedBy && (
+                        <div className="text-xs text-theme-muted">por {requisition.separatedBy}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {requisition.status === "CANCELLED" && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Ban className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-red-700">Cancelada</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(requisition.updatedAt)}</div>
                     </div>
                   </div>
                 )}
@@ -411,9 +462,9 @@ export default function RequisitionDetailPage() {
 
             {/* Notes */}
             {requisition.notes && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="font-medium text-gray-900 mb-2">Observações</h3>
-                <p className="text-gray-600 text-sm whitespace-pre-wrap">{requisition.notes}</p>
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="font-medium text-theme mb-2">Observações</h3>
+                <p className="text-theme-secondary text-sm whitespace-pre-wrap">{requisition.notes}</p>
               </div>
             )}
           </div>
@@ -429,15 +480,15 @@ export default function RequisitionDetailPage() {
           aria-labelledby="cancel-requisition-title"
           onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="cancel-requisition-title" className="text-lg font-medium text-gray-900 mb-4">Cancelar Requisição</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="cancel-requisition-title" className="text-lg font-medium text-theme mb-4">Cancelar Requisição</h3>
             
-            <p className="text-gray-600 mb-4">
+            <p className="text-theme-secondary mb-4">
               Tem certeza que deseja cancelar esta requisição?
             </p>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
               <textarea
@@ -445,7 +496,7 @@ export default function RequisitionDetailPage() {
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -461,7 +512,7 @@ export default function RequisitionDetailPage() {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
               </button>

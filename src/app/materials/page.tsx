@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { 
   Package, 
@@ -12,15 +12,23 @@ import {
   Edit,
   Trash2,
   Eye,
-  Building2
+  Building2,
+  X
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 
-export default function MaterialsPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<"ACTIVE" | "INACTIVE" | "BLOCKED" | undefined>();
+function MaterialsContent() {
+  const { filters, setFilter, resetFilters } = useUrlFilters({
+    defaults: { page: 1, search: "", status: undefined },
+  });
+
+  const search = (filters.search as string) || "";
+  const page = (filters.page as number) || 1;
+  const statusFilter = filters.status as "ACTIVE" | "INACTIVE" | "BLOCKED" | undefined;
+
+  const hasActiveFilters = search || statusFilter;
 
   const { data, isLoading, error } = trpc.materials.list.useQuery({
     search: search || undefined,
@@ -33,181 +41,191 @@ export default function MaterialsPage() {
   const pagination = data?.pagination;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader 
         title="Materiais" 
-        icon={<Package className="w-6 h-6 text-blue-600" />}
+        icon={<Package className="w-6 h-6" />}
         module="MATERIALS"
+        actions={
+          <Link
+            href="/materials/new"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Novo Material</span>
+          </Link>
+        }
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por descrição ou código..."
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
+                setFilter("search", e.target.value);
+                setFilter("page", 1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <select
               value={statusFilter ?? ""}
               onChange={(e) => {
-                setStatusFilter(e.target.value as typeof statusFilter || undefined);
-                setPage(1);
+                setFilter("status", (e.target.value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined);
+                setFilter("page", 1);
               }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Todos os status</option>
               <option value="ACTIVE">Ativos</option>
               <option value="INACTIVE">Inativos</option>
               <option value="BLOCKED">Bloqueados</option>
             </select>
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-theme-muted hover:text-theme border border-theme rounded-lg hover:bg-theme-hover transition-colors"
+                title="Limpar filtros"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Limpar</span>
+              </button>
+            )}
           </div>
-
-          {/* Add Button */}
-          <Link
-            href="/materials/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Novo Material</span>
-          </Link>
         </div>
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">Erro ao carregar materiais: {error.message}</p>
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-6">
+            <p className="text-red-400">Erro ao carregar materiais: {error.message}</p>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="bg-theme-card rounded-xl border border-theme p-8">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Carregando materiais...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-theme-secondary">Carregando materiais...</span>
             </div>
           </div>
         )}
 
         {/* Materials Table */}
         {!isLoading && !error && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-theme-table-header border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Código
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Descrição
                     </th>
-                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Categoria
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Unidade
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Compartilhado
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {materials.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-theme-muted">
                         Nenhum material encontrado.
                       </td>
                     </tr>
                   ) : (
                     materials.map((material: typeof materials[number]) => (
-                      <tr key={material.id} className="hover:bg-gray-50">
+                      <tr key={material.id} className="hover:bg-theme-table-hover transition-colors">
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-theme">
                             {material.code}
                           </div>
                           {material.internalCode && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-theme-muted">
                               {material.internalCode}
                             </div>
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm text-gray-900 max-w-xs truncate">
+                          <div className="text-sm text-theme max-w-xs truncate">
                             {material.description}
                           </div>
                         </td>
                         <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-theme-secondary">
                             {material.category?.name ?? "-"}
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-theme-secondary">
                             {material.unit}
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             material.status === "ACTIVE" 
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-green-900/50 text-green-400"
                               : material.status === "INACTIVE"
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-red-100 text-red-800"
+                              ? "bg-theme-secondary text-theme-secondary"
+                              : "bg-red-900/50 text-red-400"
                           }`}>
                             {material.status === "ACTIVE" ? "Ativo" : material.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>
                         </td>
                         <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap">
                           {material.isShared ? (
-                            <span className="inline-flex items-center gap-1 text-xs text-blue-600">
+                            <span className="inline-flex items-center gap-1 text-xs text-blue-400">
                               <Building2 className="w-3 h-3" />
                               Sim
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">Não</span>
+                            <span className="text-xs text-theme-muted">Não</span>
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Link
                               href={`/materials/${material.id}`}
-                              className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-blue-400 transition-colors"
                               title="Visualizar"
                             >
                               <Eye className="w-4 h-4" />
                             </Link>
                             <Link
                               href={`/materials/${material.id}/edit`}
-                              className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-green-400 transition-colors"
                               title="Editar"
                             >
                               <Edit className="w-4 h-4" />
                             </Link>
                             <button
-                              className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-red-400 transition-colors"
                               title="Excluir"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -223,27 +241,27 @@ export default function MaterialsPage() {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+              <div className="px-4 py-3 border-t border-theme flex items-center justify-between">
+                <div className="text-sm text-theme-secondary">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
                   {pagination.total} materiais
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setPage(page - 1)}
+                    onClick={() => setFilter("page", page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
                   <button
-                    onClick={() => setPage(page + 1)}
+                    onClick={() => setFilter("page", page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -252,7 +270,19 @@ export default function MaterialsPage() {
             )}
           </div>
         )}
-      </main>
+      </div>
     </div>
+  );
+}
+
+export default function MaterialsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <MaterialsContent />
+    </Suspense>
   );
 }

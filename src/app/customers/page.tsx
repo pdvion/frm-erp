@@ -20,7 +20,7 @@ import {
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800" },
-  INACTIVE: { label: "Inativo", color: "bg-gray-100 text-gray-600" },
+  INACTIVE: { label: "Inativo", color: "bg-theme-tertiary text-theme-secondary" },
   BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800" },
 };
 
@@ -37,18 +37,18 @@ export default function CustomersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Users className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Clientes</h1>
+                <h1 className="text-xl font-semibold text-theme">Clientes</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -67,10 +67,10 @@ export default function CustomersPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por nome, código, CNPJ ou email..."
@@ -79,18 +79,18 @@ export default function CustomersPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
+              <Filter className="w-4 h-4 text-theme-muted" />
               <select
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="ALL">Todos os status</option>
                 <option value="ACTIVE">Ativos</option>
@@ -102,7 +102,7 @@ export default function CustomersPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -110,81 +110,81 @@ export default function CustomersPage() {
           ) : !data?.customers.length ? (
             <div className="text-center py-12">
               <Users className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhum cliente encontrado</p>
+              <p className="text-theme-muted">Nenhum cliente encontrado</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Código
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Cliente
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         CNPJ/CPF
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Contato
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Títulos
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.customers.map((customer) => {
                       const config = statusConfig[customer.status] || statusConfig.ACTIVE;
 
                       return (
-                        <tr key={customer.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        <tr key={customer.id} className="hover:bg-theme-hover">
+                          <td className="px-4 py-3 text-sm font-medium text-theme">
                             {customer.code}
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-theme">
                                   {customer.companyName}
                                 </div>
                                 {customer.tradeName && (
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-theme-muted">
                                     {customer.tradeName}
                                   </div>
                                 )}
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
+                          <td className="px-4 py-3 text-sm text-theme-secondary">
                             {customer.cnpj || customer.cpf || "-"}
                           </td>
                           <td className="px-4 py-3">
                             <div className="space-y-1">
                               {customer.email && (
-                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <div className="flex items-center gap-1 text-xs text-theme-muted">
                                   <Mail className="w-3 h-3" />
                                   {customer.email}
                                 </div>
                               )}
                               {customer.phone && (
-                                <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <div className="flex items-center gap-1 text-xs text-theme-muted">
                                   <Phone className="w-3 h-3" />
                                   {customer.phone}
                                 </div>
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center text-sm text-gray-600">
+                          <td className="px-4 py-3 text-center text-sm text-theme-secondary">
                             {customer._count.receivables}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -210,22 +210,22 @@ export default function CustomersPage() {
 
               {/* Pagination */}
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Página {page} de {data.pages} ({data.total} clientes)
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
-                      className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

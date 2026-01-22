@@ -154,17 +154,17 @@ export default function NewReceivingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="space-y-6">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/receiving" className="text-gray-500 hover:text-gray-700">
+              <Link href="/receiving" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Plus className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Nova Entrada de Material</h1>
+                <h1 className="text-xl font-semibold text-theme">Nova Entrada de Material</h1>
               </div>
             </div>
             <CompanySwitcher />
@@ -176,13 +176,13 @@ export default function NewReceivingPage() {
         {/* Upload XML */}
         {!parsedNfe && (
           <div
-            className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-blue-400 transition-colors"
+            className="bg-theme-card rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-blue-400 transition-colors"
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >
-            <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Importar XML da NFe</h3>
-            <p className="text-gray-500 mb-4">Arraste e solte o arquivo XML ou clique para selecionar</p>
+            <Upload className="w-12 h-12 mx-auto text-theme-muted mb-4" />
+            <h3 className="text-lg font-medium text-theme mb-2">Importar XML da NFe</h3>
+            <p className="text-theme-muted mb-4">Arraste e solte o arquivo XML ou clique para selecionar</p>
             <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">
               <FileText className="w-4 h-4" />
               Selecionar Arquivo
@@ -217,9 +217,9 @@ export default function NewReceivingPage() {
         {parsedNfe && (
           <div className="space-y-6">
             {/* Header da NFe */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-theme flex items-center gap-2">
                   <FileText className="w-5 h-5 text-blue-600" />
                   NFe {parsedNfe.numero} - Série {parsedNfe.serie}
                 </h2>
@@ -231,27 +231,27 @@ export default function NewReceivingPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Chave de Acesso</label>
-                  <p className="text-sm font-mono text-gray-900 break-all">{parsedNfe.chaveAcesso}</p>
+                  <label className="text-xs text-theme-muted uppercase">Chave de Acesso</label>
+                  <p className="text-sm font-mono text-theme break-all">{parsedNfe.chaveAcesso}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Data Emissão</label>
-                  <p className="text-sm text-gray-900 flex items-center gap-1">
-                    <Calendar className="w-4 h-4 text-gray-400" />
+                  <label className="text-xs text-theme-muted uppercase">Data Emissão</label>
+                  <p className="text-sm text-theme flex items-center gap-1">
+                    <Calendar className="w-4 h-4 text-theme-muted" />
                     {formatDate(parsedNfe.dataEmissao)}
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Valor Total</label>
-                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-1">
-                    <DollarSign className="w-4 h-4 text-gray-400" />
+                  <label className="text-xs text-theme-muted uppercase">Valor Total</label>
+                  <p className="text-sm font-semibold text-theme flex items-center gap-1">
+                    <DollarSign className="w-4 h-4 text-theme-muted" />
                     {formatCurrency(parsedNfe.totais.valorNota)}
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Itens</label>
-                  <p className="text-sm text-gray-900 flex items-center gap-1">
-                    <Package className="w-4 h-4 text-gray-400" />
+                  <label className="text-xs text-theme-muted uppercase">Itens</label>
+                  <p className="text-sm text-theme flex items-center gap-1">
+                    <Package className="w-4 h-4 text-theme-muted" />
                     {parsedNfe.itens.length} itens
                   </p>
                 </div>
@@ -259,27 +259,27 @@ export default function NewReceivingPage() {
             </div>
 
             {/* Fornecedor */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-600" />
                 Fornecedor
               </h3>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">CNPJ (NFe)</label>
-                  <p className="text-sm text-gray-900">{parsedNfe.emitente.cnpj}</p>
+                  <label className="text-xs text-theme-muted uppercase">CNPJ (NFe)</label>
+                  <p className="text-sm text-theme">{parsedNfe.emitente.cnpj}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 uppercase">Razão Social (NFe)</label>
-                  <p className="text-sm text-gray-900">{parsedNfe.emitente.razaoSocial}</p>
+                  <label className="text-xs text-theme-muted uppercase">Razão Social (NFe)</label>
+                  <p className="text-sm text-theme">{parsedNfe.emitente.razaoSocial}</p>
                 </div>
               </div>
 
               {!selectedSupplier && (
                 <div className="relative">
-                  <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2">
-                    <Search className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-2 border border-theme-input rounded-lg px-3 py-2">
+                    <Search className="w-4 h-4 text-theme-muted" />
                     <input
                       type="text"
                       placeholder="Buscar fornecedor cadastrado..."
@@ -293,7 +293,7 @@ export default function NewReceivingPage() {
                     />
                   </div>
                   {showSupplierSearch && suppliers?.suppliers && suppliers.suppliers.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-theme-card border border-theme rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
                       {suppliers.suppliers.map((supplier) => (
                         <button
                           key={supplier.id}
@@ -301,13 +301,13 @@ export default function NewReceivingPage() {
                             setSelectedSupplier(supplier.id);
                             setShowSupplierSearch(false);
                           }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center justify-between"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center justify-between"
                         >
                           <div>
-                            <p className="font-medium text-gray-900">{supplier.companyName}</p>
-                            <p className="text-sm text-gray-500">{supplier.cnpj}</p>
+                            <p className="font-medium text-theme">{supplier.companyName}</p>
+                            <p className="text-sm text-theme-muted">{supplier.cnpj}</p>
                           </div>
-                          <span className="text-xs text-gray-400">#{supplier.code}</span>
+                          <span className="text-xs text-theme-muted">#{supplier.code}</span>
                         </button>
                       ))}
                     </div>
@@ -320,17 +320,17 @@ export default function NewReceivingPage() {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-theme">
                         {suppliers.suppliers.find((s) => s.id === selectedSupplier)?.companyName}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-theme-muted">
                         {suppliers.suppliers.find((s) => s.id === selectedSupplier)?.cnpj}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={() => setSelectedSupplier(null)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-theme-muted hover:text-theme-secondary"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -339,52 +339,52 @@ export default function NewReceivingPage() {
             </div>
 
             {/* Itens */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+              <div className="px-6 py-4 border-b border-theme">
+                <h3 className="text-lg font-semibold text-theme flex items-center gap-2">
                   <Package className="w-5 h-5 text-blue-600" />
                   Itens da NFe ({parsedNfe.itens.length})
                 </h3>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">UN</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Qtd</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Vlr Unit</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">#</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Código</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Descrição</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">UN</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Qtd</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Vlr Unit</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {parsedNfe.itens.map((item) => (
-                      <tr key={item.numero} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-500">{item.numero}</td>
-                        <td className="px-4 py-3 text-sm font-mono text-gray-900">{item.codigo}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900">{item.descricao}</td>
-                        <td className="px-4 py-3 text-sm text-center text-gray-500">{item.unidade}</td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-900">{item.quantidade.toLocaleString("pt-BR")}</td>
-                        <td className="px-4 py-3 text-sm text-right text-gray-500">{formatCurrency(item.valorUnitario)}</td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-gray-900">{formatCurrency(item.valorTotal)}</td>
+                      <tr key={item.numero} className="hover:bg-theme-hover">
+                        <td className="px-4 py-3 text-sm text-theme-muted">{item.numero}</td>
+                        <td className="px-4 py-3 text-sm font-mono text-theme">{item.codigo}</td>
+                        <td className="px-4 py-3 text-sm text-theme">{item.descricao}</td>
+                        <td className="px-4 py-3 text-sm text-center text-theme-muted">{item.unidade}</td>
+                        <td className="px-4 py-3 text-sm text-right text-theme">{item.quantidade.toLocaleString("pt-BR")}</td>
+                        <td className="px-4 py-3 text-sm text-right text-theme-muted">{formatCurrency(item.valorUnitario)}</td>
+                        <td className="px-4 py-3 text-sm text-right font-medium text-theme">{formatCurrency(item.valorTotal)}</td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="bg-gray-50">
+                  <tfoot className="bg-theme-tertiary">
                     <tr>
-                      <td colSpan={6} className="px-4 py-3 text-right text-sm font-medium text-gray-700">Total Produtos:</td>
-                      <td className="px-4 py-3 text-right text-sm font-bold text-gray-900">{formatCurrency(parsedNfe.totais.valorProdutos)}</td>
+                      <td colSpan={6} className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">Total Produtos:</td>
+                      <td className="px-4 py-3 text-right text-sm font-bold text-theme">{formatCurrency(parsedNfe.totais.valorProdutos)}</td>
                     </tr>
                     {parsedNfe.totais.valorFrete > 0 && (
                       <tr>
-                        <td colSpan={6} className="px-4 py-3 text-right text-sm font-medium text-gray-700">Frete:</td>
-                        <td className="px-4 py-3 text-right text-sm text-gray-900">{formatCurrency(parsedNfe.totais.valorFrete)}</td>
+                        <td colSpan={6} className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">Frete:</td>
+                        <td className="px-4 py-3 text-right text-sm text-theme">{formatCurrency(parsedNfe.totais.valorFrete)}</td>
                       </tr>
                     )}
                     <tr>
-                      <td colSpan={6} className="px-4 py-3 text-right text-sm font-bold text-gray-900">Total NFe:</td>
+                      <td colSpan={6} className="px-4 py-3 text-right text-sm font-bold text-theme">Total NFe:</td>
                       <td className="px-4 py-3 text-right text-lg font-bold text-blue-600">{formatCurrency(parsedNfe.totais.valorNota)}</td>
                     </tr>
                   </tfoot>
@@ -393,14 +393,14 @@ export default function NewReceivingPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center justify-between bg-theme-card rounded-lg border border-theme p-4">
               <button
                 onClick={() => {
                   setParsedNfe(null);
                   setXmlContent("");
                   setSelectedSupplier(null);
                 }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-theme-secondary hover:text-theme"
               >
                 Cancelar
               </button>

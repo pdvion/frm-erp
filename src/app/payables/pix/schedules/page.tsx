@@ -25,7 +25,7 @@ type ScheduleStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FAILED";
 const statusConfig: Record<ScheduleStatus, { label: string; color: string; icon: typeof Clock }> = {
   SCHEDULED: { label: "Agendado", color: "bg-blue-100 text-blue-800", icon: Clock },
   COMPLETED: { label: "Executado", color: "bg-green-100 text-green-800", icon: CheckCircle },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-800", icon: XCircle },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme", icon: XCircle },
   FAILED: { label: "Falhou", color: "bg-red-100 text-red-800", icon: AlertTriangle },
 };
 
@@ -73,7 +73,7 @@ export default function PixSchedulesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Agendamentos PIX"
         icon={<Calendar className="w-6 h-6 text-purple-600" />}
@@ -82,7 +82,7 @@ export default function PixSchedulesPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/payables/pix"
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:text-theme"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Voltar</span>
@@ -101,58 +101,58 @@ export default function PixSchedulesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-xl border border-theme p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Total Agendamentos</p>
-                <p className="text-xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-sm text-theme-muted">Total Agendamentos</p>
+                <p className="text-xl font-bold text-theme">{stats.total}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-xl border border-theme p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <Clock className="w-5 h-5 text-yellow-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Pendentes</p>
-                <p className="text-xl font-bold text-gray-900">{stats.scheduled}</p>
+                <p className="text-sm text-theme-muted">Pendentes</p>
+                <p className="text-xl font-bold text-theme">{stats.scheduled}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="bg-theme-card rounded-xl border border-theme p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Valor Total Agendado</p>
-                <p className="text-xl font-bold text-gray-900">{formatCurrency(stats.totalValue)}</p>
+                <p className="text-sm text-theme-muted">Valor Total Agendado</p>
+                <p className="text-xl font-bold text-theme">{formatCurrency(stats.totalValue)}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-xl border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por destinatário ou chave PIX..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ScheduleStatus | "")}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
               <option value="">Todos os status</option>
               <option value="SCHEDULED">Agendado</option>
@@ -164,16 +164,16 @@ export default function PixSchedulesPage() {
         </div>
 
         {/* Schedules List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-gray-500">Carregando agendamentos...</p>
+              <p className="text-theme-muted">Carregando agendamentos...</p>
             </div>
           ) : filteredSchedules.length === 0 ? (
             <div className="p-8 text-center">
               <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Nenhum agendamento encontrado</p>
+              <p className="text-theme-muted">Nenhum agendamento encontrado</p>
               <Link
                 href="/payables/pix/new"
                 className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
@@ -185,56 +185,56 @@ export default function PixSchedulesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-theme-table-header border-b border-theme">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Destinatário
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Chave PIX
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Data Agendada
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Valor
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {filteredSchedules.map((schedule) => {
                     const status = statusConfig[schedule.status as ScheduleStatus] || statusConfig.SCHEDULED;
                     const StatusIcon = status.icon;
                     
                     return (
-                      <tr key={schedule.id} className="hover:bg-gray-50">
+                      <tr key={schedule.id} className="hover:bg-theme-hover">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
-                            <p className="font-medium text-gray-900">{schedule.recipientName}</p>
+                            <p className="font-medium text-theme">{schedule.recipientName}</p>
                             {schedule.description && (
-                              <p className="text-sm text-gray-500">{schedule.description}</p>
+                              <p className="text-sm text-theme-muted">{schedule.description}</p>
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
-                            <p className="text-sm font-mono text-gray-900">{schedule.pixKey}</p>
-                            <p className="text-xs text-gray-500">{schedule.pixKeyType}</p>
+                            <p className="text-sm font-mono text-theme">{schedule.pixKey}</p>
+                            <p className="text-xs text-theme-muted">{schedule.pixKeyType}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <p className="text-sm text-gray-900">
+                          <p className="text-sm text-theme">
                             {schedule.scheduledAt ? formatDate(schedule.scheduledAt) : "-"}
                           </p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <p className="font-medium text-gray-900">{formatCurrency(schedule.value)}</p>
+                          <p className="font-medium text-theme">{formatCurrency(schedule.value)}</p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
@@ -246,18 +246,18 @@ export default function PixSchedulesPage() {
                           <div className="relative">
                             <button
                               onClick={() => setOpenMenu(openMenu === schedule.id ? null : schedule.id)}
-                              className="p-2 hover:bg-gray-100 rounded-lg"
+                              className="p-2 hover:bg-theme-hover rounded-lg"
                             >
-                              <MoreVertical className="w-5 h-5 text-gray-500" />
+                              <MoreVertical className="w-5 h-5 text-theme-muted" />
                             </button>
                             {openMenu === schedule.id && (
-                              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                              <div className="absolute right-0 mt-2 w-48 bg-theme-card rounded-lg shadow-lg border border-theme z-10">
                                 <button
                                   onClick={() => {
                                     // View details
                                     setOpenMenu(null);
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover"
                                 >
                                   <Eye className="w-4 h-4" />
                                   Ver Detalhes
@@ -269,7 +269,7 @@ export default function PixSchedulesPage() {
                                         // Edit schedule
                                         setOpenMenu(null);
                                       }}
-                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover"
                                     >
                                       <Edit className="w-4 h-4" />
                                       Editar

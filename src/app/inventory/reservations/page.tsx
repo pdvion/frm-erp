@@ -22,7 +22,7 @@ import {
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   ACTIVE: { label: "Ativa", color: "bg-blue-100 text-blue-800", icon: <Clock className="w-4 h-4" /> },
   CONSUMED: { label: "Consumida", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  RELEASED: { label: "Liberada", color: "bg-gray-100 text-gray-800", icon: <XCircle className="w-4 h-4" /> },
+  RELEASED: { label: "Liberada", color: "bg-theme-tertiary text-theme", icon: <XCircle className="w-4 h-4" /> },
   EXPIRED: { label: "Expirada", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
@@ -73,16 +73,16 @@ export default function ReservationsPage() {
 
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/inventory" className="text-gray-500 hover:text-gray-700">
+              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Package className="w-5 h-5 text-indigo-600" />
                 Reservas de Estoque
               </h1>
@@ -120,7 +120,7 @@ export default function ReservationsPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div>
               <label htmlFor="status-filter" className="sr-only">Filtrar por status</label>
@@ -129,7 +129,7 @@ export default function ReservationsPage() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filtrar por status"
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Todos os status</option>
                 {Object.entries(statusConfig).map(([value, config]) => (
@@ -145,7 +145,7 @@ export default function ReservationsPage() {
                 value={documentTypeFilter}
                 onChange={(e) => setDocumentTypeFilter(e.target.value)}
                 aria-label="Filtrar por tipo de documento"
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Todos os tipos</option>
                 {Object.entries(documentTypeLabels).map(([value, label]) => (
@@ -157,7 +157,7 @@ export default function ReservationsPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -165,71 +165,71 @@ export default function ReservationsPage() {
           ) : !data?.reservations.length ? (
             <div className="text-center py-12">
               <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma reserva encontrada</h3>
-              <p className="text-gray-500">Crie uma nova reserva para começar.</p>
+              <h3 className="text-lg font-medium text-theme mb-2">Nenhuma reserva encontrada</h3>
+              <p className="text-theme-muted">Crie uma nova reserva para começar.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                       Código
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                       Material
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                       Documento
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Quantidade
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                       Consumido
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {data.reservations.map((reservation) => {
                     const config = statusConfig[reservation.status] || statusConfig.ACTIVE;
 
                     return (
-                      <tr key={reservation.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <tr key={reservation.id} className="hover:bg-theme-hover">
+                        <td className="px-6 py-4 text-sm font-medium text-theme">
                           #{reservation.code}
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-theme">
                             {reservation.material?.description}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-theme-muted">
                             Cód: {reservation.material?.code}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
+                          <div className="text-sm text-theme">
                             {documentTypeLabels[reservation.documentType] || reservation.documentType}
                           </div>
                           {reservation.documentNumber && (
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-theme-muted">
                               #{reservation.documentNumber}
                             </div>
                           )}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-theme">
                             {formatNumber(reservation.quantity)} {reservation.material?.unit}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="text-gray-600">
+                          <span className="text-theme-secondary">
                             {formatNumber(reservation.consumedQty || 0)} {reservation.material?.unit}
                           </span>
                         </td>
@@ -273,21 +273,21 @@ export default function ReservationsPage() {
         {/* Pagination */}
         {data && data.total > 20 && (
           <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-theme-muted">
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Anterior
               </button>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page * 20 >= data.total}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Próximo
               </button>
@@ -342,27 +342,27 @@ function CreateReservationModal({
       aria-labelledby="modal-title-reserva"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="modal-title-reserva" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 id="modal-title-reserva" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-indigo-600" />
           Nova Reserva de Estoque
         </h3>
 
         <div className="space-y-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Material</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
-              <div className="mt-1 border border-gray-200 rounded-lg max-h-40 overflow-y-auto">
+              <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
                 {materials.materials.map((mat) => (
                   <button
                     key={mat.id}
@@ -370,7 +370,7 @@ function CreateReservationModal({
                       setMaterialId(mat.id);
                       setSearch(mat.description);
                     }}
-                    className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm"
+                    className="w-full px-3 py-2 text-left hover:bg-theme-hover text-sm"
                   >
                     <span className="font-medium">{mat.code}</span> - {mat.description}
                   </button>
@@ -380,23 +380,23 @@ function CreateReservationModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Quantidade</label>
             <input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="0.00"
               step="0.01"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Documento</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo de Documento</label>
             <select
               value={documentType}
               onChange={(e) => setDocumentType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             >
               {Object.entries(documentTypeLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -406,34 +406,34 @@ function CreateReservationModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ID do Documento</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">ID do Documento</label>
               <input
                 type="text"
                 value={documentId}
                 onChange={(e) => setDocumentId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 placeholder="UUID"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Número (opcional)</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Número (opcional)</label>
               <input
                 type="text"
                 value={documentNumber}
                 onChange={(e) => setDocumentNumber(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 placeholder="Ex: REQ-001"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Observações (opcional)</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Observações (opcional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -447,7 +447,7 @@ function CreateReservationModal({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Cancelar
           </button>

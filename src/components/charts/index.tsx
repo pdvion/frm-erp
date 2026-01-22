@@ -1,0 +1,339 @@
+"use client";
+
+import React, { memo } from "react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+
+// Cores padrão para gráficos
+const COLORS = [
+  "#3B82F6", // blue-500
+  "#10B981", // emerald-500
+  "#F59E0B", // amber-500
+  "#EF4444", // red-500
+  "#8B5CF6", // violet-500
+  "#EC4899", // pink-500
+  "#06B6D4", // cyan-500
+  "#84CC16", // lime-500
+];
+
+interface ChartData {
+  name: string;
+  [key: string]: string | number;
+}
+
+interface BaseChartProps {
+  data: ChartData[];
+  height?: number;
+  className?: string;
+}
+
+interface LineChartProps extends BaseChartProps {
+  dataKeys: { key: string; color?: string; name?: string }[];
+  showGrid?: boolean;
+  showLegend?: boolean;
+}
+
+// VIO-557: Memoizar componentes de gráficos para evitar re-renders desnecessários
+export const SimpleLineChart = memo(function SimpleLineChart({
+  data,
+  dataKeys,
+  height = 300,
+  showGrid = true,
+  showLegend = true,
+  className,
+}: LineChartProps) {
+  return (
+    <div className={className} style={{ width: "100%", height }}>
+      <ResponsiveContainer>
+        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
+          <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+          <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#fff",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+            }}
+          />
+          {showLegend && <Legend />}
+          {dataKeys.map((dk, index) => (
+            <Line
+              key={dk.key}
+              type="monotone"
+              dataKey={dk.key}
+              name={dk.name || dk.key}
+              stroke={dk.color || COLORS[index % COLORS.length]}
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+});
+
+interface BarChartProps extends BaseChartProps {
+  dataKeys: { key: string; color?: string; name?: string; stackId?: string }[];
+  showGrid?: boolean;
+  showLegend?: boolean;
+  layout?: "horizontal" | "vertical";
+}
+
+export const SimpleBarChart = memo(function SimpleBarChart({
+  data,
+  dataKeys,
+  height = 300,
+  showGrid = true,
+  showLegend = true,
+  layout = "horizontal",
+  className,
+}: BarChartProps) {
+  return (
+    <div className={className} style={{ width: "100%", height }}>
+      <ResponsiveContainer>
+        <BarChart
+          data={data}
+          layout={layout}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
+          {layout === "horizontal" ? (
+            <>
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+              <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+            </>
+          ) : (
+            <>
+              <XAxis type="number" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#9CA3AF" width={100} />
+            </>
+          )}
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#fff",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+            }}
+          />
+          {showLegend && <Legend />}
+          {dataKeys.map((dk, index) => (
+            <Bar
+              key={dk.key}
+              dataKey={dk.key}
+              name={dk.name || dk.key}
+              fill={dk.color || COLORS[index % COLORS.length]}
+              stackId={dk.stackId}
+              radius={[4, 4, 0, 0]}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+});
+
+interface PieChartProps extends BaseChartProps {
+  dataKey: string;
+  nameKey?: string;
+  showLegend?: boolean;
+  innerRadius?: number;
+  outerRadius?: number;
+}
+
+export const SimplePieChart = memo(function SimplePieChart({
+  data,
+  dataKey,
+  nameKey = "name",
+  height = 300,
+  showLegend = true,
+  innerRadius = 0,
+  outerRadius = 80,
+  className,
+}: PieChartProps) {
+  return (
+    <div className={className} style={{ width: "100%", height }}>
+      <ResponsiveContainer>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
+            dataKey={dataKey}
+            nameKey={nameKey}
+          >
+            {data.map((_, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#fff",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+            }}
+          />
+          {showLegend && <Legend />}
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+});
+
+export const DonutChart = memo(function DonutChart(props: PieChartProps) {
+  return <SimplePieChart {...props} innerRadius={60} outerRadius={80} />;
+});
+
+interface AreaChartProps extends BaseChartProps {
+  dataKeys: { key: string; color?: string; name?: string; stackId?: string }[];
+  showGrid?: boolean;
+  showLegend?: boolean;
+}
+
+export const SimpleAreaChart = memo(function SimpleAreaChart({
+  data,
+  dataKeys,
+  height = 300,
+  showGrid = true,
+  showLegend = true,
+  className,
+}: AreaChartProps) {
+  return (
+    <div className={className} style={{ width: "100%", height }}>
+      <ResponsiveContainer>
+        <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
+          <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+          <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#fff",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+            }}
+          />
+          {showLegend && <Legend />}
+          {dataKeys.map((dk, index) => (
+            <Area
+              key={dk.key}
+              type="monotone"
+              dataKey={dk.key}
+              name={dk.name || dk.key}
+              stroke={dk.color || COLORS[index % COLORS.length]}
+              fill={dk.color || COLORS[index % COLORS.length]}
+              fillOpacity={0.3}
+              stackId={dk.stackId}
+            />
+          ))}
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+});
+
+// Componente de Card com Gráfico
+interface ChartCardProps {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  className?: string;
+  actions?: React.ReactNode;
+}
+
+export const ChartCard = memo(function ChartCard({ title, subtitle, children, className, actions }: ChartCardProps) {
+  return (
+    <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        </div>
+        {actions && <div className="flex gap-2">{actions}</div>}
+      </div>
+      {children}
+    </div>
+  );
+});
+
+// Componente de KPI com mini gráfico
+interface KpiCardProps {
+  title: string;
+  value: string | number;
+  change?: number;
+  changeLabel?: string;
+  sparklineData?: number[];
+  icon?: React.ReactNode;
+  className?: string;
+}
+
+export const KpiCard = memo(function KpiCard({
+  title,
+  value,
+  change,
+  changeLabel,
+  sparklineData,
+  icon,
+  className,
+}: KpiCardProps) {
+  const isPositive = change !== undefined && change >= 0;
+
+  return (
+    <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-sm text-gray-500">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          {change !== undefined && (
+            <p className={`text-sm mt-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
+              {isPositive ? "↑" : "↓"} {Math.abs(change).toFixed(1)}%
+              {changeLabel && <span className="text-gray-500 ml-1">{changeLabel}</span>}
+            </p>
+          )}
+        </div>
+        {icon && <div className="text-gray-400">{icon}</div>}
+      </div>
+      {sparklineData && sparklineData.length > 0 && (
+        <div className="mt-3 h-10">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={sparklineData.map((v, i) => ({ value: v, index: i }))}>
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke={isPositive ? "#10B981" : "#EF4444"}
+                fill={isPositive ? "#10B981" : "#EF4444"}
+                fillOpacity={0.2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
+});
+
+export { COLORS };

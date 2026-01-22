@@ -41,7 +41,7 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
 function VersionStatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string }> = {
-    DRAFT: { color: "bg-gray-100 text-gray-800", label: "Rascunho" },
+    DRAFT: { color: "bg-theme-tertiary text-theme", label: "Rascunho" },
     APPROVED: { color: "bg-green-100 text-green-800", label: "Aprovado" },
     LOCKED: { color: "bg-blue-100 text-blue-800", label: "Bloqueado" },
   };
@@ -85,7 +85,7 @@ export default function BudgetDashboardPage() {
   const activeAlerts = alerts || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Gestão Orçamentária"
         icon={<Wallet className="h-6 w-6 text-emerald-600" />}
@@ -93,14 +93,14 @@ export default function BudgetDashboardPage() {
       >
         <Link
           href="/budget/accounts"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <FileText className="h-4 w-4" />
           Contas
         </Link>
         <Link
           href="/budget/versions"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <Calendar className="h-4 w-4" />
           Versões
@@ -138,35 +138,35 @@ export default function BudgetDashboardPage() {
 
           {/* Cards de Resumo */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-blue-100 p-3">
                   <PieChart className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Orçado (YTD)</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-theme-muted">Orçado (YTD)</p>
+                  <p className="text-2xl font-bold text-theme">
                     {formatCurrency(summary.budgeted)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-3">
                   <BarChart3 className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Realizado (YTD)</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-theme-muted">Realizado (YTD)</p>
+                  <p className="text-2xl font-bold text-theme">
                     {formatCurrency(summary.actual)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-3 ${summary.variance >= 0 ? "bg-green-100" : "bg-red-100"}`}>
                   {summary.variance >= 0 ? (
@@ -176,18 +176,18 @@ export default function BudgetDashboardPage() {
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Variação</p>
+                  <p className="text-sm text-theme-muted">Variação</p>
                   <p className={`text-2xl font-bold ${summary.variance >= 0 ? "text-green-600" : "text-red-600"}`}>
                     {formatCurrency(summary.variance)}
                   </p>
                 </div>
               </div>
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2 text-xs text-theme-muted">
                 {formatPercent(Math.abs(summary.variancePercent) / 100)} {summary.variance >= 0 ? "abaixo" : "acima"} do orçado
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-3 ${activeAlerts.length > 0 ? "bg-orange-100" : "bg-green-100"}`}>
                   {activeAlerts.length > 0 ? (
@@ -197,8 +197,8 @@ export default function BudgetDashboardPage() {
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Alertas</p>
-                  <p className="text-2xl font-bold text-gray-900">{activeAlerts.length}</p>
+                  <p className="text-sm text-theme-muted">Alertas</p>
+                  <p className="text-2xl font-bold text-theme">{activeAlerts.length}</p>
                 </div>
               </div>
               {activeAlerts.length > 0 && (
@@ -213,7 +213,7 @@ export default function BudgetDashboardPage() {
             {/* Orçado vs Realizado por Conta */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Orçado vs Realizado</h2>
+                <h2 className="text-lg font-semibold text-theme">Orçado vs Realizado</h2>
                 <Link href="/budget/tracking" className="text-sm text-emerald-600 hover:text-emerald-800">
                   Ver detalhes →
                 </Link>
@@ -222,15 +222,15 @@ export default function BudgetDashboardPage() {
                 {byAccount.slice(0, 8).map((account) => (
                   <div
                     key={account.id}
-                    className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                    className="rounded-lg border border-theme bg-theme-card p-4 shadow-sm"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-500">{account.code}</span>
-                          <p className="font-medium text-gray-900">{account.name}</p>
+                          <span className="text-sm font-medium text-theme-muted">{account.code}</span>
+                          <p className="font-medium text-theme">{account.name}</p>
                         </div>
-                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                        <div className="mt-2 flex items-center gap-4 text-xs text-theme-muted">
                           <span>Orçado: {formatCurrency(account.budgeted)}</span>
                           <span>Realizado: {formatCurrency(account.actual)}</span>
                         </div>
@@ -252,7 +252,7 @@ export default function BudgetDashboardPage() {
                           }}
                         />
                       </div>
-                      <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <div className="mt-1 flex justify-between text-xs text-theme-muted">
                         <span>{formatPercent(account.actual / account.budgeted)} utilizado</span>
                         <span className={account.variance >= 0 ? "text-green-600" : "text-red-600"}>
                           {account.variance >= 0 ? "+" : ""}{formatCurrency(account.variance)}
@@ -262,9 +262,9 @@ export default function BudgetDashboardPage() {
                   </div>
                 ))}
                 {byAccount.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-                    <Wallet className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhum orçamento cadastrado</p>
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                    <Wallet className="mx-auto h-12 w-12 text-theme-muted" />
+                    <p className="mt-2 text-sm text-theme-muted">Nenhum orçamento cadastrado</p>
                     <Link
                       href="/budget/planning"
                       className="mt-4 inline-flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-800"
@@ -282,7 +282,7 @@ export default function BudgetDashboardPage() {
               {/* Versões de Orçamento */}
               <section>
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Versões {currentYear}</h2>
+                  <h2 className="text-lg font-semibold text-theme">Versões {currentYear}</h2>
                   <Link href="/budget/versions" className="text-sm text-emerald-600 hover:text-emerald-800">
                     Ver todas →
                   </Link>
@@ -292,12 +292,12 @@ export default function BudgetDashboardPage() {
                     <Link
                       key={version.id}
                       href={`/budget/versions/${version.id}`}
-                      className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                      className="block rounded-lg border border-theme bg-theme-card p-4 shadow-sm transition-shadow hover:shadow-md"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">{version.name}</p>
-                          <p className="mt-1 text-xs text-gray-500">
+                          <p className="font-medium text-theme">{version.name}</p>
+                          <p className="mt-1 text-xs text-theme-muted">
                             {version.type === "ORIGINAL" ? "Original" : version.type === "REVISED" ? "Revisado" : "Forecast"}
                             {" • "}
                             {version._count.entries} lançamentos
@@ -305,15 +305,15 @@ export default function BudgetDashboardPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <VersionStatusBadge status={version.status} />
-                          <ArrowRight className="h-4 w-4 text-gray-400" />
+                          <ArrowRight className="h-4 w-4 text-theme-muted" />
                         </div>
                       </div>
                     </Link>
                   ))}
                   {(!versions || versions.length === 0) && (
-                    <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-                      <Calendar className="mx-auto h-10 w-10 text-gray-400" />
-                      <p className="mt-2 text-sm text-gray-500">Nenhuma versão criada</p>
+                    <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-6 text-center">
+                      <Calendar className="mx-auto h-10 w-10 text-theme-muted" />
+                      <p className="mt-2 text-sm text-theme-muted">Nenhuma versão criada</p>
                     </div>
                   )}
                 </div>
@@ -322,7 +322,7 @@ export default function BudgetDashboardPage() {
               {/* Alertas Ativos */}
               <section>
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Alertas Ativos</h2>
+                  <h2 className="text-lg font-semibold text-theme">Alertas Ativos</h2>
                   <Link href="/budget/alerts" className="text-sm text-emerald-600 hover:text-emerald-800">
                     Ver todos →
                   </Link>
@@ -350,9 +350,9 @@ export default function BudgetDashboardPage() {
                     </div>
                   ))}
                   {activeAlerts.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+                    <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-6 text-center">
                       <CheckCircle className="mx-auto h-10 w-10 text-green-400" />
-                      <p className="mt-2 text-sm text-gray-500">Nenhum alerta ativo</p>
+                      <p className="mt-2 text-sm text-theme-muted">Nenhum alerta ativo</p>
                     </div>
                   )}
                 </div>

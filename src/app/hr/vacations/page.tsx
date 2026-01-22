@@ -1,0 +1,200 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { trpc } from "@/lib/trpc";
+import { formatDate, formatCurrency } from "@/lib/formatters";
+import {
+  Calendar,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Plus,
+  Eye,
+  AlertTriangle,
+} from "lucide-react";
+
+const statusConfig: Record<string, { label: string; color: string }> = {
+  SCHEDULED: { label: "Programada", color: "bg-theme-tertiary text-theme" },
+  APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { label: "Em Andamento", color: "bg-green-100 text-green-800" },
+  COMPLETED: { label: "Concluída", color: "bg-theme-tertiary text-theme-secondary" },
+  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-800" },
+};
+
+export default function VacationsPage() {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = trpc.vacations.list.useQuery({
+    status: statusFilter as "SCHEDULED" | "APPROVED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "ALL",
+    year,
+    page,
+    limit: 20,
+  });
+
+  const { data: overdueEmployees } = trpc.vacations.listOverdue.useQuery();
+
+  const filteredVacations = data?.vacations.filter((v) =>
+    v.employee.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Calendar className="w-8 h-8 text-blue-600" />
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Férias</h1>
+            <p className="text-sm text-theme-muted">Gerenciamento de férias dos funcionários</p>
+          </div>
+        </div>
+        <Link
+          href="/hr/vacations/new"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Programar Férias
+        </Link>
+      </div>
+
+      {overdueEmployees && overdueEmployees.length > 0 && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-2 text-yellow-700 font-medium mb-2">
+            <AlertTriangle className="w-5 h-5" />
+            Férias Vencidas ou a Vencer
+          </div>
+          <p className="text-sm text-yellow-600">
+            {overdueEmployees.length} funcionário(s) com férias pendentes
+          </p>
+        </div>
+      )}
+
+      <div className="bg-theme-card rounded-lg shadow">
+        <div className="p-4 border-b border-theme">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar por funcionário..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="ALL">Todos os Status</option>
+              <option value="SCHEDULED">Programada</option>
+              <option value="APPROVED">Aprovada</option>
+              <option value="IN_PROGRESS">Em Andamento</option>
+              <option value="COMPLETED">Concluída</option>
+              <option value="CANCELLED">Cancelada</option>
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              {[2024, 2025, 2026, 2027].map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-theme-tertiary">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Funcionário</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Período</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Dias</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Abono</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Valor Líquido</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-theme-table">
+                {filteredVacations?.map((vacation) => (
+                  <tr key={vacation.id} className="hover:bg-theme-hover">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-theme">
+                      {vacation.employee.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                      {formatDate(vacation.startDate)} - {formatDate(vacation.endDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                      {vacation.enjoyedDays} dias
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                      {vacation.soldDays > 0 ? `${vacation.soldDays} dias` : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-theme">
+                      {formatCurrency(vacation.totalNet)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[vacation.status]?.color || "bg-theme-tertiary"}`}>
+                        {statusConfig[vacation.status]?.label || vacation.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <Link
+                        href={`/hr/vacations/${vacation.id}`}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Eye className="w-4 h-4 inline" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+                {(!filteredVacations || filteredVacations.length === 0) && (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center text-theme-muted">
+                      Nenhuma férias encontrada
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {data && data.pages > 1 && (
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-theme">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm text-theme-secondary">
+              Página {page} de {data.pages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
+              disabled={page === data.pages}
+              className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

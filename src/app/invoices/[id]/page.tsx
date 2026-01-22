@@ -34,11 +34,11 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-500", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const matchStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-gray-100 text-gray-600", icon: <Clock className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
   MATCHED: { label: "Vinculado", color: "bg-green-100 text-green-700", icon: <Link2 className="w-4 h-4" /> },
   DIVERGENT: { label: "Divergente", color: "bg-yellow-100 text-yellow-700", icon: <AlertTriangle className="w-4 h-4" /> },
   NOT_FOUND: { label: "Não encontrado", color: "bg-red-100 text-red-600", icon: <Unlink className="w-4 h-4" /> },
@@ -94,7 +94,7 @@ export default function InvoiceDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -102,10 +102,10 @@ export default function InvoiceDetailPage() {
 
   if (!invoice) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">NFe não encontrada</h3>
+          <h3 className="text-lg font-medium text-theme mb-2">NFe não encontrada</h3>
           <Link href="/invoices" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
@@ -124,16 +124,16 @@ export default function InvoiceDetailPage() {
   const notFoundItems = invoice.items.filter((i) => i.matchStatus === "NOT_FOUND").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/invoices" className="text-gray-500 hover:text-gray-700">
+              <Link href="/invoices" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <FileText className="w-5 h-5 text-indigo-600" />
                 NFe {invoice.invoiceNumber}
               </h1>
@@ -151,12 +151,12 @@ export default function InvoiceDetailPage() {
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Fornecedor */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Building2 className="w-5 h-5 text-blue-600" />
               </div>
-              <h3 className="font-medium text-gray-900">Fornecedor</h3>
+              <h3 className="font-medium text-theme">Fornecedor</h3>
               {!invoice.supplier && canApprove && (
                 <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">
                   Não vinculado
@@ -164,10 +164,10 @@ export default function InvoiceDetailPage() {
               )}
             </div>
             <div className="space-y-2">
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-theme">
                 {invoice.supplier?.companyName || invoice.supplierName}
               </p>
-              <p className="text-sm text-gray-500">CNPJ: {invoice.supplierCnpj}</p>
+              <p className="text-sm text-theme-muted">CNPJ: {invoice.supplierCnpj}</p>
               {invoice.supplier ? (
                 <Link
                   href={`/suppliers/${invoice.supplier.id}`}
@@ -203,28 +203,28 @@ export default function InvoiceDetailPage() {
           </div>
 
           {/* Dados da Nota */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-purple-100 rounded-lg">
                 <FileText className="w-5 h-5 text-purple-600" />
               </div>
-              <h3 className="font-medium text-gray-900">Dados da Nota</h3>
+              <h3 className="font-medium text-theme">Dados da Nota</h3>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Número:</span>
+                <span className="text-theme-muted">Número:</span>
                 <span className="font-medium">{invoice.invoiceNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Série:</span>
+                <span className="text-theme-muted">Série:</span>
                 <span className="font-medium">{invoice.series}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Emissão:</span>
+                <span className="text-theme-muted">Emissão:</span>
                 <span className="font-medium">{formatDate(invoice.issueDate)}</span>
               </div>
               <div className="pt-2 border-t">
-                <p className="text-xs text-gray-400 font-mono break-all">
+                <p className="text-xs text-theme-muted font-mono break-all">
                   {invoice.accessKey}
                 </p>
               </div>
@@ -232,32 +232,32 @@ export default function InvoiceDetailPage() {
           </div>
 
           {/* Valores */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-green-100 rounded-lg">
                 <DollarSign className="w-5 h-5 text-green-600" />
               </div>
-              <h3 className="font-medium text-gray-900">Valores</h3>
+              <h3 className="font-medium text-theme">Valores</h3>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Produtos:</span>
+                <span className="text-theme-muted">Produtos:</span>
                 <span className="font-medium">{formatCurrency(invoice.totalProducts)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Frete:</span>
+                <span className="text-theme-muted">Frete:</span>
                 <span className="font-medium">{formatCurrency(invoice.freightValue)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">ICMS:</span>
+                <span className="text-theme-muted">ICMS:</span>
                 <span className="font-medium">{formatCurrency(invoice.icmsValue)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">IPI:</span>
+                <span className="text-theme-muted">IPI:</span>
                 <span className="font-medium">{formatCurrency(invoice.ipiValue)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t">
-                <span className="text-gray-900 font-medium">Total:</span>
+                <span className="text-theme font-medium">Total:</span>
                 <span className="text-lg font-bold text-green-600">
                   {formatCurrency(invoice.totalInvoice)}
                 </span>
@@ -267,11 +267,11 @@ export default function InvoiceDetailPage() {
         </div>
 
         {/* Match Status Summary */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-gray-400" />
+                <Package className="w-5 h-5 text-theme-muted" />
                 <span className="font-medium">{invoice.items.length} itens</span>
               </div>
               <div className="flex items-center gap-4 text-sm">
@@ -292,7 +292,7 @@ export default function InvoiceDetailPage() {
                   </span>
                 )}
                 {pendingItems > 0 && (
-                  <span className="flex items-center gap-1 text-gray-500">
+                  <span className="flex items-center gap-1 text-theme-muted">
                     <Clock className="w-4 h-4" />
                     {pendingItems} pendentes
                   </span>
@@ -328,68 +328,68 @@ export default function InvoiceDetailPage() {
         </div>
 
         {/* Items Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="font-medium text-gray-900">Itens da Nota</h3>
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden mb-6">
+          <div className="px-6 py-4 border-b border-theme">
+            <h3 className="font-medium text-theme">Itens da Nota</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-theme-table">
+              <thead className="bg-theme-tertiary">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     #
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Produto NFe
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Material Vinculado
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Qtd
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Preço Unit.
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Total
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-theme-table">
                 {invoice.items.map((item) => {
                   const matchConfig = matchStatusConfig[item.matchStatus];
                   return (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-500">
+                    <tr key={item.id} className="hover:bg-theme-hover">
+                      <td className="px-4 py-3 text-sm text-theme-muted">
                         {item.itemNumber}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{item.productName}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-theme">{item.productName}</div>
+                        <div className="text-sm text-theme-muted">
                           Cód: {item.productCode} | NCM: {item.ncm || "-"}
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         {item.material ? (
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-theme">
                               {item.material.description}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-theme-muted">
                               Cód: {item.material.code} | {item.material.unit}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-400 italic">Não vinculado</span>
+                          <span className="text-theme-muted italic">Não vinculado</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className="font-medium">{item.quantity}</span>
-                        <span className="text-gray-500 ml-1">{item.unit}</span>
+                        <span className="text-theme-muted ml-1">{item.unit}</span>
                       </td>
                       <td className="px-4 py-3 text-right font-medium">
                         {formatCurrency(item.unitPrice)}
@@ -432,11 +432,11 @@ export default function InvoiceDetailPage() {
 
         {/* Actions */}
         {canApprove && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium text-gray-900 mb-1">Ações</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="font-medium text-theme mb-1">Ações</h3>
+                <p className="text-sm text-theme-muted">
                   {allItemsLinked
                     ? "Todos os itens estão vinculados. Você pode aprovar a entrada."
                     : `${invoice.items.length - matchedItems} item(ns) precisam ser vinculados antes de aprovar.`}
@@ -536,7 +536,7 @@ export default function InvoiceDetailPage() {
               {invoice.rejectionReason && (
                 <div>
                   <span className="text-red-700">Motivo:</span>
-                  <p className="mt-1 p-3 bg-white rounded border border-red-200">
+                  <p className="mt-1 p-3 bg-theme-card rounded border border-red-200">
                     {invoice.rejectionReason}
                   </p>
                 </div>
@@ -547,17 +547,17 @@ export default function InvoiceDetailPage() {
 
         {/* Purchase Order Link */}
         {invoice.purchaseOrder && (
-          <div className="mt-6 bg-white rounded-lg border border-gray-200 p-6">
+          <div className="mt-6 bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center gap-3 mb-4">
               <Truck className="w-5 h-5 text-teal-600" />
-              <h3 className="font-medium text-gray-900">Pedido de Compra Vinculado</h3>
+              <h3 className="font-medium text-theme">Pedido de Compra Vinculado</h3>
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-theme">
                   Pedido #{invoice.purchaseOrder.code}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-theme-muted">
                   {invoice.purchaseOrder.items?.length || 0} itens
                 </p>
               </div>
@@ -602,21 +602,21 @@ export default function InvoiceDetailPage() {
           aria-labelledby="reject-nfe-title"
           onKeyDown={(e) => e.key === "Escape" && setShowRejectModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="reject-nfe-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 id="reject-nfe-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
               <Ban className="w-5 h-5 text-red-600" />
               Rejeitar NFe
             </h3>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Motivo da rejeição *
               </label>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
                 placeholder="Descreva o motivo da rejeição..."
               />
             </div>
@@ -633,7 +633,7 @@ export default function InvoiceDetailPage() {
                   setShowRejectModal(false);
                   setRejectReason("");
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Cancelar
               </button>

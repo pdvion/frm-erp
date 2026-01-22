@@ -107,7 +107,7 @@ export default function NFeImportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Importar NFe"
         icon={<Upload className="w-6 h-6 text-blue-600" />}
@@ -115,7 +115,7 @@ export default function NFeImportPage() {
         actions={
           <Link
             href="/fiscal/nfe"
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:text-theme"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Voltar</span>
@@ -125,15 +125,15 @@ export default function NFeImportPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-          <div className="border-b border-gray-200">
+        <div className="bg-theme-card rounded-xl border border-theme mb-6">
+          <div className="border-b border-theme">
             <nav className="flex -mb-px">
               <button
                 onClick={() => setActiveTab("upload")}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "upload"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-gray-300"
                 }`}
               >
                 <FileUp className="w-5 h-5" />
@@ -144,7 +144,7 @@ export default function NFeImportPage() {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "email"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-gray-300"
                 }`}
               >
                 <Mail className="w-5 h-5" />
@@ -170,8 +170,8 @@ export default function NFeImportPage() {
                     <div className="flex flex-col items-center gap-3">
                       <CheckCircle className="w-12 h-12 text-green-500" />
                       <div>
-                        <p className="text-lg font-medium text-gray-900">{fileName}</p>
-                        <p className="text-sm text-gray-500">Arquivo carregado com sucesso</p>
+                        <p className="text-lg font-medium text-theme">{fileName}</p>
+                        <p className="text-sm text-theme-muted">Arquivo carregado com sucesso</p>
                       </div>
                       <button
                         onClick={() => {
@@ -185,12 +185,12 @@ export default function NFeImportPage() {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-3">
-                      <Upload className="w-12 h-12 text-gray-400" />
+                      <Upload className="w-12 h-12 text-theme-muted" />
                       <div>
-                        <p className="text-lg font-medium text-gray-900">
+                        <p className="text-lg font-medium text-theme">
                           Arraste o arquivo XML aqui
                         </p>
-                        <p className="text-sm text-gray-500">ou clique para selecionar</p>
+                        <p className="text-sm text-theme-muted">ou clique para selecionar</p>
                       </div>
                       <input
                         type="file"
@@ -238,10 +238,10 @@ export default function NFeImportPage() {
             {activeTab === "email" && (
               <div className="text-center py-8">
                 <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-theme mb-2">
                   Importação por Email
                 </h3>
-                <p className="text-gray-500 mb-4">
+                <p className="text-theme-muted mb-4">
                   Configure uma conta de email para receber XMLs automaticamente.
                 </p>
                 <Link
@@ -257,8 +257,8 @@ export default function NFeImportPage() {
 
         {/* Results */}
         {results.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h3 className="text-lg font-medium text-theme mb-4">
               Resultados da Importação
             </h3>
             <div className="space-y-3">
@@ -304,10 +304,10 @@ export default function NFeImportPage() {
             </div>
 
             {results.some((r) => r.success) && (
-              <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-3">
+              <div className="mt-4 pt-4 border-t border-theme flex justify-end gap-3">
                 <button
                   onClick={() => setResults([])}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-900"
+                  className="px-4 py-2 text-theme-secondary hover:text-theme"
                 >
                   Limpar resultados
                 </button>

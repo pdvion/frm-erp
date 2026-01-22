@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
   AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
   DENIED: { label: "Denegada", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
@@ -52,16 +52,16 @@ export default function BillingPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-gray-500 hover:text-gray-700">
+              <Link href="/" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <FileText className="w-5 h-5 text-indigo-600" />
                 Faturamento
               </h1>
@@ -83,48 +83,48 @@ export default function BillingPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Dashboard Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-theme-card p-4 rounded-lg border border-theme">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-5 h-5 text-green-600" />
-              <span className="text-sm font-medium text-gray-600">Faturamento do Mês</span>
+              <span className="text-sm font-medium text-theme-secondary">Faturamento do Mês</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-theme">
               {formatCurrency(dashboard?.monthInvoices?.value || 0)}
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-theme-muted">
               {dashboard?.monthInvoices?.count || 0} notas
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-theme-card p-4 rounded-lg border border-theme">
             <div className="flex items-center gap-2 mb-2">
               <FileCheck className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-medium text-gray-600">Autorizadas</span>
+              <span className="text-sm font-medium text-theme-secondary">Autorizadas</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-theme">
               {dashboard?.byStatus?.find((s) => s.status === "AUTHORIZED")?.count || 0}
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-theme-card p-4 rounded-lg border border-theme">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-5 h-5 text-yellow-600" />
-              <span className="text-sm font-medium text-gray-600">Pendentes</span>
+              <span className="text-sm font-medium text-theme-secondary">Pendentes</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-theme">
               {dashboard?.pendingAuth || 0}
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="bg-theme-card p-4 rounded-lg border border-theme">
             <div className="flex items-center gap-2 mb-2">
               <Building2 className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-medium text-gray-600">Top Cliente</span>
+              <span className="text-sm font-medium text-theme-secondary">Top Cliente</span>
             </div>
-            <div className="text-lg font-bold text-gray-900 truncate">
+            <div className="text-lg font-bold text-theme truncate">
               {dashboard?.topCustomers?.[0]?.customerName || "-"}
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-theme-muted">
               {dashboard?.topCustomers?.[0]?.value
                 ? formatCurrency(dashboard.topCustomers[0].value)
                 : "-"}
@@ -143,24 +143,24 @@ export default function BillingPage() {
                 className={`p-4 rounded-lg border-2 transition-all ${
                   statusFilter === status
                     ? "border-indigo-500 bg-indigo-50"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    : "border-gray-200 bg-theme-card hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                  <span className="text-sm font-medium text-gray-600">{config.label}</span>
+                  <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                 </div>
-                <div className="text-2xl font-bold text-gray-900">{count}</div>
+                <div className="text-2xl font-bold text-theme">{count}</div>
               </button>
             );
           })}
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por número, cliente..."
@@ -169,13 +169,13 @@ export default function BillingPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter("")}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                className="px-4 py-2 text-sm text-theme-secondary hover:text-theme"
               >
                 Limpar filtro
               </button>
@@ -184,7 +184,7 @@ export default function BillingPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -192,8 +192,8 @@ export default function BillingPage() {
           ) : data?.invoices.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma NFe encontrada</h3>
-              <p className="text-gray-500 mb-4">Crie uma nova nota fiscal para começar</p>
+              <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
+              <p className="text-theme-muted mb-4">Crie uma nova nota fiscal para começar</p>
               <button
                 onClick={() => setShowNewModal(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -205,70 +205,70 @@ export default function BillingPage() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Número
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Cliente
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Emissão
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                         Valor
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Itens
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-6 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data?.invoices.map((invoice) => {
                       const config = statusConfig[invoice.status] || statusConfig.DRAFT;
                       return (
-                        <tr key={invoice.id} className="hover:bg-gray-50">
+                        <tr key={invoice.id} className="hover:bg-theme-hover">
                           <td className="px-6 py-4">
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-theme">
                               {invoice.invoiceNumber}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-theme-muted">
                               Série {invoice.series}
                             </div>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <div>
-                                <div className="font-medium text-gray-900">
+                                <div className="font-medium text-theme">
                                   {invoice.customer?.companyName}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-theme-muted">
                                   {invoice.customer?.code}
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Calendar className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center gap-2 text-theme-secondary">
+                              <Calendar className="w-4 h-4 text-theme-muted" />
                               {formatDate(invoice.issueDate)}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-right font-medium text-gray-900">
+                          <td className="px-6 py-4 text-right font-medium text-theme">
                             {formatCurrency(invoice.totalValue)}
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <div className="flex items-center justify-center gap-1 text-gray-600">
-                              <Package className="w-4 h-4 text-gray-400" />
+                            <div className="flex items-center justify-center gap-1 text-theme-secondary">
+                              <Package className="w-4 h-4 text-theme-muted" />
                               {invoice._count?.items || 0}
                             </div>
                           </td>
@@ -308,8 +308,8 @@ export default function BillingPage() {
 
               {/* Pagination */}
               {data && data.total > 20 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Mostrando {(page - 1) * 20 + 1} a{" "}
                     {Math.min(page * 20, data.total)} de {data.total}
                   </div>
@@ -317,17 +317,17 @@ export default function BillingPage() {
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-600">
+                    <span className="px-4 py-2 text-sm text-theme-secondary">
                       {page} / {Math.ceil(data.total / 20)}
                     </span>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page >= Math.ceil(data.total / 20)}
-                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -379,20 +379,20 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
       aria-labelledby="new-invoice-title"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="new-invoice-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 id="new-invoice-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-indigo-600" />
           Nova Nota Fiscal
         </h3>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-theme-secondary mb-2">
             Selecione o Pedido de Venda
           </label>
           <select
             value={selectedOrderId}
             onChange={(e) => setSelectedOrderId(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">Selecione...</option>
             {orders?.orders?.map((order) => (
@@ -418,7 +418,7 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Cancelar
           </button>

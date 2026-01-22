@@ -58,20 +58,29 @@ export default function SuppliersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader 
         title="Fornecedores" 
-        icon={<Users className="w-6 h-6 text-green-600" />}
+        icon={<Users className="w-6 h-6" />}
         module="SUPPLIERS"
+        actions={
+          <Link
+            href="/suppliers/new"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Novo Fornecedor</span>
+          </Link>
+        }
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por razão social, nome fantasia ou CNPJ..."
@@ -80,20 +89,20 @@ export default function SuppliersPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <select
               value={statusFilter ?? ""}
               onChange={(e) => {
                 setStatusFilter(e.target.value as typeof statusFilter || undefined);
                 setPage(1);
               }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               <option value="">Todos os status</option>
               <option value="ACTIVE">Ativos</option>
@@ -101,99 +110,90 @@ export default function SuppliersPage() {
               <option value="BLOCKED">Bloqueados</option>
             </select>
           </div>
-
-          {/* Add Button */}
-          <Link
-            href="/suppliers/new"
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Novo Fornecedor</span>
-          </Link>
         </div>
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">Erro ao carregar fornecedores: {error.message}</p>
+          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-6">
+            <p className="text-red-400">Erro ao carregar fornecedores: {error.message}</p>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="bg-theme-card rounded-xl border border-theme p-8">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-              <span className="ml-3 text-gray-600">Carregando fornecedores...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+              <span className="ml-3 text-theme-secondary">Carregando fornecedores...</span>
             </div>
           </div>
         )}
 
         {/* Suppliers Table */}
         {!isLoading && !error && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-theme-table-header border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Código
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Razão Social / Fantasia
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       CNPJ
                     </th>
-                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Cidade/UF
                     </th>
-                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Contato
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="hidden xl:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden xl:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       IQF
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {suppliers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-4 py-8 text-center text-theme-muted">
                         Nenhum fornecedor encontrado.
                       </td>
                     </tr>
                   ) : (
                     suppliers.map((supplier) => (
-                      <tr key={supplier.id} className="hover:bg-gray-50">
+                      <tr key={supplier.id} className="hover:bg-theme-table-hover transition-colors">
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-theme">
                             {supplier.code}
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
+                          <div className="text-sm font-medium text-theme max-w-xs truncate">
                             {supplier.companyName}
                           </div>
                           {supplier.tradeName && (
-                            <div className="text-xs text-gray-500 truncate">
+                            <div className="text-xs text-theme-muted truncate">
                               {supplier.tradeName}
                             </div>
                           )}
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-600 font-mono">
+                          <div className="text-sm text-theme-secondary font-mono">
                             {formatCNPJ(supplier.cnpj)}
                           </div>
                         </td>
                         <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-theme-secondary">
                             {supplier.city && supplier.state 
                               ? `${supplier.city}/${supplier.state}`
                               : supplier.city || supplier.state || "-"}
@@ -202,34 +202,34 @@ export default function SuppliersPage() {
                         <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap">
                           <div className="flex flex-col gap-1">
                             {supplier.phone && (
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <div className="flex items-center gap-1 text-xs text-theme-secondary">
                                 <Phone className="w-3 h-3" />
                                 {supplier.phone}
                               </div>
                             )}
                             {supplier.email && (
-                              <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <div className="flex items-center gap-1 text-xs text-theme-secondary">
                                 <Mail className="w-3 h-3" />
                                 <span className="truncate max-w-[120px]">{supplier.email}</span>
                               </div>
                             )}
                             {!supplier.phone && !supplier.email && (
-                              <span className="text-xs text-gray-400">-</span>
+                              <span className="text-xs text-theme-muted">-</span>
                             )}
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             supplier.status === "ACTIVE" 
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-green-900/50 text-green-400"
                               : supplier.status === "INACTIVE"
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-red-100 text-red-800"
+                              ? "bg-theme-secondary text-theme-secondary"
+                              : "bg-red-900/50 text-red-400"
                           }`}>
                             {supplier.status === "ACTIVE" ? "Ativo" : supplier.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>
                           {supplier.isShared && (
-                            <span className="ml-1 inline-flex items-center gap-0.5 text-xs text-blue-600" title="Compartilhado">
+                            <span className="ml-1 inline-flex items-center gap-0.5 text-xs text-blue-400" title="Compartilhado">
                               <Building2 className="w-3 h-3" />
                             </span>
                           )}
@@ -238,35 +238,35 @@ export default function SuppliersPage() {
                           {supplier.qualityIndex !== null ? (
                             <div className={`text-sm font-medium ${
                               supplier.qualityIndex >= 80 
-                                ? "text-green-600" 
+                                ? "text-green-400" 
                                 : supplier.qualityIndex >= 60 
-                                ? "text-yellow-600" 
-                                : "text-red-600"
+                                ? "text-yellow-400" 
+                                : "text-red-400"
                             }`}>
                               {supplier.qualityIndex.toFixed(1)}%
                             </div>
                           ) : (
-                            <span className="text-xs text-gray-400">-</span>
+                            <span className="text-xs text-theme-muted">-</span>
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Link
                               href={`/suppliers/${supplier.id}`}
-                              className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-green-400 transition-colors"
                               title="Visualizar"
                             >
                               <Eye className="w-4 h-4" />
                             </Link>
                             <Link
                               href={`/suppliers/${supplier.id}/edit`}
-                              className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-blue-400 transition-colors"
                               title="Editar"
                             >
                               <Edit className="w-4 h-4" />
                             </Link>
                             <button
-                              className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                              className="p-1 text-theme-muted hover:text-red-400 transition-colors"
                               title="Excluir"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -282,8 +282,8 @@ export default function SuppliersPage() {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+              <div className="px-4 py-3 border-t border-theme flex items-center justify-between">
+                <div className="text-sm text-theme-secondary">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
                   {pagination.total} fornecedores
@@ -292,17 +292,17 @@ export default function SuppliersPage() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -311,7 +311,7 @@ export default function SuppliersPage() {
             )}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -104,21 +104,21 @@ export default function InventoryExitPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-theme-card shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/inventory" className="text-gray-400 hover:text-gray-600">
+              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
                 <ArrowUpCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Saída de Estoque</h1>
-                <p className="text-sm text-gray-500">Registrar saída de materiais</p>
+                <h1 className="text-xl font-bold text-theme">Saída de Estoque</h1>
+                <p className="text-sm text-theme-muted">Registrar saída de materiais</p>
               </div>
             </div>
             <CompanySwitcher />
@@ -128,7 +128,7 @@ export default function InventoryExitPage() {
 
       {/* Form */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
               {error}
@@ -138,7 +138,7 @@ export default function InventoryExitPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Material Search */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Material *
               </label>
               {selectedMaterial ? (
@@ -159,27 +159,27 @@ export default function InventoryExitPage() {
                 </div>
               ) : (
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                   <input
                     type="text"
                     value={materialSearch}
                     onChange={(e) => setMaterialSearch(e.target.value)}
                     placeholder="Buscar material por código ou descrição..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   />
                   {materialsData && materialsData.materials.length > 0 && materialSearch.length >= 2 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-60 overflow-auto">
                       {materialsData.materials.map((material) => (
                         <button
                           key={material.id}
                           type="button"
                           onClick={() => selectMaterial(material)}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center gap-2"
                         >
                           <span className="font-medium">{material.code}</span>
-                          <span className="text-gray-600">-</span>
+                          <span className="text-theme-secondary">-</span>
                           <span className="truncate">{material.description}</span>
-                          <span className="text-sm text-gray-400 ml-auto">{material.unit}</span>
+                          <span className="text-sm text-theme-muted ml-auto">{material.unit}</span>
                         </button>
                       ))}
                     </div>
@@ -190,7 +190,7 @@ export default function InventoryExitPage() {
 
             {/* Tipo de Estoque */}
             <div>
-              <label htmlFor="inventoryType" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="inventoryType" className="block text-sm font-medium text-theme-secondary mb-1">
                 Tipo de Estoque
               </label>
               <select
@@ -198,7 +198,7 @@ export default function InventoryExitPage() {
                 name="inventoryType"
                 value={formData.inventoryType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 <option value="RAW_MATERIAL">Matéria Prima</option>
                 <option value="SEMI_FINISHED">Semi-Acabado</option>
@@ -209,7 +209,7 @@ export default function InventoryExitPage() {
 
             {/* Quantidade */}
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="quantity" className="block text-sm font-medium text-theme-secondary mb-1">
                 Quantidade *
               </label>
               <input
@@ -221,13 +221,13 @@ export default function InventoryExitPage() {
                 step="0.01"
                 value={formData.quantity || ""}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               />
             </div>
 
             {/* Tipo de Documento */}
             <div>
-              <label htmlFor="documentType" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="documentType" className="block text-sm font-medium text-theme-secondary mb-1">
                 Tipo de Documento
               </label>
               <select
@@ -235,7 +235,7 @@ export default function InventoryExitPage() {
                 name="documentType"
                 value={formData.documentType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 <option value="OS">Ordem de Serviço</option>
                 <option value="OP">Ordem de Produção</option>
@@ -247,7 +247,7 @@ export default function InventoryExitPage() {
 
             {/* Número do Documento */}
             <div>
-              <label htmlFor="documentNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="documentNumber" className="block text-sm font-medium text-theme-secondary mb-1">
                 Número do Documento
               </label>
               <input
@@ -256,13 +256,13 @@ export default function InventoryExitPage() {
                 name="documentNumber"
                 value={formData.documentNumber}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               />
             </div>
 
             {/* Observações */}
             <div className="md:col-span-2">
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="notes" className="block text-sm font-medium text-theme-secondary mb-1">
                 Observações
               </label>
               <textarea
@@ -271,16 +271,16 @@ export default function InventoryExitPage() {
                 rows={3}
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-theme">
             <Link
               href="/inventory"
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
             >
               <X className="w-4 h-4" />
               Cancelar

@@ -5,13 +5,15 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { 
   Users, 
-  ChevronLeft, 
   Save,
   X,
   Loader2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
+
+const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
+const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
 interface SupplierFormData {
   code: number;
@@ -199,10 +201,10 @@ export default function EditSupplierPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-green-600" />
-          <span className="text-gray-600">Carregando fornecedor...</span>
+          <Loader2 className="w-6 h-6 animate-spin text-green-500" />
+          <span className="text-theme-secondary">Carregando fornecedor...</span>
         </div>
       </div>
     );
@@ -210,10 +212,10 @@ export default function EditSupplierPage() {
 
   if (!supplier) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Fornecedor não encontrado</h1>
-          <Link href="/suppliers" className="text-green-600 hover:underline">
+          <h1 className="text-xl font-bold text-theme mb-2">Fornecedor não encontrado</h1>
+          <Link href="/suppliers" className="text-green-400 hover:underline">
             Voltar para listagem
           </Link>
         </div>
@@ -222,412 +224,352 @@ export default function EditSupplierPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/suppliers" className="text-gray-400 hover:text-gray-600">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Editar Fornecedor</h1>
-                <p className="text-sm text-gray-500">Código: {supplier.code}</p>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
-        </div>
-      </header>
+    <div className="space-y-6">
+      <PageHeader
+        title="Editar Fornecedor"
+        subtitle={`Código: ${supplier.code}`}
+        icon={<Users className="w-6 h-6" />}
+        backHref="/suppliers"
+      />
 
       {/* Form */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-              {error}
-            </div>
-          )}
-
-          {/* Dados Básicos */}
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dados Básicos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Código
-              </label>
-              <input
-                type="number"
-                value={formData.code}
-                disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">
-                CNPJ
-              </label>
-              <input
-                type="text"
-                id="cnpj"
-                name="cnpj"
-                value={formatCNPJ(formData.cnpj)}
-                onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
-                placeholder="00.000.000/0000-00"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
-                Razão Social *
-              </label>
-              <input
-                type="text"
-                id="companyName"
-                name="companyName"
-                required
-                value={formData.companyName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="tradeName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome Fantasia
-              </label>
-              <input
-                type="text"
-                id="tradeName"
-                name="tradeName"
-                value={formData.tradeName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="ACTIVE">Ativo</option>
-                <option value="INACTIVE">Inativo</option>
-                <option value="BLOCKED">Bloqueado</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="qualityIndex" className="block text-sm font-medium text-gray-700 mb-1">
-                Índice de Qualidade (IQF)
-              </label>
-              <input
-                type="number"
-                id="qualityIndex"
-                name="qualityIndex"
-                min="0"
-                max="100"
-                step="0.1"
-                value={formData.qualityIndex || ""}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="ie" className="block text-sm font-medium text-gray-700 mb-1">
-                Inscrição Estadual
-              </label>
-              <input
-                type="text"
-                id="ie"
-                name="ie"
-                value={formData.ie}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="im" className="block text-sm font-medium text-gray-700 mb-1">
-                Inscrição Municipal
-              </label>
-              <input
-                type="text"
-                id="im"
-                name="im"
-                value={formData.im}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
+            {error}
           </div>
+        )}
 
-          {/* Endereço */}
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Endereço</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div>
-              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-1">
-                CEP
-              </label>
-              <input
-                type="text"
-                id="zipCode"
-                name="zipCode"
-                value={formatCEP(formData.zipCode)}
-                onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
-                placeholder="00000-000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                Endereço
-              </label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="number" className="block text-sm font-medium text-gray-700 mb-1">
-                Número
-              </label>
-              <input
-                type="text"
-                id="number"
-                name="number"
-                value={formData.number}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="complement" className="block text-sm font-medium text-gray-700 mb-1">
-                Complemento
-              </label>
-              <input
-                type="text"
-                id="complement"
-                name="complement"
-                value={formData.complement}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700 mb-1">
-                Bairro
-              </label>
-              <input
-                type="text"
-                id="neighborhood"
-                name="neighborhood"
-                value={formData.neighborhood}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                Cidade
-              </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-                UF
-              </label>
-              <select
-                id="state"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="">Selecione</option>
-                {STATES.map(uf => (
-                  <option key={uf} value={uf}>{uf}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Contato */}
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Contato</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                Telefone
-              </label>
-              <input
-                type="text"
-                id="phone"
-                name="phone"
-                value={formatPhone(formData.phone)}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
-                placeholder="(00) 0000-0000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
-                Celular
-              </label>
-              <input
-                type="text"
-                id="mobile"
-                name="mobile"
-                value={formatPhone(formData.mobile)}
-                onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
-                placeholder="(00) 00000-0000"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                E-mail
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">
-                Website
-              </label>
-              <input
-                type="text"
-                id="website"
-                name="website"
-                value={formData.website}
-                onChange={handleChange}
-                placeholder="https://"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="contactName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome do Contato
-              </label>
-              <input
-                type="text"
-                id="contactName"
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="paymentTerms" className="block text-sm font-medium text-gray-700 mb-1">
-                Condições de Pagamento
-              </label>
-              <input
-                type="text"
-                id="paymentTerms"
-                name="paymentTerms"
-                value={formData.paymentTerms}
-                onChange={handleChange}
-                placeholder="Ex: 30/60/90 dias"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-          </div>
-
-          {/* Observações */}
-          <div className="mb-6">
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-              Observações
-            </label>
-            <textarea
-              id="notes"
-              name="notes"
-              rows={3}
-              value={formData.notes}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            />
-          </div>
-
-          {/* Compartilhado */}
-          <div className="flex items-center gap-2 mb-6">
+        {/* Dados Básicos */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Dados Básicos</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label className={labelClass}>Código</label>
             <input
-              type="checkbox"
-              id="isShared"
-              name="isShared"
-              checked={formData.isShared}
-              onChange={handleChange}
-              className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+              type="number"
+              value={formData.code}
+              disabled
+              className="w-full px-3 py-2 bg-theme-secondary border border-theme rounded-lg text-theme-muted cursor-not-allowed"
             />
-            <label htmlFor="isShared" className="text-sm font-medium text-gray-700">
-              Compartilhar com outras empresas
-            </label>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <Link
-              href="/suppliers"
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <X className="w-4 h-4" />
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              Salvar Alterações
-            </button>
+          <div>
+            <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
+            <input
+              type="text"
+              id="cnpj"
+              name="cnpj"
+              value={formatCNPJ(formData.cnpj)}
+              onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
+              placeholder="00.000.000/0000-00"
+              className={inputClass}
+            />
           </div>
-        </form>
-      </main>
+
+          <div className="md:col-span-2">
+            <label htmlFor="companyName" className={labelClass}>Razão Social *</label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              required
+              value={formData.companyName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="tradeName" className={labelClass}>Nome Fantasia</label>
+            <input
+              type="text"
+              id="tradeName"
+              name="tradeName"
+              value={formData.tradeName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="status" className={labelClass}>Status</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="ACTIVE">Ativo</option>
+              <option value="INACTIVE">Inativo</option>
+              <option value="BLOCKED">Bloqueado</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="qualityIndex" className={labelClass}>Índice de Qualidade (IQF)</label>
+            <input
+              type="number"
+              id="qualityIndex"
+              name="qualityIndex"
+              min="0"
+              max="100"
+              step="0.1"
+              value={formData.qualityIndex || ""}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="ie" className={labelClass}>Inscrição Estadual</label>
+            <input
+              type="text"
+              id="ie"
+              name="ie"
+              value={formData.ie}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="im" className={labelClass}>Inscrição Municipal</label>
+            <input
+              type="text"
+              id="im"
+              name="im"
+              value={formData.im}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Endereço */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Endereço</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div>
+            <label htmlFor="zipCode" className={labelClass}>CEP</label>
+            <input
+              type="text"
+              id="zipCode"
+              name="zipCode"
+              value={formatCEP(formData.zipCode)}
+              onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
+              placeholder="00000-000"
+              className={inputClass}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="address" className={labelClass}>Endereço</label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="number" className={labelClass}>Número</label>
+            <input
+              type="text"
+              id="number"
+              name="number"
+              value={formData.number}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="complement" className={labelClass}>Complemento</label>
+            <input
+              type="text"
+              id="complement"
+              name="complement"
+              value={formData.complement}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="neighborhood" className={labelClass}>Bairro</label>
+            <input
+              type="text"
+              id="neighborhood"
+              name="neighborhood"
+              value={formData.neighborhood}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="city" className={labelClass}>Cidade</label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="state" className={labelClass}>UF</label>
+            <select
+              id="state"
+              name="state"
+              value={formData.state}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Selecione</option>
+              {STATES.map(uf => (
+                <option key={uf} value={uf}>{uf}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Contato */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Contato</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label htmlFor="phone" className={labelClass}>Telefone</label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formatPhone(formData.phone)}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
+              placeholder="(00) 0000-0000"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="mobile" className={labelClass}>Celular</label>
+            <input
+              type="text"
+              id="mobile"
+              name="mobile"
+              value={formatPhone(formData.mobile)}
+              onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
+              placeholder="(00) 00000-0000"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className={labelClass}>E-mail</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="website" className={labelClass}>Website</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="https://"
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="contactName" className={labelClass}>Nome do Contato</label>
+            <input
+              type="text"
+              id="contactName"
+              name="contactName"
+              value={formData.contactName}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="paymentTerms" className={labelClass}>Condições de Pagamento</label>
+            <input
+              type="text"
+              id="paymentTerms"
+              name="paymentTerms"
+              value={formData.paymentTerms}
+              onChange={handleChange}
+              placeholder="Ex: 30/60/90 dias"
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Observações */}
+        <div className="mb-6">
+          <label htmlFor="notes" className={labelClass}>Observações</label>
+          <textarea
+            id="notes"
+            name="notes"
+            rows={3}
+            value={formData.notes}
+            onChange={handleChange}
+            className={inputClass}
+          />
+        </div>
+
+        {/* Compartilhado */}
+        <div className="flex items-center gap-2 mb-6">
+          <input
+            type="checkbox"
+            id="isShared"
+            name="isShared"
+            checked={formData.isShared}
+            onChange={handleChange}
+            className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
+          />
+          <label htmlFor="isShared" className="text-sm font-medium text-theme-secondary">
+            Compartilhar com outras empresas
+          </label>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-theme">
+          <Link
+            href="/suppliers"
+            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+          >
+            <X className="w-4 h-4" />
+            Cancelar
+          </Link>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

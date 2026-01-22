@@ -88,16 +88,16 @@ export default function ImportOFXPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/treasury/reconciliation" className="text-gray-500 hover:text-gray-700">
+              <Link href="/treasury/reconciliation" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
                 <Upload className="w-5 h-5 text-blue-600" />
                 Importar Extrato OFX
               </h1>
@@ -163,10 +163,10 @@ export default function ImportOFXPage() {
 
         {/* Formulário */}
         {!importMutation.isSuccess && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-6">
             {/* Seleção de Conta */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 <Building2 className="w-4 h-4 inline mr-2" />
                 Conta Bancária
               </label>
@@ -176,7 +176,7 @@ export default function ImportOFXPage() {
                 <select
                   value={selectedAccountId}
                   onChange={(e) => setSelectedAccountId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Selecione uma conta...</option>
                   {accounts?.map((account) => (
@@ -190,7 +190,7 @@ export default function ImportOFXPage() {
 
             {/* Upload de Arquivo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 <FileText className="w-4 h-4 inline mr-2" />
                 Arquivo OFX
               </label>
@@ -219,15 +219,15 @@ export default function ImportOFXPage() {
                         setFile(null);
                         setFileContent("");
                       }}
-                      className="text-sm text-gray-500 hover:text-gray-700 underline"
+                      className="text-sm text-theme-muted hover:text-theme-secondary underline"
                     >
                       Remover arquivo
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Upload className="w-10 h-10 text-gray-400 mx-auto" />
-                    <p className="text-gray-600">
+                    <Upload className="w-10 h-10 text-theme-muted mx-auto" />
+                    <p className="text-theme-secondary">
                       Arraste um arquivo OFX aqui ou{" "}
                       <label className="text-blue-600 hover:text-blue-800 cursor-pointer underline">
                         clique para selecionar
@@ -239,7 +239,7 @@ export default function ImportOFXPage() {
                         />
                       </label>
                     </p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-theme-muted text-sm">
                       Formato aceito: .ofx (Open Financial Exchange)
                     </p>
                   </div>
@@ -265,7 +265,7 @@ export default function ImportOFXPage() {
             <div className="flex justify-end gap-3">
               <Link
                 href="/treasury/reconciliation"
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Cancelar
               </Link>

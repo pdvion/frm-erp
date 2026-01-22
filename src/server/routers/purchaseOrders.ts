@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 import { emitEvent } from "../services/events";
+import { startWorkflowForEntity, getWorkflowStatus, requiresApproval } from "@/lib/workflow-integration";
 
 export const purchaseOrdersRouter = createTRPCRouter({
   // Listar pedidos de compra
@@ -493,5 +494,107 @@ export const purchaseOrdersRouter = createTRPCRouter({
         })),
         recentOrders,
       };
+    }),
+
+  // ============================================================================
+  // INTEGRAÇÃO COM WORKFLOWS
+  // ============================================================================
+
+  // Enviar pedido para aprovação via workflow
+  submitForApproval: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.purchaseOrder.findFirst({
+        where: {
+          id: input.id,
+          ...tenantFilter(ctx.companyId, false),
+        },
+        include: { supplier: true },
+      });
+
+      if (!order) {
+        throw new Error("Pedido não encontrado");
+      }
+
+      if (order.status !== "DRAFT") {
+        throw new Error("Apenas pedidos em rascunho podem ser enviados para aprovação");
+      }
+
+      // Verificar se requer aprovação baseado no valor
+      const approval = await requiresApproval(ctx.companyId!, "PURCHASE_ORDER", order.totalValue);
+
+      if (!approval.required) {
+        // Não requer aprovação - aprovar diretamente
+        const updated = await ctx.prisma.purchaseOrder.update({
+          where: { id: input.id },
+          data: { status: "APPROVED" },
+        });
+
+        await auditUpdate("PurchaseOrder", input.id, String(order.code), order, updated, {
+          userId: ctx.tenant.userId ?? undefined,
+          companyId: ctx.companyId,
+        });
+
+        return { 
+          success: true, 
+          status: "APPROVED", 
+          message: "Pedido aprovado automaticamente (não requer aprovação)" 
+        };
+      }
+
+      // Iniciar workflow de aprovação
+      const result = await startWorkflowForEntity({
+        companyId: ctx.companyId!,
+        entityType: "PURCHASE_ORDER",
+        entityId: input.id,
+        startedBy: ctx.tenant.userId!,
+        workflowCode: approval.workflowCode,
+        data: {
+          orderCode: order.code,
+          supplierName: order.supplier.companyName,
+          totalValue: order.totalValue,
+        },
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || "Erro ao iniciar workflow");
+      }
+
+      // Atualizar status do pedido para PENDING
+      await ctx.prisma.purchaseOrder.update({
+        where: { id: input.id },
+        data: { status: "PENDING" },
+      });
+
+      await auditUpdate("PurchaseOrder", input.id, String(order.code), order, { ...order, status: "PENDING" }, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+
+      emitEvent("purchaseOrder.submittedForApproval", {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId ?? undefined,
+      }, {
+        orderId: order.id,
+        code: order.code,
+        supplierName: order.supplier.companyName,
+        totalValue: order.totalValue,
+        workflowCode: result.instanceCode,
+      });
+
+      return { 
+        success: true, 
+        status: "PENDING", 
+        workflowInstanceId: result.instanceId,
+        workflowCode: result.instanceCode,
+        message: "Pedido enviado para aprovação" 
+      };
+    }),
+
+  // Obter status do workflow de um pedido
+  getWorkflowStatus: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return getWorkflowStatus(ctx.companyId!, "PURCHASE_ORDER", input.id);
     }),
 });

@@ -25,7 +25,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   PARTIAL: { label: "Parcialmente Pago", color: "text-blue-800", bgColor: "bg-blue-100" },
   PAID: { label: "Pago", color: "text-green-800", bgColor: "bg-green-100" },
   OVERDUE: { label: "Vencido", color: "text-red-800", bgColor: "bg-red-100" },
-  CANCELLED: { label: "Cancelado", color: "text-gray-600", bgColor: "bg-gray-100" },
+  CANCELLED: { label: "Cancelado", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
 };
 
 export default function PayableDetailPage() {
@@ -86,7 +86,7 @@ export default function PayableDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -94,10 +94,10 @@ export default function PayableDetailPage() {
 
   if (!payable) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Título não encontrado</h3>
+          <h3 className="text-lg font-medium text-theme mb-2">Título não encontrado</h3>
           <Link href="/payables" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
@@ -135,18 +135,18 @@ export default function PayableDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/payables" className="text-gray-500 hover:text-gray-700">
+              <Link href="/payables" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-theme">
                   Título #{payable.code}
                 </h1>
               </div>
@@ -199,34 +199,34 @@ export default function PayableDetailPage() {
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Dados do Título */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Dados do Título</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-medium text-theme mb-4">Dados do Título</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-500">Descrição</label>
-                  <p className="font-medium text-gray-900">{payable.description}</p>
+                  <label className="text-sm text-theme-muted">Descrição</label>
+                  <p className="font-medium text-theme">{payable.description}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Tipo</label>
-                  <p className="font-medium text-gray-900">{payable.documentType}</p>
+                  <label className="text-sm text-theme-muted">Tipo</label>
+                  <p className="font-medium text-theme">{payable.documentType}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Documento</label>
-                  <p className="font-medium text-gray-900">{payable.documentNumber || "-"}</p>
+                  <label className="text-sm text-theme-muted">Documento</label>
+                  <p className="font-medium text-theme">{payable.documentNumber || "-"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Parcela</label>
-                  <p className="font-medium text-gray-900">
+                  <label className="text-sm text-theme-muted">Parcela</label>
+                  <p className="font-medium text-theme">
                     {payable.installmentNumber}/{payable.totalInstallments}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Emissão</label>
-                  <p className="font-medium text-gray-900">{formatDate(payable.issueDate)}</p>
+                  <label className="text-sm text-theme-muted">Emissão</label>
+                  <p className="font-medium text-theme">{formatDate(payable.issueDate)}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Vencimento</label>
-                  <p className={`font-medium ${isOverdue ? "text-red-600" : "text-gray-900"}`}>
+                  <label className="text-sm text-theme-muted">Vencimento</label>
+                  <p className={`font-medium ${isOverdue ? "text-red-600" : "text-theme"}`}>
                     {formatDate(payable.dueDate)}
                     {isOverdue && (
                       <span className="ml-2 text-sm text-red-500">
@@ -238,16 +238,16 @@ export default function PayableDetailPage() {
               </div>
 
               {payable.notes && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <label className="text-sm text-gray-500">Observações</label>
-                  <p className="text-gray-700 whitespace-pre-wrap">{payable.notes}</p>
+                <div className="mt-4 pt-4 border-t border-theme">
+                  <label className="text-sm text-theme-muted">Observações</label>
+                  <p className="text-theme-secondary whitespace-pre-wrap">{payable.notes}</p>
                 </div>
               )}
 
               {payable.barcode && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <label className="text-sm text-gray-500">Código de Barras</label>
-                  <p className="font-mono text-sm text-gray-900 bg-gray-50 p-2 rounded">
+                <div className="mt-4 pt-4 border-t border-theme">
+                  <label className="text-sm text-theme-muted">Código de Barras</label>
+                  <p className="font-mono text-sm text-theme bg-theme-tertiary p-2 rounded">
                     {payable.barcode}
                   </p>
                 </div>
@@ -255,27 +255,27 @@ export default function PayableDetailPage() {
             </div>
 
             {/* Fornecedor */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Fornecedor</h3>
+                <Building2 className="w-5 h-5 text-theme-muted" />
+                <h3 className="text-lg font-medium text-theme">Fornecedor</h3>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-500">Razão Social</label>
-                  <p className="font-medium text-gray-900">{payable.supplier.companyName}</p>
+                  <label className="text-sm text-theme-muted">Razão Social</label>
+                  <p className="font-medium text-theme">{payable.supplier.companyName}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Nome Fantasia</label>
-                  <p className="font-medium text-gray-900">{payable.supplier.tradeName || "-"}</p>
+                  <label className="text-sm text-theme-muted">Nome Fantasia</label>
+                  <p className="font-medium text-theme">{payable.supplier.tradeName || "-"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">CNPJ</label>
-                  <p className="font-medium text-gray-900">{payable.supplier.cnpj || "-"}</p>
+                  <label className="text-sm text-theme-muted">CNPJ</label>
+                  <p className="font-medium text-theme">{payable.supplier.cnpj || "-"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Código</label>
-                  <p className="font-medium text-gray-900">{payable.supplier.code}</p>
+                  <label className="text-sm text-theme-muted">Código</label>
+                  <p className="font-medium text-theme">{payable.supplier.code}</p>
                 </div>
               </div>
               <div className="mt-4">
@@ -290,19 +290,19 @@ export default function PayableDetailPage() {
 
             {/* NFe Vinculada */}
             {payable.invoice && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <FileText className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-lg font-medium text-gray-900">NFe de Origem</h3>
+                  <FileText className="w-5 h-5 text-theme-muted" />
+                  <h3 className="text-lg font-medium text-theme">NFe de Origem</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-500">Número</label>
-                    <p className="font-medium text-gray-900">{payable.invoice.invoiceNumber}</p>
+                    <label className="text-sm text-theme-muted">Número</label>
+                    <p className="font-medium text-theme">{payable.invoice.invoiceNumber}</p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-500">Chave de Acesso</label>
-                    <p className="font-mono text-xs text-gray-900">{payable.invoice.accessKey}</p>
+                    <label className="text-sm text-theme-muted">Chave de Acesso</label>
+                    <p className="font-mono text-xs text-theme">{payable.invoice.accessKey}</p>
                   </div>
                 </div>
                 <div className="mt-4">
@@ -317,30 +317,30 @@ export default function PayableDetailPage() {
             )}
 
             {/* Histórico de Pagamentos */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Histórico de Pagamentos</h3>
+                <History className="w-5 h-5 text-theme-muted" />
+                <h3 className="text-lg font-medium text-theme">Histórico de Pagamentos</h3>
               </div>
               {payable.payments.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Nenhum pagamento registrado</p>
+                <p className="text-theme-muted text-center py-4">Nenhum pagamento registrado</p>
               ) : (
                 <div className="space-y-3">
                   {payable.payments.map((payment) => (
                     <div
                       key={payment.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-theme-tertiary rounded-lg"
                     >
                       <div>
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-theme">
                           {formatCurrency(payment.value)}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-theme-muted">
                           {formatDate(payment.paymentDate)}
                           {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                         </div>
                         {(payment.discountValue > 0 || payment.interestValue > 0 || payment.fineValue > 0) && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-theme-muted mt-1">
                             {payment.discountValue > 0 && (
                               <span className="text-green-600 mr-2">
                                 Desc: {formatCurrency(payment.discountValue)}
@@ -359,7 +359,7 @@ export default function PayableDetailPage() {
                           </div>
                         )}
                         {payment.notes && (
-                          <div className="text-xs text-gray-500 mt-1">{payment.notes}</div>
+                          <div className="text-xs text-theme-muted mt-1">{payment.notes}</div>
                         )}
                       </div>
                       <CheckCircle className="w-5 h-5 text-green-500" />
@@ -372,12 +372,12 @@ export default function PayableDetailPage() {
 
           {/* Sidebar - Valores */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Valores</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-medium text-theme mb-4">Valores</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Valor Original</span>
-                  <span className="font-medium text-gray-900">{formatCurrency(payable.originalValue)}</span>
+                  <span className="text-theme-muted">Valor Original</span>
+                  <span className="font-medium text-theme">{formatCurrency(payable.originalValue)}</span>
                 </div>
                 {payable.discountValue > 0 && (
                   <div className="flex justify-between text-green-600">
@@ -397,9 +397,9 @@ export default function PayableDetailPage() {
                     <span>+{formatCurrency(payable.fineValue)}</span>
                   </div>
                 )}
-                <div className="flex justify-between pt-3 border-t border-gray-200">
-                  <span className="font-medium text-gray-900">Valor Líquido</span>
-                  <span className="font-bold text-gray-900">{formatCurrency(payable.netValue)}</span>
+                <div className="flex justify-between pt-3 border-t border-theme">
+                  <span className="font-medium text-theme">Valor Líquido</span>
+                  <span className="font-bold text-theme">{formatCurrency(payable.netValue)}</span>
                 </div>
                 {payable.paidValue > 0 && (
                   <div className="flex justify-between text-green-600">
@@ -407,8 +407,8 @@ export default function PayableDetailPage() {
                     <span>-{formatCurrency(payable.paidValue)}</span>
                   </div>
                 )}
-                <div className="flex justify-between pt-3 border-t border-gray-200">
-                  <span className="font-bold text-gray-900">Saldo Devedor</span>
+                <div className="flex justify-between pt-3 border-t border-theme">
+                  <span className="font-bold text-theme">Saldo Devedor</span>
                   <span className={`font-bold text-xl ${balance > 0 ? "text-red-600" : "text-green-600"}`}>
                     {formatCurrency(balance)}
                   </span>
@@ -416,7 +416,7 @@ export default function PayableDetailPage() {
               </div>
 
               {payable.status === "PAID" && payable.paidAt && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="mt-4 pt-4 border-t border-theme">
                   <div className="flex items-center gap-2 text-green-600">
                     <CheckCircle className="w-5 h-5" />
                     <span className="font-medium">Pago em {formatDateTime(payable.paidAt)}</span>
@@ -427,8 +427,8 @@ export default function PayableDetailPage() {
 
             {/* Ações Rápidas */}
             {canPay && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Ações Rápidas</h3>
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="text-lg font-medium text-theme mb-4">Ações Rápidas</h3>
                 <div className="space-y-2">
                   <button
                     onClick={() => {
@@ -445,7 +445,7 @@ export default function PayableDetailPage() {
                       setPaymentValue("");
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
                   >
                     <Receipt className="w-4 h-4" />
                     Baixa Parcial
@@ -466,24 +466,24 @@ export default function PayableDetailPage() {
           aria-labelledby="payment-modal-title"
           onKeyDown={(e) => e.key === "Escape" && setShowPaymentModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="payment-modal-title" className="text-lg font-medium text-gray-900 mb-4">Registrar Pagamento</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="payment-modal-title" className="text-lg font-medium text-theme mb-4">Registrar Pagamento</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Data do Pagamento
                 </label>
                 <input
                   type="date"
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Valor do Pagamento *
                 </label>
                 <input
@@ -492,52 +492,52 @@ export default function PayableDetailPage() {
                   value={paymentValue}
                   onChange={(e) => setPaymentValue(e.target.value)}
                   placeholder={balance.toFixed(2)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">Saldo: {formatCurrency(balance)}</p>
+                <p className="text-xs text-theme-muted mt-1">Saldo: {formatCurrency(balance)}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Desconto</label>
                   <input
                     type="number"
                     step="0.01"
                     value={discountValue}
                     onChange={(e) => setDiscountValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Juros</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Juros</label>
                   <input
                     type="number"
                     step="0.01"
                     value={interestValue}
                     onChange={(e) => setInterestValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Multa</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Multa</label>
                   <input
                     type="number"
                     step="0.01"
                     value={fineValue}
                     onChange={(e) => setFineValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Forma de Pagamento
                 </label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Selecione...</option>
                   <option value="Boleto">Boleto</option>
@@ -550,14 +550,14 @@ export default function PayableDetailPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Observações
                 </label>
                 <textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -574,7 +574,7 @@ export default function PayableDetailPage() {
                   setShowPaymentModal(false);
                   resetPaymentForm();
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Cancelar
               </button>
@@ -604,24 +604,24 @@ export default function PayableDetailPage() {
           aria-labelledby="reschedule-modal-title"
           onKeyDown={(e) => e.key === "Escape" && setShowRescheduleModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="reschedule-modal-title" className="text-lg font-medium text-gray-900 mb-4">Reprogramar Vencimento</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="reschedule-modal-title" className="text-lg font-medium text-theme mb-4">Reprogramar Vencimento</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Nova Data de Vencimento *
                 </label>
                 <input
                   type="date"
                   value={rescheduleDate}
                   onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Motivo da Reprogramação *
                 </label>
                 <textarea
@@ -629,7 +629,7 @@ export default function PayableDetailPage() {
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   rows={3}
                   placeholder="Informe o motivo da reprogramação..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -647,7 +647,7 @@ export default function PayableDetailPage() {
                   setRescheduleDate("");
                   setRescheduleReason("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Cancelar
               </button>
@@ -687,15 +687,15 @@ export default function PayableDetailPage() {
           aria-labelledby="cancel-payable-title"
           onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="cancel-payable-title" className="text-lg font-medium text-gray-900 mb-4">Cancelar Título</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="cancel-payable-title" className="text-lg font-medium text-theme mb-4">Cancelar Título</h3>
             
-            <p className="text-gray-600 mb-4">
+            <p className="text-theme-secondary mb-4">
               Tem certeza que deseja cancelar este título? Esta ação não pode ser desfeita.
             </p>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
               <textarea
@@ -703,7 +703,7 @@ export default function PayableDetailPage() {
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo do cancelamento..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -719,7 +719,7 @@ export default function PayableDetailPage() {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
               </button>

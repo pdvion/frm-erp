@@ -81,6 +81,7 @@
 | WF10 | Workflow/BPM | ✅ Migrado |
 | WMS10 | Picking List | ✅ Migrado |
 | ALC10 | Alçadas de Aprovação | ✅ Migrado |
+| REL10 | Relatórios Gerenciais | ✅ Migrado |
 
 ### Tecnologias Originais
 - **Linguagem**: Delphi (Object Pascal)
@@ -428,6 +429,50 @@ mcp4_browser_resize({ width: 1440, height: 900 }) # Desktop
 ### Relatórios
 
 Relatórios de testes são salvos em `docs/test-report-*.md`
+
+---
+
+## Cron Jobs (Vercel)
+
+### Configuração
+
+Cron jobs são configurados em `vercel.json`:
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/sefaz-sync",
+      "schedule": "0 */4 * * *"
+    }
+  ]
+}
+```
+
+### Cron Jobs Ativos
+
+| Rota | Schedule | Descrição |
+|------|----------|-----------|
+| `/api/cron/sefaz-sync` | A cada 4h | Sincronização automática de NFes com SEFAZ |
+
+### Autenticação
+
+Cron jobs devem verificar o header `Authorization: Bearer ${CRON_SECRET}`:
+
+```typescript
+function isValidCronRequest(request: Request): boolean {
+  const authHeader = request.headers.get("authorization");
+  if (process.env.CRON_SECRET) {
+    return authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  }
+  return process.env.NODE_ENV === "development";
+}
+```
+
+### Variáveis de Ambiente
+
+Adicionar no Vercel:
+- `CRON_SECRET` - Token secreto para autenticação dos cron jobs
 
 ---
 

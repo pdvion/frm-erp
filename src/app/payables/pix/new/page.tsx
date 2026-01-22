@@ -142,7 +142,7 @@ export default function NewPixPage() {
   const KeyIcon = keyTypeConfig[keyType].icon;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Novo PIX"
         icon={<QrCode className="w-6 h-6 text-purple-600" />}
@@ -150,7 +150,7 @@ export default function NewPixPage() {
         actions={
           <Link
             href="/payables/pix"
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:text-theme"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Voltar</span>
@@ -169,13 +169,13 @@ export default function NewPixPage() {
             </div>
             <div className={`w-16 h-1 ${step !== "key" ? "bg-green-500" : "bg-gray-300"}`} />
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "confirm" ? "bg-purple-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-gray-600"
+              step === "confirm" ? "bg-purple-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-theme-secondary"
             }`}>
               {step === "success" ? <CheckCircle className="w-5 h-5" /> : "2"}
             </div>
             <div className={`w-16 h-1 ${step === "success" ? "bg-green-500" : "bg-gray-300"}`} />
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-gray-600"
+              step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-theme-secondary"
             }`}>
               3
             </div>
@@ -195,12 +195,12 @@ export default function NewPixPage() {
 
         {/* Step 1: Key Input */}
         {step === "key" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Dados do PIX</h2>
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-6">Dados do PIX</h2>
 
             {/* Key Type Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Tipo de Chave
               </label>
               <div className="grid grid-cols-5 gap-2">
@@ -217,7 +217,7 @@ export default function NewPixPage() {
                       className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
                         keyType === type
                           ? "border-purple-500 bg-purple-50 text-purple-700"
-                          : "border-gray-200 hover:border-gray-300 text-gray-600"
+                          : "border-gray-200 hover:border-gray-300 text-theme-secondary"
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -230,51 +230,51 @@ export default function NewPixPage() {
 
             {/* Key Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Chave PIX
               </label>
               <div className="relative">
-                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                 <input
                   type={keyType === "EMAIL" ? "email" : "text"}
                   value={pixKey}
                   onChange={(e) => setPixKey(e.target.value)}
                   placeholder={keyTypeConfig[keyType].placeholder}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Value Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Valor
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                 <input
                   type="text"
                   value={value}
                   onChange={handleValueChange}
                   placeholder="0,00"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-right text-lg font-medium"
+                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-right text-lg font-medium"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Descrição (opcional)
               </label>
               <div className="relative">
-                <FileText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <FileText className="absolute left-3 top-3 w-5 h-5 text-theme-muted" />
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Ex: Pagamento fornecedor, Transferência..."
                   rows={2}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                 />
               </div>
             </div>
@@ -302,24 +302,24 @@ export default function NewPixPage() {
 
         {/* Step 2: Confirmation */}
         {step === "confirm" && recipientData && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Confirmar PIX</h2>
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h2 className="text-lg font-medium text-theme mb-6">Confirmar PIX</h2>
 
             {/* Recipient Info */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="text-sm font-medium text-gray-500 mb-3">Destinatário</h3>
+            <div className="bg-theme-tertiary rounded-lg p-4 mb-6">
+              <h3 className="text-sm font-medium text-theme-muted mb-3">Destinatário</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Nome</span>
-                  <span className="font-medium text-gray-900">{recipientData.name}</span>
+                  <span className="text-theme-secondary">Nome</span>
+                  <span className="font-medium text-theme">{recipientData.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Documento</span>
-                  <span className="font-mono text-gray-900">{recipientData.document}</span>
+                  <span className="text-theme-secondary">Documento</span>
+                  <span className="font-mono text-theme">{recipientData.document}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Banco</span>
-                  <span className="text-gray-900">{recipientData.bank}</span>
+                  <span className="text-theme-secondary">Banco</span>
+                  <span className="text-theme">{recipientData.bank}</span>
                 </div>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function NewPixPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setStep("key")}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-6 py-3 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
               >
                 Voltar
               </button>
@@ -380,28 +380,28 @@ export default function NewPixPage() {
 
         {/* Step 3: Success */}
         {step === "success" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+          <div className="bg-theme-card rounded-xl border border-theme p-6 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-xl font-medium text-gray-900 mb-2">PIX Enviado!</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-medium text-theme mb-2">PIX Enviado!</h2>
+            <p className="text-theme-secondary mb-6">
               Sua transação foi processada com sucesso.
             </p>
 
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="bg-theme-tertiary rounded-lg p-4 mb-6">
               <div className="space-y-2 text-left">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">ID da Transação</span>
-                  <span className="font-mono text-sm text-gray-900">{transactionId}</span>
+                  <span className="text-theme-secondary">ID da Transação</span>
+                  <span className="font-mono text-sm text-theme">{transactionId}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Destinatário</span>
-                  <span className="text-gray-900">{recipientData?.name}</span>
+                  <span className="text-theme-secondary">Destinatário</span>
+                  <span className="text-theme">{recipientData?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Valor</span>
-                  <span className="font-bold text-gray-900">R$ {value}</span>
+                  <span className="text-theme-secondary">Valor</span>
+                  <span className="font-bold text-theme">R$ {value}</span>
                 </div>
               </div>
             </div>
@@ -409,7 +409,7 @@ export default function NewPixPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => router.push("/payables/pix")}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-6 py-3 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
               >
                 Ver Transações
               </button>

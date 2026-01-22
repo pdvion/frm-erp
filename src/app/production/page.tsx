@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PLANNED: { label: "Planejada", color: "bg-gray-100 text-gray-600", icon: <Clock className="w-4 h-4" /> },
+  PLANNED: { label: "Planejada", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
   RELEASED: { label: "Liberada", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
   IN_PROGRESS: { label: "Em Produção", color: "bg-purple-100 text-purple-800", icon: <Play className="w-4 h-4" /> },
   COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
@@ -36,7 +36,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 const priorityConfig: Record<number, { label: string; color: string }> = {
   1: { label: "Urgente", color: "text-red-600" },
   2: { label: "Alta", color: "text-orange-600" },
-  3: { label: "Normal", color: "text-gray-600" },
+  3: { label: "Normal", color: "text-theme-secondary" },
   4: { label: "Baixa", color: "text-blue-600" },
 };
 
@@ -60,18 +60,18 @@ export default function ProductionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Factory className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">Ordens de Produção</h1>
+                <h1 className="text-xl font-semibold text-theme">Ordens de Produção</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -93,50 +93,50 @@ export default function ProductionPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Link
             href="/production/mrp"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-blue-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-blue-100 rounded-lg">
               <Calculator className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <div className="font-medium text-gray-900">MRP</div>
-              <div className="text-xs text-gray-500">Planejamento</div>
+              <div className="font-medium text-theme">MRP</div>
+              <div className="text-xs text-theme-muted">Planejamento</div>
             </div>
           </Link>
           <Link
             href="/production/mes"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-green-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-green-100 rounded-lg">
               <Cpu className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <div className="font-medium text-gray-900">MES</div>
-              <div className="text-xs text-gray-500">Chão de Fábrica</div>
+              <div className="font-medium text-theme">MES</div>
+              <div className="text-xs text-theme-muted">Chão de Fábrica</div>
             </div>
           </Link>
           <Link
             href="/production/oee"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-purple-300 hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-purple-100 rounded-lg">
               <BarChart3 className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <div className="font-medium text-gray-900">OEE</div>
-              <div className="text-xs text-gray-500">Indicadores</div>
+              <div className="font-medium text-theme">OEE</div>
+              <div className="text-xs text-theme-muted">Indicadores</div>
             </div>
           </Link>
           <Link
             href="/production/work-centers"
-            className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-400 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-gray-400 hover:shadow-sm transition-all"
           >
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <Settings className="w-5 h-5 text-gray-600" />
+            <div className="p-2 bg-theme-tertiary rounded-lg">
+              <Settings className="w-5 h-5 text-theme-secondary" />
             </div>
             <div>
-              <div className="font-medium text-gray-900">Centros</div>
-              <div className="text-xs text-gray-500">Configuração</div>
+              <div className="font-medium text-theme">Centros</div>
+              <div className="text-xs text-theme-muted">Configuração</div>
             </div>
           </Link>
         </div>
@@ -148,15 +148,15 @@ export default function ProductionPage() {
               const config = statusConfig[s.status];
               const progress = s.totalQty > 0 ? Math.round((s.producedQty / s.totalQty) * 100) : 0;
               return (
-                <div key={s.status} className="bg-white rounded-lg border border-gray-200 p-4">
+                <div key={s.status} className="bg-theme-card rounded-lg border border-theme p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                    <span className="text-sm font-medium text-gray-600">{config.label}</span>
+                    <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{s.count}</div>
+                  <div className="text-2xl font-bold text-theme">{s.count}</div>
                   {s.status === "IN_PROGRESS" && (
                     <div className="mt-2">
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                      <div className="flex justify-between text-xs text-theme-muted mb-1">
                         <span>Progresso</span>
                         <span>{progress}%</span>
                       </div>
@@ -195,10 +195,10 @@ export default function ProductionPage() {
         )}
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Buscar por produto, pedido ou cliente..."
@@ -207,7 +207,7 @@ export default function ProductionPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -217,7 +217,7 @@ export default function ProductionPage() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             >
               <option value="ALL">Todos os Status</option>
               <option value="PLANNED">Planejadas</option>
@@ -230,7 +230,7 @@ export default function ProductionPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -238,8 +238,8 @@ export default function ProductionPage() {
           ) : !data?.orders.length ? (
             <div className="text-center py-12">
               <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma OP encontrada</h3>
-              <p className="text-gray-500 mb-4">
+              <h3 className="text-lg font-medium text-theme mb-2">Nenhuma OP encontrada</h3>
+              <p className="text-theme-muted mb-4">
                 {search || statusFilter !== "ALL"
                   ? "Tente ajustar os filtros"
                   : "Crie uma nova ordem de produção"}
@@ -255,36 +255,36 @@ export default function ProductionPage() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         OP
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Produto
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Quantidade
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Progresso
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Entrega
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Prioridade
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                         Ações
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.orders.map((order) => {
                       const statusCfg = statusConfig[order.status];
                       const priorityCfg = priorityConfig[order.priority];
@@ -294,23 +294,23 @@ export default function ProductionPage() {
                       const late = isLate(order.dueDate, order.status);
 
                       return (
-                        <tr key={order.id} className={`hover:bg-gray-50 ${late ? "bg-red-50" : ""}`}>
+                        <tr key={order.id} className={`hover:bg-theme-hover ${late ? "bg-red-50" : ""}`}>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">#{order.code}</div>
+                            <div className="font-medium text-theme">#{order.code}</div>
                             {order.salesOrderNumber && (
-                              <div className="text-xs text-gray-500">PV: {order.salesOrderNumber}</div>
+                              <div className="text-xs text-theme-muted">PV: {order.salesOrderNumber}</div>
                             )}
                           </td>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">{order.product.description}</div>
-                            <div className="text-xs text-gray-500">Cód: {order.product.code}</div>
+                            <div className="font-medium text-theme">{order.product.description}</div>
+                            <div className="text-xs text-theme-muted">Cód: {order.product.code}</div>
                             {order.customerName && (
-                              <div className="text-xs text-gray-500">{order.customerName}</div>
+                              <div className="text-xs text-theme-muted">{order.customerName}</div>
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className="font-medium text-gray-900">{order.quantity}</span>
-                            <span className="text-gray-500 text-sm ml-1">{order.product.unit}</span>
+                            <span className="font-medium text-theme">{order.quantity}</span>
+                            <span className="text-theme-muted text-sm ml-1">{order.product.unit}</span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
@@ -322,14 +322,14 @@ export default function ProductionPage() {
                                   style={{ width: `${Math.min(progress, 100)}%` }}
                                 />
                               </div>
-                              <span className="text-sm text-gray-600 w-12 text-right">{progress}%</span>
+                              <span className="text-sm text-theme-secondary w-12 text-right">{progress}%</span>
                             </div>
-                            <div className="text-xs text-gray-500 text-center mt-1">
+                            <div className="text-xs text-theme-muted text-center mt-1">
                               {order.producedQty} / {order.quantity}
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className={late ? "text-red-600 font-medium" : "text-gray-600"}>
+                            <span className={late ? "text-red-600 font-medium" : "text-theme-secondary"}>
                               {formatDate(order.dueDate)}
                             </span>
                             {late && (
@@ -365,25 +365,25 @@ export default function ProductionPage() {
 
               {/* Pagination */}
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 hover:bg-theme-hover"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-theme-secondary">
                       Página {page} de {data.pages}
                     </span>
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
-                      className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 hover:bg-theme-hover"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>

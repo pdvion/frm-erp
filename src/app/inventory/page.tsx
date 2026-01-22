@@ -52,12 +52,12 @@ const inventoryTypeLabels: Record<string, string> = {
 };
 
 const inventoryTypeColors: Record<string, string> = {
-  RAW_MATERIAL: "bg-blue-100 text-blue-800",
-  SEMI_FINISHED: "bg-yellow-100 text-yellow-800",
-  FINISHED: "bg-green-100 text-green-800",
-  CRITICAL: "bg-red-100 text-red-800",
-  DEAD: "bg-gray-100 text-gray-800",
-  SCRAP: "bg-orange-100 text-orange-800",
+  RAW_MATERIAL: "bg-blue-500/20 text-blue-400",
+  SEMI_FINISHED: "bg-yellow-500/20 text-yellow-400",
+  FINISHED: "bg-green-500/20 text-green-400",
+  CRITICAL: "bg-red-500/20 text-red-400",
+  DEAD: "bg-zinc-500/20 text-zinc-400",
+  SCRAP: "bg-orange-500/20 text-orange-400",
 };
 
 export default function InventoryPage() {
@@ -88,20 +88,20 @@ export default function InventoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader 
         title="Estoque" 
-        icon={<Warehouse className="w-6 h-6 text-orange-600" />}
+        icon={<Warehouse className="w-6 h-6" />}
         module="INVENTORY"
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
             <input
               type="text"
               placeholder="Buscar por descrição ou código do material..."
@@ -110,20 +110,20 @@ export default function InventoryPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           {/* Type Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" />
+            <Filter className="w-5 h-5 text-theme-muted" />
             <select
               value={inventoryType ?? ""}
               onChange={(e) => {
                 setInventoryType(e.target.value || undefined);
                 setPage(1);
               }}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Todos os tipos</option>
               <option value="RAW_MATERIAL">Matéria Prima</option>
@@ -136,7 +136,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Below Minimum Filter */}
-          <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+          <label className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg cursor-pointer hover:bg-theme-hover">
             <input
               type="checkbox"
               checked={belowMinimum}
@@ -144,9 +144,9 @@ export default function InventoryPage() {
                 setBelowMinimum(e.target.checked);
                 setPage(1);
               }}
-              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Abaixo do mínimo</span>
+            <span className="text-sm text-theme-secondary">Abaixo do mínimo</span>
             <AlertTriangle className="w-4 h-4 text-orange-500" />
           </label>
 
@@ -154,7 +154,7 @@ export default function InventoryPage() {
           <div className="flex gap-2">
             <Link
               href="/inventory/movements"
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
             >
               <span>Histórico</span>
             </Link>
@@ -177,58 +177,58 @@ export default function InventoryPage() {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">Erro ao carregar estoque: {error.message}</p>
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+            <p className="text-red-400">Erro ao carregar estoque: {error.message}</p>
           </div>
         )}
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <div className="bg-theme-card rounded-xl border border-theme p-8">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-              <span className="ml-3 text-gray-600">Carregando estoque...</span>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-theme-muted">Carregando estoque...</span>
             </div>
           </div>
         )}
 
         {/* Inventory Table */}
         {!isLoading && !error && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-theme-table-header border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Material
                     </th>
-                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Tipo
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Quantidade
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Reservado
                     </th>
-                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Disponível
                     </th>
-                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Custo Unit.
                     </th>
-                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Custo Total
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-theme-table">
                   {inventory.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-4 py-8 text-center text-theme-muted">
                         Nenhum item de estoque encontrado.
                       </td>
                     </tr>
@@ -236,14 +236,14 @@ export default function InventoryPage() {
                     inventory.map((item) => {
                       const stockStatus = getStockStatus(item);
                       return (
-                        <tr key={item.id} className="hover:bg-gray-50">
+                        <tr key={item.id} className="hover:bg-theme-hover transition-colors">
                           <td className="px-4 py-3">
                             <div className="flex items-start gap-2">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-theme">
                                   {item.material.code} - {item.material.description}
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-theme-muted">
                                   {item.material.category?.name ?? "Sem categoria"} • {item.material.unit}
                                 </div>
                               </div>
@@ -259,28 +259,28 @@ export default function InventoryPage() {
                               {formatNumber(item.quantity)}
                             </div>
                             {item.material.minQuantity && (
-                              <div className="text-xs text-gray-400">
+                              <div className="text-xs text-theme-muted">
                                 Mín: {formatNumber(item.material.minQuantity)}
                               </div>
                             )}
                           </td>
                           <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-right">
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-theme-secondary">
                               {formatNumber(item.reservedQty)}
                             </div>
                           </td>
                           <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-right">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-theme">
                               {formatNumber(item.availableQty)}
                             </div>
                           </td>
                           <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap text-right">
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-theme-secondary">
                               {formatCurrency(item.unitCost)}
                             </div>
                           </td>
                           <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap text-right">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-theme">
                               {formatCurrency(item.totalCost)}
                             </div>
                           </td>
@@ -289,7 +289,7 @@ export default function InventoryPage() {
                               <stockStatus.icon className={`w-5 h-5 mx-auto ${stockStatus.color}`} />
                             )}
                             {!stockStatus.icon && (
-                              <span className="text-green-600 text-sm">OK</span>
+                              <span className="text-green-500 text-sm">OK</span>
                             )}
                           </td>
                         </tr>
@@ -302,8 +302,8 @@ export default function InventoryPage() {
 
             {/* Pagination */}
             {pagination && pagination.totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-gray-600">
+              <div className="px-4 py-3 border-t border-theme flex items-center justify-between">
+                <div className="text-sm text-theme-muted">
                   Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
                   {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
                   {pagination.total} itens
@@ -312,17 +312,17 @@ export default function InventoryPage() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-theme-muted">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -331,7 +331,7 @@ export default function InventoryPage() {
             )}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

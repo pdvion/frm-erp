@@ -29,7 +29,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-800", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function ReceivingPage() {
@@ -45,7 +45,7 @@ export default function ReceivingPage() {
   const { data: dashboard } = trpc.receiving.dashboard.useQuery();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader 
         title="Entrada de Materiais" 
         icon={<Package className="w-6 h-6 text-blue-600" />}
@@ -64,45 +64,45 @@ export default function ReceivingPage() {
         {/* KPIs */}
         {dashboard && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-yellow-600 mb-2">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Pendentes</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{dashboard.pending}</div>
+              <div className="text-2xl font-bold text-theme">{dashboard.pending}</div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <Package className="w-4 h-4" />
                 <span className="text-sm font-medium">Em Conferência</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{dashboard.inProgress}</div>
+              <div className="text-2xl font-bold text-theme">{dashboard.inProgress}</div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-green-600 mb-2">
                 <CheckCircle className="w-4 h-4" />
                 <span className="text-sm font-medium">Concluídos (Mês)</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{dashboard.completedMonth.count}</div>
+              <div className="text-2xl font-bold text-theme">{dashboard.completedMonth.count}</div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-purple-600 mb-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm font-medium">Valor (Mês)</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{formatCurrency(dashboard.completedMonth.value)}</div>
+              <div className="text-2xl font-bold text-theme">{formatCurrency(dashboard.completedMonth.value)}</div>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-4">
-            <Filter className="w-4 h-4 text-gray-400" />
+            <Filter className="w-4 h-4 text-theme-muted" />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="border border-gray-300 rounded-lg px-3 py-2"
+              className="border border-theme-input rounded-lg px-3 py-2"
             >
               <option value="ALL">Todos os status</option>
               <option value="PENDING">Pendentes</option>
@@ -115,7 +115,7 @@ export default function ReceivingPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -123,52 +123,52 @@ export default function ReceivingPage() {
           ) : !data?.receivings.length ? (
             <div className="text-center py-12">
               <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">Nenhum recebimento encontrado</p>
+              <p className="text-theme-muted">Nenhum recebimento encontrado</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-theme-table">
+                  <thead className="bg-theme-tertiary">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fornecedor</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">NFe</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Data</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Itens</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Valor</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Código</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Fornecedor</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">NFe</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Data</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Itens</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Valor</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Status</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Ações</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-theme-table">
                     {data.receivings.map((receiving) => {
                       const config = statusConfig[receiving.status] || statusConfig.PENDING;
                       return (
-                        <tr key={receiving.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium text-gray-900">#{receiving.code}</td>
+                        <tr key={receiving.id} className="hover:bg-theme-hover">
+                          <td className="px-4 py-3 font-medium text-theme">#{receiving.code}</td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-gray-400" />
+                              <Building2 className="w-4 h-4 text-theme-muted" />
                               <span className="text-sm">{receiving.supplier.companyName}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
                             {receiving.nfeNumber && (
-                              <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                              <div className="flex items-center justify-center gap-1 text-sm text-theme-secondary">
                                 <FileText className="w-3 h-3" />
                                 {receiving.nfeNumber}
                               </div>
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                            <div className="flex items-center justify-center gap-1 text-sm text-theme-secondary">
                               <Calendar className="w-3 h-3" />
                               {formatDate(receiving.receivingDate)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center text-sm text-gray-600">{receiving._count.items}</td>
-                          <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
+                          <td className="px-4 py-3 text-center text-sm text-theme-secondary">{receiving._count.items}</td>
+                          <td className="px-4 py-3 text-right text-sm font-medium text-theme">
                             {formatCurrency(receiving.totalValue)}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -193,13 +193,13 @@ export default function ReceivingPage() {
                 </table>
               </div>
               {data.pages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">Página {page} de {data.pages}</div>
+                <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
+                  <div className="text-sm text-theme-muted">Página {page} de {data.pages}</div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50">
+                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>

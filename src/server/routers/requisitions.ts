@@ -3,6 +3,7 @@ import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { startWorkflowForEntity, getWorkflowStatus } from "@/lib/workflow-integration";
 
 export const requisitionsRouter = createTRPCRouter({
   // Listar requisições
@@ -599,4 +600,83 @@ export const requisitionsRouter = createTRPCRouter({
       recentCount,
     };
   }),
+
+  // ============================================================================
+  // INTEGRAÇÃO COM WORKFLOWS
+  // ============================================================================
+
+  // Enviar requisição para aprovação via workflow
+  submitForApproval: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const requisition = await prisma.materialRequisition.findFirst({
+        where: {
+          id: input.id,
+          ...tenantFilter(ctx.companyId, false),
+        },
+        include: {
+          items: { include: { material: true } },
+        },
+      });
+
+      if (!requisition) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Requisição não encontrada" });
+      }
+
+      if (requisition.status !== "DRAFT") {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Apenas requisições em rascunho podem ser enviadas para aprovação" 
+        });
+      }
+
+      // Calcular valor total da requisição (usando lastPurchasePrice como aproximação)
+      const totalValue = requisition.items.reduce(
+        (sum: number, item) => sum + (item.material.lastPurchasePrice || 0) * item.requestedQty, 
+        0
+      );
+
+      // Iniciar workflow de aprovação
+      const result = await startWorkflowForEntity({
+        companyId: ctx.companyId!,
+        entityType: "REQUISITION",
+        entityId: input.id,
+        startedBy: ctx.tenant.userId!,
+        data: {
+          orderNumber: requisition.orderNumber,
+          code: requisition.code,
+          type: requisition.type,
+          department: requisition.department,
+          totalValue,
+          itemCount: requisition.items.length,
+        },
+      });
+
+      if (!result.success && result.error !== "NO_WORKFLOW_CONFIGURED") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: result.error });
+      }
+
+      // Atualizar status da requisição para PENDING
+      await prisma.materialRequisition.update({
+        where: { id: input.id },
+        data: { status: "PENDING" },
+      });
+
+      return { 
+        success: true, 
+        status: "PENDING", 
+        workflowInstanceId: result.instanceId,
+        workflowCode: result.instanceCode,
+        message: result.error === "NO_WORKFLOW_CONFIGURED" 
+          ? "Requisição enviada (sem workflow configurado)" 
+          : "Requisição enviada para aprovação" 
+      };
+    }),
+
+  // Obter status do workflow de uma requisição
+  getWorkflowStatus: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return getWorkflowStatus(ctx.companyId!, "REQUISITION", input.id);
+    }),
 });

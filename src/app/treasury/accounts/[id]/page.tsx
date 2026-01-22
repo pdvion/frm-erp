@@ -55,7 +55,7 @@ export default function AccountDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -63,10 +63,10 @@ export default function AccountDetailPage() {
 
   if (!account) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <Landmark className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Conta não encontrada</h3>
+          <h3 className="text-lg font-medium text-theme mb-2">Conta não encontrada</h3>
           <Link href="/treasury" className="text-indigo-600 hover:text-indigo-800">
             Voltar para tesouraria
           </Link>
@@ -78,13 +78,13 @@ export default function AccountDetailPage() {
   const config = accountTypeConfig[account.accountType] || accountTypeConfig.CHECKING;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/treasury" className="text-gray-500 hover:text-gray-700">
+              <Link href="/treasury" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-3">
@@ -92,8 +92,8 @@ export default function AccountDetailPage() {
                   {config.icon}
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">{account.name}</h1>
-                  <p className="text-sm text-gray-500">
+                  <h1 className="text-xl font-semibold text-theme">{account.name}</h1>
+                  <p className="text-sm text-theme-muted">
                     {account.bankName} {account.agency && `• Ag ${account.agency}`} {account.accountNumber && `• CC ${account.accountNumber}`}
                   </p>
                 </div>
@@ -103,7 +103,7 @@ export default function AccountDetailPage() {
               <CompanySwitcher />
               <button
                 onClick={() => setShowTransferModal(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 <ArrowRightLeft className="w-4 h-4" />
                 Transferir
@@ -136,22 +136,22 @@ export default function AccountDetailPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por descrição..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Todos os tipos</option>
               {Object.entries(transactionTypeLabels).map(([value, label]) => (
@@ -162,27 +162,27 @@ export default function AccountDetailPage() {
         </div>
 
         {/* Transactions */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="font-medium text-gray-900">Extrato</h2>
-            <button className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+          <div className="px-4 py-3 border-b border-theme flex items-center justify-between">
+            <h2 className="font-medium text-theme">Extrato</h2>
+            <button className="text-sm text-theme-secondary hover:text-theme flex items-center gap-1">
               <Download className="w-4 h-4" />
               Exportar
             </button>
           </div>
 
           {!transactions?.transactions.length ? (
-            <div className="px-4 py-12 text-center text-gray-500">
+            <div className="px-4 py-12 text-center text-theme-muted">
               <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>Nenhuma transação encontrada</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-theme-table">
               {transactions.transactions.map((tx) => {
                 const isCredit = ["CREDIT", "TRANSFER_IN", "INTEREST"].includes(tx.type);
 
                 return (
-                  <div key={tx.id} className="px-4 py-3 flex items-center justify-between hover:bg-gray-50">
+                  <div key={tx.id} className="px-4 py-3 flex items-center justify-between hover:bg-theme-hover">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${isCredit ? "bg-green-100" : "bg-red-100"}`}>
                         {isCredit ? (
@@ -192,11 +192,11 @@ export default function AccountDetailPage() {
                         )}
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{tx.description}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-theme">{tx.description}</div>
+                        <div className="text-sm text-theme-muted">
                           {formatDate(tx.transactionDate)}
                           {tx.documentNumber && ` • Doc: ${tx.documentNumber}`}
-                          <span className="ml-2 px-2 py-0.5 bg-gray-100 rounded text-xs">
+                          <span className="ml-2 px-2 py-0.5 bg-theme-tertiary rounded text-xs">
                             {transactionTypeLabels[tx.type] || tx.type}
                           </span>
                         </div>
@@ -206,7 +206,7 @@ export default function AccountDetailPage() {
                       <div className={`font-medium ${isCredit ? "text-green-600" : "text-red-600"}`}>
                         {isCredit ? "+" : "-"}{formatCurrency(tx.value)}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-theme-muted">
                         Saldo: {formatCurrency(tx.balanceAfter)}
                       </div>
                     </div>
@@ -276,8 +276,8 @@ function TransferModal({
       aria-labelledby="transfer-modal-title"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 id="transfer-modal-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 id="transfer-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
           <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
           Transferência entre Contas
         </h3>
@@ -290,11 +290,11 @@ function TransferModal({
 
         <div className="space-y-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Conta Destino</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Conta Destino</label>
             <select
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Selecione...</option>
               {otherAccounts.map((account) => (
@@ -306,24 +306,24 @@ function TransferModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Valor</label>
             <input
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="0.00"
               step="0.01"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Descrição</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="Transferência entre contas"
             />
           </div>
@@ -338,7 +338,7 @@ function TransferModal({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Cancelar
           </button>
@@ -390,22 +390,22 @@ function TransactionModal({
       aria-labelledby="transaction-modal-title"
       onKeyDown={(e) => e.key === "Escape" && onClose()}
     >
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 id="transaction-modal-title" className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 id="transaction-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-indigo-600" />
           Novo Lançamento
         </h3>
 
         <div className="space-y-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setType("CREDIT")}
                 className={`flex-1 py-2 rounded-lg border-2 ${
                   type === "CREDIT"
                     ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-gray-200 text-gray-600"
+                    : "border-gray-200 text-theme-secondary"
                 }`}
               >
                 <TrendingUp className="w-4 h-4 inline mr-1" />
@@ -416,7 +416,7 @@ function TransactionModal({
                 className={`flex-1 py-2 rounded-lg border-2 ${
                   type === "DEBIT"
                     ? "border-red-500 bg-red-50 text-red-700"
-                    : "border-gray-200 text-gray-600"
+                    : "border-gray-200 text-theme-secondary"
                 }`}
               >
                 <TrendingDown className="w-4 h-4 inline mr-1" />
@@ -426,45 +426,45 @@ function TransactionModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Valor</label>
             <input
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="0.00"
               step="0.01"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Descrição</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="Descrição do lançamento"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Data</label>
             <input
               type="date"
               value={transactionDate}
               onChange={(e) => setTransactionDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Documento (opcional)</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Documento (opcional)</label>
             <input
               type="text"
               value={documentNumber}
               onChange={(e) => setDocumentNumber(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               placeholder="Número do documento"
             />
           </div>
@@ -479,7 +479,7 @@ function TransactionModal({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Cancelar
           </button>

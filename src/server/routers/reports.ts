@@ -1,0 +1,279 @@
+import { z } from "zod";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
+import type { InventoryType } from "@prisma/client";
+
+export const reportsRouter = createTRPCRouter({
+  // Relatório de Posição de Estoque
+  inventoryPosition: tenantProcedure
+    .input(
+      z.object({
+        inventoryType: z.enum(["RAW_MATERIAL", "FINISHED_PRODUCT", "PACKAGING", "CONSUMABLE", "SPARE_PART"]).optional(),
+        categoryId: z.string().optional(),
+        belowMinimum: z.boolean().optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const { inventoryType, categoryId, belowMinimum } = input || {};
+
+      const inventory = await ctx.prisma.inventory.findMany({
+        where: {
+          companyId: ctx.companyId,
+          ...(inventoryType && { inventoryType: inventoryType as InventoryType }),
+          ...(categoryId && { material: { categoryId } }),
+        },
+        include: {
+          material: {
+            include: {
+              category: true,
+            },
+          },
+        },
+        orderBy: { material: { description: "asc" } },
+      });
+
+      const filtered = belowMinimum
+        ? inventory.filter((item) => item.availableQty < (item.material.minQuantity || 0))
+        : inventory;
+
+      const totals = filtered.reduce(
+        (acc, item) => ({
+          totalItems: acc.totalItems + 1,
+          totalQuantity: acc.totalQuantity + item.quantity,
+          totalValue: acc.totalValue + item.totalCost,
+          belowMinimum: acc.belowMinimum + (item.availableQty < (item.material.minQuantity || 0) ? 1 : 0),
+        }),
+        { totalItems: 0, totalQuantity: 0, totalValue: 0, belowMinimum: 0 }
+      );
+
+      return {
+        items: filtered.map((item) => ({
+          id: item.id,
+          materialCode: item.material.code,
+          materialDescription: item.material.description,
+          category: item.material.category?.name || "Sem categoria",
+          unit: item.material.unit,
+          quantity: item.quantity,
+          reservedQty: item.reservedQty,
+          availableQty: item.availableQty,
+          unitCost: item.unitCost,
+          totalCost: item.totalCost,
+          minQuantity: item.material.minQuantity,
+          maxQuantity: item.material.maxQuantity,
+          inventoryType: item.inventoryType,
+          isBelowMinimum: item.availableQty < (item.material.minQuantity || 0),
+        })),
+        totals,
+      };
+    }),
+
+  // Relatório de Contas a Pagar - Aging
+  payablesAging: tenantProcedure
+    .input(
+      z.object({
+        asOfDate: z.string().optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const asOfDate = input?.asOfDate ? new Date(input.asOfDate) : new Date();
+
+      const payables = await ctx.prisma.accountsPayable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: { in: ["PENDING", "OVERDUE"] },
+        },
+        include: {
+          supplier: true,
+        },
+        orderBy: { dueDate: "asc" },
+      });
+
+      const aging = {
+        current: { count: 0, value: 0 },
+        days1to30: { count: 0, value: 0 },
+        days31to60: { count: 0, value: 0 },
+        days61to90: { count: 0, value: 0 },
+        over90: { count: 0, value: 0 },
+      };
+
+      payables.forEach((p) => {
+        const dueDate = new Date(p.dueDate);
+        const diffDays = Math.floor((asOfDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        const amount = Number(p.netValue) - Number(p.paidValue || 0);
+
+        if (diffDays <= 0) {
+          aging.current.count += 1;
+          aging.current.value += amount;
+        } else if (diffDays <= 30) {
+          aging.days1to30.count += 1;
+          aging.days1to30.value += amount;
+        } else if (diffDays <= 60) {
+          aging.days31to60.count += 1;
+          aging.days31to60.value += amount;
+        } else if (diffDays <= 90) {
+          aging.days61to90.count += 1;
+          aging.days61to90.value += amount;
+        } else {
+          aging.over90.count += 1;
+          aging.over90.value += amount;
+        }
+      });
+
+      const total = Object.values(aging).reduce((acc, bucket) => acc + bucket.value, 0);
+
+      return {
+        aging,
+        total,
+        details: payables.map((p) => ({
+          id: p.id,
+          supplier: p.supplier?.companyName || "N/A",
+          description: p.description || "",
+          dueDate: p.dueDate,
+          amount: Number(p.netValue) - Number(p.paidValue || 0),
+          daysOverdue: Math.max(0, Math.floor((asOfDate.getTime() - new Date(p.dueDate).getTime()) / (1000 * 60 * 60 * 24))),
+        })),
+      };
+    }),
+
+  // Relatório de Contas a Receber - Aging
+  receivablesAging: tenantProcedure
+    .input(
+      z.object({
+        asOfDate: z.string().optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const asOfDate = input?.asOfDate ? new Date(input.asOfDate) : new Date();
+
+      const receivables = await ctx.prisma.accountsReceivable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: { in: ["PENDING", "OVERDUE"] },
+        },
+        include: {
+          customer: true,
+        },
+        orderBy: { dueDate: "asc" },
+      });
+
+      const aging = {
+        current: { count: 0, value: 0 },
+        days1to30: { count: 0, value: 0 },
+        days31to60: { count: 0, value: 0 },
+        days61to90: { count: 0, value: 0 },
+        over90: { count: 0, value: 0 },
+      };
+
+      receivables.forEach((r) => {
+        const dueDate = new Date(r.dueDate);
+        const diffDays = Math.floor((asOfDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        const amount = Number(r.netValue) - Number(r.paidValue || 0);
+
+        if (diffDays <= 0) {
+          aging.current.count += 1;
+          aging.current.value += amount;
+        } else if (diffDays <= 30) {
+          aging.days1to30.count += 1;
+          aging.days1to30.value += amount;
+        } else if (diffDays <= 60) {
+          aging.days31to60.count += 1;
+          aging.days31to60.value += amount;
+        } else if (diffDays <= 90) {
+          aging.days61to90.count += 1;
+          aging.days61to90.value += amount;
+        } else {
+          aging.over90.count += 1;
+          aging.over90.value += amount;
+        }
+      });
+
+      const total = Object.values(aging).reduce((acc, bucket) => acc + bucket.value, 0);
+
+      return {
+        aging,
+        total,
+        details: receivables.map((r) => ({
+          id: r.id,
+          customer: r.customer?.tradeName || "N/A",
+          description: r.description || "",
+          dueDate: r.dueDate,
+          amount: Number(r.netValue) - Number(r.paidValue || 0),
+          daysOverdue: Math.max(0, Math.floor((asOfDate.getTime() - new Date(r.dueDate).getTime()) / (1000 * 60 * 60 * 24))),
+        })),
+      };
+    }),
+
+  // Relatório de Fluxo de Caixa
+  cashFlow: tenantProcedure
+    .input(
+      z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { startDate, endDate } = input;
+
+      const paidPayables = await ctx.prisma.accountsPayable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+      });
+
+      const paidReceivables = await ctx.prisma.accountsReceivable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+      });
+
+      const dailyFlow: Record<string, { inflow: number; outflow: number }> = {};
+
+      paidReceivables.forEach((r) => {
+        const date = r.paidAt?.toISOString().split("T")[0] || "";
+        if (!dailyFlow[date]) dailyFlow[date] = { inflow: 0, outflow: 0 };
+        dailyFlow[date].inflow += Number(r.paidValue || r.netValue);
+      });
+
+      paidPayables.forEach((p) => {
+        const date = p.paidAt?.toISOString().split("T")[0] || "";
+        if (!dailyFlow[date]) dailyFlow[date] = { inflow: 0, outflow: 0 };
+        dailyFlow[date].outflow += Number(p.paidValue || p.netValue);
+      });
+
+      const sortedDates = Object.keys(dailyFlow).sort();
+      let runningBalance = 0;
+      const flowData = sortedDates.map((date) => {
+        const { inflow, outflow } = dailyFlow[date];
+        runningBalance += inflow - outflow;
+        return { date, inflow, outflow, net: inflow - outflow, balance: runningBalance };
+      });
+
+      const totals = {
+        totalInflow: paidReceivables.reduce((acc, r) => acc + Number(r.paidValue || r.netValue), 0),
+        totalOutflow: paidPayables.reduce((acc, p) => acc + Number(p.paidValue || p.netValue), 0),
+        netFlow: 0,
+      };
+      totals.netFlow = totals.totalInflow - totals.totalOutflow;
+
+      return { flowData, totals };
+    }),
+
+  // Lista de relatórios disponíveis
+  available: tenantProcedure.query(() => {
+    return [
+      { id: "inventory-position", name: "Posição de Estoque", description: "Visão geral do estoque atual", category: "Estoque", icon: "Package" },
+      { id: "payables-aging", name: "Aging Contas a Pagar", description: "Análise de vencimentos", category: "Financeiro", icon: "TrendingDown" },
+      { id: "receivables-aging", name: "Aging Contas a Receber", description: "Análise de vencimentos", category: "Financeiro", icon: "TrendingUp" },
+      { id: "cash-flow", name: "Fluxo de Caixa", description: "Entradas e saídas por período", category: "Financeiro", icon: "Wallet" },
+    ];
+  }),
+});

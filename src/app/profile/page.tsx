@@ -97,20 +97,20 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200">
+        <header className="bg-theme-card border-b border-theme">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-4">
                 <Link
                   href="/"
-                  className="text-gray-600 hover:text-[var(--frm-primary)]"
+                  className="text-theme-secondary hover:text-[var(--frm-primary)]"
                 >
                   ← Voltar
                 </Link>
                 <div className="h-6 w-px bg-gray-300" />
-                <h1 className="text-xl font-semibold text-gray-900">Meu Perfil</h1>
+                <h1 className="text-xl font-semibold text-theme">Meu Perfil</h1>
               </div>
               
               <button
@@ -125,25 +125,25 @@ export default function ProfilePage() {
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
           {/* User Info Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-[var(--frm-primary)] rounded-full flex items-center justify-center">
                 <User className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-theme">
                   {user?.user_metadata?.name || user?.email?.split("@")[0] || "Usuário"}
                 </h2>
-                <div className="flex items-center gap-2 text-gray-500 mt-1">
+                <div className="flex items-center gap-2 text-theme-muted mt-1">
                   <Mail className="w-4 h-4" />
                   <span>{user?.email}</span>
                 </div>
                 {company && (
-                  <div className="flex items-center gap-2 text-gray-500 mt-1">
+                  <div className="flex items-center gap-2 text-theme-muted mt-1">
                     <Building2 className="w-4 h-4" />
                     <span>{company.name}</span>
                     {companies.length > 1 && (
-                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-theme-tertiary px-2 py-0.5 rounded-full">
                         +{companies.length - 1} empresas
                       </span>
                     )}
@@ -154,25 +154,25 @@ export default function ProfilePage() {
           </div>
 
           {/* Security Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <div className="bg-theme-card rounded-xl border border-theme overflow-hidden">
+            <div className="px-6 py-4 border-b border-theme">
+              <h3 className="text-lg font-semibold text-theme flex items-center gap-2">
                 <Shield className="w-5 h-5 text-[var(--frm-primary)]" />
                 Segurança
               </h3>
             </div>
 
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-theme-table">
               {/* Change Password */}
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <Key className="w-5 h-5 text-gray-600" />
+                    <div className="p-2 bg-theme-tertiary rounded-lg">
+                      <Key className="w-5 h-5 text-theme-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Senha</p>
-                      <p className="text-sm text-gray-500">Altere sua senha de acesso</p>
+                      <p className="font-medium text-theme">Senha</p>
+                      <p className="text-sm text-theme-muted">Altere sua senha de acesso</p>
                     </div>
                   </div>
                   <button
@@ -201,22 +201,22 @@ export default function ProfilePage() {
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">
                         Nova senha
                       </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                         <input
                           type={showPassword ? "text" : "password"}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           required
-                          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
+                          className="w-full pl-10 pr-10 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -225,17 +225,17 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-theme-secondary mb-1">
                         Confirmar nova senha
                       </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                         <input
                           type={showPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           required
-                          className="w-full pl-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
+                          className="w-full pl-10 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
                         />
                       </div>
                     </div>
@@ -258,12 +258,12 @@ export default function ProfilePage() {
               <div className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <Smartphone className="w-5 h-5 text-gray-600" />
+                    <div className="p-2 bg-theme-tertiary rounded-lg">
+                      <Smartphone className="w-5 h-5 text-theme-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Autenticação em dois fatores</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium text-theme">Autenticação em dois fatores</p>
+                      <p className="text-sm text-theme-muted">
                         {loadingMFA ? (
                           "Carregando..."
                         ) : mfaFactors.length > 0 ? (
@@ -296,7 +296,7 @@ export default function ProfilePage() {
                 {mfaFactors.length > 0 && (
                   <div className="mt-3 pl-12">
                     {mfaFactors.map((factor) => (
-                      <div key={factor.id} className="flex items-center gap-2 text-sm text-gray-600">
+                      <div key={factor.id} className="flex items-center gap-2 text-sm text-theme-secondary">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         {factor.friendlyName}
                       </div>
@@ -306,47 +306,47 @@ export default function ProfilePage() {
               </div>
 
               {/* Sessions */}
-              <Link href="/profile/sessions" className="block p-6 hover:bg-gray-50 transition-colors">
+              <Link href="/profile/sessions" className="block p-6 hover:bg-theme-hover transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <Monitor className="w-5 h-5 text-gray-600" />
+                    <div className="p-2 bg-theme-tertiary rounded-lg">
+                      <Monitor className="w-5 h-5 text-theme-secondary" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Sessões ativas</p>
-                      <p className="text-sm text-gray-500">Gerencie dispositivos conectados</p>
+                      <p className="font-medium text-theme">Sessões ativas</p>
+                      <p className="text-sm text-theme-muted">Gerencie dispositivos conectados</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className="w-5 h-5 text-theme-muted" />
                 </div>
               </Link>
             </div>
           </div>
 
           {/* Account Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações da Conta</h3>
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h3 className="text-lg font-semibold text-theme mb-4">Informações da Conta</h3>
             
             <dl className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <dt className="text-gray-500">ID do usuário</dt>
-                <dd className="text-gray-900 font-mono text-xs">{user?.id}</dd>
+                <dt className="text-theme-muted">ID do usuário</dt>
+                <dd className="text-theme font-mono text-xs">{user?.id}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-gray-500">Criado em</dt>
-                <dd className="text-gray-900">
+                <dt className="text-theme-muted">Criado em</dt>
+                <dd className="text-theme">
                   {user?.created_at ? new Date(user.created_at).toLocaleDateString("pt-BR") : "-"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-gray-500">Último login</dt>
-                <dd className="text-gray-900">
+                <dt className="text-theme-muted">Último login</dt>
+                <dd className="text-theme">
                   {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString("pt-BR") : "-"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-gray-500">Email verificado</dt>
-                <dd className="text-gray-900">
+                <dt className="text-theme-muted">Email verificado</dt>
+                <dd className="text-theme">
                   {user?.email_confirmed_at ? (
                     <span className="text-green-600">✓ Sim</span>
                   ) : (

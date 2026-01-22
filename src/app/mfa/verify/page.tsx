@@ -80,12 +80,12 @@ export default function MFAVerifyPage() {
           <h1 className="text-2xl font-bold text-[var(--frm-primary)]">
             Verificação em Dois Fatores
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-theme-secondary mt-1">
             Digite o código do seu autenticador
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-theme-card rounded-2xl shadow-xl p-8">
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-800">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -96,13 +96,13 @@ export default function MFAVerifyPage() {
           <form onSubmit={handleVerify}>
             {factors.length > 1 && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Selecione o autenticador
                 </label>
                 <select
                   value={selectedFactor || ""}
                   onChange={(e) => setSelectedFactor(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
                 >
                   {factors.map((f) => (
                     <option key={f.id} value={f.id}>
@@ -114,7 +114,7 @@ export default function MFAVerifyPage() {
             )}
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+              <label className="block text-sm font-medium text-theme-secondary mb-2 text-center">
                 Código de verificação
               </label>
               <input
@@ -123,7 +123,7 @@ export default function MFAVerifyPage() {
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="000000"
                 maxLength={6}
-                className="w-full text-center text-3xl font-mono tracking-[0.5em] py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                className="w-full text-center text-3xl font-mono tracking-[0.5em] py-4 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                 autoFocus
               />
             </div>
@@ -147,14 +147,14 @@ export default function MFAVerifyPage() {
           <div className="mt-6 pt-4 border-t border-gray-100 text-center">
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+              className="text-sm text-theme-muted hover:text-red-600 transition-colors"
             >
               Sair e usar outra conta
             </button>
           </div>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-theme-muted mt-6">
           © 2026 FRM ERP - Grupo FRM
         </p>
       </div>

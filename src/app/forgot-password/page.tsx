@@ -43,18 +43,18 @@ export default function ForgotPasswordPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-[var(--frm-primary)]">FRM ERP</h1>
-          <p className="text-gray-600 mt-1">Recuperar senha</p>
+          <p className="text-theme-secondary mt-1">Recuperar senha</p>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-theme-card rounded-2xl shadow-xl p-8">
           {success ? (
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">E-mail enviado!</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-xl font-semibold text-theme mb-2">E-mail enviado!</h2>
+              <p className="text-theme-secondary mb-6">
                 Enviamos um link de recuperação para <strong>{email}</strong>. 
                 Verifique sua caixa de entrada.
               </p>
@@ -68,8 +68,8 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Esqueceu sua senha?</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-xl font-semibold text-theme mb-2">Esqueceu sua senha?</h2>
+              <p className="text-theme-secondary mb-6">
                 Digite seu e-mail e enviaremos um link para redefinir sua senha.
               </p>
 
@@ -82,11 +82,11 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="block text-sm font-medium text-theme-secondary mb-1">
                     E-mail
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
                     <input
                       type="email"
                       id="email"
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="seu@email.com"
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                      className="w-full pl-10 pr-4 py-2.5 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-theme-muted mt-6">
           © 2026 FRM ERP - Grupo FRM
         </p>
       </div>

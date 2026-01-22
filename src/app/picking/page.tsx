@@ -24,10 +24,10 @@ type StatusBadgeProps = {
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-gray-100 text-gray-800", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    PENDING: { color: "bg-theme-tertiary text-theme", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
     IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Separação", icon: <Play className="h-3 w-3" /> },
     COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-gray-100 text-gray-800", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
+    CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
   };
 
   const { color, label, icon } = config[status] || config.PENDING;
@@ -42,7 +42,7 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
 function PriorityBadge({ priority }: { priority: string }) {
   const config: Record<string, { color: string; label: string }> = {
-    LOW: { color: "bg-gray-100 text-gray-600", label: "Baixa" },
+    LOW: { color: "bg-theme-tertiary text-theme-secondary", label: "Baixa" },
     NORMAL: { color: "bg-blue-100 text-blue-700", label: "Normal" },
     HIGH: { color: "bg-orange-100 text-orange-700", label: "Alta" },
     URGENT: { color: "bg-red-100 text-red-700", label: "Urgente" },
@@ -99,7 +99,7 @@ export default function PickingDashboardPage() {
   const recentLists = dashboard?.recentLists || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       <PageHeader
         title="Picking - Lista de Separação"
         icon={<Package className="h-6 w-6 text-emerald-600" />}
@@ -107,7 +107,7 @@ export default function PickingDashboardPage() {
       >
         <Link
           href="/picking/list"
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <ClipboardList className="h-4 w-4" />
           Ver Todas
@@ -125,50 +125,50 @@ export default function PickingDashboardPage() {
         <div className="space-y-8">
           {/* Cards de Resumo */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-gray-100 p-3">
-                  <Clock className="h-6 w-6 text-gray-600" />
+                <div className="rounded-lg bg-theme-tertiary p-3">
+                  <Clock className="h-6 w-6 text-theme-secondary" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Pendentes</p>
-                  <p className="text-2xl font-bold text-gray-900">{status.PENDING}</p>
+                  <p className="text-sm text-theme-muted">Pendentes</p>
+                  <p className="text-2xl font-bold text-theme">{status.PENDING}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-blue-100 p-3">
                   <Play className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Em Separação</p>
-                  <p className="text-2xl font-bold text-gray-900">{status.IN_PROGRESS}</p>
+                  <p className="text-sm text-theme-muted">Em Separação</p>
+                  <p className="text-2xl font-bold text-theme">{status.IN_PROGRESS}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Concluídos</p>
-                  <p className="text-2xl font-bold text-gray-900">{status.COMPLETED}</p>
+                  <p className="text-sm text-theme-muted">Concluídos</p>
+                  <p className="text-2xl font-bold text-theme">{status.COMPLETED}</p>
                 </div>
               </div>
             </div>
 
-            <div className={`rounded-lg border p-6 shadow-sm ${priority.URGENT > 0 ? "border-red-200 bg-red-50" : "border-gray-200 bg-white"}`}>
+            <div className={`rounded-lg border p-6 shadow-sm ${priority.URGENT > 0 ? "border-red-200 bg-red-50" : "border-gray-200 bg-theme-card"}`}>
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-3 ${priority.URGENT > 0 ? "bg-red-100" : "bg-orange-100"}`}>
                   <AlertTriangle className={`h-6 w-6 ${priority.URGENT > 0 ? "text-red-600" : "text-orange-600"}`} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Urgentes</p>
-                  <p className="text-2xl font-bold text-gray-900">{priority.URGENT + priority.HIGH}</p>
+                  <p className="text-sm text-theme-muted">Urgentes</p>
+                  <p className="text-2xl font-bold text-theme">{priority.URGENT + priority.HIGH}</p>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function PickingDashboardPage() {
             {/* Minhas Listas Pendentes */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Minhas Listas Pendentes</h2>
+                <h2 className="text-lg font-semibold text-theme">Minhas Listas Pendentes</h2>
               </div>
               <div className="space-y-3">
                 {myPendingLists.map((list) => (
@@ -188,28 +188,28 @@ export default function PickingDashboardPage() {
                     className={`block rounded-lg border p-4 transition-shadow hover:shadow-md ${
                       list.priority === "URGENT" ? "border-red-200 bg-red-50" :
                       list.priority === "HIGH" ? "border-orange-200 bg-orange-50" :
-                      "border-gray-200 bg-white"
+                      "border-gray-200 bg-theme-card"
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900">{list.code}</p>
+                          <p className="font-medium text-theme">{list.code}</p>
                           <PriorityBadge priority={list.priority} />
                           <StatusBadge status={list.status} />
                         </div>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-theme-muted">
                           {list._count.items} itens para separar
                         </p>
                       </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400" />
+                      <ArrowRight className="h-5 w-5 text-theme-muted" />
                     </div>
                   </Link>
                 ))}
                 {myPendingLists.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
-                    <p className="mt-2 text-sm text-gray-500">Nenhuma lista pendente para você</p>
+                    <p className="mt-2 text-sm text-theme-muted">Nenhuma lista pendente para você</p>
                   </div>
                 )}
               </div>
@@ -218,37 +218,37 @@ export default function PickingDashboardPage() {
             {/* Prioridades */}
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Por Prioridade</h2>
+                <h2 className="text-lg font-semibold text-theme">Por Prioridade</h2>
               </div>
-              <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="rounded-lg border border-theme bg-theme-card p-6 shadow-sm">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full bg-red-500" />
-                      <span className="text-sm text-gray-700">Urgente</span>
+                      <span className="text-sm text-theme-secondary">Urgente</span>
                     </div>
-                    <span className="text-lg font-semibold text-gray-900">{priority.URGENT}</span>
+                    <span className="text-lg font-semibold text-theme">{priority.URGENT}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full bg-orange-500" />
-                      <span className="text-sm text-gray-700">Alta</span>
+                      <span className="text-sm text-theme-secondary">Alta</span>
                     </div>
-                    <span className="text-lg font-semibold text-gray-900">{priority.HIGH}</span>
+                    <span className="text-lg font-semibold text-theme">{priority.HIGH}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full bg-blue-500" />
-                      <span className="text-sm text-gray-700">Normal</span>
+                      <span className="text-sm text-theme-secondary">Normal</span>
                     </div>
-                    <span className="text-lg font-semibold text-gray-900">{priority.NORMAL}</span>
+                    <span className="text-lg font-semibold text-theme">{priority.NORMAL}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 rounded-full bg-gray-400" />
-                      <span className="text-sm text-gray-700">Baixa</span>
+                      <span className="text-sm text-theme-secondary">Baixa</span>
                     </div>
-                    <span className="text-lg font-semibold text-gray-900">{priority.LOW}</span>
+                    <span className="text-lg font-semibold text-theme">{priority.LOW}</span>
                   </div>
                 </div>
               </div>
@@ -258,31 +258,31 @@ export default function PickingDashboardPage() {
           {/* Listas Recentes */}
           <section>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Listas Recentes</h2>
+              <h2 className="text-lg font-semibold text-theme">Listas Recentes</h2>
               <Link href="/picking/list" className="text-sm text-emerald-600 hover:text-emerald-800">
                 Ver todas →
               </Link>
             </div>
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-hidden rounded-lg border border-theme bg-theme-card shadow-sm">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-tertiary">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Código
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Tipo
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Itens
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Responsável
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Prioridade
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-theme-muted">
                       Status
                     </th>
                     <th className="relative px-6 py-3">
@@ -290,29 +290,29 @@ export default function PickingDashboardPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-theme-table bg-theme-card">
                   {recentLists.map((list) => (
-                    <tr key={list.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    <tr key={list.id} className="hover:bg-theme-hover">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-theme">
                         {list.code}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <TypeBadge type={list.type} />
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-theme-muted">
                         <div className="flex items-center gap-1">
                           <Box className="h-4 w-4" />
                           {list._count.items}
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-theme-muted">
                         {list.assignee ? (
                           <div className="flex items-center gap-1">
                             <User className="h-4 w-4" />
                             {list.assignee.name}
                           </div>
                         ) : (
-                          <span className="text-gray-400">Não atribuído</span>
+                          <span className="text-theme-muted">Não atribuído</span>
                         )}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
@@ -333,7 +333,7 @@ export default function PickingDashboardPage() {
                   ))}
                   {recentLists.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={7} className="px-6 py-8 text-center text-sm text-theme-muted">
                         Nenhuma lista de separação encontrada
                       </td>
                     </tr>

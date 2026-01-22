@@ -23,8 +23,8 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
   PARTIAL: { label: "Parcialmente Recebido", color: "text-blue-800", bgColor: "bg-blue-100" },
   PAID: { label: "Recebido", color: "text-green-800", bgColor: "bg-green-100" },
   OVERDUE: { label: "Vencido", color: "text-red-800", bgColor: "bg-red-100" },
-  CANCELLED: { label: "Cancelado", color: "text-gray-600", bgColor: "bg-gray-100" },
-  WRITTEN_OFF: { label: "Baixado", color: "text-gray-600", bgColor: "bg-gray-100" },
+  CANCELLED: { label: "Cancelado", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
+  WRITTEN_OFF: { label: "Baixado", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
 };
 
 export default function ReceivableDetailPage() {
@@ -77,7 +77,7 @@ export default function ReceivableDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-green-600" />
       </div>
     );
@@ -85,8 +85,8 @@ export default function ReceivableDetailPage() {
 
   if (!receivable) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Título não encontrado</p>
+      <div className="space-y-6 flex items-center justify-center">
+        <p className="text-theme-muted">Título não encontrado</p>
       </div>
     );
   }
@@ -97,21 +97,21 @@ export default function ReceivableDetailPage() {
   const config = statusConfig[displayStatus] || statusConfig.PENDING;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/receivables" className="text-gray-500 hover:text-gray-700">
+              <Link href="/receivables" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-theme">
                   Título #{receivable.code}
                   {receivable.totalInstallments > 1 && (
-                    <span className="text-gray-500 text-sm ml-2">
+                    <span className="text-theme-muted text-sm ml-2">
                       (Parcela {receivable.installmentNumber}/{receivable.totalInstallments})
                     </span>
                   )}
@@ -128,66 +128,66 @@ export default function ReceivableDetailPage() {
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Status Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
                   {config.label}
                 </span>
                 {receivable.documentNumber && (
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-theme-muted">
                     Doc: {receivable.documentNumber}
                   </span>
                 )}
               </div>
-              <h2 className="text-lg font-medium text-gray-900 mb-2">{receivable.description}</h2>
+              <h2 className="text-lg font-medium text-theme mb-2">{receivable.description}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                 <div>
-                  <div className="text-xs text-gray-500">Emissão</div>
+                  <div className="text-xs text-theme-muted">Emissão</div>
                   <div className="text-sm font-medium">{formatDate(receivable.issueDate)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Vencimento</div>
+                  <div className="text-xs text-theme-muted">Vencimento</div>
                   <div className={`text-sm font-medium ${isOverdue ? "text-red-600" : ""}`}>
                     {formatDate(receivable.dueDate)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Valor Original</div>
+                  <div className="text-xs text-theme-muted">Valor Original</div>
                   <div className="text-sm font-medium">{formatCurrency(receivable.originalValue)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500">Valor Líquido</div>
+                  <div className="text-xs text-theme-muted">Valor Líquido</div>
                   <div className="text-sm font-medium">{formatCurrency(receivable.netValue)}</div>
                 </div>
               </div>
             </div>
 
             {/* Cliente */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Cliente</h3>
+                <Building2 className="w-5 h-5 text-theme-muted" />
+                <h3 className="text-lg font-medium text-theme">Cliente</h3>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-gray-500">Razão Social</div>
+                  <div className="text-xs text-theme-muted">Razão Social</div>
                   <div className="text-sm font-medium">{receivable.customer.companyName}</div>
                 </div>
                 {receivable.customer.tradeName && (
                   <div>
-                    <div className="text-xs text-gray-500">Nome Fantasia</div>
+                    <div className="text-xs text-theme-muted">Nome Fantasia</div>
                     <div className="text-sm font-medium">{receivable.customer.tradeName}</div>
                   </div>
                 )}
                 {receivable.customer.cnpj && (
                   <div>
-                    <div className="text-xs text-gray-500">CNPJ</div>
+                    <div className="text-xs text-theme-muted">CNPJ</div>
                     <div className="text-sm font-medium">{receivable.customer.cnpj}</div>
                   </div>
                 )}
                 {receivable.customer.email && (
                   <div>
-                    <div className="text-xs text-gray-500">Email</div>
+                    <div className="text-xs text-theme-muted">Email</div>
                     <div className="text-sm font-medium">{receivable.customer.email}</div>
                   </div>
                 )}
@@ -195,30 +195,30 @@ export default function ReceivableDetailPage() {
             </div>
 
             {/* Histórico de Recebimentos */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Histórico de Recebimentos</h3>
+                <History className="w-5 h-5 text-theme-muted" />
+                <h3 className="text-lg font-medium text-theme">Histórico de Recebimentos</h3>
               </div>
               {receivable.payments.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Nenhum recebimento registrado</p>
+                <p className="text-theme-muted text-center py-4">Nenhum recebimento registrado</p>
               ) : (
                 <div className="space-y-3">
                   {receivable.payments.map((payment) => (
                     <div
                       key={payment.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-theme-tertiary rounded-lg"
                     >
                       <div>
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-theme">
                           {formatCurrency(payment.value)}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-theme-muted">
                           {formatDate(payment.paymentDate)}
                           {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                         </div>
                         {(payment.discountValue > 0 || payment.interestValue > 0 || payment.fineValue > 0) && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-theme-muted mt-1">
                             {payment.discountValue > 0 && (
                               <span className="text-green-600 mr-2">
                                 Desc: {formatCurrency(payment.discountValue)}
@@ -248,11 +248,11 @@ export default function ReceivableDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Resumo Financeiro */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Resumo</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="text-lg font-medium text-theme mb-4">Resumo</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Valor Original</span>
+                  <span className="text-theme-muted">Valor Original</span>
                   <span className="font-medium">{formatCurrency(receivable.originalValue)}</span>
                 </div>
                 {receivable.discountValue > 0 && (
@@ -292,8 +292,8 @@ export default function ReceivableDetailPage() {
 
             {/* Ações */}
             {receivable.status !== "PAID" && receivable.status !== "CANCELLED" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Ações</h3>
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="text-lg font-medium text-theme mb-4">Ações</h3>
                 <div className="space-y-3">
                   <button
                     onClick={() => {
@@ -310,7 +310,7 @@ export default function ReceivableDetailPage() {
                       setPaymentValue("");
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
                   >
                     <Receipt className="w-4 h-4" />
                     Baixa Parcial
@@ -340,22 +340,22 @@ export default function ReceivableDetailPage() {
           aria-labelledby="payment-receivable-title"
           onKeyDown={(e) => e.key === "Escape" && setShowPaymentModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="payment-receivable-title" className="text-lg font-medium text-gray-900 mb-4">Registrar Recebimento</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 id="payment-receivable-title" className="text-lg font-medium text-theme mb-4">Registrar Recebimento</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Data do Recebimento
                 </label>
                 <input
                   type="date"
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Valor Recebido
                 </label>
                 <input
@@ -364,49 +364,49 @@ export default function ReceivableDetailPage() {
                   value={paymentValue}
                   onChange={(e) => setPaymentValue(e.target.value)}
                   placeholder={remaining.toFixed(2)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Desconto</label>
+                  <label className="block text-xs font-medium text-theme-secondary mb-1">Desconto</label>
                   <input
                     type="number"
                     step="0.01"
                     value={discountValue}
                     onChange={(e) => setDiscountValue(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Juros</label>
+                  <label className="block text-xs font-medium text-theme-secondary mb-1">Juros</label>
                   <input
                     type="number"
                     step="0.01"
                     value={interestValue}
                     onChange={(e) => setInterestValue(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Multa</label>
+                  <label className="block text-xs font-medium text-theme-secondary mb-1">Multa</label>
                   <input
                     type="number"
                     step="0.01"
                     value={fineValue}
                     onChange={(e) => setFineValue(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Forma de Recebimento
                 </label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 >
                   <option value="">Selecione...</option>
                   <option value="PIX">PIX</option>
@@ -419,13 +419,13 @@ export default function ReceivableDetailPage() {
               </div>
               {bankAccounts && bankAccounts.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Conta Bancária
                   </label>
                   <select
                     value={selectedBankAccount}
                     onChange={(e) => setSelectedBankAccount(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   >
                     <option value="">Selecione...</option>
                     {bankAccounts.map((account) => (
@@ -437,14 +437,14 @@ export default function ReceivableDetailPage() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Observações
                 </label>
                 <textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
@@ -454,7 +454,7 @@ export default function ReceivableDetailPage() {
                   setShowPaymentModal(false);
                   resetPaymentForm();
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Cancelar
               </button>
@@ -491,20 +491,20 @@ export default function ReceivableDetailPage() {
           aria-labelledby="cancel-receivable-title"
           onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="cancel-receivable-title" className="text-lg font-medium text-gray-900 mb-4">Cancelar Título</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 id="cancel-receivable-title" className="text-lg font-medium text-theme mb-4">Cancelar Título</h3>
+            <p className="text-theme-secondary mb-4">
               Tem certeza que deseja cancelar este título? Esta ação não pode ser desfeita.
             </p>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento
               </label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-theme-input rounded-lg px-3 py-2"
                 placeholder="Informe o motivo..."
               />
             </div>
@@ -514,7 +514,7 @@ export default function ReceivableDetailPage() {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Voltar
               </button>

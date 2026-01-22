@@ -185,15 +185,15 @@ export default function ImportNFePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="space-y-6">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b">
+        <header className="bg-theme-card shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Link
                   href="/invoices"
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </Link>
@@ -202,10 +202,10 @@ export default function ImportNFePage() {
                     <FileUp className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-gray-900">
+                    <h1 className="text-xl font-bold text-theme">
                       Importar XML de NFe
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-theme-muted">
                       Arraste arquivos XML ou clique para selecionar
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export default function ImportNFePage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setFiles([])}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     Limpar
@@ -259,12 +259,12 @@ export default function ImportNFePage() {
               id="file-input"
             />
             <label htmlFor="file-input" className="cursor-pointer">
-              <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <p className="text-lg font-medium text-gray-700 mb-1">
+              <FileText className="w-16 h-16 mx-auto text-theme-muted mb-4" />
+              <p className="text-lg font-medium text-theme-secondary mb-1">
                 Arraste arquivos XML aqui
               </p>
-              <p className="text-gray-500 mb-4">ou clique para selecionar</p>
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+              <p className="text-theme-muted mb-4">ou clique para selecionar</p>
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-theme-tertiary text-theme-secondary rounded-lg hover:bg-gray-200 transition-colors">
                 <Upload className="w-4 h-4" />
                 Selecionar Arquivos
               </span>
@@ -274,20 +274,20 @@ export default function ImportNFePage() {
           {/* Stats */}
           {files.length > 0 && (
             <div className="grid grid-cols-4 gap-4 mt-6">
-              <div className="bg-white rounded-lg p-4 border">
-                <p className="text-sm text-gray-500">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{files.length}</p>
+              <div className="bg-theme-card rounded-lg p-4 border">
+                <p className="text-sm text-theme-muted">Total</p>
+                <p className="text-2xl font-bold text-theme">{files.length}</p>
               </div>
-              <div className="bg-white rounded-lg p-4 border">
-                <p className="text-sm text-gray-500">Pendentes</p>
+              <div className="bg-theme-card rounded-lg p-4 border">
+                <p className="text-sm text-theme-muted">Pendentes</p>
                 <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
               </div>
-              <div className="bg-white rounded-lg p-4 border">
-                <p className="text-sm text-gray-500">Importados</p>
+              <div className="bg-theme-card rounded-lg p-4 border">
+                <p className="text-sm text-theme-muted">Importados</p>
                 <p className="text-2xl font-bold text-green-600">{successCount}</p>
               </div>
-              <div className="bg-white rounded-lg p-4 border">
-                <p className="text-sm text-gray-500">Erros</p>
+              <div className="bg-theme-card rounded-lg p-4 border">
+                <p className="text-sm text-theme-muted">Erros</p>
                 <p className="text-2xl font-bold text-red-600">{errorCount}</p>
               </div>
             </div>
@@ -295,9 +295,9 @@ export default function ImportNFePage() {
 
           {/* File List */}
           {files.length > 0 && (
-            <div className="mt-6 bg-white rounded-xl shadow-sm border overflow-hidden">
-              <div className="px-6 py-4 border-b bg-gray-50">
-                <h2 className="font-semibold text-gray-900">
+            <div className="mt-6 bg-theme-card rounded-xl shadow-sm border overflow-hidden">
+              <div className="px-6 py-4 border-b bg-theme-tertiary">
+                <h2 className="font-semibold text-theme">
                   Arquivos Selecionados
                 </h2>
               </div>
@@ -314,7 +314,7 @@ export default function ImportNFePage() {
                             ? "bg-green-100"
                             : fileItem.status === "error"
                             ? "bg-red-100"
-                            : "bg-gray-100"
+                            : "bg-theme-tertiary"
                         }`}
                       >
                         {fileItem.status === "success" ? (
@@ -322,14 +322,14 @@ export default function ImportNFePage() {
                         ) : fileItem.status === "error" ? (
                           <XCircle className="w-5 h-5 text-red-600" />
                         ) : (
-                          <FileText className="w-5 h-5 text-gray-600" />
+                          <FileText className="w-5 h-5 text-theme-secondary" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-theme">
                           {fileItem.file.name}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-theme-muted">
                           {fileItem.status === "success" && fileItem.invoiceNumber
                             ? `Nota ${fileItem.invoiceNumber} importada`
                             : fileItem.status === "error"
@@ -366,7 +366,7 @@ export default function ImportNFePage() {
                       )}
                       <button
                         onClick={() => removeFile(index)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -380,7 +380,7 @@ export default function ImportNFePage() {
           {/* Empty State */}
           {files.length === 0 && (
             <div className="mt-8 text-center">
-              <p className="text-gray-500">
+              <p className="text-theme-muted">
                 Nenhum arquivo selecionado. Arraste arquivos XML ou clique na área acima.
               </p>
             </div>

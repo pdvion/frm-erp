@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  PLANNED: { label: "Planejada", color: "text-gray-600", bgColor: "bg-gray-100" },
+  PLANNED: { label: "Planejada", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
   RELEASED: { label: "Liberada", color: "text-blue-800", bgColor: "bg-blue-100" },
   IN_PROGRESS: { label: "Em Produção", color: "text-purple-800", bgColor: "bg-purple-100" },
   COMPLETED: { label: "Concluída", color: "text-green-800", bgColor: "bg-green-100" },
@@ -72,7 +72,7 @@ export default function ProductionOrderDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
@@ -80,10 +80,10 @@ export default function ProductionOrderDetailPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
           <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">OP não encontrada</h3>
+          <h3 className="text-lg font-medium text-theme mb-2">OP não encontrada</h3>
           <Link href="/production" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
@@ -104,18 +104,18 @@ export default function ProductionOrderDetailPage() {
     !order.materials.some((m) => m.consumedQty > 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/production" className="text-gray-500 hover:text-gray-700">
+              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
                 <ChevronLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-2">
                 <Factory className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-theme">
                   OP #{order.code}
                 </h1>
               </div>
@@ -175,19 +175,19 @@ export default function ProductionOrderDetailPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Produto e Progresso */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Produto</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="font-medium text-theme mb-4">Produto</h3>
               <div className="flex items-start gap-4">
                 <div className="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center">
                   <Package className="w-8 h-8 text-indigo-600" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-lg font-medium text-gray-900">{order.product.description}</div>
-                  <div className="text-sm text-gray-500">Código: {order.product.code}</div>
+                  <div className="text-lg font-medium text-theme">{order.product.description}</div>
+                  <div className="text-sm text-theme-muted">Código: {order.product.code}</div>
                   
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">Progresso</span>
+                      <span className="text-theme-secondary">Progresso</span>
                       <span className="font-medium">{order.producedQty} / {order.quantity} {order.product.unit}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
@@ -196,15 +196,15 @@ export default function ProductionOrderDetailPage() {
                         style={{ width: `${Math.min(progress, 100)}%` }}
                       />
                     </div>
-                    <div className="text-right text-sm text-gray-500 mt-1">{progress}%</div>
+                    <div className="text-right text-sm text-theme-muted mt-1">{progress}%</div>
                   </div>
                 </div>
               </div>
 
               {/* Apontamento */}
               {canReport && remainingQty > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-3">Apontar Produção</h4>
+                <div className="mt-6 pt-6 border-t border-theme">
+                  <h4 className="font-medium text-theme mb-3">Apontar Produção</h4>
                   <div className="flex items-center gap-3">
                     <input
                       type="number"
@@ -213,9 +213,9 @@ export default function ProductionOrderDetailPage() {
                       placeholder={String(remainingQty)}
                       max={remainingQty}
                       min={0}
-                      className="w-32 px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-32 px-3 py-2 border border-theme-input rounded-lg"
                     />
-                    <span className="text-gray-500">{order.product.unit}</span>
+                    <span className="text-theme-muted">{order.product.unit}</span>
                     <button
                       onClick={() => {
                         const qty = parseFloat(reportQty) || remainingQty;
@@ -242,40 +242,40 @@ export default function ProductionOrderDetailPage() {
             </div>
 
             {/* Materiais */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
-                <Package className="w-5 h-5 text-gray-400" />
-                <h3 className="font-medium text-gray-900">Materiais</h3>
+            <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+              <div className="px-6 py-4 border-b border-theme flex items-center gap-2">
+                <Package className="w-5 h-5 text-theme-muted" />
+                <h3 className="font-medium text-theme">Materiais</h3>
               </div>
               {order.materials.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-theme-muted">
                   Nenhum material cadastrado
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-theme-table">
+                    <thead className="bg-theme-tertiary">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                           Material
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                           Necessário
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                           Consumido
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                           Estoque
                         </th>
                         {canConsume && (
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Ação
                           </th>
                         )}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-theme-table">
                       {order.materials.map((mat) => {
                         const remaining = mat.requiredQty - mat.consumedQty;
                         const inventory = mat.material.inventory[0];
@@ -285,22 +285,22 @@ export default function ProductionOrderDetailPage() {
                         return (
                           <tr key={mat.id} className={isComplete ? "bg-green-50" : ""}>
                             <td className="px-4 py-3">
-                              <div className="font-medium text-gray-900">{mat.material.description}</div>
-                              <div className="text-xs text-gray-500">Cód: {mat.material.code}</div>
+                              <div className="font-medium text-theme">{mat.material.description}</div>
+                              <div className="text-xs text-theme-muted">Cód: {mat.material.code}</div>
                             </td>
-                            <td className="px-4 py-3 text-right font-medium text-gray-900">
+                            <td className="px-4 py-3 text-right font-medium text-theme">
                               {mat.requiredQty}
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className={isComplete ? "text-green-600 font-medium" : "text-gray-900"}>
+                              <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
                                 {mat.consumedQty}
                               </span>
                               {!isComplete && remaining > 0 && (
-                                <span className="text-gray-400 text-sm ml-1">(falta {remaining})</span>
+                                <span className="text-theme-muted text-sm ml-1">(falta {remaining})</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className={available < remaining ? "text-red-600" : "text-gray-600"}>
+                              <span className={available < remaining ? "text-red-600" : "text-theme-secondary"}>
                                 {available}
                               </span>
                             </td>
@@ -314,7 +314,7 @@ export default function ProductionOrderDetailPage() {
                                         value={consumeQty}
                                         onChange={(e) => setConsumeQty(e.target.value)}
                                         placeholder={String(Math.min(remaining, available))}
-                                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                                        className="w-20 px-2 py-1 border border-theme-input rounded text-sm"
                                       />
                                       <button
                                         onClick={() => {
@@ -337,7 +337,7 @@ export default function ProductionOrderDetailPage() {
                                           setConsumingMaterial(null);
                                           setConsumeQty("");
                                         }}
-                                        className="p-1 text-gray-400 hover:text-gray-600"
+                                        className="p-1 text-theme-muted hover:text-theme-secondary"
                                       >
                                         <XCircle className="w-4 h-4" />
                                       </button>
@@ -371,46 +371,46 @@ export default function ProductionOrderDetailPage() {
 
             {/* Operações */}
             {order.operations.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-2">
-                  <Cog className="w-5 h-5 text-gray-400" />
-                  <h3 className="font-medium text-gray-900">Operações</h3>
+              <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
+                <div className="px-6 py-4 border-b border-theme flex items-center gap-2">
+                  <Cog className="w-5 h-5 text-theme-muted" />
+                  <h3 className="font-medium text-theme">Operações</h3>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-theme-table">
+                    <thead className="bg-theme-tertiary">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                           Seq
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                           Operação
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                           Centro
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                           Planejado
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                           Concluído
                         </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                           Status
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-theme-table">
                       {order.operations.map((op) => {
                         const isComplete = op.completedQty >= op.plannedQty;
                         return (
                           <tr key={op.id} className={isComplete ? "bg-green-50" : ""}>
-                            <td className="px-4 py-3 text-gray-600">{op.sequence}</td>
-                            <td className="px-4 py-3 font-medium text-gray-900">{op.name}</td>
-                            <td className="px-4 py-3 text-gray-600">{op.workCenter || "-"}</td>
-                            <td className="px-4 py-3 text-right text-gray-900">{op.plannedQty}</td>
+                            <td className="px-4 py-3 text-theme-secondary">{op.sequence}</td>
+                            <td className="px-4 py-3 font-medium text-theme">{op.name}</td>
+                            <td className="px-4 py-3 text-theme-secondary">{op.workCenter || "-"}</td>
+                            <td className="px-4 py-3 text-right text-theme">{op.plannedQty}</td>
                             <td className="px-4 py-3 text-right">
-                              <span className={isComplete ? "text-green-600 font-medium" : "text-gray-900"}>
+                              <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
                                 {op.completedQty}
                               </span>
                             </td>
@@ -420,7 +420,7 @@ export default function ProductionOrderDetailPage() {
                               ) : op.startedAt ? (
                                 <Play className="w-5 h-5 text-purple-500 mx-auto" />
                               ) : (
-                                <Clock className="w-5 h-5 text-gray-400 mx-auto" />
+                                <Clock className="w-5 h-5 text-theme-muted mx-auto" />
                               )}
                             </td>
                           </tr>
@@ -436,47 +436,47 @@ export default function ProductionOrderDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Informações</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="font-medium text-theme mb-4">Informações</h3>
               <div className="space-y-3 text-sm">
                 {order.salesOrderNumber && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Pedido de Venda</span>
-                    <span className="font-medium text-gray-900">{order.salesOrderNumber}</span>
+                    <span className="text-theme-muted">Pedido de Venda</span>
+                    <span className="font-medium text-theme">{order.salesOrderNumber}</span>
                   </div>
                 )}
                 {order.customerName && (
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Cliente</span>
-                    <span className="font-medium text-gray-900">{order.customerName}</span>
+                    <span className="text-theme-muted">Cliente</span>
+                    <span className="font-medium text-theme">{order.customerName}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Prioridade</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-theme-muted">Prioridade</span>
+                  <span className="font-medium text-theme">
                     {order.priority === 1 ? "Urgente" : 
                      order.priority === 2 ? "Alta" :
                      order.priority === 3 ? "Normal" : "Baixa"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Entrega</span>
-                  <span className="font-medium text-gray-900">{formatDate(order.dueDate)}</span>
+                  <span className="text-theme-muted">Entrega</span>
+                  <span className="font-medium text-theme">{formatDate(order.dueDate)}</span>
                 </div>
               </div>
             </div>
 
             {/* Timeline */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Histórico</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h3 className="font-medium text-theme mb-4">Histórico</h3>
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-gray-500" />
+                  <div className="w-8 h-8 bg-theme-tertiary rounded-full flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-theme-muted" />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">Criada</div>
-                    <div className="text-sm text-gray-500">{formatDateTime(order.createdAt)}</div>
+                    <div className="font-medium text-theme">Criada</div>
+                    <div className="text-sm text-theme-muted">{formatDateTime(order.createdAt)}</div>
                   </div>
                 </div>
 
@@ -486,8 +486,8 @@ export default function ProductionOrderDetailPage() {
                       <Play className="w-4 h-4 text-purple-600" />
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">Iniciada</div>
-                      <div className="text-sm text-gray-500">{formatDateTime(order.actualStart)}</div>
+                      <div className="font-medium text-theme">Iniciada</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(order.actualStart)}</div>
                     </div>
                   </div>
                 )}
@@ -498,8 +498,8 @@ export default function ProductionOrderDetailPage() {
                       <CheckCircle className="w-4 h-4 text-green-600" />
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">Concluída</div>
-                      <div className="text-sm text-gray-500">{formatDateTime(order.actualEnd)}</div>
+                      <div className="font-medium text-theme">Concluída</div>
+                      <div className="text-sm text-theme-muted">{formatDateTime(order.actualEnd)}</div>
                     </div>
                   </div>
                 )}
@@ -508,9 +508,9 @@ export default function ProductionOrderDetailPage() {
 
             {/* Notes */}
             {order.notes && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="font-medium text-gray-900 mb-2">Observações</h3>
-                <p className="text-gray-600 text-sm whitespace-pre-wrap">{order.notes}</p>
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <h3 className="font-medium text-theme mb-2">Observações</h3>
+                <p className="text-theme-secondary text-sm whitespace-pre-wrap">{order.notes}</p>
               </div>
             )}
           </div>
@@ -526,15 +526,15 @@ export default function ProductionOrderDetailPage() {
           aria-labelledby="cancel-op-title"
           onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
         >
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 id="cancel-op-title" className="text-lg font-medium text-gray-900 mb-4">Cancelar OP</h3>
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 id="cancel-op-title" className="text-lg font-medium text-theme mb-4">Cancelar OP</h3>
             
-            <p className="text-gray-600 mb-4">
+            <p className="text-theme-secondary mb-4">
               Tem certeza que deseja cancelar esta ordem de produção?
             </p>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
               <textarea
@@ -542,7 +542,7 @@ export default function ProductionOrderDetailPage() {
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -558,7 +558,7 @@ export default function ProductionOrderDetailPage() {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
               </button>
