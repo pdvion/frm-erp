@@ -90,7 +90,7 @@ export default function NewMaterialPage() {
     }));
   };
 
-  const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
+  const inputClass = "w-full px-3 py-2 min-h-[44px] bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
   const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
   return (
@@ -110,7 +110,7 @@ export default function NewMaterialPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {/* Código */}
           <div>
             <label htmlFor="code" className={labelClass}>
@@ -143,7 +143,7 @@ export default function NewMaterialPage() {
           </div>
 
           {/* Descrição */}
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2">
             <label htmlFor="description" className={labelClass}>
               Descrição *
             </label>
@@ -300,10 +300,10 @@ export default function NewMaterialPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-theme">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 mt-6 pt-6 border-t border-theme">
           <Link
             href="/materials"
-            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
           >
             <X className="w-4 h-4" />
             Cancelar
@@ -311,7 +311,7 @@ export default function NewMaterialPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />

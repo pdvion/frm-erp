@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { 
   Package, 
@@ -12,15 +12,23 @@ import {
   Edit,
   Trash2,
   Eye,
-  Building2
+  Building2,
+  X
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { useUrlFilters } from "@/hooks/useUrlFilters";
 
-export default function MaterialsPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<"ACTIVE" | "INACTIVE" | "BLOCKED" | undefined>();
+function MaterialsContent() {
+  const { filters, setFilter, resetFilters } = useUrlFilters({
+    defaults: { page: 1, search: "", status: undefined },
+  });
+
+  const search = (filters.search as string) || "";
+  const page = (filters.page as number) || 1;
+  const statusFilter = filters.status as "ACTIVE" | "INACTIVE" | "BLOCKED" | undefined;
+
+  const hasActiveFilters = search || statusFilter;
 
   const { data, isLoading, error } = trpc.materials.list.useQuery({
     search: search || undefined,
@@ -61,8 +69,8 @@ export default function MaterialsPage() {
               placeholder="Buscar por descrição ou código..."
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
+                setFilter("search", e.target.value);
+                setFilter("page", 1);
               }}
               className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -74,8 +82,8 @@ export default function MaterialsPage() {
             <select
               value={statusFilter ?? ""}
               onChange={(e) => {
-                setStatusFilter(e.target.value as typeof statusFilter || undefined);
-                setPage(1);
+                setFilter("status", (e.target.value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined);
+                setFilter("page", 1);
               }}
               className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -84,6 +92,16 @@ export default function MaterialsPage() {
               <option value="INACTIVE">Inativos</option>
               <option value="BLOCKED">Bloqueados</option>
             </select>
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-theme-muted hover:text-theme border border-theme rounded-lg hover:bg-theme-hover transition-colors"
+                title="Limpar filtros"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Limpar</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -231,7 +249,7 @@ export default function MaterialsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setPage(page - 1)}
+                    onClick={() => setFilter("page", page - 1)}
                     disabled={page === 1}
                     className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
@@ -241,7 +259,7 @@ export default function MaterialsPage() {
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
                   <button
-                    onClick={() => setPage(page + 1)}
+                    onClick={() => setFilter("page", page + 1)}
                     disabled={page === pagination.totalPages}
                     className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
@@ -254,5 +272,17 @@ export default function MaterialsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function MaterialsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <MaterialsContent />
+    </Suspense>
   );
 }
