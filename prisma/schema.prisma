@@ -153,6 +153,8 @@ model Company {
   terminations        Termination[]
   workSchedules       WorkSchedule[]
   holidays            Holiday[]
+  ddaBoletos          DdaBoleto[]
+  ddaConfigs          DdaConfig[]
 
   @@map("companies")
 }
@@ -473,6 +475,7 @@ model Supplier {
   receivedInvoices  ReceivedInvoice[]
   accountsPayable   AccountsPayable[]
   materialReceivings MaterialReceiving[]
+  ddaBoletos        DdaBoleto[]
 
   @@map("suppliers")
 }
@@ -946,6 +949,7 @@ model AccountsPayable {
   costAllocations PayableCostAllocation[]
   bankTransactions BankTransaction[]
   paymentRequests  PaymentRequest[]
+  ddaBoletos      DdaBoleto[]
   
   @@unique([companyId, code])
   @@index([supplierId])
@@ -4429,4 +4433,170 @@ model SefazManifestacaoLog {
   @@index([tipo])
   @@index([dataManifestacao])
   @@map("sefaz_manifestacao_logs")
+}
+
+// =============================================================================
+// DDA - DÉBITO DIRETO AUTORIZADO
+// =============================================================================
+
+enum DdaBoletoStatus {
+  PENDENTE
+  APROVADO
+  REJEITADO
+  PAGO
+  VENCIDO
+  CANCELADO
+}
+
+enum DdaOrigem {
+  DDA
+  MANUAL
+  IMPORTACAO
+}
+
+enum DdaAmbiente {
+  HOMOLOGACAO
+  PRODUCAO
+}
+
+enum DdaSyncTipo {
+  CONSULTA
+  DOWNLOAD
+  CONFIRMACAO
+}
+
+enum DdaSyncStatus {
+  INICIADO
+  SUCESSO
+  ERRO
+}
+
+// Boletos recebidos via DDA
+model DdaBoleto {
+  id                    String          @id @default(uuid()) @db.Uuid
+  companyId             String          @db.Uuid
+  company               Company         @relation(fields: [companyId], references: [id])
+  
+  // Dados do boleto
+  codigoBarras          String?         @db.VarChar(48)
+  linhaDigitavel        String?         @db.VarChar(54)
+  nossoNumero           String?         @db.VarChar(20)
+  seuNumero             String?         @db.VarChar(20)
+  
+  // Valores
+  valorOriginal         Decimal         @db.Decimal(15, 2)
+  valorDesconto         Decimal         @default(0) @db.Decimal(15, 2)
+  valorJuros            Decimal         @default(0) @db.Decimal(15, 2)
+  valorMulta            Decimal         @default(0) @db.Decimal(15, 2)
+  valorFinal            Decimal         @db.Decimal(15, 2)
+  
+  // Datas
+  dataEmissao           DateTime?       @db.Date
+  dataVencimento        DateTime        @db.Date
+  dataLimitePagamento   DateTime?       @db.Date
+  
+  // Cedente (quem emitiu o boleto)
+  cedenteCnpj           String?         @db.VarChar(18)
+  cedenteNome           String?         @db.VarChar(200)
+  cedenteBanco          String?         @db.VarChar(3)
+  cedenteAgencia        String?         @db.VarChar(10)
+  cedenteConta          String?         @db.VarChar(20)
+  
+  // Sacado (empresa que vai pagar)
+  sacadoCnpj            String?         @db.VarChar(18)
+  sacadoNome            String?         @db.VarChar(200)
+  
+  // Status e controle
+  status                DdaBoletoStatus @default(PENDENTE)
+  origem                DdaOrigem       @default(DDA)
+  
+  // Vinculação
+  accountsPayableId     String?         @db.Uuid
+  accountsPayable       AccountsPayable? @relation(fields: [accountsPayableId], references: [id])
+  supplierId            String?         @db.Uuid
+  supplier              Supplier?       @relation(fields: [supplierId], references: [id])
+  
+  // Aprovação
+  aprovadoPor           String?         @db.Uuid
+  aprovadoEm            DateTime?
+  motivoRejeicao        String?
+  
+  // Pagamento
+  pagoEm                DateTime?
+  comprovanteUrl        String?
+  
+  // Auditoria
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  createdBy             String?         @db.Uuid
+  
+  @@index([companyId])
+  @@index([status])
+  @@index([dataVencimento])
+  @@index([cedenteCnpj])
+  @@index([codigoBarras])
+  @@map("dda_boletos")
+}
+
+// Configuração de integração DDA por banco
+model DdaConfig {
+  id                    String        @id @default(uuid()) @db.Uuid
+  companyId             String        @db.Uuid
+  company               Company       @relation(fields: [companyId], references: [id])
+  
+  // Banco
+  bancoCodigo           String        @db.VarChar(3)
+  bancoNome             String?       @db.VarChar(100)
+  
+  // Credenciais
+  agencia               String?       @db.VarChar(10)
+  conta                 String?       @db.VarChar(20)
+  convenio              String?       @db.VarChar(20)
+  
+  // API/Integração
+  ambiente              DdaAmbiente   @default(HOMOLOGACAO)
+  clientId              String?
+  clientSecret          String?
+  certificadoId         String?
+  
+  // Configurações
+  ativo                 Boolean       @default(true)
+  autoAprovarAte        Decimal       @default(0) @db.Decimal(15, 2)
+  notificarNovos        Boolean       @default(true)
+  emailNotificacao      String?       @db.VarChar(200)
+  
+  // Última sincronização
+  ultimaSincronizacao   DateTime?
+  
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  
+  syncLogs              DdaSyncLog[]
+  
+  @@unique([companyId, bancoCodigo])
+  @@map("dda_config")
+}
+
+// Log de sincronização DDA
+model DdaSyncLog {
+  id                    String        @id @default(uuid()) @db.Uuid
+  companyId             String        @db.Uuid
+  configId              String?       @db.Uuid
+  config                DdaConfig?    @relation(fields: [configId], references: [id])
+  
+  tipo                  DdaSyncTipo
+  status                DdaSyncStatus
+  
+  boletosEncontrados    Int           @default(0)
+  boletosNovos          Int           @default(0)
+  boletosAtualizados    Int           @default(0)
+  
+  erroMensagem          String?
+  
+  iniciadoEm            DateTime      @default(now())
+  finalizadoEm          DateTime?
+  
+  @@index([companyId])
+  @@index([configId])
+  @@map("dda_sync_log")
 }
