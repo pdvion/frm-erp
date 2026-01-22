@@ -27,10 +27,29 @@ model NovaTabela {
 ### 2. Aplicar migration via Supabase MCP
 // turbo
 ```
-Usar mcp9_apply_migration com:
+Usar mcp7_apply_migration com:
 - project_id: jewutjydoyaimusaxvyg
 - name: nome_descritivo_snake_case
 - query: SQL da migration
+```
+
+**⚠️ OBRIGATÓRIO - RLS em TODAS as tabelas:**
+```sql
+-- SEMPRE incluir no final da migration:
+ALTER TABLE nova_tabela ENABLE ROW LEVEL SECURITY;
+
+-- Políticas básicas (ajustar conforme necessidade):
+CREATE POLICY "nova_tabela_select_policy" ON nova_tabela
+  FOR SELECT USING (true);
+
+CREATE POLICY "nova_tabela_insert_policy" ON nova_tabela
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "nova_tabela_update_policy" ON nova_tabela
+  FOR UPDATE USING (true);
+
+CREATE POLICY "nova_tabela_delete_policy" ON nova_tabela
+  FOR DELETE USING (true);
 ```
 
 **IMPORTANTE - Tipos SQL:**

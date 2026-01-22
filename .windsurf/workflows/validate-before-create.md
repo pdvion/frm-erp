@@ -60,6 +60,24 @@ grep -r "<funcionalidade>" src/lib/
 - Confirmar com busca adicional por termos relacionados
 - Só então criar o novo arquivo
 
+## 7. Verificar branches e PRs pendentes
+
+```bash
+# Ver branches locais
+git branch -a | grep -i "<feature>"
+
+# Ver commits não mergeados de uma branch
+git log main..<branch> --oneline
+
+# Ver se código já existe em main
+git log --oneline -20  # Ver últimos commits
+```
+
+**⚠️ IMPORTANTE:** Antes de fazer merge de branches antigas:
+1. Verificar se o código já foi integrado em main por outro caminho
+2. Se houver conflitos, analisar se são por duplicação
+3. Preferir NÃO fazer merge se funcionalidade já existe
+
 ## Checklist Rápido
 
 - [ ] Busquei por arquivos com nome similar?
@@ -67,6 +85,8 @@ grep -r "<funcionalidade>" src/lib/
 - [ ] Verifiquei o index de routers?
 - [ ] Li o conteúdo de arquivos encontrados?
 - [ ] Confirmei que não existe código que atenda à necessidade?
+- [ ] Verifiquei se há branches/PRs pendentes com código similar?
+- [ ] Verifiquei os últimos commits em main?
 
 ## Exemplos de Erros a Evitar
 
