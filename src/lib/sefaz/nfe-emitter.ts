@@ -218,8 +218,85 @@ export interface SefazConfig {
   timeout?: number;
 }
 
-// URLs dos Web Services por UF (homologação)
+/**
+ * URLs dos Web Services SEFAZ por UF - Ambiente de Homologação
+ * @see https://www.nfe.fazenda.gov.br/portal/webServices.aspx
+ * @see VIO-577 - Mapeamento completo de UFs
+ */
 const WS_URLS_HOMOLOGACAO: Record<string, Record<string, string>> = {
+  // SEFAZ Autorizadoras
+  AM: {
+    autorizacao: "https://homnfe.sefaz.am.gov.br/services2/services/NfeAutorizacao4",
+    retAutorizacao: "https://homnfe.sefaz.am.gov.br/services2/services/NfeRetAutorizacao4",
+    consulta: "https://homnfe.sefaz.am.gov.br/services2/services/NfeConsulta4",
+    status: "https://homnfe.sefaz.am.gov.br/services2/services/NfeStatusServico4",
+    evento: "https://homnfe.sefaz.am.gov.br/services2/services/RecepcaoEvento4",
+    inutilizacao: "https://homnfe.sefaz.am.gov.br/services2/services/NfeInutilizacao4",
+  },
+  BA: {
+    autorizacao: "https://hnfe.sefaz.ba.gov.br/webservices/NFeAutorizacao4/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://hnfe.sefaz.ba.gov.br/webservices/NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
+    consulta: "https://hnfe.sefaz.ba.gov.br/webservices/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+    status: "https://hnfe.sefaz.ba.gov.br/webservices/NFeStatusServico4/NFeStatusServico4.asmx",
+    evento: "https://hnfe.sefaz.ba.gov.br/webservices/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+    inutilizacao: "https://hnfe.sefaz.ba.gov.br/webservices/NFeInutilizacao4/NFeInutilizacao4.asmx",
+  },
+  GO: {
+    autorizacao: "https://homolog.sefaz.go.gov.br/nfe/services/NFeAutorizacao4",
+    retAutorizacao: "https://homolog.sefaz.go.gov.br/nfe/services/NFeRetAutorizacao4",
+    consulta: "https://homolog.sefaz.go.gov.br/nfe/services/NFeConsultaProtocolo4",
+    status: "https://homolog.sefaz.go.gov.br/nfe/services/NFeStatusServico4",
+    evento: "https://homolog.sefaz.go.gov.br/nfe/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://homolog.sefaz.go.gov.br/nfe/services/NFeInutilizacao4",
+  },
+  MG: {
+    autorizacao: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeAutorizacao4",
+    retAutorizacao: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeRetAutorizacao4",
+    consulta: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeConsultaProtocolo4",
+    status: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeStatusServico4",
+    evento: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://hnfe.fazenda.mg.gov.br/nfe2/services/NFeInutilizacao4",
+  },
+  MS: {
+    autorizacao: "https://homologacao.nfe.ms.gov.br/ws/NFeAutorizacao4",
+    retAutorizacao: "https://homologacao.nfe.ms.gov.br/ws/NFeRetAutorizacao4",
+    consulta: "https://homologacao.nfe.ms.gov.br/ws/NFeConsultaProtocolo4",
+    status: "https://homologacao.nfe.ms.gov.br/ws/NFeStatusServico4",
+    evento: "https://homologacao.nfe.ms.gov.br/ws/NFeRecepcaoEvento4",
+    inutilizacao: "https://homologacao.nfe.ms.gov.br/ws/NFeInutilizacao4",
+  },
+  MT: {
+    autorizacao: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeAutorizacao4",
+    retAutorizacao: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeRetAutorizacao4",
+    consulta: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeConsulta4",
+    status: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeStatusServico4",
+    evento: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeRecepcaoEvento4",
+    inutilizacao: "https://homologacao.sefaz.mt.gov.br/nfews/v2/services/NfeInutilizacao4",
+  },
+  PE: {
+    autorizacao: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeAutorizacao4",
+    retAutorizacao: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeRetAutorizacao4",
+    consulta: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeConsultaProtocolo4",
+    status: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeStatusServico4",
+    evento: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfehomolog.sefaz.pe.gov.br/nfe-service/services/NFeInutilizacao4",
+  },
+  PR: {
+    autorizacao: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeAutorizacao4",
+    retAutorizacao: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeRetAutorizacao4",
+    consulta: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeConsultaProtocolo4",
+    status: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeStatusServico4",
+    evento: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeRecepcaoEvento4",
+    inutilizacao: "https://homologacao.nfe.sefa.pr.gov.br/nfe/NFeInutilizacao4",
+  },
+  RS: {
+    autorizacao: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/NfeAutorizacao/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
+    consulta: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/NfeConsulta/NfeConsulta4.asmx",
+    status: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/NfeStatusServico/NfeStatusServico4.asmx",
+    evento: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/recepcaoevento/recepcaoevento4.asmx",
+    inutilizacao: "https://nfe-homologacao.sefazrs.rs.gov.br/ws/nfeinutilizacao/nfeinutilizacao4.asmx",
+  },
   SP: {
     autorizacao: "https://homologacao.nfe.fazenda.sp.gov.br/ws/nfeautorizacao4.asmx",
     retAutorizacao: "https://homologacao.nfe.fazenda.sp.gov.br/ws/nferetautorizacao4.asmx",
@@ -228,11 +305,104 @@ const WS_URLS_HOMOLOGACAO: Record<string, Record<string, string>> = {
     evento: "https://homologacao.nfe.fazenda.sp.gov.br/ws/nferecepcaoevento4.asmx",
     inutilizacao: "https://homologacao.nfe.fazenda.sp.gov.br/ws/nfeinutilizacao4.asmx",
   },
-  // Adicionar outras UFs conforme necessário
+  // SVAN - Sefaz Virtual do Ambiente Nacional (MA, PA, PI)
+  SVAN: {
+    autorizacao: "https://hom.sefazvirtual.fazenda.gov.br/NFeAutorizacao4/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://hom.sefazvirtual.fazenda.gov.br/NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
+    consulta: "https://hom.sefazvirtual.fazenda.gov.br/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+    status: "https://hom.sefazvirtual.fazenda.gov.br/NFeStatusServico4/NFeStatusServico4.asmx",
+    evento: "https://hom.sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+    inutilizacao: "https://hom.sefazvirtual.fazenda.gov.br/NFeInutilizacao4/NFeInutilizacao4.asmx",
+  },
+  // SVRS - Sefaz Virtual RS (AC, AL, AP, CE, DF, ES, PB, RJ, RN, RO, RR, SC, SE, TO)
+  SVRS: {
+    autorizacao: "https://nfe-homologacao.svrs.rs.gov.br/ws/NfeAutorizacao/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://nfe-homologacao.svrs.rs.gov.br/ws/NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
+    consulta: "https://nfe-homologacao.svrs.rs.gov.br/ws/NfeConsulta/NfeConsulta4.asmx",
+    status: "https://nfe-homologacao.svrs.rs.gov.br/ws/NfeStatusServico/NfeStatusServico4.asmx",
+    evento: "https://nfe-homologacao.svrs.rs.gov.br/ws/recepcaoevento/recepcaoevento4.asmx",
+    inutilizacao: "https://nfe-homologacao.svrs.rs.gov.br/ws/nfeinutilizacao/nfeinutilizacao4.asmx",
+  },
 };
 
-// URLs dos Web Services por UF (produção)
+/**
+ * URLs dos Web Services SEFAZ por UF - Ambiente de Produção
+ * @see https://www.nfe.fazenda.gov.br/portal/webServices.aspx
+ */
 const WS_URLS_PRODUCAO: Record<string, Record<string, string>> = {
+  // SEFAZ Autorizadoras
+  AM: {
+    autorizacao: "https://nfe.sefaz.am.gov.br/services2/services/NfeAutorizacao4",
+    retAutorizacao: "https://nfe.sefaz.am.gov.br/services2/services/NfeRetAutorizacao4",
+    consulta: "https://nfe.sefaz.am.gov.br/services2/services/NfeConsulta4",
+    status: "https://nfe.sefaz.am.gov.br/services2/services/NfeStatusServico4",
+    evento: "https://nfe.sefaz.am.gov.br/services2/services/RecepcaoEvento4",
+    inutilizacao: "https://nfe.sefaz.am.gov.br/services2/services/NfeInutilizacao4",
+  },
+  BA: {
+    autorizacao: "https://nfe.sefaz.ba.gov.br/webservices/NFeAutorizacao4/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://nfe.sefaz.ba.gov.br/webservices/NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
+    consulta: "https://nfe.sefaz.ba.gov.br/webservices/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+    status: "https://nfe.sefaz.ba.gov.br/webservices/NFeStatusServico4/NFeStatusServico4.asmx",
+    evento: "https://nfe.sefaz.ba.gov.br/webservices/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+    inutilizacao: "https://nfe.sefaz.ba.gov.br/webservices/NFeInutilizacao4/NFeInutilizacao4.asmx",
+  },
+  GO: {
+    autorizacao: "https://nfe.sefaz.go.gov.br/nfe/services/NFeAutorizacao4",
+    retAutorizacao: "https://nfe.sefaz.go.gov.br/nfe/services/NFeRetAutorizacao4",
+    consulta: "https://nfe.sefaz.go.gov.br/nfe/services/NFeConsultaProtocolo4",
+    status: "https://nfe.sefaz.go.gov.br/nfe/services/NFeStatusServico4",
+    evento: "https://nfe.sefaz.go.gov.br/nfe/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfe.sefaz.go.gov.br/nfe/services/NFeInutilizacao4",
+  },
+  MG: {
+    autorizacao: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeAutorizacao4",
+    retAutorizacao: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeRetAutorizacao4",
+    consulta: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeConsultaProtocolo4",
+    status: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeStatusServico4",
+    evento: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfe.fazenda.mg.gov.br/nfe2/services/NFeInutilizacao4",
+  },
+  MS: {
+    autorizacao: "https://nfe.sefaz.ms.gov.br/ws/NFeAutorizacao4",
+    retAutorizacao: "https://nfe.sefaz.ms.gov.br/ws/NFeRetAutorizacao4",
+    consulta: "https://nfe.sefaz.ms.gov.br/ws/NFeConsultaProtocolo4",
+    status: "https://nfe.sefaz.ms.gov.br/ws/NFeStatusServico4",
+    evento: "https://nfe.sefaz.ms.gov.br/ws/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfe.sefaz.ms.gov.br/ws/NFeInutilizacao4",
+  },
+  MT: {
+    autorizacao: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeAutorizacao4",
+    retAutorizacao: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeRetAutorizacao4",
+    consulta: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeConsulta4",
+    status: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeStatusServico4",
+    evento: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeRecepcaoEvento4",
+    inutilizacao: "https://nfe.sefaz.mt.gov.br/nfews/v2/services/NfeInutilizacao4",
+  },
+  PE: {
+    autorizacao: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeAutorizacao4",
+    retAutorizacao: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeRetAutorizacao4",
+    consulta: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeConsultaProtocolo4",
+    status: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeStatusServico4",
+    evento: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfe.sefaz.pe.gov.br/nfe-service/services/NFeInutilizacao4",
+  },
+  PR: {
+    autorizacao: "https://nfe.sefa.pr.gov.br/nfe/NFeAutorizacao4",
+    retAutorizacao: "https://nfe.sefa.pr.gov.br/nfe/NFeRetAutorizacao4",
+    consulta: "https://nfe.sefa.pr.gov.br/nfe/NFeConsultaProtocolo4",
+    status: "https://nfe.sefa.pr.gov.br/nfe/NFeStatusServico4",
+    evento: "https://nfe.sefa.pr.gov.br/nfe/NFeRecepcaoEvento4",
+    inutilizacao: "https://nfe.sefa.pr.gov.br/nfe/NFeInutilizacao4",
+  },
+  RS: {
+    autorizacao: "https://nfe.sefazrs.rs.gov.br/ws/NfeAutorizacao/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://nfe.sefazrs.rs.gov.br/ws/NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
+    consulta: "https://nfe.sefazrs.rs.gov.br/ws/NfeConsulta/NfeConsulta4.asmx",
+    status: "https://nfe.sefazrs.rs.gov.br/ws/NfeStatusServico/NfeStatusServico4.asmx",
+    evento: "https://nfe.sefazrs.rs.gov.br/ws/recepcaoevento/recepcaoevento4.asmx",
+    inutilizacao: "https://nfe.sefazrs.rs.gov.br/ws/nfeinutilizacao/nfeinutilizacao4.asmx",
+  },
   SP: {
     autorizacao: "https://nfe.fazenda.sp.gov.br/ws/nfeautorizacao4.asmx",
     retAutorizacao: "https://nfe.fazenda.sp.gov.br/ws/nferetautorizacao4.asmx",
@@ -241,8 +411,53 @@ const WS_URLS_PRODUCAO: Record<string, Record<string, string>> = {
     evento: "https://nfe.fazenda.sp.gov.br/ws/nferecepcaoevento4.asmx",
     inutilizacao: "https://nfe.fazenda.sp.gov.br/ws/nfeinutilizacao4.asmx",
   },
-  // Adicionar outras UFs conforme necessário
+  // SVAN - Sefaz Virtual do Ambiente Nacional (MA, PA, PI)
+  SVAN: {
+    autorizacao: "https://www.sefazvirtual.fazenda.gov.br/NFeAutorizacao4/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://www.sefazvirtual.fazenda.gov.br/NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
+    consulta: "https://www.sefazvirtual.fazenda.gov.br/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+    status: "https://www.sefazvirtual.fazenda.gov.br/NFeStatusServico4/NFeStatusServico4.asmx",
+    evento: "https://www.sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+    inutilizacao: "https://www.sefazvirtual.fazenda.gov.br/NFeInutilizacao4/NFeInutilizacao4.asmx",
+  },
+  // SVRS - Sefaz Virtual RS (AC, AL, AP, CE, DF, ES, PB, RJ, RN, RO, RR, SC, SE, TO)
+  SVRS: {
+    autorizacao: "https://nfe.svrs.rs.gov.br/ws/NfeAutorizacao/NFeAutorizacao4.asmx",
+    retAutorizacao: "https://nfe.svrs.rs.gov.br/ws/NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
+    consulta: "https://nfe.svrs.rs.gov.br/ws/NfeConsulta/NfeConsulta4.asmx",
+    status: "https://nfe.svrs.rs.gov.br/ws/NfeStatusServico/NfeStatusServico4.asmx",
+    evento: "https://nfe.svrs.rs.gov.br/ws/recepcaoevento/recepcaoevento4.asmx",
+    inutilizacao: "https://nfe.svrs.rs.gov.br/ws/nfeinutilizacao/nfeinutilizacao4.asmx",
+  },
 };
+
+/**
+ * Mapeamento de UF para servidor autorizador
+ * UFs que não têm SEFAZ própria usam SVAN ou SVRS
+ */
+const UF_PARA_SERVIDOR: Record<string, string> = {
+  AC: "SVRS", AL: "SVRS", AP: "SVRS", AM: "AM",
+  BA: "BA", CE: "SVRS", DF: "SVRS", ES: "SVRS",
+  GO: "GO", MA: "SVAN", MG: "MG", MS: "MS",
+  MT: "MT", PA: "SVAN", PB: "SVRS", PE: "PE",
+  PI: "SVAN", PR: "PR", RJ: "SVRS", RN: "SVRS",
+  RO: "SVRS", RR: "SVRS", RS: "RS", SC: "SVRS",
+  SE: "SVRS", SP: "SP", TO: "SVRS",
+};
+
+/**
+ * Retorna as URLs do Web Service para uma UF específica
+ * @param uf - Sigla da UF (2 letras)
+ * @param ambiente - "1" para produção, "2" para homologação
+ * @returns URLs dos Web Services ou null se UF não suportada
+ */
+export function getWsUrlsParaUF(uf: string, ambiente: "1" | "2"): Record<string, string> | null {
+  const servidor = UF_PARA_SERVIDOR[uf.toUpperCase()];
+  if (!servidor) return null;
+  
+  const urls = ambiente === "1" ? WS_URLS_PRODUCAO : WS_URLS_HOMOLOGACAO;
+  return urls[servidor] || null;
+}
 
 /**
  * Gera o código numérico aleatório da NF-e (8 dígitos)
@@ -601,9 +816,13 @@ export class NFeEmitter {
 
   constructor(config: SefazConfig) {
     this.config = config;
-    this.wsUrls = config.ambiente === "1"
-      ? WS_URLS_PRODUCAO[config.uf] || WS_URLS_PRODUCAO.SP
-      : WS_URLS_HOMOLOGACAO[config.uf] || WS_URLS_HOMOLOGACAO.SP;
+    
+    // Usar mapeamento correto de UF para servidor (VIO-577)
+    const urls = getWsUrlsParaUF(config.uf, config.ambiente);
+    if (!urls) {
+      throw new Error(`UF não suportada: ${config.uf}. Verifique se a sigla está correta.`);
+    }
+    this.wsUrls = urls;
   }
 
   /**
