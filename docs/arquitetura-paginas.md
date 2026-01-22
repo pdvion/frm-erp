@@ -218,5 +218,55 @@ Use classes Tailwind para ajustes específicos:
 - [ ] Usar `PageHeader` para título e ações
 - [ ] Usar `PageCard` para seções
 - [ ] Usar classes de tema (`bg-theme-*`, `text-theme-*`, `border-theme-*`)
-- [ ] Testar em mobile
+- [ ] Testar em mobile (375px, 414px)
+- [ ] Testar em tablet (768px)
 - [ ] Testar alternância de tema (Light/Dark)
+- [ ] Verificar acessibilidade (labels, contraste, foco)
+
+## Requisitos Mobile/Touch
+
+### Tamanhos Mínimos
+- **Botões**: Mínimo 44x44px para área de toque
+- **Inputs**: Altura mínima 40px
+- **Links**: Área de toque adequada (não apenas texto)
+- **Espaçamento**: Mínimo 8px entre elementos interativos
+
+### Layout Responsivo
+```tsx
+// Grid que adapta de 1 coluna (mobile) para 2 colunas (desktop)
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div>Campo 1</div>
+  <div>Campo 2</div>
+</div>
+
+// Tabela com colunas ocultas em mobile
+<th className="hidden sm:table-cell">Coluna Desktop</th>
+<td className="hidden sm:table-cell">Valor Desktop</td>
+```
+
+### Menu Mobile
+- Sidebar deve colapsar em menu hamburger em mobile
+- Menu deve ocupar tela cheia ou drawer lateral
+- Botão de fechar claramente visível
+
+## Testes E2E
+
+Toda nova página deve ter cobertura de testes E2E. Ver `docs/testes-e2e.md` para detalhes.
+
+### Testes Obrigatórios
+1. **Navegação**: Acesso via sidebar e breadcrumbs
+2. **CRUD**: Create, Read, Update, Delete (se aplicável)
+3. **Filtros**: Busca e filtros funcionando
+4. **Mobile**: Layout responsivo em 375px
+5. **Tema**: Funciona em light e dark mode
+
+### Exemplo de Teste
+```typescript
+test('deve listar registros', async ({ page }) => {
+  await page.goto('/minha-pagina');
+  await page.waitForLoadState('networkidle');
+  
+  await expect(page.getByRole('table')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole('columnheader', { name: 'Nome' })).toBeVisible();
+});
+```
