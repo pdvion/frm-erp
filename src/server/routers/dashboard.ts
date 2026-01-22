@@ -336,111 +336,131 @@ export const dashboardRouter = createTRPCRouter({
     const today = new Date();
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
+    // Helper para executar queries com fallback para array vazio
+    async function safeQuery<T>(queryFn: () => Promise<T[]>): Promise<T[]> {
+      try {
+        return await queryFn();
+      } catch (error) {
+        console.error("Dashboard chart query error:", error);
+        return [];
+      }
+    }
+
     // Pagamentos por mês (últimos 6 meses) - SQL seguro via prepared statements
-    const paymentsByMonth = await prisma.$queryRaw<Array<{ month: string; paid: number; pending: number }>>`
-      SELECT 
-        TO_CHAR(DATE_TRUNC('month', "dueDate"), 'Mon') as month,
-        COALESCE(SUM(CASE WHEN status = 'PAID' THEN "netValue" ELSE 0 END), 0)::float as paid,
-        COALESCE(SUM(CASE WHEN status = 'PENDING' THEN "netValue" ELSE 0 END), 0)::float as pending
-      FROM accounts_payable
-      WHERE "companyId" = ${ctx.companyId}::uuid
-        AND "dueDate" >= ${sixMonthsAgo}
-      GROUP BY DATE_TRUNC('month', "dueDate")
-      ORDER BY DATE_TRUNC('month', "dueDate")
-    `;
+    const paymentsByMonth = await safeQuery(() => 
+      prisma.$queryRaw<Array<{ month: string; paid: number; pending: number }>>`
+        SELECT 
+          TO_CHAR(DATE_TRUNC('month', "dueDate"), 'Mon') as month,
+          COALESCE(SUM(CASE WHEN status = 'PAID' THEN "netValue" ELSE 0 END), 0)::float as paid,
+          COALESCE(SUM(CASE WHEN status = 'PENDING' THEN "netValue" ELSE 0 END), 0)::float as pending
+        FROM accounts_payable
+        WHERE "companyId" = ${ctx.companyId}::uuid
+          AND "dueDate" >= ${sixMonthsAgo}
+        GROUP BY DATE_TRUNC('month', "dueDate")
+        ORDER BY DATE_TRUNC('month', "dueDate")
+      `
+    );
 
     // Compras por categoria (top 5)
-    const purchasesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
-      SELECT 
-        COALESCE(c.name, 'Sem Categoria') as name,
-        COALESCE(SUM(ri."totalValue"), 0)::float as value
-      FROM received_invoices ri
-      LEFT JOIN materials m ON m.id = (
-        SELECT "materialId" FROM received_invoice_items WHERE "invoiceId" = ri.id LIMIT 1
-      )
-      LEFT JOIN categories c ON c.id = m."categoryId"
-      WHERE ri."companyId" = ${ctx.companyId}::uuid
-        AND ri."issueDate" >= ${sixMonthsAgo}
-      GROUP BY c.name
-      ORDER BY value DESC
-      LIMIT 5
-    `;
+    const purchasesByCategory = await safeQuery(() =>
+      prisma.$queryRaw<Array<{ name: string; value: number }>>`
+        SELECT 
+          COALESCE(c.name, 'Sem Categoria') as name,
+          COALESCE(SUM(ri."totalValue"), 0)::float as value
+        FROM received_invoices ri
+        LEFT JOIN materials m ON m.id = (
+          SELECT "materialId" FROM received_invoice_items WHERE "invoiceId" = ri.id LIMIT 1
+        )
+        LEFT JOIN categories c ON c.id = m."categoryId"
+        WHERE ri."companyId" = ${ctx.companyId}::uuid
+          AND ri."issueDate" >= ${sixMonthsAgo}
+        GROUP BY c.name
+        ORDER BY value DESC
+        LIMIT 5
+      `
+    );
 
     // Estoque por categoria
-    const inventoryByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
-      SELECT 
-        COALESCE(c.name, 'Sem Categoria') as name,
-        COALESCE(SUM(i.quantity * m."averageCost"), 0)::float as value
-      FROM inventory i
-      JOIN materials m ON m.id = i."materialId"
-      LEFT JOIN categories c ON c.id = m."categoryId"
-      WHERE i."companyId" = ${ctx.companyId}::uuid
-      GROUP BY c.name
-      ORDER BY value DESC
-      LIMIT 6
-    `;
+    const inventoryByCategory = await safeQuery(() =>
+      prisma.$queryRaw<Array<{ name: string; value: number }>>`
+        SELECT 
+          COALESCE(c.name, 'Sem Categoria') as name,
+          COALESCE(SUM(i.quantity * m."averageCost"), 0)::float as value
+        FROM inventory i
+        JOIN materials m ON m.id = i."materialId"
+        LEFT JOIN categories c ON c.id = m."categoryId"
+        WHERE i."companyId" = ${ctx.companyId}::uuid
+        GROUP BY c.name
+        ORDER BY value DESC
+        LIMIT 6
+      `
+    );
 
     // Requisições por mês
-    const requisitionsByMonth = await prisma.$queryRaw<Array<{ month: string; count: number }>>`
-      SELECT 
-        TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
-        COUNT(*)::int as count
-      FROM material_requisitions
-      WHERE "companyId" = ${ctx.companyId}::uuid
-        AND "createdAt" >= ${sixMonthsAgo}
-      GROUP BY DATE_TRUNC('month', "createdAt")
-      ORDER BY DATE_TRUNC('month', "createdAt")
-    `;
+    const requisitionsByMonth = await safeQuery(() =>
+      prisma.$queryRaw<Array<{ month: string; count: number }>>`
+        SELECT 
+          TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
+          COUNT(*)::int as count
+        FROM material_requisitions
+        WHERE "companyId" = ${ctx.companyId}::uuid
+          AND "createdAt" >= ${sixMonthsAgo}
+        GROUP BY DATE_TRUNC('month', "createdAt")
+        ORDER BY DATE_TRUNC('month', "createdAt")
+      `
+    );
 
     // Fluxo de caixa projetado (próximos 30 dias)
-    const cashFlowProjection = await prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
-      WITH dates AS (
-        SELECT generate_series(
-          CURRENT_DATE,
-          CURRENT_DATE + INTERVAL '30 days',
-          INTERVAL '7 days'
-        )::date as date
-      )
-      SELECT 
-        TO_CHAR(d.date, 'DD/MM') as date,
-        COALESCE((
-          SELECT SUM("netValue")::float FROM accounts_payable 
-          WHERE "companyId" = ${ctx.companyId}::uuid 
-          AND status = 'PENDING'
-          AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'
-        ), 0) as payables,
-        COALESCE((
-          SELECT SUM("netValue")::float FROM accounts_receivable 
-          WHERE "companyId" = ${ctx.companyId}::uuid 
-          AND status = 'PENDING'
-          AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'
-        ), 0) as receivables
-      FROM dates d
-      ORDER BY d.date
-    `;
+    const cashFlowProjection = await safeQuery(() =>
+      prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
+        WITH dates AS (
+          SELECT generate_series(
+            CURRENT_DATE,
+            CURRENT_DATE + INTERVAL '30 days',
+            INTERVAL '7 days'
+          )::date as date
+        )
+        SELECT 
+          TO_CHAR(d.date, 'DD/MM') as date,
+          COALESCE((
+            SELECT SUM("netValue")::float FROM accounts_payable 
+            WHERE "companyId" = ${ctx.companyId}::uuid 
+            AND status = 'PENDING'
+            AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'
+          ), 0) as payables,
+          COALESCE((
+            SELECT SUM("netValue")::float FROM accounts_receivable 
+            WHERE "companyId" = ${ctx.companyId}::uuid 
+            AND status = 'PENDING'
+            AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'
+          ), 0) as receivables
+        FROM dates d
+        ORDER BY d.date
+      `
+    );
 
     return {
       paymentsByMonth: paymentsByMonth.map(p => ({
         name: p.month,
-        Pago: p.paid,
-        Pendente: p.pending,
+        Pago: Number(p.paid) || 0,
+        Pendente: Number(p.pending) || 0,
       })),
       purchasesByCategory: purchasesByCategory.map(p => ({
         name: p.name,
-        value: p.value,
+        value: Number(p.value) || 0,
       })),
       inventoryByCategory: inventoryByCategory.map(i => ({
         name: i.name,
-        value: i.value,
+        value: Number(i.value) || 0,
       })),
       requisitionsByMonth: requisitionsByMonth.map(r => ({
         name: r.month,
-        Requisições: r.count,
+        Requisições: Number(r.count) || 0,
       })),
       cashFlowProjection: cashFlowProjection.map(c => ({
         name: c.date,
-        "A Pagar": c.payables,
-        "A Receber": c.receivables,
+        "A Pagar": Number(c.payables) || 0,
+        "A Receber": Number(c.receivables) || 0,
       })),
     };
   }),

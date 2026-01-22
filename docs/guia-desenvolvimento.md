@@ -183,6 +183,66 @@ export function MaterialCard({ material }: Props) {
 }
 ```
 
+### Bibliotecas Utilitárias
+
+#### Validadores (src/lib/validators.ts)
+```typescript
+import { 
+  cpfSchema, cnpjSchema, cpfOrCnpjSchema,
+  emailSchema, phoneSchema, cepSchema,
+  moneySchema, quantitySchema, percentSchema,
+  ufSchema, ieSchema, nfeKeySchema,
+  paginationSchema, addressSchema, contactSchema,
+  formatCPF, formatCNPJ, formatPhone, formatCEP,
+  isValidCPF, isValidCNPJ
+} from "@/lib/validators";
+
+// Validação em routers tRPC
+.input(z.object({
+  cpf: cpfSchema,
+  email: emailSchema,
+  value: moneySchema,
+}))
+```
+
+#### Erros Customizados (src/lib/errors.ts)
+```typescript
+import { 
+  ValidationError, NotFoundError, ConflictError,
+  UnauthorizedError, ForbiddenError, BusinessRuleError,
+  ExternalServiceError, RateLimitError,
+  toTRPCError, handleError,
+  assertExists, assertCondition, assertAuthorized
+} from "@/lib/errors";
+
+// Uso em routers
+const material = await prisma.material.findUnique({ where: { id } });
+assertExists(material, "Material", id); // Lança NotFoundError se null
+
+// Wrapper com logging
+return handleError(async () => {
+  // operação que pode falhar
+}, "Operação X");
+```
+
+#### Retry com Circuit Breaker (src/lib/retry.ts)
+```typescript
+import { 
+  retry, retryWithCircuitBreaker,
+  retrySefaz, retryEmail, retryDatabase,
+  processBatchWithRetry
+} from "@/lib/retry";
+
+// Retry simples
+const result = await retry(() => fetchData(), { maxAttempts: 3 });
+
+// Retry especializado para SEFAZ
+const nfes = await retrySefaz(() => consultarSefaz(cnpj));
+
+// Processamento em lote
+const results = await processBatchWithRetry(items, processItem, { concurrency: 5 });
+```
+
 ### Formatadores (src/lib/formatters.ts)
 ```typescript
 import { formatCurrency, formatDate, formatCNPJ } from "@/lib/formatters";
