@@ -270,10 +270,120 @@ export const reportsRouter = createTRPCRouter({
   // Lista de relatórios disponíveis
   available: tenantProcedure.query(() => {
     return [
-      { id: "inventory-position", name: "Posição de Estoque", description: "Visão geral do estoque atual", category: "Estoque", icon: "Package" },
-      { id: "payables-aging", name: "Aging Contas a Pagar", description: "Análise de vencimentos", category: "Financeiro", icon: "TrendingDown" },
-      { id: "receivables-aging", name: "Aging Contas a Receber", description: "Análise de vencimentos", category: "Financeiro", icon: "TrendingUp" },
+      { id: "inventory-position", name: "Posição de Estoque", description: "Visão geral do estoque atual valorizado", category: "Estoque", icon: "Package" },
+      { id: "inventory-abc", name: "Curva ABC", description: "Classificação de itens por valor", category: "Estoque", icon: "Package" },
+      { id: "payables-aging", name: "Aging Contas a Pagar", description: "Análise de vencimentos por faixa", category: "Financeiro", icon: "TrendingDown" },
+      { id: "receivables-aging", name: "Aging Contas a Receber", description: "Análise de vencimentos por faixa", category: "Financeiro", icon: "TrendingUp" },
       { id: "cash-flow", name: "Fluxo de Caixa", description: "Entradas e saídas por período", category: "Financeiro", icon: "Wallet" },
+      { id: "purchases-by-supplier", name: "Compras por Fornecedor", description: "Volume e valor por fornecedor", category: "Compras", icon: "ArrowLeftRight" },
+      { id: "headcount", name: "Headcount", description: "Funcionários por departamento", category: "RH", icon: "Users" },
     ];
+  }),
+
+  // Relatório Curva ABC de Estoque
+  inventoryAbc: tenantProcedure.query(async ({ ctx }) => {
+    const inventory = await ctx.prisma.inventory.findMany({
+      where: { companyId: ctx.companyId },
+      include: { material: { include: { category: true } } },
+      orderBy: { totalCost: "desc" },
+    });
+
+    const totalValue = inventory.reduce((acc, item) => acc + item.totalCost, 0);
+    let cumulativeValue = 0;
+
+    const items = inventory.map((item) => {
+      cumulativeValue += item.totalCost;
+      const cumulativePercent = (cumulativeValue / totalValue) * 100;
+      let classification: "A" | "B" | "C";
+      if (cumulativePercent <= 80) classification = "A";
+      else if (cumulativePercent <= 95) classification = "B";
+      else classification = "C";
+
+      return {
+        id: item.id,
+        materialCode: item.material.code,
+        materialDescription: item.material.description,
+        category: item.material.category?.name || "Sem categoria",
+        quantity: item.quantity,
+        totalCost: item.totalCost,
+        percentOfTotal: (item.totalCost / totalValue) * 100,
+        cumulativePercent,
+        classification,
+      };
+    });
+
+    const summary = {
+      classA: { count: items.filter((i) => i.classification === "A").length, value: items.filter((i) => i.classification === "A").reduce((acc, i) => acc + i.totalCost, 0) },
+      classB: { count: items.filter((i) => i.classification === "B").length, value: items.filter((i) => i.classification === "B").reduce((acc, i) => acc + i.totalCost, 0) },
+      classC: { count: items.filter((i) => i.classification === "C").length, value: items.filter((i) => i.classification === "C").reduce((acc, i) => acc + i.totalCost, 0) },
+      totalItems: items.length,
+      totalValue,
+    };
+
+    return { items, summary };
+  }),
+
+  // Relatório de Compras por Fornecedor
+  purchasesBySupplier: tenantProcedure
+    .input(z.object({
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const where: Record<string, unknown> = { companyId: ctx.companyId };
+      if (input?.startDate) where.createdAt = { gte: new Date(input.startDate) };
+      if (input?.endDate) where.createdAt = { ...((where.createdAt as Record<string, unknown>) || {}), lte: new Date(input.endDate) };
+
+      const orders = await ctx.prisma.purchaseOrder.findMany({
+        where,
+        include: { supplier: true },
+      });
+
+      const bySupplier: Record<string, { supplier: string; cnpj: string; orderCount: number; totalValue: number }> = {};
+
+      orders.forEach((order) => {
+        const key = order.supplierId;
+        if (!bySupplier[key]) {
+          bySupplier[key] = {
+            supplier: order.supplier.tradeName || order.supplier.companyName,
+            cnpj: order.supplier.cnpj || "",
+            orderCount: 0,
+            totalValue: 0,
+          };
+        }
+        bySupplier[key].orderCount++;
+        bySupplier[key].totalValue += order.totalValue;
+      });
+
+      const items = Object.values(bySupplier).sort((a, b) => b.totalValue - a.totalValue);
+      const totals = { totalOrders: orders.length, totalValue: items.reduce((acc, i) => acc + i.totalValue, 0) };
+
+      return { items, totals };
+    }),
+
+  // Relatório de Headcount por Departamento
+  headcount: tenantProcedure.query(async ({ ctx }) => {
+    const employees = await ctx.prisma.employee.findMany({
+      where: { companyId: ctx.companyId, status: "ACTIVE" },
+      include: { department: true, position: true },
+    });
+
+    const byDepartment: Record<string, { department: string; count: number; positions: Record<string, number> }> = {};
+
+    employees.forEach((emp) => {
+      const deptName = emp.department?.name || "Sem departamento";
+      const posName = emp.position?.name || "Sem cargo";
+
+      if (!byDepartment[deptName]) {
+        byDepartment[deptName] = { department: deptName, count: 0, positions: {} };
+      }
+      byDepartment[deptName].count++;
+      byDepartment[deptName].positions[posName] = (byDepartment[deptName].positions[posName] || 0) + 1;
+    });
+
+    const items = Object.values(byDepartment).sort((a, b) => b.count - a.count);
+    const totals = { totalEmployees: employees.length, totalDepartments: items.length };
+
+    return { items, totals };
   }),
 });
