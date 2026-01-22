@@ -67,8 +67,7 @@ export default function NewEmployeePage() {
   // Buscar cargos
   const { data: positions } = trpc.hr.listPositions.useQuery({});
   
-  // Buscar escalas de trabalho
-  const { data: workSchedules } = trpc.hr.listWorkSchedules.useQuery({});
+  // Escalas de trabalho - TODO: implementar listWorkSchedules no router HR
 
   const createEmployee = trpc.hr.createEmployee.useMutation({
     onSuccess: () => {
@@ -88,30 +87,15 @@ export default function NewEmployeePage() {
     try {
       await createEmployee.mutateAsync({
         name: formData.name,
-        cpf: formData.cpf.replace(/\D/g, ""),
-        rg: formData.rg || undefined,
-        birthDate: formData.birthDate ? new Date(formData.birthDate) : undefined,
+        cpf: formData.cpf.replace(/\D/g, "") || undefined,
         email: formData.email || undefined,
         phone: formData.phone || undefined,
         mobile: formData.mobile || undefined,
-        address: formData.address || undefined,
-        addressNumber: formData.addressNumber || undefined,
-        addressComplement: formData.addressComplement || undefined,
-        neighborhood: formData.neighborhood || undefined,
-        city: formData.city || undefined,
-        state: formData.state || undefined,
-        zipCode: formData.zipCode?.replace(/\D/g, "") || undefined,
         contractType: formData.contractType as "CLT" | "PJ" | "TEMPORARY" | "INTERN" | "APPRENTICE",
-        admissionDate: new Date(formData.admissionDate),
+        hireDate: new Date(formData.admissionDate),
         departmentId: formData.departmentId || undefined,
         positionId: formData.positionId || undefined,
-        salary: formData.salary ? parseFloat(formData.salary) : undefined,
-        workScheduleId: formData.workScheduleId || undefined,
-        pis: formData.pis || undefined,
-        ctps: formData.ctps || undefined,
-        ctpsSeries: formData.ctpsSeries || undefined,
-        voterRegistration: formData.voterRegistration || undefined,
-        militaryService: formData.militaryService || undefined,
+        salary: formData.salary ? parseFloat(formData.salary) : 0,
       });
     } catch {
       // Error handled by onError
@@ -433,7 +417,7 @@ export default function NewEmployeePage() {
                   className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 >
                   <option value="">Selecione</option>
-                  {departments?.items?.map((dept) => (
+                  {(departments as { id: string; name: string }[] | undefined)?.map((dept) => (
                     <option key={dept.id} value={dept.id}>
                       {dept.name}
                     </option>
@@ -451,7 +435,7 @@ export default function NewEmployeePage() {
                   className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 >
                   <option value="">Selecione</option>
-                  {positions?.items?.map((pos) => (
+                  {(positions as { id: string; name: string }[] | undefined)?.map((pos) => (
                     <option key={pos.id} value={pos.id}>
                       {pos.name}
                     </option>
@@ -485,11 +469,7 @@ export default function NewEmployeePage() {
                   className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 >
                   <option value="">Selecione</option>
-                  {workSchedules?.items?.map((schedule) => (
-                    <option key={schedule.id} value={schedule.id}>
-                      {schedule.name}
-                    </option>
-                  ))}
+                  {/* TODO: implementar listWorkSchedules */}
                 </select>
               </div>
             </div>

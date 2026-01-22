@@ -53,7 +53,7 @@ export async function getSefazConfig(companyId: string): Promise<SefazConfig | n
     where: { id: companyId },
     select: {
       cnpj: true,
-      stateRegistration: true,
+      ie: true,
       address: true,
       city: true,
       state: true,
@@ -202,7 +202,7 @@ export async function emitirNFe(invoiceId: string, companyId: string): Promise<E
       },
       itens: invoice.items.map((item, index) => ({
         numero: index + 1,
-        codigo: item.material?.code || item.materialId,
+        codigo: String(item.material?.code || item.materialId),
         descricao: item.description || item.material?.description || "",
         ncm: item.material?.ncm || "00000000",
         cfop: item.cfop || "5102",
