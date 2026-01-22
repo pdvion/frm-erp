@@ -89,22 +89,23 @@ export async function getDadosEmitente(companyId: string): Promise<DadosEmitente
 
   if (!company) return null;
 
+  // Campos do schema Company: name, tradeName, cnpj, ie, address, city, state, zipCode
   return {
     cnpj: company.cnpj || "",
-    ie: company.stateRegistration || "",
+    ie: company.ie || "", // Inscrição Estadual
     razaoSocial: company.name,
     nomeFantasia: company.tradeName || undefined,
     endereco: {
       logradouro: company.address || "",
-      numero: company.addressNumber || "S/N",
-      complemento: company.addressComplement || undefined,
-      bairro: company.neighborhood || "",
-      codigoMunicipio: company.cityCode || "",
+      numero: "S/N", // TODO: Adicionar campo addressNumber ao schema Company
+      complemento: undefined,
+      bairro: "", // TODO: Adicionar campo neighborhood ao schema Company
+      codigoMunicipio: "", // TODO: Adicionar campo cityCode ao schema Company
       municipio: company.city || "",
       uf: company.state || "",
       cep: company.zipCode || "",
     },
-    crt: (company.taxRegime as "1" | "2" | "3") || "3",
+    crt: "3", // Regime Normal por padrão - TODO: Adicionar campo taxRegime ao schema Company
   };
 }
 
@@ -154,6 +155,9 @@ export async function emitirNFe(invoiceId: string, companyId: string): Promise<E
     }
 
     // Montar dados da NF-e
+    // Campos Customer: companyName, tradeName, cnpj, cpf, stateRegistration, 
+    // addressStreet, addressNumber, addressComplement, addressNeighborhood, 
+    // addressCity, addressState, addressZipCode
     const nfeData: NFeData = {
       naturezaOperacao: invoice.operationType || "VENDA",
       modelo: (invoice.model as "55" | "65") || "55",
@@ -162,10 +166,10 @@ export async function emitirNFe(invoiceId: string, companyId: string): Promise<E
       dataEmissao: invoice.issueDate,
       dataSaida: invoice.issueDate,
       tipoOperacao: "1", // Saída
-      destino: invoice.customer?.state === emitente.endereco.uf ? "1" : "2",
+      destino: invoice.customer?.addressState === emitente.endereco.uf ? "1" : "2",
       tipoImpressao: "1", // DANFE normal
       finalidade: "1", // Normal
-      consumidorFinal: invoice.customer?.customerType === "CONSUMER" ? "1" : "0",
+      consumidorFinal: invoice.customer?.type === "PERSON" ? "1" : "0",
       presencaComprador: "1", // Presencial
       emitente: {
         cnpj: emitente.cnpj,
@@ -181,18 +185,18 @@ export async function emitirNFe(invoiceId: string, companyId: string): Promise<E
       },
       destinatario: {
         cpfCnpj: invoice.customer?.cnpj || invoice.customer?.cpf || "",
-        razaoSocial: invoice.customer?.companyName || invoice.customer?.name || "",
+        razaoSocial: invoice.customer?.companyName || "",
         ie: invoice.customer?.stateRegistration || undefined,
         email: invoice.customer?.email || undefined,
         endereco: {
-          logradouro: invoice.customer?.address || "",
+          logradouro: invoice.customer?.addressStreet || "",
           numero: invoice.customer?.addressNumber || "S/N",
           complemento: invoice.customer?.addressComplement || undefined,
-          bairro: invoice.customer?.neighborhood || "",
-          codigoMunicipio: invoice.customer?.cityCode || "",
-          municipio: invoice.customer?.city || "",
-          uf: invoice.customer?.state || "",
-          cep: invoice.customer?.zipCode || "",
+          bairro: invoice.customer?.addressNeighborhood || "",
+          codigoMunicipio: "", // TODO: Adicionar campo cityCode ao Customer
+          municipio: invoice.customer?.addressCity || "",
+          uf: invoice.customer?.addressState || "",
+          cep: invoice.customer?.addressZipCode || "",
         },
         indIEDest: invoice.customer?.stateRegistration ? "1" : "9",
       },

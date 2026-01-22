@@ -3,6 +3,7 @@ import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { emitEvent } from "../services/events";
+import { emitirNFe, cancelarNFe, emitirCartaCorrecao } from "../services/sefaz";
 
 export const billingRouter = createTRPCRouter({
   // Listar notas fiscais de saída
@@ -237,7 +238,8 @@ export const billingRouter = createTRPCRouter({
       return invoice;
     }),
 
-  // Autorizar NFe (simular transmissão SEFAZ)
+  // Autorizar NFe (transmissão SEFAZ via serviço)
+  // @see VIO-566 - Emissão de NF-e
   authorize: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
@@ -254,17 +256,24 @@ export const billingRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Nota já processada" });
       }
 
-      // Simular autorização (em produção, integrar com SEFAZ)
-      const protocolNumber = `${Date.now()}`;
-      const accessKey = `35${new Date().toISOString().slice(2, 10).replace(/-/g, "")}${ctx.companyId?.slice(0, 14) || "00000000000000"}55001${invoice.invoiceNumber}1${protocolNumber.slice(-8)}`;
+      // Emitir NF-e via serviço SEFAZ
+      const resultado = await emitirNFe(input.id, ctx.companyId!);
+      
+      if (!resultado.sucesso) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: resultado.erro || "Erro na emissão da NF-e" 
+        });
+      }
 
       const authorizedInvoice = await ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
         data: {
           status: "AUTHORIZED",
-          accessKey,
-          protocolNumber,
+          accessKey: resultado.chaveAcesso,
+          protocolNumber: resultado.protocolo,
           authorizedAt: new Date(),
+          xmlContent: resultado.xml,
         },
       });
 
@@ -274,13 +283,14 @@ export const billingRouter = createTRPCRouter({
       }, {
         invoiceId: authorizedInvoice.id,
         invoiceNumber: authorizedInvoice.invoiceNumber,
-        accessKey,
+        accessKey: resultado.chaveAcesso,
       });
 
       return authorizedInvoice;
     }),
 
-  // Cancelar NFe
+  // Cancelar NFe (via serviço SEFAZ)
+  // @see VIO-566 - Emissão de NF-e
   cancel: tenantProcedure
     .input(z.object({
       id: z.string(),
@@ -307,6 +317,17 @@ export const billingRouter = createTRPCRouter({
         }
       }
 
+      // Cancelar via serviço SEFAZ (se nota autorizada)
+      if (invoice.status === "AUTHORIZED" && invoice.accessKey) {
+        const resultado = await cancelarNFe(input.id, ctx.companyId!, input.reason);
+        if (!resultado.sucesso) {
+          throw new TRPCError({ 
+            code: "BAD_REQUEST", 
+            message: resultado.erro || "Erro no cancelamento da NF-e" 
+          });
+        }
+      }
+
       const cancelledInvoice = await ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
         data: {
@@ -319,7 +340,8 @@ export const billingRouter = createTRPCRouter({
       return cancelledInvoice;
     }),
 
-  // Carta de correção
+  // Carta de correção (via serviço SEFAZ)
+  // @see VIO-566 - Emissão de NF-e
   correctionLetter: tenantProcedure
     .input(z.object({
       id: z.string(),
@@ -340,6 +362,15 @@ export const billingRouter = createTRPCRouter({
 
       // Incrementar sequência de correção
       const correctionSeq = (invoice.correctionSeq || 0) + 1;
+
+      // Emitir CC-e via serviço SEFAZ
+      const resultado = await emitirCartaCorrecao(input.id, ctx.companyId!, input.correction, correctionSeq);
+      if (!resultado.sucesso) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: resultado.erro || "Erro na carta de correção" 
+        });
+      }
 
       const correctedInvoice = await ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
