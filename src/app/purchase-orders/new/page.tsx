@@ -168,15 +168,15 @@ export default function NewPurchaseOrderPage() {
           {/* Dados do Pedido */}
           <div className="lg:col-span-2 space-y-6">
             {/* Fornecedor */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-4">
                 Fornecedor
               </h2>
               <div className="relative">
                 <label htmlFor="supplier-search" className="sr-only">
                   Buscar fornecedor
                 </label>
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                 <input
                   id="supplier-search"
                   type="text"
@@ -186,11 +186,11 @@ export default function NewPurchaseOrderPage() {
                     setSelectedSupplier(null);
                   }}
                   placeholder="Buscar fornecedor..."
-                  className="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                  className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   aria-label="Buscar fornecedor"
                 />
                 {suppliersData?.suppliers && supplierSearch && !selectedSupplier && (
-                  <div className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-1 bg-theme-input border border-theme rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {suppliersData.suppliers.map((supplier) => (
                       <button
                         key={supplier.id}
@@ -203,10 +203,10 @@ export default function NewPurchaseOrderPage() {
                           });
                           setSupplierSearch("");
                         }}
-                        className="w-full px-4 py-2 text-left hover:bg-zinc-700"
+                        className="w-full px-4 py-2 text-left hover:bg-theme-hover"
                       >
-                        <div className="font-medium text-white">{supplier.companyName}</div>
-                        <div className="text-sm text-zinc-500">
+                        <div className="font-medium text-theme">{supplier.companyName}</div>
+                        <div className="text-sm text-theme-muted">
                           Código: {supplier.code}
                         </div>
                       </button>
@@ -217,9 +217,9 @@ export default function NewPurchaseOrderPage() {
             </div>
 
             {/* Itens */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium text-white">Itens</h2>
+                <h2 className="text-lg font-medium text-theme">Itens</h2>
                 <button
                   type="button"
                   onClick={() => setShowMaterialSearch(true)}
@@ -231,34 +231,34 @@ export default function NewPurchaseOrderPage() {
               </div>
 
               {showMaterialSearch && (
-                <div className="mb-4 p-4 bg-zinc-800 rounded-lg">
+                <div className="mb-4 p-4 bg-theme-secondary rounded-lg">
                   <div className="relative">
                     <label htmlFor="material-search" className="sr-only">
                       Buscar material
                     </label>
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                     <input
                       id="material-search"
                       type="text"
                       value={materialSearch}
                       onChange={(e) => setMaterialSearch(e.target.value)}
                       placeholder="Buscar material..."
-                      className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                      className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                       autoFocus
                       aria-label="Buscar material"
                     />
                   </div>
                   {materialsData?.materials && materialSearch && (
-                    <div className="mt-2 border border-zinc-700 rounded-lg max-h-40 overflow-y-auto">
+                    <div className="mt-2 border border-theme rounded-lg max-h-40 overflow-y-auto">
                       {materialsData.materials.map((material) => (
                         <button
                           key={material.id}
                           type="button"
                           onClick={() => handleAddItem(material)}
-                          className="w-full px-4 py-2 text-left hover:bg-zinc-700"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover"
                         >
-                          <div className="font-medium text-white">{material.description}</div>
-                          <div className="text-sm text-zinc-500">
+                          <div className="font-medium text-theme">{material.description}</div>
+                          <div className="text-sm text-theme-muted">
                             Código: {material.code} | Último preço:{" "}
                             {formatCurrency(material.lastPurchasePrice ?? 0)}
                           </div>
@@ -272,7 +272,7 @@ export default function NewPurchaseOrderPage() {
                       setShowMaterialSearch(false);
                       setMaterialSearch("");
                     }}
-                    className="mt-2 text-sm text-zinc-500 hover:text-zinc-300"
+                    className="mt-2 text-sm text-theme-muted hover:text-theme-secondary"
                   >
                     Cancelar
                   </button>
@@ -280,24 +280,24 @@ export default function NewPurchaseOrderPage() {
               )}
 
               {items.length === 0 ? (
-                <div className="text-center py-8 text-zinc-500">
+                <div className="text-center py-8 text-theme-muted">
                   Nenhum item adicionado
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-zinc-800">
-                        <th className="text-left py-2 text-sm font-medium text-zinc-400">
+                      <tr className="border-b border-theme">
+                        <th className="text-left py-2 text-sm font-medium text-theme-muted">
                           Material
                         </th>
-                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-24">
+                        <th className="text-right py-2 text-sm font-medium text-theme-muted w-24">
                           Qtd
                         </th>
-                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-32">
+                        <th className="text-right py-2 text-sm font-medium text-theme-muted w-32">
                           Preço Unit.
                         </th>
-                        <th className="text-right py-2 text-sm font-medium text-zinc-400 w-32">
+                        <th className="text-right py-2 text-sm font-medium text-theme-muted w-32">
                           Total
                         </th>
                         <th className="w-10"></th>
@@ -305,12 +305,12 @@ export default function NewPurchaseOrderPage() {
                     </thead>
                     <tbody>
                       {items.map((item) => (
-                        <tr key={item.materialId} className="border-b border-zinc-800">
+                        <tr key={item.materialId} className="border-b border-theme">
                           <td className="py-3">
-                            <div className="font-medium text-sm text-white">
+                            <div className="font-medium text-sm text-theme">
                               {item.materialDescription}
                             </div>
-                            <div className="text-xs text-zinc-500">
+                            <div className="text-xs text-theme-muted">
                               Código: {item.materialCode}
                             </div>
                           </td>
@@ -325,7 +325,7 @@ export default function NewPurchaseOrderPage() {
                                   parseFloat(e.target.value) || 0
                                 )
                               }
-                              className="w-full text-right px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white"
+                              className="w-full text-right px-2 py-1 bg-theme-input border border-theme-input rounded text-theme"
                               min="0.01"
                               step="0.01"
                               aria-label={`Quantidade de ${item.materialDescription}`}
@@ -342,13 +342,13 @@ export default function NewPurchaseOrderPage() {
                                   parseFloat(e.target.value) || 0
                                 )
                               }
-                              className="w-full text-right px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white"
+                              className="w-full text-right px-2 py-1 bg-theme-input border border-theme-input rounded text-theme"
                               min="0"
                               step="0.01"
                               aria-label={`Preço unitário de ${item.materialDescription}`}
                             />
                           </td>
-                          <td className="py-3 text-right text-sm font-medium text-white">
+                          <td className="py-3 text-right text-sm font-medium text-theme">
                             {formatCurrency(item.quantity * item.unitPrice)}
                           </td>
                           <td className="py-3">
@@ -365,8 +365,8 @@ export default function NewPurchaseOrderPage() {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr className="border-t-2 border-zinc-700">
-                        <td colSpan={3} className="py-3 text-right font-medium text-white">
+                      <tr className="border-t-2 border-theme">
+                        <td colSpan={3} className="py-3 text-right font-medium text-theme">
                           Total:
                         </td>
                         <td className="py-3 text-right text-lg font-bold text-teal-400">
@@ -384,15 +384,15 @@ export default function NewPurchaseOrderPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Condições */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-4">
                 Condições
               </h2>
               <div className="space-y-4">
                 <div>
                   <label
                     htmlFor="delivery-date"
-                    className="block text-sm font-medium text-zinc-300 mb-1"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
                   >
                     Previsão de Entrega
                   </label>
@@ -401,13 +401,13 @@ export default function NewPurchaseOrderPage() {
                     type="date"
                     value={expectedDeliveryDate}
                     onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="payment-terms"
-                    className="block text-sm font-medium text-zinc-300 mb-1"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
                   >
                     Condição de Pagamento
                   </label>
@@ -417,13 +417,13 @@ export default function NewPurchaseOrderPage() {
                     value={paymentTerms}
                     onChange={(e) => setPaymentTerms(e.target.value)}
                     placeholder="Ex: 30/60/90 dias"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="delivery-terms"
-                    className="block text-sm font-medium text-zinc-300 mb-1"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
                   >
                     Condição de Entrega
                   </label>
@@ -433,13 +433,13 @@ export default function NewPurchaseOrderPage() {
                     value={deliveryTerms}
                     onChange={(e) => setDeliveryTerms(e.target.value)}
                     placeholder="Ex: CIF, FOB"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="notes"
-                    className="block text-sm font-medium text-zinc-300 mb-1"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
                   >
                     Observações
                   </label>
@@ -448,14 +448,14 @@ export default function NewPurchaseOrderPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Ações */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <button
                 type="submit"
                 disabled={createMutation.isPending || items.length === 0}

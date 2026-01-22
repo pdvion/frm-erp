@@ -154,8 +154,8 @@ export default function NewQuotePage() {
           {/* Left Column - Quote Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Supplier Selection */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-4">
                 Fornecedor
               </h2>
                 <SelectWithAdd
@@ -178,9 +178,9 @@ export default function NewQuotePage() {
               </div>
 
             {/* Items */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium text-white">
+                <h2 className="text-lg font-medium text-theme">
                   Itens da Cotação
                 </h2>
                 <div className="relative">
@@ -194,23 +194,23 @@ export default function NewQuotePage() {
                   </button>
 
                   {showMaterialSearch && (
-                    <div className="absolute right-0 top-full mt-2 w-96 bg-zinc-800 rounded-lg shadow-lg border border-zinc-700 z-10">
-                      <div className="p-3 border-b border-zinc-700">
+                    <div className="absolute right-0 top-full mt-2 w-96 bg-theme-input rounded-lg shadow-lg border border-theme z-10">
+                      <div className="p-3 border-b border-theme">
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
                           <input
                             type="text"
                             placeholder="Buscar material..."
                             value={materialSearch}
                             onChange={(e) => setMaterialSearch(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500"
+                            className="w-full pl-9 pr-3 py-2 bg-theme-card border border-theme rounded-lg text-sm text-theme placeholder-theme-muted"
                             autoFocus
                           />
                         </div>
                       </div>
                       <div className="max-h-64 overflow-y-auto">
                         {materials?.materials.length === 0 ? (
-                          <div className="p-4 text-center text-zinc-500 text-sm">
+                          <div className="p-4 text-center text-theme-muted text-sm">
                             {materialSearch.length < 2
                               ? "Digite pelo menos 2 caracteres"
                               : "Nenhum material encontrado"}
@@ -221,14 +221,14 @@ export default function NewQuotePage() {
                               key={material.id}
                               type="button"
                               onClick={() => handleAddMaterial(material)}
-                              className="w-full px-4 py-3 text-left hover:bg-zinc-700 flex items-center gap-3 border-b border-zinc-700 last:border-0"
+                              className="w-full px-4 py-3 text-left hover:bg-theme-hover flex items-center gap-3 border-b border-theme last:border-0"
                             >
-                              <Package className="w-5 h-5 text-zinc-500" />
+                              <Package className="w-5 h-5 text-theme-muted" />
                               <div>
-                                <div className="font-medium text-white">
+                                <div className="font-medium text-theme">
                                   {material.code} - {material.description}
                                 </div>
-                                <div className="text-sm text-zinc-500">
+                                <div className="text-sm text-theme-muted">
                                   Unidade: {material.unit}
                                 </div>
                               </div>
@@ -242,8 +242,8 @@ export default function NewQuotePage() {
               </div>
 
               {items.length === 0 ? (
-                <div className="text-center py-8 text-zinc-500">
-                  <Package className="w-12 h-12 mx-auto mb-3 text-zinc-600" />
+                <div className="text-center py-8 text-theme-muted">
+                  <Package className="w-12 h-12 mx-auto mb-3 text-theme-muted" />
                   <p>Nenhum item adicionado</p>
                   <p className="text-sm">
                     Clique em &quot;Adicionar Item&quot; para começar
@@ -251,32 +251,32 @@ export default function NewQuotePage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-zinc-800">
-                    <thead className="bg-zinc-800/50">
+                  <table className="min-w-full divide-y divide-theme-table">
+                    <thead className="bg-theme-table-header">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                           Material
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase w-24">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase w-24">
                           Qtd
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase w-32">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase w-32">
                           Preço Unit.
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase w-32">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase w-32">
                           Total
                         </th>
                         <th className="px-4 py-3 w-12"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800">
+                    <tbody className="divide-y divide-theme-table">
                       {items.map((item, index) => (
                         <tr key={item.materialId}>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-white">
+                            <div className="font-medium text-theme">
                               {item.materialCode} - {item.materialDescription}
                             </div>
-                            <div className="text-sm text-zinc-500">
+                            <div className="text-sm text-theme-muted">
                               {item.unit}
                             </div>
                           </td>
@@ -293,7 +293,7 @@ export default function NewQuotePage() {
                                   parseFloat(e.target.value) || 0
                                 )
                               }
-                              className="w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-white"
+                              className="w-full px-2 py-1 bg-theme-input border border-theme-input rounded text-sm text-theme"
                             />
                           </td>
                           <td className="px-4 py-3">
@@ -309,10 +309,10 @@ export default function NewQuotePage() {
                                   parseFloat(e.target.value) || 0
                                 )
                               }
-                              className="w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-white"
+                              className="w-full px-2 py-1 bg-theme-input border border-theme-input rounded text-sm text-theme"
                             />
                           </td>
-                          <td className="px-4 py-3 text-sm font-medium text-white">
+                          <td className="px-4 py-3 text-sm font-medium text-theme">
                             {formatCurrency(item.quantity * item.unitPrice)}
                           </td>
                           <td className="px-4 py-3">
@@ -327,15 +327,15 @@ export default function NewQuotePage() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-zinc-800/50">
+                    <tfoot className="bg-theme-table-header">
                       <tr>
                         <td
                           colSpan={3}
-                          className="px-4 py-3 text-right font-medium text-white"
+                          className="px-4 py-3 text-right font-medium text-theme"
                         >
                           Total:
                         </td>
-                        <td className="px-4 py-3 font-bold text-white">
+                        <td className="px-4 py-3 font-bold text-theme">
                           {formatCurrency(calculateTotal())}
                         </td>
                         <td></td>
@@ -349,26 +349,26 @@ export default function NewQuotePage() {
 
           {/* Right Column - Additional Info */}
           <div className="space-y-6">
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6">
-              <h2 className="text-lg font-medium text-white mb-4">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-4">
                 Informações Adicionais
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Válida até
                   </label>
                   <input
                     type="date"
                     value={validUntil}
                     onChange={(e) => setValidUntil(e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Condições de Pagamento
                   </label>
                   <input
@@ -376,12 +376,12 @@ export default function NewQuotePage() {
                     value={paymentTerms}
                     onChange={(e) => setPaymentTerms(e.target.value)}
                     placeholder="Ex: 30/60/90 dias"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Condições de Entrega
                   </label>
                   <input
@@ -389,19 +389,19 @@ export default function NewQuotePage() {
                     value={deliveryTerms}
                     onChange={(e) => setDeliveryTerms(e.target.value)}
                     placeholder="Ex: CIF, FOB"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-zinc-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Observações
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -447,7 +447,7 @@ export default function NewQuotePage() {
               </button>
               <Link
                 href="/quotes"
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 font-medium"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover font-medium"
               >
                 Cancelar
               </Link>

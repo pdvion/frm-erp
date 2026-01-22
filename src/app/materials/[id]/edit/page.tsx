@@ -117,15 +117,15 @@ export default function EditMaterialPage() {
     }));
   };
 
-  const inputClass = "w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
-  const labelClass = "block text-sm font-medium text-zinc-300 mb-1";
+  const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
+  const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex items-center gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-zinc-400">Carregando material...</span>
+          <span className="text-theme-secondary">Carregando material...</span>
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ export default function EditMaterialPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-white mb-2">Material não encontrado</h1>
+          <h1 className="text-xl font-bold text-theme mb-2">Material não encontrado</h1>
           <Link href="/materials" className="text-blue-400 hover:underline">
             Voltar para listagem
           </Link>
@@ -154,7 +154,7 @@ export default function EditMaterialPage() {
       />
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+      <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
         {error && (
           <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
             {error}
@@ -169,7 +169,7 @@ export default function EditMaterialPage() {
               type="number"
               value={formData.code}
               disabled
-              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-500 cursor-not-allowed"
+              className="w-full px-3 py-2 bg-theme-secondary border border-theme rounded-lg text-theme-muted cursor-not-allowed"
             />
           </div>
 
@@ -323,9 +323,9 @@ export default function EditMaterialPage() {
               name="requiresQualityCheck"
               checked={formData.requiresQualityCheck}
               onChange={handleChange}
-              className="w-4 h-4 text-blue-600 bg-zinc-900 border-zinc-700 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500"
             />
-            <label htmlFor="requiresQualityCheck" className="text-sm font-medium text-zinc-300">
+            <label htmlFor="requiresQualityCheck" className="text-sm font-medium text-theme-secondary">
               Requer inspeção de qualidade
             </label>
           </div>
@@ -338,19 +338,19 @@ export default function EditMaterialPage() {
               name="isShared"
               checked={formData.isShared}
               onChange={handleChange}
-              className="w-4 h-4 text-blue-600 bg-zinc-900 border-zinc-700 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500"
             />
-            <label htmlFor="isShared" className="text-sm font-medium text-zinc-300">
+            <label htmlFor="isShared" className="text-sm font-medium text-theme-secondary">
               Compartilhar com outras empresas
             </label>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-zinc-800">
+        <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-theme">
           <Link
             href="/materials"
-            className="flex items-center gap-2 px-4 py-2 border border-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
           >
             <X className="w-4 h-4" />
             Cancelar
