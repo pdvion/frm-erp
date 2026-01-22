@@ -1,5 +1,8 @@
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { prisma } from "@/lib/prisma";
+import { createModuleLogger } from "@/lib/logger";
+
+const dashboardLogger = createModuleLogger("dashboard");
 
 export const dashboardRouter = createTRPCRouter({
   // KPIs principais do dashboard
@@ -341,7 +344,10 @@ export const dashboardRouter = createTRPCRouter({
       try {
         return await queryFn();
       } catch (error) {
-        console.error("Dashboard chart query error:", error);
+        dashboardLogger.error("Chart query falhou", {
+          companyId: ctx.companyId,
+          errorMessage: error instanceof Error ? error.message : String(error),
+        });
         return [];
       }
     }

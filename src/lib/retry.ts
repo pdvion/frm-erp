@@ -1,4 +1,7 @@
 import { ExternalServiceError } from "./errors";
+import { createModuleLogger } from "./logger";
+
+const retryLogger = createModuleLogger("retry");
 
 // ============================================
 // Retry Configuration
@@ -205,7 +208,12 @@ export async function retrySefaz<T>(
     failureThreshold: 5,
     resetTimeoutMs: 300000, // 5 minutes
     onRetry: (error, attempt, delay) => {
-      console.warn(`[SEFAZ] Tentativa ${attempt} falhou. Retentando em ${delay}ms...`, error);
+      retryLogger.warn(`SEFAZ tentativa ${attempt} falhou. Retentando em ${delay}ms`, {
+        service: "sefaz",
+        attempt,
+        delayMs: delay,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
       onRetry?.(error, attempt);
     },
   });
@@ -220,7 +228,12 @@ export async function retryEmail<T>(
     initialDelayMs: 1000,
     maxDelayMs: 5000,
     onRetry: (error, attempt, delay) => {
-      console.warn(`[EMAIL] Tentativa ${attempt} falhou. Retentando em ${delay}ms...`, error);
+      retryLogger.warn(`Email tentativa ${attempt} falhou. Retentando em ${delay}ms`, {
+        service: "email",
+        attempt,
+        delayMs: delay,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
       onRetry?.(error, attempt);
     },
   });
@@ -248,7 +261,12 @@ export async function retryDatabase<T>(
       return false;
     },
     onRetry: (error, attempt, delay) => {
-      console.warn(`[DATABASE] Tentativa ${attempt} falhou. Retentando em ${delay}ms...`, error);
+      retryLogger.warn(`Database tentativa ${attempt} falhou. Retentando em ${delay}ms`, {
+        service: "database",
+        attempt,
+        delayMs: delay,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
       onRetry?.(error, attempt);
     },
   });
