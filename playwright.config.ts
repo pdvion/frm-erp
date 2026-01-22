@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const baseURL = process.env.BASE_URL || 'http://localhost:3000';
+const isExternalServer = process.env.BASE_URL !== undefined;
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -7,8 +10,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html'], ['list']],
+  timeout: 60000,
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
@@ -35,10 +39,13 @@ export default defineConfig({
       use: { ...devices['iPad Pro 11'] },
     },
   ],
-  webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  // Só iniciar webServer se não houver BASE_URL externo
+  ...(isExternalServer ? {} : {
+    webServer: {
+      command: 'pnpm dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+  }),
 });

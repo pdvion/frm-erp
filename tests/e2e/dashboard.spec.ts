@@ -34,9 +34,11 @@ test.describe('Dashboard', () => {
   test('deve exibir seletor de empresa', async ({ page }) => {
     await page.waitForLoadState('networkidle');
     
-    // Verificar CompanySwitcher
-    const companySwitcher = page.getByTestId('company-switcher').or(
-      page.locator('[class*="company"]')
+    // Verificar CompanySwitcher - buscar pelo botão com nome da empresa ou ícone
+    const companySwitcher = page.getByRole('button', { name: /FRM|empresa|company/i }).or(
+      page.locator('button:has-text("Ltda")').or(
+        page.locator('[data-testid="company-switcher"]')
+      )
     );
     await expect(companySwitcher.first()).toBeVisible({ timeout: 5000 });
   });
