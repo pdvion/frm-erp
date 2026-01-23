@@ -814,4 +814,239 @@ export const dashboardRouter = createTRPCRouter({
       })),
     };
   }),
+
+  // Dashboard específico do módulo Vendas
+  salesKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+
+    // Pedidos de venda
+    const salesOrdersStats = await prisma.$queryRaw<[{
+      total: bigint;
+      pending: bigint;
+      approved: bigint;
+      invoiced: bigint;
+      total_value: number;
+      month_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
+        COUNT(*) FILTER (WHERE status = 'APPROVED') as approved,
+        COUNT(*) FILTER (WHERE status = 'INVOICED') as invoiced,
+        COALESCE(SUM("totalValue"), 0)::float as total_value,
+        COALESCE(SUM("totalValue") FILTER (WHERE "createdAt" >= ${startOfMonth}), 0)::float as month_value
+      FROM sales_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // NFes emitidas no mês
+    const issuedInvoicesMonth = await prisma.$queryRaw<[{ count: bigint; total: number }]>`
+      SELECT COUNT(*) as count, COALESCE(SUM("totalValue"), 0)::float as total
+      FROM issued_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "issueDate" >= ${startOfMonth}
+    `;
+
+    // Top 5 clientes por valor
+    const topCustomers = await prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
+      SELECT 
+        c."tradeName" as name,
+        COALESCE(SUM(so."totalValue"), 0)::float as total,
+        COUNT(*) as count
+      FROM sales_orders so
+      JOIN customers c ON c.id = so."customerId"
+      WHERE so."companyId" = ${ctx.companyId}::uuid
+      AND so."createdAt" >= ${thirtyDaysAgo}
+      GROUP BY c.id, c."tradeName"
+      ORDER BY total DESC
+      LIMIT 5
+    `;
+
+    // Vendas por categoria (últimos 30 dias)
+    const salesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+      SELECT 
+        COALESCE(c.name, 'Sem Categoria') as name,
+        COALESCE(SUM(soi."totalValue"), 0)::float as value
+      FROM sales_order_items soi
+      JOIN sales_orders so ON so.id = soi."salesOrderId"
+      JOIN materials m ON m.id = soi."materialId"
+      LEFT JOIN categories c ON c.id = m."categoryId"
+      WHERE so."companyId" = ${ctx.companyId}::uuid
+      AND so."createdAt" >= ${thirtyDaysAgo}
+      GROUP BY c.name
+      ORDER BY value DESC
+      LIMIT 6
+    `;
+
+    // Evolução de vendas (últimos 6 meses)
+    const salesEvolution = await prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
+        COALESCE(SUM("totalValue"), 0)::float as total,
+        COUNT(*) as count
+      FROM sales_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${sixMonthsAgo}
+      GROUP BY DATE_TRUNC('month', "createdAt")
+      ORDER BY DATE_TRUNC('month', "createdAt")
+    `;
+
+    // Contas a receber do mês
+    const receivablesMonth = await prisma.$queryRaw<[{ pending: number; received: number }]>`
+      SELECT 
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING'), 0)::float as pending,
+        COALESCE(SUM("paidValue") FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}), 0)::float as received
+      FROM accounts_receivable
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "dueDate" >= ${startOfMonth}
+    `;
+
+    return {
+      orders: {
+        total: Number(salesOrdersStats[0]?.total || 0),
+        pending: Number(salesOrdersStats[0]?.pending || 0),
+        approved: Number(salesOrdersStats[0]?.approved || 0),
+        invoiced: Number(salesOrdersStats[0]?.invoiced || 0),
+        totalValue: Number(salesOrdersStats[0]?.total_value || 0),
+        monthValue: Number(salesOrdersStats[0]?.month_value || 0),
+      },
+      invoices: {
+        thisMonth: Number(issuedInvoicesMonth[0]?.count || 0),
+        totalValue: Number(issuedInvoicesMonth[0]?.total || 0),
+      },
+      receivables: {
+        pending: Number(receivablesMonth[0]?.pending || 0),
+        received: Number(receivablesMonth[0]?.received || 0),
+      },
+      topCustomers: topCustomers.map(c => ({
+        name: c.name,
+        total: Number(c.total),
+        count: Number(c.count),
+      })),
+      salesByCategory: salesByCategory.map(s => ({
+        name: s.name,
+        value: Number(s.value),
+      })),
+      salesEvolution: salesEvolution.map(s => ({
+        name: s.month,
+        Valor: Number(s.total),
+        Quantidade: Number(s.count),
+      })),
+    };
+  }),
+
+  // Dashboard específico do módulo Produção
+  productionKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+
+    // Ordens de produção
+    const productionOrdersStats = await prisma.$queryRaw<[{
+      total: bigint;
+      pending: bigint;
+      in_progress: bigint;
+      completed: bigint;
+      delayed: bigint;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
+        COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
+        COUNT(*) FILTER (WHERE status = 'COMPLETED') as completed,
+        COUNT(*) FILTER (WHERE status IN ('PENDING', 'IN_PROGRESS') AND "plannedEndDate" < CURRENT_DATE) as delayed
+      FROM production_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Produção do mês
+    const monthProduction = await prisma.$queryRaw<[{ count: bigint; quantity: number }]>`
+      SELECT 
+        COUNT(*) as count,
+        COALESCE(SUM("producedQuantity"), 0)::float as quantity
+      FROM production_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status = 'COMPLETED'
+      AND "actualEndDate" >= ${startOfMonth}
+    `;
+
+    // OEE médio (últimos 30 dias)
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const oeeStats = await prisma.$queryRaw<[{ avg_oee: number; avg_availability: number; avg_performance: number; avg_quality: number }]>`
+      SELECT 
+        COALESCE(AVG(oee), 0)::float as avg_oee,
+        COALESCE(AVG(availability), 0)::float as avg_availability,
+        COALESCE(AVG(performance), 0)::float as avg_performance,
+        COALESCE(AVG(quality), 0)::float as avg_quality
+      FROM oee_records
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND date >= ${thirtyDaysAgo}
+    `;
+
+    // Produção por produto (top 5)
+    const productionByProduct = await prisma.$queryRaw<Array<{ name: string; quantity: number }>>`
+      SELECT 
+        m.name,
+        COALESCE(SUM(po."producedQuantity"), 0)::float as quantity
+      FROM production_orders po
+      JOIN materials m ON m.id = po."materialId"
+      WHERE po."companyId" = ${ctx.companyId}::uuid
+      AND po.status = 'COMPLETED'
+      AND po."actualEndDate" >= ${startOfMonth}
+      GROUP BY m.id, m.name
+      ORDER BY quantity DESC
+      LIMIT 5
+    `;
+
+    // Evolução da produção (últimos 6 meses)
+    const productionEvolution = await prisma.$queryRaw<Array<{ month: string; quantity: number; orders: bigint }>>`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', "actualEndDate"), 'Mon') as month,
+        COALESCE(SUM("producedQuantity"), 0)::float as quantity,
+        COUNT(*) as orders
+      FROM production_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status = 'COMPLETED'
+      AND "actualEndDate" >= ${sixMonthsAgo}
+      GROUP BY DATE_TRUNC('month', "actualEndDate")
+      ORDER BY DATE_TRUNC('month', "actualEndDate")
+    `;
+
+    return {
+      orders: {
+        total: Number(productionOrdersStats[0]?.total || 0),
+        pending: Number(productionOrdersStats[0]?.pending || 0),
+        inProgress: Number(productionOrdersStats[0]?.in_progress || 0),
+        completed: Number(productionOrdersStats[0]?.completed || 0),
+        delayed: Number(productionOrdersStats[0]?.delayed || 0),
+      },
+      monthProduction: {
+        count: Number(monthProduction[0]?.count || 0),
+        quantity: Number(monthProduction[0]?.quantity || 0),
+      },
+      oee: {
+        average: Number(oeeStats[0]?.avg_oee || 0),
+        availability: Number(oeeStats[0]?.avg_availability || 0),
+        performance: Number(oeeStats[0]?.avg_performance || 0),
+        quality: Number(oeeStats[0]?.avg_quality || 0),
+      },
+      productionByProduct: productionByProduct.map(p => ({
+        name: p.name,
+        quantity: Number(p.quantity),
+      })),
+      productionEvolution: productionEvolution.map(p => ({
+        name: p.month,
+        Quantidade: Number(p.quantity),
+        Ordens: Number(p.orders),
+      })),
+    };
+  }),
 });
