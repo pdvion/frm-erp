@@ -18,7 +18,19 @@ function getActiveCompanyId(): string | null {
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60, // 1 minuto - dados considerados frescos
+            gcTime: 1000 * 60 * 5, // 5 minutos - tempo de cache
+            refetchOnWindowFocus: false, // Não refetch ao focar janela
+            retry: 1, // Apenas 1 retry em caso de erro
+          },
+        },
+      })
+  );
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
