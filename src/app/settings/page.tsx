@@ -10,6 +10,7 @@ import {
   Layout,
   Shield,
   Wallet,
+  Bell,
 } from "lucide-react";
 
 const settingsItems = [
@@ -47,6 +48,13 @@ const settingsItems = [
     href: "/settings/landing",
     icon: Layout,
     color: "bg-pink-500",
+  },
+  {
+    title: "Régua de Cobrança",
+    description: "Configurar etapas automáticas de cobrança",
+    href: "/settings/collection-rules",
+    icon: Bell,
+    color: "bg-orange-500",
   },
 ];
 
