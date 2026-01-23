@@ -13,7 +13,11 @@ import {
   Trash2,
   Eye,
   Building2,
-  X
+  X,
+  HardHat,
+  FileText,
+  Barcode,
+  Factory,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
@@ -175,6 +179,30 @@ function MaterialsContent() {
                         <td className="px-4 py-3">
                           <div className="text-sm text-theme max-w-xs truncate">
                             {material.description}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            {material.isEpi && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-orange-100 text-orange-700" title="EPI">
+                                <HardHat className="w-3 h-3" />
+                                EPI
+                              </span>
+                            )}
+                            {material.requiresQualityCheck && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-100 text-purple-700" title="Requer IQF">
+                                <FileText className="w-3 h-3" />
+                                IQF
+                              </span>
+                            )}
+                            {material.barcode && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-700" title={material.barcode}>
+                                <Barcode className="w-3 h-3" />
+                              </span>
+                            )}
+                            {material.manufacturer && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-100 text-blue-700" title={material.manufacturer}>
+                                <Factory className="w-3 h-3" />
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">

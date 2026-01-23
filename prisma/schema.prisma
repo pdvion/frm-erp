@@ -395,16 +395,55 @@ model Material {
   description         String         // descMaterial
   categoryId          String?
   category            Category?      @relation(fields: [categoryId], references: [id])
+  subCategoryId       String?        @map("sub_category_id")
   unit                String         @default("UN") // unidadeEstoque
+  purchaseUnit        String?        @map("purchase_unit") // unidade de compra
+  unitConversionFactor Float         @default(1) @map("unit_conversion_factor")
   location            String?        // local de armazenamento
+  stockLocationId     String?        @map("stock_location_id")
   minQuantity         Float          @default(0) // qdeMinima
   maxQuantity         Float?         // qdeMaxima
+  calculatedMinQuantity Float        @default(0) @map("calculated_min_quantity")
+  minQuantityCalcType String         @default("MANUAL") @map("min_quantity_calc_type")
+  minQuantityAlarmDate DateTime?     @map("min_quantity_alarm_date")
+  minQuantityCalcDate DateTime?      @map("min_quantity_calc_date")
+  reservedQuantity    Float          @default(0) @map("reserved_quantity")
   monthlyAverage      Float          @default(0) // qdeMediaMensal
+  peak12Months        Float          @default(0) @map("peak_12_months")
+  maxMonthlyConsumption Float        @default(0) @map("max_monthly_consumption")
+  adjustMaxConsumptionManual Boolean @default(false) @map("adjust_max_consumption_manual")
+  avgDeliveryDays     Float          @default(0) @map("avg_delivery_days")
   lastPurchasePrice   Float?         // vlrUnitUltCompra
+  lastPurchasePriceAvg Float         @default(0) @map("last_purchase_unit_price_avg")
   lastPurchaseDate    DateTime?      // dtUltCompra
+  lastPurchaseQuantity Float         @default(0) @map("last_purchase_quantity")
+  lastSupplierId      String?        @map("last_supplier_id")
   ncm                 String?        // código NCM
+  ipiRate             Float          @default(0) @map("ipi_rate")
+  icmsRate            Float          @default(0) @map("icms_rate")
   status              MaterialStatus @default(ACTIVE)
+  isEpi               Boolean        @default(false) @map("is_epi")
+  isOfficeSupply      Boolean        @default(false) @map("is_office_supply")
   requiresQualityCheck Boolean       @default(false) // requerIQF
+  requiresQualityInspection Boolean  @default(false) @map("requires_quality_inspection")
+  requiresMaterialCertificate Boolean @default(false) @map("requires_material_certificate")
+  requiresControlSheets Boolean      @default(false) @map("requires_control_sheets")
+  requiresReturn      Boolean        @default(false) @map("requires_return")
+  requiresFiscalEntry Boolean        @default(false) @map("requires_fiscal_entry")
+  requiredBrand       String?        @map("required_brand")
+  requiredBrandReason String?        @map("required_brand_reason")
+  writeOffCode        String?        @map("write_off_code")
+  costCenterFrm       String?        @map("cost_center_frm")
+  costCenterFnd       String?        @map("cost_center_fnd")
+  financialAccount    String?        @map("financial_account")
+  parentProductId     String?        @map("parent_product_id")
+  assetId             String?        @map("asset_id")
+  weight              Float          @default(0)
+  weightUnit          String         @default("KG") @map("weight_unit")
+  barcode             String?
+  manufacturer        String?
+  manufacturerCode    String?        @map("manufacturer_code")
+  notes               String?
   isShared            Boolean        @default(false) // Visível para outras empresas?
   companyId           String?
   company             Company?       @relation(fields: [companyId], references: [id])
