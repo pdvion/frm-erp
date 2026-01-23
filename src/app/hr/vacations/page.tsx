@@ -88,7 +88,7 @@ export default function VacationsPage() {
             </div>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Todos os Status</option>
@@ -100,7 +100,7 @@ export default function VacationsPage() {
             </select>
             <select
               value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
+              onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               {[2024, 2025, 2026, 2027].map((y) => (

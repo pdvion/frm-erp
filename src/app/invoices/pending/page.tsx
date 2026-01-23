@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
+import { formatChaveAcesso } from "@/lib/nfe-parser";
 import {
   FileText,
   ArrowLeft,
@@ -161,10 +162,6 @@ export default function PendingInvoicesPage() {
   const selectAllPending = () => {
     const pendingIds = data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).map((n) => n.id) || [];
     setSelectedNfes(pendingIds);
-  };
-
-  const formatChaveAcesso = (chave: string) => {
-    return chave.replace(/(\d{4})/g, "$1 ").trim();
   };
 
   const pendingCount = data?.nfes?.filter((n) => n.situacao === "PENDENTE").length || 0;

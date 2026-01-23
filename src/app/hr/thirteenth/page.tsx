@@ -130,7 +130,7 @@ export default function ThirteenthPage() {
             </div>
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
             >
               <option value="ALL">Todos os Tipos</option>
@@ -141,7 +141,7 @@ export default function ThirteenthPage() {
             </select>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
             >
               <option value="ALL">Todos os Status</option>
@@ -152,7 +152,7 @@ export default function ThirteenthPage() {
             </select>
             <select
               value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
+              onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
             >
               {[2024, 2025, 2026, 2027].map((y) => (

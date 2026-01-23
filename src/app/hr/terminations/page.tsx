@@ -84,7 +84,7 @@ export default function TerminationsPage() {
             </div>
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
             >
               <option value="ALL">Todos os Tipos</option>
@@ -98,7 +98,7 @@ export default function TerminationsPage() {
             </select>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
             >
               <option value="ALL">Todos os Status</option>
