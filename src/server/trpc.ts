@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getTenantContext, hasPermission, type SystemModule, type PermissionLevel } from "./context";
+import { checkRateLimit, type RateLimitType } from "@/lib/rate-limit";
+import { RateLimitError } from "@/lib/errors";
 
 async function getSupabaseUser() {
   try {
@@ -169,3 +171,36 @@ export function tenantFilter(companyId: string | null, includeShared = true) {
   
   return { companyId };
 }
+
+// Middleware de rate limiting
+const rateLimitMiddleware = (type: RateLimitType) => {
+  return t.middleware(async ({ ctx, next }) => {
+    const identifier = ctx.tenant.userId || ctx.headers.get("x-forwarded-for") || "anonymous";
+    
+    try {
+      checkRateLimit(identifier, type);
+    } catch (error) {
+      if (error instanceof RateLimitError) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: error.message,
+        });
+      }
+      throw error;
+    }
+    
+    return next();
+  });
+};
+
+// Procedure com rate limiting para API geral
+export const rateLimitedProcedure = tenantProcedure.use(rateLimitMiddleware("API"));
+
+// Procedure com rate limiting para operações sensíveis
+export const sensitiveProcedure = tenantProcedure.use(rateLimitMiddleware("SENSITIVE"));
+
+// Procedure com rate limiting para uploads
+export const uploadProcedure = tenantProcedure.use(rateLimitMiddleware("UPLOAD"));
+
+// Procedure com rate limiting para relatórios
+export const reportsProcedure = tenantProcedure.use(rateLimitMiddleware("REPORTS"));
