@@ -58,16 +58,16 @@ export function CompanySwitcher() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors min-w-[200px]"
+        className="flex items-center gap-2 px-2 md:px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors w-full md:min-w-[200px] max-w-[200px] md:max-w-none"
       >
-        <Building2 className="w-5 h-5 text-gray-500" />
-        <span className="flex-1 text-left text-sm font-medium text-gray-700 truncate">
-          {currentCompany?.name ?? "Selecione uma empresa"}
+        <Building2 className="w-5 h-5 text-gray-500 flex-shrink-0" />
+        <span className="flex-1 text-left text-sm font-medium text-gray-700 truncate hidden sm:block">
+          {currentCompany?.name ?? "Selecione"}
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
