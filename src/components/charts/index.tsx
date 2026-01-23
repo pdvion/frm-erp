@@ -342,6 +342,8 @@ export const KpiCard = memo(function KpiCard({
   className,
 }: KpiCardProps) {
   const isPositive = change !== undefined && change >= 0;
+  const sparklineRef = useRef<HTMLDivElement>(null);
+  const isSparklineReady = useContainerReady(sparklineRef);
 
   return (
     <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
@@ -359,18 +361,20 @@ export const KpiCard = memo(function KpiCard({
         {icon && <div className="text-gray-400">{icon}</div>}
       </div>
       {sparklineData && sparklineData.length > 0 && (
-        <div className="mt-3 h-10">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={sparklineData.map((v, i) => ({ value: v, index: i }))}>
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke={isPositive ? "#10B981" : "#EF4444"}
-                fill={isPositive ? "#10B981" : "#EF4444"}
-                fillOpacity={0.2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div ref={sparklineRef} className="mt-3 h-10" style={{ minWidth: 100, minHeight: 40 }}>
+          {isSparklineReady && (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineData.map((v, i) => ({ value: v, index: i }))}>
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={isPositive ? "#10B981" : "#EF4444"}
+                  fill={isPositive ? "#10B981" : "#EF4444"}
+                  fillOpacity={0.2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       )}
     </div>
