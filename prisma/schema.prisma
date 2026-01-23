@@ -2507,6 +2507,12 @@ model Employee {
   bankAccount         String?
   bankAccountType     String?
   pixKey              String?
+  bankCode            String?        @map("bank_code")
+  bankAgency          String?        @map("bank_agency")
+  bankAccountDigit    String?        @map("bank_account_digit")
+  insalubrityDegree   String?        @map("insalubrity_degree")
+  hasDangerousness    Boolean        @default(false) @map("has_dangerousness")
+  dependentsCount     Int            @default(0) @map("dependents_count")
   pis                 String?
   ctps                String?
   voterRegistration   String?
@@ -2568,6 +2574,8 @@ model TimesheetDay {
   scheduledHours Float     @default(8)
   workedHours    Float     @default(0)
   overtimeHours  Float     @default(0)
+  overtime50     Float     @default(0) @map("overtime_50")
+  overtime100    Float     @default(0) @map("overtime_100")
   nightHours     Float     @default(0)
   absenceHours   Float     @default(0)
   isHoliday      Boolean   @default(false)

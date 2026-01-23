@@ -54,6 +54,7 @@ import { ddaRouter } from "./dda";
 import { savedReportsRouter } from "./savedReports";
 import { collectionRulesRouter } from "./collectionRules";
 import { supplierReturnsRouter } from "./supplierReturns";
+import { payrollRouter } from "./payroll";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -111,6 +112,7 @@ export const appRouter = createTRPCRouter({
   savedReports: savedReportsRouter,
   collectionRules: collectionRulesRouter,
   supplierReturns: supplierReturnsRouter,
+  payroll: payrollRouter,
 });
 
 export type AppRouter = typeof appRouter;
