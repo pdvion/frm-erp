@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   validatePassword,
   getPasswordStrengthLabel,
@@ -7,6 +7,9 @@ import {
 } from "./password";
 
 describe("Password Validation", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
   describe("DEFAULT_PASSWORD_POLICY", () => {
     it("deve ter configurações padrão corretas", () => {
       expect(DEFAULT_PASSWORD_POLICY.minLength).toBe(8);

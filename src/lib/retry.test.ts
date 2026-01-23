@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   retry,
   sleep,
@@ -7,7 +7,13 @@ import {
 } from "./retry";
 import { ExternalServiceError } from "./errors";
 
+// Contador para gerar nomes únicos de circuit breaker
+let circuitCounter = 0;
+
 describe("Retry Utilities", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
   describe("sleep", () => {
     it("deve aguardar o tempo especificado", async () => {
       const start = Date.now();
@@ -82,9 +88,10 @@ describe("Retry Utilities", () => {
   describe("retryWithCircuitBreaker", () => {
     it("deve funcionar com operação bem-sucedida", async () => {
       const operation = vi.fn().mockResolvedValue("success");
+      circuitCounter++;
       
       const result = await retryWithCircuitBreaker(operation, {
-        circuitName: `test-${Date.now()}`,
+        circuitName: `test-circuit-${circuitCounter}`,
         maxAttempts: 1,
         failureThreshold: 5,
       });
