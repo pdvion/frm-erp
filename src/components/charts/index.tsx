@@ -308,15 +308,17 @@ interface ChartCardProps {
 
 export const ChartCard = memo(function ChartCard({ title, subtitle, children, className, actions }: ChartCardProps) {
   return (
-    <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
+    <div className={`bg-theme-card rounded-lg shadow p-4 ${className || ""}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          <h3 className="text-lg font-semibold text-theme">{title}</h3>
+          {subtitle && <p className="text-sm text-theme-muted">{subtitle}</p>}
         </div>
         {actions && <div className="flex gap-2">{actions}</div>}
       </div>
-      {children}
+      <div className="min-h-[200px] w-full">
+        {children}
+      </div>
     </div>
   );
 });
@@ -346,19 +348,19 @@ export const KpiCard = memo(function KpiCard({
   const isSparklineReady = useContainerReady(sparklineRef);
 
   return (
-    <div className={`bg-white rounded-lg shadow p-4 ${className || ""}`}>
+    <div className={`bg-theme-card rounded-lg shadow p-4 ${className || ""}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-sm text-theme-muted">{title}</p>
+          <p className="text-2xl font-bold text-theme mt-1">{value}</p>
           {change !== undefined && (
             <p className={`text-sm mt-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
               {isPositive ? "↑" : "↓"} {Math.abs(change).toFixed(1)}%
-              {changeLabel && <span className="text-gray-500 ml-1">{changeLabel}</span>}
+              {changeLabel && <span className="text-theme-muted ml-1">{changeLabel}</span>}
             </p>
           )}
         </div>
-        {icon && <div className="text-gray-400">{icon}</div>}
+        {icon && <div className="text-theme-muted">{icon}</div>}
       </div>
       {sparklineData && sparklineData.length > 0 && (
         <div ref={sparklineRef} className="mt-3 h-10" style={{ minWidth: 100, minHeight: 40 }}>
