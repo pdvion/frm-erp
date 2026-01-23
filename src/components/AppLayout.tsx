@@ -58,7 +58,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           isMobile
             ? sidebarOpen
               ? "translate-x-0"
-              : "-translate-x-full"
+              : "-translate-x-full pointer-events-none"
             : "translate-x-0"
         } fixed z-40 transition-transform duration-300`}
       >
