@@ -1181,4 +1181,211 @@ export const dashboardRouter = createTRPCRouter({
       },
     };
   }),
+
+  // Dashboard específico do módulo Fiscal
+  fiscalKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+
+    // NFes recebidas
+    const receivedInvoices = await prisma.$queryRaw<[{
+      total: bigint;
+      pending: bigint;
+      validated: bigint;
+      approved: bigint;
+      month_count: bigint;
+      month_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
+        COUNT(*) FILTER (WHERE status = 'VALIDATED') as validated,
+        COUNT(*) FILTER (WHERE status = 'APPROVED') as approved,
+        COUNT(*) FILTER (WHERE "issueDate" >= ${startOfMonth}) as month_count,
+        COALESCE(SUM("totalInvoice") FILTER (WHERE "issueDate" >= ${startOfMonth}), 0)::float as month_value
+      FROM received_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // NFes emitidas
+    const issuedInvoices = await prisma.$queryRaw<[{
+      total: bigint;
+      authorized: bigint;
+      cancelled: bigint;
+      month_count: bigint;
+      month_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'AUTHORIZED') as authorized,
+        COUNT(*) FILTER (WHERE status = 'CANCELLED') as cancelled,
+        COUNT(*) FILTER (WHERE "issueDate" >= ${startOfMonth}) as month_count,
+        COALESCE(SUM("totalValue") FILTER (WHERE "issueDate" >= ${startOfMonth}), 0)::float as month_value
+      FROM issued_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Impostos do mês (estimativa baseada em NFes)
+    const taxesMonth = await prisma.$queryRaw<[{
+      icms: number;
+      ipi: number;
+      pis: number;
+      cofins: number;
+    }]>`
+      SELECT 
+        COALESCE(SUM("icmsValue"), 0)::float as icms,
+        COALESCE(SUM("ipiValue"), 0)::float as ipi,
+        COALESCE(SUM("pisValue"), 0)::float as pis,
+        COALESCE(SUM("cofinsValue"), 0)::float as cofins
+      FROM received_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "issueDate" >= ${startOfMonth}
+    `;
+
+    // Evolução de NFes (últimos 6 meses)
+    const nfesEvolution = await prisma.$queryRaw<Array<{ month: string; received: bigint; issued: bigint }>>`
+      WITH received AS (
+        SELECT DATE_TRUNC('month', "issueDate") as month, COUNT(*) as count
+        FROM received_invoices
+        WHERE "companyId" = ${ctx.companyId}::uuid AND "issueDate" >= ${sixMonthsAgo}
+        GROUP BY DATE_TRUNC('month', "issueDate")
+      ),
+      issued AS (
+        SELECT DATE_TRUNC('month', "issueDate") as month, COUNT(*) as count
+        FROM issued_invoices
+        WHERE "companyId" = ${ctx.companyId}::uuid AND "issueDate" >= ${sixMonthsAgo}
+        GROUP BY DATE_TRUNC('month', "issueDate")
+      )
+      SELECT 
+        TO_CHAR(COALESCE(r.month, i.month), 'Mon') as month,
+        COALESCE(r.count, 0) as received,
+        COALESCE(i.count, 0) as issued
+      FROM received r
+      FULL OUTER JOIN issued i ON r.month = i.month
+      ORDER BY COALESCE(r.month, i.month)
+    `;
+
+    return {
+      received: {
+        total: Number(receivedInvoices[0]?.total || 0),
+        pending: Number(receivedInvoices[0]?.pending || 0),
+        validated: Number(receivedInvoices[0]?.validated || 0),
+        approved: Number(receivedInvoices[0]?.approved || 0),
+        monthCount: Number(receivedInvoices[0]?.month_count || 0),
+        monthValue: Number(receivedInvoices[0]?.month_value || 0),
+      },
+      issued: {
+        total: Number(issuedInvoices[0]?.total || 0),
+        authorized: Number(issuedInvoices[0]?.authorized || 0),
+        cancelled: Number(issuedInvoices[0]?.cancelled || 0),
+        monthCount: Number(issuedInvoices[0]?.month_count || 0),
+        monthValue: Number(issuedInvoices[0]?.month_value || 0),
+      },
+      taxes: {
+        icms: Number(taxesMonth[0]?.icms || 0),
+        ipi: Number(taxesMonth[0]?.ipi || 0),
+        pis: Number(taxesMonth[0]?.pis || 0),
+        cofins: Number(taxesMonth[0]?.cofins || 0),
+        total: Number((taxesMonth[0]?.icms || 0) + (taxesMonth[0]?.ipi || 0) + (taxesMonth[0]?.pis || 0) + (taxesMonth[0]?.cofins || 0)),
+      },
+      nfesEvolution: nfesEvolution.map(n => ({
+        name: n.month,
+        Recebidas: Number(n.received),
+        Emitidas: Number(n.issued),
+      })),
+    };
+  }),
+
+  // Dashboard específico do módulo Sistema
+  systemKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Usuários
+    const usersStats = await prisma.$queryRaw<[{
+      total: bigint;
+      active: bigint;
+      admins: bigint;
+    }]>`
+      SELECT 
+        COUNT(DISTINCT uc."userId") as total,
+        COUNT(DISTINCT uc."userId") FILTER (WHERE u.status = 'ACTIVE') as active,
+        COUNT(DISTINCT uc."userId") FILTER (WHERE uc.role = 'ADMIN') as admins
+      FROM user_companies uc
+      JOIN users u ON u.id = uc."userId"
+      WHERE uc."companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Logs de auditoria
+    const auditStats = await prisma.$queryRaw<[{
+      total: bigint;
+      today: bigint;
+      creates: bigint;
+      updates: bigint;
+      deletes: bigint;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE "createdAt" >= CURRENT_DATE) as today,
+        COUNT(*) FILTER (WHERE action = 'CREATE') as creates,
+        COUNT(*) FILTER (WHERE action = 'UPDATE') as updates,
+        COUNT(*) FILTER (WHERE action = 'DELETE') as deletes
+      FROM audit_logs
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${thirtyDaysAgo}
+    `;
+
+    // Logs de autenticação
+    const authStats = await prisma.$queryRaw<[{
+      logins: bigint;
+      failed: bigint;
+    }]>`
+      SELECT 
+        COUNT(*) FILTER (WHERE action = 'LOGIN' AND success = true) as logins,
+        COUNT(*) FILTER (WHERE action = 'LOGIN' AND success = false) as failed
+      FROM auth_logs
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${thirtyDaysAgo}
+    `;
+
+    // Atividade por módulo (últimos 30 dias)
+    const activityByModule = await prisma.$queryRaw<Array<{ module: string; count: bigint }>>`
+      SELECT 
+        "entityType" as module,
+        COUNT(*) as count
+      FROM audit_logs
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY "entityType"
+      ORDER BY count DESC
+      LIMIT 10
+    `;
+
+    return {
+      users: {
+        total: Number(usersStats[0]?.total || 0),
+        active: Number(usersStats[0]?.active || 0),
+        admins: Number(usersStats[0]?.admins || 0),
+      },
+      audit: {
+        total: Number(auditStats[0]?.total || 0),
+        today: Number(auditStats[0]?.today || 0),
+        creates: Number(auditStats[0]?.creates || 0),
+        updates: Number(auditStats[0]?.updates || 0),
+        deletes: Number(auditStats[0]?.deletes || 0),
+      },
+      auth: {
+        logins: Number(authStats[0]?.logins || 0),
+        failed: Number(authStats[0]?.failed || 0),
+      },
+      activityByModule: activityByModule.map(a => ({
+        name: a.module,
+        count: Number(a.count),
+      })),
+    };
+  }),
 });
