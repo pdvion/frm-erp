@@ -96,12 +96,19 @@
 
 ---
 
-## Ações Necessárias
+## Ações Realizadas
 
-1. ✅ Corrigir validação UUID
-2. ✅ Adicionar transações para operações de default
-3. ✅ Corrigir tipo genérico em reports.ts
-4. ✅ Implementar botão Sincronizar (placeholder)
-5. ✅ Implementar botão Ver Detalhes (placeholder)
-6. ⏭️ Refatorar código repetido (baixa prioridade)
-7. ⏭️ Adicionar JSDoc (baixa prioridade)
+| # | Ação | Status | Commit |
+|---|------|--------|--------|
+| 1 | Corrigir validação UUID | ✅ Corrigido | `398d243` |
+| 2 | Adicionar transações para operações de default | ✅ Corrigido | `398d243` |
+| 3 | Corrigir tipo genérico em reports.ts | ✅ Corrigido | `398d243` |
+| 4 | Implementar botão Sincronizar (placeholder) | ✅ Corrigido | `398d243` |
+| 5 | Implementar botão Ver Detalhes (placeholder) | ✅ Corrigido | `398d243` |
+| 6 | Refatorar código repetido | ⏭️ VIO-598 | Backlog |
+| 7 | Adicionar JSDoc | ⏭️ VIO-599 | Backlog |
+
+## Issues Criadas
+
+- **VIO-598** - [REFACTOR] Extrair helper para verificação de relatório existente
+- **VIO-599** - [DOCS] Adicionar JSDoc aos routers de relatórios
