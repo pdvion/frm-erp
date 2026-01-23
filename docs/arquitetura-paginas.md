@@ -249,6 +249,24 @@ Use classes Tailwind para ajustes específicos:
 - Menu deve ocupar tela cheia ou drawer lateral
 - Botão de fechar claramente visível
 
+### SidebarContext (Novo em 23/01/2026)
+O estado de colapso da sidebar é gerenciado via contexto compartilhado:
+
+```tsx
+// src/contexts/SidebarContext.tsx
+import { useSidebar } from "@/contexts/SidebarContext";
+
+function MyComponent() {
+  const { isCollapsed, setIsCollapsed, toggleCollapsed } = useSidebar();
+  // ...
+}
+```
+
+O `AppLayout` ajusta automaticamente o padding do conteúdo:
+- Sidebar expandida: `pl-64` (256px)
+- Sidebar colapsada: `pl-16` (64px)
+- Mobile: `pl-0`
+
 ## Testes E2E
 
 Toda nova página deve ter cobertura de testes E2E. Ver `docs/testes-e2e.md` para detalhes.
