@@ -312,6 +312,7 @@ export default function InventoryPage() {
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
+                    aria-label="Página anterior"
                     className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -322,6 +323,7 @@ export default function InventoryPage() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
+                    aria-label="Próxima página"
                     className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />

@@ -338,6 +338,7 @@ export default function ReceivablesPage() {
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
+                      aria-label="Página anterior"
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
@@ -345,6 +346,7 @@ export default function ReceivablesPage() {
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
+                      aria-label="Próxima página"
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />

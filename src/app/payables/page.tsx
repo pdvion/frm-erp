@@ -377,6 +377,7 @@ export default function PayablesPage() {
                     <button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
+                      aria-label="Página anterior"
                       className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -387,6 +388,7 @@ export default function PayablesPage() {
                     <button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
+                      aria-label="Próxima página"
                       className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronRight className="w-4 h-4" />
