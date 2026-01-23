@@ -3,12 +3,40 @@ import { createTRPCRouter, tenantProcedure } from "../trpc";
 import type { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
+/**
+ * Extrai o userId do contexto ou lança erro de autenticação
+ */
 function getUserId(ctx: { tenant: { userId: string | null } }): string {
   const userId = ctx.tenant.userId;
   if (!userId) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
   }
   return userId;
+}
+
+/**
+ * Busca um relatório salvo do usuário ou lança erro NOT_FOUND
+ * @param prisma - Cliente Prisma ou transação
+ * @param id - ID do relatório
+ * @param userId - ID do usuário
+ * @param companyId - ID da empresa
+ * @returns Relatório encontrado
+ * @throws TRPCError NOT_FOUND se não encontrar
+ */
+async function findUserReportOrThrow(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prisma: any,
+  id: string,
+  userId: string,
+  companyId: string
+) {
+  const report = await prisma.savedReport.findFirst({
+    where: { id, userId, companyId },
+  });
+  if (!report) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
+  }
+  return report;
 }
 
 export const savedReportsRouter = createTRPCRouter({
@@ -119,10 +147,7 @@ export const savedReportsRouter = createTRPCRouter({
       const userId = getUserId(ctx);
 
       return ctx.prisma.$transaction(async (tx) => {
-        const existing = await tx.savedReport.findFirst({
-          where: { id: input.id, userId, companyId: ctx.companyId },
-        });
-        if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
+        const existing = await findUserReportOrThrow(tx, input.id, userId, ctx.companyId);
 
         if (input.isDefault) {
           await tx.savedReport.updateMany({
@@ -155,10 +180,7 @@ export const savedReportsRouter = createTRPCRouter({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      const existing = await ctx.prisma.savedReport.findFirst({
-        where: { id: input.id, userId, companyId: ctx.companyId },
-      });
-      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
+      await findUserReportOrThrow(ctx.prisma, input.id, userId, ctx.companyId);
       await ctx.prisma.savedReport.delete({ where: { id: input.id } });
       return { success: true };
     }),
@@ -167,10 +189,7 @@ export const savedReportsRouter = createTRPCRouter({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      const existing = await ctx.prisma.savedReport.findFirst({
-        where: { id: input.id, userId, companyId: ctx.companyId },
-      });
-      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
+      const existing = await findUserReportOrThrow(ctx.prisma, input.id, userId, ctx.companyId);
       return ctx.prisma.savedReport.update({
         where: { id: input.id },
         data: { isFavorite: !existing.isFavorite },
