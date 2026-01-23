@@ -8,10 +8,8 @@ import {
   Filter,
   RotateCcw,
   Eye,
-  Edit,
   Trash2,
   Send,
-  CheckCircle,
   FileText,
   Loader2,
   ChevronLeft,
@@ -230,13 +228,6 @@ export default function SupplierReturnsPage() {
                           </Link>
                           {item.status === "DRAFT" && (
                             <>
-                              <Link
-                                href={`/supplier-returns/${item.id}/edit`}
-                                className="p-1.5 text-theme-muted hover:text-blue-600 rounded"
-                                title="Editar"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Link>
                               <button
                                 onClick={() => handleSubmit(item.id)}
                                 className="p-1.5 text-theme-muted hover:text-green-600 rounded"
@@ -254,15 +245,6 @@ export default function SupplierReturnsPage() {
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </>
-                          )}
-                          {item.status === "INVOICED" && (
-                            <Link
-                              href={`/supplier-returns/${item.id}/complete`}
-                              className="p-1.5 text-theme-muted hover:text-green-600 rounded"
-                              title="Concluir"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </Link>
                           )}
                           {item.returnInvoiceNumber && (
                             <span

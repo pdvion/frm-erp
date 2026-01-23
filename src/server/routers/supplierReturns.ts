@@ -162,6 +162,22 @@ export const supplierReturnsRouter = createTRPCRouter({
         }
       }
 
+      // Validar materiais pertencem ao tenant
+      const materialIds = items.map((item) => item.materialId);
+      const materials = await prisma.material.findMany({
+        where: { id: { in: materialIds }, companyId: ctx.companyId },
+        select: { id: true },
+      });
+
+      if (materials.length !== materialIds.length) {
+        const foundIds = new Set(materials.map((m) => m.id));
+        const missingIds = materialIds.filter((id) => !foundIds.has(id));
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Materiais não encontrados ou não pertencem à empresa: ${missingIds.join(", ")}`,
+        });
+      }
+
       // Calcular total
       const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
@@ -352,9 +368,8 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      // Baixar estoque dos itens
+      // Validar estoque antes da transação
       for (const item of existing.items) {
-        // Verificar estoque disponível
         const inventory = await prisma.inventory.findFirst({
           where: { materialId: item.materialId, companyId: ctx.companyId },
         });
@@ -369,37 +384,50 @@ export const supplierReturnsRouter = createTRPCRouter({
             message: `Estoque insuficiente para o material: ${material?.description || item.materialId}`,
           });
         }
-
-        // Baixar estoque
-        await prisma.inventory.update({
-          where: { id: inventory.id },
-          data: { quantity: { decrement: item.quantity } },
-        });
-
-        // Registrar movimento
-        await prisma.inventoryMovement.create({
-          data: {
-            inventoryId: inventory.id,
-            movementType: "EXIT",
-            quantity: item.quantity,
-            unitCost: item.unitPrice,
-            totalCost: item.totalPrice,
-            documentType: "SUPPLIER_RETURN",
-            documentNumber: String(existing.returnNumber),
-            documentId: existing.id,
-            supplierId: existing.supplierId,
-            notes: `Devolução a fornecedor #${existing.returnNumber}`,
-          },
-        });
       }
 
-      const updated = await prisma.supplierReturn.update({
-        where: { id: input.id },
-        data: {
-          status: "APPROVED",
-          approvedAt: new Date(),
-          approvedBy: ctx.tenant.userId ?? undefined,
-        },
+      // Executar todas as operações em transação
+      const updated = await prisma.$transaction(async (tx) => {
+        // Baixar estoque dos itens
+        for (const item of existing.items) {
+          const inventory = await tx.inventory.findFirst({
+            where: { materialId: item.materialId, companyId: ctx.companyId },
+          });
+
+          if (inventory) {
+            // Baixar estoque
+            await tx.inventory.update({
+              where: { id: inventory.id },
+              data: { quantity: { decrement: item.quantity } },
+            });
+
+            // Registrar movimento
+            await tx.inventoryMovement.create({
+              data: {
+                inventoryId: inventory.id,
+                movementType: "EXIT",
+                quantity: item.quantity,
+                unitCost: item.unitPrice,
+                totalCost: item.totalPrice,
+                documentType: "SUPPLIER_RETURN",
+                documentNumber: String(existing.returnNumber),
+                documentId: existing.id,
+                supplierId: existing.supplierId,
+                notes: `Devolução a fornecedor #${existing.returnNumber}`,
+              },
+            });
+          }
+        }
+
+        // Atualizar status
+        return tx.supplierReturn.update({
+          where: { id: input.id },
+          data: {
+            status: "APPROVED",
+            approvedAt: new Date(),
+            approvedBy: ctx.tenant.userId ?? undefined,
+          },
+        });
       });
 
       await auditUpdate("SupplierReturn", existing.id, String(updated.returnNumber), existing, updated, {
@@ -472,47 +500,50 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      // Gerar crédito no contas a pagar (se houver NFe de origem vinculada)
-      if (existing.receivedInvoiceId) {
-        const invoice = await prisma.receivedInvoice.findUnique({
-          where: { id: existing.receivedInvoiceId },
-        });
-
-        if (invoice) {
-          // Criar crédito (valor negativo)
-          const lastPayable = await prisma.accountsPayable.findFirst({
-            where: { companyId: ctx.companyId },
-            orderBy: { code: "desc" },
-            select: { code: true },
+      // Executar todas as operações em transação
+      const updated = await prisma.$transaction(async (tx) => {
+        // Gerar crédito no contas a pagar (se houver NFe de origem vinculada)
+        if (existing.receivedInvoiceId) {
+          const invoice = await tx.receivedInvoice.findUnique({
+            where: { id: existing.receivedInvoiceId },
           });
-          const nextCode = (lastPayable?.code ?? 0) + 1;
 
-          await prisma.accountsPayable.create({
-            data: {
-              code: nextCode,
-              supplierId: existing.supplierId,
-              invoiceId: existing.receivedInvoiceId,
-              documentType: "OTHER",
-              documentNumber: String(existing.returnInvoiceNumber),
-              description: `Crédito ref. devolução #${existing.returnNumber}`,
-              originalValue: -existing.totalValue,
-              netValue: -existing.totalValue,
-              dueDate: new Date(),
-              status: "PAID",
-              paidAt: new Date(),
-              paidValue: -existing.totalValue,
-              companyId: ctx.companyId,
-            },
-          });
+          if (invoice) {
+            // Criar crédito (valor negativo)
+            const lastPayable = await tx.accountsPayable.findFirst({
+              where: { companyId: ctx.companyId },
+              orderBy: { code: "desc" },
+              select: { code: true },
+            });
+            const nextCode = (lastPayable?.code ?? 0) + 1;
+
+            await tx.accountsPayable.create({
+              data: {
+                code: nextCode,
+                supplierId: existing.supplierId,
+                invoiceId: existing.receivedInvoiceId,
+                documentType: "OTHER",
+                documentNumber: String(existing.returnInvoiceNumber),
+                description: `Crédito ref. devolução #${existing.returnNumber}`,
+                originalValue: -existing.totalValue,
+                netValue: -existing.totalValue,
+                dueDate: new Date(),
+                status: "PAID",
+                paidAt: new Date(),
+                paidValue: -existing.totalValue,
+                companyId: ctx.companyId,
+              },
+            });
+          }
         }
-      }
 
-      const updated = await prisma.supplierReturn.update({
-        where: { id: input.id },
-        data: {
-          status: "COMPLETED",
-          completedAt: new Date(),
-        },
+        return tx.supplierReturn.update({
+          where: { id: input.id },
+          data: {
+            status: "COMPLETED",
+            completedAt: new Date(),
+          },
+        });
       });
 
       await auditUpdate("SupplierReturn", existing.id, String(updated.returnNumber), existing, updated, {
@@ -548,48 +579,51 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      // Se já foi aprovada, estornar estoque
-      if (existing.status === "APPROVED" || existing.status === "INVOICED") {
-        for (const item of existing.items) {
-          // Buscar inventário
-          const inventory = await prisma.inventory.findFirst({
-            where: { materialId: item.materialId, companyId: ctx.companyId },
-          });
-
-          if (inventory) {
-            // Estornar estoque
-            await prisma.inventory.update({
-              where: { id: inventory.id },
-              data: { quantity: { increment: item.quantity } },
+      // Executar todas as operações em transação
+      const updated = await prisma.$transaction(async (tx) => {
+        // Se já foi aprovada, estornar estoque
+        if (existing.status === "APPROVED" || existing.status === "INVOICED") {
+          for (const item of existing.items) {
+            // Buscar inventário
+            const inventory = await tx.inventory.findFirst({
+              where: { materialId: item.materialId, companyId: ctx.companyId },
             });
 
-            // Registrar movimento de estorno
-            await prisma.inventoryMovement.create({
-              data: {
-                inventoryId: inventory.id,
-                movementType: "ENTRY",
-                quantity: item.quantity,
-                unitCost: item.unitPrice,
-                totalCost: item.totalPrice,
-                documentType: "SUPPLIER_RETURN_CANCEL",
-                documentNumber: String(existing.returnNumber),
-                documentId: existing.id,
-                supplierId: existing.supplierId,
-                notes: `Estorno - Cancelamento devolução #${existing.returnNumber}`,
-              },
-            });
+            if (inventory) {
+              // Estornar estoque
+              await tx.inventory.update({
+                where: { id: inventory.id },
+                data: { quantity: { increment: item.quantity } },
+              });
+
+              // Registrar movimento de estorno
+              await tx.inventoryMovement.create({
+                data: {
+                  inventoryId: inventory.id,
+                  movementType: "ENTRY",
+                  quantity: item.quantity,
+                  unitCost: item.unitPrice,
+                  totalCost: item.totalPrice,
+                  documentType: "SUPPLIER_RETURN_CANCEL",
+                  documentNumber: String(existing.returnNumber),
+                  documentId: existing.id,
+                  supplierId: existing.supplierId,
+                  notes: `Estorno - Cancelamento devolução #${existing.returnNumber}`,
+                },
+              });
+            }
           }
         }
-      }
 
-      const updated = await prisma.supplierReturn.update({
-        where: { id: input.id },
-        data: {
-          status: "CANCELLED",
-          cancelledAt: new Date(),
-          cancelledBy: ctx.tenant.userId ?? undefined,
-          cancellationReason: input.reason,
-        },
+        return tx.supplierReturn.update({
+          where: { id: input.id },
+          data: {
+            status: "CANCELLED",
+            cancelledAt: new Date(),
+            cancelledBy: ctx.tenant.userId ?? undefined,
+            cancellationReason: input.reason,
+          },
+        });
       });
 
       await auditUpdate("SupplierReturn", existing.id, String(updated.returnNumber), existing, updated, {
