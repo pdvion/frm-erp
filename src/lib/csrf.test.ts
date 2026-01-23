@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   generateCSRFToken,
   validateCSRFToken,
@@ -14,6 +14,10 @@ describe("CSRF Protection", () => {
     invalidateCSRFToken("test-session");
     invalidateCSRFToken("session-1");
     invalidateCSRFToken("session-2");
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("generateCSRFToken", () => {
@@ -87,15 +91,13 @@ describe("CSRF Protection", () => {
     });
 
     it("deve rejeitar token expirado", () => {
+      vi.useFakeTimers();
       const token = generateCSRFToken("test-session");
       
       // Avançar o tempo em 2 horas (token expira em 1 hora)
-      vi.useFakeTimers();
       vi.advanceTimersByTime(2 * 60 * 60 * 1000);
       
       expect(validateCSRFToken("test-session", token)).toBe(false);
-      
-      vi.useRealTimers();
     });
   });
 
@@ -145,19 +147,23 @@ describe("CSRF Protection", () => {
   });
 
   describe("Cleanup lazy", () => {
-    it("deve executar cleanup após muitas operações", () => {
-      // Gerar muitos tokens para acionar o cleanup
+    it("deve executar cleanup após muitas operações sem erro", () => {
+      const sessions: string[] = [];
+      
+      // Gerar muitos tokens para acionar o cleanup (threshold é 100)
       for (let i = 0; i < 150; i++) {
-        generateCSRFToken(`session-cleanup-${i}`);
+        const sessionId = `session-cleanup-${i}`;
+        sessions.push(sessionId);
+        generateCSRFToken(sessionId);
       }
       
-      // Se chegou aqui sem erro, o cleanup funcionou
-      expect(true).toBe(true);
+      // Verificar que pelo menos o último token ainda é válido
+      const lastSession = sessions[sessions.length - 1];
+      const lastToken = generateCSRFToken(lastSession);
+      expect(validateCSRFToken(lastSession, lastToken)).toBe(true);
       
       // Cleanup
-      for (let i = 0; i < 150; i++) {
-        invalidateCSRFToken(`session-cleanup-${i}`);
-      }
+      sessions.forEach(s => invalidateCSRFToken(s));
     });
   });
 });
