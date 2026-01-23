@@ -52,6 +52,7 @@ import { timeclockRouter } from "./timeclock";
 import { spedRouter } from "./sped";
 import { ddaRouter } from "./dda";
 import { savedReportsRouter } from "./savedReports";
+import { collectionRulesRouter } from "./collectionRules";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -107,6 +108,7 @@ export const appRouter = createTRPCRouter({
   sped: spedRouter,
   dda: ddaRouter,
   savedReports: savedReportsRouter,
+  collectionRules: collectionRulesRouter,
 });
 
 export type AppRouter = typeof appRouter;

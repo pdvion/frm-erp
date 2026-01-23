@@ -156,6 +156,7 @@ model Company {
   ddaBoletos          DdaBoleto[]
   ddaConfigs          DdaConfig[]
   savedReports        SavedReport[]
+  collectionRules     CollectionRule[]
 
   @@map("companies")
 }
@@ -1522,6 +1523,7 @@ model AccountsReceivable {
   bankTransactions  BankTransaction[]
   issuedInvoice     IssuedInvoice?     @relation(fields: [issuedInvoiceId], references: [id])
   issuedInvoiceId   String?            @db.Uuid
+  collectionActions CollectionAction[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -4627,4 +4629,93 @@ model SavedReport {
   @@index([companyId])
   @@index([reportType])
   @@map("saved_reports")
+}
+
+// =============================================================================
+// RÉGUA DE COBRANÇA - VIO-571
+// =============================================================================
+
+enum CollectionActionType {
+  EMAIL
+  SMS
+  WHATSAPP
+  PHONE
+  LETTER
+  NEGATIVATION
+  PROTEST
+}
+
+enum CollectionActionStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  RESPONDED
+}
+
+model CollectionRule {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String?  @db.Uuid @map("company_id")
+  company     Company? @relation(fields: [companyId], references: [id])
+  name        String   @db.VarChar(100)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdBy   String?  @db.Uuid @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  steps   CollectionRuleStep[]
+  actions CollectionAction[]
+
+  @@index([companyId])
+  @@index([isActive])
+  @@map("collection_rules")
+}
+
+model CollectionRuleStep {
+  id               String               @id @default(uuid()) @db.Uuid
+  collectionRuleId String               @db.Uuid @map("collection_rule_id")
+  collectionRule   CollectionRule       @relation(fields: [collectionRuleId], references: [id], onDelete: Cascade)
+  stepOrder        Int                  @map("step_order")
+  name             String               @db.VarChar(100)
+  daysOffset       Int                  @map("days_offset") // Negativo = antes do vencimento, Positivo = depois
+  actionType       CollectionActionType @map("action_type")
+  templateSubject  String?              @db.VarChar(255) @map("template_subject")
+  templateBody     String?              @map("template_body")
+  isActive         Boolean              @default(true) @map("is_active")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+
+  actions CollectionAction[]
+
+  @@unique([collectionRuleId, stepOrder])
+  @@index([collectionRuleId])
+  @@map("collection_rule_steps")
+}
+
+model CollectionAction {
+  id               String                 @id @default(uuid()) @db.Uuid
+  receivableId     String                 @db.Uuid @map("receivable_id")
+  receivable       AccountsReceivable     @relation(fields: [receivableId], references: [id], onDelete: Cascade)
+  collectionRuleId String?                @db.Uuid @map("collection_rule_id")
+  collectionRule   CollectionRule?        @relation(fields: [collectionRuleId], references: [id])
+  stepId           String?                @db.Uuid @map("step_id")
+  step             CollectionRuleStep?    @relation(fields: [stepId], references: [id])
+  actionType       CollectionActionType   @map("action_type")
+  actionDate       DateTime               @default(now()) @map("action_date")
+  status           CollectionActionStatus @default(PENDING)
+  contactInfo      String?                @db.VarChar(255) @map("contact_info")
+  messageContent   String?                @map("message_content")
+  responseContent  String?                @map("response_content")
+  responseDate     DateTime?              @map("response_date")
+  notes            String?
+  createdBy        String?                @db.Uuid @map("created_by")
+  createdAt        DateTime               @default(now()) @map("created_at")
+  updatedAt        DateTime               @updatedAt @map("updated_at")
+
+  @@index([receivableId])
+  @@index([status])
+  @@index([actionDate])
+  @@map("collection_actions")
 }
