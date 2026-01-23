@@ -470,4 +470,348 @@ export const dashboardRouter = createTRPCRouter({
       })),
     };
   }),
+
+  // Dashboard específico do módulo Compras
+  purchasesKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    // Cotações
+    const quotesStats = await prisma.quote.groupBy({
+      by: ["status"],
+      where: { supplier: tenantFilter(ctx.companyId, true) },
+      _count: true,
+      _sum: { totalValue: true },
+    });
+
+    // Pedidos de compra
+    const ordersStats = await prisma.purchaseOrder.groupBy({
+      by: ["status"],
+      where: { supplier: tenantFilter(ctx.companyId, true) },
+      _count: true,
+      _sum: { totalValue: true },
+    });
+
+    // NFes recebidas no mês
+    const nfesThisMonth = await prisma.$queryRaw<[{ count: bigint; total: number }]>`
+      SELECT COUNT(*) as count, COALESCE(SUM("totalInvoice"), 0)::float as total
+      FROM received_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "issueDate" >= ${startOfMonth}
+    `;
+
+    // Top 5 fornecedores por valor
+    const topSuppliers = await prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
+      SELECT 
+        s."tradeName" as name,
+        COALESCE(SUM(ri."totalInvoice"), 0)::float as total,
+        COUNT(*) as count
+      FROM received_invoices ri
+      JOIN suppliers s ON s.id = ri."supplierId"
+      WHERE ri."companyId" = ${ctx.companyId}::uuid
+      AND ri."issueDate" >= ${thirtyDaysAgo}
+      GROUP BY s.id, s."tradeName"
+      ORDER BY total DESC
+      LIMIT 5
+    `;
+
+    // Compras por categoria (últimos 30 dias)
+    const purchasesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+      SELECT 
+        COALESCE(c.name, 'Sem Categoria') as name,
+        COALESCE(SUM(rii."totalValue"), 0)::float as value
+      FROM received_invoice_items rii
+      JOIN received_invoices ri ON ri.id = rii."invoiceId"
+      JOIN materials m ON m.id = rii."materialId"
+      LEFT JOIN categories c ON c.id = m."categoryId"
+      WHERE ri."companyId" = ${ctx.companyId}::uuid
+      AND ri."issueDate" >= ${thirtyDaysAgo}
+      GROUP BY c.name
+      ORDER BY value DESC
+      LIMIT 6
+    `;
+
+    // Evolução de compras (últimos 6 meses)
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+    const purchasesEvolution = await prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', "issueDate"), 'Mon') as month,
+        COALESCE(SUM("totalInvoice"), 0)::float as total,
+        COUNT(*) as count
+      FROM received_invoices
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "issueDate" >= ${sixMonthsAgo}
+      GROUP BY DATE_TRUNC('month', "issueDate")
+      ORDER BY DATE_TRUNC('month', "issueDate")
+    `;
+
+    return {
+      quotes: {
+        pending: quotesStats.find(q => q.status === "PENDING")?._count || 0,
+        sent: quotesStats.find(q => q.status === "SENT")?._count || 0,
+        approved: quotesStats.find(q => q.status === "APPROVED")?._count || 0,
+        total: quotesStats.reduce((acc, q) => acc + q._count, 0),
+        totalValue: quotesStats.reduce((acc, q) => acc + (Number(q._sum.totalValue) || 0), 0),
+      },
+      orders: {
+        pending: ordersStats.find(o => o.status === "PENDING")?._count || 0,
+        approved: ordersStats.find(o => o.status === "APPROVED")?._count || 0,
+        sent: ordersStats.find(o => o.status === "SENT")?._count || 0,
+        partial: ordersStats.find(o => o.status === "PARTIAL")?._count || 0,
+        completed: ordersStats.find(o => o.status === "COMPLETED")?._count || 0,
+        total: ordersStats.reduce((acc, o) => acc + o._count, 0),
+        totalValue: ordersStats.reduce((acc, o) => acc + (Number(o._sum.totalValue) || 0), 0),
+      },
+      nfes: {
+        thisMonth: Number(nfesThisMonth[0]?.count || 0),
+        totalValue: Number(nfesThisMonth[0]?.total || 0),
+      },
+      topSuppliers: topSuppliers.map(s => ({
+        name: s.name,
+        total: Number(s.total),
+        count: Number(s.count),
+      })),
+      purchasesByCategory: purchasesByCategory.map(p => ({
+        name: p.name,
+        value: Number(p.value),
+      })),
+      purchasesEvolution: purchasesEvolution.map(p => ({
+        name: p.month,
+        Valor: Number(p.total),
+        Quantidade: Number(p.count),
+      })),
+    };
+  }),
+
+  // Dashboard específico do módulo Estoque
+  inventoryKpis: tenantProcedure.query(async ({ ctx }) => {
+    // Resumo geral do estoque
+    const inventorySummary = await prisma.$queryRaw<[{ 
+      total_items: bigint; 
+      total_value: number;
+      low_stock: bigint;
+      zero_stock: bigint;
+    }]>`
+      SELECT 
+        COUNT(DISTINCT i."materialId") as total_items,
+        COALESCE(SUM(i.quantity * i."unitCost"), 0)::float as total_value,
+        COUNT(*) FILTER (WHERE i.quantity < COALESCE(m."minQuantity", 0) AND i.quantity > 0) as low_stock,
+        COUNT(*) FILTER (WHERE i.quantity = 0) as zero_stock
+      FROM inventory i
+      JOIN materials m ON m.id = i."materialId"
+      WHERE i."companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Movimentações recentes (últimos 30 dias)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const movementsSummary = await prisma.$queryRaw<[{
+      entries: bigint;
+      exits: bigint;
+      entries_value: number;
+      exits_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) FILTER (WHERE type = 'ENTRY') as entries,
+        COUNT(*) FILTER (WHERE type = 'EXIT') as exits,
+        COALESCE(SUM(CASE WHEN type = 'ENTRY' THEN quantity * "unitCost" ELSE 0 END), 0)::float as entries_value,
+        COALESCE(SUM(CASE WHEN type = 'EXIT' THEN quantity * "unitCost" ELSE 0 END), 0)::float as exits_value
+      FROM inventory_movements
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${thirtyDaysAgo}
+    `;
+
+    // Estoque por localização
+    const stockByLocation = await prisma.$queryRaw<Array<{ name: string; value: number; count: bigint }>>`
+      SELECT 
+        COALESCE(sl.name, 'Sem Local') as name,
+        COALESCE(SUM(i.quantity * i."unitCost"), 0)::float as value,
+        COUNT(*) as count
+      FROM inventory i
+      LEFT JOIN stock_locations sl ON sl.id = i."locationId"
+      WHERE i."companyId" = ${ctx.companyId}::uuid
+      GROUP BY sl.name
+      ORDER BY value DESC
+      LIMIT 6
+    `;
+
+    // Estoque por categoria
+    const stockByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+      SELECT 
+        COALESCE(c.name, 'Sem Categoria') as name,
+        COALESCE(SUM(i.quantity * i."unitCost"), 0)::float as value
+      FROM inventory i
+      JOIN materials m ON m.id = i."materialId"
+      LEFT JOIN categories c ON c.id = m."categoryId"
+      WHERE i."companyId" = ${ctx.companyId}::uuid
+      GROUP BY c.name
+      ORDER BY value DESC
+      LIMIT 6
+    `;
+
+    // Evolução do estoque (últimos 6 meses)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+
+    const stockEvolution = await prisma.$queryRaw<Array<{ month: string; entries: number; exits: number }>>`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
+        COALESCE(SUM(CASE WHEN type = 'ENTRY' THEN quantity * "unitCost" ELSE 0 END), 0)::float as entries,
+        COALESCE(SUM(CASE WHEN type = 'EXIT' THEN quantity * "unitCost" ELSE 0 END), 0)::float as exits
+      FROM inventory_movements
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${sixMonthsAgo}
+      GROUP BY DATE_TRUNC('month', "createdAt")
+      ORDER BY DATE_TRUNC('month', "createdAt")
+    `;
+
+    return {
+      summary: {
+        totalItems: Number(inventorySummary[0]?.total_items || 0),
+        totalValue: Number(inventorySummary[0]?.total_value || 0),
+        lowStock: Number(inventorySummary[0]?.low_stock || 0),
+        zeroStock: Number(inventorySummary[0]?.zero_stock || 0),
+      },
+      movements: {
+        entries: Number(movementsSummary[0]?.entries || 0),
+        exits: Number(movementsSummary[0]?.exits || 0),
+        entriesValue: Number(movementsSummary[0]?.entries_value || 0),
+        exitsValue: Number(movementsSummary[0]?.exits_value || 0),
+      },
+      stockByLocation: stockByLocation.map(s => ({
+        name: s.name,
+        value: Number(s.value),
+        count: Number(s.count),
+      })),
+      stockByCategory: stockByCategory.map(s => ({
+        name: s.name,
+        value: Number(s.value),
+      })),
+      stockEvolution: stockEvolution.map(s => ({
+        name: s.month,
+        Entradas: Number(s.entries),
+        Saídas: Number(s.exits),
+      })),
+    };
+  }),
+
+  // Dashboard específico do módulo Financeiro
+  financialKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Contas a pagar
+    const payablesSummary = await prisma.$queryRaw<[{
+      overdue_count: bigint;
+      overdue_value: number;
+      today_count: bigint;
+      today_value: number;
+      week_count: bigint;
+      week_value: number;
+      month_count: bigint;
+      month_value: number;
+      paid_month_count: bigint;
+      paid_month_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" < CURRENT_DATE) as overdue_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" < CURRENT_DATE), 0)::float as overdue_value,
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" = CURRENT_DATE) as today_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" = CURRENT_DATE), 0)::float as today_value,
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days') as week_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'), 0)::float as week_value,
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN ${startOfMonth} AND ${endOfMonth}) as month_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN ${startOfMonth} AND ${endOfMonth}), 0)::float as month_value,
+        COUNT(*) FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}) as paid_month_count,
+        COALESCE(SUM("paidValue") FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}), 0)::float as paid_month_value
+      FROM accounts_payable
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Contas a receber
+    const receivablesSummary = await prisma.$queryRaw<[{
+      overdue_count: bigint;
+      overdue_value: number;
+      today_count: bigint;
+      today_value: number;
+      week_count: bigint;
+      week_value: number;
+      received_month_count: bigint;
+      received_month_value: number;
+    }]>`
+      SELECT 
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" < CURRENT_DATE) as overdue_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" < CURRENT_DATE), 0)::float as overdue_value,
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" = CURRENT_DATE) as today_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" = CURRENT_DATE), 0)::float as today_value,
+        COUNT(*) FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days') as week_count,
+        COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING' AND "dueDate" BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'), 0)::float as week_value,
+        COUNT(*) FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}) as received_month_count,
+        COALESCE(SUM("paidValue") FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}), 0)::float as received_month_value
+      FROM accounts_receivable
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Fluxo de caixa projetado (próximos 30 dias)
+    const cashFlow = await prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
+      WITH dates AS (
+        SELECT generate_series(CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', INTERVAL '7 days')::date as date
+      )
+      SELECT 
+        TO_CHAR(d.date, 'DD/MM') as date,
+        COALESCE((SELECT SUM("netValue")::float FROM accounts_payable WHERE "companyId" = ${ctx.companyId}::uuid AND status = 'PENDING' AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'), 0) as payables,
+        COALESCE((SELECT SUM("netValue")::float FROM accounts_receivable WHERE "companyId" = ${ctx.companyId}::uuid AND status = 'PENDING' AND "dueDate" BETWEEN d.date AND d.date + INTERVAL '6 days'), 0) as receivables
+      FROM dates d
+      ORDER BY d.date
+    `;
+
+    // Pagamentos por forma de pagamento
+    const paymentsByMethod = await prisma.$queryRaw<Array<{ method: string; value: number; count: bigint }>>`
+      SELECT 
+        COALESCE("paymentMethod", 'Outros') as method,
+        COALESCE(SUM("paidValue"), 0)::float as value,
+        COUNT(*) as count
+      FROM accounts_payable
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status = 'PAID'
+      AND "paidAt" >= ${thirtyDaysAgo}
+      GROUP BY "paymentMethod"
+      ORDER BY value DESC
+    `;
+
+    return {
+      payables: {
+        overdue: { count: Number(payablesSummary[0]?.overdue_count || 0), value: Number(payablesSummary[0]?.overdue_value || 0) },
+        today: { count: Number(payablesSummary[0]?.today_count || 0), value: Number(payablesSummary[0]?.today_value || 0) },
+        week: { count: Number(payablesSummary[0]?.week_count || 0), value: Number(payablesSummary[0]?.week_value || 0) },
+        month: { count: Number(payablesSummary[0]?.month_count || 0), value: Number(payablesSummary[0]?.month_value || 0) },
+        paidMonth: { count: Number(payablesSummary[0]?.paid_month_count || 0), value: Number(payablesSummary[0]?.paid_month_value || 0) },
+      },
+      receivables: {
+        overdue: { count: Number(receivablesSummary[0]?.overdue_count || 0), value: Number(receivablesSummary[0]?.overdue_value || 0) },
+        today: { count: Number(receivablesSummary[0]?.today_count || 0), value: Number(receivablesSummary[0]?.today_value || 0) },
+        week: { count: Number(receivablesSummary[0]?.week_count || 0), value: Number(receivablesSummary[0]?.week_value || 0) },
+        receivedMonth: { count: Number(receivablesSummary[0]?.received_month_count || 0), value: Number(receivablesSummary[0]?.received_month_value || 0) },
+      },
+      cashFlow: cashFlow.map(c => ({
+        name: c.date,
+        "A Pagar": Number(c.payables),
+        "A Receber": Number(c.receivables),
+      })),
+      paymentsByMethod: paymentsByMethod.map(p => ({
+        name: p.method,
+        value: Number(p.value),
+        count: Number(p.count),
+      })),
+    };
+  }),
 });
