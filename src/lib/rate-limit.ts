@@ -20,15 +20,26 @@ interface RateLimitConfig {
 // Armazenamento em memória (para produção, usar Redis)
 const store = new Map<string, RateLimitEntry>();
 
-// Limpar entradas expiradas periodicamente
-setInterval(() => {
+// Contador para cleanup lazy (a cada N operações)
+let operationCount = 0;
+const CLEANUP_INTERVAL = 50;
+
+/**
+ * Limpa entradas expiradas (cleanup lazy)
+ * Chamado periodicamente durante operações normais
+ */
+function cleanupExpiredEntries(): void {
+  operationCount++;
+  if (operationCount < CLEANUP_INTERVAL) return;
+  
+  operationCount = 0;
   const now = Date.now();
   for (const [key, entry] of store.entries()) {
     if (entry.resetAt < now) {
       store.delete(key);
     }
   }
-}, 60000); // Limpar a cada minuto
+}
 
 /**
  * Configurações padrão para diferentes tipos de operações
@@ -71,6 +82,7 @@ export function checkRateLimitCustom(
   namespace: string,
   config: RateLimitConfig
 ): { remaining: number; resetAt: Date } {
+  cleanupExpiredEntries();
   const key = `${namespace}:${identifier}`;
   const now = Date.now();
   const windowMs = config.windowSeconds * 1000;

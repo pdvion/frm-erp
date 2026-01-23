@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { JSDOM } from "jsdom";
 import { formatCnpj, formatChaveAcesso } from "./nfe-parser";
 
@@ -6,8 +6,15 @@ import { formatCnpj, formatChaveAcesso } from "./nfe-parser";
 const dom = new JSDOM();
 global.DOMParser = dom.window.DOMParser;
 
-// Importar após configurar DOMParser
-const { parseNFeXml, validateNFeXml } = await import("./nfe-parser");
+// Importar após configurar DOMParser usando beforeAll
+let parseNFeXml: typeof import("./nfe-parser").parseNFeXml;
+let validateNFeXml: typeof import("./nfe-parser").validateNFeXml;
+
+beforeAll(async () => {
+  const nfeModule = await import("./nfe-parser");
+  parseNFeXml = nfeModule.parseNFeXml;
+  validateNFeXml = nfeModule.validateNFeXml;
+});
 
 // XML de NFe mínimo válido para testes
 const validNFeXml = `<?xml version="1.0" encoding="UTF-8"?>

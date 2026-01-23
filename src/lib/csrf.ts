@@ -5,7 +5,15 @@
 
 import { randomBytes, createHmac } from "crypto";
 
-const CSRF_SECRET = process.env.CSRF_SECRET || "frm-erp-csrf-secret-change-in-production";
+const CSRF_SECRET = process.env.CSRF_SECRET;
+
+// Validar secret em produção
+if (!CSRF_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("CSRF_SECRET environment variable is required in production");
+}
+
+// Fallback para desenvolvimento/testes
+const SECRET = CSRF_SECRET || "dev-csrf-secret-not-for-production";
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hora
 
 interface CSRFToken {
@@ -16,15 +24,26 @@ interface CSRFToken {
 // Armazenamento em memória (para produção, usar Redis)
 const tokenStore = new Map<string, CSRFToken>();
 
-// Limpar tokens expirados periodicamente
-setInterval(() => {
+// Contador para cleanup lazy (a cada N operações)
+let operationCount = 0;
+const CLEANUP_INTERVAL = 100;
+
+/**
+ * Limpa tokens expirados (cleanup lazy)
+ * Chamado periodicamente durante operações normais
+ */
+function cleanupExpiredTokens(): void {
+  operationCount++;
+  if (operationCount < CLEANUP_INTERVAL) return;
+  
+  operationCount = 0;
   const now = Date.now();
   for (const [key, value] of tokenStore.entries()) {
     if (value.expiresAt < now) {
       tokenStore.delete(key);
     }
   }
-}, 300000); // Limpar a cada 5 minutos
+}
 
 /**
  * Gera um token CSRF para uma sessão
@@ -32,11 +51,12 @@ setInterval(() => {
  * @returns Token CSRF
  */
 export function generateCSRFToken(sessionId: string): string {
+  cleanupExpiredTokens();
   const timestamp = Date.now();
   const random = randomBytes(32).toString("hex");
   const data = `${sessionId}:${timestamp}:${random}`;
   
-  const hmac = createHmac("sha256", CSRF_SECRET);
+  const hmac = createHmac("sha256", SECRET);
   hmac.update(data);
   const signature = hmac.digest("hex");
   
@@ -85,7 +105,7 @@ export function validateCSRFToken(sessionId: string, token: string): boolean {
     }
 
     const data = Buffer.from(dataBase64, "base64").toString();
-    const hmac = createHmac("sha256", CSRF_SECRET);
+    const hmac = createHmac("sha256", SECRET);
     hmac.update(data);
     const expectedSignature = hmac.digest("hex");
 
