@@ -1388,4 +1388,189 @@ export const dashboardRouter = createTRPCRouter({
       })),
     };
   }),
+
+  // Dashboard específico do módulo Relatórios
+  reportsKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Relatórios gerados
+    const reportsGenerated = await prisma.$queryRaw<[{
+      total: bigint;
+      today: bigint;
+      week: bigint;
+      month: bigint;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE "createdAt" >= CURRENT_DATE) as today,
+        COUNT(*) FILTER (WHERE "createdAt" >= CURRENT_DATE - INTERVAL '7 days') as week,
+        COUNT(*) FILTER (WHERE "createdAt" >= ${thirtyDaysAgo}) as month
+      FROM report_logs
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Relatórios por tipo
+    const reportsByType = await prisma.$queryRaw<Array<{ type: string; count: bigint }>>`
+      SELECT 
+        "reportType" as type,
+        COUNT(*) as count
+      FROM report_logs
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY "reportType"
+      ORDER BY count DESC
+      LIMIT 10
+    `;
+
+    // Relatórios por usuário
+    const reportsByUser = await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+      SELECT 
+        COALESCE(u.name, 'Sistema') as name,
+        COUNT(*) as count
+      FROM report_logs rl
+      LEFT JOIN users u ON u.id = rl."userId"
+      WHERE rl."companyId" = ${ctx.companyId}::uuid
+      AND rl."createdAt" >= ${thirtyDaysAgo}
+      GROUP BY u.name
+      ORDER BY count DESC
+      LIMIT 5
+    `;
+
+    return {
+      generated: {
+        total: Number(reportsGenerated[0]?.total || 0),
+        today: Number(reportsGenerated[0]?.today || 0),
+        week: Number(reportsGenerated[0]?.week || 0),
+        month: Number(reportsGenerated[0]?.month || 0),
+      },
+      byType: reportsByType.map(r => ({
+        name: r.type,
+        count: Number(r.count),
+      })),
+      byUser: reportsByUser.map(r => ({
+        name: r.name,
+        count: Number(r.count),
+      })),
+    };
+  }),
+
+  // Dashboard específico do módulo BI
+  biKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+
+    // Resumo financeiro anual
+    const financialSummary = await prisma.$queryRaw<[{
+      revenue: number;
+      expenses: number;
+      profit: number;
+    }]>`
+      SELECT 
+        COALESCE(SUM(CASE WHEN type = 'RECEIVABLE' AND status = 'PAID' THEN amount ELSE 0 END), 0)::float as revenue,
+        COALESCE(SUM(CASE WHEN type = 'PAYABLE' AND status = 'PAID' THEN amount ELSE 0 END), 0)::float as expenses,
+        COALESCE(SUM(CASE WHEN type = 'RECEIVABLE' AND status = 'PAID' THEN amount ELSE 0 END) - 
+                 SUM(CASE WHEN type = 'PAYABLE' AND status = 'PAID' THEN amount ELSE 0 END), 0)::float as profit
+      FROM financial_entries
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "paidAt" >= ${startOfYear}
+    `;
+
+    // Vendas do mês vs mês anterior
+    const salesComparison = await prisma.$queryRaw<[{
+      current_month: number;
+      previous_month: number;
+    }]>`
+      SELECT 
+        COALESCE(SUM(CASE WHEN "orderDate" >= ${startOfMonth} THEN "totalValue" ELSE 0 END), 0)::float as current_month,
+        COALESCE(SUM(CASE WHEN "orderDate" >= ${startOfMonth}::date - INTERVAL '1 month' 
+                          AND "orderDate" < ${startOfMonth} THEN "totalValue" ELSE 0 END), 0)::float as previous_month
+      FROM sales_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status IN ('APPROVED', 'INVOICED', 'DELIVERED')
+    `;
+
+    // Compras do mês vs mês anterior
+    const purchasesComparison = await prisma.$queryRaw<[{
+      current_month: number;
+      previous_month: number;
+    }]>`
+      SELECT 
+        COALESCE(SUM(CASE WHEN "orderDate" >= ${startOfMonth} THEN "totalValue" ELSE 0 END), 0)::float as current_month,
+        COALESCE(SUM(CASE WHEN "orderDate" >= ${startOfMonth}::date - INTERVAL '1 month' 
+                          AND "orderDate" < ${startOfMonth} THEN "totalValue" ELSE 0 END), 0)::float as previous_month
+      FROM purchase_orders
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status IN ('APPROVED', 'SENT', 'PARTIAL', 'COMPLETED')
+    `;
+
+    // Produção do mês
+    const productionSummary = await prisma.$queryRaw<[{
+      orders: bigint;
+      quantity: number;
+      oee: number;
+    }]>`
+      SELECT 
+        COUNT(*) as orders,
+        COALESCE(SUM("producedQuantity"), 0)::float as quantity,
+        COALESCE(AVG(oee.oee), 0)::float as oee
+      FROM production_orders po
+      LEFT JOIN oee_records oee ON oee."productionOrderId" = po.id
+      WHERE po."companyId" = ${ctx.companyId}::uuid
+      AND po."completedAt" >= ${startOfMonth}
+    `;
+
+    // Indicadores de estoque
+    const inventorySummary = await prisma.$queryRaw<[{
+      total_value: number;
+      low_stock: bigint;
+      out_of_stock: bigint;
+    }]>`
+      SELECT 
+        COALESCE(SUM(i.quantity * COALESCE(m."averageCost", 0)), 0)::float as total_value,
+        COUNT(*) FILTER (WHERE i.quantity <= COALESCE(m."minimumStock", 0) AND i.quantity > 0) as low_stock,
+        COUNT(*) FILTER (WHERE i.quantity <= 0) as out_of_stock
+      FROM inventory i
+      JOIN materials m ON m.id = i."materialId"
+      WHERE i."companyId" = ${ctx.companyId}::uuid
+    `;
+
+    const salesGrowth = salesComparison[0]?.previous_month 
+      ? ((salesComparison[0].current_month - salesComparison[0].previous_month) / salesComparison[0].previous_month) * 100 
+      : 0;
+
+    return {
+      financial: {
+        revenue: Number(financialSummary[0]?.revenue || 0),
+        expenses: Number(financialSummary[0]?.expenses || 0),
+        profit: Number(financialSummary[0]?.profit || 0),
+        margin: financialSummary[0]?.revenue 
+          ? (financialSummary[0].profit / financialSummary[0].revenue) * 100 
+          : 0,
+      },
+      sales: {
+        currentMonth: Number(salesComparison[0]?.current_month || 0),
+        previousMonth: Number(salesComparison[0]?.previous_month || 0),
+        growth: salesGrowth,
+      },
+      purchases: {
+        currentMonth: Number(purchasesComparison[0]?.current_month || 0),
+        previousMonth: Number(purchasesComparison[0]?.previous_month || 0),
+      },
+      production: {
+        orders: Number(productionSummary[0]?.orders || 0),
+        quantity: Number(productionSummary[0]?.quantity || 0),
+        oee: Number(productionSummary[0]?.oee || 0),
+      },
+      inventory: {
+        totalValue: Number(inventorySummary[0]?.total_value || 0),
+        lowStock: Number(inventorySummary[0]?.low_stock || 0),
+        outOfStock: Number(inventorySummary[0]?.out_of_stock || 0),
+      },
+    };
+  }),
 });
