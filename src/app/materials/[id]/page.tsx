@@ -12,7 +12,15 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Warehouse
+  Warehouse,
+  HardHat,
+  FileText,
+  Barcode,
+  Factory,
+  Scale,
+  Clock,
+  DollarSign,
+  Briefcase,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
@@ -82,7 +90,7 @@ export default function MaterialDetailPage() {
           {/* Dados Básicos */}
           <div className="bg-theme-card rounded-xl border border-theme p-6">
             <h2 className="text-lg font-semibold text-theme mb-4">Dados Básicos</h2>
-            <dl className="grid grid-cols-2 gap-4">
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <dt className="text-sm text-theme-muted">Código</dt>
                 <dd className="text-sm font-medium text-theme">{material.code}</dd>
@@ -91,18 +99,30 @@ export default function MaterialDetailPage() {
                 <dt className="text-sm text-theme-muted">Código Interno</dt>
                 <dd className="text-sm font-medium text-theme">{material.internalCode || "-"}</dd>
               </div>
-              <div className="col-span-2">
+              <div>
+                <dt className="text-sm text-theme-muted flex items-center gap-1">
+                  <Barcode className="w-3 h-3" /> Código de Barras
+                </dt>
+                <dd className="text-sm font-medium text-theme">{material.barcode || "-"}</dd>
+              </div>
+              <div className="col-span-2 sm:col-span-3">
                 <dt className="text-sm text-theme-muted">Descrição</dt>
                 <dd className="text-sm font-medium text-theme">{material.description}</dd>
               </div>
               <div>
-                <dt className="text-sm text-theme-muted">Unidade</dt>
+                <dt className="text-sm text-theme-muted">Unidade Estoque</dt>
                 <dd className="text-sm font-medium text-theme">{material.unit || "UN"}</dd>
               </div>
               <div>
-                <dt className="text-sm text-theme-muted">NCM</dt>
-                <dd className="text-sm font-medium text-theme">{material.ncm || "-"}</dd>
+                <dt className="text-sm text-theme-muted">Unidade Compra</dt>
+                <dd className="text-sm font-medium text-theme">{material.purchaseUnit || material.unit || "UN"}</dd>
               </div>
+              {material.purchaseUnit && material.purchaseUnit !== material.unit && (
+                <div>
+                  <dt className="text-sm text-theme-muted">Fator Conversão</dt>
+                  <dd className="text-sm font-medium text-theme">{material.unitConversionFactor || 1}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-sm text-theme-muted">Categoria</dt>
                 <dd className="text-sm font-medium text-theme flex items-center gap-1">
@@ -117,8 +137,62 @@ export default function MaterialDetailPage() {
                   {material.location || "-"}
                 </dd>
               </div>
+              {material.weight > 0 && (
+                <div>
+                  <dt className="text-sm text-theme-muted flex items-center gap-1">
+                    <Scale className="w-3 h-3" /> Peso
+                  </dt>
+                  <dd className="text-sm font-medium text-theme">{material.weight} {material.weightUnit || "KG"}</dd>
+                </div>
+              )}
+            </dl>
+            {material.notes && (
+              <div className="mt-4 pt-4 border-t border-theme">
+                <dt className="text-sm text-theme-muted mb-1">Observações</dt>
+                <dd className="text-sm text-theme">{material.notes}</dd>
+              </div>
+            )}
+          </div>
+
+          {/* Dados Fiscais */}
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
+              <DollarSign className="w-5 h-5" /> Dados Fiscais
+            </h2>
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div>
+                <dt className="text-sm text-theme-muted">NCM</dt>
+                <dd className="text-sm font-medium text-theme">{material.ncm || "-"}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-theme-muted">% IPI</dt>
+                <dd className="text-sm font-medium text-theme">{material.ipiRate || 0}%</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-theme-muted">% ICMS</dt>
+                <dd className="text-sm font-medium text-theme">{material.icmsRate || 0}%</dd>
+              </div>
             </dl>
           </div>
+
+          {/* Fabricante */}
+          {(material.manufacturer || material.manufacturerCode) && (
+            <div className="bg-theme-card rounded-xl border border-theme p-6">
+              <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
+                <Factory className="w-5 h-5" /> Fabricante
+              </h2>
+              <dl className="grid grid-cols-2 gap-4">
+                <div>
+                  <dt className="text-sm text-theme-muted">Nome</dt>
+                  <dd className="text-sm font-medium text-theme">{material.manufacturer || "-"}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-theme-muted">Código</dt>
+                  <dd className="text-sm font-medium text-theme">{material.manufacturerCode || "-"}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
 
           {/* Estoque */}
           <div className="bg-theme-card rounded-xl border border-theme p-6">
@@ -235,9 +309,38 @@ export default function MaterialDetailPage() {
             </dl>
           </div>
 
-          {/* Flags */}
+          {/* Classificação */}
           <div className="bg-theme-card rounded-xl border border-theme p-6">
-            <h3 className="text-sm font-medium text-theme-muted mb-3">Configurações</h3>
+            <h3 className="text-sm font-medium text-theme-muted mb-3">Classificação</h3>
+            <div className="space-y-2">
+              {material.isEpi && (
+                <div className="flex items-center gap-2">
+                  <HardHat className="w-4 h-4 text-orange-500" />
+                  <span className="text-sm text-theme-secondary">EPI - Equipamento de Proteção</span>
+                </div>
+              )}
+              {material.isOfficeSupply && (
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-blue-500" />
+                  <span className="text-sm text-theme-secondary">Material de Escritório</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                {material.isShared ? (
+                  <CheckCircle className="w-4 h-4 text-purple-500" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-theme-muted" />
+                )}
+                <span className="text-sm text-theme-secondary">Compartilhado entre empresas</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Requisitos de Qualidade */}
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h3 className="text-sm font-medium text-theme-muted mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4" /> Qualidade
+            </h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 {material.requiresQualityCheck ? (
@@ -245,17 +348,78 @@ export default function MaterialDetailPage() {
                 ) : (
                   <XCircle className="w-4 h-4 text-theme-muted" />
                 )}
-                <span className="text-sm text-theme-secondary">Requer inspeção de qualidade</span>
+                <span className="text-sm text-theme-secondary">Requer IQF</span>
               </div>
               <div className="flex items-center gap-2">
-                {material.isShared ? (
+                {material.requiresQualityInspection ? (
                   <CheckCircle className="w-4 h-4 text-green-500" />
                 ) : (
                   <XCircle className="w-4 h-4 text-theme-muted" />
                 )}
-                <span className="text-sm text-theme-secondary">Compartilhado entre empresas</span>
+                <span className="text-sm text-theme-secondary">Inspeção de qualidade</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {material.requiresMaterialCertificate ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-theme-muted" />
+                )}
+                <span className="text-sm text-theme-secondary">Certificado de material</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {material.requiresControlSheets ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-theme-muted" />
+                )}
+                <span className="text-sm text-theme-secondary">Controle de fichas</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {material.requiresReturn ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-theme-muted" />
+                )}
+                <span className="text-sm text-theme-secondary">Requer devolução</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {material.requiresFiscalEntry ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-theme-muted" />
+                )}
+                <span className="text-sm text-theme-secondary">Entrada fiscal</span>
               </div>
             </div>
+            {material.requiredBrand && (
+              <div className="mt-3 pt-3 border-t border-theme">
+                <dt className="text-xs text-theme-muted">Marca Obrigatória</dt>
+                <dd className="text-sm font-medium text-theme">{material.requiredBrand}</dd>
+                {material.requiredBrandReason && (
+                  <dd className="text-xs text-theme-muted mt-1">{material.requiredBrandReason}</dd>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Estoque - Parâmetros */}
+          <div className="bg-theme-card rounded-xl border border-theme p-6">
+            <h3 className="text-sm font-medium text-theme-muted mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4" /> Parâmetros de Estoque
+            </h3>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <dt className="text-theme-secondary">Cálculo Qtd. Mín.</dt>
+                <dd className="text-theme font-medium">
+                  {material.minQuantityCalcType === "CMM" ? "CMM" : 
+                   material.minQuantityCalcType === "PEAK_12M" ? "Pico 12M" : "Manual"}
+                </dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-theme-secondary">Lead Time</dt>
+                <dd className="text-theme font-medium">{material.avgDeliveryDays || 0} dias</dd>
+              </div>
+            </dl>
           </div>
 
           {/* Datas */}
