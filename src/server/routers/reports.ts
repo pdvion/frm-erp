@@ -2,8 +2,19 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import type { InventoryType, Prisma } from "@prisma/client";
 
+/**
+ * Router de relatórios gerenciais
+ * Fornece endpoints para geração de relatórios de estoque, financeiro, compras e RH
+ */
 export const reportsRouter = createTRPCRouter({
-  // Relatório de Posição de Estoque
+  /**
+   * Relatório de Posição de Estoque
+   * Retorna visão geral do estoque atual com quantidades e valores
+   * @param inventoryType - Filtrar por tipo de estoque (RAW_MATERIAL, FINISHED_PRODUCT, etc)
+   * @param categoryId - Filtrar por categoria de material
+   * @param belowMinimum - Mostrar apenas itens abaixo do estoque mínimo
+   * @returns Lista de itens com quantidades, valores e totalizadores
+   */
   inventoryPosition: tenantProcedure
     .input(
       z.object({
@@ -66,7 +77,12 @@ export const reportsRouter = createTRPCRouter({
       };
     }),
 
-  // Relatório de Contas a Pagar - Aging
+  /**
+   * Relatório de Aging de Contas a Pagar
+   * Analisa títulos pendentes por faixa de vencimento (a vencer, 1-30, 31-60, 61-90, +90 dias)
+   * @param asOfDate - Data base para cálculo (padrão: hoje)
+   * @returns Aging por faixa, total e detalhamento por título
+   */
   payablesAging: tenantProcedure
     .input(
       z.object({
@@ -134,7 +150,12 @@ export const reportsRouter = createTRPCRouter({
       };
     }),
 
-  // Relatório de Contas a Receber - Aging
+  /**
+   * Relatório de Aging de Contas a Receber
+   * Analisa títulos pendentes por faixa de vencimento (a vencer, 1-30, 31-60, 61-90, +90 dias)
+   * @param asOfDate - Data base para cálculo (padrão: hoje)
+   * @returns Aging por faixa, total e detalhamento por título
+   */
   receivablesAging: tenantProcedure
     .input(
       z.object({
@@ -202,7 +223,13 @@ export const reportsRouter = createTRPCRouter({
       };
     }),
 
-  // Relatório de Fluxo de Caixa
+  /**
+   * Relatório de Fluxo de Caixa
+   * Mostra entradas e saídas realizadas no período com saldo acumulado
+   * @param startDate - Data inicial do período (obrigatório)
+   * @param endDate - Data final do período (obrigatório)
+   * @returns Fluxo diário com entradas, saídas, saldo líquido e acumulado
+   */
   cashFlow: tenantProcedure
     .input(
       z.object({
@@ -267,7 +294,11 @@ export const reportsRouter = createTRPCRouter({
       return { flowData, totals };
     }),
 
-  // Lista de relatórios disponíveis
+  /**
+   * Lista de relatórios disponíveis
+   * Retorna catálogo de relatórios com metadados para exibição no menu
+   * @returns Array com id, nome, descrição, categoria e ícone de cada relatório
+   */
   available: tenantProcedure.query(() => {
     return [
       { id: "inventory-position", name: "Posição de Estoque", description: "Visão geral do estoque atual valorizado", category: "Estoque", icon: "Package" },
@@ -280,7 +311,11 @@ export const reportsRouter = createTRPCRouter({
     ];
   }),
 
-  // Relatório Curva ABC de Estoque
+  /**
+   * Relatório de Curva ABC de Estoque
+   * Classifica itens por valor (A=80%, B=15%, C=5%) para gestão de prioridades
+   * @returns Itens classificados com percentual acumulado e resumo por classe
+   */
   inventoryAbc: tenantProcedure.query(async ({ ctx }) => {
     const inventory = await ctx.prisma.inventory.findMany({
       where: { companyId: ctx.companyId },
@@ -323,7 +358,13 @@ export const reportsRouter = createTRPCRouter({
     return { items, summary };
   }),
 
-  // Relatório de Compras por Fornecedor
+  /**
+   * Relatório de Compras por Fornecedor
+   * Agrupa pedidos de compra por fornecedor com totais
+   * @param startDate - Data inicial do período (opcional)
+   * @param endDate - Data final do período (opcional)
+   * @returns Fornecedores ordenados por valor total de compras
+   */
   purchasesBySupplier: tenantProcedure
     .input(z.object({
       startDate: z.string().optional(),
@@ -367,7 +408,11 @@ export const reportsRouter = createTRPCRouter({
       return { items, totals };
     }),
 
-  // Relatório de Headcount por Departamento
+  /**
+   * Relatório de Headcount por Departamento
+   * Conta funcionários ativos agrupados por departamento e cargo
+   * @returns Departamentos com contagem e distribuição por cargo
+   */
   headcount: tenantProcedure.query(async ({ ctx }) => {
     const employees = await ctx.prisma.employee.findMany({
       where: { companyId: ctx.companyId, status: "ACTIVE" },

@@ -62,7 +62,7 @@ async function getParticipantes(companyId: string, params: SpedParams): Promise<
 
   for (const f of fornecedores) {
     participantes.push({
-      codigo: "F" + f.code,
+      codigo: `F${f.code}`,
       nome: f.companyName,
       codigoPais: "1058",
       cnpjCpf: f.cnpj?.replace(/\D/g, "") || "",
@@ -84,7 +84,7 @@ async function getParticipantes(companyId: string, params: SpedParams): Promise<
 
   for (const c of clientes) {
     participantes.push({
-      codigo: "C" + c.code,
+      codigo: `C${c.code}`,
       nome: c.companyName,
       codigoPais: "1058",
       cnpjCpf: (c.cnpj || c.cpf || "").replace(/\D/g, ""),
@@ -167,7 +167,7 @@ async function getDocumentosEntrada(companyId: string, params: SpedParams): Prom
     valorIpi: Number(nf.ipiValue || 0),
     valorPis: Number(nf.pisValue || 0),
     valorCofins: Number(nf.cofinsValue || 0),
-    participanteCodigo: "F" + (nf.supplier?.code || "0"),
+    participanteCodigo: `F${nf.supplier?.code || "0"}`,
     itens: nf.items.map((item, idx) => ({
       numero: idx + 1,
       produtoCodigo: String(item.material?.code || item.productCode || ""),
@@ -214,7 +214,7 @@ async function getDocumentosSaida(companyId: string, params: SpedParams): Promis
     valorIpi: Number(nf.ipiValue || 0),
     valorPis: Number(nf.pisValue || 0),
     valorCofins: Number(nf.cofinsValue || 0),
-    participanteCodigo: "C" + (nf.customer?.code || "0"),
+    participanteCodigo: `C${nf.customer?.code || "0"}`,
     itens: nf.items.map((item, idx) => ({
       numero: idx + 1,
       produtoCodigo: String(item.material?.code || item.materialId || ""),
@@ -261,7 +261,7 @@ export async function gerarArquivoSped(params: SpedParams): Promise<SpedResult> 
   try {
     const config = await getSpedConfig(params.companyId, params);
     if (!config) {
-      return { sucesso: false, erro: "Empresa nao encontrada ou dados fiscais incompletos" };
+      return { sucesso: false, erro: "Empresa não encontrada ou dados fiscais incompletos (CNPJ, IE, UF)" };
     }
 
     const [participantes, produtos, documentosEntrada, documentosSaida, inventario] = await Promise.all([
@@ -297,7 +297,7 @@ export async function gerarArquivoSped(params: SpedParams): Promise<SpedResult> 
 
     const mes = String(params.dataInicial.getMonth() + 1).padStart(2, "0");
     const ano = params.dataInicial.getFullYear();
-    const nomeArquivo = "SPED_" + config.empresa.cnpj + "_" + ano + mes + ".txt";
+    const nomeArquivo = `SPED_${config.empresa.cnpj}_${ano}${mes}.txt`;
 
     return { sucesso: true, conteudo, nomeArquivo, validacao };
   } catch (error) {
@@ -321,10 +321,10 @@ export async function listarPeriodosDisponiveis(companyId: string): Promise<{ me
   });
 
   const periodosSet = new Set<string>();
-  for (const e of entradas) periodosSet.add(e.issueDate.getFullYear() + "-" + (e.issueDate.getMonth() + 1));
-  for (const s of saidas) periodosSet.add(s.issueDate.getFullYear() + "-" + (s.issueDate.getMonth() + 1));
+  for (const e of entradas) periodosSet.add(`${e.issueDate.getFullYear()}-${e.issueDate.getMonth() + 1}`);
+  for (const s of saidas) periodosSet.add(`${s.issueDate.getFullYear()}-${s.issueDate.getMonth() + 1}`);
 
   return Array.from(periodosSet)
-    .map(p => { const parts = p.split("-").map(Number); return { mes: parts[1], ano: parts[0], temDados: true }; })
+    .map(p => { const [ano, mes] = p.split("-").map(Number); return { mes, ano, temDados: true }; })
     .sort((a, b) => a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes);
 }
