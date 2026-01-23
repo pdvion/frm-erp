@@ -13,3 +13,9 @@ export { PageTable } from "./PageTable";
 export { PageTimeline } from "./PageTimeline";
 export { PageInfoList } from "./PageInfoList";
 export { PageButton } from "./PageButton";
+
+export { Modal, ModalFooter } from "./Modal";
+export { SkipLink } from "./SkipLink";
+export { VisuallyHidden } from "./VisuallyHidden";
+export { FormField } from "./FormField";
+export { AccessibleTable } from "./AccessibleTable";
