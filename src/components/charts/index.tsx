@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useState, useEffect, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -18,6 +18,35 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+
+// Hook para detectar se o container tem dimensões válidas
+function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const checkDimensions = () => {
+      if (ref.current) {
+        const { width, height } = ref.current.getBoundingClientRect();
+        if (width > 0 && height > 0) {
+          setIsReady(true);
+        }
+      }
+    };
+
+    // Verificar imediatamente
+    checkDimensions();
+
+    // Usar ResizeObserver para detectar mudanças
+    const observer = new ResizeObserver(checkDimensions);
+    observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return isReady;
+}
 
 // Cores padrão para gráficos
 const COLORS = [
@@ -57,9 +86,12 @@ export const SimpleLineChart = memo(function SimpleLineChart({
   showLegend = true,
   className,
 }: LineChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isReady = useContainerReady(containerRef);
+
   return (
-    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      {isReady && <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
@@ -86,7 +118,7 @@ export const SimpleLineChart = memo(function SimpleLineChart({
             />
           ))}
         </LineChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
 });
@@ -107,9 +139,12 @@ export const SimpleBarChart = memo(function SimpleBarChart({
   layout = "horizontal",
   className,
 }: BarChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isReady = useContainerReady(containerRef);
+
   return (
-    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      {isReady && <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
           layout={layout}
@@ -147,7 +182,7 @@ export const SimpleBarChart = memo(function SimpleBarChart({
             />
           ))}
         </BarChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
 });
@@ -170,9 +205,12 @@ export const SimplePieChart = memo(function SimplePieChart({
   outerRadius = 80,
   className,
 }: PieChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isReady = useContainerReady(containerRef);
+
   return (
-    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      {isReady && <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -199,7 +237,7 @@ export const SimplePieChart = memo(function SimplePieChart({
           />
           {showLegend && <Legend />}
         </PieChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
 });
@@ -222,9 +260,12 @@ export const SimpleAreaChart = memo(function SimpleAreaChart({
   showLegend = true,
   className,
 }: AreaChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isReady = useContainerReady(containerRef);
+
   return (
-    <div className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
+      {isReady && <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />}
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
@@ -251,7 +292,7 @@ export const SimpleAreaChart = memo(function SimpleAreaChart({
             />
           ))}
         </AreaChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </div>
   );
 });
