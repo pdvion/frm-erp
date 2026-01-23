@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import type { InventoryType } from "@prisma/client";
+import type { InventoryType, Prisma } from "@prisma/client";
 
 export const reportsRouter = createTRPCRouter({
   // Relatório de Posição de Estoque
@@ -330,9 +330,15 @@ export const reportsRouter = createTRPCRouter({
       endDate: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const where: Record<string, unknown> = { companyId: ctx.companyId };
-      if (input?.startDate) where.createdAt = { gte: new Date(input.startDate) };
-      if (input?.endDate) where.createdAt = { ...((where.createdAt as Record<string, unknown>) || {}), lte: new Date(input.endDate) };
+      const where: Prisma.PurchaseOrderWhereInput = {
+        companyId: ctx.companyId,
+        ...(input?.startDate || input?.endDate ? {
+          createdAt: {
+            ...(input?.startDate && { gte: new Date(input.startDate) }),
+            ...(input?.endDate && { lte: new Date(input.endDate) }),
+          },
+        } : {}),
+      };
 
       const orders = await ctx.prisma.purchaseOrder.findMany({
         where,

@@ -108,7 +108,13 @@ export default function DdaPage() {
         icon={<FileText className="h-6 w-6" />}
         backHref="/treasury"
         actions={
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          <button
+            onClick={() => {
+              // TODO: Implementar sincronização real com API bancária (VIO-597)
+              alert("Sincronização com bancos será implementada após cadastro das credenciais bancárias.");
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
             <RefreshCw className="h-4 w-4" />
             Sincronizar
           </button>
@@ -323,6 +329,10 @@ export default function DdaPage() {
                             </button>
                           )}
                           <button
+                            onClick={() => {
+                              // TODO: Implementar modal de detalhes do boleto
+                              setSelectedBoleto(boleto.id);
+                            }}
                             className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             title="Ver Detalhes"
                           >

@@ -13,30 +13,48 @@ function getUserId(ctx: { tenant: { userId: string | null } }): string {
 
 export const savedReportsRouter = createTRPCRouter({
   list: tenantProcedure
-    .input(z.object({ reportType: z.string().optional(), onlyFavorites: z.boolean().optional(), includeShared: z.boolean().optional() }).optional())
+    .input(
+      z.object({
+        reportType: z.string().optional(),
+        onlyFavorites: z.boolean().optional(),
+        includeShared: z.boolean().optional(),
+      }).optional()
+    )
     .query(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
       const { reportType, onlyFavorites, includeShared } = input || {};
+
       const where: Prisma.SavedReportWhereInput = {
         companyId: ctx.companyId,
         OR: [{ userId }, ...(includeShared ? [{ isShared: true }] : [])],
         ...(reportType && { reportType }),
         ...(onlyFavorites && { isFavorite: true }),
       };
+
       const reports = await ctx.prisma.savedReport.findMany({
         where,
         orderBy: [{ isFavorite: "desc" }, { updatedAt: "desc" }],
         include: { user: { select: { name: true, email: true } } },
       });
+
       return reports.map((r) => ({
-        id: r.id, reportType: r.reportType, name: r.name, description: r.description,
-        filters: r.filters, isDefault: r.isDefault, isShared: r.isShared, isFavorite: r.isFavorite,
-        isOwner: r.userId === userId, createdBy: r.user.name, createdAt: r.createdAt, updatedAt: r.updatedAt,
+        id: r.id,
+        reportType: r.reportType,
+        name: r.name,
+        description: r.description,
+        filters: r.filters,
+        isDefault: r.isDefault,
+        isShared: r.isShared,
+        isFavorite: r.isFavorite,
+        isOwner: r.userId === userId,
+        createdBy: r.user.name,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
       }));
     }),
 
   getById: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
       const report = await ctx.prisma.savedReport.findFirst({
@@ -47,76 +65,120 @@ export const savedReportsRouter = createTRPCRouter({
     }),
 
   create: tenantProcedure
-    .input(z.object({
-      reportType: z.string(), name: z.string().min(1), description: z.string().optional(),
-      filters: z.record(z.string(), z.unknown()), isDefault: z.boolean().optional(), isShared: z.boolean().optional(), isFavorite: z.boolean().optional(),
-    }))
+    .input(
+      z.object({
+        reportType: z.string().min(1),
+        name: z.string().min(1),
+        description: z.string().optional(),
+        filters: z.record(z.string(), z.unknown()),
+        isDefault: z.boolean().optional(),
+        isShared: z.boolean().optional(),
+        isFavorite: z.boolean().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      if (input.isDefault) {
-        await ctx.prisma.savedReport.updateMany({
-          where: { userId, companyId: ctx.companyId, reportType: input.reportType, isDefault: true },
-          data: { isDefault: false },
+
+      return ctx.prisma.$transaction(async (tx) => {
+        if (input.isDefault) {
+          await tx.savedReport.updateMany({
+            where: { userId, companyId: ctx.companyId, reportType: input.reportType, isDefault: true },
+            data: { isDefault: false },
+          });
+        }
+
+        return tx.savedReport.create({
+          data: {
+            userId,
+            companyId: ctx.companyId,
+            reportType: input.reportType,
+            name: input.name,
+            description: input.description ?? null,
+            filters: input.filters as Prisma.InputJsonValue,
+            isDefault: input.isDefault ?? false,
+            isShared: input.isShared ?? false,
+            isFavorite: input.isFavorite ?? false,
+          },
         });
-      }
-      return ctx.prisma.savedReport.create({
-        data: {
-          userId, companyId: ctx.companyId, reportType: input.reportType, name: input.name,
-          description: input.description ?? null, filters: input.filters as Prisma.InputJsonValue,
-          isDefault: input.isDefault ?? false, isShared: input.isShared ?? false, isFavorite: input.isFavorite ?? false,
-        },
       });
     }),
 
   update: tenantProcedure
-    .input(z.object({
-      id: z.string(), name: z.string().min(1).optional(), description: z.string().optional(),
-      filters: z.record(z.string(), z.unknown()).optional(), isDefault: z.boolean().optional(), isShared: z.boolean().optional(), isFavorite: z.boolean().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(1).optional(),
+        description: z.string().optional(),
+        filters: z.record(z.string(), z.unknown()).optional(),
+        isDefault: z.boolean().optional(),
+        isShared: z.boolean().optional(),
+        isFavorite: z.boolean().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      const existing = await ctx.prisma.savedReport.findFirst({ where: { id: input.id, userId, companyId: ctx.companyId } });
-      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
-      if (input.isDefault) {
-        await ctx.prisma.savedReport.updateMany({
-          where: { userId, companyId: ctx.companyId, reportType: existing.reportType, isDefault: true, id: { not: input.id } },
-          data: { isDefault: false },
+
+      return ctx.prisma.$transaction(async (tx) => {
+        const existing = await tx.savedReport.findFirst({
+          where: { id: input.id, userId, companyId: ctx.companyId },
         });
-      }
-      return ctx.prisma.savedReport.update({
-        where: { id: input.id },
-        data: {
-          ...(input.name && { name: input.name }),
-          ...(input.description !== undefined && { description: input.description }),
-          ...(input.filters && { filters: input.filters as Prisma.InputJsonValue }),
-          ...(input.isDefault !== undefined && { isDefault: input.isDefault }),
-          ...(input.isShared !== undefined && { isShared: input.isShared }),
-          ...(input.isFavorite !== undefined && { isFavorite: input.isFavorite }),
-        },
+        if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
+
+        if (input.isDefault) {
+          await tx.savedReport.updateMany({
+            where: {
+              userId,
+              companyId: ctx.companyId,
+              reportType: existing.reportType,
+              isDefault: true,
+              id: { not: input.id },
+            },
+            data: { isDefault: false },
+          });
+        }
+
+        return tx.savedReport.update({
+          where: { id: input.id },
+          data: {
+            ...(input.name && { name: input.name }),
+            ...(input.description !== undefined && { description: input.description }),
+            ...(input.filters && { filters: input.filters as Prisma.InputJsonValue }),
+            ...(input.isDefault !== undefined && { isDefault: input.isDefault }),
+            ...(input.isShared !== undefined && { isShared: input.isShared }),
+            ...(input.isFavorite !== undefined && { isFavorite: input.isFavorite }),
+          },
+        });
       });
     }),
 
   delete: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      const existing = await ctx.prisma.savedReport.findFirst({ where: { id: input.id, userId, companyId: ctx.companyId } });
+      const existing = await ctx.prisma.savedReport.findFirst({
+        where: { id: input.id, userId, companyId: ctx.companyId },
+      });
       if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
       await ctx.prisma.savedReport.delete({ where: { id: input.id } });
       return { success: true };
     }),
 
   toggleFavorite: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
-      const existing = await ctx.prisma.savedReport.findFirst({ where: { id: input.id, userId, companyId: ctx.companyId } });
+      const existing = await ctx.prisma.savedReport.findFirst({
+        where: { id: input.id, userId, companyId: ctx.companyId },
+      });
       if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Relatório não encontrado" });
-      return ctx.prisma.savedReport.update({ where: { id: input.id }, data: { isFavorite: !existing.isFavorite } });
+      return ctx.prisma.savedReport.update({
+        where: { id: input.id },
+        data: { isFavorite: !existing.isFavorite },
+      });
     }),
 
   getDefault: tenantProcedure
-    .input(z.object({ reportType: z.string() }))
+    .input(z.object({ reportType: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       const userId = getUserId(ctx);
       return ctx.prisma.savedReport.findFirst({
