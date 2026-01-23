@@ -10,6 +10,7 @@ import { CompanySwitcher } from "./CompanySwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { SessionTimeout } from "./SessionTimeout";
 import { useIsMobile } from "@/hooks/useMediaQuery";
+import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 
 const publicRoutes = [
   "/",
@@ -25,9 +26,10 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+function AppLayoutContent({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const { isCollapsed } = useSidebar();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const isPublicRoute = publicRoutes.some(
@@ -37,6 +39,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   if (isPublicRoute) {
     return <>{children}</>;
   }
+
+  // Calcular padding baseado no estado da sidebar
+  const sidebarWidth = isMobile ? "pl-0" : isCollapsed ? "pl-16" : "pl-64";
 
   return (
     <div className="min-h-screen bg-theme">
@@ -66,18 +71,14 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div
-        className={`transition-all duration-300 ${
-          isMobile ? "pl-0" : "pl-64"
-        }`}
-      >
+      <div className={`transition-all duration-300 ${sidebarWidth}`}>
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-theme-header bg-theme-header/95 px-4 md:px-6 backdrop-blur">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
             {/* Mobile menu button */}
             {isMobile && (
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme"
+                className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme flex-shrink-0"
                 aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
               >
                 {sidebarOpen ? (
@@ -87,9 +88,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                 )}
               </button>
             )}
-            <CompanySwitcher />
+            <div className="min-w-0 flex-1">
+              <CompanySwitcher />
+            </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
             <ThemeSwitcher />
             <NotificationBell />
             <UserMenu />
@@ -99,5 +102,13 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
       <SessionTimeout />
     </div>
+  );
+}
+
+export function AppLayout({ children }: AppLayoutProps) {
+  return (
+    <SidebarProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </SidebarProvider>
   );
 }

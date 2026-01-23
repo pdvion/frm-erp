@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/useMediaQuery";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   ChevronDown,
   ChevronRight,
@@ -150,7 +151,7 @@ interface SidebarProps {
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   // Em mobile, fechar sidebar ao navegar
