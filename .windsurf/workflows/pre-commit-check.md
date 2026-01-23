@@ -8,10 +8,10 @@ Execute este workflow **ANTES** de fazer commit para evitar falhas no CI.
 
 ## ⚠️ REGRA OBRIGATÓRIA
 
-**NUNCA fazer push sem executar os 3 comandos abaixo e todos passarem:**
+**NUNCA fazer push sem executar os 4 comandos abaixo e todos passarem:**
 
 ```bash
-pnpm type-check && pnpm lint && pnpm build
+pnpm type-check && pnpm lint && pnpm test:run && pnpm build
 ```
 
 ## Passos Obrigatórios
@@ -28,7 +28,13 @@ pnpm type-check
 pnpm lint
 ```
 
-### 3. Verificar Build
+### 3. Executar Testes
+// turbo
+```bash
+pnpm test:run
+```
+
+### 4. Verificar Build
 // turbo
 ```bash
 pnpm build
