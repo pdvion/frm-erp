@@ -1049,4 +1049,136 @@ export const dashboardRouter = createTRPCRouter({
       })),
     };
   }),
+
+  // Dashboard específico do módulo RH
+  hrKpis: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    // Funcionários ativos
+    const employeesStats = await prisma.$queryRaw<[{
+      total: bigint;
+      active: bigint;
+      on_vacation: bigint;
+      on_leave: bigint;
+    }]>`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'ACTIVE') as active,
+        COUNT(*) FILTER (WHERE status = 'ON_VACATION') as on_vacation,
+        COUNT(*) FILTER (WHERE status = 'ON_LEAVE') as on_leave
+      FROM employees
+      WHERE "companyId" = ${ctx.companyId}::uuid
+    `;
+
+    // Férias programadas no mês
+    const vacationsMonth = await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
+      SELECT 
+        COUNT(*) as count,
+        COUNT(*) FILTER (WHERE status = 'PENDING') as pending
+      FROM vacations
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "startDate" <= ${endOfMonth}
+      AND "endDate" >= ${startOfMonth}
+    `;
+
+    // Aniversariantes do mês
+    const birthdaysMonth = await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
+      SELECT name, "birthDate" as birth_date
+      FROM employees
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND status = 'ACTIVE'
+      AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
+      ORDER BY EXTRACT(DAY FROM "birthDate")
+      LIMIT 10
+    `;
+
+    // Folha de pagamento do mês
+    const payrollMonth = await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
+      SELECT 
+        COALESCE(SUM("grossSalary"), 0)::float as total_gross,
+        COALESCE(SUM("netSalary"), 0)::float as total_net,
+        COUNT(*) as count
+      FROM payroll_entries
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "referenceMonth" = ${startOfMonth}
+    `;
+
+    // Funcionários por departamento
+    const employeesByDepartment = await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+      SELECT 
+        COALESCE(d.name, 'Sem Departamento') as name,
+        COUNT(*) as count
+      FROM employees e
+      LEFT JOIN departments d ON d.id = e."departmentId"
+      WHERE e."companyId" = ${ctx.companyId}::uuid
+      AND e.status = 'ACTIVE'
+      GROUP BY d.name
+      ORDER BY count DESC
+      LIMIT 6
+    `;
+
+    // Admissões e demissões (últimos 6 meses)
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+    const hiringTrend = await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
+        COUNT(*) as admissions,
+        0::bigint as terminations
+      FROM employees
+      WHERE "companyId" = ${ctx.companyId}::uuid
+      AND "admissionDate" >= ${sixMonthsAgo}
+      GROUP BY DATE_TRUNC('month', "admissionDate")
+      ORDER BY DATE_TRUNC('month', "admissionDate")
+    `;
+
+    // Ponto do dia (se houver timeclock)
+    const timeclockToday = await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
+      SELECT 
+        COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
+        0::bigint as absent,
+        COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" > t."expectedClockIn") as late
+      FROM timeclock_entries t
+      WHERE t."companyId" = ${ctx.companyId}::uuid
+      AND DATE(t."clockIn") = CURRENT_DATE
+    `;
+
+    return {
+      employees: {
+        total: Number(employeesStats[0]?.total || 0),
+        active: Number(employeesStats[0]?.active || 0),
+        onVacation: Number(employeesStats[0]?.on_vacation || 0),
+        onLeave: Number(employeesStats[0]?.on_leave || 0),
+      },
+      vacations: {
+        thisMonth: Number(vacationsMonth[0]?.count || 0),
+        pending: Number(vacationsMonth[0]?.pending || 0),
+      },
+      birthdays: birthdaysMonth.map(b => ({
+        name: b.name,
+        date: b.birth_date,
+      })),
+      payroll: {
+        grossTotal: Number(payrollMonth[0]?.total_gross || 0),
+        netTotal: Number(payrollMonth[0]?.total_net || 0),
+        count: Number(payrollMonth[0]?.count || 0),
+      },
+      employeesByDepartment: employeesByDepartment.map(d => ({
+        name: d.name,
+        count: Number(d.count),
+      })),
+      hiringTrend: hiringTrend.map(h => ({
+        name: h.month,
+        Admissões: Number(h.admissions),
+        Demissões: Number(h.terminations),
+      })),
+      timeclock: {
+        present: Number(timeclockToday[0]?.present || 0),
+        absent: Number(timeclockToday[0]?.absent || 0),
+        late: Number(timeclockToday[0]?.late || 0),
+      },
+    };
+  }),
 });
