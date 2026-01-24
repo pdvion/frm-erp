@@ -564,22 +564,22 @@ model Supplier {
   isRetailer        Boolean      @default(false) @map("is_retailer")
   isIndustry        Boolean      @default(false) @map("is_industry")
   isService         Boolean      @default(false) @map("is_service")
-  activityTypeId    String?
+  activityTypeId    String?      @map("activity_type_id")
   cnae              String?
   
   // Qualidade (IQF)
-  certificationType       SupplierCertificationType?
-  certificationExpiryDate DateTime?
-  certificationFileName   String?
-  overallQualityPercent   Float?
-  iqfPercent              Float?
-  qualityCalcDate         DateTime?
-  iqfStatus               SupplierIqfStatus?
+  certificationType       SupplierCertificationType? @map("certification_type")
+  certificationExpiryDate DateTime?                  @map("certification_expiry_date")
+  certificationFileName   String?                    @map("certification_file_name")
+  overallQualityPercent   Float?                     @map("overall_quality_percent")
+  iqfPercent              Float?                     @map("iqf_percent")
+  qualityCalcDate         DateTime?                  @map("quality_calc_date")
+  iqfStatus               SupplierIqfStatus?         @map("iqf_status")
   
   // Outros
-  taxRegime             String?
-  sefazQueryDate        DateTime?
-  hasFinancialContract  Boolean      @default(false)
+  taxRegime             String?      @map("tax_regime")
+  sefazQueryDate        DateTime?    @map("sefaz_query_date")
+  hasFinancialContract  Boolean      @default(false) @map("has_financial_contract")
   
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
