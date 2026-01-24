@@ -24,19 +24,41 @@ export interface NFeDestinatario {
   cnpj?: string;
   cpf?: string;
   razaoSocial: string;
+  nomeFantasia?: string;
   ie?: string;
+  im?: string;
+  email?: string;
+  telefone?: string;
+  endereco?: {
+    logradouro?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    codigoMunicipio?: string;
+    cidade?: string;
+    uf?: string;
+    cep?: string;
+    codigoPais?: string;
+    pais?: string;
+  };
 }
 
 export interface NFeItem {
   numero: number;
   codigo: string;
+  codigoEan?: string;
   descricao: string;
   ncm?: string;
+  cest?: string;
   cfop: number;
   unidade: string;
   quantidade: number;
   valorUnitario: number;
   valorTotal: number;
+  valorDesconto?: number;
+  valorFrete?: number;
+  valorSeguro?: number;
+  valorOutros?: number;
   icms: {
     cst?: string;
     baseCalculo: number;
@@ -89,18 +111,34 @@ export interface NFeTransporte {
   };
 }
 
+export interface NFePagamento {
+  forma: string; // 01=Dinheiro, 02=Cheque, 03=Cartão Crédito, etc
+  valor: number;
+  tipoIntegracao?: string;
+  cnpjCredenciadora?: string;
+  bandeira?: string;
+  autorizacao?: string;
+}
+
 export interface NFeParsed {
   chaveAcesso: string;
   numero: number;
   serie: number;
   dataEmissao: Date;
+  dataSaida?: Date;
   naturezaOperacao: string;
+  tipoOperacao: number; // 0=Entrada, 1=Saída
+  finalidade: number; // 1=Normal, 2=Complementar, 3=Ajuste, 4=Devolução
+  consumidorFinal: boolean;
+  presencaComprador: number; // 0=Não se aplica, 1=Presencial, 9=Internet
   emitente: NFeEmitente;
   destinatario: NFeDestinatario;
   itens: NFeItem[];
   totais: {
     baseCalculoIcms: number;
     valorIcms: number;
+    baseCalculoIcmsSt: number;
+    valorIcmsSt: number;
     valorIpi: number;
     valorPis: number;
     valorCofins: number;
@@ -110,10 +148,13 @@ export interface NFeParsed {
     valorOutros: number;
     valorProdutos: number;
     valorNota: number;
+    valorAproximadoTributos?: number;
   };
   duplicatas: NFeDuplicata[];
+  pagamentos: NFePagamento[];
   transporte?: NFeTransporte;
   informacoesAdicionais?: string;
+  informacoesFisco?: string;
 }
 
 /**
@@ -194,7 +235,12 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
   const numero = getInt(ide, "nNF");
   const serie = getInt(ide, "serie");
   const dataEmissao = getDate(ide, "dhEmi") || getDate(ide, "dEmi");
+  const dataSaida = getText(ide, "dhSaiEnt") ? getDate(ide, "dhSaiEnt") : undefined;
   const naturezaOperacao = getText(ide, "natOp");
+  const tipoOperacao = getInt(ide, "tpNF"); // 0=Entrada, 1=Saída
+  const finalidade = getInt(ide, "finNFe"); // 1=Normal, 2=Complementar, 3=Ajuste, 4=Devolução
+  const consumidorFinal = getText(ide, "indFinal") === "1";
+  const presencaComprador = getInt(ide, "indPres");
 
   // Dados do emitente
   const emit = infNFe.getElementsByTagName("emit")[0];
@@ -218,11 +264,28 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
 
   // Dados do destinatário
   const dest = infNFe.getElementsByTagName("dest")[0];
+  const enderDest = dest?.getElementsByTagName("enderDest")[0];
   const destinatario: NFeDestinatario = {
     cnpj: getText(dest, "CNPJ"),
     cpf: getText(dest, "CPF"),
     razaoSocial: getText(dest, "xNome"),
+    nomeFantasia: getText(dest, "xFant"),
     ie: getText(dest, "IE"),
+    im: getText(dest, "IM"),
+    email: getText(dest, "email"),
+    telefone: getText(enderDest, "fone"),
+    endereco: enderDest ? {
+      logradouro: getText(enderDest, "xLgr"),
+      numero: getText(enderDest, "nro"),
+      complemento: getText(enderDest, "xCpl"),
+      bairro: getText(enderDest, "xBairro"),
+      codigoMunicipio: getText(enderDest, "cMun"),
+      cidade: getText(enderDest, "xMun"),
+      uf: getText(enderDest, "UF"),
+      cep: getText(enderDest, "CEP"),
+      codigoPais: getText(enderDest, "cPais"),
+      pais: getText(enderDest, "xPais"),
+    } : undefined,
   };
 
   // Itens da nota
@@ -253,13 +316,19 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
     itens.push({
       numero: parseInt(det.getAttribute("nItem") || "0", 10),
       codigo: getText(prod, "cProd"),
+      codigoEan: getText(prod, "cEAN") || getText(prod, "cEANTrib"),
       descricao: getText(prod, "xProd"),
       ncm: getText(prod, "NCM"),
+      cest: getText(prod, "CEST"),
       cfop: getInt(prod, "CFOP"),
       unidade: getText(prod, "uCom"),
       quantidade: getNumber(prod, "qCom"),
       valorUnitario: getNumber(prod, "vUnCom"),
       valorTotal: getNumber(prod, "vProd"),
+      valorDesconto: getNumber(prod, "vDesc") || undefined,
+      valorFrete: getNumber(prod, "vFrete") || undefined,
+      valorSeguro: getNumber(prod, "vSeg") || undefined,
+      valorOutros: getNumber(prod, "vOutro") || undefined,
       icms: {
         cst: getText(icmsEl, "CST") || getText(icmsEl, "CSOSN"),
         baseCalculo: getNumber(icmsEl, "vBC"),
@@ -293,6 +362,8 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
   const totais = {
     baseCalculoIcms: getNumber(icmsTot, "vBC"),
     valorIcms: getNumber(icmsTot, "vICMS"),
+    baseCalculoIcmsSt: getNumber(icmsTot, "vBCST"),
+    valorIcmsSt: getNumber(icmsTot, "vST"),
     valorIpi: getNumber(icmsTot, "vIPI"),
     valorPis: getNumber(icmsTot, "vPIS"),
     valorCofins: getNumber(icmsTot, "vCOFINS"),
@@ -302,6 +373,7 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
     valorOutros: getNumber(icmsTot, "vOutro"),
     valorProdutos: getNumber(icmsTot, "vProd"),
     valorNota: getNumber(icmsTot, "vNF"),
+    valorAproximadoTributos: getNumber(icmsTot, "vTotTrib") || undefined,
   };
 
   // Duplicatas
@@ -346,23 +418,49 @@ export function parseNFeXml(xmlContent: string): NFeParsed {
     };
   }
 
+  // Pagamentos
+  const pag = infNFe.getElementsByTagName("pag")[0];
+  const detPagElements = pag?.getElementsByTagName("detPag") || [];
+  const pagamentos: NFePagamento[] = [];
+
+  for (let i = 0; i < detPagElements.length; i++) {
+    const detPag = detPagElements[i];
+    const card = detPag.getElementsByTagName("card")[0];
+    pagamentos.push({
+      forma: getText(detPag, "tPag"),
+      valor: getNumber(detPag, "vPag"),
+      tipoIntegracao: getText(detPag, "tpIntegra") || undefined,
+      cnpjCredenciadora: card ? getText(card, "CNPJ") : undefined,
+      bandeira: card ? getText(card, "tBand") : undefined,
+      autorizacao: card ? getText(card, "cAut") : undefined,
+    });
+  }
+
   // Informações adicionais
   const infAdic = infNFe.getElementsByTagName("infAdic")[0];
   const informacoesAdicionais = getText(infAdic, "infCpl");
+  const informacoesFisco = getText(infAdic, "infAdFisco");
 
   return {
     chaveAcesso,
     numero,
     serie,
     dataEmissao,
+    dataSaida,
     naturezaOperacao,
+    tipoOperacao,
+    finalidade,
+    consumidorFinal,
+    presencaComprador,
     emitente,
     destinatario,
     itens,
     totais,
     duplicatas,
+    pagamentos,
     transporte,
     informacoesAdicionais,
+    informacoesFisco,
   };
 }
 
