@@ -48,6 +48,10 @@ export default function NewPurchaseOrderPage() {
   const [operationNature, setOperationNature] = useState("");
   const [freightType, setFreightType] = useState("");
   const [fobFreightValue, setFobFreightValue] = useState(0);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryPhone, setDeliveryPhone] = useState("");
+  const [pickupKm, setPickupKm] = useState<number | undefined>(undefined);
+  const [pickupValue, setPickupValue] = useState<number | undefined>(undefined);
 
   // Material search
   const [materialSearch, setMaterialSearch] = useState("");
@@ -151,6 +155,10 @@ export default function NewPurchaseOrderPage() {
       operationNature: operationNature as "INDUSTRIALIZATION" | "RESALE" | "CONSUMPTION" | "SERVICES" | "RAW_MATERIAL" | "SECONDARY" | "PACKAGING" | "FIXED_ASSET" | undefined || undefined,
       freightType: freightType as "CIF" | "FOB" | "PICKUP" | undefined || undefined,
       fobFreightValue: fobFreightValue || 0,
+      deliveryAddress: deliveryAddress || undefined,
+      deliveryPhone: deliveryPhone || undefined,
+      pickupKm: pickupKm,
+      pickupValue: pickupValue,
       items: items.map((item) => ({
         materialId: item.materialId,
         quantity: item.quantity,
@@ -530,6 +538,76 @@ export default function NewPurchaseOrderPage() {
                     className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
+                <div>
+                  <label
+                    htmlFor="delivery-address"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Endereço de Entrega
+                  </label>
+                  <input
+                    id="delivery-address"
+                    type="text"
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    placeholder="Endereço completo"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="delivery-phone"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Telefone de Entrega
+                  </label>
+                  <input
+                    id="delivery-phone"
+                    type="text"
+                    value={deliveryPhone}
+                    onChange={(e) => setDeliveryPhone(e.target.value)}
+                    placeholder="(00) 00000-0000"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                {freightType === "PICKUP" && (
+                  <>
+                    <div>
+                      <label
+                        htmlFor="pickup-km"
+                        className="block text-sm font-medium text-theme-secondary mb-1"
+                      >
+                        Km para Retirada
+                      </label>
+                      <input
+                        id="pickup-km"
+                        type="number"
+                        value={pickupKm ?? ""}
+                        onChange={(e) => setPickupKm(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        step="0.1"
+                        min="0"
+                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="pickup-value"
+                        className="block text-sm font-medium text-theme-secondary mb-1"
+                      >
+                        Valor da Retirada
+                      </label>
+                      <input
+                        id="pickup-value"
+                        type="number"
+                        value={pickupValue ?? ""}
+                        onChange={(e) => setPickupValue(e.target.value ? parseFloat(e.target.value) : undefined)}
+                        step="0.01"
+                        min="0"
+                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
+                  </>
+                )}
                 <div>
                   <label
                     htmlFor="operation-nature"

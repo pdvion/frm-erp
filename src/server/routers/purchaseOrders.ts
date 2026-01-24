@@ -195,6 +195,8 @@ export const purchaseOrdersRouter = createTRPCRouter({
         paymentConditionDesc: z.string().optional(),
         freightType: z.enum(["CIF", "FOB", "PICKUP"]).optional(),
         fobFreightValue: z.number().default(0),
+        pickupKm: z.number().optional(),
+        pickupValue: z.number().optional(),
         items: z.array(
           z.object({
             materialId: z.string(),
