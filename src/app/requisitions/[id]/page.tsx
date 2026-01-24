@@ -395,8 +395,8 @@ export default function RequisitionDetailPage() {
                   <div className="min-w-0">
                     <div className="font-medium text-theme">Criada</div>
                     <div className="text-sm text-theme-muted">{formatDateTime(requisition.createdAt)}</div>
-                    {requisition.createdBy && (
-                      <div className="text-xs text-theme-muted">por {requisition.createdBy}</div>
+                    {requisition.createdByName && (
+                      <div className="text-xs text-theme-muted">por {requisition.createdByName}</div>
                     )}
                   </div>
                 </div>
@@ -409,8 +409,8 @@ export default function RequisitionDetailPage() {
                     <div className="min-w-0">
                       <div className="font-medium text-theme">Enviada para Aprovação</div>
                       <div className="text-sm text-theme-muted">{formatDateTime(requisition.requestedAt)}</div>
-                      {requisition.requestedBy && (
-                        <div className="text-xs text-theme-muted">por {requisition.requestedBy}</div>
+                      {requisition.requestedByName && (
+                        <div className="text-xs text-theme-muted">por {requisition.requestedByName}</div>
                       )}
                     </div>
                   </div>
@@ -424,8 +424,8 @@ export default function RequisitionDetailPage() {
                     <div className="min-w-0">
                       <div className="font-medium text-theme">Aprovada</div>
                       <div className="text-sm text-theme-muted">{formatDateTime(requisition.approvedAt)}</div>
-                      {requisition.approvedBy && (
-                        <div className="text-xs text-theme-muted">por {requisition.approvedBy}</div>
+                      {requisition.approvedByName && (
+                        <div className="text-xs text-theme-muted">por {requisition.approvedByName}</div>
                       )}
                     </div>
                   </div>
@@ -439,8 +439,8 @@ export default function RequisitionDetailPage() {
                     <div className="min-w-0">
                       <div className="font-medium text-theme">Separação Concluída</div>
                       <div className="text-sm text-theme-muted">{formatDateTime(requisition.separatedAt)}</div>
-                      {requisition.separatedBy && (
-                        <div className="text-xs text-theme-muted">por {requisition.separatedBy}</div>
+                      {requisition.separatedByName && (
+                        <div className="text-xs text-theme-muted">por {requisition.separatedByName}</div>
                       )}
                     </div>
                   </div>

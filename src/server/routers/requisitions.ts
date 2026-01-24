@@ -114,7 +114,30 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return requisition;
+      // Buscar nomes dos usuários
+      const userIds = [
+        requisition.createdBy,
+        requisition.requestedBy,
+        requisition.approvedBy,
+        requisition.separatedBy,
+      ].filter((id): id is string => !!id);
+
+      const users = userIds.length > 0
+        ? await prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, name: true },
+          })
+        : [];
+
+      const userMap = new Map(users.map((u) => [u.id, u.name]));
+
+      return {
+        ...requisition,
+        createdByName: requisition.createdBy ? userMap.get(requisition.createdBy) || requisition.createdBy : null,
+        requestedByName: requisition.requestedBy ? userMap.get(requisition.requestedBy) || requisition.requestedBy : null,
+        approvedByName: requisition.approvedBy ? userMap.get(requisition.approvedBy) || requisition.approvedBy : null,
+        separatedByName: requisition.separatedBy ? userMap.get(requisition.separatedBy) || requisition.separatedBy : null,
+      };
     }),
 
   // Criar requisição
