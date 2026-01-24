@@ -53,10 +53,11 @@ export const suppliersRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.supplier.findFirst({
+      console.log("[suppliers.byId] Debug:", { id: input.id, companyId: ctx.companyId });
+      const result = await ctx.prisma.supplier.findFirst({
         where: { 
           id: input.id,
-          ...tenantFilter(ctx.companyId, false),
+          ...tenantFilter(ctx.companyId, true),
         },
         include: {
           supplierMaterials: {
@@ -68,6 +69,8 @@ export const suppliersRouter = createTRPCRouter({
           },
         },
       });
+      console.log("[suppliers.byId] Result:", { found: !!result, id: result?.id });
+      return result;
     }),
 
   // Buscar fornecedor por ID ou código (para URLs amigáveis)
