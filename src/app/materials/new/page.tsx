@@ -38,7 +38,10 @@ interface MaterialFormData {
   icmsRate: number;
   location: string;
   isEpi: boolean;
+  epiCaCode: string;
   isOfficeSupply: boolean;
+  financialValidated: boolean;
+  financialValidatedCc: boolean;
   requiresQualityCheck: boolean;
   requiresQualityInspection: boolean;
   requiresMaterialCertificate: boolean;
@@ -80,7 +83,10 @@ export default function NewMaterialPage() {
     icmsRate: 0,
     location: "",
     isEpi: false,
+    epiCaCode: "",
     isOfficeSupply: false,
+    financialValidated: false,
+    financialValidatedCc: false,
     requiresQualityCheck: false,
     requiresQualityInspection: false,
     requiresMaterialCertificate: false,
@@ -131,7 +137,10 @@ export default function NewMaterialPage() {
       icmsRate: formData.icmsRate || undefined,
       location: formData.location || undefined,
       isEpi: formData.isEpi,
+      epiCaCode: formData.epiCaCode || undefined,
       isOfficeSupply: formData.isOfficeSupply,
+      financialValidated: formData.financialValidated,
+      financialValidatedCc: formData.financialValidatedCc,
       requiresQualityCheck: formData.requiresQualityCheck,
       requiresQualityInspection: formData.requiresQualityInspection,
       requiresMaterialCertificate: formData.requiresMaterialCertificate,
@@ -385,9 +394,23 @@ export default function NewMaterialPage() {
                       <input type="checkbox" name="isEpi" checked={formData.isEpi} onChange={handleChange} className="w-4 h-4 text-orange-600 bg-theme-input border-theme rounded focus:ring-orange-500" />
                       <span className="text-sm text-theme-secondary">Material é EPI</span>
                     </label>
+                    {formData.isEpi && (
+                      <div className="ml-6">
+                        <label htmlFor="epiCaCode" className="block text-xs font-medium text-theme-muted mb-1">Código CA (EPI)</label>
+                        <input type="text" id="epiCaCode" name="epiCaCode" value={formData.epiCaCode} onChange={handleChange} placeholder="Ex: 12345" className="w-full px-3 py-1.5 text-sm bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+                      </div>
+                    )}
                     <label className="flex items-center gap-2">
                       <input type="checkbox" name="isOfficeSupply" checked={formData.isOfficeSupply} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
                       <span className="text-sm text-theme-secondary">Material de escritório</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" name="financialValidated" checked={formData.financialValidated} onChange={handleChange} className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500" />
+                      <span className="text-sm text-theme-secondary">Validado pelo Financeiro</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" name="financialValidatedCc" checked={formData.financialValidatedCc} onChange={handleChange} className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500" />
+                      <span className="text-sm text-theme-secondary">Validado pelo Financeiro (Centro de Custo)</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" name="isShared" checked={formData.isShared} onChange={handleChange} className="w-4 h-4 text-purple-600 bg-theme-input border-theme rounded focus:ring-purple-500" />
