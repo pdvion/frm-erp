@@ -123,6 +123,8 @@ export const quotesRouter = createTRPCRouter({
         costCenterGroup: z.number().optional(),
         requisitionId: z.string().optional(),
         requesterName: z.string().optional(),
+        freightValue: z.number().default(0),
+        discountPercent: z.number().default(0),
         items: z.array(
           z.object({
             materialId: z.string(),

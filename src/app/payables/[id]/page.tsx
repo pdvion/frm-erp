@@ -254,6 +254,69 @@ export default function PayableDetailPage() {
               )}
             </div>
 
+            {/* Retenções de Impostos - VIO-650 */}
+            {payable.hasWithholding && (
+              <div className="bg-theme-card rounded-lg border border-theme p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Receipt className="w-5 h-5 text-theme-muted" />
+                  <h3 className="text-lg font-medium text-theme">Retenções de Impostos</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {payable.withholdingIr > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">IR</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingIr)}</p>
+                    </div>
+                  )}
+                  {payable.withholdingIss > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">ISS</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingIss)}</p>
+                    </div>
+                  )}
+                  {payable.withholdingInss > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">INSS</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingInss)}</p>
+                    </div>
+                  )}
+                  {payable.withholdingPis > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">PIS</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingPis)}</p>
+                    </div>
+                  )}
+                  {payable.withholdingCofins > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">COFINS</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingCofins)}</p>
+                    </div>
+                  )}
+                  {payable.withholdingCsll > 0 && (
+                    <div>
+                      <label className="text-sm text-theme-muted">CSLL</label>
+                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingCsll)}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t border-theme">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-theme-muted">Total de Retenções</span>
+                    <span className="font-bold text-theme">
+                      {formatCurrency(
+                        (payable.withholdingIr || 0) +
+                        (payable.withholdingIss || 0) +
+                        (payable.withholdingInss || 0) +
+                        (payable.withholdingPis || 0) +
+                        (payable.withholdingCofins || 0) +
+                        (payable.withholdingCsll || 0)
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Fornecedor */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">

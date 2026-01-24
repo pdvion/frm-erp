@@ -39,6 +39,12 @@ export default function NewQuotePage() {
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // Novos campos VIO-650
+  const [requesterName, setRequesterName] = useState("");
+  const [costCenterGroup, setCostCenterGroup] = useState<number | undefined>(undefined);
+  const [freightValue, setFreightValue] = useState(0);
+  const [discountPercent, setDiscountPercent] = useState(0);
 
   // Material search
   const [materialSearch, setMaterialSearch] = useState("");
@@ -123,6 +129,11 @@ export default function NewQuotePage() {
       paymentTerms: paymentTerms || undefined,
       deliveryTerms: deliveryTerms || undefined,
       notes: notes || undefined,
+      // Novos campos VIO-650
+      requesterName: requesterName || undefined,
+      costCenterGroup: costCenterGroup,
+      freightValue: freightValue || 0,
+      discountPercent: discountPercent || 0,
       items: items.map((item) => ({
         materialId: item.materialId,
         quantity: item.quantity,
@@ -403,6 +414,63 @@ export default function NewQuotePage() {
                     rows={4}
                     className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
+                </div>
+
+                {/* Novos campos VIO-650 */}
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
+                    Solicitante
+                  </label>
+                  <input
+                    type="text"
+                    value={requesterName}
+                    onChange={(e) => setRequesterName(e.target.value)}
+                    placeholder="Nome do solicitante"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
+                    Grupo Centro de Custo
+                  </label>
+                  <input
+                    type="number"
+                    value={costCenterGroup ?? ""}
+                    onChange={(e) => setCostCenterGroup(e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="Código do grupo"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
+                      Valor Frete
+                    </label>
+                    <input
+                      type="number"
+                      value={freightValue || ""}
+                      onChange={(e) => setFreightValue(parseFloat(e.target.value) || 0)}
+                      step="0.01"
+                      min="0"
+                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
+                      Desconto %
+                    </label>
+                    <input
+                      type="number"
+                      value={discountPercent || ""}
+                      onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
