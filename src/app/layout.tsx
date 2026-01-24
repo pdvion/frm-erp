@@ -37,6 +37,9 @@ export default function RootLayout({
           <AuthProvider>
             <TRPCProvider>
               <EnsureUserProvider>
+                <a href="#main-content" className="skip-link">
+                  Pular para o conteúdo principal
+                </a>
                 <AppLayout>{children}</AppLayout>
                 <Toaster />
               </EnsureUserProvider>

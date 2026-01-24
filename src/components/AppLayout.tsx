@@ -98,7 +98,7 @@ function AppLayoutContent({ children }: AppLayoutProps) {
             <UserMenu />
           </div>
         </header>
-        <main className="p-4 md:p-6">{children}</main>
+        <main id="main-content" className="p-4 md:p-6" tabIndex={-1}>{children}</main>
       </div>
       <SessionTimeout />
     </div>
