@@ -767,18 +767,18 @@ model Quote {
   attachment3     String?
   
   // Análise
-  analysisExecuted    Boolean     @default(false)
-  conversationHistory String?     @db.Text
+  analysisExecuted    Boolean     @default(false) @map("analysis_executed")
+  conversationHistory String?     @db.Text @map("conversation_history")
   
   // Centro de Custo
-  ownerCompanyId  String?
-  costCenterGroup Int?
+  ownerCompanyId  String? @map("owner_company_id")
+  costCenterGroup Int?    @map("cost_center_group")
   
   // Solicitação
-  requisitionId   String?
-  requesterName   String?
-  approverName    String?
-  completionPercent Int         @default(0)
+  requisitionId     String? @map("requisition_id")
+  requesterName     String? @map("requester_name")
+  approverName      String? @map("approver_name")
+  completionPercent Int     @default(0) @map("completion_percent")
   
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
