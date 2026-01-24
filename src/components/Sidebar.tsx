@@ -139,6 +139,7 @@ const menuItems: MenuItem[] = [
       { label: "Auditoria", href: "/audit" },
       { label: "Configurações", href: "/settings" },
       { label: "Empresas", href: "/settings/companies" },
+      { label: "Tokens de IA", href: "/settings/ai" },
       { label: "Design System", href: "/docs" },
     ],
   },
