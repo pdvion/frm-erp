@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -66,9 +67,11 @@ export default function NewPurchaseOrderPage() {
   // Mutation
   const createMutation = trpc.purchaseOrders.create.useMutation({
     onSuccess: (data) => {
+      toast.success("Pedido de compra criado com sucesso!");
       router.push(`/purchase-orders/${data.id}`);
     },
     onError: (err) => {
+      toast.error("Erro ao criar pedido de compra", { description: err.message });
       setError(err.message);
     },
   });

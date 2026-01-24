@@ -10,6 +10,7 @@ import {
   Loader2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
@@ -131,9 +132,11 @@ export default function EditSupplierPage() {
   
   const updateMutation = trpc.suppliers.update.useMutation({
     onSuccess: () => {
+      toast.success("Fornecedor atualizado com sucesso!");
       router.push("/suppliers");
     },
     onError: (err) => {
+      toast.error("Erro ao atualizar fornecedor", { description: err.message });
       setError(err.message);
       setIsSubmitting(false);
     },

@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { EnsureUserProvider } from "@/components/EnsureUserProvider";
 import { AppLayout } from "@/components/AppLayout";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
             <TRPCProvider>
               <EnsureUserProvider>
                 <AppLayout>{children}</AppLayout>
+                <Toaster />
               </EnsureUserProvider>
             </TRPCProvider>
           </AuthProvider>
