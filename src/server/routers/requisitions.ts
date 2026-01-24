@@ -702,4 +702,143 @@ export const requisitionsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return getWorkflowStatus(ctx.companyId!, "REQUISITION", input.id);
     }),
+
+  // Relatório de consumo de materiais - VIO-379
+  consumptionReport: tenantProcedure
+    .input(z.object({
+      dateFrom: z.date(),
+      dateTo: z.date(),
+      groupBy: z.enum(["material", "costCenter", "department", "type"]).default("material"),
+      materialId: z.string().optional(),
+      costCenter: z.string().optional(),
+      department: z.string().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { dateFrom, dateTo, groupBy, materialId, costCenter, department } = input;
+
+      // Buscar itens de requisições completadas no período
+      const items = await prisma.materialRequisitionItem.findMany({
+        where: {
+          requisition: {
+            ...tenantFilter(ctx.companyId, false),
+            status: "COMPLETED",
+            requestedAt: {
+              gte: dateFrom,
+              lte: dateTo,
+            },
+            ...(costCenter && { costCenter }),
+            ...(department && { department }),
+          },
+          ...(materialId && { materialId }),
+        },
+        include: {
+          material: {
+            select: {
+              id: true,
+              code: true,
+              description: true,
+              unit: true,
+              lastPurchasePrice: true,
+            },
+          },
+          requisition: {
+            select: {
+              id: true,
+              code: true,
+              costCenter: true,
+              department: true,
+              type: true,
+              requestedAt: true,
+            },
+          },
+        },
+      });
+
+      // Agrupar dados conforme solicitado
+      const grouped = new Map<string, {
+        key: string;
+        label: string;
+        totalQty: number;
+        totalValue: number;
+        items: number;
+        details: Array<{
+          materialCode: number;
+          materialDescription: string;
+          unit: string;
+          qty: number;
+          value: number;
+        }>;
+      }>();
+
+      for (const item of items) {
+        let key: string;
+        let label: string;
+
+        switch (groupBy) {
+          case "material":
+            key = item.materialId;
+            label = `${item.material.code} - ${item.material.description}`;
+            break;
+          case "costCenter":
+            key = item.requisition.costCenter || "SEM_CC";
+            label = item.requisition.costCenter || "Sem Centro de Custo";
+            break;
+          case "department":
+            key = item.requisition.department || "SEM_DEPT";
+            label = item.requisition.department || "Sem Departamento";
+            break;
+          case "type":
+            key = item.requisition.type;
+            label = item.requisition.type;
+            break;
+        }
+
+        const itemValue = (item.material.lastPurchasePrice || 0) * item.separatedQty;
+
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            key,
+            label,
+            totalQty: 0,
+            totalValue: 0,
+            items: 0,
+            details: [],
+          });
+        }
+
+        const group = grouped.get(key)!;
+        group.totalQty += item.separatedQty;
+        group.totalValue += itemValue;
+        group.items += 1;
+        
+        if (groupBy !== "material") {
+          group.details.push({
+            materialCode: item.material.code,
+            materialDescription: item.material.description,
+            unit: item.material.unit,
+            qty: item.separatedQty,
+            value: itemValue,
+          });
+        }
+      }
+
+      // Converter para array e ordenar por valor total
+      const data = Array.from(grouped.values())
+        .sort((a, b) => b.totalValue - a.totalValue);
+
+      // Calcular totais gerais
+      const totals = {
+        totalQty: data.reduce((sum, g) => sum + g.totalQty, 0),
+        totalValue: data.reduce((sum, g) => sum + g.totalValue, 0),
+        totalItems: data.reduce((sum, g) => sum + g.items, 0),
+        totalGroups: data.length,
+      };
+
+      return {
+        period: { from: dateFrom, to: dateTo },
+        groupBy,
+        data,
+        totals,
+      };
+    }),
 });
