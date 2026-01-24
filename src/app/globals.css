@@ -141,22 +141,43 @@ body {
 
 /* Botões Primários - Usar SEMPRE blue-600 para ações principais */
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 transition-colors;
+  background-color: #2563eb;
+  color: white;
+  transition: background-color 0.15s;
+}
+.btn-primary:hover {
+  background-color: #1d4ed8;
 }
 
 /* Botões Secundários */
 .btn-secondary {
-  @apply bg-theme-input text-theme-secondary border border-theme hover:bg-theme-hover transition-colors;
+  background-color: var(--input-bg);
+  color: var(--foreground-secondary);
+  border: 1px solid var(--card-border);
+  transition: background-color 0.15s;
+}
+.btn-secondary:hover {
+  background-color: var(--card-hover);
 }
 
 /* Botões de Perigo */
 .btn-danger {
-  @apply bg-red-600 text-white hover:bg-red-700 transition-colors;
+  background-color: #dc2626;
+  color: white;
+  transition: background-color 0.15s;
+}
+.btn-danger:hover {
+  background-color: #b91c1c;
 }
 
 /* Botões de Sucesso */
 .btn-success {
-  @apply bg-green-600 text-white hover:bg-green-700 transition-colors;
+  background-color: #16a34a;
+  color: white;
+  transition: background-color 0.15s;
+}
+.btn-success:hover {
+  background-color: #15803d;
 }
 
 /* Espaçamentos Padrão (8px grid) */
