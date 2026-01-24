@@ -1,0 +1,176 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "FRM ERP" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e7]
+          - generic [ref=e11]: FRM ERP
+        - button "Colapsar menu" [ref=e12]:
+          - img [ref=e13]
+      - navigation [ref=e15]:
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e19]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - button "Compras" [ref=e24]:
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - generic [ref=e30]: Compras
+              - img [ref=e31]
+            - list [ref=e33]:
+              - listitem [ref=e34]:
+                - link "Materiais" [ref=e35] [cursor=pointer]:
+                  - /url: /materials
+              - listitem [ref=e36]:
+                - link "Fornecedores" [ref=e37] [cursor=pointer]:
+                  - /url: /suppliers
+              - listitem [ref=e38]:
+                - link "Cotações" [ref=e39] [cursor=pointer]:
+                  - /url: /quotes
+              - listitem [ref=e40]:
+                - link "Ordens de Compra" [ref=e41] [cursor=pointer]:
+                  - /url: /purchase-orders
+              - listitem [ref=e42]:
+                - link "Recebimento" [ref=e43] [cursor=pointer]:
+                  - /url: /receiving
+              - listitem [ref=e44]:
+                - link "Requisições" [ref=e45] [cursor=pointer]:
+                  - /url: /requisitions
+          - listitem [ref=e46]:
+            - button "Estoque" [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - generic [ref=e52]: Estoque
+              - img [ref=e53]
+          - listitem [ref=e55]:
+            - button "Vendas" [ref=e56]:
+              - generic [ref=e57]:
+                - img [ref=e58]
+                - generic [ref=e61]: Vendas
+              - img [ref=e62]
+          - listitem [ref=e64]:
+            - button "Financeiro" [ref=e65]:
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e69]: Financeiro
+              - img [ref=e70]
+          - listitem [ref=e72]:
+            - button "Fiscal" [ref=e73]:
+              - generic [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Fiscal
+              - img [ref=e79]
+          - listitem [ref=e81]:
+            - button "Produção" [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e86]: Produção
+              - img [ref=e87]
+          - listitem [ref=e89]:
+            - button "RH" [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - generic [ref=e97]: RH
+              - img [ref=e98]
+          - listitem [ref=e100]:
+            - button "Relatórios" [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e105]: Relatórios
+              - img [ref=e106]
+          - listitem [ref=e108]:
+            - button "BI & Gestão" [ref=e109]:
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e114]: BI & Gestão
+              - img [ref=e115]
+          - listitem [ref=e117]:
+            - button "Sistema" [ref=e118]:
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e123]: Sistema
+              - img [ref=e124]
+    - generic [ref=e126]:
+      - banner [ref=e127]:
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - button "Tema Claro" [ref=e135]:
+              - img [ref=e136]
+            - button "Tema Escuro" [ref=e142]:
+              - img [ref=e143]
+            - button "Tema Sistema" [ref=e145]:
+              - img [ref=e146]
+          - button [ref=e149]:
+            - img [ref=e150]
+          - button "Menu do usuário" [ref=e154]:
+            - img [ref=e156]
+            - generic [ref=e159]:
+              - generic [ref=e160]: paulo.vion
+              - generic [ref=e161]: paulo.vion@me.com
+            - img [ref=e162]
+      - main [ref=e164]:
+        - generic [ref=e165]:
+          - generic [ref=e166]:
+            - navigation "Breadcrumb" [ref=e167]:
+              - list [ref=e168]:
+                - listitem [ref=e169]:
+                  - link "Início" [ref=e170] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e171]
+                    - generic [ref=e174]: Início
+                - listitem [ref=e175]:
+                  - img [ref=e176]
+                  - link "Compras" [ref=e178] [cursor=pointer]:
+                    - /url: /purchase-orders
+                    - generic [ref=e179]: Compras
+                - listitem [ref=e180]:
+                  - img [ref=e181]
+                  - generic [ref=e183]: Fornecedores
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - img [ref=e187]
+                - heading "Fornecedores" [level=1] [ref=e194]
+              - generic [ref=e195]:
+                - link "Documentação" [ref=e196] [cursor=pointer]:
+                  - /url: /docs
+                  - img [ref=e197]
+                - button "Ajuda" [ref=e199]:
+                  - img [ref=e200]
+                - link "Novo Fornecedor" [ref=e203] [cursor=pointer]:
+                  - /url: /suppliers/new
+                  - img [ref=e204]
+                  - generic [ref=e205]: Novo Fornecedor
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - generic [ref=e208]:
+                - img [ref=e209]
+                - textbox "Buscar por razão social, nome fantasia ou CNPJ..." [ref=e212]
+              - generic [ref=e213]:
+                - img [ref=e214]
+                - combobox [ref=e216]:
+                  - option "Todos os status" [selected]
+                  - option "Ativos"
+                  - option "Inativos"
+                  - option "Bloqueados"
+              - generic [ref=e217]:
+                - button "Excel" [disabled] [ref=e218]:
+                  - img [ref=e219]
+                  - generic [ref=e222]: Excel
+                - button "PDF" [disabled] [ref=e223]:
+                  - img [ref=e224]
+                  - generic [ref=e227]: PDF
+            - generic [ref=e231]: Carregando fornecedores...
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e237] [cursor=pointer]:
+    - img [ref=e238]
+  - alert [ref=e241]
+```

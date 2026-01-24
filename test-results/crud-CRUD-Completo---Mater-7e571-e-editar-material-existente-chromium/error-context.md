@@ -1,0 +1,134 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "FRM ERP" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e7]
+          - generic [ref=e11]: FRM ERP
+        - button "Colapsar menu" [ref=e12]:
+          - img [ref=e13]
+      - navigation [ref=e15]:
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e19]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - button "Compras" [ref=e24]:
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - generic [ref=e30]: Compras
+              - img [ref=e31]
+            - list [ref=e33]:
+              - listitem [ref=e34]:
+                - link "Materiais" [ref=e35] [cursor=pointer]:
+                  - /url: /materials
+              - listitem [ref=e36]:
+                - link "Fornecedores" [ref=e37] [cursor=pointer]:
+                  - /url: /suppliers
+              - listitem [ref=e38]:
+                - link "Cotações" [ref=e39] [cursor=pointer]:
+                  - /url: /quotes
+              - listitem [ref=e40]:
+                - link "Ordens de Compra" [ref=e41] [cursor=pointer]:
+                  - /url: /purchase-orders
+              - listitem [ref=e42]:
+                - link "Recebimento" [ref=e43] [cursor=pointer]:
+                  - /url: /receiving
+              - listitem [ref=e44]:
+                - link "Requisições" [ref=e45] [cursor=pointer]:
+                  - /url: /requisitions
+          - listitem [ref=e46]:
+            - button "Estoque" [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - generic [ref=e52]: Estoque
+              - img [ref=e53]
+          - listitem [ref=e55]:
+            - button "Vendas" [ref=e56]:
+              - generic [ref=e57]:
+                - img [ref=e58]
+                - generic [ref=e61]: Vendas
+              - img [ref=e62]
+          - listitem [ref=e64]:
+            - button "Financeiro" [ref=e65]:
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e69]: Financeiro
+              - img [ref=e70]
+          - listitem [ref=e72]:
+            - button "Fiscal" [ref=e73]:
+              - generic [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Fiscal
+              - img [ref=e79]
+          - listitem [ref=e81]:
+            - button "Produção" [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e86]: Produção
+              - img [ref=e87]
+          - listitem [ref=e89]:
+            - button "RH" [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - generic [ref=e97]: RH
+              - img [ref=e98]
+          - listitem [ref=e100]:
+            - button "Relatórios" [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e105]: Relatórios
+              - img [ref=e106]
+          - listitem [ref=e108]:
+            - button "BI & Gestão" [ref=e109]:
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e114]: BI & Gestão
+              - img [ref=e115]
+          - listitem [ref=e117]:
+            - button "Sistema" [ref=e118]:
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e123]: Sistema
+              - img [ref=e124]
+    - generic [ref=e126]:
+      - banner [ref=e127]:
+        - button "FRM Indústria e Comércio Ltda" [ref=e131]:
+          - img [ref=e132]
+          - generic [ref=e136]: FRM Indústria e Comércio Ltda
+          - img [ref=e137]
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - button "Tema Claro" [ref=e141]:
+              - img [ref=e142]
+            - button "Tema Escuro" [ref=e148]:
+              - img [ref=e149]
+            - button "Tema Sistema" [ref=e151]:
+              - img [ref=e152]
+          - button "9+" [ref=e155]:
+            - img [ref=e156]
+            - generic [ref=e159]: 9+
+          - button "Menu do usuário" [ref=e161]:
+            - img [ref=e163]
+            - generic [ref=e166]:
+              - generic [ref=e167]: paulo.vion
+              - generic [ref=e168]: paulo.vion@me.com
+            - img [ref=e169]
+      - main [ref=e171]:
+        - generic [ref=e173]:
+          - heading "Material não encontrado" [level=1] [ref=e174]
+          - link "Voltar para listagem" [ref=e175] [cursor=pointer]:
+            - /url: /materials
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e181] [cursor=pointer]:
+    - img [ref=e182]
+  - alert [ref=e185]
+```

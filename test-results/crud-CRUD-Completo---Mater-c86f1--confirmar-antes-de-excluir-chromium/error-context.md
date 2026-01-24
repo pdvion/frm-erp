@@ -1,0 +1,354 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "FRM ERP" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e7]
+          - generic [ref=e11]: FRM ERP
+        - button "Colapsar menu" [ref=e12]:
+          - img [ref=e13]
+      - navigation [ref=e15]:
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e19]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - button "Compras" [ref=e24]:
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - generic [ref=e30]: Compras
+              - img [ref=e31]
+            - list [ref=e33]:
+              - listitem [ref=e34]:
+                - link "Materiais" [ref=e35] [cursor=pointer]:
+                  - /url: /materials
+              - listitem [ref=e36]:
+                - link "Fornecedores" [ref=e37] [cursor=pointer]:
+                  - /url: /suppliers
+              - listitem [ref=e38]:
+                - link "Cotações" [ref=e39] [cursor=pointer]:
+                  - /url: /quotes
+              - listitem [ref=e40]:
+                - link "Ordens de Compra" [ref=e41] [cursor=pointer]:
+                  - /url: /purchase-orders
+              - listitem [ref=e42]:
+                - link "Recebimento" [ref=e43] [cursor=pointer]:
+                  - /url: /receiving
+              - listitem [ref=e44]:
+                - link "Requisições" [ref=e45] [cursor=pointer]:
+                  - /url: /requisitions
+          - listitem [ref=e46]:
+            - button "Estoque" [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - generic [ref=e52]: Estoque
+              - img [ref=e53]
+          - listitem [ref=e55]:
+            - button "Vendas" [ref=e56]:
+              - generic [ref=e57]:
+                - img [ref=e58]
+                - generic [ref=e61]: Vendas
+              - img [ref=e62]
+          - listitem [ref=e64]:
+            - button "Financeiro" [ref=e65]:
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e69]: Financeiro
+              - img [ref=e70]
+          - listitem [ref=e72]:
+            - button "Fiscal" [ref=e73]:
+              - generic [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Fiscal
+              - img [ref=e79]
+          - listitem [ref=e81]:
+            - button "Produção" [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e86]: Produção
+              - img [ref=e87]
+          - listitem [ref=e89]:
+            - button "RH" [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - generic [ref=e97]: RH
+              - img [ref=e98]
+          - listitem [ref=e100]:
+            - button "Relatórios" [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e105]: Relatórios
+              - img [ref=e106]
+          - listitem [ref=e108]:
+            - button "BI & Gestão" [ref=e109]:
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e114]: BI & Gestão
+              - img [ref=e115]
+          - listitem [ref=e117]:
+            - button "Sistema" [ref=e118]:
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e123]: Sistema
+              - img [ref=e124]
+    - generic [ref=e126]:
+      - banner [ref=e127]:
+        - button "FRM Indústria e Comércio Ltda" [ref=e131]:
+          - img [ref=e132]
+          - generic [ref=e136]: FRM Indústria e Comércio Ltda
+          - img [ref=e137]
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - button "Tema Claro" [ref=e141]:
+              - img [ref=e142]
+            - button "Tema Escuro" [ref=e148]:
+              - img [ref=e149]
+            - button "Tema Sistema" [ref=e151]:
+              - img [ref=e152]
+          - button "9+" [ref=e155]:
+            - img [ref=e156]
+            - generic [ref=e159]: 9+
+          - button "Menu do usuário" [ref=e161]:
+            - img [ref=e163]
+            - generic [ref=e166]:
+              - generic [ref=e167]: paulo.vion
+              - generic [ref=e168]: paulo.vion@me.com
+            - img [ref=e169]
+      - main [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - navigation "Breadcrumb" [ref=e174]:
+              - list [ref=e175]:
+                - listitem [ref=e176]:
+                  - link "Início" [ref=e177] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e178]
+                    - generic [ref=e181]: Início
+                - listitem [ref=e182]:
+                  - img [ref=e183]
+                  - link "Compras" [ref=e185] [cursor=pointer]:
+                    - /url: /purchase-orders
+                    - generic [ref=e186]: Compras
+                - listitem [ref=e187]:
+                  - img [ref=e188]
+                  - generic [ref=e190]: Materiais
+            - generic [ref=e191]:
+              - generic [ref=e192]:
+                - img [ref=e194]
+                - heading "Materiais" [level=1] [ref=e200]
+              - generic [ref=e201]:
+                - link "Documentação" [ref=e202] [cursor=pointer]:
+                  - /url: /docs
+                  - img [ref=e203]
+                - button "Ajuda" [ref=e205]:
+                  - img [ref=e206]
+                - link "Novo Material" [ref=e209] [cursor=pointer]:
+                  - /url: /materials/new
+                  - img [ref=e210]
+                  - generic [ref=e211]: Novo Material
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]:
+                - img [ref=e215]
+                - textbox "Buscar por descrição ou código..." [ref=e218]
+              - generic [ref=e219]:
+                - img [ref=e220]
+                - combobox [ref=e222]:
+                  - option "Todos os status" [selected]
+                  - option "Ativos"
+                  - option "Inativos"
+                  - option "Bloqueados"
+            - table [ref=e225]:
+              - rowgroup [ref=e226]:
+                - row "Código Descrição Categoria Unidade Status Compartilhado Ações" [ref=e227]:
+                  - columnheader "Código" [ref=e228]
+                  - columnheader "Descrição" [ref=e229]
+                  - columnheader "Categoria" [ref=e230]
+                  - columnheader "Unidade" [ref=e231]
+                  - columnheader "Status" [ref=e232]
+                  - columnheader "Compartilhado" [ref=e233]
+                  - columnheader "Ações" [ref=e234]
+              - rowgroup [ref=e235]:
+                - row "1001 MP-001 Aço Carbono 1020 - Barra Redonda 1\" Matéria Prima KG Ativo Não" [ref=e236]:
+                  - cell "1001 MP-001" [ref=e237]:
+                    - generic [ref=e238]: "1001"
+                    - generic [ref=e239]: MP-001
+                  - cell "Aço Carbono 1020 - Barra Redonda 1\"" [ref=e240]:
+                    - generic [ref=e241]: Aço Carbono 1020 - Barra Redonda 1"
+                  - cell "Matéria Prima" [ref=e242]:
+                    - generic [ref=e243]: Matéria Prima
+                  - cell "KG" [ref=e244]:
+                    - generic [ref=e245]: KG
+                  - cell "Ativo" [ref=e246]:
+                    - generic [ref=e247]: Ativo
+                  - cell "Não" [ref=e248]
+                  - cell [ref=e249]:
+                    - generic [ref=e250]:
+                      - link "Visualizar" [ref=e251] [cursor=pointer]:
+                        - /url: /materials/1aca9404-e37d-4c30-94c0-f95ccb520c39
+                        - img [ref=e252]
+                      - link "Editar" [ref=e255] [cursor=pointer]:
+                        - /url: /materials/1aca9404-e37d-4c30-94c0-f95ccb520c39/edit
+                        - img [ref=e256]
+                      - button "Excluir" [active] [ref=e259]:
+                        - img [ref=e260]
+                - row "1002 MP-002 Alumínio 6061 - Chapa 3mm Matéria Prima KG Ativo Não" [ref=e263]:
+                  - cell "1002 MP-002" [ref=e264]:
+                    - generic [ref=e265]: "1002"
+                    - generic [ref=e266]: MP-002
+                  - cell "Alumínio 6061 - Chapa 3mm" [ref=e267]:
+                    - generic [ref=e268]: Alumínio 6061 - Chapa 3mm
+                  - cell "Matéria Prima" [ref=e269]:
+                    - generic [ref=e270]: Matéria Prima
+                  - cell "KG" [ref=e271]:
+                    - generic [ref=e272]: KG
+                  - cell "Ativo" [ref=e273]:
+                    - generic [ref=e274]: Ativo
+                  - cell "Não" [ref=e275]
+                  - cell [ref=e276]:
+                    - generic [ref=e277]:
+                      - link "Visualizar" [ref=e278] [cursor=pointer]:
+                        - /url: /materials/0caacf80-abcd-47ef-b733-ae6100248bb7
+                        - img [ref=e279]
+                      - link "Editar" [ref=e282] [cursor=pointer]:
+                        - /url: /materials/0caacf80-abcd-47ef-b733-ae6100248bb7/edit
+                        - img [ref=e283]
+                      - button "Excluir" [ref=e286]:
+                        - img [ref=e287]
+                - row "1003 CE-001 Capacitor Cerâmico 100nF Componentes Eletrônicos UN Ativo Não" [ref=e290]:
+                  - cell "1003 CE-001" [ref=e291]:
+                    - generic [ref=e292]: "1003"
+                    - generic [ref=e293]: CE-001
+                  - cell "Capacitor Cerâmico 100nF" [ref=e294]:
+                    - generic [ref=e295]: Capacitor Cerâmico 100nF
+                  - cell "Componentes Eletrônicos" [ref=e296]:
+                    - generic [ref=e297]: Componentes Eletrônicos
+                  - cell "UN" [ref=e298]:
+                    - generic [ref=e299]: UN
+                  - cell "Ativo" [ref=e300]:
+                    - generic [ref=e301]: Ativo
+                  - cell "Não" [ref=e302]
+                  - cell [ref=e303]:
+                    - generic [ref=e304]:
+                      - link "Visualizar" [ref=e305] [cursor=pointer]:
+                        - /url: /materials/9a6126c5-e35a-4566-a2c1-9b18f068b899
+                        - img [ref=e306]
+                      - link "Editar" [ref=e309] [cursor=pointer]:
+                        - /url: /materials/9a6126c5-e35a-4566-a2c1-9b18f068b899/edit
+                        - img [ref=e310]
+                      - button "Excluir" [ref=e313]:
+                        - img [ref=e314]
+                - row "1004 CE-002 Resistor 10K 1/4W Componentes Eletrônicos UN Ativo Não" [ref=e317]:
+                  - cell "1004 CE-002" [ref=e318]:
+                    - generic [ref=e319]: "1004"
+                    - generic [ref=e320]: CE-002
+                  - cell "Resistor 10K 1/4W" [ref=e321]:
+                    - generic [ref=e322]: Resistor 10K 1/4W
+                  - cell "Componentes Eletrônicos" [ref=e323]:
+                    - generic [ref=e324]: Componentes Eletrônicos
+                  - cell "UN" [ref=e325]:
+                    - generic [ref=e326]: UN
+                  - cell "Ativo" [ref=e327]:
+                    - generic [ref=e328]: Ativo
+                  - cell "Não" [ref=e329]
+                  - cell [ref=e330]:
+                    - generic [ref=e331]:
+                      - link "Visualizar" [ref=e332] [cursor=pointer]:
+                        - /url: /materials/ebcef786-4a6c-41f7-b8ad-c174d6be96c5
+                        - img [ref=e333]
+                      - link "Editar" [ref=e336] [cursor=pointer]:
+                        - /url: /materials/ebcef786-4a6c-41f7-b8ad-c174d6be96c5/edit
+                        - img [ref=e337]
+                      - button "Excluir" [ref=e340]:
+                        - img [ref=e341]
+                - row "1005 EM-001 Caixa Papelão 30x20x15 Embalagens UN Ativo Sim" [ref=e344]:
+                  - cell "1005 EM-001" [ref=e345]:
+                    - generic [ref=e346]: "1005"
+                    - generic [ref=e347]: EM-001
+                  - cell "Caixa Papelão 30x20x15" [ref=e348]:
+                    - generic [ref=e349]: Caixa Papelão 30x20x15
+                  - cell "Embalagens" [ref=e350]:
+                    - generic [ref=e351]: Embalagens
+                  - cell "UN" [ref=e352]:
+                    - generic [ref=e353]: UN
+                  - cell "Ativo" [ref=e354]:
+                    - generic [ref=e355]: Ativo
+                  - cell "Sim" [ref=e356]:
+                    - generic [ref=e357]:
+                      - img [ref=e358]
+                      - text: Sim
+                  - cell [ref=e362]:
+                    - generic [ref=e363]:
+                      - link "Visualizar" [ref=e364] [cursor=pointer]:
+                        - /url: /materials/568f7c7c-2750-4015-8709-b9aa0efa15cc
+                        - img [ref=e365]
+                      - link "Editar" [ref=e368] [cursor=pointer]:
+                        - /url: /materials/568f7c7c-2750-4015-8709-b9aa0efa15cc/edit
+                        - img [ref=e369]
+                      - button "Excluir" [ref=e372]:
+                        - img [ref=e373]
+                - row "7284 Yeir Teste IQF Embalagens KG Ativo Sim" [ref=e376]:
+                  - cell "7284 Yeir" [ref=e377]:
+                    - generic [ref=e378]: "7284"
+                    - generic [ref=e379]: Yeir
+                  - cell "Teste IQF" [ref=e380]:
+                    - generic [ref=e381]: Teste
+                    - generic "Requer IQF" [ref=e383]:
+                      - img [ref=e384]
+                      - text: IQF
+                  - cell "Embalagens" [ref=e387]:
+                    - generic [ref=e388]: Embalagens
+                  - cell "KG" [ref=e389]:
+                    - generic [ref=e390]: KG
+                  - cell "Ativo" [ref=e391]:
+                    - generic [ref=e392]: Ativo
+                  - cell "Sim" [ref=e393]:
+                    - generic [ref=e394]:
+                      - img [ref=e395]
+                      - text: Sim
+                  - cell [ref=e399]:
+                    - generic [ref=e400]:
+                      - link "Visualizar" [ref=e401] [cursor=pointer]:
+                        - /url: /materials/ecf78fbd-76e7-4d1d-9847-4ec804ca1cef
+                        - img [ref=e402]
+                      - link "Editar" [ref=e405] [cursor=pointer]:
+                        - /url: /materials/ecf78fbd-76e7-4d1d-9847-4ec804ca1cef/edit
+                        - img [ref=e406]
+                      - button "Excluir" [ref=e409]:
+                        - img [ref=e410]
+                - row "9999 TEST-001 Material de Teste E2E Ferramentas KG Ativo Não" [ref=e413]:
+                  - cell "9999 TEST-001" [ref=e414]:
+                    - generic [ref=e415]: "9999"
+                    - generic [ref=e416]: TEST-001
+                  - cell "Material de Teste E2E" [ref=e417]:
+                    - generic [ref=e418]: Material de Teste E2E
+                  - cell "Ferramentas" [ref=e419]:
+                    - generic [ref=e420]: Ferramentas
+                  - cell "KG" [ref=e421]:
+                    - generic [ref=e422]: KG
+                  - cell "Ativo" [ref=e423]:
+                    - generic [ref=e424]: Ativo
+                  - cell "Não" [ref=e425]
+                  - cell [ref=e426]:
+                    - generic [ref=e427]:
+                      - link "Visualizar" [ref=e428] [cursor=pointer]:
+                        - /url: /materials/107e9cfa-c5b8-4887-b8f7-5e322c0e8e47
+                        - img [ref=e429]
+                      - link "Editar" [ref=e432] [cursor=pointer]:
+                        - /url: /materials/107e9cfa-c5b8-4887-b8f7-5e322c0e8e47/edit
+                        - img [ref=e433]
+                      - button "Excluir" [ref=e436]:
+                        - img [ref=e437]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e445] [cursor=pointer]:
+    - img [ref=e446]
+  - alert [ref=e449]
+```

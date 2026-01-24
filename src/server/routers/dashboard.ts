@@ -372,7 +372,7 @@ export const dashboardRouter = createTRPCRouter({
       prisma.$queryRaw<Array<{ name: string; value: number }>>`
         SELECT 
           COALESCE(c.name, 'Sem Categoria') as name,
-          COALESCE(SUM(ri."totalValue"), 0)::float as value
+          COALESCE(SUM(ri."totalInvoice"), 0)::float as value
         FROM received_invoices ri
         LEFT JOIN materials m ON m.id = (
           SELECT "materialId" FROM received_invoice_items WHERE "invoiceId" = ri.id LIMIT 1
@@ -391,7 +391,7 @@ export const dashboardRouter = createTRPCRouter({
       prisma.$queryRaw<Array<{ name: string; value: number }>>`
         SELECT 
           COALESCE(c.name, 'Sem Categoria') as name,
-          COALESCE(SUM(i.quantity * m."averageCost"), 0)::float as value
+          COALESCE(SUM(i.quantity * COALESCE(m."lastPurchasePrice", 0)), 0)::float as value
         FROM inventory i
         JOIN materials m ON m.id = i."materialId"
         LEFT JOIN categories c ON c.id = m."categoryId"
@@ -522,7 +522,7 @@ export const dashboardRouter = createTRPCRouter({
     const purchasesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
       SELECT 
         COALESCE(c.name, 'Sem Categoria') as name,
-        COALESCE(SUM(rii."totalValue"), 0)::float as value
+        COALESCE(SUM(rii."totalPrice"), 0)::float as value
       FROM received_invoice_items rii
       JOIN received_invoices ri ON ri.id = rii."invoiceId"
       JOIN materials m ON m.id = rii."materialId"
@@ -871,7 +871,7 @@ export const dashboardRouter = createTRPCRouter({
     const salesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
       SELECT 
         COALESCE(c.name, 'Sem Categoria') as name,
-        COALESCE(SUM(soi."totalValue"), 0)::float as value
+        COALESCE(SUM(soi."totalPrice"), 0)::float as value
       FROM sales_order_items soi
       JOIN sales_orders so ON so.id = soi."salesOrderId"
       JOIN materials m ON m.id = soi."materialId"
@@ -1531,8 +1531,8 @@ export const dashboardRouter = createTRPCRouter({
       out_of_stock: bigint;
     }]>`
       SELECT 
-        COALESCE(SUM(i.quantity * COALESCE(m."averageCost", 0)), 0)::float as total_value,
-        COUNT(*) FILTER (WHERE i.quantity <= COALESCE(m."minimumStock", 0) AND i.quantity > 0) as low_stock,
+        COALESCE(SUM(i.quantity * COALESCE(m."lastPurchasePrice", 0)), 0)::float as total_value,
+        COUNT(*) FILTER (WHERE i.quantity <= COALESCE(m."minQuantity", 0) AND i.quantity > 0) as low_stock,
         COUNT(*) FILTER (WHERE i.quantity <= 0) as out_of_stock
       FROM inventory i
       JOIN materials m ON m.id = i."materialId"

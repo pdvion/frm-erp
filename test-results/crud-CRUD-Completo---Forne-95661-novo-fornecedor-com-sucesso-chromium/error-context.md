@@ -1,0 +1,327 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "FRM ERP" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e7]
+          - generic [ref=e11]: FRM ERP
+        - button "Colapsar menu" [ref=e12]:
+          - img [ref=e13]
+      - navigation [ref=e15]:
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e19]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - button "Compras" [ref=e24]:
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - generic [ref=e30]: Compras
+              - img [ref=e31]
+            - list [ref=e33]:
+              - listitem [ref=e34]:
+                - link "Materiais" [ref=e35] [cursor=pointer]:
+                  - /url: /materials
+              - listitem [ref=e36]:
+                - link "Fornecedores" [ref=e37] [cursor=pointer]:
+                  - /url: /suppliers
+              - listitem [ref=e38]:
+                - link "Cotações" [ref=e39] [cursor=pointer]:
+                  - /url: /quotes
+              - listitem [ref=e40]:
+                - link "Ordens de Compra" [ref=e41] [cursor=pointer]:
+                  - /url: /purchase-orders
+              - listitem [ref=e42]:
+                - link "Recebimento" [ref=e43] [cursor=pointer]:
+                  - /url: /receiving
+              - listitem [ref=e44]:
+                - link "Requisições" [ref=e45] [cursor=pointer]:
+                  - /url: /requisitions
+          - listitem [ref=e46]:
+            - button "Estoque" [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - generic [ref=e52]: Estoque
+              - img [ref=e53]
+          - listitem [ref=e55]:
+            - button "Vendas" [ref=e56]:
+              - generic [ref=e57]:
+                - img [ref=e58]
+                - generic [ref=e61]: Vendas
+              - img [ref=e62]
+          - listitem [ref=e64]:
+            - button "Financeiro" [ref=e65]:
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e69]: Financeiro
+              - img [ref=e70]
+          - listitem [ref=e72]:
+            - button "Fiscal" [ref=e73]:
+              - generic [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Fiscal
+              - img [ref=e79]
+          - listitem [ref=e81]:
+            - button "Produção" [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e86]: Produção
+              - img [ref=e87]
+          - listitem [ref=e89]:
+            - button "RH" [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - generic [ref=e97]: RH
+              - img [ref=e98]
+          - listitem [ref=e100]:
+            - button "Relatórios" [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e105]: Relatórios
+              - img [ref=e106]
+          - listitem [ref=e108]:
+            - button "BI & Gestão" [ref=e109]:
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e114]: BI & Gestão
+              - img [ref=e115]
+          - listitem [ref=e117]:
+            - button "Sistema" [ref=e118]:
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e123]: Sistema
+              - img [ref=e124]
+    - generic [ref=e126]:
+      - banner [ref=e127]:
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - button "Tema Claro" [ref=e135]:
+              - img [ref=e136]
+            - button "Tema Escuro" [ref=e142]:
+              - img [ref=e143]
+            - button "Tema Sistema" [ref=e145]:
+              - img [ref=e146]
+          - button [ref=e149]:
+            - img [ref=e150]
+          - button "Menu do usuário" [ref=e154]:
+            - img [ref=e156]
+            - generic [ref=e159]:
+              - generic [ref=e160]: paulo.vion
+              - generic [ref=e161]: paulo.vion@me.com
+            - img [ref=e162]
+      - main [ref=e164]:
+        - generic [ref=e165]:
+          - generic [ref=e168]:
+            - link "Voltar" [ref=e169] [cursor=pointer]:
+              - /url: /suppliers
+              - img [ref=e170]
+              - generic [ref=e172]: Voltar
+            - img [ref=e174]
+            - generic [ref=e179]:
+              - heading "Novo Fornecedor" [level=1] [ref=e181]
+              - paragraph [ref=e182]: CP11 - Cadastro de Fornecedores
+          - generic [ref=e183]:
+            - heading "Dados Básicos" [level=2] [ref=e184]
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - generic [ref=e187]: Código *
+                - spinbutton "Código *" [ref=e188]
+              - generic [ref=e189]:
+                - generic [ref=e190]: CNPJ
+                - textbox "CNPJ" [ref=e191]:
+                  - /placeholder: 00.000.000/0000-00
+              - generic [ref=e192]:
+                - generic [ref=e193]: Razão Social *
+                - textbox "Razão Social *" [ref=e194]
+              - generic [ref=e195]:
+                - generic [ref=e196]: Nome Fantasia
+                - textbox "Nome Fantasia" [ref=e197]
+              - generic [ref=e198]:
+                - generic [ref=e199]: Inscrição Estadual
+                - textbox "Inscrição Estadual" [ref=e200]
+              - generic [ref=e201]:
+                - generic [ref=e202]: Inscrição Municipal
+                - textbox "Inscrição Municipal" [ref=e203]
+            - heading "Endereço" [level=2] [ref=e204]
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - generic [ref=e207]: CEP
+                - textbox "CEP" [ref=e208]:
+                  - /placeholder: 00000-000
+              - generic [ref=e209]:
+                - generic [ref=e210]: Endereço
+                - textbox "Endereço" [ref=e211]
+              - generic [ref=e212]:
+                - generic [ref=e213]: Número
+                - textbox "Número" [ref=e214]
+              - generic [ref=e215]:
+                - generic [ref=e216]: Complemento
+                - textbox "Complemento" [ref=e217]
+              - generic [ref=e218]:
+                - generic [ref=e219]: Bairro
+                - textbox "Bairro" [ref=e220]
+              - generic [ref=e221]:
+                - generic [ref=e222]: Cidade
+                - textbox "Cidade" [ref=e223]
+              - generic [ref=e224]:
+                - generic [ref=e225]: UF
+                - combobox "UF" [ref=e226]:
+                  - option "Selecione" [selected]
+                  - option "AC"
+                  - option "AL"
+                  - option "AP"
+                  - option "AM"
+                  - option "BA"
+                  - option "CE"
+                  - option "DF"
+                  - option "ES"
+                  - option "GO"
+                  - option "MA"
+                  - option "MT"
+                  - option "MS"
+                  - option "MG"
+                  - option "PA"
+                  - option "PB"
+                  - option "PR"
+                  - option "PE"
+                  - option "PI"
+                  - option "RJ"
+                  - option "RN"
+                  - option "RS"
+                  - option "RO"
+                  - option "RR"
+                  - option "SC"
+                  - option "SP"
+                  - option "SE"
+                  - option "TO"
+            - heading "Contato" [level=2] [ref=e227]
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e230]: Telefone
+                - textbox "Telefone" [ref=e231]:
+                  - /placeholder: (00) 0000-0000
+              - generic [ref=e232]:
+                - generic [ref=e233]: Celular
+                - textbox "Celular" [ref=e234]:
+                  - /placeholder: (00) 00000-0000
+              - generic [ref=e235]:
+                - generic [ref=e236]: E-mail
+                - textbox "E-mail" [ref=e237]
+              - generic [ref=e238]:
+                - generic [ref=e239]: Website
+                - textbox "Website" [ref=e240]:
+                  - /placeholder: https://
+              - generic [ref=e241]:
+                - generic [ref=e242]: Nome do Contato
+                - textbox "Nome do Contato" [ref=e243]
+              - generic [ref=e244]:
+                - generic [ref=e245]: Condições de Pagamento
+                - textbox "Condições de Pagamento" [ref=e246]:
+                  - /placeholder: "Ex: 30/60/90 dias"
+            - heading "Categorias de Fornecimento" [level=2] [ref=e247]
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - checkbox "Embalagens" [ref=e250]
+                - generic [ref=e251]: Embalagens
+              - generic [ref=e252]:
+                - checkbox "Tintas" [ref=e253]
+                - generic [ref=e254]: Tintas
+              - generic [ref=e255]:
+                - checkbox "Óleos/Graxas" [ref=e256]
+                - generic [ref=e257]: Óleos/Graxas
+              - generic [ref=e258]:
+                - checkbox "Dispositivos" [ref=e259]
+                - generic [ref=e260]: Dispositivos
+              - generic [ref=e261]:
+                - checkbox "Acessórios" [ref=e262]
+                - generic [ref=e263]: Acessórios
+              - generic [ref=e264]:
+                - checkbox "Manutenção" [ref=e265]
+                - generic [ref=e266]: Manutenção
+              - generic [ref=e267]:
+                - checkbox "Serviços" [ref=e268]
+                - generic [ref=e269]: Serviços
+              - generic [ref=e270]:
+                - checkbox "Escritório" [ref=e271]
+                - generic [ref=e272]: Escritório
+            - heading "Tipo de Atividade" [level=2] [ref=e273]
+            - generic [ref=e274]:
+              - generic [ref=e275]:
+                - checkbox "Atacadista" [ref=e276]
+                - generic [ref=e277]: Atacadista
+              - generic [ref=e278]:
+                - checkbox "Varejista" [ref=e279]
+                - generic [ref=e280]: Varejista
+              - generic [ref=e281]:
+                - checkbox "Indústria" [ref=e282]
+                - generic [ref=e283]: Indústria
+              - generic [ref=e284]:
+                - checkbox "Serviço" [ref=e285]
+                - generic [ref=e286]: Serviço
+            - generic [ref=e287]:
+              - generic [ref=e288]:
+                - generic [ref=e289]: CNAE
+                - textbox "CNAE" [ref=e290]:
+                  - /placeholder: 0000-0/00
+              - generic [ref=e291]:
+                - generic [ref=e292]: Regime Tributário
+                - textbox "Regime Tributário" [ref=e293]:
+                  - /placeholder: "Ex: Simples Nacional"
+            - heading "Qualidade (IQF)" [level=2] [ref=e294]
+            - generic [ref=e295]:
+              - generic [ref=e296]:
+                - generic [ref=e297]: Tipo de Certificação
+                - combobox "Tipo de Certificação" [ref=e298]:
+                  - option "Selecione" [selected]
+                  - option "Indefinido"
+                  - option "ISO/RBS"
+                  - option "Avaliação Inicial"
+                  - option "Estratégico"
+              - generic [ref=e299]:
+                - generic [ref=e300]: Validade Certificação
+                - textbox "Validade Certificação" [ref=e301]
+              - generic [ref=e302]:
+                - generic [ref=e303]: Arquivo Certificação
+                - textbox "Arquivo Certificação" [ref=e304]:
+                  - /placeholder: Nome do arquivo
+            - generic [ref=e305]:
+              - generic [ref=e306]:
+                - generic [ref=e307]: Qualidade Geral (%)
+                - spinbutton "Qualidade Geral (%)" [ref=e308]
+              - generic [ref=e309]:
+                - generic [ref=e310]: IQF (%)
+                - spinbutton "IQF (%)" [ref=e311]
+              - generic [ref=e312]:
+                - generic [ref=e313]: Status IQF
+                - combobox "Status IQF" [ref=e314]:
+                  - option "Selecione" [selected]
+                  - option "Novo"
+                  - option "Aprovado"
+                  - option "Reprovado"
+            - generic [ref=e315]:
+              - generic [ref=e316]: Observações
+              - textbox "Observações" [ref=e317]
+            - generic [ref=e318]:
+              - checkbox "Compartilhar com outras empresas" [ref=e319]
+              - generic [ref=e320]: Compartilhar com outras empresas
+            - generic [ref=e321]:
+              - link "Cancelar" [ref=e322] [cursor=pointer]:
+                - /url: /suppliers
+                - img [ref=e323]
+                - text: Cancelar
+              - button "Salvar" [ref=e326]:
+                - img [ref=e327]
+                - text: Salvar
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e336] [cursor=pointer]:
+    - img [ref=e337]
+  - alert [ref=e340]
+```
