@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 interface Supplier {
   id: string;
@@ -110,6 +111,25 @@ export default function SuppliersPage() {
               <option value="BLOCKED">Bloqueados</option>
             </select>
           </div>
+
+          {/* Export Buttons */}
+          <ExportButtons
+            filename="fornecedores"
+            title="Lista de Fornecedores"
+            columns={[
+              { header: "Código", key: "code", width: 10 },
+              { header: "Razão Social", key: "companyName", width: 40 },
+              { header: "Nome Fantasia", key: "tradeName", width: 30 },
+              { header: "CNPJ", key: "cnpj", width: 20 },
+              { header: "Cidade", key: "city", width: 20 },
+              { header: "UF", key: "state", width: 5 },
+              { header: "Telefone", key: "phone", width: 15 },
+              { header: "Email", key: "email", width: 30 },
+              { header: "Status", key: "status", width: 10 },
+            ]}
+            data={suppliers as unknown as Record<string, unknown>[]}
+            disabled={isLoading}
+          />
         </div>
 
         {/* Error State */}

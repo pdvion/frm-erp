@@ -35,6 +35,8 @@
     "dotenv": "^17.2.3",
     "fast-xml-parser": "^5.3.3",
     "imapflow": "^1.2.6",
+    "jspdf": "^4.0.0",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
     "mailparser": "^3.9.1",
     "next": "16.1.2",
@@ -45,6 +47,7 @@
     "recharts": "^3.6.0",
     "sonner": "^2.0.7",
     "superjson": "^2.2.6",
+    "xlsx": "^0.18.5",
     "zod": "^4.3.5"
   },
   "devDependencies": {
