@@ -27,6 +27,13 @@ export default function NewProductionOrderPage() {
   const [salesOrderNumber, setSalesOrderNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
+  
+  // Novos campos VIO-650
+  const [requestType, setRequestType] = useState("");
+  const [executionType, setExecutionType] = useState("");
+  const [deliveryType, setDeliveryType] = useState("");
+  const [plannedStart, setPlannedStart] = useState("");
+  const [plannedEnd, setPlannedEnd] = useState("");
 
   const [materials, setMaterials] = useState<Array<{
     materialId: string;
@@ -112,6 +119,12 @@ export default function NewProductionOrderPage() {
       salesOrderNumber: salesOrderNumber || undefined,
       customerName: customerName || undefined,
       notes: notes || undefined,
+      // Novos campos VIO-650
+      requestType: requestType as "SALES" | "STOCK" | "EXPORT" | "NORMAL" | "REWORK" | undefined || undefined,
+      executionType: executionType as "MANUFACTURE" | "ALTER" | undefined || undefined,
+      deliveryType: deliveryType as "ASSEMBLED" | "LOOSE" | undefined || undefined,
+      plannedStart: plannedStart ? new Date(plannedStart) : undefined,
+      plannedEnd: plannedEnd ? new Date(plannedEnd) : undefined,
       materials: materials.length > 0 ? materials.map((m) => ({
         materialId: m.materialId,
         requiredQty: m.requiredQty,
@@ -253,6 +266,85 @@ export default function NewProductionOrderPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Tipos e Planejamento - VIO-650 */}
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <h3 className="font-medium text-theme mb-4">Tipos e Planejamento</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Tipo de Solicitação
+                </label>
+                <select
+                  value={requestType}
+                  onChange={(e) => setRequestType(e.target.value)}
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Selecione</option>
+                  <option value="SALES">Venda</option>
+                  <option value="STOCK">Estoque</option>
+                  <option value="EXPORT">Exportação</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="REWORK">Retrabalho</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Tipo de Execução
+                </label>
+                <select
+                  value={executionType}
+                  onChange={(e) => setExecutionType(e.target.value)}
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Selecione</option>
+                  <option value="MANUFACTURE">Fabricação</option>
+                  <option value="ALTER">Alteração</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Tipo de Entrega
+                </label>
+                <select
+                  value={deliveryType}
+                  onChange={(e) => setDeliveryType(e.target.value)}
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Selecione</option>
+                  <option value="ASSEMBLED">Montado</option>
+                  <option value="LOOSE">Solto</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Início Planejado
+                </label>
+                <input
+                  type="date"
+                  value={plannedStart}
+                  onChange={(e) => setPlannedStart(e.target.value)}
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Término Planejado
+                </label>
+                <input
+                  type="date"
+                  value={plannedEnd}
+                  onChange={(e) => setPlannedEnd(e.target.value)}
                   className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
                 />
               </div>

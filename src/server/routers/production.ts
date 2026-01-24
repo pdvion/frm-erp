@@ -121,6 +121,9 @@ export const productionRouter = createTRPCRouter({
       salesOrderNumber: z.string().optional(),
       customerName: z.string().optional(),
       notes: z.string().optional(),
+      requestType: z.enum(["SALES", "STOCK", "EXPORT", "NORMAL", "REWORK"]).optional(),
+      executionType: z.enum(["MANUFACTURE", "ALTER"]).optional(),
+      deliveryType: z.enum(["ASSEMBLED", "LOOSE"]).optional(),
       materials: z.array(z.object({
         materialId: z.string(),
         requiredQty: z.number().positive(),
@@ -158,6 +161,9 @@ export const productionRouter = createTRPCRouter({
           salesOrderNumber: input.salesOrderNumber,
           customerName: input.customerName,
           notes: input.notes,
+          requestType: input.requestType,
+          executionType: input.executionType,
+          deliveryType: input.deliveryType,
           createdBy: ctx.tenant.userId,
           materials: input.materials ? {
             create: input.materials.map((m) => ({
