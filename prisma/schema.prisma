@@ -844,37 +844,37 @@ model PurchaseOrder {
   
   // Dados Gerais
   application           String?
-  quoteSupplierCode     Int?
-  billingCompanyId      String?
-  costCenterGroup       Int?
+  quoteSupplierCode     Int?      @map("quote_supplier_code")
+  billingCompanyId      String?   @map("billing_company_id")
+  costCenterGroup       Int?      @map("cost_center_group")
   
   // Entrega
   carrier               String?
-  deliveryAddress       String?
-  deliveryPhone         String?
+  deliveryAddress       String?   @map("delivery_address")
+  deliveryPhone         String?   @map("delivery_phone")
   
   // Fiscal
-  operationNature       OperationNature?
+  operationNature       OperationNature?  @map("operation_nature")
   
   // Pagamento
-  paymentConditionId    String?
-  paymentConditionDesc  String?
+  paymentConditionId    String?   @map("payment_condition_id")
+  paymentConditionDesc  String?   @map("payment_condition_desc")
   
   // Frete
-  freightType           FreightType?
-  fobFreightValue       Float               @default(0)
-  pickupKm              Float?
-  pickupValue           Float?
+  freightType           FreightType?        @map("freight_type")
+  fobFreightValue       Float               @default(0) @map("fob_freight_value")
+  pickupKm              Float?              @map("pickup_km")
+  pickupValue           Float?              @map("pickup_value")
   
   // Cancelamento
-  cancellationReason    String?
+  cancellationReason    String?   @map("cancellation_reason")
   
   // Aprovações
-  financialApproved     Boolean             @default(false)
-  financialApprovedById String?
-  financialApprovedAt   DateTime?
-  analysisApprovedById  String?
-  analysisApprovedAt    DateTime?
+  financialApproved     Boolean             @default(false) @map("financial_approved")
+  financialApprovedById String?             @map("financial_approved_by_id")
+  financialApprovedAt   DateTime?           @map("financial_approved_at")
+  analysisApprovedById  String?             @map("analysis_approved_by_id")
+  analysisApprovedAt    DateTime?           @map("analysis_approved_at")
   
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
