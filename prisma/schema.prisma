@@ -748,20 +748,20 @@ model Quote {
   revision        Int         @default(1)
   
   // Aprovações
-  preApprovedById String?
-  preApprovedAt   DateTime?
-  approvedById    String?
-  approvedAt      DateTime?
+  preApprovedById String?   @map("pre_approved_by_id")
+  preApprovedAt   DateTime? @map("pre_approved_at")
+  approvedById    String?   @map("approved_by_id")
+  approvedAt      DateTime? @map("approved_at")
   
   // Modificações
-  materialsModifiedById String?
-  materialsModifiedAt   DateTime?
-  suppliersModifiedById String?
-  suppliersModifiedAt   DateTime?
+  materialsModifiedById String?   @map("materials_modified_by_id")
+  materialsModifiedAt   DateTime? @map("materials_modified_at")
+  suppliersModifiedById String?   @map("suppliers_modified_by_id")
+  suppliersModifiedAt   DateTime? @map("suppliers_modified_at")
   
   // Documentos
-  quotePdfName    String?
-  quotePrintedAt  DateTime?
+  quotePdfName    String?   @map("quote_pdf_name")
+  quotePrintedAt  DateTime? @map("quote_printed_at")
   attachment1     String?
   attachment2     String?
   attachment3     String?
