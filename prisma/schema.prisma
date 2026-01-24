@@ -459,7 +459,10 @@ model Material {
   icmsRate            Float          @default(0) @map("icms_rate")
   status              MaterialStatus @default(ACTIVE)
   isEpi               Boolean        @default(false) @map("is_epi")
+  epiCaCode           String?        @map("epi_ca_code") // Código CA do EPI
   isOfficeSupply      Boolean        @default(false) @map("is_office_supply")
+  financialValidated  Boolean        @default(false) @map("financial_validated") // validadoFinanceiro
+  financialValidatedCc Boolean       @default(false) @map("financial_validated_cc") // validadoCCFinanceiro
   requiresQualityCheck Boolean       @default(false) // requerIQF
   requiresQualityInspection Boolean  @default(false) @map("requires_quality_inspection")
   requiresMaterialCertificate Boolean @default(false) @map("requires_material_certificate")
