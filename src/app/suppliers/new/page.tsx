@@ -38,6 +38,28 @@ interface SupplierFormData {
   paymentTerms: string;
   notes: string;
   isShared: boolean;
+  // Categorias
+  cat01Embalagens: boolean;
+  cat02Tintas: boolean;
+  cat03OleosGraxas: boolean;
+  cat04Dispositivos: boolean;
+  cat05Acessorios: boolean;
+  cat06Manutencao: boolean;
+  cat07Servicos: boolean;
+  cat08Escritorio: boolean;
+  // Tipo de atividade
+  isWholesaler: boolean;
+  isRetailer: boolean;
+  isIndustry: boolean;
+  isService: boolean;
+  cnae: string;
+  // IQF
+  certificationType: string;
+  iqfPercent: number;
+  iqfStatus: string;
+  // Outros
+  taxRegime: string;
+  hasFinancialContract: boolean;
 }
 
 const STATES = [
@@ -74,6 +96,28 @@ export default function NewSupplierPage() {
     paymentTerms: "",
     notes: "",
     isShared: false,
+    // Categorias
+    cat01Embalagens: false,
+    cat02Tintas: false,
+    cat03OleosGraxas: false,
+    cat04Dispositivos: false,
+    cat05Acessorios: false,
+    cat06Manutencao: false,
+    cat07Servicos: false,
+    cat08Escritorio: false,
+    // Tipo de atividade
+    isWholesaler: false,
+    isRetailer: false,
+    isIndustry: false,
+    isService: false,
+    cnae: "",
+    // IQF
+    certificationType: "",
+    iqfPercent: 0,
+    iqfStatus: "",
+    // Outros
+    taxRegime: "",
+    hasFinancialContract: false,
   });
 
   const createMutation = trpc.suppliers.create.useMutation({
@@ -114,6 +158,28 @@ export default function NewSupplierPage() {
       paymentTerms: formData.paymentTerms || undefined,
       notes: formData.notes || undefined,
       isShared: formData.isShared,
+      // Categorias
+      cat01Embalagens: formData.cat01Embalagens,
+      cat02Tintas: formData.cat02Tintas,
+      cat03OleosGraxas: formData.cat03OleosGraxas,
+      cat04Dispositivos: formData.cat04Dispositivos,
+      cat05Acessorios: formData.cat05Acessorios,
+      cat06Manutencao: formData.cat06Manutencao,
+      cat07Servicos: formData.cat07Servicos,
+      cat08Escritorio: formData.cat08Escritorio,
+      // Tipo de atividade
+      isWholesaler: formData.isWholesaler,
+      isRetailer: formData.isRetailer,
+      isIndustry: formData.isIndustry,
+      isService: formData.isService,
+      cnae: formData.cnae || undefined,
+      // IQF
+      certificationType: formData.certificationType as "UNDEFINED" | "ISO_RBS" | "INITIAL_EVAL" | "STRATEGIC" | undefined || undefined,
+      iqfPercent: formData.iqfPercent || undefined,
+      iqfStatus: formData.iqfStatus as "NEW" | "APPROVED" | "REJECTED" | undefined || undefined,
+      // Outros
+      taxRegime: formData.taxRegime || undefined,
+      hasFinancialContract: formData.hasFinancialContract,
     });
   };
 
@@ -418,6 +484,132 @@ export default function NewSupplierPage() {
               placeholder="Ex: 30/60/90 dias"
               className={inputClass}
             />
+          </div>
+        </div>
+
+        {/* Categorias */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Categorias de Fornecimento</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { id: "cat01Embalagens", label: "Embalagens" },
+            { id: "cat02Tintas", label: "Tintas" },
+            { id: "cat03OleosGraxas", label: "Óleos/Graxas" },
+            { id: "cat04Dispositivos", label: "Dispositivos" },
+            { id: "cat05Acessorios", label: "Acessórios" },
+            { id: "cat06Manutencao", label: "Manutenção" },
+            { id: "cat07Servicos", label: "Serviços" },
+            { id: "cat08Escritorio", label: "Escritório" },
+          ].map(cat => (
+            <div key={cat.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={cat.id}
+                name={cat.id}
+                checked={formData[cat.id as keyof SupplierFormData] as boolean}
+                onChange={handleChange}
+                className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
+              />
+              <label htmlFor={cat.id} className="text-sm text-theme-secondary">{cat.label}</label>
+            </div>
+          ))}
+        </div>
+
+        {/* Tipo de Atividade */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Tipo de Atividade</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {[
+            { id: "isWholesaler", label: "Atacadista" },
+            { id: "isRetailer", label: "Varejista" },
+            { id: "isIndustry", label: "Indústria" },
+            { id: "isService", label: "Serviço" },
+          ].map(tipo => (
+            <div key={tipo.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={tipo.id}
+                name={tipo.id}
+                checked={formData[tipo.id as keyof SupplierFormData] as boolean}
+                onChange={handleChange}
+                className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
+              />
+              <label htmlFor={tipo.id} className="text-sm text-theme-secondary">{tipo.label}</label>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label htmlFor="cnae" className={labelClass}>CNAE</label>
+            <input
+              type="text"
+              id="cnae"
+              name="cnae"
+              value={formData.cnae}
+              onChange={handleChange}
+              placeholder="0000-0/00"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="taxRegime" className={labelClass}>Regime Tributário</label>
+            <input
+              type="text"
+              id="taxRegime"
+              name="taxRegime"
+              value={formData.taxRegime}
+              onChange={handleChange}
+              placeholder="Ex: Simples Nacional"
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* IQF - Índice de Qualidade */}
+        <h2 className="text-lg font-semibold text-theme mb-4">Qualidade (IQF)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div>
+            <label htmlFor="certificationType" className={labelClass}>Tipo de Certificação</label>
+            <select
+              id="certificationType"
+              name="certificationType"
+              value={formData.certificationType}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Selecione</option>
+              <option value="UNDEFINED">Indefinido</option>
+              <option value="ISO_RBS">ISO/RBS</option>
+              <option value="INITIAL_EVAL">Avaliação Inicial</option>
+              <option value="STRATEGIC">Estratégico</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="iqfPercent" className={labelClass}>IQF (%)</label>
+            <input
+              type="number"
+              id="iqfPercent"
+              name="iqfPercent"
+              value={formData.iqfPercent || ""}
+              onChange={handleChange}
+              min="0"
+              max="100"
+              step="0.1"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="iqfStatus" className={labelClass}>Status IQF</label>
+            <select
+              id="iqfStatus"
+              name="iqfStatus"
+              value={formData.iqfStatus}
+              onChange={handleChange}
+              className={inputClass}
+            >
+              <option value="">Selecione</option>
+              <option value="NEW">Novo</option>
+              <option value="APPROVED">Aprovado</option>
+              <option value="REJECTED">Reprovado</option>
+            </select>
           </div>
         </div>
 
