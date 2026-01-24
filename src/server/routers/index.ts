@@ -56,6 +56,7 @@ import { collectionRulesRouter } from "./collectionRules";
 import { supplierReturnsRouter } from "./supplierReturns";
 import { payrollRouter } from "./payroll";
 import { deployAgentRouter } from "./deploy-agent";
+import { aiConfigRouter } from "./aiConfig";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -115,6 +116,7 @@ export const appRouter = createTRPCRouter({
   supplierReturns: supplierReturnsRouter,
   payroll: payrollRouter,
   deployAgent: deployAgentRouter,
+  aiConfig: aiConfigRouter,
 });
 
 export type AppRouter = typeof appRouter;
