@@ -550,20 +550,20 @@ model Supplier {
   company         Company?       @relation(fields: [companyId], references: [id])
   
   // Categorias de Fornecedor
-  cat01Embalagens   Boolean      @default(false)
-  cat02Tintas       Boolean      @default(false)
-  cat03OleosGraxas  Boolean      @default(false)
-  cat04Dispositivos Boolean      @default(false)
-  cat05Acessorios   Boolean      @default(false)
-  cat06Manutencao   Boolean      @default(false)
-  cat07Servicos     Boolean      @default(false)
-  cat08Escritorio   Boolean      @default(false)
+  cat01Embalagens   Boolean      @default(false) @map("cat01_embalagens")
+  cat02Tintas       Boolean      @default(false) @map("cat02_tintas")
+  cat03OleosGraxas  Boolean      @default(false) @map("cat03_oleos_graxas")
+  cat04Dispositivos Boolean      @default(false) @map("cat04_dispositivos")
+  cat05Acessorios   Boolean      @default(false) @map("cat05_acessorios")
+  cat06Manutencao   Boolean      @default(false) @map("cat06_manutencao")
+  cat07Servicos     Boolean      @default(false) @map("cat07_servicos")
+  cat08Escritorio   Boolean      @default(false) @map("cat08_escritorio")
   
   // Tipo de Atividade
-  isWholesaler      Boolean      @default(false)
-  isRetailer        Boolean      @default(false)
-  isIndustry        Boolean      @default(false)
-  isService         Boolean      @default(false)
+  isWholesaler      Boolean      @default(false) @map("is_wholesaler")
+  isRetailer        Boolean      @default(false) @map("is_retailer")
+  isIndustry        Boolean      @default(false) @map("is_industry")
+  isService         Boolean      @default(false) @map("is_service")
   activityTypeId    String?
   cnae              String?
   
