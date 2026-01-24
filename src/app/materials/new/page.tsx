@@ -29,9 +29,13 @@ interface MaterialFormData {
   purchaseUnit: string;
   unitConversionFactor: number;
   categoryId: string;
+  subCategoryId: string;
+  stockLocationId: string;
   minQuantity: number;
   maxQuantity: number;
   minQuantityCalcType: string;
+  maxMonthlyConsumption: number;
+  adjustMaxConsumptionManual: boolean;
   avgDeliveryDays: number;
   ncm: string;
   ipiRate: number;
@@ -50,6 +54,10 @@ interface MaterialFormData {
   requiresFiscalEntry: boolean;
   requiredBrand: string;
   requiredBrandReason: string;
+  writeOffCode: string;
+  costCenterFrm: string;
+  costCenterFnd: string;
+  financialAccount: string;
   weight: number;
   weightUnit: string;
   barcode: string;
@@ -74,9 +82,13 @@ export default function NewMaterialPage() {
     purchaseUnit: "",
     unitConversionFactor: 1,
     categoryId: "",
+    subCategoryId: "",
+    stockLocationId: "",
     minQuantity: 0,
     maxQuantity: 0,
     minQuantityCalcType: "MANUAL",
+    maxMonthlyConsumption: 0,
+    adjustMaxConsumptionManual: false,
     avgDeliveryDays: 0,
     ncm: "",
     ipiRate: 0,
@@ -95,6 +107,10 @@ export default function NewMaterialPage() {
     requiresFiscalEntry: false,
     requiredBrand: "",
     requiredBrandReason: "",
+    writeOffCode: "",
+    costCenterFrm: "",
+    costCenterFnd: "",
+    financialAccount: "",
     weight: 0,
     weightUnit: "KG",
     barcode: "",
@@ -128,9 +144,13 @@ export default function NewMaterialPage() {
       purchaseUnit: formData.purchaseUnit || undefined,
       unitConversionFactor: formData.unitConversionFactor || 1,
       categoryId: formData.categoryId || undefined,
+      subCategoryId: formData.subCategoryId || undefined,
+      stockLocationId: formData.stockLocationId || undefined,
       minQuantity: formData.minQuantity || undefined,
       maxQuantity: formData.maxQuantity || undefined,
       minQuantityCalcType: formData.minQuantityCalcType as "MANUAL" | "CMM" | "PEAK_12M",
+      maxMonthlyConsumption: formData.maxMonthlyConsumption || undefined,
+      adjustMaxConsumptionManual: formData.adjustMaxConsumptionManual,
       avgDeliveryDays: formData.avgDeliveryDays || undefined,
       ncm: formData.ncm || undefined,
       ipiRate: formData.ipiRate || undefined,
@@ -149,6 +169,10 @@ export default function NewMaterialPage() {
       requiresFiscalEntry: formData.requiresFiscalEntry,
       requiredBrand: formData.requiredBrand || undefined,
       requiredBrandReason: formData.requiredBrandReason || undefined,
+      writeOffCode: formData.writeOffCode || undefined,
+      costCenterFrm: formData.costCenterFrm || undefined,
+      costCenterFnd: formData.costCenterFnd || undefined,
+      financialAccount: formData.financialAccount || undefined,
       weight: formData.weight || undefined,
       weightUnit: formData.weightUnit || "KG",
       barcode: formData.barcode || undefined,
@@ -320,6 +344,14 @@ export default function NewMaterialPage() {
                 </select>
               </div>
               <div>
+                <label htmlFor="maxMonthlyConsumption" className={labelClass}>Consumo Máximo Mensal</label>
+                <input type="number" id="maxMonthlyConsumption" name="maxMonthlyConsumption" step="0.01" value={formData.maxMonthlyConsumption || ""} onChange={handleChange} className={inputClass} />
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <input type="checkbox" id="adjustMaxConsumptionManual" name="adjustMaxConsumptionManual" checked={formData.adjustMaxConsumptionManual} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
+                <label htmlFor="adjustMaxConsumptionManual" className="text-sm font-medium text-theme-secondary">Ajustar consumo máximo manualmente</label>
+              </div>
+              <div>
                 <label htmlFor="avgDeliveryDays" className={labelClass}>Tempo Médio Entrega (dias)</label>
                 <input type="number" id="avgDeliveryDays" name="avgDeliveryDays" step="1" value={formData.avgDeliveryDays || ""} onChange={handleChange} className={inputClass} />
               </div>
@@ -339,22 +371,47 @@ export default function NewMaterialPage() {
 
           {/* Tab: Fiscal */}
           {activeTab === "fiscal" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div>
-                <label htmlFor="ncm" className={labelClass}>NCM</label>
-                <input type="text" id="ncm" name="ncm" value={formData.ncm} onChange={handleChange} placeholder="00000000" maxLength={8} className={inputClass} />
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div>
+                  <label htmlFor="ncm" className={labelClass}>NCM</label>
+                  <input type="text" id="ncm" name="ncm" value={formData.ncm} onChange={handleChange} placeholder="00000000" maxLength={8} className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="ipiRate" className={labelClass}>% IPI</label>
+                  <input type="number" id="ipiRate" name="ipiRate" step="0.01" value={formData.ipiRate || ""} onChange={handleChange} className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="icmsRate" className={labelClass}>% ICMS</label>
+                  <input type="number" id="icmsRate" name="icmsRate" step="0.01" value={formData.icmsRate || ""} onChange={handleChange} className={inputClass} />
+                </div>
+                <div className="flex items-center gap-2 pt-6">
+                  <input type="checkbox" id="requiresFiscalEntry" name="requiresFiscalEntry" checked={formData.requiresFiscalEntry} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
+                  <label htmlFor="requiresFiscalEntry" className="text-sm font-medium text-theme-secondary">Requer entrada fiscal</label>
+                </div>
               </div>
-              <div>
-                <label htmlFor="ipiRate" className={labelClass}>% IPI</label>
-                <input type="number" id="ipiRate" name="ipiRate" step="0.01" value={formData.ipiRate || ""} onChange={handleChange} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="icmsRate" className={labelClass}>% ICMS</label>
-                <input type="number" id="icmsRate" name="icmsRate" step="0.01" value={formData.icmsRate || ""} onChange={handleChange} className={inputClass} />
-              </div>
-              <div className="flex items-center gap-2 pt-6">
-                <input type="checkbox" id="requiresFiscalEntry" name="requiresFiscalEntry" checked={formData.requiresFiscalEntry} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                <label htmlFor="requiresFiscalEntry" className="text-sm font-medium text-theme-secondary">Requer entrada fiscal</label>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-sm font-semibold text-theme flex items-center gap-2 mb-4">
+                  <DollarSign className="w-4 h-4" /> Financeiro
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label htmlFor="writeOffCode" className={labelClass}>Código de Baixa</label>
+                    <input type="text" id="writeOffCode" name="writeOffCode" value={formData.writeOffCode} onChange={handleChange} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="costCenterFrm" className={labelClass}>Centro Custo FRM</label>
+                    <input type="text" id="costCenterFrm" name="costCenterFrm" value={formData.costCenterFrm} onChange={handleChange} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="costCenterFnd" className={labelClass}>Centro Custo FND</label>
+                    <input type="text" id="costCenterFnd" name="costCenterFnd" value={formData.costCenterFnd} onChange={handleChange} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="financialAccount" className={labelClass}>Conta Financeira</label>
+                    <input type="text" id="financialAccount" name="financialAccount" value={formData.financialAccount} onChange={handleChange} className={inputClass} />
+                  </div>
+                </div>
               </div>
             </div>
           )}
