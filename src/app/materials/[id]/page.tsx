@@ -33,9 +33,9 @@ const statusConfig = {
 
 export default function MaterialDetailPage() {
   const params = useParams();
-  const materialId = params.id as string;
+  const idOrCode = params.id as string;
 
-  const { data: material, isLoading, error } = trpc.materials.byId.useQuery({ id: materialId });
+  const { data: material, isLoading, error } = trpc.materials.byIdOrCode.useQuery({ idOrCode });
 
   if (isLoading) {
     return (
@@ -74,7 +74,7 @@ export default function MaterialDetailPage() {
         badge={material.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
         actions={
           <Link
-            href={`/materials/${materialId}/edit`}
+            href={`/materials/${material.id}/edit`}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Edit className="w-4 h-4" />
@@ -199,7 +199,7 @@ export default function MaterialDetailPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme">Estoque</h2>
               <Link
-                href={`/inventory?materialId=${materialId}`}
+                href={`/inventory?materialId=${material.id}`}
                 className="text-sm text-blue-400 hover:underline"
               >
                 Ver movimentações

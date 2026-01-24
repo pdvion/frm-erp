@@ -70,6 +70,35 @@ export const suppliersRouter = createTRPCRouter({
       });
     }),
 
+  // Buscar fornecedor por ID ou código (para URLs amigáveis)
+  byIdOrCode: tenantProcedure
+    .input(z.object({ idOrCode: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.idOrCode);
+      const isNumeric = /^\d+$/.test(input.idOrCode);
+      
+      const include = {
+        supplierMaterials: { include: { material: true } },
+        quotes: { orderBy: { createdAt: "desc" as const }, take: 10 },
+      };
+      
+      if (isUuid) {
+        return ctx.prisma.supplier.findFirst({
+          where: { id: input.idOrCode, ...tenantFilter(ctx.companyId, false) },
+          include,
+        });
+      }
+      
+      if (isNumeric) {
+        return ctx.prisma.supplier.findFirst({
+          where: { code: parseInt(input.idOrCode), ...tenantFilter(ctx.companyId, false) },
+          include,
+        });
+      }
+      
+      return null;
+    }),
+
   // Criar fornecedor
   create: tenantProcedure
     .input(

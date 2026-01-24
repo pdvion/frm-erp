@@ -70,6 +70,30 @@ export const materialsRouter = createTRPCRouter({
       });
     }),
 
+  // Buscar material por ID ou código (para URLs amigáveis)
+  byIdOrCode: tenantProcedure
+    .input(z.object({ idOrCode: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.idOrCode);
+      const isNumeric = /^\d+$/.test(input.idOrCode);
+      
+      if (isUuid) {
+        return ctx.prisma.material.findUnique({
+          where: { id: input.idOrCode, ...tenantFilter(ctx.companyId, false) },
+          include: { category: true, inventory: true, supplierMaterials: { include: { supplier: true } } },
+        });
+      }
+      
+      if (isNumeric) {
+        return ctx.prisma.material.findFirst({
+          where: { code: parseInt(input.idOrCode), ...tenantFilter(ctx.companyId, false) },
+          include: { category: true, inventory: true, supplierMaterials: { include: { supplier: true } } },
+        });
+      }
+      
+      return null;
+    }),
+
   // Criar material
   create: tenantProcedure
     .input(

@@ -66,6 +66,30 @@ export const customersRouter = createTRPCRouter({
       return customer;
     }),
 
+  // Buscar cliente por ID ou código (para URLs amigáveis)
+  byIdOrCode: tenantProcedure
+    .input(z.object({ idOrCode: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.idOrCode);
+      
+      const include = {
+        receivables: { orderBy: { dueDate: "desc" as const }, take: 10 },
+      };
+      
+      if (isUuid) {
+        return ctx.prisma.customer.findFirst({
+          where: { id: input.idOrCode, ...tenantFilter(ctx.companyId, false) },
+          include,
+        });
+      }
+      
+      // Buscar por código (string)
+      return ctx.prisma.customer.findFirst({
+        where: { code: input.idOrCode, ...tenantFilter(ctx.companyId, false) },
+        include,
+      });
+    }),
+
   // Criar cliente
   create: tenantProcedure
     .input(z.object({
