@@ -36,6 +36,13 @@ export default function NewCustomerPage() {
   const [creditLimit, setCreditLimit] = useState("");
   const [paymentTermDays, setPaymentTermDays] = useState("30");
   const [notes, setNotes] = useState("");
+  // Novos campos
+  const [municipalRegistration, setMunicipalRegistration] = useState("");
+  const [website, setWebsite] = useState("");
+  const [minInvoiceValue, setMinInvoiceValue] = useState("");
+  const [defaultPaymentCondition, setDefaultPaymentCondition] = useState("");
+  const [applySt, setApplySt] = useState(false);
+  const [isShared, setIsShared] = useState(false);
 
   const createMutation = trpc.customers.create.useMutation({
     onSuccess: (data) => {
@@ -68,6 +75,13 @@ export default function NewCustomerPage() {
       creditLimit: creditLimit ? parseFloat(creditLimit) : undefined,
       paymentTermDays: paymentTermDays ? parseInt(paymentTermDays) : undefined,
       notes: notes || undefined,
+      // Novos campos
+      municipalRegistration: municipalRegistration || undefined,
+      website: website || undefined,
+      minInvoiceValue: minInvoiceValue ? parseFloat(minInvoiceValue) : undefined,
+      defaultPaymentCondition: defaultPaymentCondition || undefined,
+      applySt,
+      isShared,
     });
   };
 
@@ -174,17 +188,30 @@ export default function NewCustomerPage() {
               </div>
 
               {type === "COMPANY" && (
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Inscrição Estadual
-                  </label>
-                  <input
-                    type="text"
-                    value={stateRegistration}
-                    onChange={(e) => setStateRegistration(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
+                      Inscrição Estadual
+                    </label>
+                    <input
+                      type="text"
+                      value={stateRegistration}
+                      onChange={(e) => setStateRegistration(e.target.value)}
+                      className="w-full border border-theme-input rounded-lg px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
+                      Inscrição Municipal
+                    </label>
+                    <input
+                      type="text"
+                      value={municipalRegistration}
+                      onChange={(e) => setMunicipalRegistration(e.target.value)}
+                      className="w-full border border-theme-input rounded-lg px-3 py-2"
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -238,6 +265,19 @@ export default function NewCustomerPage() {
                   type="text"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  placeholder="https://"
                   className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
@@ -365,6 +405,61 @@ export default function NewCustomerPage() {
                   onChange={(e) => setPaymentTermDays(e.target.value)}
                   className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Valor Mínimo Fatura
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={minInvoiceValue}
+                  onChange={(e) => setMinInvoiceValue(e.target.value)}
+                  placeholder="0,00"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
+                  Condição de Pagamento Padrão
+                </label>
+                <input
+                  type="text"
+                  value={defaultPaymentCondition}
+                  onChange={(e) => setDefaultPaymentCondition(e.target.value)}
+                  placeholder="Ex: 30/60/90"
+                  className="w-full border border-theme-input rounded-lg px-3 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-6 mt-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="applySt"
+                  checked={applySt}
+                  onChange={(e) => setApplySt(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-theme-input rounded"
+                />
+                <label htmlFor="applySt" className="text-sm text-theme-secondary">
+                  Aplicar Substituição Tributária
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isShared"
+                  checked={isShared}
+                  onChange={(e) => setIsShared(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-theme-input rounded"
+                />
+                <label htmlFor="isShared" className="text-sm text-theme-secondary">
+                  Compartilhar com outras empresas
+                </label>
               </div>
             </div>
           </div>

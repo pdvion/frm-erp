@@ -92,6 +92,10 @@ export const customersRouter = createTRPCRouter({
       creditLimit: z.number().optional(),
       paymentTermDays: z.number().optional(),
       notes: z.string().optional(),
+      minInvoiceValue: z.number().optional(),
+      defaultPaymentCondition: z.string().optional(),
+      applySt: z.boolean().default(false),
+      isShared: z.boolean().default(false),
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar código único
@@ -142,6 +146,10 @@ export const customersRouter = createTRPCRouter({
       paymentTermDays: z.number().optional(),
       status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED"]).optional(),
       notes: z.string().optional(),
+      minInvoiceValue: z.number().optional(),
+      defaultPaymentCondition: z.string().optional(),
+      applySt: z.boolean().optional(),
+      isShared: z.boolean().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
