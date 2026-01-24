@@ -53,9 +53,11 @@ export const suppliersRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      // Buscar diretamente sem filtro de tenant (temporário para debug)
-      return ctx.prisma.supplier.findUnique({
-        where: { id: input.id },
+      return ctx.prisma.supplier.findFirst({
+        where: { 
+          id: input.id,
+          ...tenantFilter(ctx.companyId, true),
+        },
         include: {
           supplierMaterials: {
             include: { material: true },
