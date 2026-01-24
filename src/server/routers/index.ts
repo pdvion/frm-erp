@@ -55,6 +55,7 @@ import { savedReportsRouter } from "./savedReports";
 import { collectionRulesRouter } from "./collectionRules";
 import { supplierReturnsRouter } from "./supplierReturns";
 import { payrollRouter } from "./payroll";
+import { deployAgentRouter } from "./deploy-agent";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -113,6 +114,7 @@ export const appRouter = createTRPCRouter({
   collectionRules: collectionRulesRouter,
   supplierReturns: supplierReturnsRouter,
   payroll: payrollRouter,
+  deployAgent: deployAgentRouter,
 });
 
 export type AppRouter = typeof appRouter;
