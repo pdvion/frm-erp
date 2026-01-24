@@ -50,6 +50,10 @@ function MaterialsContent() {
         title="Materiais" 
         icon={<Package className="w-6 h-6" />}
         module="MATERIALS"
+        breadcrumbs={[
+          { label: "Compras", href: "/purchase-orders" },
+          { label: "Materiais" },
+        ]}
         actions={
           <Link
             href="/materials/new"

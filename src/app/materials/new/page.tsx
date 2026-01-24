@@ -181,6 +181,11 @@ export default function NewMaterialPage() {
         subtitle="CP10 - Cadastro de Materiais"
         icon={<Package className="w-6 h-6" />}
         backHref="/materials"
+        breadcrumbs={[
+          { label: "Compras", href: "/purchase-orders" },
+          { label: "Materiais", href: "/materials" },
+          { label: "Novo" },
+        ]}
       />
 
       {/* Form */}

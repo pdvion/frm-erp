@@ -64,10 +64,14 @@ export default function SuppliersPage() {
         title="Fornecedores" 
         icon={<Users className="w-6 h-6" />}
         module="SUPPLIERS"
+        breadcrumbs={[
+          { label: "Compras", href: "/purchase-orders" },
+          { label: "Fornecedores" },
+        ]}
         actions={
           <Link
             href="/suppliers/new"
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">Novo Fornecedor</span>
