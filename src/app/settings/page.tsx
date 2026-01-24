@@ -11,6 +11,7 @@ import {
   Shield,
   Wallet,
   Bell,
+  Bot,
 } from "lucide-react";
 
 const settingsItems = [
@@ -55,6 +56,13 @@ const settingsItems = [
     href: "/settings/collection-rules",
     icon: Bell,
     color: "bg-orange-500",
+  },
+  {
+    title: "Tokens de IA",
+    description: "Configurar tokens de API para OpenAI, Anthropic e Google",
+    href: "/settings/ai",
+    icon: Bot,
+    color: "bg-violet-500",
   },
 ];
 
