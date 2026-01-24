@@ -40,6 +40,13 @@ export default function NewPurchaseOrderPage() {
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<OrderItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  
+  // Novos campos VIO-640
+  const [application, setApplication] = useState("");
+  const [carrier, setCarrier] = useState("");
+  const [operationNature, setOperationNature] = useState("");
+  const [freightType, setFreightType] = useState("");
+  const [fobFreightValue, setFobFreightValue] = useState(0);
 
   // Material search
   const [materialSearch, setMaterialSearch] = useState("");
@@ -135,6 +142,12 @@ export default function NewPurchaseOrderPage() {
       paymentTerms: paymentTerms || undefined,
       deliveryTerms: deliveryTerms || undefined,
       notes: notes || undefined,
+      // Novos campos VIO-640
+      application: application || undefined,
+      carrier: carrier || undefined,
+      operationNature: operationNature as "INDUSTRIALIZATION" | "RESALE" | "CONSUMPTION" | "SERVICES" | "RAW_MATERIAL" | "SECONDARY" | "PACKAGING" | "FIXED_ASSET" | undefined || undefined,
+      freightType: freightType as "CIF" | "FOB" | "PICKUP" | undefined || undefined,
+      fobFreightValue: fobFreightValue || 0,
       items: items.map((item) => ({
         materialId: item.materialId,
         quantity: item.quantity,
@@ -448,6 +461,109 @@ export default function NewPurchaseOrderPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={3}
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Frete e Entrega */}
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
+              <h2 className="text-lg font-medium text-theme mb-4">
+                Frete e Entrega
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="freight-type"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Tipo de Frete
+                  </label>
+                  <select
+                    id="freight-type"
+                    value={freightType}
+                    onChange={(e) => setFreightType(e.target.value)}
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Selecione</option>
+                    <option value="CIF">CIF - Fornecedor</option>
+                    <option value="FOB">FOB - Comprador</option>
+                    <option value="PICKUP">FRM Retira</option>
+                  </select>
+                </div>
+                {freightType === "FOB" && (
+                  <div>
+                    <label
+                      htmlFor="fob-freight-value"
+                      className="block text-sm font-medium text-theme-secondary mb-1"
+                    >
+                      Valor do Frete FOB
+                    </label>
+                    <input
+                      id="fob-freight-value"
+                      type="number"
+                      value={fobFreightValue || ""}
+                      onChange={(e) => setFobFreightValue(parseFloat(e.target.value) || 0)}
+                      step="0.01"
+                      min="0"
+                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label
+                    htmlFor="carrier"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Transportadora
+                  </label>
+                  <input
+                    id="carrier"
+                    type="text"
+                    value={carrier}
+                    onChange={(e) => setCarrier(e.target.value)}
+                    placeholder="Nome da transportadora"
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="operation-nature"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Natureza da Operação
+                  </label>
+                  <select
+                    id="operation-nature"
+                    value={operationNature}
+                    onChange={(e) => setOperationNature(e.target.value)}
+                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="">Selecione</option>
+                    <option value="INDUSTRIALIZATION">Industrialização</option>
+                    <option value="RESALE">Revenda</option>
+                    <option value="CONSUMPTION">Consumo</option>
+                    <option value="SERVICES">Serviços</option>
+                    <option value="RAW_MATERIAL">Matéria Prima</option>
+                    <option value="SECONDARY">Secundário</option>
+                    <option value="PACKAGING">Embalagem</option>
+                    <option value="FIXED_ASSET">Ativo Imobilizado</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="application"
+                    className="block text-sm font-medium text-theme-secondary mb-1"
+                  >
+                    Aplicação
+                  </label>
+                  <input
+                    id="application"
+                    type="text"
+                    value={application}
+                    onChange={(e) => setApplication(e.target.value)}
+                    placeholder="Aplicação do material"
                     className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
