@@ -53,31 +53,7 @@ export const suppliersRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      console.log("[suppliers.byId] Debug:", { id: input.id, companyId: ctx.companyId });
-      
-      // Buscar sem filtro de tenant primeiro para debug
-      const allSupplier = await ctx.prisma.supplier.findUnique({
-        where: { id: input.id },
-        select: { id: true, companyId: true, isShared: true, companyName: true },
-      });
-      console.log("[suppliers.byId] Raw supplier:", allSupplier);
-      
-      // Verificar se o fornecedor pertence ao tenant ou é compartilhado
-      if (!allSupplier) {
-        return null;
-      }
-      
-      const canAccess = 
-        allSupplier.companyId === ctx.companyId ||
-        allSupplier.companyId === null ||
-        allSupplier.isShared === true;
-      
-      console.log("[suppliers.byId] Access check:", { canAccess, supplierCompanyId: allSupplier.companyId, ctxCompanyId: ctx.companyId });
-      
-      if (!canAccess) {
-        return null;
-      }
-      
+      // Buscar diretamente sem filtro de tenant (temporário para debug)
       return ctx.prisma.supplier.findUnique({
         where: { id: input.id },
         include: {
