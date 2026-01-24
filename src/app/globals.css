@@ -134,3 +134,83 @@ body {
 
 .hover\:bg-theme-hover:hover { background-color: var(--card-hover); }
 .hover\:bg-theme-table-hover:hover { background-color: var(--table-hover); }
+
+/* ============================================
+   DESIGN TOKENS - Padrões Globais de UX
+   ============================================ */
+
+/* Botões Primários - Usar SEMPRE blue-600 para ações principais */
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 transition-colors;
+}
+
+/* Botões Secundários */
+.btn-secondary {
+  @apply bg-theme-input text-theme-secondary border border-theme hover:bg-theme-hover transition-colors;
+}
+
+/* Botões de Perigo */
+.btn-danger {
+  @apply bg-red-600 text-white hover:bg-red-700 transition-colors;
+}
+
+/* Botões de Sucesso */
+.btn-success {
+  @apply bg-green-600 text-white hover:bg-green-700 transition-colors;
+}
+
+/* Espaçamentos Padrão (8px grid) */
+:root {
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+}
+
+/* Tamanhos de Fonte Padrão */
+:root {
+  --font-xs: 0.75rem;     /* 12px */
+  --font-sm: 0.875rem;    /* 14px */
+  --font-base: 1rem;      /* 16px */
+  --font-lg: 1.125rem;    /* 18px */
+  --font-xl: 1.25rem;     /* 20px */
+  --font-2xl: 1.5rem;     /* 24px */
+}
+
+/* Inputs - Altura mínima para touch (44px) */
+input, select, textarea, button {
+  min-height: 44px;
+}
+
+/* Focus Visible - Acessibilidade */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Skip Link - Acessibilidade */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: white;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Contraste melhorado para texto muted */
+.light {
+  --foreground-muted: #4b5563; /* gray-600 em vez de gray-500 para melhor contraste */
+}
+
+.dark {
+  --foreground-muted: #9ca3af; /* gray-400 para melhor contraste no dark */
+}

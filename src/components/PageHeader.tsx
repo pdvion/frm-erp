@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, BookOpen } from "lucide-react";
 import { HelpButton } from "@/components/HelpButton";
+import { Breadcrumbs, BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import { ReactNode } from "react";
 
 interface PageHeaderProps {
@@ -12,6 +13,7 @@ interface PageHeaderProps {
   backHref?: string;
   backLabel?: string;
   module?: string;
+  breadcrumbs?: BreadcrumbItem[];
   badge?: {
     label: string;
     color: string;
@@ -27,13 +29,18 @@ export function PageHeader({
   icon, 
   backHref, 
   backLabel = "Voltar",
-  module, 
+  module,
+  breadcrumbs,
   badge,
   children, 
   actions 
 }: PageHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div className="mb-6">
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <Breadcrumbs items={breadcrumbs} className="mb-3" />
+      )}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0">
         {backHref && (
           <Link
@@ -84,6 +91,7 @@ export function PageHeader({
         )}
         {actions}
         {children}
+      </div>
       </div>
     </div>
   );
