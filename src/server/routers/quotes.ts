@@ -117,6 +117,12 @@ export const quotesRouter = createTRPCRouter({
         paymentTerms: z.string().optional(),
         deliveryTerms: z.string().optional(),
         notes: z.string().optional(),
+        // Novos campos
+        revision: z.number().default(1),
+        ownerCompanyId: z.string().optional(),
+        costCenterGroup: z.number().optional(),
+        requisitionId: z.string().optional(),
+        requesterName: z.string().optional(),
         items: z.array(
           z.object({
             materialId: z.string(),

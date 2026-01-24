@@ -512,6 +512,19 @@ export const payablesRouter = createTRPCRouter({
       totalInstallments: z.number().default(1),
       notes: z.string().optional(),
       barcode: z.string().optional(),
+      // Retenções de impostos
+      hasWithholding: z.boolean().default(false),
+      withholdingIr: z.number().default(0),
+      withholdingIss: z.number().default(0),
+      withholdingInss: z.number().default(0),
+      withholdingPis: z.number().default(0),
+      withholdingCofins: z.number().default(0),
+      withholdingCsll: z.number().default(0),
+      // Centro de custo
+      costCenterGroup: z.number().optional(),
+      costCenterCode: z.string().optional(),
+      // Contrato
+      contractType: z.enum(["PURCHASE", "FINANCIAL", "PRESUMED"]).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       // Obter próximo código
@@ -539,6 +552,19 @@ export const payablesRouter = createTRPCRouter({
           notes: input.notes,
           barcode: input.barcode,
           createdBy: ctx.tenant.userId,
+          // Retenções
+          hasWithholding: input.hasWithholding,
+          withholdingIr: input.withholdingIr,
+          withholdingIss: input.withholdingIss,
+          withholdingInss: input.withholdingInss,
+          withholdingPis: input.withholdingPis,
+          withholdingCofins: input.withholdingCofins,
+          withholdingCsll: input.withholdingCsll,
+          // Centro de custo
+          costCenterGroup: input.costCenterGroup,
+          costCenterCode: input.costCenterCode,
+          // Contrato
+          contractType: input.contractType,
         },
         include: { supplier: true },
       });

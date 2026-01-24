@@ -183,6 +183,18 @@ export const purchaseOrdersRouter = createTRPCRouter({
         paymentTerms: z.string().optional(),
         deliveryTerms: z.string().optional(),
         notes: z.string().optional(),
+        // Novos campos
+        application: z.string().optional(),
+        billingCompanyId: z.string().optional(),
+        costCenterGroup: z.number().optional(),
+        carrier: z.string().optional(),
+        deliveryAddress: z.string().optional(),
+        deliveryPhone: z.string().optional(),
+        operationNature: z.enum(["INDUSTRIALIZATION", "RESALE", "CONSUMPTION", "SERVICES", "RAW_MATERIAL", "SECONDARY", "PACKAGING", "FIXED_ASSET"]).optional(),
+        paymentConditionId: z.string().optional(),
+        paymentConditionDesc: z.string().optional(),
+        freightType: z.enum(["CIF", "FOB", "PICKUP"]).optional(),
+        fobFreightValue: z.number().default(0),
         items: z.array(
           z.object({
             materialId: z.string(),

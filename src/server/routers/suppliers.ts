@@ -96,6 +96,29 @@ export const suppliersRouter = createTRPCRouter({
         paymentTerms: z.string().optional(),
         notes: z.string().optional(),
         isShared: z.boolean().default(false),
+        // Categorias
+        cat01Embalagens: z.boolean().default(false),
+        cat02Tintas: z.boolean().default(false),
+        cat03OleosGraxas: z.boolean().default(false),
+        cat04Dispositivos: z.boolean().default(false),
+        cat05Acessorios: z.boolean().default(false),
+        cat06Manutencao: z.boolean().default(false),
+        cat07Servicos: z.boolean().default(false),
+        cat08Escritorio: z.boolean().default(false),
+        // Tipo de atividade
+        isWholesaler: z.boolean().default(false),
+        isRetailer: z.boolean().default(false),
+        isIndustry: z.boolean().default(false),
+        isService: z.boolean().default(false),
+        cnae: z.string().optional(),
+        // IQF
+        certificationType: z.enum(["UNDEFINED", "ISO_RBS", "INITIAL_EVAL", "STRATEGIC"]).optional(),
+        certificationExpiryDate: z.date().optional(),
+        iqfPercent: z.number().optional(),
+        iqfStatus: z.enum(["NEW", "APPROVED", "REJECTED"]).optional(),
+        // Outros
+        taxRegime: z.string().optional(),
+        hasFinancialContract: z.boolean().default(false),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -142,6 +165,29 @@ export const suppliersRouter = createTRPCRouter({
         status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED"]).optional(),
         qualityIndex: z.number().optional(),
         isShared: z.boolean().optional(),
+        // Categorias
+        cat01Embalagens: z.boolean().optional(),
+        cat02Tintas: z.boolean().optional(),
+        cat03OleosGraxas: z.boolean().optional(),
+        cat04Dispositivos: z.boolean().optional(),
+        cat05Acessorios: z.boolean().optional(),
+        cat06Manutencao: z.boolean().optional(),
+        cat07Servicos: z.boolean().optional(),
+        cat08Escritorio: z.boolean().optional(),
+        // Tipo de atividade
+        isWholesaler: z.boolean().optional(),
+        isRetailer: z.boolean().optional(),
+        isIndustry: z.boolean().optional(),
+        isService: z.boolean().optional(),
+        cnae: z.string().optional(),
+        // IQF
+        certificationType: z.enum(["UNDEFINED", "ISO_RBS", "INITIAL_EVAL", "STRATEGIC"]).optional(),
+        certificationExpiryDate: z.date().optional(),
+        iqfPercent: z.number().optional(),
+        iqfStatus: z.enum(["NEW", "APPROVED", "REJECTED"]).optional(),
+        // Outros
+        taxRegime: z.string().optional(),
+        hasFinancialContract: z.boolean().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
