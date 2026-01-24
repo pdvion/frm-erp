@@ -31,6 +31,10 @@ O usuário pode alternar via `ThemeSwitcher` no header.
    - `PageTimeline` - histórico de eventos
    - `PageInfoList` - lista chave-valor
    - `PageButton` - botões padronizados
+   - `ExportButtons` - exportação Excel/PDF
+   - `AdvancedFilters` - filtros com salvamento
+   - `MaskedInput` - inputs com máscara (CNPJ, CPF, etc)
+   - `Toaster` - notificações toast (já no layout)
 
 ## Classes de Tema (CSS Variables)
 
