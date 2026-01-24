@@ -56,6 +56,9 @@ interface SupplierFormData {
   cnae: string;
   // IQF
   certificationType: string;
+  certificationExpiryDate: string;
+  certificationFileName: string;
+  overallQualityPercent: number;
   iqfPercent: number;
   iqfStatus: string;
   // Outros
@@ -114,6 +117,9 @@ export default function NewSupplierPage() {
     cnae: "",
     // IQF
     certificationType: "",
+    certificationExpiryDate: "",
+    certificationFileName: "",
+    overallQualityPercent: 0,
     iqfPercent: 0,
     iqfStatus: "",
     // Outros
@@ -178,6 +184,9 @@ export default function NewSupplierPage() {
       cnae: formData.cnae || undefined,
       // IQF
       certificationType: formData.certificationType as "UNDEFINED" | "ISO_RBS" | "INITIAL_EVAL" | "STRATEGIC" | undefined || undefined,
+      certificationExpiryDate: formData.certificationExpiryDate ? new Date(formData.certificationExpiryDate) : undefined,
+      certificationFileName: formData.certificationFileName || undefined,
+      overallQualityPercent: formData.overallQualityPercent || undefined,
       iqfPercent: formData.iqfPercent || undefined,
       iqfStatus: formData.iqfStatus as "NEW" | "APPROVED" | "REJECTED" | undefined || undefined,
       // Outros
@@ -568,7 +577,7 @@ export default function NewSupplierPage() {
 
         {/* IQF - Índice de Qualidade */}
         <h2 className="text-lg font-semibold text-theme mb-4">Qualidade (IQF)</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
           <div>
             <label htmlFor="certificationType" className={labelClass}>Tipo de Certificação</label>
             <select
@@ -584,6 +593,45 @@ export default function NewSupplierPage() {
               <option value="INITIAL_EVAL">Avaliação Inicial</option>
               <option value="STRATEGIC">Estratégico</option>
             </select>
+          </div>
+          <div>
+            <label htmlFor="certificationExpiryDate" className={labelClass}>Validade Certificação</label>
+            <input
+              type="date"
+              id="certificationExpiryDate"
+              name="certificationExpiryDate"
+              value={formData.certificationExpiryDate}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="certificationFileName" className={labelClass}>Arquivo Certificação</label>
+            <input
+              type="text"
+              id="certificationFileName"
+              name="certificationFileName"
+              value={formData.certificationFileName}
+              onChange={handleChange}
+              placeholder="Nome do arquivo"
+              className={inputClass}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div>
+            <label htmlFor="overallQualityPercent" className={labelClass}>Qualidade Geral (%)</label>
+            <input
+              type="number"
+              id="overallQualityPercent"
+              name="overallQualityPercent"
+              value={formData.overallQualityPercent || ""}
+              onChange={handleChange}
+              min="0"
+              max="100"
+              step="0.1"
+              className={inputClass}
+            />
           </div>
           <div>
             <label htmlFor="iqfPercent" className={labelClass}>IQF (%)</label>

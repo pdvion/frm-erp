@@ -114,6 +114,8 @@ export const suppliersRouter = createTRPCRouter({
         // IQF
         certificationType: z.enum(["UNDEFINED", "ISO_RBS", "INITIAL_EVAL", "STRATEGIC"]).optional(),
         certificationExpiryDate: z.date().optional(),
+        certificationFileName: z.string().optional(),
+        overallQualityPercent: z.number().optional(),
         iqfPercent: z.number().optional(),
         iqfStatus: z.enum(["NEW", "APPROVED", "REJECTED"]).optional(),
         // Outros
@@ -183,6 +185,8 @@ export const suppliersRouter = createTRPCRouter({
         // IQF
         certificationType: z.enum(["UNDEFINED", "ISO_RBS", "INITIAL_EVAL", "STRATEGIC"]).optional(),
         certificationExpiryDate: z.date().optional(),
+        certificationFileName: z.string().optional(),
+        overallQualityPercent: z.number().optional(),
         iqfPercent: z.number().optional(),
         iqfStatus: z.enum(["NEW", "APPROVED", "REJECTED"]).optional(),
         // Outros
