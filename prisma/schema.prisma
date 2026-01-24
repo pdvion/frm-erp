@@ -1792,27 +1792,27 @@ model Customer {
   isShared              Boolean   @default(false)
   
   // Classificação
-  customerGroupId       String?
-  customerTypeId        String?
-  alphaCode             String?
+  customerGroupId       String?   @map("customer_group_id")
+  customerTypeId        String?   @map("customer_type_id")
+  alphaCode             String?   @map("alpha_code")
   
   // Vendedor
-  salesRepId            String?
-  externalSalesRepId    String?
-  mainContactId         String?
+  salesRepId            String?   @map("sales_rep_id")
+  externalSalesRepId    String?   @map("external_sales_rep_id")
+  mainContactId         String?   @map("main_contact_id")
   
   // Visitas
-  lastVisitDate         DateTime?
-  relationshipStartDate DateTime?
-  visitFrequency        Int?
-  generatePeriodicVisit Boolean   @default(false)
+  lastVisitDate         DateTime? @map("last_visit_date")
+  relationshipStartDate DateTime? @map("relationship_start_date")
+  visitFrequency        Int?      @map("visit_frequency")
+  generatePeriodicVisit Boolean   @default(false) @map("generate_periodic_visit")
   
   // Comercial
-  minInvoiceValue       Float?
-  defaultMessage        String?
-  defaultPaymentCondition String?
-  applySt               Boolean   @default(false)
-  defaultOrderNotes     String?
+  minInvoiceValue         Float?    @map("min_invoice_value")
+  defaultMessage          String?   @map("default_message")
+  defaultPaymentCondition String?   @map("default_payment_condition")
+  applySt                 Boolean   @default(false) @map("apply_st")
+  defaultOrderNotes       String?   @map("default_order_notes")
   
   createdBy             String?   @db.Uuid
   createdAt             DateTime  @default(now())
