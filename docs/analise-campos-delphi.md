@@ -11,14 +11,16 @@
 | Módulo | Campos Implementados | Campos Pendentes | Status |
 |--------|---------------------|------------------|--------|
 | Fornecedores (CP11) | 22/22 | 0 | ✅ Completo |
-| Ordens de Compra (CP13) | 18/20 | 2 | 🟡 90% |
-| Notas Fiscais (CP14) | 20/22 | 2 | 🟡 90% |
-| Financeiro (FN10) | 25/30 | 5 | 🟡 83% |
-| Estoque (EST10) | 10/12 | 2 | 🟡 83% |
-| Produção (OP10) | 15/17 | 2 | 🟡 88% |
-| Clientes (VD) | 12/15 | 3 | 🟡 80% |
-| Orçamentos (CP12) | 18/20 | 2 | 🟡 90% |
-| Materiais (CP10) | 8/10 | 2 | 🟡 80% |
+| Ordens de Compra (CP13) | 20/20 | 0 | ✅ Completo |
+| Notas Fiscais (CP14) | 22/22 | 0 | ✅ Completo |
+| Financeiro (FN10) | 30/30 | 0 | ✅ Completo |
+| Estoque (EST10) | 12/12 | 0 | ✅ Completo |
+| Produção (OP10) | 17/17 | 0 | ✅ Completo |
+| Clientes (VD) | 15/15 | 0 | ✅ Completo |
+| Orçamentos (CP12) | 20/20 | 0 | ✅ Completo |
+| Materiais (CP10) | 10/10 | 0 | ✅ Completo |
+
+**Última atualização**: 24/01/2026 - Todos os campos do Delphi foram mapeados para o Prisma.
 
 ---
 
