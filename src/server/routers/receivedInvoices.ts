@@ -17,9 +17,14 @@ interface NFeData {
   discountValue: number;
   icmsBase: number;
   icmsValue: number;
+  icmsStBase: number;
+  icmsStValue: number;
   ipiValue: number;
   pisValue: number;
   cofinsValue: number;
+  insuranceValue: number;
+  otherExpenses: number;
+  additionalInfo: string | null;
   items: NFeItemData[];
 }
 
@@ -87,9 +92,18 @@ function parseNFeXml(xmlContent: string): NFeData {
   const discountValue = getTagValueFloat(tot, "vDesc");
   const icmsBase = getTagValueFloat(tot, "vBC");
   const icmsValue = getTagValueFloat(tot, "vICMS");
+  const icmsStBase = getTagValueFloat(tot, "vBCST");
+  const icmsStValue = getTagValueFloat(tot, "vST");
   const ipiValue = getTagValueFloat(tot, "vIPI");
   const pisValue = getTagValueFloat(tot, "vPIS");
   const cofinsValue = getTagValueFloat(tot, "vCOFINS");
+  const insuranceValue = getTagValueFloat(tot, "vSeg");
+  const otherExpenses = getTagValueFloat(tot, "vOutro");
+
+  // Informações adicionais
+  const infAdicMatch = xmlContent.match(/<infAdic>([\s\S]*?)<\/infAdic>/i);
+  const infAdic = infAdicMatch ? infAdicMatch[1] : "";
+  const additionalInfo = getTagValue(infAdic, "infCpl") || null;
 
   // Itens (det)
   const items: NFeItemData[] = [];
@@ -156,9 +170,14 @@ function parseNFeXml(xmlContent: string): NFeData {
     discountValue,
     icmsBase,
     icmsValue,
+    icmsStBase,
+    icmsStValue,
     ipiValue,
     pisValue,
     cofinsValue,
+    insuranceValue,
+    otherExpenses,
+    additionalInfo,
     items,
   };
 }
@@ -300,9 +319,14 @@ export const receivedInvoicesRouter = createTRPCRouter({
           discountValue: nfeData.discountValue,
           icmsBase: nfeData.icmsBase,
           icmsValue: nfeData.icmsValue,
+          icmsStBase: nfeData.icmsStBase,
+          icmsStValue: nfeData.icmsStValue,
           ipiValue: nfeData.ipiValue,
           pisValue: nfeData.pisValue,
           cofinsValue: nfeData.cofinsValue,
+          insuranceValue: nfeData.insuranceValue,
+          otherExpenses: nfeData.otherExpenses,
+          additionalInfo: nfeData.additionalInfo,
           status: "PENDING",
           companyId: ctx.companyId,
           xmlContent: input.xmlContent,

@@ -25,6 +25,19 @@ enum SupplierStatus {
   BLOCKED
 }
 
+enum SupplierCertificationType {
+  UNDEFINED       // Não definido
+  ISO_RBS         // ISO/RBS
+  INITIAL_EVAL    // Avaliação Inicial
+  STRATEGIC       // Estratégico
+}
+
+enum SupplierIqfStatus {
+  NEW             // Novo (não avaliado)
+  APPROVED        // Aprovado
+  REJECTED        // Reprovado
+}
+
 enum MovementType {
   ENTRY        // Entrada
   EXIT         // Saída
@@ -66,6 +79,29 @@ enum PayableType {
   SERVICE         // Serviço
   TAX             // Imposto
   OTHER           // Outros
+}
+
+enum PayableContractType {
+  PURCHASE        // Contrato Compras
+  FINANCIAL       // Contrato Financeiro
+  PRESUMED        // Contrato Financeiro Presumido
+}
+
+enum FreightType {
+  CIF             // Frete por conta do fornecedor
+  FOB             // Frete por conta do comprador
+  PICKUP          // FRM retira
+}
+
+enum OperationNature {
+  INDUSTRIALIZATION // Industrialização
+  RESALE            // Revenda
+  CONSUMPTION       // Consumo
+  SERVICES          // Serviços
+  RAW_MATERIAL      // Matéria Prima
+  SECONDARY         // Secundário
+  PACKAGING         // Embalagem
+  FIXED_ASSET       // Ativo Imobilizado
 }
 
 // =============================================================================
@@ -509,6 +545,39 @@ model Supplier {
   isShared        Boolean        @default(false) // Visível para outras empresas?
   companyId       String?
   company         Company?       @relation(fields: [companyId], references: [id])
+  
+  // Categorias de Fornecedor
+  cat01Embalagens   Boolean      @default(false)
+  cat02Tintas       Boolean      @default(false)
+  cat03OleosGraxas  Boolean      @default(false)
+  cat04Dispositivos Boolean      @default(false)
+  cat05Acessorios   Boolean      @default(false)
+  cat06Manutencao   Boolean      @default(false)
+  cat07Servicos     Boolean      @default(false)
+  cat08Escritorio   Boolean      @default(false)
+  
+  // Tipo de Atividade
+  isWholesaler      Boolean      @default(false)
+  isRetailer        Boolean      @default(false)
+  isIndustry        Boolean      @default(false)
+  isService         Boolean      @default(false)
+  activityTypeId    String?
+  cnae              String?
+  
+  // Qualidade (IQF)
+  certificationType       SupplierCertificationType?
+  certificationExpiryDate DateTime?
+  certificationFileName   String?
+  overallQualityPercent   Float?
+  iqfPercent              Float?
+  qualityCalcDate         DateTime?
+  iqfStatus               SupplierIqfStatus?
+  
+  // Outros
+  taxRegime             String?
+  sefazQueryDate        DateTime?
+  hasFinancialContract  Boolean      @default(false)
+  
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
@@ -563,6 +632,27 @@ model Inventory {
   unitCost        Float         @default(0) // custo unitário médio
   totalCost       Float         @default(0) // custo total
   lastMovementAt  DateTime?
+  
+  // Tipos de Quantidade
+  quantitySemiFinished    Float         @default(0)
+  quantityFinished        Float         @default(0)
+  quantityCritical        Float         @default(0)
+  quantityScrap           Float         @default(0)
+  quantityDead            Float         @default(0)
+  quantityAccountingInd   Float         @default(0)
+  quantityAccountingResale Float        @default(0)
+  
+  // Pedidos
+  quantityOnOrder         Float         @default(0)
+  expectedDeliveryDate    DateTime?
+  
+  // Regras
+  consumptionRuleId       String?
+  consumeByFormula        Boolean       @default(false)
+  
+  // Referência
+  legacyProductCode       Int?
+  
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -650,6 +740,43 @@ model Quote {
   discountPercent Float       @default(0)
   totalValue      Float       @default(0)
   notes           String?
+  
+  // Revisão
+  revision        Int         @default(1)
+  
+  // Aprovações
+  preApprovedById String?
+  preApprovedAt   DateTime?
+  approvedById    String?
+  approvedAt      DateTime?
+  
+  // Modificações
+  materialsModifiedById String?
+  materialsModifiedAt   DateTime?
+  suppliersModifiedById String?
+  suppliersModifiedAt   DateTime?
+  
+  // Documentos
+  quotePdfName    String?
+  quotePrintedAt  DateTime?
+  attachment1     String?
+  attachment2     String?
+  attachment3     String?
+  
+  // Análise
+  analysisExecuted    Boolean     @default(false)
+  conversationHistory String?     @db.Text
+  
+  // Centro de Custo
+  ownerCompanyId  String?
+  costCenterGroup Int?
+  
+  // Solicitação
+  requisitionId   String?
+  requesterName   String?
+  approverName    String?
+  completionPercent Int         @default(0)
+  
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -711,6 +838,41 @@ model PurchaseOrder {
   notes                 String?
   companyId             String?
   company               Company?            @relation(fields: [companyId], references: [id])
+  
+  // Dados Gerais
+  application           String?
+  quoteSupplierCode     Int?
+  billingCompanyId      String?
+  costCenterGroup       Int?
+  
+  // Entrega
+  carrier               String?
+  deliveryAddress       String?
+  deliveryPhone         String?
+  
+  // Fiscal
+  operationNature       OperationNature?
+  
+  // Pagamento
+  paymentConditionId    String?
+  paymentConditionDesc  String?
+  
+  // Frete
+  freightType           FreightType?
+  fobFreightValue       Float               @default(0)
+  pickupKm              Float?
+  pickupValue           Float?
+  
+  // Cancelamento
+  cancellationReason    String?
+  
+  // Aprovações
+  financialApproved     Boolean             @default(false)
+  financialApprovedById String?
+  financialApprovedAt   DateTime?
+  analysisApprovedById  String?
+  analysisApprovedAt    DateTime?
+  
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
 
@@ -847,9 +1009,34 @@ model ReceivedInvoice {
   // Impostos
   icmsBase        Float         @default(0)
   icmsValue       Float         @default(0)
+  icmsStBase      Float         @default(0)
+  icmsStValue     Float         @default(0)
   ipiValue        Float         @default(0)
   pisValue        Float         @default(0)
   cofinsValue     Float         @default(0)
+  insuranceValue  Float         @default(0)
+  otherExpenses   Float         @default(0)
+  
+  // Créditos Fiscais
+  icmsCredit      Float         @default(0)
+  icmsStCredit    Float         @default(0)
+  icmsSnCredit    Float         @default(0)
+  ipiCredit       Float         @default(0)
+  pisCredit       Float         @default(0)
+  cofinsCredit    Float         @default(0)
+  
+  // Centro de Custo
+  costCenterGroup Int?
+  costCenterConfirmedById String?
+  
+  // Pagamento
+  paymentConditionId String?
+  installmentsCalculated Boolean @default(false)
+  paymentDate     DateTime?
+  
+  // Informações Adicionais
+  additionalInfo  String?       @db.Text
+  xmlSupplierId   String?
   
   // Status
   status          InvoiceStatus @default(PENDING)
@@ -982,6 +1169,42 @@ model AccountsPayable {
   // Observações
   notes           String?
   barcode         String?        // código de barras do boleto
+  additionalInfo  String?        @db.Text
+  
+  // Retenções de Impostos
+  hasWithholding    Boolean      @default(false)
+  withholdingIr     Float        @default(0)
+  withholdingIss    Float        @default(0)
+  withholdingInss   Float        @default(0)
+  withholdingPis    Float        @default(0)
+  withholdingCofins Float        @default(0)
+  withholdingCsll   Float        @default(0)
+  
+  // Dados do Fornecedor (cache)
+  supplierAlphaCode String?
+  supplierCnpj      String?
+  supplierIe        String?
+  supplierStateCode Int?
+  
+  // Centro de Custo
+  costCenterGroup   Int?
+  costCenterCode    String?
+  costCenterNotes   String?
+  
+  // Contrato
+  contractType      PayableContractType?
+  
+  // Confirmações
+  sectorConfirmedAt   DateTime?
+  sectorConfirmedById String?
+  physicalDeliveryAt  DateTime?
+  physicalDeliveryById String?
+  paymentReleasedAt   DateTime?
+  paymentReleasedById String?
+  
+  // Pagamento
+  paymentBankId     String?
+  pdfFileName       String?
   
   // Auditoria
   createdBy       String?
@@ -1142,6 +1365,30 @@ enum ProductionOrderStatus {
   CANCELLED     // Cancelada
 }
 
+enum ProductionRequestType {
+  SALES         // Venda
+  STOCK         // Estoque
+  EXPORT        // Exportação
+  NORMAL        // Normal
+  REWORK        // Retrabalho
+}
+
+enum ProductionExecutionType {
+  MANUFACTURE   // Fabricação
+  ALTER         // Alteração
+}
+
+enum ProductionDeliveryType {
+  ASSEMBLED     // Montado
+  LOOSE         // Solto
+}
+
+enum RawMaterialOrigin {
+  INDUSTRIALIZED_STOCK  // Estoque Industrializado
+  RAW_MATERIAL          // Matéria Prima
+  FOUNDRY               // Fundição
+}
+
 model ProductionOrder {
   id              String                @id @default(uuid())
   code            Int                   // número da OP
@@ -1171,6 +1418,41 @@ model ProductionOrder {
   
   // Observações
   notes           String?
+  
+  // Tipo de Solicitação
+  requestType           ProductionRequestType?
+  executionType         ProductionExecutionType?
+  
+  // Cliente
+  customerId            String?
+  
+  // Entrega
+  deliveryDate          DateTime?
+  deliveryType          ProductionDeliveryType?
+  suggestedDeliveryDate DateTime?
+  deliveryDateChanged   Boolean               @default(false)
+  
+  // Responsável
+  responsibleEmployeeId String?
+  deliveryUserId        String?
+  
+  // Quantidades
+  finishedQuantity      Int                   @default(0)
+  paintedQuantity       Int                   @default(0)
+  
+  // Origem
+  rawMaterialOrigin     RawMaterialOrigin?
+  
+  // Agrupamento
+  exportCode            Int?
+  groupedOrderId        String?
+  
+  // Urgência
+  typeBeforeUrgency     Int?
+  dateBeforeUrgency     DateTime?
+  
+  // Controle
+  printed               Boolean               @default(false)
   
   // Auditoria
   createdBy       String?
@@ -1505,6 +1787,30 @@ model Customer {
   status                String    @default("ACTIVE")
   notes                 String?
   isShared              Boolean   @default(false)
+  
+  // Classificação
+  customerGroupId       String?
+  customerTypeId        String?
+  alphaCode             String?
+  
+  // Vendedor
+  salesRepId            String?
+  externalSalesRepId    String?
+  mainContactId         String?
+  
+  // Visitas
+  lastVisitDate         DateTime?
+  relationshipStartDate DateTime?
+  visitFrequency        Int?
+  generatePeriodicVisit Boolean   @default(false)
+  
+  // Comercial
+  minInvoiceValue       Float?
+  defaultMessage        String?
+  defaultPaymentCondition String?
+  applySt               Boolean   @default(false)
+  defaultOrderNotes     String?
+  
   createdBy             String?   @db.Uuid
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
