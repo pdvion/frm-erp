@@ -637,24 +637,24 @@ model Inventory {
   lastMovementAt  DateTime?
   
   // Tipos de Quantidade
-  quantitySemiFinished    Float         @default(0)
-  quantityFinished        Float         @default(0)
-  quantityCritical        Float         @default(0)
-  quantityScrap           Float         @default(0)
-  quantityDead            Float         @default(0)
-  quantityAccountingInd   Float         @default(0)
-  quantityAccountingResale Float        @default(0)
+  quantitySemiFinished    Float         @default(0) @map("quantity_semi_finished")
+  quantityFinished        Float         @default(0) @map("quantity_finished")
+  quantityCritical        Float         @default(0) @map("quantity_critical")
+  quantityScrap           Float         @default(0) @map("quantity_scrap")
+  quantityDead            Float         @default(0) @map("quantity_dead")
+  quantityAccountingInd   Float         @default(0) @map("quantity_accounting_ind")
+  quantityAccountingResale Float        @default(0) @map("quantity_accounting_resale")
   
   // Pedidos
-  quantityOnOrder         Float         @default(0)
-  expectedDeliveryDate    DateTime?
+  quantityOnOrder         Float         @default(0) @map("quantity_on_order")
+  expectedDeliveryDate    DateTime?     @map("expected_delivery_date")
   
   // Regras
-  consumptionRuleId       String?
-  consumeByFormula        Boolean       @default(false)
+  consumptionRuleId       String?       @map("consumption_rule_id")
+  consumeByFormula        Boolean       @default(false) @map("consume_by_formula")
   
   // Referência
-  legacyProductCode       Int?
+  legacyProductCode       Int?          @map("legacy_product_code")
   
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
