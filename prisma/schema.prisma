@@ -520,7 +520,7 @@ model Material {
 // =============================================================================
 
 model Supplier {
-  id              String         @id @default(uuid())
+  id              String         @id @default(uuid()) @db.Uuid
   code            Int            @unique // codFornecedor original
   companyName     String         // razaoSocial
   tradeName       String?        // nomeFantasia
