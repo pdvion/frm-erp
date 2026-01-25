@@ -20,8 +20,10 @@ import {
 } from "recharts";
 
 // Hook para detectar se o container tem dimensões válidas
+// VIO-697: Melhorado para evitar warnings de width/height -1
 function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
   const [isReady, setIsReady] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!ref.current) return;
@@ -29,23 +31,34 @@ function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
     const checkDimensions = () => {
       if (ref.current) {
         const { width, height } = ref.current.getBoundingClientRect();
-        if (width > 0 && height > 0) {
+        // Garantir dimensões mínimas de 50px para evitar warnings
+        if (width >= 50 && height >= 50) {
           setIsReady(true);
+          setDimensions({ width, height });
+        } else {
+          setIsReady(false);
         }
       }
     };
 
-    // Verificar imediatamente
-    checkDimensions();
+    // Usar requestAnimationFrame para garantir que o layout foi calculado
+    const rafId = requestAnimationFrame(() => {
+      checkDimensions();
+    });
 
     // Usar ResizeObserver para detectar mudanças
-    const observer = new ResizeObserver(checkDimensions);
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(checkDimensions);
+    });
     observer.observe(ref.current);
 
-    return () => observer.disconnect();
+    return () => {
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+    };
   }, [ref]);
 
-  return isReady;
+  return { isReady, dimensions };
 }
 
 // Cores padrão para gráficos
@@ -87,7 +100,7 @@ export const SimpleLineChart = memo(function SimpleLineChart({
   className,
 }: LineChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isReady = useContainerReady(containerRef);
+  const { isReady } = useContainerReady(containerRef);
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
@@ -140,7 +153,7 @@ export const SimpleBarChart = memo(function SimpleBarChart({
   className,
 }: BarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isReady = useContainerReady(containerRef);
+  const { isReady } = useContainerReady(containerRef);
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
@@ -206,7 +219,7 @@ export const SimplePieChart = memo(function SimplePieChart({
   className,
 }: PieChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isReady = useContainerReady(containerRef);
+  const { isReady } = useContainerReady(containerRef);
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
@@ -261,7 +274,7 @@ export const SimpleAreaChart = memo(function SimpleAreaChart({
   className,
 }: AreaChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isReady = useContainerReady(containerRef);
+  const { isReady } = useContainerReady(containerRef);
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%", minWidth: 200, height, minHeight: 200 }}>
@@ -345,7 +358,7 @@ export const KpiCard = memo(function KpiCard({
 }: KpiCardProps) {
   const isPositive = change !== undefined && change >= 0;
   const sparklineRef = useRef<HTMLDivElement>(null);
-  const isSparklineReady = useContainerReady(sparklineRef);
+  const { isReady: isSparklineReady } = useContainerReady(sparklineRef);
 
   return (
     <div className={`bg-theme-card rounded-lg shadow p-4 ${className || ""}`}>
