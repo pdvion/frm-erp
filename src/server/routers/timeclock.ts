@@ -598,15 +598,42 @@ export const timeclockRouter = createTRPCRouter({
         );
 
         let workedHours = 0;
-        const nightHours = 0; // TODO: calcular horas noturnas (22h-5h)
+        let nightHours = 0;
 
-        // Calcular horas trabalhadas (simplificado)
+        // Calcular horas trabalhadas e horas noturnas (22h-5h)
         const clockIns = dayEntries.filter((e) => e.type === "CLOCK_IN");
         const clockOuts = dayEntries.filter((e) => e.type === "CLOCK_OUT");
 
         for (let i = 0; i < Math.min(clockIns.length, clockOuts.length); i++) {
-          const diff = (clockOuts[i].timestamp.getTime() - clockIns[i].timestamp.getTime()) / 3600000;
+          const inTime = clockIns[i].timestamp;
+          const outTime = clockOuts[i].timestamp;
+          const diff = (outTime.getTime() - inTime.getTime()) / 3600000;
           workedHours += diff;
+
+          // Calcular horas noturnas (22h-5h) - adicional noturno CLT
+          const inHour = inTime.getHours();
+          const outHour = outTime.getHours();
+          
+          // Simplificado: verificar se período inclui horário noturno
+          if (inHour >= 22 || inHour < 5 || outHour >= 22 || outHour < 5) {
+            // Calcular interseção com período noturno
+            const nightStart = 22;
+            const nightEnd = 5;
+            
+            let nightMinutes = 0;
+            const startMinutes = inHour * 60 + inTime.getMinutes();
+            const endMinutes = outHour * 60 + outTime.getMinutes();
+            
+            // Período noturno: 22:00-23:59 e 00:00-05:00
+            if (startMinutes >= nightStart * 60) {
+              nightMinutes += Math.min(endMinutes, 24 * 60) - startMinutes;
+            }
+            if (endMinutes <= nightEnd * 60) {
+              nightMinutes += endMinutes - Math.max(startMinutes, 0);
+            }
+            
+            nightHours += Math.max(0, nightMinutes / 60);
+          }
         }
 
         const scheduledHours = isWeekend || isHoliday ? 0 : 8;

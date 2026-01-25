@@ -58,12 +58,22 @@ export const tasksRouter = createTRPCRouter({
       }
 
       if (availableTasks && ctx.tenant.userId) {
+        // Buscar grupos do usuário
+        const userGroups = await prisma.userGroupMember.findMany({
+          where: { userId: ctx.tenant.userId },
+          select: { groupId: true },
+        });
+        
+        const userGroupIds = userGroups.map(g => g.groupId);
+        const userPermissions = Array.from(ctx.tenant.permissions.keys());
+        
         where.status = "PENDING";
         where.OR = [
           { targetUserId: ctx.tenant.userId },
-          { targetType: "department" }, // TODO: filtrar por departamento do usuário
-          { targetType: "group" }, // TODO: filtrar por grupos do usuário
-          { targetType: "permission" }, // TODO: filtrar por permissões do usuário
+          // Filtrar por grupos do usuário
+          ...(userGroupIds.length > 0 ? [{ targetType: "group", targetGroupId: { in: userGroupIds } }] : []),
+          // Filtrar por permissões do usuário
+          ...(userPermissions.length > 0 ? [{ targetType: "permission", targetPermission: { in: userPermissions } }] : []),
         ];
       }
 

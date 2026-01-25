@@ -1,0 +1,215 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - link "FRM ERP" [ref=e6] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e7]
+          - generic [ref=e11]: FRM ERP
+        - button "Colapsar menu" [ref=e12]:
+          - img [ref=e13]
+      - navigation [ref=e15]:
+        - list [ref=e16]:
+          - listitem [ref=e17]:
+            - link "Dashboard" [ref=e18] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e19]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - button "Compras" [ref=e24]:
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - generic [ref=e30]: Compras
+              - img [ref=e31]
+            - list [ref=e33]:
+              - listitem [ref=e34]:
+                - link "Materiais" [ref=e35] [cursor=pointer]:
+                  - /url: /materials
+              - listitem [ref=e36]:
+                - link "Fornecedores" [ref=e37] [cursor=pointer]:
+                  - /url: /suppliers
+              - listitem [ref=e38]:
+                - link "Cotações" [ref=e39] [cursor=pointer]:
+                  - /url: /quotes
+              - listitem [ref=e40]:
+                - link "Ordens de Compra" [ref=e41] [cursor=pointer]:
+                  - /url: /purchase-orders
+              - listitem [ref=e42]:
+                - link "Recebimento" [ref=e43] [cursor=pointer]:
+                  - /url: /receiving
+              - listitem [ref=e44]:
+                - link "Requisições" [ref=e45] [cursor=pointer]:
+                  - /url: /requisitions
+          - listitem [ref=e46]:
+            - button "Estoque" [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - generic [ref=e52]: Estoque
+              - img [ref=e53]
+          - listitem [ref=e55]:
+            - button "Vendas" [ref=e56]:
+              - generic [ref=e57]:
+                - img [ref=e58]
+                - generic [ref=e61]: Vendas
+              - img [ref=e62]
+          - listitem [ref=e64]:
+            - button "Financeiro" [ref=e65]:
+              - generic [ref=e66]:
+                - img [ref=e67]
+                - generic [ref=e69]: Financeiro
+              - img [ref=e70]
+          - listitem [ref=e72]:
+            - button "Fiscal" [ref=e73]:
+              - generic [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Fiscal
+              - img [ref=e79]
+          - listitem [ref=e81]:
+            - button "Produção" [ref=e82]:
+              - generic [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e86]: Produção
+              - img [ref=e87]
+          - listitem [ref=e89]:
+            - button "RH" [ref=e90]:
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - generic [ref=e97]: RH
+              - img [ref=e98]
+          - listitem [ref=e100]:
+            - button "Relatórios" [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e105]: Relatórios
+              - img [ref=e106]
+          - listitem [ref=e108]:
+            - button "BI & Gestão" [ref=e109]:
+              - generic [ref=e110]:
+                - img [ref=e111]
+                - generic [ref=e114]: BI & Gestão
+              - img [ref=e115]
+          - listitem [ref=e117]:
+            - button "Sistema" [ref=e118]:
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e123]: Sistema
+              - img [ref=e124]
+    - generic [ref=e126]:
+      - banner [ref=e127]:
+        - button "FRM Indústria e Comércio Ltda" [ref=e131]:
+          - img [ref=e132]
+          - generic [ref=e136]: FRM Indústria e Comércio Ltda
+          - img [ref=e137]
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - button "Tema Claro" [ref=e141]:
+              - img [ref=e142]
+            - button "Tema Escuro" [ref=e148]:
+              - img [ref=e149]
+            - button "Tema Sistema" [ref=e151]:
+              - img [ref=e152]
+          - button "9+" [ref=e155]:
+            - img [ref=e156]
+            - generic [ref=e159]: 9+
+          - button "Menu do usuário" [ref=e161]:
+            - img [ref=e163]
+            - generic [ref=e166]:
+              - generic [ref=e167]: paulo.vion
+              - generic [ref=e168]: paulo.vion@me.com
+            - img [ref=e169]
+      - main [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e175]:
+            - link "Voltar" [ref=e176] [cursor=pointer]:
+              - /url: /purchase-orders
+              - img [ref=e177]
+              - generic [ref=e179]: Voltar
+            - img [ref=e181]
+            - generic [ref=e185]:
+              - heading "Novo Pedido de Compra" [level=1] [ref=e187]
+              - paragraph [ref=e188]: Cadastre um novo pedido de compra
+          - generic [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e192]:
+                - heading "Fornecedor" [level=2] [ref=e193]
+                - generic [ref=e194]:
+                  - generic [ref=e195]: Buscar fornecedor
+                  - img [ref=e196]
+                  - textbox "Buscar fornecedor" [ref=e199]:
+                    - /placeholder: Buscar fornecedor...
+              - generic [ref=e200]:
+                - generic [ref=e201]:
+                  - heading "Itens" [level=2] [ref=e202]
+                  - button "Adicionar Item" [ref=e203]:
+                    - img [ref=e204]
+                    - text: Adicionar Item
+                - generic [ref=e205]: Nenhum item adicionado
+            - generic [ref=e206]:
+              - generic [ref=e207]:
+                - heading "Condições" [level=2] [ref=e208]
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - generic [ref=e211]: Previsão de Entrega
+                    - textbox "Previsão de Entrega" [ref=e212]
+                  - generic [ref=e213]:
+                    - generic [ref=e214]: Condição de Pagamento
+                    - textbox "Condição de Pagamento" [ref=e215]:
+                      - /placeholder: "Ex: 30/60/90 dias"
+                  - generic [ref=e216]:
+                    - generic [ref=e217]: Condição de Entrega
+                    - textbox "Condição de Entrega" [ref=e218]:
+                      - /placeholder: "Ex: CIF, FOB"
+                  - generic [ref=e219]:
+                    - generic [ref=e220]: Observações
+                    - textbox "Observações" [ref=e221]
+              - generic [ref=e222]:
+                - heading "Frete e Entrega" [level=2] [ref=e223]
+                - generic [ref=e224]:
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: Tipo de Frete
+                    - combobox "Tipo de Frete" [ref=e227]:
+                      - option "Selecione" [selected]
+                      - option "CIF - Fornecedor"
+                      - option "FOB - Comprador"
+                      - option "FRM Retira"
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: Transportadora
+                    - textbox "Transportadora" [ref=e230]:
+                      - /placeholder: Nome da transportadora
+                  - generic [ref=e231]:
+                    - generic [ref=e232]: Endereço de Entrega
+                    - textbox "Endereço de Entrega" [ref=e233]:
+                      - /placeholder: Endereço completo
+                  - generic [ref=e234]:
+                    - generic [ref=e235]: Telefone de Entrega
+                    - textbox "Telefone de Entrega" [ref=e236]:
+                      - /placeholder: (00) 00000-0000
+                  - generic [ref=e237]:
+                    - generic [ref=e238]: Natureza da Operação
+                    - combobox "Natureza da Operação" [ref=e239]:
+                      - option "Selecione" [selected]
+                      - option "Industrialização"
+                      - option "Revenda"
+                      - option "Consumo"
+                      - option "Serviços"
+                      - option "Matéria Prima"
+                      - option "Secundário"
+                      - option "Embalagem"
+                      - option "Ativo Imobilizado"
+                  - generic [ref=e240]:
+                    - generic [ref=e241]: Aplicação
+                    - textbox "Aplicação" [ref=e242]:
+                      - /placeholder: Aplicação do material
+              - button "Criar Pedido" [disabled] [ref=e244]:
+                - img [ref=e245]
+                - text: Criar Pedido
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e254] [cursor=pointer]:
+    - img [ref=e255]
+  - alert [ref=e258]
+```

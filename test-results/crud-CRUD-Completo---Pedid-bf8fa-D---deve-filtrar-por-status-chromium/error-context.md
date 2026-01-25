@@ -134,109 +134,57 @@
                     - generic [ref=e181]: Início
                 - listitem [ref=e182]:
                   - img [ref=e183]
-                  - link "Compras" [ref=e185] [cursor=pointer]:
-                    - /url: /purchase-orders
-                    - generic [ref=e186]: Compras
-                - listitem [ref=e187]:
-                  - img [ref=e188]
-                  - link "Materiais" [ref=e190] [cursor=pointer]:
-                    - /url: /materials
-                    - generic [ref=e191]: Materiais
-                - listitem [ref=e192]:
-                  - img [ref=e193]
-                  - generic [ref=e195]: Novo
-            - generic [ref=e197]:
-              - link "Voltar" [ref=e198] [cursor=pointer]:
-                - /url: /materials
-                - img [ref=e199]
-                - generic [ref=e201]: Voltar
-              - img [ref=e203]
-              - generic [ref=e207]:
-                - heading "Novo Material" [level=1] [ref=e209]
-                - paragraph [ref=e210]: CP10 - Cadastro de Materiais
+                  - generic [ref=e185]: Compras
+                - listitem [ref=e186]:
+                  - img [ref=e187]
+                  - generic [ref=e189]: Pedidos de Compra
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - img [ref=e193]
+                - heading "Pedidos de Compra" [level=1] [ref=e199]
+              - generic [ref=e200]:
+                - link "Documentação" [ref=e201] [cursor=pointer]:
+                  - /url: /docs
+                  - img [ref=e202]
+                - button "Ajuda" [ref=e204]:
+                  - img [ref=e205]
+                - link "Novo Pedido" [ref=e208] [cursor=pointer]:
+                  - /url: /purchase-orders/new
+                  - img [ref=e209]
+                  - text: Novo Pedido
           - generic [ref=e211]:
-            - navigation "Tabs" [ref=e213]:
-              - button "Dados Básicos" [ref=e214]:
-                - img [ref=e215]
-                - text: Dados Básicos
-              - button "Estoque" [ref=e217]:
-                - img [ref=e218]
-                - text: Estoque
-              - button "Fiscal" [ref=e228]:
+            - generic [ref=e212]: "0"
+            - generic [ref=e213]: Total
+          - generic [ref=e215]:
+            - generic [ref=e216]:
+              - img [ref=e217]
+              - textbox "Buscar por fornecedor..." [ref=e220]
+            - generic [ref=e221]:
+              - img [ref=e222]
+              - combobox [ref=e224]:
+                - option "Todos os status" [selected]
+                - option "Rascunho"
+                - option "Pendente"
+                - option "Aprovado"
+                - option "Enviado"
+                - option "Parcial"
+                - option "Concluído"
+                - option "Cancelado"
+            - generic [ref=e225]:
+              - button "Visualização em lista" [ref=e226]:
+                - img [ref=e227]
+              - button "Visualização Kanban" [ref=e228]:
                 - img [ref=e229]
-                - text: Fiscal
-              - button "Qualidade" [ref=e231]:
-                - img [ref=e232]
-                - text: Qualidade
-              - button "Extras" [ref=e235]:
-                - img [ref=e236]
-                - text: Extras
-            - generic [ref=e240]:
-              - generic [ref=e241]:
-                - generic [ref=e242]: Código *
-                - spinbutton "Código *" [ref=e243]
-              - generic [ref=e244]:
-                - generic [ref=e245]: Código Interno
-                - textbox "Código Interno" [ref=e246]
-              - generic [ref=e247]:
-                - generic [ref=e248]: Código de Barras
-                - textbox "Código de Barras" [ref=e249]
-              - generic [ref=e250]:
-                - generic [ref=e251]: Descrição *
-                - textbox "Descrição *" [ref=e252]
-              - generic [ref=e253]:
-                - generic [ref=e254]: Categoria
-                - generic [ref=e255]:
-                  - combobox "Categoria" [ref=e256]:
-                    - option "Selecione uma categoria" [selected]
-                    - option "Componentes Eletrônicos"
-                    - option "Embalagens"
-                    - option "Ferramentas"
-                    - option "Matéria Prima"
-                    - option "Peças Usinadas"
-                    - option "Produtos Químicos"
-                  - button "Adicionar categoria" [ref=e257]:
-                    - img [ref=e258]
-              - generic [ref=e259]:
-                - generic [ref=e260]: Unidade Estoque *
-                - combobox "Unidade Estoque *" [ref=e261]:
-                  - option "UN - Unidade" [selected]
-                  - option "KG - Quilograma"
-                  - option "M - Metro"
-                  - option "M² - Metro Quadrado"
-                  - option "M³ - Metro Cúbico"
-                  - option "L - Litro"
-                  - option "PC - Peça"
-                  - option "CX - Caixa"
-                  - option "PCT - Pacote"
-                  - option "ROL - Rolo"
-              - generic [ref=e262]:
-                - generic [ref=e263]: Unidade Compra
-                - combobox "Unidade Compra" [ref=e264]:
-                  - option "Mesma do estoque" [selected]
-                  - option "UN - Unidade"
-                  - option "KG - Quilograma"
-                  - option "M - Metro"
-                  - option "CX - Caixa"
-                  - option "PCT - Pacote"
-                  - option "ROL - Rolo"
-              - generic [ref=e265]:
-                - generic [ref=e266]: Localização
-                - textbox "Localização" [ref=e267]:
-                  - /placeholder: "Ex: Prateleira A-01"
-              - generic [ref=e268]:
-                - generic [ref=e269]: Observações
-                - textbox "Observações" [ref=e270]
-            - generic [ref=e271]:
-              - link "Cancelar" [ref=e272] [cursor=pointer]:
-                - /url: /materials
-                - img [ref=e273]
-                - text: Cancelar
-              - button "Salvar" [ref=e276]:
-                - img [ref=e277]
-                - text: Salvar
+          - generic [ref=e234]:
+            - img [ref=e235]
+            - heading "Nenhum pedido encontrado" [level=3] [ref=e239]
+            - paragraph [ref=e240]: Comece criando seu primeiro pedido de compra
+            - link "Novo Pedido" [ref=e241] [cursor=pointer]:
+              - /url: /purchase-orders/new
+              - img [ref=e242]
+              - text: Novo Pedido
   - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e286] [cursor=pointer]:
-    - img [ref=e287]
-  - alert [ref=e290]
+  - button "Open Next.js Dev Tools" [ref=e248] [cursor=pointer]:
+    - img [ref=e249]
+  - alert [ref=e252]
 ```

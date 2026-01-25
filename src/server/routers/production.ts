@@ -429,14 +429,32 @@ export const productionRouter = createTRPCRouter({
           });
         }
 
+        // Calcular custo de produção baseado nos materiais consumidos
+        const consumedMaterials = await prisma.productionOrderMaterial.findMany({
+          where: { orderId: order.id },
+          include: { material: true },
+        });
+        
+        let totalMaterialCost = 0;
+        for (const mat of consumedMaterials) {
+          const materialCost = mat.material.lastPurchasePrice || 0;
+          totalMaterialCost += materialCost * mat.consumedQty;
+        }
+        
+        // Custo unitário = custo total dos materiais / quantidade produzida
+        const unitCost = order.producedQty > 0 
+          ? totalMaterialCost / order.producedQty 
+          : totalMaterialCost / order.quantity;
+        const totalCost = unitCost * input.quantity;
+
         // Criar movimentação de entrada
         await prisma.inventoryMovement.create({
           data: {
             inventoryId: inventory.id,
             movementType: "ENTRY",
             quantity: input.quantity,
-            unitCost: 0, // TODO: calcular custo de produção
-            totalCost: 0,
+            unitCost,
+            totalCost,
             balanceAfter: inventory.quantity + input.quantity,
             documentType: "OP",
             documentNumber: String(order.code),

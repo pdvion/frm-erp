@@ -123,12 +123,88 @@
               - generic [ref=e168]: paulo.vion@me.com
             - img [ref=e169]
       - main [ref=e171]:
-        - generic [ref=e173]:
-          - heading "Material não encontrado" [level=1] [ref=e174]
-          - link "Voltar para listagem" [ref=e175] [cursor=pointer]:
-            - /url: /materials
+        - generic [ref=e172]:
+          - generic [ref=e175]:
+            - link "Voltar" [ref=e176] [cursor=pointer]:
+              - /url: /quotes
+              - img [ref=e177]
+              - generic [ref=e179]: Voltar
+            - img [ref=e181]
+            - generic [ref=e184]:
+              - heading "Nova Cotação" [level=1] [ref=e186]
+              - paragraph [ref=e187]: Cadastre uma nova cotação de fornecedor
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - heading "Fornecedor" [level=2] [ref=e192]
+                - generic [ref=e193]:
+                  - generic [ref=e194]: Fornecedor *
+                  - generic [ref=e195]:
+                    - combobox "Fornecedor *" [ref=e196]:
+                      - option "Selecione um fornecedor" [selected]
+                      - option "101 - Aços Brasil"
+                      - option "102 - Master Eletrônicos"
+                      - option "103 - Emba Rápida"
+                      - option "999 - Teste E2E"
+                      - option "9003 - Fornecedor Teste Paulo Vion Ltda"
+                    - button "Adicionar fornecedor" [ref=e197]:
+                      - img [ref=e198]
+              - generic [ref=e199]:
+                - generic [ref=e200]:
+                  - heading "Itens da Cotação" [level=2] [ref=e201]
+                  - button "Adicionar Item" [ref=e203]:
+                    - img [ref=e204]
+                    - text: Adicionar Item
+                - generic [ref=e205]:
+                  - img [ref=e206]
+                  - paragraph [ref=e210]: Nenhum item adicionado
+                  - paragraph [ref=e211]: Clique em "Adicionar Item" para começar
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - heading "Informações Adicionais" [level=2] [ref=e214]
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]: Válida até
+                    - textbox [ref=e218]
+                  - generic [ref=e219]:
+                    - generic [ref=e220]: Condições de Pagamento
+                    - 'textbox "Ex: 30/60/90 dias" [ref=e221]'
+                  - generic [ref=e222]:
+                    - generic [ref=e223]: Condições de Entrega
+                    - 'textbox "Ex: CIF, FOB" [ref=e224]'
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: Observações
+                    - textbox [ref=e227]
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: Solicitante
+                    - textbox "Nome do solicitante" [ref=e230]
+                  - generic [ref=e231]:
+                    - generic [ref=e232]: Grupo Centro de Custo
+                    - spinbutton [ref=e233]
+                  - generic [ref=e234]:
+                    - generic [ref=e235]:
+                      - generic [ref=e236]: Valor Frete
+                      - spinbutton [ref=e237]
+                    - generic [ref=e238]:
+                      - generic [ref=e239]: Desconto %
+                      - spinbutton [ref=e240]
+              - generic [ref=e241]:
+                - heading "Resumo" [level=3] [ref=e242]
+                - generic [ref=e243]:
+                  - generic [ref=e244]:
+                    - generic [ref=e245]: "Itens:"
+                    - generic [ref=e246]: "0"
+                  - generic [ref=e247]:
+                    - generic [ref=e248]: "Total:"
+                    - generic [ref=e249]: R$ 0,00
+              - generic [ref=e250]:
+                - button "Criar Cotação" [ref=e251]:
+                  - img [ref=e252]
+                  - text: Criar Cotação
+                - link "Cancelar" [ref=e256] [cursor=pointer]:
+                  - /url: /quotes
   - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e181] [cursor=pointer]:
-    - img [ref=e182]
-  - alert [ref=e185]
+  - button "Open Next.js Dev Tools" [ref=e262] [cursor=pointer]:
+    - img [ref=e263]
+  - alert [ref=e266]
 ```
