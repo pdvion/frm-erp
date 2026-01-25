@@ -45,9 +45,9 @@ export default function LeadsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = trpc.sales.listLeads.useQuery({
+  const { data, isLoading } = trpc.leads.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "NEW" | "CONTACTED" | "QUALIFIED" | "PROPOSAL" | "NEGOTIATION" | "WON" | "LOST" | "ALL" | undefined,
+    status: statusFilter !== "ALL" ? statusFilter as "NEW" | "CONTACTED" | "QUALIFIED" | "PROPOSAL" | "NEGOTIATION" | "WON" | "LOST" : undefined,
     page,
     limit: 20,
   });
