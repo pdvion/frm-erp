@@ -2782,11 +2782,12 @@ model Department {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   
-  positions       JobPosition[]
-  employees       Employee[]
-  notifications   Notification[]
-  tasks           Task[] @relation("TaskTargetDepartment")
-  strategicGoals  StrategicGoal[]
+  positions          JobPosition[]
+  employees          Employee[]
+  notifications      Notification[]
+  tasks              Task[] @relation("TaskTargetDepartment")
+  strategicGoals     StrategicGoal[]
+  admissionProcesses AdmissionProcess[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -2811,7 +2812,8 @@ model JobPosition {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   
-  employees Employee[]
+  employees          Employee[]
+  admissionProcesses AdmissionProcess[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -5617,4 +5619,139 @@ model SkillMatrix {
 
   @@index([employeeId])
   @@map("skill_matrix")
+}
+
+// =============================================================================
+// ADMISSÃO DIGITAL
+// =============================================================================
+
+enum AdmissionStatus {
+  DRAFT           // Rascunho
+  DOCUMENTS       // Aguardando documentos
+  EXAM            // Aguardando exame
+  APPROVAL        // Aguardando aprovação
+  APPROVED        // Aprovado
+  REJECTED        // Rejeitado
+  COMPLETED       // Concluído (funcionário criado)
+  CANCELLED       // Cancelado
+}
+
+enum AdmissionStepType {
+  DOCUMENT        // Coleta de documento
+  EXAM            // Exame médico
+  APPROVAL        // Aprovação
+  SIGNATURE       // Assinatura
+  SYSTEM          // Ação do sistema
+}
+
+enum AdmissionStepStatus {
+  PENDING         // Pendente
+  IN_PROGRESS     // Em andamento
+  COMPLETED       // Concluído
+  SKIPPED         // Pulado
+  REJECTED        // Rejeitado
+}
+
+enum DocumentStatus {
+  PENDING         // Pendente
+  UPLOADED        // Enviado
+  VERIFIED        // Verificado
+  REJECTED        // Rejeitado
+}
+
+enum ExamResult {
+  PENDING         // Pendente
+  FIT             // Apto
+  UNFIT           // Inapto
+  FIT_RESTRICTIONS // Apto com restrições
+}
+
+model AdmissionProcess {
+  id                String           @id @default(uuid()) @db.Uuid
+  code              Int              @default(autoincrement())
+  companyId         String?          @db.Uuid
+  candidateName     String
+  candidateEmail    String?
+  candidatePhone    String?
+  candidateCpf      String?
+  positionId        String?          @db.Uuid
+  position          JobPosition?     @relation(fields: [positionId], references: [id])
+  departmentId      String?          @db.Uuid
+  department        Department?      @relation(fields: [departmentId], references: [id])
+  proposedSalary    Float?
+  proposedStartDate DateTime?
+  status            AdmissionStatus  @default(DRAFT)
+  currentStep       Int              @default(1)
+  totalSteps        Int              @default(5)
+  recruiterId       String?          @db.Uuid
+  managerId         String?          @db.Uuid
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  completedAt       DateTime?
+
+  steps             AdmissionStep[]
+  documents         AdmissionDocument[]
+  exams             AdmissionExam[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("admission_processes")
+}
+
+model AdmissionStep {
+  id            String              @id @default(uuid()) @db.Uuid
+  admissionId   String              @db.Uuid
+  admission     AdmissionProcess    @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  stepNumber    Int
+  stepName      String
+  stepType      AdmissionStepType   @default(DOCUMENT)
+  status        AdmissionStepStatus @default(PENDING)
+  assignedTo    String?             @db.Uuid
+  dueDate       DateTime?
+  completedAt   DateTime?
+  completedBy   String?             @db.Uuid
+  notes         String?
+  createdAt     DateTime            @default(now())
+
+  @@index([admissionId])
+  @@map("admission_steps")
+}
+
+model AdmissionDocument {
+  id              String         @id @default(uuid()) @db.Uuid
+  admissionId     String         @db.Uuid
+  admission       AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  documentType    String
+  documentName    String
+  fileUrl         String?
+  status          DocumentStatus @default(PENDING)
+  isRequired      Boolean        @default(true)
+  uploadedAt      DateTime?
+  verifiedAt      DateTime?
+  verifiedBy      String?        @db.Uuid
+  rejectionReason String?
+  createdAt       DateTime       @default(now())
+
+  @@index([admissionId])
+  @@map("admission_documents")
+}
+
+model AdmissionExam {
+  id            String      @id @default(uuid()) @db.Uuid
+  admissionId   String      @db.Uuid
+  admission     AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade)
+  examType      String      @default("ADMISSIONAL")
+  clinicName    String?
+  scheduledDate DateTime?
+  completedDate DateTime?
+  result        ExamResult?
+  asoNumber     String?
+  asoUrl        String?
+  validUntil    DateTime?
+  notes         String?
+  createdAt     DateTime    @default(now())
+
+  @@index([admissionId])
+  @@map("admission_exams")
 }
