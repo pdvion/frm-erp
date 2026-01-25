@@ -52,6 +52,11 @@ export function isValidCep(cep: string): boolean {
 }
 
 /**
+ * Timeout padrão para requisições (10 segundos)
+ */
+const DEFAULT_TIMEOUT = 10000;
+
+/**
  * Consulta endereço pelo CEP usando a API ViaCEP
  */
 export async function fetchAddressByCep(cep: string): Promise<CepResult> {
@@ -64,12 +69,16 @@ export async function fetchAddressByCep(cep: string): Promise<CepResult> {
     };
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
+
   try {
     const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
       method: "GET",
       headers: {
         "Accept": "application/json",
       },
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -102,10 +111,18 @@ export async function fetchAddressByCep(cep: string): Promise<CepResult> {
       },
     };
   } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return {
+        success: false,
+        error: "Tempo limite excedido ao consultar CEP.",
+      };
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : "Erro ao consultar CEP",
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

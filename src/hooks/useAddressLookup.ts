@@ -30,16 +30,28 @@ interface UseAddressLookupReturn {
 /**
  * Hook para consulta de CEP e CNPJ com auto-preenchimento de formulários
  * 
+ * **Nota sobre debounce**: Este hook não implementa debounce internamente.
+ * Se você estiver usando em um campo de input com onChange, considere
+ * implementar debounce no componente para evitar múltiplas requisições.
+ * Recomendamos usar no evento onBlur do input para melhor UX.
+ * 
  * @example
  * ```tsx
  * const { lookupCep, lookupCnpj, isLoadingCep, isLoadingCnpj } = useAddressLookup();
  * 
+ * // Recomendado: usar no onBlur
  * const handleCepBlur = async (cep: string) => {
  *   const address = await lookupCep(cep);
  *   if (address) {
  *     setFormData(prev => ({ ...prev, ...mapAddressToForm(address) }));
  *   }
  * };
+ * 
+ * // Se precisar usar no onChange, implemente debounce:
+ * const debouncedLookup = useMemo(
+ *   () => debounce((cep: string) => lookupCep(cep), 500),
+ *   [lookupCep]
+ * );
  * ```
  */
 export function useAddressLookup(): UseAddressLookupReturn {

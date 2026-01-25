@@ -29,3 +29,6 @@ export {
   type CnpjData,
   type CnpjResult,
 } from "./cnpj";
+
+// Re-export formatCnpjDisplay explicitly for convenience
+export { formatCnpjDisplay as formatCnpjForDisplay } from "./cnpj";

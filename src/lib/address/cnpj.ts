@@ -87,6 +87,11 @@ export function formatCnpjDisplay(cnpj: string): string {
 }
 
 /**
+ * Timeout padrão para requisições (10 segundos)
+ */
+const DEFAULT_TIMEOUT = 10000;
+
+/**
  * Consulta dados da empresa pelo CNPJ usando BrasilAPI
  * https://brasilapi.com.br/docs#tag/CNPJ
  */
@@ -107,6 +112,9 @@ export async function fetchCompanyByCnpj(cnpj: string): Promise<CnpjResult> {
     };
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
+
   try {
     // Tenta BrasilAPI primeiro (mais rápido e sem limite)
     const response = await fetch(
@@ -116,6 +124,7 @@ export async function fetchCompanyByCnpj(cnpj: string): Promise<CnpjResult> {
         headers: {
           "Accept": "application/json",
         },
+        signal: controller.signal,
       }
     );
 
@@ -157,10 +166,18 @@ export async function fetchCompanyByCnpj(cnpj: string): Promise<CnpjResult> {
       },
     };
   } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return {
+        success: false,
+        error: "Tempo limite excedido ao consultar CNPJ.",
+      };
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : "Erro ao consultar CNPJ",
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
