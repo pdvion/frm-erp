@@ -511,6 +511,8 @@ model Material {
   stockReservations   StockReservation[]
   pickingListItems    PickingListItem[]
   supplierReturnItems SupplierReturnItem[]
+  qualityInspections  QualityInspection[]
+  nonConformities     NonConformity[]
 
   @@map("materials")
 }
@@ -1463,10 +1465,12 @@ model ProductionOrder {
   updatedAt       DateTime              @updatedAt
   
   // Relações
-  materials       ProductionOrderMaterial[]
-  operations      ProductionOrderOperation[]
-  productionLogs  ProductionLog[]
-  salesOrderItems SalesOrderItem[]
+  materials           ProductionOrderMaterial[]
+  operations          ProductionOrderOperation[]
+  productionLogs      ProductionLog[]
+  salesOrderItems     SalesOrderItem[]
+  qualityInspections  QualityInspection[]
+  nonConformities     NonConformity[]
   
   @@unique([companyId, code])
   @@index([companyId])
@@ -5192,4 +5196,133 @@ model SupplierReturnItem {
   @@index([returnId])
   @@index([materialId])
   @@map("supplier_return_items")
+}
+
+// =============================================================================
+// CONTROLE DE QUALIDADE
+// =============================================================================
+
+enum InspectionType {
+  RECEIVING   // Recebimento
+  IN_PROCESS  // Em Processo
+  FINAL       // Final
+  AUDIT       // Auditoria
+}
+
+enum InspectionStatus {
+  PENDING     // Pendente
+  IN_PROGRESS // Em Andamento
+  APPROVED    // Aprovado
+  REJECTED    // Rejeitado
+  PARTIAL     // Parcialmente Aprovado
+}
+
+enum InspectionResult {
+  PENDING     // Pendente
+  PASS        // Aprovado
+  FAIL        // Reprovado
+  CONDITIONAL // Condicional
+}
+
+enum NonConformityType {
+  INTERNAL    // Interna
+  SUPPLIER    // Fornecedor
+  CUSTOMER    // Cliente
+  PROCESS     // Processo
+}
+
+enum NonConformitySeverity {
+  MINOR       // Menor
+  MAJOR       // Maior
+  CRITICAL    // Crítica
+}
+
+enum NonConformityStatus {
+  OPEN        // Aberta
+  ANALYZING   // Em Análise
+  ACTION      // Ação em Andamento
+  VERIFICATION // Verificação
+  CLOSED      // Fechada
+}
+
+model QualityInspection {
+  id                 String            @id @default(uuid()) @db.Uuid
+  code               Int
+  companyId          String?           @db.Uuid
+  type               InspectionType    @default(RECEIVING)
+  status             InspectionStatus  @default(PENDING)
+  materialId         String?           @db.Uuid
+  material           Material?         @relation(fields: [materialId], references: [id])
+  productionOrderId  String?           @db.Uuid
+  productionOrder    ProductionOrder?  @relation(fields: [productionOrderId], references: [id])
+  receivedInvoiceId  String?           @db.Uuid
+  lotNumber          String?
+  quantity           Float             @default(0)
+  sampleSize         Int?
+  approvedQty        Float             @default(0)
+  rejectedQty        Float             @default(0)
+  inspectionDate     DateTime          @default(now())
+  completedAt        DateTime?
+  inspectorId        String?           @db.Uuid
+  notes              String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  items              QualityInspectionItem[]
+  nonConformities    NonConformity[]
+
+  @@index([companyId])
+  @@index([materialId])
+  @@index([status])
+  @@map("quality_inspections")
+}
+
+model QualityInspectionItem {
+  id              String           @id @default(uuid()) @db.Uuid
+  inspectionId    String           @db.Uuid
+  inspection      QualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+  characteristic  String
+  specification   String?
+  toleranceMin    Float?
+  toleranceMax    Float?
+  measuredValue   Float?
+  result          InspectionResult @default(PENDING)
+  notes           String?
+  createdAt       DateTime         @default(now())
+
+  @@index([inspectionId])
+  @@map("quality_inspection_items")
+}
+
+model NonConformity {
+  id                String               @id @default(uuid()) @db.Uuid
+  code              Int
+  companyId         String?              @db.Uuid
+  type              NonConformityType    @default(INTERNAL)
+  status            NonConformityStatus  @default(OPEN)
+  severity          NonConformitySeverity @default(MINOR)
+  inspectionId      String?              @db.Uuid
+  inspection        QualityInspection?   @relation(fields: [inspectionId], references: [id])
+  productionOrderId String?              @db.Uuid
+  productionOrder   ProductionOrder?     @relation(fields: [productionOrderId], references: [id])
+  materialId        String?              @db.Uuid
+  material          Material?            @relation(fields: [materialId], references: [id])
+  lotNumber         String?
+  quantity          Float                @default(0)
+  description       String
+  rootCause         String?
+  immediateAction   String?
+  correctiveAction  String?
+  preventiveAction  String?
+  responsibleId     String?              @db.Uuid
+  dueDate           DateTime?
+  closedAt          DateTime?
+  closedBy          String?              @db.Uuid
+  createdBy         String?              @db.Uuid
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+  @@map("non_conformities")
 }
