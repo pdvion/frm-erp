@@ -2879,13 +2879,17 @@ model Employee {
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   
-  timeClockEntries TimeClockEntry[]
-  timesheetDays    TimesheetDay[]
-  payrollItems     PayrollItem[]
-  vacations        Vacation[]
+  timeClockEntries   TimeClockEntry[]
+  timesheetDays      TimesheetDay[]
+  payrollItems       PayrollItem[]
+  vacations          Vacation[]
   thirteenthSalaries ThirteenthSalary[]
-  terminations     Termination[]
-  schedules        EmployeeSchedule[]
+  terminations       Termination[]
+  schedules          EmployeeSchedule[]
+  benefits           EmployeeBenefit[]
+  transportVouchers  TransportVoucher[]
+  trainings          EmployeeTraining[]
+  skills             SkillMatrix[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -5444,4 +5448,173 @@ model MaterialStandardCost {
   @@index([materialId])
   @@index([companyId])
   @@map("material_standard_costs")
+}
+
+// =============================================================================
+// BENEFÍCIOS E TREINAMENTOS (RH)
+// =============================================================================
+
+enum BenefitCategory {
+  TRANSPORT       // Vale Transporte
+  MEAL            // Vale Refeição
+  FOOD            // Vale Alimentação
+  HEALTH          // Plano de Saúde
+  DENTAL          // Plano Odontológico
+  LIFE_INSURANCE  // Seguro de Vida
+  PENSION         // Previdência Privada
+  EDUCATION       // Auxílio Educação
+  CHILDCARE       // Auxílio Creche
+  OTHER           // Outros
+}
+
+enum BenefitCalculationType {
+  FIXED           // Valor fixo
+  PERCENTAGE      // Percentual do salário
+  PER_DAY         // Por dia trabalhado
+  PER_DEPENDENT   // Por dependente
+}
+
+enum BenefitStatus {
+  ACTIVE          // Ativo
+  SUSPENDED       // Suspenso
+  CANCELLED       // Cancelado
+}
+
+enum TrainingStatus {
+  SCHEDULED       // Agendado
+  IN_PROGRESS     // Em Andamento
+  COMPLETED       // Concluído
+  CANCELLED       // Cancelado
+  EXPIRED         // Expirado
+}
+
+model BenefitType {
+  id                      String                @id @default(uuid()) @db.Uuid
+  code                    String
+  name                    String
+  description             String?
+  companyId               String?               @db.Uuid
+  category                BenefitCategory       @default(OTHER)
+  calculationType         BenefitCalculationType @default(FIXED)
+  defaultValue            Float?                @default(0)
+  defaultPercentage       Float?                @default(0)
+  employeeDiscountPercent Float?                @default(0)
+  isTaxable               Boolean               @default(false)
+  affectsInss             Boolean               @default(false)
+  affectsIrrf             Boolean               @default(false)
+  affectsFgts             Boolean               @default(false)
+  isActive                Boolean               @default(true)
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+
+  employeeBenefits        EmployeeBenefit[]
+
+  @@index([companyId])
+  @@map("benefit_types")
+}
+
+model EmployeeBenefit {
+  id                  String         @id @default(uuid()) @db.Uuid
+  employeeId          String         @db.Uuid
+  employee            Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  benefitTypeId       String         @db.Uuid
+  benefitType         BenefitType    @relation(fields: [benefitTypeId], references: [id])
+  companyId           String?        @db.Uuid
+  status              BenefitStatus  @default(ACTIVE)
+  startDate           DateTime       @default(now())
+  endDate             DateTime?
+  value               Float?         @default(0)
+  employeeDiscount    Float?         @default(0)
+  companyContribution Float?         @default(0)
+  quantity            Float?         @default(1)
+  notes               String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@index([employeeId])
+  @@index([benefitTypeId])
+  @@map("employee_benefits")
+}
+
+model TransportVoucher {
+  id            String    @id @default(uuid()) @db.Uuid
+  employeeId    String    @db.Uuid
+  employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  companyId     String?   @db.Uuid
+  lineType      String    @default("BUS")
+  lineName      String
+  fareValue     Float     @default(0)
+  quantityPerDay Int      @default(2)
+  workingDays   Int       @default(22)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([employeeId])
+  @@map("transport_vouchers")
+}
+
+model Training {
+  id              String    @id @default(uuid()) @db.Uuid
+  code            String
+  name            String
+  description     String?
+  companyId       String?   @db.Uuid
+  category        String?
+  durationHours   Int?      @default(0)
+  instructor      String?
+  provider        String?
+  cost            Float?    @default(0)
+  isMandatory     Boolean   @default(false)
+  validityMonths  Int?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  employeeTrainings EmployeeTraining[]
+
+  @@index([companyId])
+  @@map("trainings")
+}
+
+model EmployeeTraining {
+  id              String          @id @default(uuid()) @db.Uuid
+  employeeId      String          @db.Uuid
+  employee        Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  trainingId      String          @db.Uuid
+  training        Training        @relation(fields: [trainingId], references: [id])
+  companyId       String?         @db.Uuid
+  status          TrainingStatus  @default(SCHEDULED)
+  scheduledDate   DateTime?
+  completionDate  DateTime?
+  expirationDate  DateTime?
+  score           Float?
+  certificateUrl  String?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([employeeId])
+  @@index([trainingId])
+  @@map("employee_trainings")
+}
+
+model SkillMatrix {
+  id              String    @id @default(uuid()) @db.Uuid
+  employeeId      String    @db.Uuid
+  employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  skillName       String
+  companyId       String?   @db.Uuid
+  category        String?
+  level           Int       @default(0)
+  maxLevel        Int       @default(4)
+  certifiedAt     DateTime?
+  certifiedBy     String?   @db.Uuid
+  expirationDate  DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([employeeId])
+  @@map("skill_matrix")
 }

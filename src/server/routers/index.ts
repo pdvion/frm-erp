@@ -63,6 +63,7 @@ import { issuedInvoicesRouter } from "./issuedInvoices";
 import { salesQuotesRouter } from "./salesQuotes";
 import { qualityRouter } from "./quality";
 import { productionCostsRouter } from "./productionCosts";
+import { benefitsRouter } from "./benefits";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -129,6 +130,7 @@ export const appRouter = createTRPCRouter({
   salesQuotes: salesQuotesRouter,
   quality: qualityRouter,
   productionCosts: productionCostsRouter,
+  benefits: benefitsRouter,
 });
 
 export type AppRouter = typeof appRouter;
