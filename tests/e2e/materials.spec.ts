@@ -1,13 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Materiais (CP10)', () => {
   test.beforeEach(async ({ page }) => {
-    // Login antes de cada teste
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve listar materiais', async ({ page }) => {
@@ -30,7 +26,7 @@ test.describe('Materiais (CP10)', () => {
     await page.getByPlaceholder('Buscar').fill('Aço');
     
     // Aguardar filtro
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('domcontentloaded');
     
     // Verificar que apenas materiais com "Aço" aparecem
     const rows = page.getByRole('row');
@@ -45,7 +41,7 @@ test.describe('Materiais (CP10)', () => {
     await page.getByRole('combobox').selectOption('ACTIVE');
     
     // Aguardar filtro
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('domcontentloaded');
     
     // Verificar que todos os materiais visíveis são ativos
     const statusCells = page.getByRole('cell', { name: 'Ativo' });

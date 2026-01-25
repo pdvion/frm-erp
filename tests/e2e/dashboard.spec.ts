@@ -1,13 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    // Login antes de cada teste
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve exibir dashboard após login', async ({ page }) => {

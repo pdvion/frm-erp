@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Alternância de Tema (Light/Dark Mode)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve alternar entre tema claro e escuro', async ({ page }) => {
@@ -16,7 +13,7 @@ test.describe('Alternância de Tema (Light/Dark Mode)', () => {
     const lightThemeBtn = page.getByRole('button', { name: /tema claro/i });
     if (await lightThemeBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await lightThemeBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
       
       // Verificar que mudou para light mode (sem classe dark)
       await expect(html).not.toHaveClass(/dark/);
@@ -24,7 +21,7 @@ test.describe('Alternância de Tema (Light/Dark Mode)', () => {
       // Alternar de volta para dark mode
       const darkThemeBtn = page.getByRole('button', { name: /tema escuro/i });
       await darkThemeBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
       await expect(html).toHaveClass(/dark/);
     }
   });
@@ -35,7 +32,7 @@ test.describe('Alternância de Tema (Light/Dark Mode)', () => {
     if (await lightThemeBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       // Mudar para light mode
       await lightThemeBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
       
       // Refresh da página
       await page.reload();
@@ -67,7 +64,7 @@ test.describe('Alternância de Tema (Light/Dark Mode)', () => {
     
     if (await lightThemeBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await lightThemeBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
       await page.goto('/materials');
       await page.waitForLoadState('networkidle');
       

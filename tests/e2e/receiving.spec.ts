@@ -1,13 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Recebimento de Materiais (CP14)', () => {
   test.beforeEach(async ({ page }) => {
-    // Login antes de cada teste
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve listar recebimentos', async ({ page }) => {
@@ -30,7 +26,7 @@ test.describe('Recebimento de Materiais (CP14)', () => {
     const statusFilter = page.getByRole('combobox').first();
     if (await statusFilter.isVisible({ timeout: 3000 }).catch(() => false)) {
       await statusFilter.selectOption('PENDING');
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
     }
   });
 
