@@ -18,8 +18,8 @@ test.describe('Autenticação', () => {
     const passwordInput = page.locator('input[type="password"]').first();
     const submitButton = page.getByRole('button', { name: /entrar|login|acessar/i });
     
-    await emailInput.fill('paulo.vion@me.com');
-    await passwordInput.fill('Test@12345');
+    await emailInput.fill(process.env.E2E_TEST_EMAIL || 'paulo.vion@me.com');
+    await passwordInput.fill(process.env.E2E_TEST_PASSWORD || 'Test@12345');
     await submitButton.click();
     
     // Aguardar redirecionamento para dashboard
@@ -39,7 +39,7 @@ test.describe('Autenticação', () => {
     await submitButton.click();
     
     // Aguardar mensagem de erro ou permanecer na página de login
-    await page.waitForTimeout(3000);
+    await page.waitForLoadState('networkidle');
     const hasError = await page.locator('[role="alert"], .error, .text-red-500, .text-destructive').first().isVisible().catch(() => false);
     const stillOnLogin = page.url().includes('/login');
     expect(hasError || stillOnLogin).toBeTruthy();

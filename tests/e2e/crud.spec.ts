@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('CRUD Completo - Materiais', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('CREATE - deve criar novo material com sucesso', async ({ page }) => {
@@ -30,11 +27,13 @@ test.describe('CRUD Completo - Materiais', () => {
     if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.click();
       // Verificar redirecionamento ou mensagem
-      await page.waitForTimeout(2000);
+      await page.waitForLoadState('networkidle');
     }
     
-    // Teste passa se chegou até aqui sem erro
-    expect(true).toBe(true);
+    // Verificar que o formulário foi processado (URL mudou ou mensagem apareceu)
+    const successMsg = page.getByText(/sucesso|criado|salvo/i);
+    const stillOnForm = await page.url().includes('/new');
+    expect(await successMsg.isVisible({ timeout: 2000 }).catch(() => false) || !stillOnForm).toBeTruthy();
   });
 
   test('CREATE - deve validar campos obrigatórios', async ({ page }) => {
@@ -49,11 +48,11 @@ test.describe('CRUD Completo - Materiais', () => {
     const saveBtn = page.getByRole('button', { name: /salvar|criar|cadastrar/i });
     if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.click();
-      await page.waitForTimeout(1000);
+      await page.waitForLoadState('domcontentloaded');
     }
     
-    // Teste passa se o formulário está presente
-    expect(true).toBe(true);
+    // Verificar que o formulário ainda está presente (não foi submetido)
+    await expect(form).toBeVisible();
   });
 
   test('READ - deve exibir detalhes do material', async ({ page }) => {
@@ -71,11 +70,11 @@ test.describe('CRUD Completo - Materiais', () => {
     
     if (await viewLink.isVisible({ timeout: 3000 }).catch(() => false)) {
       await viewLink.click();
-      await page.waitForTimeout(2000);
+      await page.waitForLoadState('networkidle');
+      // Verificar que navegou para detalhes ou listagem
+      const url = page.url();
+      expect(url).toMatch(/\/materials/);
     }
-    
-    // Teste passa se chegou até aqui
-    expect(true).toBe(true);
   });
 
   test('UPDATE - deve editar material existente', async ({ page }) => {
@@ -135,18 +134,14 @@ test.describe('CRUD Completo - Materiais', () => {
     const emptyMsg = page.getByText(/nenhum.*encontrado/i);
     await expect(table.or(emptyMsg)).toBeVisible({ timeout: 10000 });
     
-    // Teste passa se a listagem carregou corretamente
-    expect(true).toBe(true);
+    // Verificar que a listagem carregou corretamente
+    await expect(table.or(emptyMsg)).toBeVisible();
   });
 });
 
 test.describe('CRUD Completo - Fornecedores', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('CREATE - deve criar novo fornecedor com sucesso', async ({ page }) => {
@@ -199,11 +194,7 @@ test.describe('CRUD Completo - Fornecedores', () => {
 
 test.describe('CRUD Completo - Cotações', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('CREATE - deve criar nova cotação', async ({ page }) => {
@@ -229,7 +220,7 @@ test.describe('CRUD Completo - Cotações', () => {
     
     if (await viewToggle.isVisible({ timeout: 3000 }).catch(() => false)) {
       await viewToggle.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
       
       // Verificar que a visualização mudou
       const kanbanBoard = page.locator('[data-testid="kanban-board"]')
@@ -262,11 +253,7 @@ test.describe('CRUD Completo - Cotações', () => {
 
 test.describe('CRUD Completo - Pedidos de Compra', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('CREATE - deve criar novo pedido de compra', async ({ page }) => {

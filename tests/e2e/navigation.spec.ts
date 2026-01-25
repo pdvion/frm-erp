@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Navegação - Páginas Principais', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve navegar para todas as páginas principais via sidebar', async ({ page }) => {
@@ -82,11 +79,7 @@ test.describe('Navegação - Páginas Principais', () => {
 
 test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve acessar página de comparação de cotações', async ({ page }) => {
@@ -117,7 +110,7 @@ test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
 
         for (let i = 0; i < tabCount; i++) {
           await tabButtons.nth(i).click();
-          await page.waitForTimeout(300);
+          await page.waitForLoadState('domcontentloaded');
         }
       }
     }
@@ -131,7 +124,7 @@ test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
     const statusFilter = page.getByRole('combobox').first();
     if (await statusFilter.isVisible({ timeout: 3000 }).catch(() => false)) {
       await statusFilter.selectOption('ACTIVE');
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
 
       // Verificar que o filtro está na URL ou foi aplicado
       const url = page.url();
@@ -152,7 +145,7 @@ test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
     const searchInput = page.getByPlaceholder(/buscar/i);
     if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await searchInput.fill('teste');
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
 
       // Verificar que a busca foi aplicada
       const table = page.getByRole('table');
@@ -173,7 +166,7 @@ test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
       const isDisabled = await nextButton.isDisabled();
       if (!isDisabled) {
         await nextButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForLoadState('domcontentloaded');
 
         // Verificar que a página mudou
         const pageIndicator = page.getByText(/página.*2|2.*de/i);
@@ -186,11 +179,7 @@ test.describe('Navegação - Sub-páginas e Funcionalidades', () => {
 
 test.describe('Navegação - Comportamento do Menu', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve expandir/colapsar submenus', async ({ page }) => {
@@ -199,7 +188,7 @@ test.describe('Navegação - Comportamento do Menu', () => {
     
     if (await menuWithSubmenu.isVisible({ timeout: 3000 }).catch(() => false)) {
       await menuWithSubmenu.click();
-      await page.waitForTimeout(300);
+      await page.waitForLoadState('domcontentloaded');
 
       // Verificar que o submenu expandiu
       const submenuItems = page.locator('[role="menu"] a, [data-submenu] a');

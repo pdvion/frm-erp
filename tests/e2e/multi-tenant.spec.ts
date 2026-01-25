@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Multi-Tenant - Isolamento de Dados', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve exibir seletor de empresa no header', async ({ page }) => {
@@ -29,7 +26,7 @@ test.describe('Multi-Tenant - Isolamento de Dados', () => {
     
     if (await companySelector.isVisible({ timeout: 3000 }).catch(() => false)) {
       await companySelector.click();
-      await page.waitForTimeout(300);
+      await page.waitForLoadState('domcontentloaded');
       
       // Selecionar outra empresa do menu (se disponível)
       const otherCompany = page.getByRole('menuitem').or(page.getByRole('option')).nth(1);

@@ -1,14 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { login } from './fixtures/auth';
 
 test.describe('Mobile - Responsividade e UX', () => {
   test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve exibir menu hamburger em mobile', async ({ page }) => {
@@ -28,7 +25,7 @@ test.describe('Mobile - Responsividade e UX', () => {
     if (await hamburgerMenu.isVisible({ timeout: 3000 }).catch(() => false)) {
       // Abrir menu
       await hamburgerMenu.click();
-      await page.waitForTimeout(300);
+      await page.waitForLoadState('domcontentloaded');
 
       // Verificar que a sidebar está visível
       const sidebar = page.locator('[data-testid="sidebar"]')
@@ -173,11 +170,7 @@ test.describe('Mobile - Navegação Touch', () => {
   test.use({ viewport: { width: 414, height: 896 } }); // iPhone 11
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve permitir swipe em listas (se implementado)', async ({ page }) => {
@@ -194,7 +187,7 @@ test.describe('Mobile - Navegação Touch', () => {
         await page.mouse.down();
         await page.mouse.move(box.x + 20, box.y + box.height / 2, { steps: 10 });
         await page.mouse.up();
-        await page.waitForTimeout(300);
+        await page.waitForLoadState('domcontentloaded');
       }
     }
   });
@@ -226,7 +219,7 @@ test.describe('Mobile - Navegação Touch', () => {
     const addButton = page.getByRole('button', { name: /adicionar|novo/i }).first();
     if (await addButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       await addButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('domcontentloaded');
 
       // Verificar modal/drawer
       const modal = page.getByRole('dialog')
@@ -272,11 +265,7 @@ test.describe('Tablet - Layout Intermediário', () => {
   test.use({ viewport: { width: 768, height: 1024 } }); // iPad
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve exibir sidebar colapsada ou expandida', async ({ page }) => {
@@ -347,11 +336,7 @@ test.describe('Mobile - Acessibilidade', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('paulo.vion@me.com');
-    await page.getByRole('textbox', { name: 'Senha' }).fill('Test@12345');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    await login(page);
   });
 
   test('deve ter labels visíveis ou aria-label em inputs', async ({ page }) => {
