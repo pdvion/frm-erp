@@ -511,8 +511,10 @@ model Material {
   stockReservations   StockReservation[]
   pickingListItems    PickingListItem[]
   supplierReturnItems SupplierReturnItem[]
-  qualityInspections  QualityInspection[]
-  nonConformities     NonConformity[]
+  qualityInspections      QualityInspection[]
+  nonConformities         NonConformity[]
+  productionCostMaterials ProductionCostMaterial[]
+  standardCosts           MaterialStandardCost[]
 
   @@map("materials")
 }
@@ -1471,6 +1473,7 @@ model ProductionOrder {
   salesOrderItems     SalesOrderItem[]
   qualityInspections  QualityInspection[]
   nonConformities     NonConformity[]
+  productionCosts     ProductionCost[]
   
   @@unique([companyId, code])
   @@index([companyId])
@@ -2161,9 +2164,10 @@ model WorkCenter {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   
-  productionLogs ProductionLog[]
-  machineStops   MachineStop[]
-  oeeTargets     OeeTarget[]
+  productionLogs      ProductionLog[]
+  machineStops        MachineStop[]
+  oeeTargets          OeeTarget[]
+  productionCostLabor ProductionCostLabor[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -5325,4 +5329,119 @@ model NonConformity {
   @@index([companyId])
   @@index([status])
   @@map("non_conformities")
+}
+
+// =============================================================================
+// CUSTOS DE PRODUÇÃO
+// =============================================================================
+
+enum ProductionCostStatus {
+  DRAFT       // Rascunho
+  CALCULATED  // Calculado
+  CLOSED      // Fechado
+}
+
+model ProductionCost {
+  id                  String               @id @default(uuid()) @db.Uuid
+  productionOrderId   String               @db.Uuid
+  productionOrder     ProductionOrder      @relation(fields: [productionOrderId], references: [id], onDelete: Cascade)
+  companyId           String?              @db.Uuid
+  status              ProductionCostStatus @default(DRAFT)
+  
+  // Custos de Material
+  materialCost        Float                @default(0)
+  materialCostStd     Float?               @default(0)
+  materialVariance    Float?               @default(0)
+  
+  // Custos de Mão de Obra
+  laborCost           Float                @default(0)
+  laborCostStd        Float?               @default(0)
+  laborVariance       Float?               @default(0)
+  laborHours          Float?               @default(0)
+  laborHoursStd       Float?               @default(0)
+  
+  // Custos Indiretos (CIP/GGF)
+  overheadCost        Float                @default(0)
+  overheadCostStd     Float?               @default(0)
+  overheadVariance    Float?               @default(0)
+  
+  // Totais
+  totalCost           Float                @default(0)
+  totalCostStd        Float?               @default(0)
+  totalVariance       Float?               @default(0)
+  unitCost            Float?               @default(0)
+  unitCostStd         Float?               @default(0)
+  
+  // Quantidade produzida
+  quantityProduced    Float?               @default(0)
+  
+  // Datas
+  calculatedAt        DateTime?
+  closedAt            DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  
+  materials           ProductionCostMaterial[]
+  labor               ProductionCostLabor[]
+  
+  @@index([productionOrderId])
+  @@index([companyId])
+  @@index([status])
+  @@map("production_costs")
+}
+
+model ProductionCostMaterial {
+  id                String          @id @default(uuid()) @db.Uuid
+  productionCostId  String          @db.Uuid
+  productionCost    ProductionCost  @relation(fields: [productionCostId], references: [id], onDelete: Cascade)
+  materialId        String          @db.Uuid
+  material          Material        @relation(fields: [materialId], references: [id])
+  quantityStd       Float?          @default(0)
+  quantityActual    Float?          @default(0)
+  unitCost          Float?          @default(0)
+  totalCostStd      Float?          @default(0)
+  totalCostActual   Float?          @default(0)
+  variance          Float?          @default(0)
+  createdAt         DateTime        @default(now())
+  
+  @@index([productionCostId])
+  @@map("production_cost_materials")
+}
+
+model ProductionCostLabor {
+  id                String          @id @default(uuid()) @db.Uuid
+  productionCostId  String          @db.Uuid
+  productionCost    ProductionCost  @relation(fields: [productionCostId], references: [id], onDelete: Cascade)
+  workCenterId      String?         @db.Uuid
+  workCenter        WorkCenter?     @relation(fields: [workCenterId], references: [id])
+  operationId       String?         @db.Uuid
+  hoursStd          Float?          @default(0)
+  hoursActual       Float?          @default(0)
+  hourlyRate        Float?          @default(0)
+  totalCostStd      Float?          @default(0)
+  totalCostActual   Float?          @default(0)
+  variance          Float?          @default(0)
+  createdAt         DateTime        @default(now())
+  
+  @@index([productionCostId])
+  @@map("production_cost_labor")
+}
+
+model MaterialStandardCost {
+  id              String    @id @default(uuid()) @db.Uuid
+  materialId      String    @db.Uuid
+  material        Material  @relation(fields: [materialId], references: [id])
+  companyId       String?   @db.Uuid
+  effectiveDate   DateTime  @default(now())
+  materialCost    Float     @default(0)
+  laborCost       Float?    @default(0)
+  overheadCost    Float?    @default(0)
+  totalCost       Float     @default(0)
+  notes           String?
+  createdBy       String?   @db.Uuid
+  createdAt       DateTime  @default(now())
+  
+  @@index([materialId])
+  @@index([companyId])
+  @@map("material_standard_costs")
 }
