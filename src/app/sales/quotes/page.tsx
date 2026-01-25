@@ -32,9 +32,9 @@ export default function SalesQuotesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = trpc.sales.listQuotes.useQuery({
+  const { data, isLoading } = trpc.salesQuotes.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "DRAFT" | "SENT" | "VIEWED" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "CONVERTED" | "ALL" | undefined,
+    status: statusFilter !== "ALL" ? statusFilter as "DRAFT" | "SENT" | "VIEWED" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "CONVERTED" : undefined,
     page,
     limit: 20,
   });
