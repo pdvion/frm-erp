@@ -2,6 +2,11 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
+import { auditUpdate } from "../services/audit";
+
+// Constants
+const VT_DISCOUNT_PERCENTAGE = 0.06; // 6% desconto máximo de Vale Transporte
+const MAX_PAGE_SIZE = 100;
 
 const benefitCategoryEnum = z.enum([
   "TRANSPORT", "MEAL", "FOOD", "HEALTH", "DENTAL",
@@ -55,7 +60,7 @@ export const benefitsRouter = createTRPCRouter({
 
   updateBenefitType: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       name: z.string().optional(),
       description: z.string().optional(),
       defaultValue: z.number().optional(),
@@ -67,12 +72,27 @@ export const benefitsRouter = createTRPCRouter({
       affectsFgts: z.boolean().optional(),
       isActive: z.boolean().optional(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
-      return prisma.benefitType.update({
+      
+      // Validate tenant ownership
+      const existing = await prisma.benefitType.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de benefício não encontrado" });
+      }
+      
+      const updated = await prisma.benefitType.update({
         where: { id },
         data,
       });
+      
+      await auditUpdate("BenefitType", id, existing.code, existing, updated, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+      return updated;
     }),
 
   // ==================== BENEFÍCIOS DO FUNCIONÁRIO ====================
@@ -82,8 +102,8 @@ export const benefitsRouter = createTRPCRouter({
       employeeId: z.string().optional(),
       benefitTypeId: z.string().optional(),
       status: benefitStatusEnum.optional(),
-      page: z.number().default(1),
-      limit: z.number().default(20),
+      page: z.number().min(1).default(1),
+      limit: z.number().min(1).max(MAX_PAGE_SIZE).default(20),
     }))
     .query(async ({ input, ctx }) => {
       const { employeeId, benefitTypeId, status, page, limit } = input;
@@ -162,7 +182,7 @@ export const benefitsRouter = createTRPCRouter({
 
   updateEmployeeBenefit: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       value: z.number().optional(),
       employeeDiscount: z.number().optional(),
       companyContribution: z.number().optional(),
@@ -171,27 +191,56 @@ export const benefitsRouter = createTRPCRouter({
       endDate: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, endDate, ...data } = input;
-      return prisma.employeeBenefit.update({
+      
+      // Validate tenant ownership
+      const existing = await prisma.employeeBenefit.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Benefício não encontrado" });
+      }
+      
+      const updated = await prisma.employeeBenefit.update({
         where: { id },
         data: {
           ...data,
           endDate: endDate ? new Date(endDate) : undefined,
         },
       });
+      
+      await auditUpdate("EmployeeBenefit", id, undefined, existing, updated, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+      return updated;
     }),
 
   cancelBenefit: tenantProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      return prisma.employeeBenefit.update({
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      // Validate tenant ownership
+      const existing = await prisma.employeeBenefit.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Benefício não encontrado" });
+      }
+      
+      const updated = await prisma.employeeBenefit.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
           endDate: new Date(),
         },
       });
+      
+      await auditUpdate("EmployeeBenefit", input.id, undefined, existing, updated, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+      return updated;
     }),
 
   // ==================== VALE TRANSPORTE ====================
@@ -222,7 +271,7 @@ export const benefitsRouter = createTRPCRouter({
 
   updateTransportVoucher: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       lineType: z.string().optional(),
       lineName: z.string().optional(),
       fareValue: z.number().optional(),
@@ -230,8 +279,17 @@ export const benefitsRouter = createTRPCRouter({
       workingDays: z.number().optional(),
       isActive: z.boolean().optional(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
+      
+      // Validate tenant ownership
+      const existing = await prisma.transportVoucher.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Vale transporte não encontrado" });
+      }
+      
       return prisma.transportVoucher.update({ where: { id }, data });
     }),
 
@@ -251,8 +309,8 @@ export const benefitsRouter = createTRPCRouter({
         return sum + (v.fareValue * v.quantityPerDay * v.workingDays);
       }, 0);
 
-      // Desconto máximo de 6% do salário
-      const maxDiscount = (employee?.salary || 0) * 0.06;
+      // Desconto máximo de 6% do salário (CLT)
+      const maxDiscount = (employee?.salary || 0) * VT_DISCOUNT_PERCENTAGE;
       const employeeDiscount = Math.min(totalMonthly, maxDiscount);
       const companyContribution = totalMonthly - employeeDiscount;
 
@@ -321,8 +379,8 @@ export const benefitsRouter = createTRPCRouter({
       employeeId: z.string().optional(),
       trainingId: z.string().optional(),
       status: trainingStatusEnum.optional(),
-      page: z.number().default(1),
-      limit: z.number().default(20),
+      page: z.number().min(1).default(1),
+      limit: z.number().min(1).max(MAX_PAGE_SIZE).default(20),
     }))
     .query(async ({ input, ctx }) => {
       const { employeeId, trainingId, status, page, limit } = input;
@@ -465,7 +523,7 @@ export const benefitsRouter = createTRPCRouter({
 
   updateSkillLevel: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       level: z.number().int().min(0).max(4),
       certifiedAt: z.string().optional(),
       expirationDate: z.string().optional(),
@@ -473,6 +531,15 @@ export const benefitsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const { id, certifiedAt, expirationDate, ...data } = input;
+      
+      // Validate tenant ownership
+      const existing = await prisma.skillMatrix.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Competência não encontrada" });
+      }
+      
       return prisma.skillMatrix.update({
         where: { id },
         data: {

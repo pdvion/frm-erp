@@ -2,6 +2,29 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
+import { auditUpdate } from "../services/audit";
+
+// Constants
+const MAX_PAGE_SIZE = 100;
+
+// CPF validation helper
+function isValidCpf(cpf: string): boolean {
+  const cleaned = cpf.replace(/\D/g, "");
+  if (cleaned.length !== 11) return false;
+  if (/^(\d)\1+$/.test(cleaned)) return false;
+  
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(cleaned[i]) * (10 - i);
+  let digit = (sum * 10) % 11;
+  if (digit === 10) digit = 0;
+  if (digit !== parseInt(cleaned[9])) return false;
+  
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(cleaned[i]) * (11 - i);
+  digit = (sum * 10) % 11;
+  if (digit === 10) digit = 0;
+  return digit === parseInt(cleaned[10]);
+}
 
 const admissionStatusEnum = z.enum([
   "DRAFT", "DOCUMENTS", "EXAM", "APPROVAL", "APPROVED", "REJECTED", "COMPLETED", "CANCELLED"
@@ -34,8 +57,8 @@ export const admissionRouter = createTRPCRouter({
     .input(z.object({
       search: z.string().optional(),
       status: admissionStatusEnum.optional(),
-      page: z.number().default(1),
-      limit: z.number().default(20),
+      page: z.number().min(1).default(1),
+      limit: z.number().min(1).max(MAX_PAGE_SIZE).default(20),
     }).optional())
     .query(async ({ input, ctx }) => {
       const { search, status, page = 1, limit = 20 } = input || {};
@@ -101,7 +124,9 @@ export const admissionRouter = createTRPCRouter({
       candidateName: z.string().min(1),
       candidateEmail: z.string().email().optional(),
       candidatePhone: z.string().optional(),
-      candidateCpf: z.string().optional(),
+      candidateCpf: z.string().refine((val) => !val || isValidCpf(val), {
+        message: "CPF inválido",
+      }).optional(),
       positionId: z.string().optional(),
       departmentId: z.string().optional(),
       proposedSalary: z.number().optional(),
@@ -145,7 +170,7 @@ export const admissionRouter = createTRPCRouter({
   // Atualizar processo
   update: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       candidateName: z.string().optional(),
       candidateEmail: z.string().optional(),
       candidatePhone: z.string().optional(),
@@ -157,21 +182,36 @@ export const admissionRouter = createTRPCRouter({
       managerId: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, proposedStartDate, ...data } = input;
-      return prisma.admissionProcess.update({
+      
+      // Validate tenant ownership
+      const existing = await prisma.admissionProcess.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+      
+      const updated = await prisma.admissionProcess.update({
         where: { id },
         data: {
           ...data,
           proposedStartDate: proposedStartDate ? new Date(proposedStartDate) : undefined,
         },
       });
+      
+      await auditUpdate("AdmissionProcess", id, existing.candidateName, existing, updated, {
+        userId: ctx.tenant.userId ?? undefined,
+        companyId: ctx.companyId,
+      });
+      return updated;
     }),
 
   // Upload de documento
   uploadDocument: tenantProcedure
     .input(z.object({
-      documentId: z.string(),
+      documentId: z.string().uuid(),
       fileUrl: z.string(),
     }))
     .mutation(async ({ input }) => {
@@ -188,7 +228,7 @@ export const admissionRouter = createTRPCRouter({
   // Verificar documento
   verifyDocument: tenantProcedure
     .input(z.object({
-      documentId: z.string(),
+      documentId: z.string().uuid(),
       approved: z.boolean(),
       rejectionReason: z.string().optional(),
     }))
@@ -207,7 +247,7 @@ export const admissionRouter = createTRPCRouter({
   // Agendar exame
   scheduleExam: tenantProcedure
     .input(z.object({
-      admissionId: z.string(),
+      admissionId: z.string().uuid(),
       examType: z.string().default("ADMISSIONAL"),
       clinicName: z.string().optional(),
       scheduledDate: z.string(),
@@ -228,7 +268,7 @@ export const admissionRouter = createTRPCRouter({
   // Registrar resultado do exame
   recordExamResult: tenantProcedure
     .input(z.object({
-      examId: z.string(),
+      examId: z.string().uuid(),
       result: examResultEnum,
       asoNumber: z.string().optional(),
       asoUrl: z.string().optional(),
@@ -252,7 +292,7 @@ export const admissionRouter = createTRPCRouter({
   // Completar etapa
   completeStep: tenantProcedure
     .input(z.object({
-      stepId: z.string(),
+      stepId: z.string().uuid(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -293,7 +333,7 @@ export const admissionRouter = createTRPCRouter({
   // Aprovar admissão
   approve: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
@@ -309,7 +349,7 @@ export const admissionRouter = createTRPCRouter({
   // Rejeitar admissão
   reject: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       reason: z.string(),
     }))
     .mutation(async ({ input }) => {
@@ -324,7 +364,7 @@ export const admissionRouter = createTRPCRouter({
 
   // Completar admissão (criar funcionário)
   complete: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
       const admission = await prisma.admissionProcess.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
@@ -380,7 +420,7 @@ export const admissionRouter = createTRPCRouter({
   // Cancelar admissão
   cancel: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       reason: z.string(),
     }))
     .mutation(async ({ input }) => {
