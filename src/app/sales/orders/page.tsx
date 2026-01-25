@@ -37,9 +37,9 @@ export default function SalesOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = trpc.sales.listOrders.useQuery({
+  const { data, isLoading } = trpc.salesOrders.list.useQuery({
     search: search || undefined,
-    status: statusFilter as "PENDING" | "CONFIRMED" | "IN_PRODUCTION" | "READY" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "ALL" | undefined,
+    status: statusFilter !== "ALL" ? statusFilter as "PENDING" | "CONFIRMED" | "IN_PRODUCTION" | "READY" | "SHIPPED" | "DELIVERED" | "CANCELLED" : undefined,
     page,
     limit: 20,
   });
