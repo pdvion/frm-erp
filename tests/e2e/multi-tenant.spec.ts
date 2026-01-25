@@ -10,10 +10,9 @@ test.describe('Multi-Tenant - Isolamento de Dados', () => {
   });
 
   test('deve exibir seletor de empresa no header', async ({ page }) => {
-    // Verificar que o seletor de empresa está visível
-    const companySelector = page.getByRole('combobox', { name: /empresa/i })
-      .or(page.locator('[data-testid="company-selector"]'))
-      .or(page.getByText(/selecione.*empresa/i));
+    // Verificar que o seletor de empresa está visível (é um botão com nome da empresa)
+    const companySelector = page.getByRole('button', { name: /FRM|empresa|indústria/i }).first()
+      .or(page.locator('[data-testid="company-selector"]'));
     
     await expect(companySelector).toBeVisible({ timeout: 5000 });
   });
@@ -25,15 +24,15 @@ test.describe('Multi-Tenant - Isolamento de Dados', () => {
     // Aguardar carregamento da tabela
     await page.getByRole('table').or(page.getByText(/nenhum.*encontrado/i)).waitFor({ timeout: 10000 });
     
-    // Encontrar e clicar no seletor de empresa
-    const companySelector = page.getByRole('combobox', { name: /empresa/i })
-      .or(page.locator('[data-testid="company-selector"]'));
+    // Encontrar e clicar no seletor de empresa (é um botão)
+    const companySelector = page.getByRole('button', { name: /FRM|empresa|indústria/i }).first();
     
     if (await companySelector.isVisible({ timeout: 3000 }).catch(() => false)) {
       await companySelector.click();
+      await page.waitForTimeout(300);
       
-      // Selecionar outra empresa (se disponível)
-      const otherCompany = page.getByRole('option').nth(1);
+      // Selecionar outra empresa do menu (se disponível)
+      const otherCompany = page.getByRole('menuitem').or(page.getByRole('option')).nth(1);
       if (await otherCompany.isVisible({ timeout: 2000 }).catch(() => false)) {
         await otherCompany.click();
         
@@ -66,13 +65,12 @@ test.describe('Multi-Tenant - Isolamento de Dados', () => {
     await page.goto('/materials');
     await page.waitForLoadState('networkidle');
     
-    // Capturar empresa atual
-    const companySelector = page.getByRole('combobox', { name: /empresa/i })
-      .or(page.locator('[data-testid="company-selector"]'));
+    // Capturar empresa atual (texto do botão)
+    const companySelector = page.getByRole('button', { name: /FRM|empresa|indústria/i }).first();
     
     let currentCompany = '';
     if (await companySelector.isVisible({ timeout: 3000 }).catch(() => false)) {
-      currentCompany = await companySelector.inputValue().catch(() => '');
+      currentCompany = await companySelector.textContent() ?? '';
     }
     
     // Navegar para fornecedores
@@ -80,9 +78,12 @@ test.describe('Multi-Tenant - Isolamento de Dados', () => {
     await page.waitForLoadState('networkidle');
     
     // Verificar que a empresa continua a mesma
-    if (currentCompany && await companySelector.isVisible({ timeout: 3000 }).catch(() => false)) {
-      const newCompany = await companySelector.inputValue().catch(() => '');
-      expect(newCompany).toBe(currentCompany);
+    if (currentCompany) {
+      const companySelectorNew = page.getByRole('button', { name: /FRM|empresa|indústria/i }).first();
+      if (await companySelectorNew.isVisible({ timeout: 3000 }).catch(() => false)) {
+        const newCompany = await companySelectorNew.textContent() ?? '';
+        expect(newCompany).toBe(currentCompany);
+      }
     }
   });
 

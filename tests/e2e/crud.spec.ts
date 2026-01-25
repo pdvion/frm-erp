@@ -42,7 +42,7 @@ test.describe('CRUD Completo - Materiais', () => {
     await page.waitForLoadState('networkidle');
     
     // Verificar que o formulário carregou
-    const form = page.locator('form').or(page.getByRole('main'));
+    const form = page.locator('form').first().or(page.getByRole('main').first());
     await expect(form).toBeVisible({ timeout: 5000 });
     
     // Tentar submeter sem preencher campos obrigatórios
@@ -211,11 +211,11 @@ test.describe('CRUD Completo - Cotações', () => {
     await page.waitForLoadState('networkidle');
     
     // Verificar que o formulário carregou
-    const pageContent = page.getByRole('main').or(page.locator('body'));
+    const pageContent = page.getByRole('main').first();
     await expect(pageContent).toBeVisible({ timeout: 5000 });
     
     // Verificar elementos do formulário
-    const hasForm = await page.locator('form').or(page.getByText(/cotação|fornecedor/i)).isVisible({ timeout: 3000 }).catch(() => false);
+    const hasForm = await page.locator('form').first().or(page.getByText(/cotação|fornecedor/i).first()).isVisible({ timeout: 3000 }).catch(() => false);
     expect(typeof hasForm).toBe('boolean');
   });
 
@@ -274,11 +274,11 @@ test.describe('CRUD Completo - Pedidos de Compra', () => {
     await page.waitForLoadState('networkidle');
     
     // Verificar que a página carregou
-    const pageContent = page.getByRole('main').or(page.locator('body'));
+    const pageContent = page.getByRole('main').first();
     await expect(pageContent).toBeVisible({ timeout: 5000 });
     
     // Verificar elementos do formulário
-    const hasForm = await page.locator('form').or(page.getByText(/pedido|fornecedor/i)).isVisible({ timeout: 3000 }).catch(() => false);
+    const hasForm = await page.locator('form').first().or(page.getByText(/pedido|fornecedor/i).first()).isVisible({ timeout: 3000 }).catch(() => false);
     expect(typeof hasForm).toBe('boolean');
   });
 
@@ -296,7 +296,7 @@ test.describe('CRUD Completo - Pedidos de Compra', () => {
     await page.waitForLoadState('networkidle');
     
     // Verificar que a página carregou
-    const pageContent = page.getByRole('main').or(page.locator('body'));
+    const pageContent = page.getByRole('main').first();
     await expect(pageContent).toBeVisible({ timeout: 5000 });
     
     // Verificar filtro de status
