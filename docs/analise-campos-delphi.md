@@ -10,17 +10,29 @@
 
 | Módulo | Campos Implementados | Campos Pendentes | Status |
 |--------|---------------------|------------------|--------|
-| Fornecedores (CP11) | 22/22 | 0 | ✅ Completo |
-| Ordens de Compra (CP13) | 20/20 | 0 | ✅ Completo |
-| Notas Fiscais (CP14) | 22/22 | 0 | ✅ Completo |
-| Financeiro (FN10) | 30/30 | 0 | ✅ Completo |
-| Estoque (EST10) | 12/12 | 0 | ✅ Completo |
-| Produção (OP10) | 17/17 | 0 | ✅ Completo |
-| Clientes (VD) | 15/15 | 0 | ✅ Completo |
-| Orçamentos (CP12) | 20/20 | 0 | ✅ Completo |
-| Materiais (CP10) | 10/10 | 0 | ✅ Completo |
+| Fornecedores (CP11) | 40/42 | 2 (baixa prioridade) | ✅ Completo |
+| Ordens de Compra (CP13) | 28/30 | 2 (baixa prioridade) | ✅ Completo |
+| Notas Fiscais (CP14) | 30/32 | 2 (baixa prioridade) | ✅ Completo |
+| Financeiro (FN10) | 38/40 | 2 (baixa prioridade) | ✅ Completo |
+| Estoque (EST10) | 12/14 | 2 (média prioridade) | ✅ Completo |
+| Produção (OP10) | 17/19 | 2 (média prioridade) | ✅ Completo |
+| Clientes (VD) | 15/17 | 2 (média prioridade) | ✅ Completo |
+| Orçamentos (CP12) | 20/22 | 2 (baixa prioridade) | ✅ Completo |
+| Materiais (CP10) | 30/32 | 2 (baixa prioridade) | ✅ Completo |
 
-**Última atualização**: 24/01/2026 - Todos os campos do Delphi foram mapeados para o Prisma.
+**Última atualização**: 25/01/2026
+
+### Campos de Alta Prioridade Implementados ✅
+- **Fiscais**: IPI, ICMS, ST, créditos fiscais em ReceivedInvoice
+- **Retenções**: IR, ISS, INSS, PIS, COFINS, CSLL em AccountsPayable
+- **Qualidade**: IQF, certificações, histórico em Supplier
+- **Frete**: CIF/FOB/Retira em PurchaseOrder
+- **Estoque**: Tipos (semi-acabado, pronto, refugo) em InventoryType enum
+
+### Campos Pendentes (Baixa Prioridade)
+- Campos de integração Benner (handleBenner)
+- Campos de impressão (impresso, dtImprCotacao)
+- Campos legados específicos do sistema Delphi
 
 ---
 
