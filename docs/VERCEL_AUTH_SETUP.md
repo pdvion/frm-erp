@@ -111,11 +111,11 @@ A aplicação mantém duas camadas de autenticação:
 ## Checklist de Configuração
 
 - [x] Plano Vercel Pro ativado
-- [ ] SSO Protection habilitado no Dashboard
-- [ ] Automation Bypass configurado
-- [ ] Secret adicionado ao GitHub
-- [ ] Playwright configurado com bypass header
-- [ ] Documentação atualizada
+- [x] SSO Protection habilitado no Dashboard
+- [x] Automation Bypass configurado
+- [x] Secret adicionado ao GitHub
+- [x] Playwright configurado com bypass header
+- [x] Documentação atualizada
 
 ---
 
