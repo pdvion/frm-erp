@@ -203,6 +203,14 @@ describe("Thirteenth Router Schemas", () => {
       { max: 7786.02, rate: 0.14 },
     ];
 
+    it("should have progressive brackets", () => {
+      expect(inssTable.length).toBeGreaterThan(0);
+      for (let i = 1; i < inssTable.length; i++) {
+        expect(inssTable[i].max).toBeGreaterThan(inssTable[i - 1].max);
+        expect(inssTable[i].rate).toBeGreaterThan(0);
+      }
+    });
+
     it("should calculate INSS for first bracket", () => {
       const salary = 1400;
       const inss = salary * 0.075;
@@ -231,6 +239,26 @@ describe("Thirteenth Router Schemas", () => {
       // Progressive INSS calculation result
       expect(inss).toBeGreaterThan(250);
       expect(inss).toBeLessThan(300);
+    });
+  });
+
+  describe("Thirteenth Response Schema", () => {
+    it("should validate response shape", () => {
+      const result = thirteenthResponseSchema.safeParse({
+        id: "th-1",
+        employeeId: "emp-1",
+        year: 2024,
+        type: "FULL",
+        status: "CALCULATED",
+        baseValue: 3000,
+        monthsWorked: 12,
+        grossValue: 3000,
+        inssDiscount: 250,
+        irrfDiscount: 0,
+        otherDiscounts: 0,
+        netValue: 2750,
+      });
+      expect(result.success).toBe(true);
     });
   });
 

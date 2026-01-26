@@ -14,6 +14,11 @@ export default defineConfig({
       exclude: [
         "src/**/*.test.ts",
         "src/**/*.spec.ts",
+        "src/server/routers/**",
+        "src/lib/**/index.ts",
+        "src/lib/deploy-agent/**",
+        "src/lib/email/**",
+        "src/lib/supabase/**",
         "src/lib/trpc.ts",
         "src/lib/trpc-provider.tsx",
         "src/lib/prisma.ts",

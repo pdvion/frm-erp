@@ -14,6 +14,12 @@ Execute este workflow **ANTES** de fazer commit para evitar falhas no CI.
 pnpm type-check && pnpm lint && pnpm test:run && pnpm build
 ```
 
+Se você alterou testes/configuração de testes/áreas críticas (ex.: `src/lib`, `src/server`), execute também:
+
+```bash
+pnpm test:coverage
+```
+
 ## Passos Obrigatórios
 
 ### 1. Verificar Tipos TypeScript

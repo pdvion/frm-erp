@@ -91,6 +91,30 @@ describe("Vacations Router Schemas", () => {
     });
   });
 
+  describe("Vacation Response Schema", () => {
+    it("should validate response shape", () => {
+      const result = _vacationResponseSchema.safeParse({
+        id: "vac-1",
+        employeeId: "emp-1",
+        acquisitionStart: new Date("2023-01-01"),
+        acquisitionEnd: new Date("2023-12-31"),
+        startDate: new Date("2024-01-01"),
+        endDate: new Date("2024-01-30"),
+        totalDays: 30,
+        soldDays: 0,
+        enjoyedDays: 30,
+        remainingDays: 0,
+        status: "COMPLETED",
+        isCollective: false,
+        baseValue: 3000,
+        oneThirdValue: 1000,
+        soldValue: 0,
+        totalValue: 4000,
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("List Input Schema", () => {
     it("should accept empty input with defaults", () => {
       const result = listInputSchema.safeParse({});

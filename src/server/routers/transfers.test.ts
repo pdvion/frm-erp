@@ -84,6 +84,24 @@ describe("Transfers Router Schemas", () => {
     });
   });
 
+  describe("Transfer Response Schema", () => {
+    it("should validate response shape", () => {
+      const result = _transferResponseSchema.safeParse({
+        id: "tr-1",
+        code: 123,
+        fromLocationId: "loc-001",
+        toLocationId: "loc-002",
+        status: "PENDING",
+        requestedAt: new Date("2024-01-01T00:00:00Z"),
+        sentAt: null,
+        receivedAt: null,
+        notes: null,
+        companyId: "company-1",
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("List Input Schema", () => {
     it("should accept undefined input", () => {
       const result = listInputSchema.safeParse(undefined);

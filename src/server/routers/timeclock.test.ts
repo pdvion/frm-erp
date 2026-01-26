@@ -96,6 +96,25 @@ describe("Timeclock Router Schemas", () => {
     });
   });
 
+  describe("TimeClock Entry Schema", () => {
+    it("should validate entry response shape", () => {
+      const result = _timeClockEntrySchema.safeParse({
+        id: "entry-1",
+        employeeId: "emp-1",
+        type: "CLOCK_IN",
+        timestamp: new Date("2024-01-01T08:00:00Z"),
+        location: null,
+        latitude: null,
+        longitude: null,
+        deviceId: null,
+        ipAddress: null,
+        isManual: false,
+        justification: null,
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("Clock In Input Schema", () => {
     it("should accept minimal valid input", () => {
       const result = clockInInputSchema.safeParse({

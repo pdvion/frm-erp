@@ -216,6 +216,52 @@ describe("Admission Router Schemas", () => {
     });
   });
 
+  describe("Document / Exam / Response Schemas", () => {
+    it("should validate document schema", () => {
+      const result = documentSchema.safeParse({
+        documentType: "RG",
+        documentName: "Documento de Identidade",
+        isRequired: true,
+        fileUrl: "https://example.com/rg.pdf",
+        uploadedAt: new Date("2024-01-01"),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate exam input schema", () => {
+      const result = examInputSchema.safeParse({
+        admissionId: "123e4567-e89b-12d3-a456-426614174000",
+        examDate: "2024-01-10",
+        examType: "Admission",
+        clinicName: "Clínica X",
+        result: "FIT",
+        restrictions: "",
+        validUntil: "2025-01-10",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate admission response schema", () => {
+      const result = admissionResponseSchema.safeParse({
+        id: "adm-1",
+        candidateName: "Fulano",
+        candidateEmail: "fulano@example.com",
+        candidateCpf: "12345678901",
+        candidatePhone: null,
+        status: "DRAFT",
+        positionId: "pos-1",
+        departmentId: "dep-1",
+        expectedStartDate: new Date("2024-02-01"),
+        proposedSalary: 3500,
+        notes: null,
+        companyId: "comp-1",
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date("2024-01-02"),
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("List Input Schema", () => {
     it("should accept undefined input", () => {
       const result = listInputSchema.safeParse(undefined);
