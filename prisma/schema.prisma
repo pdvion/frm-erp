@@ -5755,3 +5755,128 @@ model AdmissionExam {
   @@index([admissionId])
   @@map("admission_exams")
 }
+
+// =============================================================================
+// GED - GESTÃO ELETRÔNICA DE DOCUMENTOS (VIO-706)
+// =============================================================================
+
+enum GedDocumentStatus {
+  DRAFT           // Rascunho
+  ACTIVE          // Ativo
+  ARCHIVED        // Arquivado
+  DELETED         // Excluído
+}
+
+enum GedEntityType {
+  SUPPLIER        // Fornecedor
+  CUSTOMER        // Cliente
+  EMPLOYEE        // Funcionário
+  CONTRACT        // Contrato
+  PURCHASE_ORDER  // Pedido de Compra
+  SALES_ORDER     // Pedido de Venda
+  INVOICE         // Nota Fiscal
+  MATERIAL        // Material
+  PROJECT         // Projeto
+  GENERAL         // Geral
+}
+
+model GedDocument {
+  id              String            @id @default(uuid()) @db.Uuid
+  code            Int               @default(autoincrement())
+  companyId       String?           @db.Uuid
+  
+  // Metadados do documento
+  title           String
+  description     String?
+  fileName        String
+  fileType        String            // MIME type (application/pdf, image/png, etc)
+  fileSize        Int               // Tamanho em bytes
+  fileUrl         String            // URL no Supabase Storage
+  filePath        String            // Caminho no bucket
+  
+  // Categorização
+  categoryId      String?           @db.Uuid
+  category        GedCategory?      @relation(fields: [categoryId], references: [id])
+  tags            String[]          // Tags para busca
+  
+  // Vinculação com entidades
+  entityType      GedEntityType?
+  entityId        String?           @db.Uuid
+  
+  // Versionamento
+  version         Int               @default(1)
+  parentId        String?           @db.Uuid
+  parent          GedDocument?      @relation("DocumentVersions", fields: [parentId], references: [id])
+  versions        GedDocument[]     @relation("DocumentVersions")
+  isLatestVersion Boolean           @default(true)
+  
+  // Status e controle
+  status          GedDocumentStatus @default(ACTIVE)
+  isShared        Boolean           @default(false)
+  
+  // Assinatura eletrônica (futuro)
+  requiresSignature Boolean         @default(false)
+  signedAt        DateTime?
+  signedBy        String?           @db.Uuid
+  signatureId     String?           // ID externo do serviço de assinatura
+  
+  // Auditoria
+  createdBy       String?           @db.Uuid
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  
+  // Metadados extras (JSON flexível)
+  metadata        Json?
+  
+  // Relações
+  accessLogs      GedAccessLog[]
+
+  @@index([companyId])
+  @@index([categoryId])
+  @@index([entityType, entityId])
+  @@index([status])
+  @@index([parentId])
+  @@index([tags])
+  @@map("ged_documents")
+}
+
+model GedCategory {
+  id          String        @id @default(uuid()) @db.Uuid
+  companyId   String?       @db.Uuid
+  name        String
+  description String?
+  color       String?       // Cor para UI (#hex)
+  icon        String?       // Nome do ícone (Lucide)
+  parentId    String?       @db.Uuid
+  parent      GedCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    GedCategory[] @relation("CategoryHierarchy")
+  isActive    Boolean       @default(true)
+  isShared    Boolean       @default(false)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  documents   GedDocument[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@index([parentId])
+  @@map("ged_categories")
+}
+
+model GedAccessLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  documentId  String      @db.Uuid
+  document    GedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId      String?     @db.Uuid
+  action      String      // VIEW, DOWNLOAD, EDIT, DELETE, SHARE
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+
+  @@index([documentId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("ged_access_logs")
+}
