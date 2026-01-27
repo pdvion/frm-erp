@@ -3678,6 +3678,8 @@ enum TaskStatus {
   ON_HOLD
   COMPLETED
   CANCELLED
+
+  @@map("task_status")
 }
 
 enum TaskPriority {
@@ -3685,6 +3687,8 @@ enum TaskPriority {
   HIGH
   NORMAL
   LOW
+
+  @@map("task_priority")
 }
 
 enum TaskEntityType {
@@ -3696,6 +3700,8 @@ enum TaskEntityType {
   RECEIVABLE
   PRODUCTION_ORDER
   OTHER
+
+  @@map("task_entity_type")
 }
 
 model Task {
