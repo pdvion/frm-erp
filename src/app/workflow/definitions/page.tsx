@@ -10,6 +10,7 @@ import {
   Play,
   Edit,
   ArrowLeft,
+  Workflow,
 } from "lucide-react";
 
 export default function WorkflowDefinitionsPage() {
@@ -103,13 +104,20 @@ export default function WorkflowDefinitionsPage() {
                     <Play className="w-4 h-4" />
                   </Link>
                   <Link
+                    href={`/workflow/definitions/${def.id}/visual`}
+                    className="p-2 text-violet-600 hover:bg-violet-100 rounded-lg"
+                    title="Editor Visual"
+                  >
+                    <Workflow className="w-4 h-4" />
+                  </Link>
+                  <Link
                     href={`/workflow/definitions/${def.id}/edit`}
                     className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
                     title="Editar"
                   >
                     <Edit className="w-4 h-4" />
                   </Link>
-                                  </div>
+                </div>
               </div>
             ))}
           </div>
