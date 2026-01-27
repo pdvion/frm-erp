@@ -75,6 +75,65 @@ const categoryUpdateSchema = z.object({
 
 export const documentsRouter = createTRPCRouter({
   // ---------------------------------------------------------------------------
+  // UPLOAD
+  // ---------------------------------------------------------------------------
+
+  getUploadUrl: tenantProcedure
+    .input(z.object({
+      fileName: z.string().min(1),
+      fileType: z.string().min(1),
+      fileSize: z.number().int().positive(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Gerar nome único para o arquivo
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 8);
+      const extension = input.fileName.split(".").pop()?.toLowerCase() || "bin";
+      const uniqueName = `${timestamp}-${random}.${extension}`;
+      
+      // Path no storage: documents/{companyId}/{uniqueName}
+      const filePath = `documents/${ctx.companyId}/${uniqueName}`;
+      
+      // Importar cliente Supabase server-side
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      
+      if (!supabaseUrl || !supabaseServiceKey) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Configuração do Supabase não encontrada",
+        });
+      }
+      
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      
+      // Criar signed URL para upload
+      const { data, error } = await supabase.storage
+        .from("documents")
+        .createSignedUploadUrl(filePath);
+      
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error?.message || "Erro ao gerar URL de upload",
+        });
+      }
+      
+      // Gerar URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from("documents")
+        .getPublicUrl(filePath);
+      
+      return {
+        uploadUrl: data.signedUrl,
+        filePath,
+        publicUrl: publicUrlData.publicUrl,
+        token: data.token,
+      };
+    }),
+
+  // ---------------------------------------------------------------------------
   // DOCUMENTOS
   // ---------------------------------------------------------------------------
 

@@ -26,6 +26,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { DocumentUpload } from "@/components/documents/DocumentUpload";
 
 function getFileIcon(fileType: string) {
   if (fileType.includes("pdf")) return <FileText className="w-5 h-5 text-red-500" />;
@@ -397,46 +398,16 @@ function DocumentsContent() {
         )}
       </div>
 
-      {/* Upload Modal Placeholder */}
+      {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-lg mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-theme">Upload de Documento</h2>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="p-2 text-theme-muted hover:text-theme"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center">
-              <Upload className="w-12 h-12 mx-auto mb-4 text-theme-muted" />
-              <p className="text-theme-muted mb-2">
-                Arraste arquivos aqui ou clique para selecionar
-              </p>
-              <p className="text-sm text-theme-muted">
-                PDF, Imagens, Planilhas (máx. 10MB)
-              </p>
-              <input
-                type="file"
-                className="hidden"
-                id="file-upload"
-                multiple
-                accept=".pdf,.png,.jpg,.jpeg,.gif,.xlsx,.xls,.csv,.doc,.docx"
-              />
-              <label
-                htmlFor="file-upload"
-                className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
-              >
-                Selecionar Arquivos
-              </label>
-            </div>
-            <p className="mt-4 text-sm text-theme-muted text-center">
-              Funcionalidade de upload será implementada na próxima fase
-            </p>
-          </div>
-        </div>
+        <DocumentUpload
+          onClose={() => setShowUploadModal(false)}
+          onSuccess={() => {
+            refetch();
+            setShowUploadModal(false);
+          }}
+          categories={categories ?? []}
+        />
       )}
     </div>
   );

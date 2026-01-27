@@ -105,6 +105,32 @@ const where: Prisma.ModeloWhereInput = {
 };
 ```
 
+### 7. Upsert com índice parcial (system_settings)
+```typescript
+// ❌ ERRADO - upsert falha com índice parcial
+await prisma.systemSetting.upsert({
+  where: { key_companyId: { key, companyId } },
+  create: { ... },
+  update: { ... },
+});
+
+// ✅ CORRETO - usar findFirst + create/update
+const existing = await prisma.systemSetting.findFirst({
+  where: { key, companyId },
+});
+
+if (existing) {
+  await prisma.systemSetting.update({
+    where: { id: existing.id },
+    data: { value, updatedBy },
+  });
+} else {
+  await prisma.systemSetting.create({
+    data: { key, value, companyId, updatedBy },
+  });
+}
+```
+
 ## Checklist Antes de Usar Modelo Prisma
 
 - [ ] Verifiquei a definição do modelo no schema.prisma?
