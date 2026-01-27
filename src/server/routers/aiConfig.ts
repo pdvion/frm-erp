@@ -41,26 +41,34 @@ export const aiConfigRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const key = `${input.provider}_token`;
 
-      await ctx.prisma.systemSetting.upsert({
+      // Usar findFirst + create/update para evitar problemas com índice parcial
+      const existing = await ctx.prisma.systemSetting.findFirst({
         where: {
-          key_companyId: {
-            key,
-            companyId: ctx.companyId,
-          },
-        },
-        update: {
-          value: { value: input.token },
-          updatedBy: ctx.tenant.userId,
-        },
-        create: {
           key,
-          value: { value: input.token },
-          category: "ai",
           companyId: ctx.companyId,
-          description: `Token de API ${input.provider.toUpperCase()}`,
-          updatedBy: ctx.tenant.userId,
         },
       });
+
+      if (existing) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existing.id },
+          data: {
+            value: { value: input.token },
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key,
+            value: { value: input.token },
+            category: "ai",
+            companyId: ctx.companyId,
+            description: `Token de API ${input.provider.toUpperCase()}`,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       return { success: true };
     }),
@@ -93,26 +101,36 @@ export const aiConfigRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.systemSetting.upsert({
+      const key = "default_provider";
+
+      // Usar findFirst + create/update para evitar problemas com índice parcial
+      const existing = await ctx.prisma.systemSetting.findFirst({
         where: {
-          key_companyId: {
-            key: "default_provider",
-            companyId: ctx.companyId,
-          },
-        },
-        update: {
-          value: { value: input.provider },
-          updatedBy: ctx.tenant.userId,
-        },
-        create: {
-          key: "default_provider",
-          value: { value: input.provider },
-          category: "ai",
+          key,
           companyId: ctx.companyId,
-          description: "Provedor de IA padrão",
-          updatedBy: ctx.tenant.userId,
         },
       });
+
+      if (existing) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existing.id },
+          data: {
+            value: { value: input.provider },
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key,
+            value: { value: input.provider },
+            category: "ai",
+            companyId: ctx.companyId,
+            description: "Provedor de IA padrão",
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       return { success: true };
     }),

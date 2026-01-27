@@ -340,11 +340,12 @@ export const dashboardRouter = createTRPCRouter({
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
     // Helper para executar queries com fallback para array vazio
+    // Usa warn em vez de error para não gerar notificações desnecessárias
     async function safeQuery<T>(queryFn: () => Promise<T[]>): Promise<T[]> {
       try {
         return await queryFn();
       } catch (error) {
-        dashboardLogger.error("Chart query falhou", {
+        dashboardLogger.warn("Chart query falhou (fallback para vazio)", {
           companyId: ctx.companyId,
           errorMessage: error instanceof Error ? error.message : String(error),
         });
