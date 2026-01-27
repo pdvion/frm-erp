@@ -101,12 +101,13 @@ export function WorkflowEditor({
   const onConnect = useCallback(
     (connection: Connection) => {
       if (readOnly) return;
+      if (!connection.source || !connection.target) return;
       
       const newEdge: Edge = {
         ...connection,
         id: `e-${connection.source}-${connection.target}`,
-        source: connection.source!,
-        target: connection.target!,
+        source: connection.source,
+        target: connection.target,
         animated: true,
         style: { stroke: "#6366f1" },
       };
@@ -115,8 +116,8 @@ export function WorkflowEditor({
       
       const newTransition: WorkflowTransition = {
         id: newEdge.id,
-        fromStepId: connection.source!,
-        toStepId: connection.target!,
+        fromStepId: connection.source,
+        toStepId: connection.target,
       };
       
       onTransitionsChange([...transitions, newTransition]);
@@ -125,7 +126,7 @@ export function WorkflowEditor({
   );
 
   const onNodeDragStop = useCallback(
-    (_event: React.MouseEvent, node: Node) => {
+    (_: React.MouseEvent, node: Node) => {
       if (readOnly) return;
       
       const updatedSteps = steps.map((step) =>
@@ -139,7 +140,7 @@ export function WorkflowEditor({
   );
 
   const onNodeClick = useCallback(
-    (_event: React.MouseEvent, node: Node) => {
+    (_: React.MouseEvent, node: Node) => {
       const step = steps.find((s) => s.id === node.id);
       onNodeSelect?.(step || null);
     },
