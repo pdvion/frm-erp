@@ -44,7 +44,8 @@ describe("rate-limit branches", () => {
     class Test {
       value = 0;
 
-      method(_ctx?: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      method(_ctx?: unknown): number {
         this.value++;
         return this.value;
       }

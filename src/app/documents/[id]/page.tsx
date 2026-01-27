@@ -133,6 +133,7 @@ export default function DocumentDetailPage({
                   title={document.title}
                 />
               ) : document.fileType.includes("image") ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={document.fileUrl}
                   alt={document.title}
