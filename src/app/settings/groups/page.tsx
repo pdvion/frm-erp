@@ -1,19 +1,385 @@
 "use client";
 
-import { PlaceholderPage } from "@/components/PlaceholderPage";
-import { Users } from "lucide-react";
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
+import {
+  Shield,
+  Plus,
+  Search,
+  Users,
+  Edit2,
+  Trash2,
+  Check,
+  X,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
+
+interface GroupForm {
+  name: string;
+  description: string;
+  permissions: string[];
+}
+
+const emptyForm: GroupForm = {
+  name: "",
+  description: "",
+  permissions: [],
+};
 
 export default function GroupsPage() {
+  const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<GroupForm>(emptyForm);
+  const [expandedModules, setExpandedModules] = useState<string[]>([]);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  const utils = trpc.useUtils();
+  const { data: groups, isLoading } = trpc.groups.list.useQuery({
+    includeMembers: true,
+  });
+  const { data: permissionsList } = trpc.groups.listPermissions.useQuery();
+
+  const createMutation = trpc.groups.create.useMutation({
+    onSuccess: () => {
+      utils.groups.list.invalidate();
+      resetForm();
+    },
+  });
+
+  const updateMutation = trpc.groups.update.useMutation({
+    onSuccess: () => {
+      utils.groups.list.invalidate();
+      resetForm();
+    },
+  });
+
+  const deleteMutation = trpc.groups.delete.useMutation({
+    onSuccess: () => {
+      utils.groups.list.invalidate();
+      setDeleteConfirm(null);
+    },
+  });
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(emptyForm);
+  };
+
+  const handleEdit = (group: NonNullable<typeof groups>[0]) => {
+    setEditingId(group.id);
+    setForm({
+      name: group.name,
+      description: group.description || "",
+      permissions: group.permissions as string[],
+    });
+    setShowForm(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingId) {
+      updateMutation.mutate({
+        id: editingId,
+        name: form.name,
+        description: form.description || undefined,
+        permissions: form.permissions,
+      });
+    } else {
+      createMutation.mutate({
+        name: form.name,
+        description: form.description || undefined,
+        permissions: form.permissions,
+      });
+    }
+  };
+
+  const togglePermission = (permKey: string) => {
+    setForm((prev) => ({
+      ...prev,
+      permissions: prev.permissions.includes(permKey)
+        ? prev.permissions.filter((p) => p !== permKey)
+        : [...prev.permissions, permKey],
+    }));
+  };
+
+  const toggleModule = (module: string) => {
+    setExpandedModules((prev) =>
+      prev.includes(module)
+        ? prev.filter((m) => m !== module)
+        : [...prev, module]
+    );
+  };
+
+  const groupedPermissions = permissionsList?.reduce(
+    (acc, perm) => {
+      if (!acc[perm.module]) acc[perm.module] = [];
+      acc[perm.module].push(perm);
+      return acc;
+    },
+    {} as Record<string, typeof permissionsList>
+  );
+
+  const filteredGroups = groups?.filter(
+    (g) =>
+      !search ||
+      g.name.toLowerCase().includes(search.toLowerCase()) ||
+      g.description?.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <PlaceholderPage
-      title="Grupos de Usuários"
-      module="SETTINGS"
-      icon={<Users className="w-6 h-6" />}
-      breadcrumbs={[
-        { label: "Configurações", href: "/settings" },
-        { label: "Grupos" },
-      ]}
-      backHref="/settings"
-    />
+    <div className="space-y-6">
+      <PageHeader
+        title="Grupos de Permissões"
+        icon={<Shield className="w-6 h-6" />}
+        module="SETTINGS"
+        breadcrumbs={[
+          { label: "Configurações", href: "/settings" },
+          { label: "Grupos" },
+        ]}
+        actions={
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Novo Grupo
+          </button>
+        }
+      />
+
+      {/* Search */}
+      <div className="bg-theme-card border border-theme rounded-lg p-4">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar grupos..."
+            className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted"
+          />
+        </div>
+      </div>
+
+      {/* Groups Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {isLoading ? (
+          <div className="col-span-full text-center py-8 text-theme-muted">
+            Carregando...
+          </div>
+        ) : filteredGroups?.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-theme-muted">
+            Nenhum grupo encontrado
+          </div>
+        ) : (
+          filteredGroups?.map((group) => (
+            <div
+              key={group.id}
+              className="bg-theme-card border border-theme rounded-lg p-4 hover:border-blue-500/50 transition-colors"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-theme">{group.name}</h3>
+                    {group.isSystem && (
+                      <span className="text-xs text-theme-muted">Sistema</span>
+                    )}
+                  </div>
+                </div>
+                {!group.isSystem && (
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleEdit(group)}
+                      className="p-1.5 hover:bg-theme-secondary rounded transition-colors"
+                      title="Editar"
+                    >
+                      <Edit2 className="w-4 h-4 text-theme-muted" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(group.id)}
+                      className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                      title="Excluir"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {group.description && (
+                <p className="text-sm text-theme-muted mb-3 line-clamp-2">
+                  {group.description}
+                </p>
+              )}
+
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1 text-theme-muted">
+                  <Users className="w-4 h-4" />
+                  <span>{group._count?.members ?? 0} membros</span>
+                </div>
+                <span className="text-xs text-theme-muted">
+                  {(group.permissions as string[]).length} permissões
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-theme-card border border-theme rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-theme flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-theme">
+                {editingId ? "Editar Grupo" : "Novo Grupo"}
+              </h2>
+              <button
+                onClick={resetForm}
+                className="p-1 hover:bg-theme-secondary rounded"
+              >
+                <X className="w-5 h-5 text-theme-muted" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex-1 overflow-auto p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-theme mb-1">
+                  Nome do Grupo *
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme mb-1">
+                  Descrição
+                </label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  rows={2}
+                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-theme mb-2">
+                  Permissões
+                </label>
+                <div className="border border-theme rounded-lg divide-y divide-theme max-h-64 overflow-auto">
+                  {groupedPermissions &&
+                    Object.entries(groupedPermissions).map(([module, perms]) => (
+                      <div key={module}>
+                        <button
+                          type="button"
+                          onClick={() => toggleModule(module)}
+                          className="w-full px-3 py-2 flex items-center justify-between hover:bg-theme-secondary"
+                        >
+                          <span className="font-medium text-theme capitalize">
+                            {module}
+                          </span>
+                          {expandedModules.includes(module) ? (
+                            <ChevronDown className="w-4 h-4 text-theme-muted" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-theme-muted" />
+                          )}
+                        </button>
+                        {expandedModules.includes(module) && (
+                          <div className="px-3 pb-2 space-y-1">
+                            {perms?.map((perm) => (
+                              <label
+                                key={perm.key}
+                                className="flex items-center gap-2 py-1 cursor-pointer"
+                              >
+                                <div
+                                  className={`w-4 h-4 rounded border flex items-center justify-center ${
+                                    form.permissions.includes(perm.key)
+                                      ? "bg-blue-600 border-blue-600"
+                                      : "border-theme-input"
+                                  }`}
+                                  onClick={() => togglePermission(perm.key)}
+                                >
+                                  {form.permissions.includes(perm.key) && (
+                                    <Check className="w-3 h-3 text-white" />
+                                  )}
+                                </div>
+                                <span className="text-sm text-theme">
+                                  {perm.description}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-theme">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {editingId ? "Salvar" : "Criar Grupo"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-lg font-semibold text-theme mb-2">
+              Excluir Grupo?
+            </h3>
+            <p className="text-sm text-theme-muted mb-4">
+              Esta ação não pode ser desfeita. Os membros perderão as permissões
+              deste grupo.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
+                disabled={deleteMutation.isPending}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

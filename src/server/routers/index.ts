@@ -68,6 +68,7 @@ import { admissionRouter } from "./admission";
 import { documentsRouter } from "./documents";
 import { aiClassifierRouter } from "./aiClassifier";
 import { chartBuilderRouter } from "./chartBuilder";
+import { usersRouter } from "./users";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -139,6 +140,7 @@ export const appRouter = createTRPCRouter({
   documents: documentsRouter,
   aiClassifier: aiClassifierRouter,
   chartBuilder: chartBuilderRouter,
+  users: usersRouter,
 });
 
 export type AppRouter = typeof appRouter;
