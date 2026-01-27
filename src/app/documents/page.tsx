@@ -98,13 +98,22 @@ function DocumentsContent() {
           { label: "Documentos" },
         ]}
         actions={
-          <button
-            onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Upload className="w-5 h-5" />
-            <span className="hidden sm:inline">Upload</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/documents/categories"
+              className="flex items-center gap-2 px-4 py-2 border border-theme text-theme rounded-lg hover:bg-theme-secondary transition-colors"
+            >
+              <FolderOpen className="w-5 h-5" />
+              <span className="hidden sm:inline">Categorias</span>
+            </Link>
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Upload className="w-5 h-5" />
+              <span className="hidden sm:inline">Upload</span>
+            </button>
+          </div>
         }
       />
 
