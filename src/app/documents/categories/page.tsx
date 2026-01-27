@@ -51,10 +51,12 @@ interface CategoryFormData {
 function ChildCategoryItem({
   child,
   level,
+  onEdit,
   onDelete,
 }: {
   child: CategoryChild;
   level: number;
+  onEdit: (child: CategoryChild) => void;
   onDelete: (id: string) => void;
 }) {
   return (
@@ -85,6 +87,13 @@ function ChildCategoryItem({
 
       <div className="flex items-center gap-1">
         <button
+          onClick={() => onEdit(child)}
+          className="p-2 text-theme-muted hover:text-blue-500 transition-colors"
+          title="Editar"
+        >
+          <Edit2 className="w-4 h-4" />
+        </button>
+        <button
           onClick={() => onDelete(child.id)}
           className="p-2 text-theme-muted hover:text-red-500 transition-colors"
           title="Excluir"
@@ -99,12 +108,14 @@ function ChildCategoryItem({
 function CategoryItem({
   category,
   onEdit,
+  onEditChild,
   onDelete,
   expandedIds,
   toggleExpand,
 }: {
   category: Category;
   onEdit: (cat: Category) => void;
+  onEditChild: (child: CategoryChild) => void;
   onDelete: (id: string) => void;
   expandedIds: Set<string>;
   toggleExpand: (id: string) => void;
@@ -194,6 +205,7 @@ function CategoryItem({
               key={child.id}
               child={child}
               level={1}
+              onEdit={onEditChild}
               onDelete={onDelete}
             />
           ))}
@@ -472,6 +484,14 @@ function CategoriesContent() {
                 key={category.id}
                 category={category}
                 onEdit={handleEdit}
+                onEditChild={(child) => {
+                  setEditingCategory({
+                    ...child,
+                    _count: { documents: 0, children: 0 },
+                    children: [],
+                  });
+                  setShowModal(true);
+                }}
                 onDelete={handleDelete}
                 expandedIds={expandedIds}
                 toggleExpand={toggleExpand}

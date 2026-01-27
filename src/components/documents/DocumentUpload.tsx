@@ -61,7 +61,7 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
     Array.from(newFiles).forEach((file) => {
       const error = validateFile(file);
       filesToAdd.push({
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
         file,
         progress: 0,
         status: error ? "error" : "pending",
@@ -148,7 +148,7 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
         fileUrl: publicUrl,
         filePath,
         categoryId: categoryId || undefined,
-        entityType: entityType as "SUPPLIER" | "CUSTOMER" | "EMPLOYEE" | "CONTRACT" | "PURCHASE_ORDER" | "SALES_ORDER" | "INVOICE" | "MATERIAL" | "PROJECT" | "GENERAL" | undefined,
+        entityType: entityType ? entityType as "SUPPLIER" | "CUSTOMER" | "EMPLOYEE" | "CONTRACT" | "PURCHASE_ORDER" | "SALES_ORDER" | "INVOICE" | "MATERIAL" | "PROJECT" | "GENERAL" : undefined,
         tags: [],
       });
 

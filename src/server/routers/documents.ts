@@ -85,6 +85,8 @@ export const documentsRouter = createTRPCRouter({
       fileSize: z.number().int().positive(),
     }))
     .mutation(async ({ ctx, input }) => {
+      const { getSupabaseAdmin } = await import("@/lib/supabase");
+      
       // Gerar nome único para o arquivo
       const timestamp = Date.now();
       const random = Math.random().toString(36).substring(2, 8);
@@ -94,19 +96,7 @@ export const documentsRouter = createTRPCRouter({
       // Path no storage: documents/{companyId}/{uniqueName}
       const filePath = `documents/${ctx.companyId}/${uniqueName}`;
       
-      // Importar cliente Supabase server-side
-      const { createClient } = await import("@supabase/supabase-js");
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      
-      if (!supabaseUrl || !supabaseServiceKey) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Configuração do Supabase não encontrada",
-        });
-      }
-      
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      const supabase = getSupabaseAdmin();
       
       // Criar signed URL para upload
       const { data, error } = await supabase.storage
