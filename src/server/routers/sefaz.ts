@@ -300,27 +300,31 @@ export const sefazRouter = createTRPCRouter({
         certificateId: input.certificateBase64 ? `cert_${ctx.companyId}` : undefined,
       };
 
-      // Upsert da configuração
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: {
-            key: "sefaz_config",
-            companyId: ctx.companyId!,
-          },
-        },
-        create: {
-          key: "sefaz_config",
-          category: "integrations",
-          companyId: ctx.companyId,
-          value: configValue as unknown as Prisma.InputJsonValue,
-          description: "Configuração de integração SEFAZ",
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: configValue as unknown as Prisma.InputJsonValue,
-          updatedBy: ctx.tenant.userId,
-        },
+      // Salvar configuração
+      const existingConfig = await ctx.prisma.systemSetting.findFirst({
+        where: { key: "sefaz_config", companyId: ctx.companyId },
       });
+
+      if (existingConfig) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingConfig.id },
+          data: {
+            value: configValue as unknown as Prisma.InputJsonValue,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: "sefaz_config",
+            category: "integrations",
+            companyId: ctx.companyId,
+            value: configValue as unknown as Prisma.InputJsonValue,
+            description: "Configuração de integração SEFAZ",
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       // TODO: Salvar certificado em storage seguro (Supabase Storage ou Vault)
       // Por segurança, o certificado não deve ser salvo em JSON no banco
@@ -446,26 +450,30 @@ export const sefazRouter = createTRPCRouter({
         validTo: cert.validTo.toISOString(),
       };
 
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: {
-            key: "sefaz_certificate",
-            companyId: ctx.companyId!,
-          },
-        },
-        create: {
-          key: "sefaz_certificate",
-          category: "integrations",
-          companyId: ctx.companyId,
-          value: certData as unknown as Prisma.InputJsonValue,
-          description: "Certificado digital A1 para SEFAZ",
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: certData as unknown as Prisma.InputJsonValue,
-          updatedBy: ctx.tenant.userId,
-        },
+      const existingCert = await ctx.prisma.systemSetting.findFirst({
+        where: { key: "sefaz_certificate", companyId: ctx.companyId },
       });
+
+      if (existingCert) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingCert.id },
+          data: {
+            value: certData as unknown as Prisma.InputJsonValue,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: "sefaz_certificate",
+            category: "integrations",
+            companyId: ctx.companyId,
+            value: certData as unknown as Prisma.InputJsonValue,
+            description: "Certificado digital A1 para SEFAZ",
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       return {
         success: true,

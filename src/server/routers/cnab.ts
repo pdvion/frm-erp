@@ -89,26 +89,31 @@ export const cnabRouter = createTRPCRouter({
       }
 
       // Salvar configuração
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: {
-            key: `cnab_config_${input.bankAccountId}`,
-            companyId: ctx.companyId!,
-          },
-        },
-        create: {
-          key: `cnab_config_${input.bankAccountId}`,
-          category: "banking",
-          companyId: ctx.companyId,
-          value: input.config as unknown as Prisma.InputJsonValue,
-          description: `Configuração CNAB - ${account.name}`,
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: input.config as unknown as Prisma.InputJsonValue,
-          updatedBy: ctx.tenant.userId,
-        },
+      const configKey = `cnab_config_${input.bankAccountId}`;
+      const existingConfig = await ctx.prisma.systemSetting.findFirst({
+        where: { key: configKey, companyId: ctx.companyId },
       });
+
+      if (existingConfig) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingConfig.id },
+          data: {
+            value: input.config as unknown as Prisma.InputJsonValue,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: configKey,
+            category: "banking",
+            companyId: ctx.companyId,
+            value: input.config as unknown as Prisma.InputJsonValue,
+            description: `Configuração CNAB - ${account.name}`,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       return { success: true };
     }),
@@ -194,25 +199,27 @@ export const cnabRouter = createTRPCRouter({
       }
 
       // Atualizar sequencial
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: {
-            key: `cnab_seq_${input.bankAccountId}`,
-            companyId: ctx.companyId!,
-          },
-        },
-        create: {
-          key: `cnab_seq_${input.bankAccountId}`,
-          category: "banking",
-          companyId: ctx.companyId,
-          value: sequencial,
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: sequencial,
-          updatedBy: ctx.tenant.userId,
-        },
+      const seqKey = `cnab_seq_${input.bankAccountId}`;
+      const existingSeq = await ctx.prisma.systemSetting.findFirst({
+        where: { key: seqKey, companyId: ctx.companyId },
       });
+
+      if (existingSeq) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingSeq.id },
+          data: { value: sequencial, updatedBy: ctx.tenant.userId },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: seqKey,
+            category: "banking",
+            companyId: ctx.companyId,
+            value: sequencial,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       // Registrar remessa no histórico
       // TODO: Criar tabela de histórico de remessas

@@ -205,55 +205,57 @@ export const emailIntegrationRouter = createTRPCRouter({
       // Salvar nas configurações do sistema
       const configKey = "email_nfe_config";
       
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: { key: configKey, companyId: ctx.companyId! },
-        },
-        create: {
-          key: configKey,
-          value: JSON.stringify({
-            host: input.host,
-            port: input.port,
-            user: input.user,
-            tls: input.tls,
-            folder: input.folder,
-            autoFetch: input.autoFetch,
-            fetchInterval: input.fetchInterval,
-          }),
-          companyId: ctx.companyId,
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: JSON.stringify({
-            host: input.host,
-            port: input.port,
-            user: input.user,
-            tls: input.tls,
-            folder: input.folder,
-            autoFetch: input.autoFetch,
-            fetchInterval: input.fetchInterval,
-          }),
-          updatedBy: ctx.tenant.userId,
-        },
+      const configValue = JSON.stringify({
+          host: input.host,
+          port: input.port,
+          user: input.user,
+          tls: input.tls,
+          folder: input.folder,
+          autoFetch: input.autoFetch,
+          fetchInterval: input.fetchInterval,
+        });
+
+      const existingConfig = await ctx.prisma.systemSetting.findFirst({
+        where: { key: configKey, companyId: ctx.companyId },
       });
+
+      if (existingConfig) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingConfig.id },
+          data: { value: configValue, updatedBy: ctx.tenant.userId },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: configKey,
+            value: configValue,
+            companyId: ctx.companyId,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       // Senha é salva separadamente (criptografada em produção)
       const passwordKey = "email_nfe_password";
-      await ctx.prisma.systemSetting.upsert({
-        where: {
-          key_companyId: { key: passwordKey, companyId: ctx.companyId! },
-        },
-        create: {
-          key: passwordKey,
-          value: input.password, // Em produção, criptografar
-          companyId: ctx.companyId,
-          updatedBy: ctx.tenant.userId,
-        },
-        update: {
-          value: input.password,
-          updatedBy: ctx.tenant.userId,
-        },
+      const existingPassword = await ctx.prisma.systemSetting.findFirst({
+        where: { key: passwordKey, companyId: ctx.companyId },
       });
+
+      if (existingPassword) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existingPassword.id },
+          data: { value: input.password, updatedBy: ctx.tenant.userId },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key: passwordKey,
+            value: input.password,
+            companyId: ctx.companyId,
+            updatedBy: ctx.tenant.userId,
+          },
+        });
+      }
 
       return { success: true };
     }),
@@ -261,10 +263,8 @@ export const emailIntegrationRouter = createTRPCRouter({
   // Obter configuração de email
   getConfig: tenantProcedure.query(async ({ ctx }) => {
     const configKey = "email_nfe_config";
-    const setting = await ctx.prisma.systemSetting.findUnique({
-      where: {
-        key_companyId: { key: configKey, companyId: ctx.companyId! },
-      },
+    const setting = await ctx.prisma.systemSetting.findFirst({
+      where: { key: configKey, companyId: ctx.companyId },
     });
 
     if (!setting) {
