@@ -66,6 +66,7 @@ import { productionCostsRouter } from "./productionCosts";
 import { benefitsRouter } from "./benefits";
 import { admissionRouter } from "./admission";
 import { documentsRouter } from "./documents";
+import { aiClassifierRouter } from "./aiClassifier";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -135,6 +136,7 @@ export const appRouter = createTRPCRouter({
   benefits: benefitsRouter,
   admission: admissionRouter,
   documents: documentsRouter,
+  aiClassifier: aiClassifierRouter,
 });
 
 export type AppRouter = typeof appRouter;
