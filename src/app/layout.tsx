@@ -8,6 +8,9 @@ import { EnsureUserProvider } from "@/components/EnsureUserProvider";
 import { AppLayout } from "@/components/AppLayout";
 import { Toaster } from "@/components/ui/toaster";
 
+// Force dynamic rendering for all pages (requires runtime env vars)
+export const dynamic = "force-dynamic";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
