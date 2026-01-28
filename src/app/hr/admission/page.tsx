@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   UserPlus,
   ChevronLeft,
@@ -60,7 +60,7 @@ export default function AdmissionPage() {
                 <h1 className="text-xl font-semibold text-theme">Admissão Digital</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

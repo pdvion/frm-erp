@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   TrendingUp,
   TrendingDown,
@@ -58,7 +58,7 @@ export default function CashflowPage() {
                 Fluxo de Caixa Projetado
               </h1>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

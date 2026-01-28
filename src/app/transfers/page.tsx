@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ArrowRightLeft,
   ChevronLeft,
@@ -42,33 +41,27 @@ export default function TransfersPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/locations" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <ArrowRightLeft className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-theme">Transferências de Estoque</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/transfers/new"
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Transferência
-              </Link>
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-green-500/10 rounded-lg">
+            <ArrowRightLeft className="w-6 h-6 text-green-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Transferências de Estoque</h1>
+            <p className="text-sm text-theme-muted">Movimentações entre locais</p>
           </div>
         </div>
-      </header>
+        <Link
+          href="/transfers/new"
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Transferência
+        </Link>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-4">
             <select
@@ -178,7 +171,7 @@ export default function TransfersPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

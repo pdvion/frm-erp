@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   DollarSign,
   ChevronLeft,
@@ -98,32 +97,25 @@ export default function ReceivableDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/receivables" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-theme">
-                  Título #{receivable.code}
-                  {receivable.totalInstallments > 1 && (
-                    <span className="text-theme-muted text-sm ml-2">
-                      (Parcela {receivable.installmentNumber}/{receivable.totalInstallments})
-                    </span>
-                  )}
-                </h1>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-green-500/10 rounded-lg">
+          <DollarSign className="w-6 h-6 text-green-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">
+            Título #{receivable.code}
+            {receivable.totalInstallments > 1 && (
+              <span className="text-theme-muted text-lg ml-2">
+                (Parcela {receivable.installmentNumber}/{receivable.totalInstallments})
+              </span>
+            )}
+          </h1>
+          <p className="text-sm text-theme-muted">Detalhes do título a receber</p>
+        </div>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
@@ -329,7 +321,7 @@ export default function ReceivableDetailPage() {
             )}
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Modal de Recebimento */}
       {showPaymentModal && (

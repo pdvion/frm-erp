@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const actionConfig = {
   CREATE: { label: "Criação", color: "bg-green-100 text-green-800", icon: Plus },
@@ -79,31 +78,18 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Auditoria</h1>
-                <p className="text-sm text-theme-muted">Histórico de ações do sistema</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-            </div>
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-indigo-500/10 rounded-lg">
+          <Shield className="w-6 h-6 text-indigo-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Auditoria</h1>
+          <p className="text-sm text-theme-muted">Histórico de ações do sistema</p>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
@@ -433,7 +419,7 @@ export default function AuditPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

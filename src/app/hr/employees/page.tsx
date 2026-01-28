@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Users,
   Search,
@@ -62,7 +62,7 @@ export default function EmployeesPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <CompanySwitcher />
+              
               <Link
                 href="/hr/employees/new"
                 className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"

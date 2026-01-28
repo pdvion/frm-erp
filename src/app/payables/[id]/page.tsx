@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   DollarSign,
   ChevronLeft,
@@ -155,7 +155,7 @@ export default function PayableDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <CompanySwitcher />
+              
               {canPay && (
                 <button
                   onClick={() => {

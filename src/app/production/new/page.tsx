@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Factory,
   ChevronLeft,
@@ -147,7 +147,7 @@ export default function NewProductionOrderPage() {
                 <h1 className="text-xl font-semibold text-theme">Nova Ordem de Produção</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

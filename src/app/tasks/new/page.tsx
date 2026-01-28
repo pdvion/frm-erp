@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ClipboardList,
   ChevronLeft,
@@ -95,30 +94,18 @@ export default function NewTaskPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/tasks"
-                className="text-theme-muted hover:text-theme-secondary"
-                aria-label="Voltar para tarefas"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <ClipboardList className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-semibold text-theme">
-                  Nova Tarefa
-                </h1>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-purple-500/10 rounded-lg">
+          <ClipboardList className="w-6 h-6 text-purple-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Nova Tarefa</h1>
+          <p className="text-sm text-theme-muted">Criar nova tarefa</p>
+        </div>
+      </div>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2">
@@ -348,7 +335,7 @@ export default function NewTaskPage() {
             </button>
           </div>
         </form>
-      </main>
+      </div>
     </div>
   );
 }

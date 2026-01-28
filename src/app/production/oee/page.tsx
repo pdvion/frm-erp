@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   BarChart3,
   ChevronLeft,
@@ -131,7 +131,7 @@ export default function OeeDashboardPage() {
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

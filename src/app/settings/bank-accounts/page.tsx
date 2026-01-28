@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Building2,
   ChevronLeft,
@@ -125,34 +124,27 @@ export default function BankAccountsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-blue-600" />
-                Contas Bancárias
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Conta
-              </button>
-              <CompanySwitcher />
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <Building2 className="w-6 h-6 text-blue-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Contas Bancárias</h1>
+            <p className="text-sm text-theme-muted">Gerenciar contas bancárias</p>
           </div>
         </div>
-      </header>
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Conta
+        </button>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Formulário */}
         {showForm && (
           <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
@@ -440,7 +432,7 @@ export default function BankAccountsPage() {
             </table>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

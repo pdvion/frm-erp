@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   ChevronLeft,
   Loader2,
@@ -77,7 +77,7 @@ export default function ReconciliationPage() {
                 <Upload className="w-4 h-4" />
                 Importar OFX
               </Link>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

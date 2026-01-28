@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   DollarSign,
   Search,
@@ -50,34 +49,27 @@ export default function ReceivablesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-green-600" />
-                <h1 className="text-xl font-semibold text-theme">Contas a Receber</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/receivables/new"
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                <Plus className="w-4 h-4" />
-                Novo Título
-              </Link>
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-green-500/10 rounded-lg">
+            <DollarSign className="w-6 h-6 text-green-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Contas a Receber</h1>
+            <p className="text-sm text-theme-muted">Gerencie títulos a receber</p>
           </div>
         </div>
-      </header>
+        <Link
+          href="/receivables/new"
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          <Plus className="w-4 h-4" />
+          Novo Título
+        </Link>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Dashboard Cards */}
         {dashboard && (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
@@ -357,7 +349,7 @@ export default function ReceivablesPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

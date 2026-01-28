@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Users,
   ChevronLeft,
@@ -121,7 +121,7 @@ export default function NewEmployeePage() {
                 <h1 className="text-xl font-semibold text-theme">Novo Funcionário</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

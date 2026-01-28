@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Factory,
   Search,
@@ -61,34 +60,27 @@ export default function ProductionPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Factory className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-theme">Ordens de Produção</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-              <Link
-                href="/production/new"
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova OP
-              </Link>
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-500/10 rounded-lg">
+            <Factory className="w-6 h-6 text-indigo-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Ordens de Produção</h1>
+            <p className="text-sm text-theme-muted">Gerencie ordens de produção</p>
           </div>
         </div>
-      </header>
+        <Link
+          href="/production/new"
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          <Plus className="w-4 h-4" />
+          Nova OP
+        </Link>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Quick Access Menu */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Link
@@ -393,7 +385,7 @@ export default function ProductionPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

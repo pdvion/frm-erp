@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   ChevronLeft,
   Package,
@@ -161,7 +161,7 @@ export default function ReceivingDetailPage() {
                 <Package className="w-4 h-4" />
                 Versão Mobile
               </Link>
-              <CompanySwitcher />
+              
               {receiving.status === "PENDING" && !isConferencing && (
                 <button
                   onClick={handleStartConference}

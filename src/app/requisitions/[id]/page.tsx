@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Package,
   ChevronLeft,
@@ -129,7 +129,7 @@ export default function RequisitionDetailPage() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
               <div className="hidden sm:block">
-                <CompanySwitcher />
+                
               </div>
               
               {canCancel && (
@@ -190,7 +190,7 @@ export default function RequisitionDetailPage() {
           </div>
           {/* Mobile Company Switcher */}
           <div className="sm:hidden pb-2">
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

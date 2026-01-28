@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Layers,
   ChevronLeft,
@@ -68,7 +68,7 @@ export default function BomDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <CompanySwitcher />
+              
               <button
                 onClick={() => setShowCostModal(true)}
                 className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"

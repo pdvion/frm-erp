@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import { LinkMaterialModal } from "@/components/LinkMaterialModal";
 import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
 import {
@@ -142,7 +142,7 @@ export default function InvoiceDetailPage() {
                 {config.label}
               </span>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

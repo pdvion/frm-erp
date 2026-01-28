@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Calculator,
   ChevronLeft,
@@ -114,7 +114,7 @@ export default function MrpPage() {
                 MRP - Planejamento de Necessidades
               </h1>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

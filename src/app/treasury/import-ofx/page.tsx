@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   ChevronLeft,
   Loader2,
@@ -102,7 +102,7 @@ export default function ImportOFXPage() {
                 Importar Extrato OFX
               </h1>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>
