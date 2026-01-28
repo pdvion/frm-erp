@@ -189,8 +189,8 @@ function CategoryItem({
               category._count.documents > 0
                 ? "Categoria possui documentos"
                 : category._count.children > 0
-                ? "Categoria possui subcategorias"
-                : "Excluir"
+                  ? "Categoria possui subcategorias"
+                  : "Excluir"
             }
           >
             <Trash2 className="w-4 h-4" />

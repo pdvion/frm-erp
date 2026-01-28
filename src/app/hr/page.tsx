@@ -5,7 +5,6 @@ import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import {
   Users,
-  ChevronLeft,
   Loader2,
   Building2,
   Clock,

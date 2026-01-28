@@ -247,8 +247,8 @@ export default function SuppliersPage() {
                             supplier.status === "ACTIVE" 
                               ? "bg-green-900/50 text-green-400"
                               : supplier.status === "INACTIVE"
-                              ? "bg-theme-secondary text-theme-secondary"
-                              : "bg-red-900/50 text-red-400"
+                                ? "bg-theme-secondary text-theme-secondary"
+                                : "bg-red-900/50 text-red-400"
                           }`}>
                             {supplier.status === "ACTIVE" ? "Ativo" : supplier.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>
@@ -264,8 +264,8 @@ export default function SuppliersPage() {
                               supplier.qualityIndex >= 80 
                                 ? "text-green-400" 
                                 : supplier.qualityIndex >= 60 
-                                ? "text-yellow-400" 
-                                : "text-red-400"
+                                  ? "text-yellow-400" 
+                                  : "text-red-400"
                             }`}>
                               {supplier.qualityIndex.toFixed(1)}%
                             </div>

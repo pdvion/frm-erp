@@ -165,10 +165,10 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
         prev.map((f) =>
           f.id === uploadFile.id
             ? {
-                ...f,
-                status: "error" as const,
-                error: error instanceof Error ? error.message : "Erro no upload",
-              }
+              ...f,
+              status: "error" as const,
+              error: error instanceof Error ? error.message : "Erro no upload",
+            }
             : f
         )
       );
@@ -226,9 +226,9 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
             className={`
               border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
               ${isDragging 
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
-                : "border-theme hover:border-blue-400 hover:bg-theme-secondary"
-              }
+      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+      : "border-theme hover:border-blue-400 hover:bg-theme-secondary"
+    }
             `}
           >
             <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? "text-blue-500" : "text-theme-muted"}`} />

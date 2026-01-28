@@ -342,11 +342,11 @@ export const mrpRouter = createTRPCRouter({
 
       const pendingSuggestions = lastRun
         ? await ctx.prisma.mrpSuggestion.groupBy({
-            by: ["type"],
-            where: { runId: lastRun.id, status: "PENDING" },
-            _count: true,
-            _sum: { quantity: true },
-          })
+          by: ["type"],
+          where: { runId: lastRun.id, status: "PENDING" },
+          _count: true,
+          _sum: { quantity: true },
+        })
         : [];
 
       // Materiais sem BOM

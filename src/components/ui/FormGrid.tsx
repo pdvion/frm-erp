@@ -43,11 +43,11 @@ export function FormField({ children, span = 1, className = "" }: FormFieldProps
   const spanClass = span === "full" 
     ? "col-span-full" 
     : {
-        1: "",
-        2: "sm:col-span-2",
-        3: "sm:col-span-2 lg:col-span-3",
-        4: "sm:col-span-2 lg:col-span-4",
-      }[span];
+      1: "",
+      2: "sm:col-span-2",
+      3: "sm:col-span-2 lg:col-span-3",
+      4: "sm:col-span-2 lg:col-span-4",
+    }[span];
 
   return (
     <div className={`${spanClass} ${className}`}>

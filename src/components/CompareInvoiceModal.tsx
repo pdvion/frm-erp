@@ -236,8 +236,8 @@ export function CompareInvoiceModal({
                         comparison.summary.totalValueDivergence > 0
                           ? "text-red-600"
                           : comparison.summary.totalValueDivergence < 0
-                          ? "text-green-600"
-                          : "text-theme-secondary"
+                            ? "text-green-600"
+                            : "text-theme-secondary"
                       }`}>
                         {formatCurrency(comparison.summary.totalValueDivergence)}
                       </p>

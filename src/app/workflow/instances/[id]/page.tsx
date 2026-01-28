@@ -101,10 +101,10 @@ export default function WorkflowInstanceDetailPage({
                         task.status === "COMPLETED"
                           ? "bg-green-100 text-green-600"
                           : task.status === "REJECTED"
-                          ? "bg-red-100 text-red-600"
-                          : task.status === "IN_PROGRESS"
-                          ? "bg-blue-100 text-blue-600"
-                          : "bg-theme-tertiary text-theme-secondary"
+                            ? "bg-red-100 text-red-600"
+                            : task.status === "IN_PROGRESS"
+                              ? "bg-blue-100 text-blue-600"
+                              : "bg-theme-tertiary text-theme-secondary"
                       }`}>
                         {task.status === "COMPLETED" ? (
                           <CheckCircle className="w-4 h-4" />

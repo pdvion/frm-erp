@@ -27,7 +27,7 @@ export function PasswordStrength({ password, showRequirements = true }: Password
         </div>
         <span className={`text-xs font-medium ${
           validation.score < 50 ? "text-red-600" : 
-          validation.score < 70 ? "text-yellow-600" : "text-green-600"
+            validation.score < 70 ? "text-yellow-600" : "text-green-600"
         }`}>
           {strength.label}
         </span>

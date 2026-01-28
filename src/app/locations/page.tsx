@@ -4,7 +4,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   MapPin,
-  ChevronLeft,
   Loader2,
   Plus,
   Warehouse,

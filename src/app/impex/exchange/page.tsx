@@ -273,8 +273,8 @@ export default function ExchangeContractsPage() {
                           isExpired(contract.maturityDate)
                             ? "text-red-600 font-medium"
                             : isExpiringSoon(contract.maturityDate)
-                            ? "text-yellow-600"
-                            : "text-theme"
+                              ? "text-yellow-600"
+                              : "text-theme"
                         }`}
                       >
                         {formatDate(contract.maturityDate)}
@@ -296,8 +296,8 @@ export default function ExchangeContractsPage() {
                             Number(contract.exchangeVariation) > 0
                               ? "text-red-600"
                               : Number(contract.exchangeVariation) < 0
-                              ? "text-green-600"
-                              : "text-theme"
+                                ? "text-green-600"
+                                : "text-theme"
                           }`}
                         >
                           {formatCurrency(Math.abs(Number(contract.exchangeVariation)), "BRL")}

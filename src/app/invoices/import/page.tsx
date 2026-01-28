@@ -131,10 +131,10 @@ export default function ImportNFePage() {
         prev.map((f, i) =>
           i === index
             ? {
-                ...f,
-                status: "error",
-                error: error instanceof Error ? error.message : "Erro ao importar",
-              }
+              ...f,
+              status: "error",
+              error: error instanceof Error ? error.message : "Erro ao importar",
+            }
             : f
         )
       );
@@ -313,8 +313,8 @@ export default function ImportNFePage() {
                           fileItem.status === "success"
                             ? "bg-green-100"
                             : fileItem.status === "error"
-                            ? "bg-red-100"
-                            : "bg-theme-tertiary"
+                              ? "bg-red-100"
+                              : "bg-theme-tertiary"
                         }`}
                       >
                         {fileItem.status === "success" ? (
@@ -333,8 +333,8 @@ export default function ImportNFePage() {
                           {fileItem.status === "success" && fileItem.invoiceNumber
                             ? `Nota ${fileItem.invoiceNumber} importada`
                             : fileItem.status === "error"
-                            ? fileItem.error
-                            : `${(fileItem.file.size / 1024).toFixed(1)} KB`}
+                              ? fileItem.error
+                              : `${(fileItem.file.size / 1024).toFixed(1)} KB`}
                         </p>
                       </div>
                     </div>

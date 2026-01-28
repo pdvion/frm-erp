@@ -5,7 +5,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   Activity,
-  ChevronLeft,
   Loader2,
   Gauge,
   Clock,

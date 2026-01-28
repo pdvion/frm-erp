@@ -455,8 +455,8 @@ export default function ProductionOrderDetailPage() {
                   <span className="text-theme-muted">Prioridade</span>
                   <span className="font-medium text-theme">
                     {order.priority === 1 ? "Urgente" : 
-                     order.priority === 2 ? "Alta" :
-                     order.priority === 3 ? "Normal" : "Baixa"}
+                      order.priority === 2 ? "Alta" :
+                        order.priority === 3 ? "Normal" : "Baixa"}
                   </span>
                 </div>
                 <div className="flex justify-between">

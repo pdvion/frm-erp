@@ -187,8 +187,8 @@ export default function PickingDashboardPage() {
                     href={`/picking/${list.id}`}
                     className={`block rounded-lg border p-4 transition-shadow hover:shadow-md ${
                       list.priority === "URGENT" ? "border-red-200 bg-red-50" :
-                      list.priority === "HIGH" ? "border-orange-200 bg-orange-50" :
-                      "border-theme bg-theme-card"
+                        list.priority === "HIGH" ? "border-orange-200 bg-orange-50" :
+                          "border-theme bg-theme-card"
                     }`}
                   >
                     <div className="flex items-start justify-between">

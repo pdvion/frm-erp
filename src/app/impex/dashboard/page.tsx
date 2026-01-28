@@ -130,8 +130,8 @@ export default function ImpExDashboardPage() {
                   (data?.kpis.totalExchangeVariation || 0) > 0
                     ? "text-red-600"
                     : (data?.kpis.totalExchangeVariation || 0) < 0
-                    ? "text-green-600"
-                    : "text-theme"
+                      ? "text-green-600"
+                      : "text-theme"
                 }`}
               >
                 {formatCurrency(Math.abs(data?.kpis.totalExchangeVariation || 0), "BRL")}

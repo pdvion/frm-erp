@@ -224,8 +224,8 @@ function MaterialsContent() {
                             material.status === "ACTIVE" 
                               ? "bg-green-900/50 text-green-400"
                               : material.status === "INACTIVE"
-                              ? "bg-theme-secondary text-theme-secondary"
-                              : "bg-red-900/50 text-red-400"
+                                ? "bg-theme-secondary text-theme-secondary"
+                                : "bg-red-900/50 text-red-400"
                           }`}>
                             {material.status === "ACTIVE" ? "Ativo" : material.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>

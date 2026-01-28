@@ -295,7 +295,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       if (input.status !== oldOrder.status) {
         const eventType = input.status === "APPROVED" ? "purchaseOrder.approved"
           : input.status === "SENT" ? "purchaseOrder.sent"
-          : null;
+            : null;
 
         if (eventType) {
           const supplier = await ctx.prisma.supplier.findUnique({

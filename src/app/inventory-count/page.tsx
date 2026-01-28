@@ -55,11 +55,11 @@ export default function InventoryCountPage() {
       items.map((item) =>
         item.inventoryId === inventoryId
           ? {
-              ...item,
-              countedQty,
-              difference: countedQty - item.systemQty,
-              status: "counted" as const,
-            }
+            ...item,
+            countedQty,
+            difference: countedQty - item.systemQty,
+            status: "counted" as const,
+          }
           : item
       )
     );
@@ -234,7 +234,7 @@ export default function InventoryCountPage() {
                       {item.countedQty !== null && (
                         <span className={`font-medium ${
                           item.difference === 0 ? "text-green-600" :
-                          item.difference > 0 ? "text-blue-600" : "text-red-600"
+                            item.difference > 0 ? "text-blue-600" : "text-red-600"
                         }`}>
                           {item.difference > 0 ? "+" : ""}{item.difference}
                         </span>

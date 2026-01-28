@@ -254,11 +254,11 @@ export default function MesPage() {
                     </div>
                     <div className={`px-3 py-1 rounded-full text-sm font-medium text-white ${
                       workCenterStatus?.status === "RUNNING" ? "bg-green-600" :
-                      workCenterStatus?.status === "STOPPED" ? "bg-red-600" :
-                      "bg-theme-tertiary"
+                        workCenterStatus?.status === "STOPPED" ? "bg-red-600" :
+                          "bg-theme-tertiary"
                     }`}>
                       {workCenterStatus?.status === "RUNNING" ? "Produzindo" :
-                       workCenterStatus?.status === "STOPPED" ? "Parado" : "Ocioso"}
+                        workCenterStatus?.status === "STOPPED" ? "Parado" : "Ocioso"}
                     </div>
                   </div>
 
@@ -296,8 +296,8 @@ export default function MesPage() {
                       <span>OEE Hoje: </span>
                       <span className={`font-medium ${
                         workCenterStatus.oee >= 85 ? "text-green-400" :
-                        workCenterStatus.oee >= 60 ? "text-yellow-400" :
-                        "text-red-400"
+                          workCenterStatus.oee >= 60 ? "text-yellow-400" :
+                            "text-red-400"
                       }`}>
                         {formatNumber(workCenterStatus.oee)}%
                       </span>

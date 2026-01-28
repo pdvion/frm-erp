@@ -237,8 +237,8 @@ export const quotesRouter = createTRPCRouter({
       if (data.status && data.status !== oldQuote.status) {
         const eventType = data.status === "SENT" ? "quote.sent"
           : data.status === "APPROVED" ? "quote.approved"
-          : data.status === "REJECTED" ? "quote.rejected"
-          : null;
+            : data.status === "REJECTED" ? "quote.rejected"
+              : null;
 
         if (eventType) {
           emitEvent(eventType, {

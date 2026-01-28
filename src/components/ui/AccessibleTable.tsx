@@ -77,11 +77,11 @@ export function AccessibleTable<T>({
                   onKeyDown={
                     isClickable
                       ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            onRowClick(item);
-                          }
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onRowClick(item);
                         }
+                      }
                       : undefined
                   }
                   tabIndex={isClickable ? 0 : undefined}

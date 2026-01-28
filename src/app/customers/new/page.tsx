@@ -6,7 +6,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   Users,
-  ChevronLeft,
   Loader2,
   Save,
 } from "lucide-react";

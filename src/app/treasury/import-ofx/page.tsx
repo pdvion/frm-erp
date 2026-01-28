@@ -199,8 +199,8 @@ export default function ImportOFXPage() {
                   dragActive
                     ? "border-blue-500 bg-blue-50"
                     : file
-                    ? "border-green-300 bg-green-50"
-                    : "border-theme hover:border-theme"
+                      ? "border-green-300 bg-green-50"
+                      : "border-theme hover:border-theme"
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}

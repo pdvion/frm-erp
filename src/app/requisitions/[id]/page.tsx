@@ -369,8 +369,8 @@ export default function RequisitionDetailPage() {
                   <span className="text-theme-muted">Prioridade</span>
                   <span className="font-medium text-theme">
                     {requisition.priority === 1 ? "Urgente" : 
-                     requisition.priority === 2 ? "Alta" :
-                     requisition.priority === 3 ? "Normal" : "Baixa"}
+                      requisition.priority === 2 ? "Alta" :
+                        requisition.priority === 3 ? "Normal" : "Baixa"}
                   </span>
                 </div>
               </div>

@@ -163,8 +163,8 @@ export default function ProductionLogsPage() {
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-sm font-medium ${
                         item.oee >= 85 ? "bg-green-100 text-green-800" :
-                        item.oee >= 65 ? "bg-yellow-100 text-yellow-800" :
-                        "bg-red-100 text-red-800"
+                          item.oee >= 65 ? "bg-yellow-100 text-yellow-800" :
+                            "bg-red-100 text-red-800"
                       }`}>
                         {item.oee.toFixed(1)}%
                       </span>

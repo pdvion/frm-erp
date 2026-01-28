@@ -246,8 +246,8 @@ export default function DeployAgentDetailPage() {
                 invoice.status === "PENDING"
                   ? "bg-yellow-500/10 text-yellow-500"
                   : invoice.status === "APPROVED"
-                  ? "bg-green-500/10 text-green-500"
-                  : "bg-red-500/10 text-red-500"
+                    ? "bg-green-500/10 text-green-500"
+                    : "bg-red-500/10 text-red-500"
               }`}
             >
               {invoice.status === "PENDING" && "Pendente de Revisão"}

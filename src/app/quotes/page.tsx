@@ -267,83 +267,83 @@ export default function QuotesPage() {
           {/* Table View */}
           <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
             <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-theme-table">
-              <thead className="bg-theme-table-header">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-table-header">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Código
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Fornecedor
-                  </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Data
-                  </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Itens
-                  </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Valor Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-theme-table">
-                {data?.quotes.map((quote) => {
-                  const config = statusConfig[quote.status];
-                  return (
-                    <tr key={quote.id} className="hover:bg-theme-table-hover">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-mono text-sm font-medium text-theme">
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-theme-table">
+                  {data?.quotes.map((quote) => {
+                    const config = statusConfig[quote.status];
+                    return (
+                      <tr key={quote.id} className="hover:bg-theme-table-hover">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="font-mono text-sm font-medium text-theme">
                           #{quote.code.toString().padStart(6, "0")}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-theme">
-                          {quote.supplier.tradeName || quote.supplier.companyName}
-                        </div>
-                        <div className="text-sm text-theme-muted">
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-theme">
+                            {quote.supplier.tradeName || quote.supplier.companyName}
+                          </div>
+                          <div className="text-sm text-theme-muted">
                           Cód: {quote.supplier.code}
-                        </div>
-                      </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {formatDate(quote.requestDate)}
-                      </td>
-                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {quote._count.items} {quote._count.items === 1 ? "item" : "itens"}
-                      </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-theme">
-                          {formatCurrency(quote.totalValue)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
-                        >
-                          {config.icon}
-                          {config.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/quotes/${quote.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
+                          </div>
+                        </td>
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                          {formatDate(quote.requestDate)}
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                          {quote._count.items} {quote._count.items === 1 ? "item" : "itens"}
+                        </td>
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-theme">
+                            {formatCurrency(quote.totalValue)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+                          >
+                            {config.icon}
+                            {config.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <Link
+                            href={`/quotes/${quote.id}`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
                           Ver
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
 

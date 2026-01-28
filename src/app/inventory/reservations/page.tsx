@@ -6,7 +6,6 @@ import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
 import {
   Package,
-  ChevronLeft,
   Loader2,
   Search,
   Clock,
@@ -40,11 +39,11 @@ export default function ReservationsPage() {
   const { data, isLoading, refetch } = trpc.inventory.listReservations.useQuery(
     statusFilter || documentTypeFilter
       ? {
-          status: statusFilter ? statusFilter as "ACTIVE" | "CONSUMED" | "RELEASED" | "EXPIRED" : undefined,
-          documentType: documentTypeFilter || undefined,
-          page,
-          limit: 20,
-        }
+        status: statusFilter ? statusFilter as "ACTIVE" | "CONSUMED" | "RELEASED" | "EXPIRED" : undefined,
+        documentType: documentTypeFilter || undefined,
+        page,
+        limit: 20,
+      }
       : { page, limit: 20 }
   );
 

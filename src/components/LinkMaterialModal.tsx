@@ -218,16 +218,16 @@ export function LinkMaterialModal({
           {!search &&
             !loadingSuggestions &&
             suggestions?.suggestions.length === 0 && (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 text-theme-muted mx-auto mb-3" />
-                <p className="text-theme-muted mb-4">
+            <div className="text-center py-8">
+              <Package className="w-12 h-12 text-theme-muted mx-auto mb-3" />
+              <p className="text-theme-muted mb-4">
                   Nenhuma sugestão encontrada
-                </p>
-                <p className="text-sm text-theme-muted">
+              </p>
+              <p className="text-sm text-theme-muted">
                   Use a busca acima ou crie um novo material
-                </p>
-              </div>
-            )}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

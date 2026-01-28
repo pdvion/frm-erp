@@ -306,8 +306,8 @@ export default function ImpExReportsPage() {
                     exchangeReport.data.summary.totalVariation > 0
                       ? "text-red-600"
                       : exchangeReport.data.summary.totalVariation < 0
-                      ? "text-green-600"
-                      : "text-theme"
+                        ? "text-green-600"
+                        : "text-theme"
                   }`}
                 >
                   {formatCurrency(Math.abs(exchangeReport.data.summary.totalVariation), "BRL")}

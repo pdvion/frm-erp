@@ -144,7 +144,7 @@ describe("SEFAZ Service", () => {
       expect(result.erro).toContain("não configurada");
     });
 
-it("should return error when emitente not found", async () => {
+    it("should return error when emitente not found", async () => {
       vi.mocked(prisma.issuedInvoice.findFirst).mockResolvedValue({
         id: "invoice-1",
         code: "NF001",

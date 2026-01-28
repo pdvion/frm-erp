@@ -206,14 +206,14 @@ export const emailIntegrationRouter = createTRPCRouter({
       const configKey = "email_nfe_config";
       
       const configValue = JSON.stringify({
-          host: input.host,
-          port: input.port,
-          user: input.user,
-          tls: input.tls,
-          folder: input.folder,
-          autoFetch: input.autoFetch,
-          fetchInterval: input.fetchInterval,
-        });
+        host: input.host,
+        port: input.port,
+        user: input.user,
+        tls: input.tls,
+        folder: input.folder,
+        autoFetch: input.autoFetch,
+        fetchInterval: input.fetchInterval,
+      });
 
       const existingConfig = await ctx.prisma.systemSetting.findFirst({
         where: { key: configKey, companyId: ctx.companyId },

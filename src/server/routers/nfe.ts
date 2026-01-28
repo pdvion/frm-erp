@@ -702,13 +702,13 @@ export const nfeRouter = createTRPCRouter({
       // Buscar por código do fornecedor (SupplierMaterial)
       const bySupplierCode = item.invoice.supplierId
         ? await prisma.supplierMaterial.findMany({
-            where: {
-              supplierId: item.invoice.supplierId,
-              supplierCode: item.productCode,
-            },
-            include: { material: true },
-            take: 5,
-          })
+          where: {
+            supplierId: item.invoice.supplierId,
+            supplierCode: item.productCode,
+          },
+          include: { material: true },
+          take: 5,
+        })
         : [];
 
       // Buscar por descrição similar
@@ -730,12 +730,12 @@ export const nfeRouter = createTRPCRouter({
       // Buscar por NCM
       const byNcm = item.ncm
         ? await prisma.material.findMany({
-            where: {
-              ...tenantFilter(ctx.companyId, false),
-              ncm: item.ncm,
-            },
-            take: 5,
-          })
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            ncm: item.ncm,
+          },
+          take: 5,
+        })
         : [];
 
       // Combinar e remover duplicatas

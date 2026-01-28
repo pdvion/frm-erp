@@ -244,8 +244,8 @@ export default function BudgetDashboardPage() {
                             account.status === "EXCEEDED"
                               ? "bg-red-500"
                               : account.status === "WARNING"
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
                           }`}
                           style={{
                             width: `${Math.min(100, (account.actual / account.budgeted) * 100)}%`,

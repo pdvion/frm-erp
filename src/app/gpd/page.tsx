@@ -232,8 +232,8 @@ export default function GpdDashboardPage() {
                               indicator.status === "BELOW"
                                 ? "bg-red-500"
                                 : indicator.status === "ABOVE"
-                                ? "bg-blue-500"
-                                : "bg-green-500"
+                                  ? "bg-blue-500"
+                                  : "bg-green-500"
                             }`}
                             style={{
                               width: `${Math.min(100, (indicator.currentValue / indicator.targetExpected) * 100)}%`,
@@ -275,12 +275,12 @@ export default function GpdDashboardPage() {
                               goal.category === "FINANCIAL"
                                 ? "bg-green-500"
                                 : goal.category === "OPERATIONAL"
-                                ? "bg-blue-500"
-                                : goal.category === "CUSTOMER"
-                                ? "bg-purple-500"
-                                : goal.category === "GROWTH"
-                                ? "bg-orange-500"
-                                : "bg-teal-500"
+                                  ? "bg-blue-500"
+                                  : goal.category === "CUSTOMER"
+                                    ? "bg-purple-500"
+                                    : goal.category === "GROWTH"
+                                      ? "bg-orange-500"
+                                      : "bg-teal-500"
                             }`}
                           />
                           <p className="font-medium text-theme">{goal.title}</p>

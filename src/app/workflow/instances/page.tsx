@@ -54,9 +54,9 @@ function WorkflowInstancesContent() {
   const allInstances = data ?? [];
   const filteredInstances = search 
     ? allInstances.filter((i) => 
-        i.definition?.name.toLowerCase().includes(search.toLowerCase()) ||
+      i.definition?.name.toLowerCase().includes(search.toLowerCase()) ||
         String(i.code).includes(search)
-      )
+    )
     : allInstances;
   const instances = filteredInstances.slice((page - 1) * 20, page * 20);
   const totalPages = Math.ceil(filteredInstances.length / 20);

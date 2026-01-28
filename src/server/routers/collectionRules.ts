@@ -126,10 +126,10 @@ export const collectionRulesRouter = createTRPCRouter({
           createdBy: ctx.tenant.userId,
           steps: steps
             ? {
-                create: steps.map((step) => ({
-                  ...step,
-                })),
-              }
+              create: steps.map((step) => ({
+                ...step,
+              })),
+            }
             : undefined,
         },
         include: {

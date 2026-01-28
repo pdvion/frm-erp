@@ -54,9 +54,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               ${rightIcon ? "pr-10" : "pr-4"}
               py-2.5
               ${error
-                ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                : "border-theme-input focus:border-blue-500 focus:ring-blue-500/20"
-              }
+        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+        : "border-theme-input focus:border-blue-500 focus:ring-blue-500/20"
+      }
               ${className}
             `}
             {...props}

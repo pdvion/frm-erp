@@ -341,8 +341,8 @@ export default function MyPendingApprovalsPage() {
                 {approveMutation.isPending || rejectMutation.isPending
                   ? "Processando..."
                   : actionType === "approve"
-                  ? "Confirmar Aprovação"
-                  : "Confirmar Rejeição"}
+                    ? "Confirmar Aprovação"
+                    : "Confirmar Rejeição"}
               </button>
             </div>
           </div>

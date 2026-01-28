@@ -102,8 +102,8 @@ export function Wizard({
                         isCompleted
                           ? "bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
                           : isCurrent
-                          ? "bg-blue-600 text-white ring-4 ring-blue-600/20"
-                          : "bg-theme-input text-theme-muted"
+                            ? "bg-blue-600 text-white ring-4 ring-blue-600/20"
+                            : "bg-theme-input text-theme-muted"
                       } ${!isClickable && !isCurrent ? "cursor-default" : ""}`}
                       aria-current={isCurrent ? "step" : undefined}
                     >

@@ -392,9 +392,9 @@ export const budgetRouter = createTRPCRouter({
       let version = input?.versionId
         ? await ctx.prisma.budgetVersion.findFirst({ where: { id: input.versionId } })
         : await ctx.prisma.budgetVersion.findFirst({
-            where: { companyId: ctx.companyId, year, status: "APPROVED" },
-            orderBy: { createdAt: "desc" },
-          });
+          where: { companyId: ctx.companyId, year, status: "APPROVED" },
+          orderBy: { createdAt: "desc" },
+        });
 
       if (!version) {
         version = await ctx.prisma.budgetVersion.findFirst({

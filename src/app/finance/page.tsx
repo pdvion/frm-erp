@@ -4,7 +4,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import {
-  ChevronLeft,
   Loader2,
   Wallet,
   TrendingUp,

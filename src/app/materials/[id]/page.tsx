@@ -215,8 +215,8 @@ export default function MaterialDetailPage() {
                       <div>
                         <div className="text-sm font-medium text-theme">
                           {inv.inventoryType === "RAW_MATERIAL" ? "Matéria Prima" :
-                           inv.inventoryType === "SEMI_FINISHED" ? "Semi-Acabado" :
-                           inv.inventoryType === "FINISHED" ? "Acabado" : inv.inventoryType}
+                            inv.inventoryType === "SEMI_FINISHED" ? "Semi-Acabado" :
+                              inv.inventoryType === "FINISHED" ? "Acabado" : inv.inventoryType}
                         </div>
                         <div className="text-xs text-theme-muted">
                           Disponível: {inv.availableQty} {material.unit}
@@ -412,7 +412,7 @@ export default function MaterialDetailPage() {
                 <dt className="text-theme-secondary">Cálculo Qtd. Mín.</dt>
                 <dd className="text-theme font-medium">
                   {material.minQuantityCalcType === "CMM" ? "CMM" : 
-                   material.minQuantityCalcType === "PEAK_12M" ? "Pico 12M" : "Manual"}
+                    material.minQuantityCalcType === "PEAK_12M" ? "Pico 12M" : "Manual"}
                 </dd>
               </div>
               <div className="flex justify-between">

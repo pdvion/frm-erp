@@ -169,24 +169,24 @@ export default function NewQuotePage() {
               <h2 className="text-lg font-medium text-theme mb-4">
                 Fornecedor
               </h2>
-                <SelectWithAdd
-                  id="supplierId"
-                  name="supplierId"
-                  label="Fornecedor"
-                  value={supplierId}
-                  onChange={(e) => setSupplierId(e.target.value)}
-                  options={suppliers?.suppliers.map((supplier) => ({
-                    value: supplier.id,
-                    label: `${supplier.code} - ${supplier.tradeName || supplier.companyName}`,
-                  })) || []}
-                  placeholder="Selecione um fornecedor"
-                  required
-                  drawerTitle="Novo Fornecedor"
-                  drawerDescription="Cadastre um novo fornecedor rapidamente"
-                  drawerSize="lg"
-                  FormComponent={SupplierQuickForm}
-                />
-              </div>
+              <SelectWithAdd
+                id="supplierId"
+                name="supplierId"
+                label="Fornecedor"
+                value={supplierId}
+                onChange={(e) => setSupplierId(e.target.value)}
+                options={suppliers?.suppliers.map((supplier) => ({
+                  value: supplier.id,
+                  label: `${supplier.code} - ${supplier.tradeName || supplier.companyName}`,
+                })) || []}
+                placeholder="Selecione um fornecedor"
+                required
+                drawerTitle="Novo Fornecedor"
+                drawerDescription="Cadastre um novo fornecedor rapidamente"
+                drawerSize="lg"
+                FormComponent={SupplierQuickForm}
+              />
+            </div>
 
             {/* Items */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">

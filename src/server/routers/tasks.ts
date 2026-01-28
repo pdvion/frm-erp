@@ -284,12 +284,12 @@ export const tasksRouter = createTRPCRouter({
       }),
       ctx.tenant.userId
         ? prisma.task.count({
-            where: {
-              ...tenantFilter(ctx.companyId, false),
-              ownerId: ctx.tenant.userId,
-              status: { notIn: ["COMPLETED", "CANCELLED"] },
-            },
-          })
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            ownerId: ctx.tenant.userId,
+            status: { notIn: ["COMPLETED", "CANCELLED"] },
+          },
+        })
         : 0,
     ]);
 

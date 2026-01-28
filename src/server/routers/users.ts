@@ -26,11 +26,11 @@ export const usersRouter = createTRPCRouter({
           ...(status !== "all" && { isActive: status === "active" }),
           user: search
             ? {
-                OR: [
-                  { name: { contains: search, mode: "insensitive" as const } },
-                  { email: { contains: search, mode: "insensitive" as const } },
-                ],
-              }
+              OR: [
+                { name: { contains: search, mode: "insensitive" as const } },
+                { email: { contains: search, mode: "insensitive" as const } },
+              ],
+            }
             : undefined,
         },
         include: {
@@ -67,11 +67,11 @@ export const usersRouter = createTRPCRouter({
           ...(status !== "all" && { isActive: status === "active" }),
           user: search
             ? {
-                OR: [
-                  { name: { contains: search, mode: "insensitive" as const } },
-                  { email: { contains: search, mode: "insensitive" as const } },
-                ],
-              }
+              OR: [
+                { name: { contains: search, mode: "insensitive" as const } },
+                { email: { contains: search, mode: "insensitive" as const } },
+              ],
+            }
             : undefined,
         },
       });

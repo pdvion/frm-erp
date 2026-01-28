@@ -264,98 +264,98 @@ export default function PurchaseOrdersPage() {
           {/* Table View */}
           <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
             <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-theme-table">
-              <thead className="bg-theme-table-header">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+              <table className="min-w-full divide-y divide-theme-table">
+                <thead className="bg-theme-table-header">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Código
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Fornecedor
-                  </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Data
-                  </th>
-                  <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Cotação
-                  </th>
-                  <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Itens
-                  </th>
-                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Valor Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-muted uppercase tracking-wider">
                     Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-theme-table">
-                {data?.orders.map((order) => {
-                  const config = statusConfig[order.status];
-                  return (
-                    <tr key={order.id} className="hover:bg-theme-table-hover">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-mono text-sm font-medium text-theme">
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-theme-table">
+                  {data?.orders.map((order) => {
+                    const config = statusConfig[order.status];
+                    return (
+                      <tr key={order.id} className="hover:bg-theme-table-hover">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="font-mono text-sm font-medium text-theme">
                           PC-{order.code.toString().padStart(6, "0")}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-theme">
-                          {order.supplier.tradeName || order.supplier.companyName}
-                        </div>
-                        <div className="text-sm text-theme-muted">
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-theme">
+                            {order.supplier.tradeName || order.supplier.companyName}
+                          </div>
+                          <div className="text-sm text-theme-muted">
                           Cód: {order.supplier.code}
-                        </div>
-                      </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {formatDate(order.orderDate)}
-                      </td>
-                      <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
-                        {order.quote ? (
-                          <Link
-                            href={`/quotes/${order.quote.id}`}
-                            className="text-sm text-blue-400 hover:text-blue-300 font-mono"
-                          >
+                          </div>
+                        </td>
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                          {formatDate(order.orderDate)}
+                        </td>
+                        <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
+                          {order.quote ? (
+                            <Link
+                              href={`/quotes/${order.quote.id}`}
+                              className="text-sm text-blue-400 hover:text-blue-300 font-mono"
+                            >
                             #{order.quote.code.toString().padStart(6, "0")}
-                          </Link>
-                        ) : (
-                          <span className="text-sm text-theme-muted">-</span>
-                        )}
-                      </td>
-                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {order._count.items} {order._count.items === 1 ? "item" : "itens"}
-                      </td>
-                      <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-theme">
-                          {formatCurrency(order.totalValue)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
-                        >
-                          {config.icon}
-                          {config.label}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/purchase-orders/${order.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-lg transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-theme-muted">-</span>
+                          )}
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                          {order._count.items} {order._count.items === 1 ? "item" : "itens"}
+                        </td>
+                        <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-theme">
+                            {formatCurrency(order.totalValue)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+                          >
+                            {config.icon}
+                            {config.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <Link
+                            href={`/purchase-orders/${order.id}`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-lg transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
                           Ver
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
 
