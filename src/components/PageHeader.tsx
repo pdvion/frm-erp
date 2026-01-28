@@ -42,7 +42,7 @@ export function PageHeader({
         {backHref && (
           <Link
             href={backHref}
-            className="flex items-center gap-1 text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-theme-muted light:hover:text-theme-secondary transition-colors flex-shrink-0"
+            className="flex items-center gap-1 text-theme-muted hover:text-white dark:text-theme-muted dark:hover:text-white light:text-theme-muted light:hover:text-theme-secondary transition-colors flex-shrink-0"
             title={backLabel}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -68,7 +68,7 @@ export function PageHeader({
             )}
           </div>
           {subtitle && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-theme-muted mt-0.5">{subtitle}</p>
+            <p className="text-sm text-theme-muted dark:text-theme-muted light:text-theme-muted mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
@@ -78,7 +78,7 @@ export function PageHeader({
           <>
             <Link
               href="/docs"
-              className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 light:text-theme-muted light:hover:text-theme-secondary light:hover:bg-theme-tertiary rounded-full transition-colors"
+              className="p-2 text-theme-muted hover:text-white hover:bg-theme-card dark:text-theme-muted dark:hover:text-white dark:hover:bg-theme-card light:text-theme-muted light:hover:text-theme-secondary light:hover:bg-theme-tertiary rounded-full transition-colors"
               title="Documentação"
             >
               <BookOpen className="w-5 h-5" />

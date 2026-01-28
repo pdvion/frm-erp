@@ -71,7 +71,7 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <HelpCircle className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <HelpCircle className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                   <p className="text-theme-muted">
                     Nenhum tutorial disponível para este módulo.
                   </p>
@@ -153,7 +153,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${elements.length}`} className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm">
+          <pre key={`code-${elements.length}`} className="bg-theme text-theme-muted p-4 rounded-lg overflow-x-auto my-4 text-sm">
             <code>{codeContent.trim()}</code>
           </pre>
         );

@@ -19,7 +19,7 @@ export function PasswordStrength({ password, showRequirements = true }: Password
     <div className="mt-2 space-y-2">
       {/* Barra de força */}
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-theme-tertiary rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${strength.color}`}
             style={{ width: `${validation.score}%` }}
@@ -91,7 +91,7 @@ function Requirement({
       {met ? (
         <Check className="w-3.5 h-3.5" />
       ) : (
-        <X className={`w-3.5 h-3.5 ${optional ? "text-gray-300" : ""}`} />
+        <X className={`w-3.5 h-3.5 ${optional ? "text-theme-muted" : ""}`} />
       )}
       <span>{text}</span>
     </div>

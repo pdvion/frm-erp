@@ -13,7 +13,7 @@ export function ThemeSwitcher() {
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 rounded-lg bg-zinc-800 dark:bg-zinc-800 light:bg-gray-200">
+    <div className="flex items-center gap-1 p-1 rounded-lg bg-theme-card dark:bg-theme-card light:bg-theme-tertiary">
       {options.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
@@ -21,7 +21,7 @@ export function ThemeSwitcher() {
           className={`p-2 rounded-md transition-colors ${
             theme === value
               ? "bg-blue-600 text-white"
-              : "text-zinc-400 hover:text-white hover:bg-zinc-700"
+              : "text-theme-muted hover:text-theme hover:bg-theme-hover"
           }`}
           title={label}
           aria-label={`Tema ${label}`}

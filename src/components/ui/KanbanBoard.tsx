@@ -213,7 +213,7 @@ export function KanbanCard({
           </span>
         )}
       </div>
-      {footer && <div className="mt-2 pt-2 border-t border-gray-100">{footer}</div>}
+      {footer && <div className="mt-2 pt-2 border-t border-theme">{footer}</div>}
     </div>
   );
 }

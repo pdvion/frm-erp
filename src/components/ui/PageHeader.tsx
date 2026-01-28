@@ -33,7 +33,7 @@ export function PageHeader({
         {backHref && (
           <Link
             href={backHref}
-            className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors flex-shrink-0"
+            className="flex items-center gap-1 text-theme-muted hover:text-white transition-colors flex-shrink-0"
             title={backLabel}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -59,7 +59,7 @@ export function PageHeader({
             )}
           </div>
           {subtitle && (
-            <p className="text-sm text-zinc-400 mt-0.5">{subtitle}</p>
+            <p className="text-sm text-theme-muted mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>

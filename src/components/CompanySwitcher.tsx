@@ -53,8 +53,8 @@ export function CompanySwitcher() {
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 px-3 py-2 bg-theme-tertiary rounded-lg animate-pulse">
-        <div className="w-5 h-5 bg-gray-300 rounded"></div>
-        <div className="w-24 h-4 bg-gray-300 rounded"></div>
+        <div className="w-5 h-5 bg-theme-tertiary rounded"></div>
+        <div className="w-24 h-4 bg-theme-tertiary rounded"></div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export function CompanySwitcher() {
             {hasMultipleCompanies && (
               <button
                 onClick={() => handleSelectCompany(ALL_COMPANIES_ID)}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-theme-secondary transition-colors border-b border-gray-100 ${
+                className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-theme-secondary transition-colors border-b border-theme ${
                   isAllSelected ? "bg-blue-50" : ""
                 }`}
               >

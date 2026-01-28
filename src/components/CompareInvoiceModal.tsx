@@ -167,7 +167,7 @@ export function CompareInvoiceModal({
                 </div>
               ) : purchaseOrders?.length === 0 ? (
                 <div className="text-center py-12">
-                  <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <ShoppingCart className="w-12 h-12 text-theme-muted mx-auto mb-3" />
                   <p className="text-theme-muted">
                     Nenhum pedido de compra encontrado para este fornecedor
                   </p>

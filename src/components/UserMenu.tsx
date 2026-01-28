@@ -69,7 +69,7 @@ export function UserMenu({ user: propUser }: UserMenuProps) {
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-56 bg-theme-card rounded-lg shadow-lg border border-theme py-1 z-50">
-          <div className="px-4 py-2 border-b border-gray-100">
+          <div className="px-4 py-2 border-b border-theme">
             <div className="text-sm font-medium text-theme">
               {user.name || "Usuário"}
             </div>
@@ -87,7 +87,7 @@ export function UserMenu({ user: propUser }: UserMenuProps) {
             Configurações
           </button>
 
-          <hr className="my-1 border-gray-100" />
+          <hr className="my-1 border-theme" />
 
           <button
             onClick={handleSignOut}

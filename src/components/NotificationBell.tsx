@@ -159,7 +159,7 @@ export function NotificationBell() {
                 </div>
               ) : !notifications?.length ? (
                 <div className="text-center py-8">
-                  <Bell className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                  <Bell className="w-10 h-10 mx-auto text-theme-muted mb-2" />
                   <p className="text-theme-muted text-sm">Nenhuma notificação</p>
                 </div>
               ) : (
