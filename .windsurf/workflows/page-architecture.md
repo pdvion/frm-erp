@@ -7,7 +7,57 @@ description: Padrão de arquitetura para novas páginas
 ## Regra Principal
 
 > **Páginas NÃO devem definir layout próprio.**
-> O `AppLayout` já fornece Sidebar, Header e tema.
+> O `AppLayout` já fornece Sidebar, Header global e tema.
+
+## ⚠️ PROIBIDO: Headers Duplicados
+
+O `AppLayout` (`src/components/AppLayout.tsx`) já fornece um header global com:
+- **Breadcrumb** (módulo + navegação)
+- **CompanySwitcher** (seletor de empresas)
+- **NotificationBell** (notificações)
+- **UserMenu** (perfil do usuário)
+
+### ❌ NÃO FAZER (cria header duplicado):
+
+```tsx
+// ERRADO - Cria segundo header na página
+export default function MyPage() {
+  return (
+    <div>
+      <header className="...">  {/* ❌ PROIBIDO */}
+        <CompanySwitcher />      {/* ❌ Já existe no AppLayout */}
+        <NotificationBell />     {/* ❌ Já existe no AppLayout */}
+      </header>
+      <main>...</main>
+    </div>
+  );
+}
+```
+
+### ✅ FAZER (usa layout global):
+
+```tsx
+// CORRETO - Apenas conteúdo, sem header próprio
+export default function MyPage() {
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Minha Página" icon={<Icon />} />
+      {/* Conteúdo da página */}
+    </div>
+  );
+}
+```
+
+### Componentes que NÃO devem ser usados nas páginas:
+- `<header>` - O header global já existe
+- `<CompanySwitcher />` - Já está no header global
+- `<NotificationBell />` - Já está no header global
+- `<ThemeSwitcher />` - Agora está no sidebar
+- `<UserMenu />` - Já está no header global
+
+### Para títulos de página, usar:
+- `<PageHeader />` - Componente de título com ícone e ações
+- Ou um `<div>` simples com título e subtítulo
 
 ## Sistema de Temas
 
@@ -16,7 +66,7 @@ O sistema suporta 3 modos de tema:
 - **Escuro** - Tema dark
 - **Sistema** - Segue preferência do SO
 
-O usuário pode alternar via `ThemeSwitcher` no header.
+O usuário pode alternar via `ThemeSwitcher` no rodapé do sidebar.
 
 ## Checklist para Nova Página
 
