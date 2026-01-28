@@ -35,9 +35,6 @@ export default function BomListPage() {
                 Estrutura de Produto (BOM)
               </h1>
             </div>
-            <div className="flex items-center gap-3">
-              
-            </div>
           </div>
         </div>
       </header>

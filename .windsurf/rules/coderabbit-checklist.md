@@ -81,7 +81,7 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 - [ ] Incluir `companyId` ao criar novos registros
 
 ### Dados Compartilhados
-- [ ] Usar `isShared: true` para dados visíveis a todas empresas
+- [ ] Usar `isShared: true` para dados visíveis a todas as empresas
 - [ ] Filtro deve incluir: `OR: [{ companyId }, { isShared: true }]`
 
 ## Código Limpo

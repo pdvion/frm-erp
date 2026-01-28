@@ -32,9 +32,11 @@ function AppLayoutContent({ children }: AppLayoutProps) {
   const { isCollapsed } = useSidebar();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith("/reset-password/")
-  );
+  const isPublicRoute = publicRoutes.some((route) => {
+    if (pathname === route) return true;
+    if (route === "/") return false;
+    return pathname.startsWith(route + "/");
+  });
 
   if (isPublicRoute) {
     return <>{children}</>;

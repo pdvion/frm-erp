@@ -128,10 +128,6 @@ export default function RequisitionDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
-              <div className="hidden sm:block">
-                
-              </div>
-              
               {canCancel && (
                 <button
                   onClick={() => setShowCancelModal(true)}
@@ -187,10 +183,6 @@ export default function RequisitionDetailPage() {
                 </button>
               )}
             </div>
-          </div>
-          {/* Mobile Company Switcher */}
-          <div className="sm:hidden pb-2">
-            
           </div>
         </div>
       </header>
