@@ -42,6 +42,7 @@ export default function ExchangeContractsPage() {
 
   const deleteMutation = trpc.impex.deleteExchangeContract.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => alert(`Erro ao excluir contrato: ${error.message}`),
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {
@@ -127,7 +128,7 @@ export default function ExchangeContractsPage() {
               </p>
             </div>
             <p className="text-xs text-theme-muted">
-              {summary.totalVariation > 0 ? "Perda" : summary.totalVariation < 0 ? "Ganho" : ""}
+              {summary.totalVariation > 0 ? "Perda" : summary.totalVariation < 0 ? "Ganho" : "Neutro"}
             </p>
           </div>
           <div className="bg-theme-card border border-theme rounded-lg p-4">
@@ -287,7 +288,9 @@ export default function ExchangeContractsPage() {
                           className={`font-medium ${
                             Number(contract.exchangeVariation) > 0
                               ? "text-red-600"
-                              : "text-green-600"
+                              : Number(contract.exchangeVariation) < 0
+                              ? "text-green-600"
+                              : "text-theme"
                           }`}
                         >
                           {formatCurrency(Math.abs(Number(contract.exchangeVariation)), "BRL")}

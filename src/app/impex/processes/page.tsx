@@ -43,6 +43,7 @@ export default function ImportProcessesPage() {
 
   const deleteMutation = trpc.impex.deleteProcess.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => alert(`Erro ao excluir processo: ${error.message}`),
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {

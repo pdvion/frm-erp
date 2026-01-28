@@ -176,6 +176,7 @@ export const appRouter = createTRPCRouter({
 - Formulário com validação
 - Botões: Cancelar, Salvar
 - Redirect após sucesso
+- **OBRIGATÓRIO**: onError handler na mutation
 
 **Detalhe** (`src/app/[nome]/[id]/page.tsx`):
 - Exibição de dados
@@ -186,6 +187,19 @@ export const appRouter = createTRPCRouter({
 - Formulário preenchido
 - Carregamento de dados existentes
 - Botões: Cancelar, Salvar
+- **OBRIGATÓRIO**: onError handler na mutation
+
+**Padrão de Mutations com onError:**
+```typescript
+const createMutation = trpc.modulo.create.useMutation({
+  onSuccess: (data) => {
+    router.push(`/modulo/${data.id}`);
+  },
+  onError: (error) => {
+    alert(`Erro ao criar: ${error.message}`);
+  },
+});
+```
 
 ### 5. Verificar Build
 // turbo
