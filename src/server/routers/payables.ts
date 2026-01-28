@@ -1625,4 +1625,220 @@ export const payablesRouter = createTRPCRouter({
 
       return { success: true, message: "Agendamento cancelado com sucesso" };
     }),
+
+  // Listar títulos para pagamento em lote
+  listForPayment: tenantProcedure
+    .input(z.object({
+      dueDateFrom: z.date().optional(),
+      dueDateTo: z.date().optional(),
+      supplierId: z.string().optional(),
+      minValue: z.number().optional(),
+      maxValue: z.number().optional(),
+    }).optional())
+    .query(async ({ input, ctx }) => {
+      const { dueDateFrom, dueDateTo, supplierId, minValue, maxValue } = input || {};
+
+      const where: Prisma.AccountsPayableWhereInput = {
+        ...tenantFilter(ctx.companyId, false),
+        status: { in: ["PENDING", "PARTIAL"] },
+      };
+
+      if (supplierId) {
+        where.supplierId = supplierId;
+      }
+
+      if (dueDateFrom || dueDateTo) {
+        where.dueDate = {};
+        if (dueDateFrom) where.dueDate.gte = dueDateFrom;
+        if (dueDateTo) where.dueDate.lte = dueDateTo;
+      }
+
+      if (minValue !== undefined || maxValue !== undefined) {
+        where.netValue = {};
+        if (minValue !== undefined) where.netValue.gte = minValue;
+        if (maxValue !== undefined) where.netValue.lte = maxValue;
+      }
+
+      const payables = await prisma.accountsPayable.findMany({
+        where,
+        include: {
+          supplier: {
+            select: { id: true, code: true, companyName: true, tradeName: true },
+          },
+        },
+        orderBy: { dueDate: "asc" },
+      });
+
+      // Calcular saldo devedor de cada título
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return payables.map((p) => ({
+        ...p,
+        remainingValue: p.netValue - p.paidValue,
+        isOverdue: new Date(p.dueDate) < today,
+        daysOverdue: new Date(p.dueDate) < today
+          ? Math.floor((today.getTime() - new Date(p.dueDate).getTime()) / (1000 * 60 * 60 * 24))
+          : 0,
+      }));
+    }),
+
+  // Pagamento em lote
+  batchPay: tenantProcedure
+    .input(z.object({
+      payableIds: z.array(z.string()).min(1),
+      paymentDate: z.date(),
+      bankAccountId: z.string().optional(),
+      notes: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const payables = await prisma.accountsPayable.findMany({
+        where: {
+          id: { in: input.payableIds },
+          ...tenantFilter(ctx.companyId, false),
+          status: { in: ["PENDING", "PARTIAL"] },
+        },
+        include: { supplier: true },
+      });
+
+      if (payables.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Nenhum título válido encontrado para pagamento",
+        });
+      }
+
+      if (payables.length !== input.payableIds.length) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Alguns títulos não estão disponíveis para pagamento. Encontrados: ${payables.length} de ${input.payableIds.length}`,
+        });
+      }
+
+      const results: { payableId: string; success: boolean; error?: string }[] = [];
+      let totalPaid = 0;
+
+      for (const payable of payables) {
+        try {
+          const remainingValue = payable.netValue - payable.paidValue;
+
+          // Criar pagamento
+          await prisma.payablePayment.create({
+            data: {
+              payableId: payable.id,
+              paymentDate: input.paymentDate,
+              value: remainingValue,
+              paymentMethod: input.bankAccountId ? "TRANSFER" : "OTHER",
+              notes: input.notes,
+              createdBy: ctx.tenant.userId,
+            },
+          });
+
+          // Atualizar título
+          await prisma.accountsPayable.update({
+            where: { id: payable.id },
+            data: {
+              paidValue: payable.netValue,
+              status: "PAID",
+              paidAt: input.paymentDate,
+            },
+          });
+
+          totalPaid += remainingValue;
+          results.push({ payableId: payable.id, success: true });
+
+          // Emitir evento
+          emitEvent("payable.paid", {
+            userId: ctx.tenant.userId ?? undefined,
+            companyId: ctx.companyId ?? undefined,
+          }, {
+            payableId: payable.id,
+            supplierName: payable.supplier?.companyName || "Fornecedor",
+            value: remainingValue,
+          });
+        } catch (error) {
+          results.push({
+            payableId: payable.id,
+            success: false,
+            error: error instanceof Error ? error.message : "Erro desconhecido",
+          });
+        }
+      }
+
+      const successCount = results.filter((r) => r.success).length;
+
+      return {
+        success: successCount > 0,
+        totalPaid,
+        successCount,
+        failCount: results.length - successCount,
+        results,
+      };
+    }),
+
+  // Estatísticas para pagamento em lote
+  batchPayStats: tenantProcedure
+    .query(async ({ ctx }) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date(today);
+      endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      const [overdueCount, overdueValue, weekCount, weekValue, monthCount, monthValue] = await Promise.all([
+        prisma.accountsPayable.count({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { lt: today },
+          },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { lt: today },
+          },
+          _sum: { netValue: true },
+        }),
+        prisma.accountsPayable.count({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { gte: today, lte: endOfWeek },
+          },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { gte: today, lte: endOfWeek },
+          },
+          _sum: { netValue: true },
+        }),
+        prisma.accountsPayable.count({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { gte: today, lte: endOfMonth },
+          },
+        }),
+        prisma.accountsPayable.aggregate({
+          where: {
+            ...tenantFilter(ctx.companyId, false),
+            status: { in: ["PENDING", "PARTIAL"] },
+            dueDate: { gte: today, lte: endOfMonth },
+          },
+          _sum: { netValue: true },
+        }),
+      ]);
+
+      return {
+        overdue: { count: overdueCount, value: overdueValue._sum.netValue || 0 },
+        thisWeek: { count: weekCount, value: weekValue._sum.netValue || 0 },
+        thisMonth: { count: monthCount, value: monthValue._sum.netValue || 0 },
+      };
+    }),
 });
