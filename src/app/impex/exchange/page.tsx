@@ -15,6 +15,8 @@ import {
   AlertTriangle,
   TrendingUp,
   TrendingDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
@@ -32,11 +34,18 @@ export default function ExchangeContractsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusKey | "">("");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data: contracts, isLoading, refetch } = trpc.impex.listExchangeContracts.useQuery({
+  const { data, isLoading, refetch } = trpc.impex.listExchangeContracts.useQuery({
     search: search || undefined,
     status: (statusFilter || undefined) as "OPEN" | "PARTIALLY_LIQUIDATED" | "LIQUIDATED" | "CANCELLED" | undefined,
+    page,
+    limit,
   });
+
+  const contracts = data?.items;
+  const pagination = data?.pagination;
 
   const { data: summary } = trpc.impex.getExchangeSummary.useQuery();
 
@@ -328,6 +337,34 @@ export default function ExchangeContractsPage() {
               </tbody>
             </table>
           </div>
+
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border-t border-theme">
+              <p className="text-sm text-theme-muted">
+                Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} contratos
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1}
+                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-sm text-theme px-2">
+                  Página {pagination.page} de {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= pagination.totalPages}
+                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

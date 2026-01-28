@@ -40,7 +40,8 @@ export default function EditExchangeContractPage({
 
   const { data: contract, isLoading: loadingContract } = trpc.impex.getExchangeContract.useQuery({ id });
   const { data: bankAccounts } = trpc.bankAccounts.list.useQuery();
-  const { data: processes } = trpc.impex.listProcesses.useQuery({});
+  const { data: processesData } = trpc.impex.listProcesses.useQuery({ limit: 100 });
+  const processes = processesData?.items;
 
   const updateMutation = trpc.impex.updateExchangeContract.useMutation({
     onSuccess: () => {

@@ -24,7 +24,8 @@ export default function NewExchangeContractPage() {
   const [brlValue, setBrlValue] = useState(0);
 
   const { data: bankAccounts } = trpc.bankAccounts.list.useQuery();
-  const { data: processes } = trpc.impex.listProcesses.useQuery({});
+  const { data: processesData } = trpc.impex.listProcesses.useQuery({ limit: 100 });
+  const processes = processesData?.items;
 
   const createMutation = trpc.impex.createExchangeContract.useMutation({
     onSuccess: (data) => {

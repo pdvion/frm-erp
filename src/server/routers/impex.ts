@@ -312,38 +312,57 @@ export const impexRouter = createTRPCRouter({
         brokerId: z.string().uuid().optional(),
         dateFrom: z.string().optional(),
         dateTo: z.string().optional(),
+        page: z.number().min(1).default(1),
+        limit: z.number().min(1).max(100).default(20),
       }).optional()
     )
     .query(async ({ ctx, input }) => {
-      const { search, status, supplierId, brokerId, dateFrom, dateTo } = input ?? {};
+      const { search, status, supplierId, brokerId, dateFrom, dateTo, page = 1, limit = 20 } = input ?? {};
 
-      return ctx.prisma.importProcess.findMany({
-        where: {
-          companyId: ctx.companyId,
-          ...(search && {
-            OR: [
-              { processNumber: { contains: search, mode: "insensitive" as const } },
-              { reference: { contains: search, mode: "insensitive" as const } },
-              { blNumber: { contains: search, mode: "insensitive" as const } },
-            ],
-          }),
-          ...(status && { status }),
-          ...(supplierId && { supplierId }),
-          ...(brokerId && { brokerId }),
-          ...(dateFrom && { eta: { gte: new Date(dateFrom) } }),
-          ...(dateTo && { eta: { lte: new Date(dateTo) } }),
+      const where = {
+        companyId: ctx.companyId,
+        ...(search && {
+          OR: [
+            { processNumber: { contains: search, mode: "insensitive" as const } },
+            { reference: { contains: search, mode: "insensitive" as const } },
+            { blNumber: { contains: search, mode: "insensitive" as const } },
+          ],
+        }),
+        ...(status && { status }),
+        ...(supplierId && { supplierId }),
+        ...(brokerId && { brokerId }),
+        ...(dateFrom && { eta: { gte: new Date(dateFrom) } }),
+        ...(dateTo && { eta: { lte: new Date(dateTo) } }),
+      };
+
+      const [items, total] = await Promise.all([
+        ctx.prisma.importProcess.findMany({
+          where,
+          include: {
+            supplier: { select: { id: true, companyName: true } },
+            broker: { select: { id: true, name: true } },
+            incoterm: { select: { id: true, code: true } },
+            cargoType: { select: { id: true, code: true, name: true } },
+            originPort: { select: { id: true, code: true, name: true } },
+            destPort: { select: { id: true, code: true, name: true } },
+            _count: { select: { items: true } },
+          },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        ctx.prisma.importProcess.count({ where }),
+      ]);
+
+      return {
+        items,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
         },
-        include: {
-          supplier: { select: { id: true, companyName: true } },
-          broker: { select: { id: true, name: true } },
-          incoterm: { select: { id: true, code: true } },
-          cargoType: { select: { id: true, code: true, name: true } },
-          originPort: { select: { id: true, code: true, name: true } },
-          destPort: { select: { id: true, code: true, name: true } },
-          _count: { select: { items: true } },
-        },
-        orderBy: { createdAt: "desc" },
-      });
+      };
     }),
 
   getProcess: tenantProcedure
@@ -643,32 +662,51 @@ export const impexRouter = createTRPCRouter({
         processId: z.string().uuid().optional(),
         maturityFrom: z.string().optional(),
         maturityTo: z.string().optional(),
+        page: z.number().min(1).default(1),
+        limit: z.number().min(1).max(100).default(20),
       }).optional()
     )
     .query(async ({ ctx, input }) => {
-      const { search, status, bankAccountId, processId, maturityFrom, maturityTo } = input ?? {};
+      const { search, status, bankAccountId, processId, maturityFrom, maturityTo, page = 1, limit = 20 } = input ?? {};
 
-      return ctx.prisma.exchangeContract.findMany({
-        where: {
-          companyId: ctx.companyId,
-          ...(search && {
-            OR: [
-              { contractNumber: { contains: search, mode: "insensitive" as const } },
-            ],
-          }),
-          ...(status && { status }),
-          ...(bankAccountId && { bankAccountId }),
-          ...(processId && { processId }),
-          ...(maturityFrom && { maturityDate: { gte: new Date(maturityFrom) } }),
-          ...(maturityTo && { maturityDate: { lte: new Date(maturityTo) } }),
+      const where = {
+        companyId: ctx.companyId,
+        ...(search && {
+          OR: [
+            { contractNumber: { contains: search, mode: "insensitive" as const } },
+          ],
+        }),
+        ...(status && { status }),
+        ...(bankAccountId && { bankAccountId }),
+        ...(processId && { processId }),
+        ...(maturityFrom && { maturityDate: { gte: new Date(maturityFrom) } }),
+        ...(maturityTo && { maturityDate: { lte: new Date(maturityTo) } }),
+      };
+
+      const [items, total] = await Promise.all([
+        ctx.prisma.exchangeContract.findMany({
+          where,
+          include: {
+            bankAccount: { select: { id: true, name: true, bankName: true } },
+            process: { select: { id: true, processNumber: true } },
+            _count: { select: { liquidations: true } },
+          },
+          orderBy: { maturityDate: "asc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        ctx.prisma.exchangeContract.count({ where }),
+      ]);
+
+      return {
+        items,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
         },
-        include: {
-          bankAccount: { select: { id: true, name: true, bankName: true } },
-          process: { select: { id: true, processNumber: true } },
-          _count: { select: { liquidations: true } },
-        },
-        orderBy: { maturityDate: "asc" },
-      });
+      };
     }),
 
   getExchangeContract: tenantProcedure

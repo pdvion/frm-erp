@@ -14,6 +14,8 @@ import {
   Calendar,
   DollarSign,
   Package,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { ProcessCardSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
@@ -35,11 +37,18 @@ export default function ImportProcessesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusKey | "">("");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data: processes, isLoading, refetch } = trpc.impex.listProcesses.useQuery({
+  const { data, isLoading, refetch } = trpc.impex.listProcesses.useQuery({
     search: search || undefined,
     status: (statusFilter || undefined) as "DRAFT" | "PENDING_SHIPMENT" | "IN_TRANSIT" | "ARRIVED" | "IN_CLEARANCE" | "CLEARED" | "DELIVERED" | "CANCELLED" | undefined,
+    page,
+    limit,
   });
+
+  const processes = data?.items;
+  const pagination = data?.pagination;
 
   const deleteMutation = trpc.impex.deleteProcess.useMutation({
     onSuccess: () => refetch(),
@@ -238,6 +247,34 @@ export default function ImportProcessesPage() {
               )}
             </div>
           ))}
+
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between bg-theme-card border border-theme rounded-lg p-4">
+              <p className="text-sm text-theme-muted">
+                Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} processos
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1}
+                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-sm text-theme px-2">
+                  Página {pagination.page} de {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= pagination.totalPages}
+                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
