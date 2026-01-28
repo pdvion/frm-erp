@@ -928,10 +928,312 @@ export const impexRouter = createTRPCRouter({
       cargoTypesCount,
       incotermsCount,
       processesCount,
-      processesByStatus: processesByStatus.reduce((acc, item) => {
+      processesByStatus: processesByStatus.reduce((acc: Record<string, number>, item: { status: string; _count: { _all: number } }) => {
         acc[item.status] = item._count._all;
         return acc;
       }, {} as Record<string, number>),
     };
   }),
+
+  // ==========================================================================
+  // DASHBOARD AVANÇADO
+  // ==========================================================================
+
+  getDashboardData: tenantProcedure.query(async ({ ctx }) => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    const [
+      processes,
+      exchangeContracts,
+      recentProcesses,
+      upcomingArrivals,
+    ] = await Promise.all([
+      // All processes for status breakdown
+      ctx.prisma.importProcess.findMany({
+        where: { companyId: ctx.companyId },
+        select: {
+          id: true,
+          status: true,
+          invoiceValue: true,
+          currency: true,
+          eta: true,
+          createdAt: true,
+        },
+      }),
+      // Exchange contracts summary
+      ctx.prisma.exchangeContract.findMany({
+        where: { companyId: ctx.companyId },
+        select: {
+          status: true,
+          foreignValue: true,
+          brlValue: true,
+          liquidatedValue: true,
+          exchangeVariation: true,
+          maturityDate: true,
+        },
+      }),
+      // Recent processes (last 30 days)
+      ctx.prisma.importProcess.findMany({
+        where: {
+          companyId: ctx.companyId,
+          createdAt: { gte: thirtyDaysAgo },
+        },
+        include: {
+          supplier: { select: { companyName: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+      // Upcoming arrivals (next 30 days)
+      ctx.prisma.importProcess.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: { in: ["IN_TRANSIT", "PENDING_SHIPMENT"] },
+          eta: { gte: today, lte: thirtyDaysFromNow },
+        },
+        include: {
+          supplier: { select: { companyName: true } },
+          destPort: { select: { code: true, name: true } },
+        },
+        orderBy: { eta: "asc" },
+        take: 10,
+      }),
+    ]);
+
+    // Calculate KPIs
+    const activeStatuses = ["DRAFT", "PENDING_SHIPMENT", "IN_TRANSIT", "ARRIVED", "IN_CLEARANCE"];
+    const activeProcesses = processes.filter(p => activeStatuses.includes(p.status));
+    
+    const totalValueInTransit = processes
+      .filter(p => p.status === "IN_TRANSIT")
+      .reduce((sum, p) => sum + Number(p.invoiceValue), 0);
+
+    const statusBreakdown = processes.reduce((acc: Record<string, number>, p) => {
+      acc[p.status] = (acc[p.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Exchange summary
+    const openContracts = exchangeContracts.filter(c => c.status === "OPEN" || c.status === "PARTIALLY_LIQUIDATED");
+    const totalExchangeOpen = openContracts.reduce((sum, c) => {
+      const remaining = Number(c.foreignValue) - Number(c.liquidatedValue || 0);
+      return sum + remaining;
+    }, 0);
+    const totalExchangeVariation = exchangeContracts.reduce((sum, c) => sum + Number(c.exchangeVariation || 0), 0);
+    const expiredContracts = openContracts.filter(c => c.maturityDate <= today).length;
+
+    return {
+      kpis: {
+        activeProcesses: activeProcesses.length,
+        totalProcesses: processes.length,
+        totalValueInTransit,
+        openExchangeContracts: openContracts.length,
+        totalExchangeOpen,
+        totalExchangeVariation,
+        expiredContracts,
+      },
+      statusBreakdown,
+      recentProcesses: recentProcesses.map(p => ({
+        id: p.id,
+        processNumber: p.processNumber,
+        supplier: p.supplier?.companyName,
+        status: p.status,
+        invoiceValue: Number(p.invoiceValue),
+        currency: p.currency,
+        createdAt: p.createdAt,
+      })),
+      upcomingArrivals: upcomingArrivals.map(p => ({
+        id: p.id,
+        processNumber: p.processNumber,
+        supplier: p.supplier?.companyName,
+        destPort: p.destPort?.code,
+        eta: p.eta,
+        invoiceValue: Number(p.invoiceValue),
+        currency: p.currency,
+      })),
+    };
+  }),
+
+  // ==========================================================================
+  // RELATÓRIOS
+  // ==========================================================================
+
+  getProcessReport: tenantProcedure
+    .input(
+      z.object({
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+        status: z.string().optional(),
+        supplierId: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { dateFrom, dateTo, status, supplierId } = input;
+
+      const processes = await ctx.prisma.importProcess.findMany({
+        where: {
+          companyId: ctx.companyId,
+          ...(dateFrom && { createdAt: { gte: new Date(dateFrom) } }),
+          ...(dateTo && { createdAt: { lte: new Date(dateTo) } }),
+          ...(status && { status: status as "DRAFT" | "PENDING_SHIPMENT" | "IN_TRANSIT" | "ARRIVED" | "IN_CLEARANCE" | "CLEARED" | "DELIVERED" | "CANCELLED" }),
+          ...(supplierId && { supplierId }),
+        },
+        include: {
+          supplier: { select: { companyName: true } },
+          broker: { select: { name: true } },
+          incoterm: { select: { code: true } },
+          originPort: { select: { code: true } },
+          destPort: { select: { code: true } },
+          _count: { select: { items: true, costs: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const summary = {
+        totalProcesses: processes.length,
+        totalValue: processes.reduce((sum, p) => sum + Number(p.invoiceValue), 0),
+        byStatus: processes.reduce((acc: Record<string, number>, p) => {
+          acc[p.status] = (acc[p.status] || 0) + 1;
+          return acc;
+        }, {}),
+        bySupplier: processes.reduce((acc: Record<string, { count: number; value: number }>, p) => {
+          const name = p.supplier?.companyName || "Sem fornecedor";
+          if (!acc[name]) acc[name] = { count: 0, value: 0 };
+          acc[name].count++;
+          acc[name].value += Number(p.invoiceValue);
+          return acc;
+        }, {}),
+      };
+
+      return {
+        processes: processes.map(p => ({
+          id: p.id,
+          processNumber: p.processNumber,
+          supplier: p.supplier?.companyName,
+          broker: p.broker?.name,
+          incoterm: p.incoterm?.code,
+          route: `${p.originPort?.code} → ${p.destPort?.code}`,
+          invoiceValue: Number(p.invoiceValue),
+          currency: p.currency,
+          status: p.status,
+          eta: p.eta,
+          itemsCount: p._count.items,
+          costsCount: p._count.costs,
+          createdAt: p.createdAt,
+        })),
+        summary,
+      };
+    }),
+
+  getCostReport: tenantProcedure
+    .input(
+      z.object({
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+        processId: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { dateFrom, dateTo, processId } = input;
+
+      const costs = await ctx.prisma.importProcessCost.findMany({
+        where: {
+          process: { companyId: ctx.companyId },
+          ...(processId && { processId }),
+          ...(dateFrom && { createdAt: { gte: new Date(dateFrom) } }),
+          ...(dateTo && { createdAt: { lte: new Date(dateTo) } }),
+        },
+        include: {
+          process: { select: { processNumber: true, invoiceValue: true, currency: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const byCostType = costs.reduce((acc: Record<string, { count: number; total: number }>, c) => {
+        if (!acc[c.costType]) acc[c.costType] = { count: 0, total: 0 };
+        acc[c.costType].count++;
+        acc[c.costType].total += Number(c.value);
+        return acc;
+      }, {});
+
+      return {
+        costs: costs.map(c => ({
+          id: c.id,
+          processNumber: c.process.processNumber,
+          costType: c.costType,
+          description: c.description,
+          value: Number(c.value),
+          currency: c.currency,
+          isEstimated: c.isEstimated,
+          createdAt: c.createdAt,
+        })),
+        summary: {
+          totalCosts: costs.length,
+          totalValue: costs.reduce((sum, c) => sum + Number(c.value), 0),
+          byCostType,
+        },
+      };
+    }),
+
+  getExchangeReport: tenantProcedure
+    .input(
+      z.object({
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+        status: z.enum(["OPEN", "PARTIALLY_LIQUIDATED", "LIQUIDATED", "CANCELLED"]).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { dateFrom, dateTo, status } = input;
+
+      const contracts = await ctx.prisma.exchangeContract.findMany({
+        where: {
+          companyId: ctx.companyId,
+          ...(status && { status }),
+          ...(dateFrom && { contractDate: { gte: new Date(dateFrom) } }),
+          ...(dateTo && { contractDate: { lte: new Date(dateTo) } }),
+        },
+        include: {
+          bankAccount: { select: { name: true, bankName: true } },
+          process: { select: { processNumber: true } },
+          _count: { select: { liquidations: true } },
+        },
+        orderBy: { contractDate: "desc" },
+      });
+
+      const summary = {
+        totalContracts: contracts.length,
+        totalForeignValue: contracts.reduce((sum, c) => sum + Number(c.foreignValue), 0),
+        totalBrlValue: contracts.reduce((sum, c) => sum + Number(c.brlValue), 0),
+        totalVariation: contracts.reduce((sum, c) => sum + Number(c.exchangeVariation || 0), 0),
+        byStatus: contracts.reduce((acc: Record<string, number>, c) => {
+          acc[c.status] = (acc[c.status] || 0) + 1;
+          return acc;
+        }, {}),
+        avgRate: contracts.length > 0
+          ? contracts.reduce((sum, c) => sum + Number(c.contractRate), 0) / contracts.length
+          : 0,
+      };
+
+      return {
+        contracts: contracts.map(c => ({
+          id: c.id,
+          contractNumber: c.contractNumber,
+          bank: c.bankAccount?.bankName || c.bankAccount?.name,
+          processNumber: c.process?.processNumber,
+          foreignValue: Number(c.foreignValue),
+          foreignCurrency: c.foreignCurrency,
+          contractRate: Number(c.contractRate),
+          brlValue: Number(c.brlValue),
+          status: c.status,
+          variation: Number(c.exchangeVariation || 0),
+          liquidationsCount: c._count.liquidations,
+          contractDate: c.contractDate,
+          maturityDate: c.maturityDate,
+        })),
+        summary,
+      };
+    }),
 });

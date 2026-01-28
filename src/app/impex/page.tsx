@@ -2,13 +2,20 @@
 
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Ship, Anchor, Users, Package, FileText, Loader2, ClipboardList, Banknote } from "lucide-react";
+import { Ship, Anchor, Users, Package, FileText, Loader2, ClipboardList, Banknote, LayoutDashboard, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 export default function ImpExPage() {
   const { data: dashboard, isLoading } = trpc.impex.dashboard.useQuery();
 
   const modules = [
+    {
+      title: "Dashboard",
+      description: "Visão geral e KPIs de importação",
+      href: "/impex/dashboard",
+      icon: LayoutDashboard,
+      color: "bg-cyan-100 text-cyan-600",
+    },
     {
       title: "Processos de Importação",
       description: "Gestão completa de processos de importação",
@@ -23,6 +30,13 @@ export default function ImpExPage() {
       href: "/impex/exchange",
       icon: Banknote,
       color: "bg-emerald-100 text-emerald-600",
+    },
+    {
+      title: "Relatórios",
+      description: "Relatórios de processos, custos e câmbio",
+      href: "/impex/reports",
+      icon: BarChart3,
+      color: "bg-rose-100 text-rose-600",
     },
     {
       title: "Portos",
