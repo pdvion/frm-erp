@@ -63,6 +63,13 @@ const settingsItems = [
     icon: Bot,
     color: "bg-violet-500",
   },
+  {
+    title: "Notificações",
+    description: "Configurar preferências de notificações por categoria",
+    href: "/settings/notifications",
+    icon: Bell,
+    color: "bg-amber-500",
+  },
 ];
 
 const quickLinks = [
