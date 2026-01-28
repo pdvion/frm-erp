@@ -21,6 +21,11 @@ import {
   Receipt,
   TrendingUp,
   Building2,
+  CheckSquare,
+  GitBranch,
+  FolderOpen,
+  Bell,
+  Shield,
 } from "lucide-react";
 
 interface MenuItem {
@@ -46,6 +51,7 @@ const menuItems: MenuItem[] = [
       { label: "Ordens de Compra", href: "/purchase-orders" },
       { label: "Recebimento", href: "/receiving" },
       { label: "Requisições", href: "/requisitions" },
+      { label: "Devoluções", href: "/supplier-returns" },
       { label: "ImpEx", href: "/impex" },
     ],
   },
@@ -57,6 +63,7 @@ const menuItems: MenuItem[] = [
       { label: "Localizações", href: "/locations" },
       { label: "Transferências", href: "/transfers" },
       { label: "Picking List", href: "/picking" },
+      { label: "Contagem", href: "/inventory-count" },
     ],
   },
   {
@@ -72,6 +79,7 @@ const menuItems: MenuItem[] = [
     label: "Financeiro",
     icon: <DollarSign className="h-5 w-5" />,
     children: [
+      { label: "Dashboard", href: "/finance/dashboard" },
       { label: "Contas a Pagar", href: "/payables" },
       { label: "Contas a Receber", href: "/receivables" },
       { label: "Tesouraria", href: "/treasury" },
@@ -82,9 +90,11 @@ const menuItems: MenuItem[] = [
     label: "Fiscal",
     icon: <FileText className="h-5 w-5" />,
     children: [
+      { label: "Dashboard", href: "/fiscal/dashboard" },
       { label: "Notas Fiscais", href: "/invoices" },
       { label: "NFe Pendentes", href: "/invoices/pending" },
       { label: "Importar XML", href: "/invoices/import" },
+      { label: "SPED", href: "/fiscal/sped" },
     ],
   },
   {
@@ -131,15 +141,44 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
-    label: "Sistema",
+    label: "Tarefas",
+    href: "/tasks",
+    icon: <CheckSquare className="h-5 w-5" />,
+  },
+  {
+    label: "Workflow",
+    href: "/workflow",
+    icon: <GitBranch className="h-5 w-5" />,
+  },
+  {
+    label: "Documentos",
+    href: "/documents",
+    icon: <FolderOpen className="h-5 w-5" />,
+  },
+  {
+    label: "Notificações",
+    href: "/notifications",
+    icon: <Bell className="h-5 w-5" />,
+  },
+  {
+    label: "Administração",
+    icon: <Shield className="h-5 w-5" />,
+    children: [
+      { label: "Usuários", href: "/settings/users" },
+      { label: "Grupos", href: "/settings/groups" },
+      { label: "Empresas", href: "/settings/companies" },
+      { label: "Auditoria", href: "/audit" },
+      { label: "Logs de Acesso", href: "/admin/auth-logs" },
+    ],
+  },
+  {
+    label: "Configurações",
     icon: <Settings className="h-5 w-5" />,
     children: [
-      { label: "Tarefas", href: "/tasks" },
-      { label: "Notificações", href: "/notifications" },
-      { label: "Workflow", href: "/workflow" },
-      { label: "Auditoria", href: "/audit" },
-      { label: "Configurações", href: "/settings" },
-      { label: "Empresas", href: "/settings/companies" },
+      { label: "Geral", href: "/settings" },
+      { label: "Contas Bancárias", href: "/settings/bank-accounts" },
+      { label: "Integração Email", href: "/settings/email-integration" },
+      { label: "SEFAZ", href: "/settings/sefaz" },
       { label: "Tokens de IA", href: "/settings/ai" },
       { label: "Design System", href: "/docs" },
     ],
