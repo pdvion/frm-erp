@@ -4,9 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
-  ChevronLeft,
   Bell,
   Check,
   CheckCheck,
@@ -68,39 +66,33 @@ export default function NotificationsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Bell className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">Notificações</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => markAllAsReadMutation.mutate()}
-                disabled={markAllAsReadMutation.isPending}
-                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
-              >
-                {markAllAsReadMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCheck className="w-4 h-4" />
-                )}
-                Marcar todas como lidas
-              </button>
-              <CompanySwitcher />
-            </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <Bell className="w-6 h-6 text-blue-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Notificações</h1>
+            <p className="text-sm text-theme-muted">Gerencie suas notificações e alertas</p>
           </div>
         </div>
-      </header>
+        <button
+          onClick={() => markAllAsReadMutation.mutate()}
+          disabled={markAllAsReadMutation.isPending}
+          className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          {markAllAsReadMutation.isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <CheckCheck className="w-4 h-4" />
+          )}
+          Marcar todas como lidas
+        </button>
+      </div>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-6">
         {/* Filtros */}
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-wrap items-center gap-4">
@@ -252,7 +244,7 @@ export default function NotificationsPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

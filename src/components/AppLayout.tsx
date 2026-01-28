@@ -7,7 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { UserMenu } from "./UserMenu";
 import { NotificationBell } from "./NotificationBell";
 import { CompanySwitcher } from "./CompanySwitcher";
-import { ThemeSwitcher } from "./ThemeSwitcher";
+import { Breadcrumb } from "./Breadcrumb";
 import { SessionTimeout } from "./SessionTimeout";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
@@ -73,7 +73,7 @@ function AppLayoutContent({ children }: AppLayoutProps) {
       {/* Main content */}
       <div className={`transition-all duration-300 ${sidebarWidth}`}>
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-theme-header bg-theme-header/95 px-4 md:px-6 backdrop-blur">
-          <div className="flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
             {/* Mobile menu button */}
             {isMobile && (
               <button
@@ -89,11 +89,11 @@ function AppLayoutContent({ children }: AppLayoutProps) {
               </button>
             )}
             <div className="min-w-0 flex-1">
-              <CompanySwitcher />
+              <Breadcrumb />
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-            <ThemeSwitcher />
+            <CompanySwitcher />
             <NotificationBell />
             <UserMenu />
           </div>

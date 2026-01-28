@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { 
   Package, Users, Warehouse, FileText, Settings, Shield, 
-  ShoppingCart, FileInput, DollarSign, User, BookOpen, AlertTriangle,
+  ShoppingCart, FileInput, DollarSign, User, AlertTriangle,
   TrendingUp, TrendingDown, Clock, CheckCircle, ClipboardList, ArrowRight,
   Loader2, BarChart3
 } from "lucide-react";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
-import { NotificationBell } from "@/components/NotificationBell";
-import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
@@ -31,7 +28,6 @@ const modules = [
 ];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
   const { data: kpis, isLoading: kpisLoading } = trpc.dashboard.kpis.useQuery();
   const { data: alerts } = trpc.dashboard.alerts.useQuery();
   const { data: activity } = trpc.dashboard.recentActivity.useQuery();
@@ -40,37 +36,6 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <header className="bg-theme-card shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[var(--frm-primary)] rounded-lg flex items-center justify-center">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-theme">FRM ERP</h1>
-                  <p className="text-sm text-theme-muted">Sistema de Gestão Industrial</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <CompanySwitcher />
-                <Link href="/docs" className="p-2 text-theme-muted hover:text-theme-secondary hover:bg-theme-hover rounded-full" title="Documentação">
-                  <BookOpen className="w-5 h-5" />
-                </Link>
-                <NotificationBell />
-                <Link href="/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:text-[var(--frm-primary)] hover:bg-theme-hover rounded-lg" title="Meu Perfil">
-                  <div className="w-8 h-8 bg-[var(--frm-primary)] rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="hidden sm:inline">{user?.email?.split("@")[0] || "Perfil"}</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Alerts */}
           {alerts && alerts.length > 0 && (
             <div className="mb-6 space-y-2">
@@ -396,7 +361,6 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-        </main>
 
         <footer className="mt-auto border-t bg-theme-card">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

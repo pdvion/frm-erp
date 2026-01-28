@@ -26,7 +26,11 @@ import {
   FolderOpen,
   Bell,
   Shield,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MenuItem {
   label: string;
@@ -193,7 +197,14 @@ export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const { isCollapsed, setIsCollapsed } = useSidebar();
+  const { theme, setTheme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const themeOptions = [
+    { value: "light" as const, icon: Sun, label: "Claro" },
+    { value: "dark" as const, icon: Moon, label: "Escuro" },
+    { value: "system" as const, icon: Monitor, label: "Sistema" },
+  ];
 
   // Em mobile, fechar sidebar ao navegar
   useEffect(() => {
@@ -288,7 +299,7 @@ export function Sidebar({ onClose }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="h-[calc(100vh-3.5rem)] overflow-y-auto p-3" data-testid="sidebar-nav">
+      <nav className="h-[calc(100vh-7rem)] overflow-y-auto p-3" data-testid="sidebar-nav">
         <ul className="space-y-1">
           {menuItems.map((item) => (
             <li key={item.label}>
@@ -348,6 +359,30 @@ export function Sidebar({ onClose }: SidebarProps) {
           ))}
         </ul>
       </nav>
+
+      {/* Theme Switcher */}
+      <div className="absolute bottom-0 left-0 right-0 border-t border-zinc-800 p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-zinc-500">Tema</span>
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-zinc-800">
+            {themeOptions.map(({ value, icon: Icon, label }) => (
+              <button
+                key={value}
+                onClick={() => setTheme(value)}
+                className={`p-1.5 rounded-md transition-colors ${
+                  theme === value
+                    ? "bg-blue-600 text-white"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-700"
+                }`}
+                title={label}
+                aria-label={`Tema ${label}`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }

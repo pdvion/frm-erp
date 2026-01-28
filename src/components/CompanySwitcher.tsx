@@ -1,15 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Building2, ChevronDown, Check } from "lucide-react";
+import { Building2, ChevronDown, Check, Globe } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
-type Company = {
-  id: string;
-  code: number;
-  name: string;
-  isDefault: boolean;
-};
+const ALL_COMPANIES_ID = "all";
 
 export function CompanySwitcher() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +14,11 @@ export function CompanySwitcher() {
   const switchMutation = trpc.tenant.switchCompany.useMutation();
 
   const companies = tenantData?.companies ?? [];
-  const currentCompany = companies.find((c) => c.id === (selectedCompanyId ?? tenantData?.companyId));
+  const hasMultipleCompanies = companies.length > 1;
+  const isAllSelected = selectedCompanyId === ALL_COMPANIES_ID;
+  const currentCompany = isAllSelected 
+    ? null 
+    : companies.find((c) => c.id === (selectedCompanyId ?? tenantData?.companyId));
 
   useEffect(() => {
     // Carregar empresa salva no localStorage
@@ -31,14 +30,21 @@ export function CompanySwitcher() {
     }
   }, [tenantData?.companyId, selectedCompanyId]);
 
-  const handleSelectCompany = async (company: Company) => {
+  const handleSelectCompany = async (companyId: string) => {
     try {
-      await switchMutation.mutateAsync({ companyId: company.id });
-      setSelectedCompanyId(company.id);
-      localStorage.setItem("frm-active-company", company.id);
-      setIsOpen(false);
-      // Recarregar a página para atualizar os dados
-      window.location.reload();
+      if (companyId === ALL_COMPANIES_ID) {
+        // Selecionar "Todas" - usar a primeira empresa como base mas marcar como "all"
+        setSelectedCompanyId(ALL_COMPANIES_ID);
+        localStorage.setItem("frm-active-company", ALL_COMPANIES_ID);
+        setIsOpen(false);
+        window.location.reload();
+      } else {
+        await switchMutation.mutateAsync({ companyId });
+        setSelectedCompanyId(companyId);
+        localStorage.setItem("frm-active-company", companyId);
+        setIsOpen(false);
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Erro ao trocar empresa:", error);
     }
@@ -63,9 +69,13 @@ export function CompanySwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-2 md:px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors w-full md:min-w-[200px] max-w-[200px] md:max-w-none"
       >
-        <Building2 className="w-5 h-5 text-gray-500 flex-shrink-0" />
+        {isAllSelected ? (
+          <Globe className="w-5 h-5 text-blue-500 flex-shrink-0" />
+        ) : (
+          <Building2 className="w-5 h-5 text-gray-500 flex-shrink-0" />
+        )}
         <span className="flex-1 text-left text-sm font-medium text-gray-700 truncate hidden sm:block">
-          {currentCompany?.name ?? "Selecione"}
+          {isAllSelected ? "Todas as Empresas" : (currentCompany?.name ?? "Selecione")}
         </span>
         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
@@ -79,15 +89,40 @@ export function CompanySwitcher() {
           />
           
           {/* Dropdown */}
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 max-h-64 overflow-auto">
+          <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 max-h-64 overflow-auto min-w-[250px]">
+            {/* Opção "Todas as Empresas" - apenas se tiver múltiplas empresas */}
+            {hasMultipleCompanies && (
+              <button
+                onClick={() => handleSelectCompany(ALL_COMPANIES_ID)}
+                className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 ${
+                  isAllSelected ? "bg-blue-50" : ""
+                }`}
+              >
+                <Globe className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900">
+                    Todas as Empresas
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Visualizar dados de todas
+                  </div>
+                </div>
+                {isAllSelected && (
+                  <Check className="w-4 h-4 text-blue-600" />
+                )}
+              </button>
+            )}
+            
+            {/* Lista de empresas */}
             {companies.map((company) => (
               <button
                 key={company.id}
-                onClick={() => handleSelectCompany(company)}
+                onClick={() => handleSelectCompany(company.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                  company.id === selectedCompanyId ? "bg-blue-50" : ""
+                  company.id === selectedCompanyId && !isAllSelected ? "bg-blue-50" : ""
                 }`}
               >
+                <Building2 className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="text-sm font-medium text-gray-900">
                     {company.name}
@@ -97,7 +132,7 @@ export function CompanySwitcher() {
                     {company.isDefault && " • Padrão"}
                   </div>
                 </div>
-                {company.id === selectedCompanyId && (
+                {company.id === selectedCompanyId && !isAllSelected && (
                   <Check className="w-4 h-4 text-blue-600" />
                 )}
               </button>
