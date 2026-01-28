@@ -5886,3 +5886,82 @@ model GedAccessLog {
   @@index([createdAt])
   @@map("ged_access_logs")
 }
+
+// =============================================================================
+// IMPEX - IMPORTAÇÃO E EXPORTAÇÃO
+// =============================================================================
+
+enum PortType {
+  MARITIME    // Marítimo
+  AIRPORT     // Aeroporto
+  BORDER      // Fronteira terrestre
+  
+  @@map("port_type")
+}
+
+model Port {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    // Código do porto (ex: BRSSZ)
+  name        String    // Nome (ex: Porto de Santos)
+  country     String    // País
+  type        PortType  // Tipo: MARITIME, AIRPORT, BORDER
+  companyId   String?   @db.Uuid
+  isShared    Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([code])
+  @@index([companyId])
+  @@index([country])
+  @@index([type])
+  @@map("ports")
+}
+
+model CustomsBroker {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        Int       @default(autoincrement())
+  name        String
+  cnpj        String
+  email       String?
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  companyId   String?   @db.Uuid
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([cnpj])
+  @@index([companyId])
+  @@map("customs_brokers")
+}
+
+model CargoType {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    // FCL, LCL, AIR, ROAD
+  name        String
+  description String?
+  isShared    Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([code])
+  @@map("cargo_types")
+}
+
+model Incoterm {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    // FOB, CIF, EXW, etc.
+  name        String
+  description String?
+  isShared    Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([code])
+  @@map("incoterms")
+}
