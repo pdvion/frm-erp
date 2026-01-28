@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   ChevronLeft,
   Settings,
@@ -84,24 +83,18 @@ const quickLinks = [
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Settings className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">Configurações</h1>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-blue-500/10 rounded-lg">
+          <Settings className="w-6 h-6 text-blue-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Configurações</h1>
+          <p className="text-sm text-theme-muted">Configurações do sistema</p>
+        </div>
+      </div>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Settings Grid */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-theme mb-4">Configurações do Sistema</h2>
@@ -163,7 +156,7 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

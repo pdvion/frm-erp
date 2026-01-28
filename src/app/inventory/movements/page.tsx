@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 const movementTypeConfig = {
   ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800", icon: ArrowDownCircle },
@@ -40,31 +39,18 @@ export default function MovementsHistoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <History className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Histórico de Movimentações</h1>
-                <p className="text-sm text-theme-muted">Todas as movimentações de estoque</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CompanySwitcher />
-            </div>
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-indigo-500/10 rounded-lg">
+          <History className="w-6 h-6 text-indigo-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Histórico de Movimentações</h1>
+          <p className="text-sm text-theme-muted">Todas as movimentações de estoque</p>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center gap-2">
@@ -240,7 +226,7 @@ export default function MovementsHistoryPage() {
             )}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

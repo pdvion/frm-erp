@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import { Package, ChevronLeft, Download, Loader2, Search } from "lucide-react";
 
 const classColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -76,7 +76,7 @@ export default function InventoryAbcReportPage() {
                 <Download className="w-4 h-4" />
                 Exportar CSV
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

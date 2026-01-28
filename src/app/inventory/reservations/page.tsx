@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Package,
   ChevronLeft,
@@ -74,34 +73,27 @@ export default function ReservationsPage() {
   
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Package className="w-5 h-5 text-indigo-600" />
-                Reservas de Estoque
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <CompanySwitcher />
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Reserva
-              </button>
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-500/10 rounded-lg">
+            <Package className="w-6 h-6 text-indigo-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Reservas de Estoque</h1>
+            <p className="text-sm text-theme-muted">Gerenciar reservas de materiais</p>
           </div>
         </div>
-      </header>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          <Plus className="w-4 h-4" />
+          Nova Reserva
+        </button>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Erro de mutation */}
         {mutationError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -294,7 +286,7 @@ export default function ReservationsPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* Create Modal */}
       {showCreateModal && (

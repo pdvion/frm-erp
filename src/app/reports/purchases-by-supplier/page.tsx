@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import { ArrowLeftRight, ChevronLeft, Download, Loader2, Search, Calendar } from "lucide-react";
 
 export default function PurchasesBySupplierReportPage() {
@@ -67,7 +67,7 @@ export default function PurchasesBySupplierReportPage() {
                 <Download className="w-4 h-4" />
                 Exportar CSV
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

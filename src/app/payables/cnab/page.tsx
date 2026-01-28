@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Building2,
   ChevronLeft,
@@ -149,7 +149,7 @@ export default function CnabPage() {
                 Integração Bancária - CNAB
               </h1>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

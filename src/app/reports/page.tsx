@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   FileText,
   ChevronLeft,
@@ -51,29 +50,18 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar ao dashboard">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Relatórios Gerenciais</h1>
-                <p className="text-sm text-theme-muted">Análises e indicadores do sistema</p>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-indigo-500/10 rounded-lg">
+          <BarChart3 className="w-6 h-6 text-indigo-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Relatórios Gerenciais</h1>
+          <p className="text-sm text-theme-muted">Análises e indicadores do sistema</p>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-1">
@@ -162,7 +150,7 @@ export default function ReportsPage() {
             <p className="text-theme-muted">Tente ajustar os filtros de busca</p>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

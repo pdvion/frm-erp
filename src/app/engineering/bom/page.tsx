@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Layers,
   Search,
@@ -36,7 +36,7 @@ export default function BomListPage() {
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

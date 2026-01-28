@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Factory,
   ChevronLeft,
@@ -124,7 +124,7 @@ export default function ProductionOrderDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <CompanySwitcher />
+              
               
               {canCancel && (
                 <button

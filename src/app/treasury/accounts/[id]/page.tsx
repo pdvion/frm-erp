@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Landmark,
   ChevronLeft,
@@ -100,7 +100,7 @@ export default function AccountDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <CompanySwitcher />
+              
               <button
                 onClick={() => setShowTransferModal(true)}
                 className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   FileText,
   Search,
@@ -56,7 +56,7 @@ export default function IssuedInvoicesPage() {
                 <h1 className="text-xl font-semibold text-theme">Notas Fiscais de Saída</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

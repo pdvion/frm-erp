@@ -12,7 +12,6 @@ import {
   Search
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
 
@@ -107,29 +106,18 @@ export default function InventoryEntryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <ArrowDownCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Entrada de Estoque</h1>
-                <p className="text-sm text-theme-muted">Registrar entrada de materiais</p>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-green-500/10 rounded-lg">
+          <ArrowDownCircle className="w-6 h-6 text-green-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Entrada de Estoque</h1>
+          <p className="text-sm text-theme-muted">Registrar entrada de materiais</p>
+        </div>
+      </div>
 
-      {/* Form */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
@@ -346,7 +334,7 @@ export default function InventoryEntryPage() {
             </button>
           </div>
         </form>
-      </main>
+      </div>
     </div>
   );
 }

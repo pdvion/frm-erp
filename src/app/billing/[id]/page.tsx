@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   FileText,
   ChevronLeft,
@@ -90,7 +90,7 @@ export default function BillingDetailPage() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <CompanySwitcher />
+              
               {invoice.status === "DRAFT" && (
                 <button
                   onClick={() => authorizeMutation.mutate({ id })}

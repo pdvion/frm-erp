@@ -12,7 +12,6 @@ import {
   Search
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 
 interface MovementFormData {
   materialId: string;
@@ -105,29 +104,18 @@ export default function InventoryExitPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/inventory" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
-                <ArrowUpCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Saída de Estoque</h1>
-                <p className="text-sm text-theme-muted">Registrar saída de materiais</p>
-              </div>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-red-500/10 rounded-lg">
+          <ArrowUpCircle className="w-6 h-6 text-red-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Saída de Estoque</h1>
+          <p className="text-sm text-theme-muted">Registrar saída de materiais</p>
+        </div>
+      </div>
 
-      {/* Form */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
@@ -299,7 +287,7 @@ export default function InventoryExitPage() {
             </button>
           </div>
         </form>
-      </main>
+      </div>
     </div>
   );
 }

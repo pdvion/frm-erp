@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import { Users, ChevronLeft, Download, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
 
 export default function HeadcountReportPage() {
@@ -77,7 +77,7 @@ export default function HeadcountReportPage() {
                 <Download className="w-4 h-4" />
                 Exportar CSV
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

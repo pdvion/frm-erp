@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Activity,
   ChevronLeft,
@@ -96,42 +95,35 @@ export default function OeeDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Activity className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-theme">Dashboard OEE</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
-                />
-                <span className="text-theme-muted">até</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
-                />
-              </div>
-              <CompanySwitcher />
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-500/10 rounded-lg">
+            <Activity className="w-6 h-6 text-indigo-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">Dashboard OEE</h1>
+            <p className="text-sm text-theme-muted">Eficiência global de equipamentos</p>
           </div>
         </div>
-      </header>
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
+          />
+          <span className="text-theme-muted">até</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
+          />
+        </div>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -357,7 +349,7 @@ export default function OeeDashboardPage() {
             </div>
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 }

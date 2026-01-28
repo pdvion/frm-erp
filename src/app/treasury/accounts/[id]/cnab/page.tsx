@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   ChevronLeft,
   Building2,
@@ -158,7 +158,7 @@ export default function CnabConfigPage() {
                 Configuração CNAB
               </h1>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

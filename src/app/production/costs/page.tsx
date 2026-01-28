@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   DollarSign,
   ChevronLeft,
@@ -56,7 +56,7 @@ export default function ProductionCostsPage() {
                 <h1 className="text-xl font-semibold text-theme">Custos de Produção</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

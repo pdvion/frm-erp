@@ -20,6 +20,10 @@ const eslintConfig = defineConfig([
       // Desabilitar regra que proíbe setState em useEffect
       // É um padrão válido para sincronizar estado com dados externos (queries, localStorage)
       "react-hooks/set-state-in-effect": "off",
+      // Indentação: 2 espaços, nunca tabs
+      "indent": ["warn", 2, { "SwitchCase": 1 }],
+      // Proibir mistura de espaços e tabs
+      "no-mixed-spaces-and-tabs": "error",
     },
   },
 ]);

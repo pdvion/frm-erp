@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Users,
   Search,
@@ -68,7 +68,7 @@ export default function LeadsPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <CompanySwitcher />
+              
               <Link
                 href="/sales/leads/new"
                 className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"

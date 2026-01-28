@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Settings,
   ChevronLeft,
@@ -127,7 +127,7 @@ export default function WorkCentersPage() {
                 <Plus className="w-4 h-4" />
                 Novo Centro
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   Package,
   ChevronLeft,
@@ -91,7 +91,7 @@ export default function InventoryPositionReportPage() {
                 <Download className="w-4 h-4" />
                 Exportar CSV
               </button>
-              <CompanySwitcher />
+              
             </div>
           </div>
         </div>

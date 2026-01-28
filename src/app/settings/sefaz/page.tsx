@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   Shield,
   ChevronLeft,
@@ -181,23 +180,16 @@ export default function SefazConfigPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Shield className="w-5 h-5 text-indigo-600" />
-                Configuração SEFAZ
-              </h1>
-            </div>
-            <CompanySwitcher />
-          </div>
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-indigo-500/10 rounded-lg">
+          <Shield className="w-6 h-6 text-indigo-500" />
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-theme">Configuração SEFAZ</h1>
+          <p className="text-sm text-theme-muted">Certificado digital e integração</p>
+        </div>
+      </div>
 
       {/* Notifications */}
       <div className="fixed top-20 right-4 z-50 space-y-2 max-w-md">

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+
 import {
   ChevronLeft,
   Upload,
@@ -167,7 +167,7 @@ export default function NewReceivingPage() {
                 <h1 className="text-xl font-semibold text-theme">Nova Entrada de Material</h1>
               </div>
             </div>
-            <CompanySwitcher />
+            
           </div>
         </div>
       </header>

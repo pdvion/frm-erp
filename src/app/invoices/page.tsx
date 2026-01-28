@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
 import {
   FileText,
   Upload,
@@ -73,41 +72,36 @@ export default function InvoicesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-600" />
-                NFe Recebidas
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <CompanySwitcher />
-              <Link
-                href="/invoices/pending"
-                className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50"
-              >
-                <Clock className="w-4 h-4" />
-                NFe Pendentes SEFAZ
-              </Link>
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Upload className="w-4 h-4" />
-                Importar XML
-              </button>
-            </div>
+      {/* Page Title */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-indigo-500/10 rounded-lg">
+            <FileText className="w-6 h-6 text-indigo-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-theme">NFe Recebidas</h1>
+            <p className="text-sm text-theme-muted">Gerencie notas fiscais recebidas</p>
           </div>
         </div>
-      </header>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/invoices/pending"
+            className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50"
+          >
+            <Clock className="w-4 h-4" />
+            NFe Pendentes SEFAZ
+          </Link>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            <Upload className="w-4 h-4" />
+            Importar XML
+          </button>
+        </div>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {Object.entries(statusConfig).map(([status, config]) => {
@@ -302,7 +296,7 @@ export default function InvoicesPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
 
       {/* Upload Modal */}
       {showUploadModal && (
