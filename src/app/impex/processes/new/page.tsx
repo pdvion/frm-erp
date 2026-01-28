@@ -41,6 +41,9 @@ export default function NewImportProcessPage() {
     onSuccess: (data) => {
       router.push(`/impex/processes/${data.id}`);
     },
+    onError: (error) => {
+      alert(`Erro ao criar processo: ${error.message}`);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {

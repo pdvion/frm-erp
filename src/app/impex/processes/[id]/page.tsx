@@ -38,14 +38,17 @@ export default function ImportProcessDetailPage({
 
   const deleteItemMutation = trpc.impex.deleteProcessItem.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => alert(`Erro ao excluir item: ${error.message}`),
   });
 
   const deleteCostMutation = trpc.impex.deleteProcessCost.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => alert(`Erro ao excluir custo: ${error.message}`),
   });
 
   const deleteEventMutation = trpc.impex.deleteProcessEvent.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => alert(`Erro ao excluir evento: ${error.message}`),
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {

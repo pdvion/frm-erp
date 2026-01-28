@@ -52,6 +52,9 @@ export default function ExchangeContractDetailPage({
       });
       refetch();
     },
+    onError: (error) => {
+      alert(`Erro ao liquidar contrato: ${error.message}`);
+    },
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "BRL") => {

@@ -30,6 +30,9 @@ export default function NewExchangeContractPage() {
     onSuccess: (data) => {
       router.push(`/impex/exchange/${data.id}`);
     },
+    onError: (error) => {
+      alert(`Erro ao criar contrato: ${error.message}`);
+    },
   });
 
   useEffect(() => {

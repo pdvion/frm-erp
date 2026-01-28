@@ -64,6 +64,9 @@ export default function EditImportProcessPage({
     onSuccess: () => {
       router.push(`/impex/processes/${id}`);
     },
+    onError: (error) => {
+      alert(`Erro ao atualizar processo: ${error.message}`);
+    },
   });
 
   useEffect(() => {

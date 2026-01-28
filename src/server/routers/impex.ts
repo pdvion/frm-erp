@@ -19,16 +19,20 @@ export const impexRouter = createTRPCRouter({
       const { search, country, type, isActive } = input ?? {};
 
       const where = {
-        OR: [
-          { companyId: ctx.companyId },
-          { isShared: true },
+        AND: [
+          {
+            OR: [
+              { companyId: ctx.companyId },
+              { isShared: true },
+            ],
+          },
+          ...(search ? [{
+            OR: [
+              { code: { contains: search, mode: "insensitive" as const } },
+              { name: { contains: search, mode: "insensitive" as const } },
+            ],
+          }] : []),
         ],
-        ...(search && {
-          OR: [
-            { code: { contains: search, mode: "insensitive" as const } },
-            { name: { contains: search, mode: "insensitive" as const } },
-          ],
-        }),
         ...(country && { country }),
         ...(type && { type }),
         ...(isActive !== undefined && { isActive }),

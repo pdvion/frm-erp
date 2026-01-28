@@ -46,6 +46,9 @@ export default function EditExchangeContractPage({
     onSuccess: () => {
       router.push(`/impex/exchange/${id}`);
     },
+    onError: (error) => {
+      alert(`Erro ao atualizar contrato: ${error.message}`);
+    },
   });
 
   useEffect(() => {
