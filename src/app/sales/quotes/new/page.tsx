@@ -3,54 +3,70 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { FileText, Search, Plus, Trash2 } from "lucide-react";
+import { FileText, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 
 interface QuoteItem {
-  id: string;
+  materialId: string;
   code: string;
   description: string;
   quantity: number;
   unitPrice: number;
-  discount: number;
+  discountPercent: number;
   total: number;
 }
 
 export default function NewSalesQuotePage() {
+  const router = useRouter();
   const [customerSearch, setCustomerSearch] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; code: string; companyName: string } | null>(null);
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [notes, setNotes] = useState("");
   const [validityDays, setValidityDays] = useState(30);
+  const [materialSearch, setMaterialSearch] = useState("");
 
   const { data: customers } = trpc.customers.list.useQuery(
     { search: customerSearch, limit: 10 },
     { enabled: customerSearch.length >= 2 }
   );
 
-  const addItem = () => {
-    const newItem: QuoteItem = {
-      id: `item-${Date.now()}`,
-      code: "",
-      description: "",
-      quantity: 1,
-      unitPrice: 0,
-      discount: 0,
-      total: 0,
-    };
-    setItems([...items, newItem]);
+  const { data: materialsData } = trpc.materials.list.useQuery(
+    { search: materialSearch, limit: 10 },
+    { enabled: materialSearch.length >= 2 }
+  );
+
+  const createQuoteMutation = trpc.sales.createQuote.useMutation({
+    onSuccess: (quote) => {
+      router.push(`/sales/quotes/${quote.id}`);
+    },
+  });
+
+  const addMaterial = (material: { id: string; code: number; description: string; lastPurchasePrice: number | null }) => {
+    if (items.find((i) => i.materialId === material.id)) return;
+    
+    const unitPrice = material.lastPurchasePrice || 0;
+    setItems([
+      ...items,
+      {
+        materialId: material.id,
+        code: String(material.code),
+        description: material.description,
+        quantity: 1,
+        unitPrice,
+        discountPercent: 0,
+        total: unitPrice,
+      },
+    ]);
+    setMaterialSearch("");
   };
 
-  const updateItem = (index: number, field: keyof QuoteItem, value: string | number) => {
+  const updateItem = (index: number, field: "quantity" | "unitPrice" | "discountPercent", value: number) => {
     const newItems = [...items];
     const item = newItems[index];
-    if (field === "quantity" || field === "unitPrice" || field === "discount") {
-      item[field] = Number(value);
-      item.total = item.quantity * item.unitPrice * (1 - item.discount / 100);
-    } else if (field === "code" || field === "description") {
-      item[field] = String(value);
-    }
+    item[field] = value;
+    item.total = item.quantity * item.unitPrice * (1 - item.discountPercent / 100);
     setItems(newItems);
   };
 
@@ -59,6 +75,26 @@ export default function NewSalesQuotePage() {
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+
+  const validUntil = new Date();
+  validUntil.setDate(validUntil.getDate() + validityDays);
+
+  const handleSubmit = () => {
+    if (!selectedCustomer || items.length === 0) return;
+
+    createQuoteMutation.mutate({
+      customerId: selectedCustomer.id,
+      validUntil,
+      notes,
+      items: items.map((item) => ({
+        materialId: item.materialId,
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        discountPercent: item.discountPercent,
+      })),
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -118,44 +154,70 @@ export default function NewSalesQuotePage() {
 
           {/* Itens */}
           <div className="bg-theme-card border border-theme rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-theme">Itens</h3>
-              <button onClick={addItem} className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <Plus className="w-4 h-4" /> Adicionar
-              </button>
+            <h3 className="font-semibold text-theme mb-3">Itens</h3>
+            
+            {/* Busca de materiais */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
+              <input
+                type="text"
+                value={materialSearch}
+                onChange={(e) => setMaterialSearch(e.target.value)}
+                placeholder="Buscar produto para adicionar..."
+                className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+              />
+              {materialsData && materialsData.materials.length > 0 && materialSearch.length >= 2 && (
+                <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {materialsData.materials.map((material) => (
+                    <button
+                      key={material.id}
+                      onClick={() => addMaterial(material)}
+                      className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme"
+                    >
+                      <p className="font-medium">{material.description}</p>
+                      <p className="text-xs text-theme-muted">
+                        Código: {material.code} | Preço: {formatCurrency(material.lastPurchasePrice || 0)}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Lista de itens */}
             <div className="space-y-2">
               {items.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2 p-2 bg-theme-hover rounded-lg">
-                  <input
-                    type="text"
-                    value={item.code}
-                    onChange={(e) => updateItem(index, "code", e.target.value)}
-                    placeholder="Código"
-                    className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
-                  />
-                  <input
-                    type="text"
-                    value={item.description}
-                    onChange={(e) => updateItem(index, "description", e.target.value)}
-                    placeholder="Descrição"
-                    className="flex-1 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
-                  />
+                <div key={item.materialId} className="flex items-center gap-2 p-2 bg-theme-hover rounded-lg">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-theme truncate">{item.description}</p>
+                    <p className="text-xs text-theme-muted">Código: {item.code}</p>
+                  </div>
                   <input
                     type="number"
                     min={1}
                     value={item.quantity}
-                    onChange={(e) => updateItem(index, "quantity", e.target.value)}
+                    onChange={(e) => updateItem(index, "quantity", Number(e.target.value))}
                     className="w-16 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-center"
+                    title="Quantidade"
                   />
                   <input
                     type="number"
                     min={0}
                     step={0.01}
                     value={item.unitPrice}
-                    onChange={(e) => updateItem(index, "unitPrice", e.target.value)}
-                    placeholder="Preço"
+                    onChange={(e) => updateItem(index, "unitPrice", Number(e.target.value))}
                     className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-right"
+                    title="Preço unitário"
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={item.discountPercent}
+                    onChange={(e) => updateItem(index, "discountPercent", Number(e.target.value))}
+                    className="w-16 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-center"
+                    title="Desconto %"
+                    placeholder="%"
                   />
                   <span className="w-24 text-right text-sm font-medium text-theme">{formatCurrency(item.total)}</span>
                   <button onClick={() => removeItem(index)} className="p-1 text-red-600 hover:text-red-700">
@@ -163,7 +225,7 @@ export default function NewSalesQuotePage() {
                   </button>
                 </div>
               ))}
-              {items.length === 0 && <p className="text-center text-theme-muted py-4">Nenhum item adicionado</p>}
+              {items.length === 0 && <p className="text-center text-theme-muted py-4">Busque produtos acima para adicionar</p>}
             </div>
           </div>
 
@@ -207,10 +269,11 @@ export default function NewSalesQuotePage() {
             </div>
             <div className="mt-6 space-y-2">
               <button
-                disabled={!selectedCustomer || items.length === 0}
+                onClick={handleSubmit}
+                disabled={!selectedCustomer || items.length === 0 || createQuoteMutation.isPending}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                Criar Cotação
+                {createQuoteMutation.isPending ? "Criando..." : "Criar Cotação"}
               </button>
               <Link href="/sales/quotes" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
                 Cancelar
