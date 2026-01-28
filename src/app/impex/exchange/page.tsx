@@ -11,12 +11,12 @@ import {
   Eye,
   Edit,
   Trash2,
-  Loader2,
   Calendar,
   AlertTriangle,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -199,9 +199,7 @@ export default function ExchangeContractsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
+        <TableSkeleton rows={5} columns={8} />
       ) : !contracts?.length ? (
         <div className="bg-theme-card border border-theme rounded-lg p-12 text-center">
           <Banknote className="w-12 h-12 mx-auto text-theme-muted mb-4" />

@@ -11,11 +11,11 @@ import {
   Eye,
   Edit,
   Trash2,
-  Loader2,
   Calendar,
   DollarSign,
   Package,
 } from "lucide-react";
+import { ProcessCardSkeleton } from "@/components/ui/Skeleton";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -130,9 +130,7 @@ export default function ImportProcessesPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
+        <ProcessCardSkeleton count={3} />
       ) : !processes?.length ? (
         <div className="bg-theme-card border border-theme rounded-lg p-12 text-center">
           <Package className="w-12 h-12 mx-auto text-theme-muted mb-4" />
