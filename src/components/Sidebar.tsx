@@ -46,6 +46,7 @@ const menuItems: MenuItem[] = [
       { label: "Ordens de Compra", href: "/purchase-orders" },
       { label: "Recebimento", href: "/receiving" },
       { label: "Requisições", href: "/requisitions" },
+      { label: "ImpEx", href: "/impex" },
     ],
   },
   {
