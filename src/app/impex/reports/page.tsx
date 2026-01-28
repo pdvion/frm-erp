@@ -92,10 +92,12 @@ export default function ImpExReportsPage() {
 
     if (csvContent) {
       const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
+      link.href = url;
       link.download = filename;
       link.click();
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -303,10 +305,15 @@ export default function ImpExReportsPage() {
                   className={`text-2xl font-bold ${
                     exchangeReport.data.summary.totalVariation > 0
                       ? "text-red-600"
-                      : "text-green-600"
+                      : exchangeReport.data.summary.totalVariation < 0
+                      ? "text-green-600"
+                      : "text-theme"
                   }`}
                 >
                   {formatCurrency(Math.abs(exchangeReport.data.summary.totalVariation), "BRL")}
+                </p>
+                <p className="text-xs text-theme-muted">
+                  {exchangeReport.data.summary.totalVariation > 0 ? "Perda" : exchangeReport.data.summary.totalVariation < 0 ? "Ganho" : "Neutro"}
                 </p>
               </div>
             </div>
@@ -411,7 +418,7 @@ export default function ImpExReportsPage() {
                         </td>
                         <td className="py-3 px-4 text-right">
                           <span
-                            className={c.variation > 0 ? "text-red-600" : "text-green-600"}
+                            className={c.variation > 0 ? "text-red-600" : c.variation < 0 ? "text-green-600" : "text-theme"}
                           >
                             {formatCurrency(Math.abs(c.variation), "BRL")}
                           </span>

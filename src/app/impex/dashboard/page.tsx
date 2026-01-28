@@ -114,9 +114,13 @@ export default function ImpExDashboardPage() {
               <div className="p-2 bg-red-100 rounded-lg">
                 <TrendingDown className="w-5 h-5 text-red-600" />
               </div>
-            ) : (
+            ) : (data?.kpis.totalExchangeVariation || 0) < 0 ? (
               <div className="p-2 bg-green-100 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-green-600" />
+              </div>
+            ) : (
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Banknote className="w-5 h-5 text-gray-600" />
               </div>
             )}
             <div>
@@ -125,13 +129,15 @@ export default function ImpExDashboardPage() {
                 className={`text-2xl font-bold ${
                   (data?.kpis.totalExchangeVariation || 0) > 0
                     ? "text-red-600"
-                    : "text-green-600"
+                    : (data?.kpis.totalExchangeVariation || 0) < 0
+                    ? "text-green-600"
+                    : "text-theme"
                 }`}
               >
                 {formatCurrency(Math.abs(data?.kpis.totalExchangeVariation || 0), "BRL")}
               </p>
               <p className="text-xs text-theme-muted">
-                {(data?.kpis.totalExchangeVariation || 0) > 0 ? "Perda" : "Ganho"}
+                {(data?.kpis.totalExchangeVariation || 0) > 0 ? "Perda" : (data?.kpis.totalExchangeVariation || 0) < 0 ? "Ganho" : "Neutro"}
               </p>
             </div>
           </div>
