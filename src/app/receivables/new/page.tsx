@@ -6,7 +6,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   DollarSign,
-  ChevronLeft,
   Loader2,
   Save,
   Search,

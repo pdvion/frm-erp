@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   Shield,
-  ChevronLeft,
   Upload,
   CheckCircle,
   XCircle,

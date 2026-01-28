@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import {
   DollarSign,
-  ChevronLeft,
   CheckCircle,
   Loader2,
   Ban,

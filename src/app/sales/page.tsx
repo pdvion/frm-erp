@@ -6,7 +6,6 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import {
   ShoppingCart,
-  ChevronLeft,
   Loader2,
   Users,
   FileText,

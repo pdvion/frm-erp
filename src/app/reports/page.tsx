@@ -5,7 +5,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   FileText,
-  ChevronLeft,
   Package,
   ArrowLeftRight,
   TrendingDown,

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  ChevronLeft,
   Settings,
   Building2,
   BookOpen,

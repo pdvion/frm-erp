@@ -6,7 +6,6 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import {
   ClipboardList,
-  ChevronLeft,
   Save,
   Loader2,
   AlertTriangle,

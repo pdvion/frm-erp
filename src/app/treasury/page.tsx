@@ -6,7 +6,6 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import {
   Landmark,
-  ChevronLeft,
   Loader2,
   Plus,
   Eye,
