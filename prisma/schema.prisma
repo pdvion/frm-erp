@@ -515,6 +515,7 @@ model Material {
   nonConformities         NonConformity[]
   productionCostMaterials ProductionCostMaterial[]
   standardCosts           MaterialStandardCost[]
+  importProcessItems      ImportProcessItem[]
 
   @@map("materials")
 }
@@ -597,6 +598,7 @@ model Supplier {
   materialReceivings MaterialReceiving[]
   ddaBoletos        DdaBoleto[]
   supplierReturns   SupplierReturn[]
+  importProcesses   ImportProcess[]
 
   @@map("suppliers")
 }
@@ -886,6 +888,7 @@ model PurchaseOrder {
   items                 PurchaseOrderItem[]
   receivedInvoices      ReceivedInvoice[]
   materialReceivings    MaterialReceiving[]
+  importProcessItems    ImportProcessItem[]
 
   @@index([supplierId])
   @@index([companyId])
@@ -5911,6 +5914,9 @@ model Port {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  importProcessesOrigin ImportProcess[] @relation("OriginPort")
+  importProcessesDest   ImportProcess[] @relation("DestPort")
+
   @@unique([code])
   @@index([companyId])
   @@index([country])
@@ -5933,6 +5939,8 @@ model CustomsBroker {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  importProcesses ImportProcess[]
+
   @@unique([cnpj])
   @@index([companyId])
   @@map("customs_brokers")
@@ -5948,6 +5956,8 @@ model CargoType {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  importProcesses ImportProcess[]
+
   @@unique([code])
   @@map("cargo_types")
 }
@@ -5962,6 +5972,134 @@ model Incoterm {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  importProcesses ImportProcess[]
+
   @@unique([code])
   @@map("incoterms")
+}
+
+enum ImportStatus {
+  DRAFT
+  PENDING_SHIPMENT
+  IN_TRANSIT
+  ARRIVED
+  IN_CLEARANCE
+  CLEARED
+  DELIVERED
+  CANCELLED
+
+  @@map("import_status")
+}
+
+model ImportProcess {
+  id              String        @id @default(uuid()) @db.Uuid
+  processNumber   String        // Número do processo (PI-2026-0001)
+  reference       String?       // Referência do fornecedor
+  supplierId      String        @db.Uuid
+  brokerId        String?       @db.Uuid
+  incotermId      String        @db.Uuid
+  cargoTypeId     String        @db.Uuid
+  originPortId    String        @db.Uuid
+  destPortId      String        @db.Uuid
+
+  // Valores
+  invoiceValue    Decimal       @db.Decimal(15,2)
+  currency        String        @default("USD")
+  exchangeRate    Decimal?      @db.Decimal(10,6)
+  freightValue    Decimal?      @db.Decimal(15,2)
+  insuranceValue  Decimal?      @db.Decimal(15,2)
+
+  // Datas
+  invoiceDate     DateTime?
+  etd             DateTime?     // Estimated Time of Departure
+  eta             DateTime?     // Estimated Time of Arrival
+  arrivalDate     DateTime?
+  clearanceDate   DateTime?
+
+  // Status
+  status          ImportStatus  @default(DRAFT)
+
+  // Documentos
+  invoiceNumber   String?
+  blNumber        String?       // Bill of Lading
+  diNumber        String?       // Declaração de Importação
+
+  notes           String?
+  companyId       String        @db.Uuid
+  createdBy       String?       @db.Uuid
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  supplier        Supplier      @relation(fields: [supplierId], references: [id])
+  broker          CustomsBroker? @relation(fields: [brokerId], references: [id])
+  incoterm        Incoterm      @relation(fields: [incotermId], references: [id])
+  cargoType       CargoType     @relation(fields: [cargoTypeId], references: [id])
+  originPort      Port          @relation("OriginPort", fields: [originPortId], references: [id])
+  destPort        Port          @relation("DestPort", fields: [destPortId], references: [id])
+  items           ImportProcessItem[]
+  events          ImportProcessEvent[]
+  costs           ImportProcessCost[]
+
+  @@unique([processNumber])
+  @@index([companyId])
+  @@index([supplierId])
+  @@index([status])
+  @@index([eta])
+  @@map("import_processes")
+}
+
+model ImportProcessItem {
+  id              String        @id @default(uuid()) @db.Uuid
+  processId       String        @db.Uuid
+  materialId      String        @db.Uuid
+  purchaseOrderId String?       @db.Uuid
+  quantity        Decimal       @db.Decimal(15,4)
+  unitPrice       Decimal       @db.Decimal(15,6)
+  totalPrice      Decimal       @db.Decimal(15,2)
+  ncm             String?
+  description     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  process         ImportProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+  material        Material      @relation(fields: [materialId], references: [id])
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+
+  @@index([processId])
+  @@index([materialId])
+  @@map("import_process_items")
+}
+
+model ImportProcessEvent {
+  id          String        @id @default(uuid()) @db.Uuid
+  processId   String        @db.Uuid
+  eventType   String        // INVOICE, SHIPMENT, ARRIVAL, CLEARANCE, etc.
+  eventDate   DateTime
+  description String?
+  userId      String?       @db.Uuid
+  createdAt   DateTime      @default(now())
+
+  process     ImportProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  @@index([processId])
+  @@index([eventDate])
+  @@map("import_process_events")
+}
+
+model ImportProcessCost {
+  id          String        @id @default(uuid()) @db.Uuid
+  processId   String        @db.Uuid
+  costType    String        // FREIGHT, INSURANCE, CUSTOMS, STORAGE, etc.
+  description String
+  value       Decimal       @db.Decimal(15,2)
+  currency    String        @default("BRL")
+  isEstimated Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  process     ImportProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  @@index([processId])
+  @@map("import_process_costs")
 }

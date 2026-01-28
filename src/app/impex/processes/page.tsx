@@ -1,0 +1,246 @@
+"use client";
+
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
+import {
+  Ship,
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash2,
+  Loader2,
+  Calendar,
+  DollarSign,
+  Package,
+} from "lucide-react";
+import Link from "next/link";
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-700" },
+  PENDING_SHIPMENT: { label: "Aguardando Embarque", color: "bg-yellow-100 text-yellow-700" },
+  IN_TRANSIT: { label: "Em Trânsito", color: "bg-blue-100 text-blue-700" },
+  ARRIVED: { label: "Chegou", color: "bg-purple-100 text-purple-700" },
+  IN_CLEARANCE: { label: "Em Desembaraço", color: "bg-orange-100 text-orange-700" },
+  CLEARED: { label: "Desembaraçado", color: "bg-green-100 text-green-700" },
+  DELIVERED: { label: "Entregue", color: "bg-emerald-100 text-emerald-700" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-700" },
+};
+
+type StatusKey = keyof typeof STATUS_LABELS;
+
+export default function ImportProcessesPage() {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusKey | "">("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const { data: processes, isLoading, refetch } = trpc.impex.listProcesses.useQuery({
+    search: search || undefined,
+    status: (statusFilter || undefined) as "DRAFT" | "PENDING_SHIPMENT" | "IN_TRANSIT" | "ARRIVED" | "IN_CLEARANCE" | "CLEARED" | "DELIVERED" | "CANCELLED" | undefined,
+  });
+
+  const deleteMutation = trpc.impex.deleteProcess.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {
+    if (!value) return "-";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency,
+    }).format(num);
+  };
+
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return "-";
+    return new Date(date).toLocaleDateString("pt-BR");
+  };
+
+  const handleDelete = (id: string, processNumber: string) => {
+    if (confirm(`Deseja excluir o processo ${processNumber}?`)) {
+      deleteMutation.mutate({ id });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Processos de Importação"
+        icon={<Ship className="w-6 h-6" />}
+        module="PURCHASES"
+        breadcrumbs={[
+          { label: "ImpEx", href: "/impex" },
+          { label: "Processos" },
+        ]}
+        actions={
+          <Link
+            href="/impex/processes/new"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            Novo Processo
+          </Link>
+        }
+      />
+
+      <div className="bg-theme-card border border-theme rounded-lg p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
+            <input
+              type="text"
+              placeholder="Buscar por número, referência ou BL..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
+          >
+            <Filter className="w-4 h-4" />
+            Filtros
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="mt-4 pt-4 border-t border-theme grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Status</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as StatusKey | "")}
+                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
+              >
+                <option value="">Todos</option>
+                {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      ) : !processes?.length ? (
+        <div className="bg-theme-card border border-theme rounded-lg p-12 text-center">
+          <Package className="w-12 h-12 mx-auto text-theme-muted mb-4" />
+          <h3 className="text-lg font-medium text-theme mb-2">Nenhum processo encontrado</h3>
+          <p className="text-theme-muted mb-4">
+            {search || statusFilter
+              ? "Tente ajustar os filtros de busca"
+              : "Comece criando seu primeiro processo de importação"}
+          </p>
+          {!search && !statusFilter && (
+            <Link
+              href="/impex/processes/new"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Processo
+            </Link>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {processes.map((process) => (
+            <div
+              key={process.id}
+              className="bg-theme-card border border-theme rounded-lg p-4 hover:border-blue-300 transition-colors"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-semibold text-theme">{process.processNumber}</h3>
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded-full ${
+                        STATUS_LABELS[process.status]?.color || "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {STATUS_LABELS[process.status]?.label || process.status}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-theme-muted">Fornecedor:</span>
+                      <p className="text-theme">{process.supplier?.companyName || "-"}</p>
+                    </div>
+                    <div>
+                      <span className="text-theme-muted">Incoterm:</span>
+                      <p className="text-theme">{process.incoterm?.code || "-"}</p>
+                    </div>
+                    <div>
+                      <span className="text-theme-muted">Origem → Destino:</span>
+                      <p className="text-theme">
+                        {process.originPort?.code || "-"} → {process.destPort?.code || "-"}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-theme-muted">Itens:</span>
+                      <p className="text-theme">{process._count?.items || 0}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <div className="text-right">
+                    <div className="flex items-center gap-1 text-theme-muted text-sm">
+                      <Calendar className="w-4 h-4" />
+                      ETA: {formatDate(process.eta)}
+                    </div>
+                    <div className="flex items-center gap-1 text-theme font-medium">
+                      <DollarSign className="w-4 h-4" />
+                      {formatCurrency(Number(process.invoiceValue), process.currency)}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/impex/processes/${process.id}`}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                      title="Visualizar"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/impex/processes/${process.id}/edit`}
+                      className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(process.id, process.processNumber)}
+                      disabled={deleteMutation.isPending}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50"
+                      title="Excluir"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {process.blNumber && (
+                <div className="mt-3 pt-3 border-t border-theme flex items-center gap-4 text-sm text-theme-muted">
+                  <span>BL: {process.blNumber}</span>
+                  {process.reference && <span>Ref: {process.reference}</span>}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
