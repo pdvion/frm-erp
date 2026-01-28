@@ -49,7 +49,37 @@ Se houver problemas em produção:
 mcp9_get_logs com service: "api" ou "postgres"
 ```
 
-## Erros Comuns de Deploy
+## ⚠️ REGRA CRÍTICA: Analisar Logs Antes de Corrigir
+
+**NUNCA assumir a causa de um erro de deploy sem analisar os logs primeiro.**
+
+### Processo Obrigatório ao Falhar Deploy
+
+1. **Obter os logs de build**:
+   - Pedir ao usuário os logs da Vercel
+   - Ou usar `mcp8_get_deployment_build_logs`
+
+2. **Ler a mensagem de erro completa**:
+   - Identificar o arquivo/linha específico
+   - Entender o contexto do erro
+
+3. **Só então propor correção** baseada no erro real
+
+### Anti-Padrões a Evitar
+- ❌ Assumir que é problema de memória sem ver os logs
+- ❌ Assumir que é problema de plano/limite sem evidência
+- ❌ Fazer múltiplas correções "tentativa e erro"
+- ❌ Ignorar a mensagem de erro específica
+
+## Erros Comuns de Deploy (referência, não suposição)
+
+| Erro | Causa | Solução |
+|------|-------|---------|
+| `JavaScript heap out of memory` | Memória insuficiente | `NODE_OPTIONS='--max-old-space-size=4096'` |
+| `@supabase/ssr: URL and API key required` | Prerender sem env vars | `export const dynamic = "force-dynamic"` no layout |
+| `Module not found` | Dependência faltando | Verificar imports e package.json |
+| `Type error` | Erro TypeScript | Corrigir tipo específico |
+| `ENOENT` | Arquivo não encontrado | Verificar path do arquivo |
 
 ### Build falha por tipos
 - Verificar `pnpm type-check` localmente
@@ -57,7 +87,8 @@ mcp9_get_logs com service: "api" ou "postgres"
 
 ### Variáveis de ambiente
 - Verificar se todas as env vars estão configuradas na Vercel
-- DATABASE_URL, DIRECT_URL para Supabase
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `DATABASE_URL`, `DIRECT_URL` para Supabase
 
 ### Prisma Client não gerado
 - Adicionar `pnpm prisma generate` no build script se necessário
