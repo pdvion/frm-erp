@@ -144,9 +144,12 @@ export function Breadcrumb() {
   };
   const ModuleIcon = moduleConfig.icon;
 
-  const breadcrumbs = segments.map((segment, index) => {
-    const path = "/" + segments.slice(0, index + 1).join("/");
-    const isLast = index === segments.length - 1;
+  // Skip first segment (module name) since it's already shown in the header
+  const breadcrumbSegments = segments.slice(1);
+  
+  const breadcrumbs = breadcrumbSegments.map((segment, index) => {
+    const path = "/" + segments.slice(0, index + 2).join("/");
+    const isLast = index === breadcrumbSegments.length - 1;
     
     // Check if segment is a UUID or ID (skip labeling)
     const isId = /^[a-f0-9-]{36}$|^[a-z0-9]{25}$/i.test(segment);
@@ -173,24 +176,26 @@ export function Breadcrumb() {
         <span className="font-semibold text-theme truncate">{moduleConfig.name}</span>
       </div>
       
-      {/* Breadcrumb Path */}
-      <nav className="flex items-center gap-1 text-xs text-theme-muted mt-0.5 overflow-hidden">
-        <Link href="/dashboard" className="hover:text-theme-secondary flex-shrink-0">
-          Home
-        </Link>
-        {breadcrumbs.map((crumb) => (
-          <span key={crumb.path} className="flex items-center gap-1 min-w-0">
-            <ChevronRight className="w-3 h-3 flex-shrink-0" />
-            {crumb.isLast ? (
-              <span className="text-theme-secondary truncate">{crumb.label}</span>
-            ) : (
-              <Link href={crumb.path} className="hover:text-theme-secondary truncate">
-                {crumb.label}
-              </Link>
-            )}
-          </span>
-        ))}
-      </nav>
+      {/* Breadcrumb Path - only show if there are sub-pages */}
+      {breadcrumbs.length > 0 && (
+        <nav className="flex items-center gap-1 text-xs text-theme-muted mt-0.5 overflow-hidden">
+          <Link href={`/${firstSegment}`} className="hover:text-theme-secondary flex-shrink-0">
+            {moduleConfig.name}
+          </Link>
+          {breadcrumbs.map((crumb) => (
+            <span key={crumb.path} className="flex items-center gap-1 min-w-0">
+              <ChevronRight className="w-3 h-3 flex-shrink-0" />
+              {crumb.isLast ? (
+                <span className="text-theme-secondary truncate">{crumb.label}</span>
+              ) : (
+                <Link href={crumb.path} className="hover:text-theme-secondary truncate">
+                  {crumb.label}
+                </Link>
+              )}
+            </span>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }
