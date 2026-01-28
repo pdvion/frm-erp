@@ -135,7 +135,7 @@ export default function BillingPage() {
                 className={`p-4 rounded-lg border-2 transition-all ${
                   statusFilter === status
                     ? "border-indigo-500 bg-indigo-50"
-                    : "border-gray-200 bg-theme-card hover:border-gray-300"
+                    : "border-theme bg-theme-card hover:border-theme"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -183,7 +183,7 @@ export default function BillingPage() {
             </div>
           ) : data?.invoices.length === 0 ? (
             <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
               <p className="text-theme-muted mb-4">Crie uma nova nota fiscal para começar</p>
               <button

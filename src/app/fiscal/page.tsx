@@ -54,14 +54,14 @@ export default function FiscalPage() {
                   <module.icon className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <h3 className="font-semibold text-theme dark:text-theme-muted group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {module.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-theme-muted mt-1">
                     {module.description}
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                <ArrowRight className="h-5 w-5 text-theme-muted group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               </div>
             </PageCard>
           </Link>
@@ -72,11 +72,11 @@ export default function FiscalPage() {
       <PageCard title="Sobre o Módulo Fiscal">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+            <h4 className="font-medium text-theme dark:text-theme-muted mb-2 flex items-center gap-2">
               <Receipt className="h-4 w-4" />
               NFe - Nota Fiscal Eletrônica
             </h4>
-            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-theme-muted space-y-1 list-disc list-inside">
               <li>Importação de XML via upload ou email</li>
               <li>Vinculação automática com materiais</li>
               <li>Conferência com pedidos de compra</li>
@@ -85,11 +85,11 @@ export default function FiscalPage() {
             </ul>
           </div>
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+            <h4 className="font-medium text-theme dark:text-theme-muted mb-2 flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               SPED Fiscal
             </h4>
-            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-theme-muted space-y-1 list-disc list-inside">
               <li>EFD ICMS/IPI - Escrituração Fiscal Digital</li>
               <li>Blocos 0, C, E, H e 9</li>
               <li>Validação automática do arquivo</li>

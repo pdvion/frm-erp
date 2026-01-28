@@ -61,7 +61,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="code" className="block text-sm font-medium text-theme-secondary mb-1">
             Código *
           </label>
           <input
@@ -71,13 +71,13 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.code}
             onChange={handleChange}
             placeholder="Ex: 101"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             autoFocus
             required
           />
         </div>
         <div>
-          <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="cnpj" className="block text-sm font-medium text-theme-secondary mb-1">
             CNPJ
           </label>
           <input
@@ -87,13 +87,13 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.cnpj}
             onChange={handleChange}
             placeholder="00.000.000/0000-00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="companyName" className="block text-sm font-medium text-theme-secondary mb-1">
           Razão Social *
         </label>
         <input
@@ -103,13 +103,13 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
           value={formData.companyName}
           onChange={handleChange}
           placeholder="Nome completo da empresa"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           required
         />
       </div>
 
       <div>
-        <label htmlFor="tradeName" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="tradeName" className="block text-sm font-medium text-theme-secondary mb-1">
           Nome Fantasia
         </label>
         <input
@@ -119,13 +119,13 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
           value={formData.tradeName}
           onChange={handleChange}
           placeholder="Nome comercial"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-theme-secondary mb-1">
             Telefone
           </label>
           <input
@@ -135,11 +135,11 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.phone}
             onChange={handleChange}
             placeholder="(00) 0000-0000"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
         </div>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-theme-secondary mb-1">
             E-mail
           </label>
           <input
@@ -149,14 +149,14 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.email}
             onChange={handleChange}
             placeholder="contato@empresa.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="city" className="block text-sm font-medium text-theme-secondary mb-1">
             Cidade
           </label>
           <input
@@ -166,11 +166,11 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.city}
             onChange={handleChange}
             placeholder="São Paulo"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
         </div>
         <div>
-          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="state" className="block text-sm font-medium text-theme-secondary mb-1">
             UF
           </label>
           <select
@@ -178,7 +178,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             name="state"
             value={formData.state}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           >
             <option value="">Selecione</option>
             {STATES.map((uf) => (
@@ -194,11 +194,11 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
         </div>
       )}
 
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4 border-t border-theme">
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-secondary transition-colors"
         >
           <X className="w-4 h-4" />
           Cancelar

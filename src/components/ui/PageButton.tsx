@@ -16,11 +16,11 @@ interface PageButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: "bg-blue-600 text-white hover:bg-blue-700 border-transparent",
-  secondary: "bg-zinc-800 text-white hover:bg-zinc-700 border-zinc-700",
+  secondary: "bg-theme-secondary text-theme hover:bg-theme-hover border-theme",
   danger: "bg-red-600 text-white hover:bg-red-700 border-transparent",
   success: "bg-green-600 text-white hover:bg-green-700 border-transparent",
   warning: "bg-yellow-600 text-white hover:bg-yellow-700 border-transparent",
-  ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800 border-zinc-700",
+  ghost: "bg-transparent text-theme-muted hover:text-theme hover:bg-theme-hover border-theme",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -43,7 +43,7 @@ export function PageButton({
     <button
       className={`
         inline-flex items-center justify-center font-medium rounded-lg border
-        transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-900
+        transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
         disabled:opacity-50 disabled:cursor-not-allowed
         ${variantStyles[variant]}
         ${sizeStyles[size]}

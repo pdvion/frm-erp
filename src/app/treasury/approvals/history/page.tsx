@@ -55,7 +55,7 @@ export default function ApprovalsHistoryPage() {
       PENDING: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
       APPROVED: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
       REJECTED: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-      CANCELLED: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
+      CANCELLED: "bg-theme-tertiary text-theme-secondary dark:text-theme-muted",
       PAID: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
     };
     const labels: Record<string, string> = {
@@ -85,7 +85,7 @@ export default function ApprovalsHistoryPage() {
       URGENT: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
       HIGH: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400",
       NORMAL: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-      LOW: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
+      LOW: "bg-theme-tertiary text-theme-secondary dark:text-theme-muted",
     };
     const labels: Record<string, string> = {
       URGENT: "Urgente",

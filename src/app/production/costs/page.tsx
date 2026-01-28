@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
   CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800", icon: <Calculator className="w-4 h-4" /> },
   CLOSED: { label: "Fechado", color: "bg-green-100 text-green-800", icon: <Lock className="w-4 h-4" /> },
 };
@@ -149,7 +149,7 @@ export default function ProductionCostsPage() {
             </div>
           ) : !costsData?.costs.length ? (
             <div className="text-center py-12">
-              <DollarSign className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <DollarSign className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum custo de produção encontrado</p>
               <p className="text-sm text-theme-muted mt-2">
                 Calcule o custo de uma OP na página de detalhes da ordem

@@ -158,7 +158,7 @@ export default function BIDashboardPage() {
                   <span className="text-sm text-theme-muted">Vendas</span>
                   <span className="font-medium text-green-600">{formatCurrency(kpis?.sales.currentMonth || 0)}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-4">
+                <div className="w-full bg-theme-tertiary rounded-full h-4">
                   <div 
                     className="h-4 rounded-full bg-green-500"
                     style={{ 
@@ -175,7 +175,7 @@ export default function BIDashboardPage() {
                   <span className="text-sm text-theme-muted">Compras</span>
                   <span className="font-medium text-blue-600">{formatCurrency(kpis?.purchases.currentMonth || 0)}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-4">
+                <div className="w-full bg-theme-tertiary rounded-full h-4">
                   <div 
                     className="h-4 rounded-full bg-blue-500"
                     style={{ 

@@ -112,7 +112,7 @@ export default function SalesOrdersPage() {
             </div>
           ) : !data?.orders.length ? (
             <div className="text-center py-12">
-              <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Package className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum pedido encontrado</p>
             </div>
           ) : (

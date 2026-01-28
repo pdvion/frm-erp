@@ -111,7 +111,7 @@ export default function LocationsPage() {
             </div>
           ) : !locations?.length ? (
             <div className="text-center py-12">
-              <MapPin className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <MapPin className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum local cadastrado</p>
             </div>
           ) : (

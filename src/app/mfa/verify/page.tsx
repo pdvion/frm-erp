@@ -144,7 +144,7 @@ export default function MFAVerifyPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-gray-100 text-center">
+          <div className="mt-6 pt-4 border-t border-theme text-center">
             <button
               onClick={handleLogout}
               className="text-sm text-theme-muted hover:text-red-600 transition-colors"

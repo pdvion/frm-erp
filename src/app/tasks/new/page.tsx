@@ -185,7 +185,7 @@ export default function NewTaskPage() {
                     className={`p-4 border rounded-lg text-left transition-colors ${
                       targetType === key
                         ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        : "border-theme hover:border-theme"
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-1">

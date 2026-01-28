@@ -102,7 +102,7 @@ export default function SalesQuotesPage() {
             </div>
           ) : !data?.quotes.length ? (
             <div className="text-center py-12">
-              <FileText className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <FileText className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum orcamento encontrado</p>
             </div>
           ) : (

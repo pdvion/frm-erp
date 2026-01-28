@@ -78,7 +78,7 @@ export default function DepartmentsPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
-        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
@@ -96,7 +96,7 @@ export default function DepartmentsPage() {
                 type="checkbox"
                 checked={showInactive}
                 onChange={(e) => setShowInactive(e.target.checked)}
-                className="rounded border-gray-300"
+                className="rounded border-theme"
               />
               <span className="text-sm text-theme-secondary">Mostrar inativos</span>
             </label>
@@ -109,8 +109,8 @@ export default function DepartmentsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : filteredDepartments.length === 0 ? (
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <FolderTree className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-12 text-center">
+            <FolderTree className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Nenhum departamento encontrado</h3>
             <p className="text-theme-muted mb-4">Crie o primeiro departamento da empresa</p>
             <button
@@ -126,7 +126,7 @@ export default function DepartmentsPage() {
             {filteredDepartments.map((dept) => (
               <div
                 key={dept.id}
-                className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+                className="bg-theme-card rounded-xl shadow-sm border border-theme p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function DepartmentsPage() {
                   <p className="text-sm text-theme-secondary mb-4">{dept.description}</p>
                 )}
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between pt-4 border-t border-theme">
                   <div className="flex items-center gap-2 text-sm text-theme-muted">
                     <Users className="w-4 h-4" />
                     <span>{dept._count.employees} funcionário(s)</span>

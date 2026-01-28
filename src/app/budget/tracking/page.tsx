@@ -18,7 +18,7 @@ export default function BudgetTrackingPage() {
       case "OK": return "text-green-600 bg-green-100 dark:bg-green-900/30";
       case "WARNING": return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
       case "EXCEEDED": return "text-red-600 bg-red-100 dark:bg-red-900/30";
-      default: return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
+      default: return "text-theme-secondary bg-theme-tertiary dark:bg-theme/30";
     }
   };
 

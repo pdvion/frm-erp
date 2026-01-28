@@ -310,7 +310,7 @@ export default function TutorialsAdminPage() {
                     type="checkbox"
                     checked={formData.isPublished}
                     onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                    className="rounded border-gray-300"
+                    className="rounded border-theme"
                   />
                   <span className="text-sm text-theme-secondary">Publicado</span>
                 </label>
@@ -362,7 +362,7 @@ export default function TutorialsAdminPage() {
             </div>
           ) : !filteredTutorials?.length ? (
             <div className="text-center py-12">
-              <BookOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <BookOpen className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum tutorial encontrado</p>
             </div>
           ) : (

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
   SENT: { label: "Enviado", color: "bg-blue-100 text-blue-800", icon: <Send className="w-4 h-4" /> },
   VIEWED: { label: "Visualizado", color: "bg-purple-100 text-purple-800", icon: <Eye className="w-4 h-4" /> },
   ACCEPTED: { label: "Aceito", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },

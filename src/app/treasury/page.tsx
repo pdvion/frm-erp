@@ -128,7 +128,7 @@ export default function TreasuryPage() {
 
                     {!accounts?.length && (
                       <div className="px-4 py-8 text-center text-theme-muted">
-                        <Landmark className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                        <Landmark className="w-8 h-8 mx-auto mb-2 text-theme-muted" />
                         <p>Nenhuma conta cadastrada</p>
                       </div>
                     )}
@@ -156,7 +156,7 @@ export default function TreasuryPage() {
 
                   {!selectedAccount ? (
                     <div className="px-4 py-12 text-center text-theme-muted">
-                      <Landmark className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <Landmark className="w-12 h-12 mx-auto mb-4 text-theme-muted" />
                       <p>Selecione uma conta para ver o extrato</p>
                     </div>
                   ) : !transactions?.transactions.length ? (

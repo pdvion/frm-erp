@@ -126,7 +126,7 @@ export default function NotificationsPage() {
                 type="checkbox"
                 checked={unreadOnly}
                 onChange={(e) => setUnreadOnly(e.target.checked)}
-                className="rounded border-gray-300"
+                className="rounded border-theme"
               />
               <span className="text-sm text-theme-secondary">Apenas não lidas</span>
             </label>
@@ -141,7 +141,7 @@ export default function NotificationsPage() {
             </div>
           ) : !data?.notifications?.length ? (
             <div className="text-center py-12">
-              <Bell className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Bell className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhuma notificação encontrada</p>
             </div>
           ) : (

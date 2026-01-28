@@ -34,7 +34,7 @@ const inspectionTypeConfig: Record<string, { label: string; color: string }> = {
   RECEIVING: { label: "Recebimento", color: "bg-blue-100 text-blue-800" },
   IN_PROCESS: { label: "Em Processo", color: "bg-purple-100 text-purple-800" },
   FINAL: { label: "Final", color: "bg-green-100 text-green-800" },
-  AUDIT: { label: "Auditoria", color: "bg-gray-100 text-gray-800" },
+  AUDIT: { label: "Auditoria", color: "bg-theme-tertiary text-theme" },
 };
 
 const ncSeverityConfig: Record<string, { label: string; color: string }> = {
@@ -241,7 +241,7 @@ export default function QualityPage() {
               </div>
             ) : !inspectionsData?.inspections.length ? (
               <div className="text-center py-12">
-                <ClipboardCheck className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <ClipboardCheck className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                 <p className="text-theme-muted">Nenhuma inspeção encontrada</p>
               </div>
             ) : (
@@ -339,7 +339,7 @@ export default function QualityPage() {
               </div>
             ) : !ncData?.nonConformities.length ? (
               <div className="text-center py-12">
-                <AlertTriangle className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <AlertTriangle className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                 <p className="text-theme-muted">Nenhuma não-conformidade encontrada</p>
               </div>
             ) : (

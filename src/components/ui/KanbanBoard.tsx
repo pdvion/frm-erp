@@ -69,7 +69,7 @@ export function KanbanBoard<T extends { id: string }>({
 
   if (totalItems === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
+      <div className="flex items-center justify-center h-64 text-theme-muted">
         {emptyMessage}
       </div>
     );
@@ -82,7 +82,7 @@ export function KanbanBoard<T extends { id: string }>({
       {columns.map((column) => (
         <div
           key={column.id}
-          className={`flex-shrink-0 w-72 bg-gray-50 rounded-lg transition-all ${
+          className={`flex-shrink-0 w-72 bg-theme-secondary rounded-lg transition-all ${
             dragOverColumn === column.id ? "ring-2 ring-blue-400 bg-blue-50" : ""
           }`}
           onDragOver={(e) => isDraggable && handleDragOver(e, column.id)}
@@ -95,7 +95,7 @@ export function KanbanBoard<T extends { id: string }>({
             style={{ borderBottomColor: column.color }}
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">{column.title}</h3>
+              <h3 className="font-medium text-theme">{column.title}</h3>
               <span
                 className="px-2 py-0.5 text-xs font-medium rounded-full text-white"
                 style={{ backgroundColor: column.color }}
@@ -108,7 +108,7 @@ export function KanbanBoard<T extends { id: string }>({
           {/* Column Content */}
           <div className="p-2 space-y-2 max-h-[calc(100vh-300px)] overflow-y-auto min-h-[100px]">
             {column.items.length === 0 ? (
-              <div className="p-4 text-center text-sm text-gray-400">
+              <div className="p-4 text-center text-sm text-theme-muted">
                 {dragOverColumn === column.id ? "Solte aqui" : "Nenhum item"}
               </div>
             ) : (
@@ -124,7 +124,7 @@ export function KanbanBoard<T extends { id: string }>({
                   } ${isDraggable ? "cursor-grab active:cursor-grabbing" : ""}`}
                 >
                   {isDraggable && (
-                    <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-gray-400">
+                    <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-theme-muted">
                       <GripVertical className="w-4 h-4" />
                     </div>
                   )}
@@ -147,13 +147,13 @@ interface ViewToggleProps {
 
 export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-theme-tertiary rounded-lg p-1">
       <button
         onClick={() => onViewChange("list")}
         className={`p-2 rounded-md transition-colors ${
           view === "list"
-            ? "bg-white text-blue-600 shadow-sm"
-            : "text-gray-500 hover:text-gray-700"
+            ? "bg-theme-card text-blue-600 shadow-sm"
+            : "text-theme-muted hover:text-theme-secondary"
         }`}
         title="Visualização em lista"
       >
@@ -163,8 +163,8 @@ export function ViewToggle({ view, onViewChange }: ViewToggleProps) {
         onClick={() => onViewChange("kanban")}
         className={`p-2 rounded-md transition-colors ${
           view === "kanban"
-            ? "bg-white text-blue-600 shadow-sm"
-            : "text-gray-500 hover:text-gray-700"
+            ? "bg-theme-card text-blue-600 shadow-sm"
+            : "text-theme-muted hover:text-theme-secondary"
         }`}
         title="Visualização Kanban"
       >
@@ -195,13 +195,13 @@ export function KanbanCard({
 }: GenericKanbanCardProps) {
   return (
     <div
-      className={`bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow ${className}`}
+      className={`bg-theme-card rounded-lg border border-theme p-3 hover:shadow-md transition-shadow ${className}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-gray-900 truncate">{title}</h4>
+          <h4 className="font-medium text-theme truncate">{title}</h4>
           {subtitle && (
-            <p className="text-sm text-gray-500 truncate mt-0.5">{subtitle}</p>
+            <p className="text-sm text-theme-muted truncate mt-0.5">{subtitle}</p>
           )}
         </div>
         {badge && (

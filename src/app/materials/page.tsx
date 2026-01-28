@@ -198,7 +198,7 @@ function MaterialsContent() {
                               </span>
                             )}
                             {material.barcode && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-700" title={material.barcode}>
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-theme-tertiary text-theme-secondary" title={material.barcode}>
                                 <Barcode className="w-3 h-3" />
                               </span>
                             )}

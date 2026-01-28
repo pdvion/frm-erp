@@ -86,7 +86,7 @@ function Requirement({
 }) {
   return (
     <div className={`flex items-center gap-2 text-xs ${
-      met ? "text-green-600" : optional ? "text-gray-400" : "text-gray-500"
+      met ? "text-green-600" : optional ? "text-theme-muted" : "text-theme-muted"
     }`}>
       {met ? (
         <Check className="w-3.5 h-3.5" />

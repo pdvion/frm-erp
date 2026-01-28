@@ -293,7 +293,7 @@ export default function CompaniesPage() {
             </div>
           ) : !filteredCompanies?.length ? (
             <div className="text-center py-12">
-              <Building2 className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Building2 className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhuma empresa encontrada</p>
             </div>
           ) : (

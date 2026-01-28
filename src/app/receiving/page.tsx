@@ -122,7 +122,7 @@ export default function ReceivingPage() {
             </div>
           ) : !data?.receivings.length ? (
             <div className="text-center py-12">
-              <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Package className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum recebimento encontrado</p>
             </div>
           ) : (

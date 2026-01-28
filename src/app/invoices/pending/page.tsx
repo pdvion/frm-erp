@@ -332,7 +332,7 @@ export default function PendingInvoicesPage() {
           </div>
         ) : data?.nfes?.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
-            <FileText className="w-12 h-12 mb-3 text-gray-300" />
+            <FileText className="w-12 h-12 mb-3 text-theme-muted" />
             <p className="font-medium">Nenhuma NFe pendente encontrada</p>
             <p className="text-sm">
               {syncStatus?.configured
@@ -351,7 +351,7 @@ export default function PendingInvoicesPage() {
                         type="checkbox"
                         checked={selectedNfes.length > 0 && selectedNfes.length === (data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).length || 0)}
                         onChange={(e) => e.target.checked ? selectAllPending() : setSelectedNfes([])}
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="rounded border-theme text-indigo-600 focus:ring-indigo-500"
                         aria-label="Selecionar todas"
                       />
                     </th>
@@ -391,7 +391,7 @@ export default function PendingInvoicesPage() {
                               type="checkbox"
                               checked={selectedNfes.includes(nfe.id)}
                               onChange={() => toggleNfeSelection(nfe.id)}
-                              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-theme text-indigo-600 focus:ring-indigo-500"
                               aria-label={`Selecionar NFe ${nfe.chaveAcesso}`}
                             />
                           )}
@@ -511,7 +511,7 @@ export default function PendingInvoicesPage() {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -519,7 +519,7 @@ export default function PendingInvoicesPage() {
                   <button
                     onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                     disabled={page === data.pages}
-                    className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -597,7 +597,7 @@ export default function PendingInvoicesPage() {
                     className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                       manifestTipo === tipo
                         ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        : "border-theme hover:border-theme"
                     }`}
                   >
                     <input
@@ -694,7 +694,7 @@ export default function PendingInvoicesPage() {
                     className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                       manifestTipo === tipo
                         ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        : "border-theme hover:border-theme"
                     }`}
                   >
                     <input

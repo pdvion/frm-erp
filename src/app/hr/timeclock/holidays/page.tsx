@@ -114,7 +114,7 @@ export default function HolidaysPage() {
           {labels[type] || type}
         </span>
         {isOptional && (
-          <span className="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+          <span className="px-2 py-0.5 text-xs font-medium rounded bg-theme-tertiary text-theme-muted">
             Facultativo
           </span>
         )}
@@ -265,7 +265,7 @@ export default function HolidaysPage() {
               <p className="text-theme-muted">Empresa</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">
+              <p className="text-2xl font-bold text-theme-muted">
                 {holidays.filter((h) => h.isOptional).length}
               </p>
               <p className="text-theme-muted">Facultativos</p>

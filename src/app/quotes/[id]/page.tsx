@@ -28,13 +28,13 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "text-zinc-300", bgColor: "bg-zinc-700", icon: <FileText className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
   PENDING: { label: "Pendente", color: "text-yellow-400", bgColor: "bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
   SENT: { label: "Enviada", color: "text-blue-400", bgColor: "bg-blue-900/30", icon: <Send className="w-4 h-4" /> },
   RECEIVED: { label: "Recebida", color: "text-purple-400", bgColor: "bg-purple-900/30", icon: <FileText className="w-4 h-4" /> },
   APPROVED: { label: "Aprovada", color: "text-green-400", bgColor: "bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitada", color: "text-red-400", bgColor: "bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "text-zinc-500", bgColor: "bg-zinc-800", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", color: "text-theme-muted", bgColor: "bg-theme-card", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function QuoteDetailPage() {

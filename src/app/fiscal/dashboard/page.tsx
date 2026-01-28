@@ -211,7 +211,7 @@ export default function FiscalDashboardPage() {
                       <span className="font-medium text-theme">{tax.name}</span>
                       <span className="text-theme-secondary">{formatCurrency(tax.value)}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-theme-tertiary rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full ${tax.color}`}
                         style={{ width: `${kpis?.taxes.total ? (tax.value / kpis.taxes.total) * 100 : 0}%` }}

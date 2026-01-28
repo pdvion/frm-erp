@@ -216,7 +216,7 @@ export default function WorkflowDashboardPage() {
                   </Link>
                 ))}
                 {pendingTasks.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhuma tarefa pendente</p>
                   </div>
@@ -258,7 +258,7 @@ export default function WorkflowDashboardPage() {
                   </div>
                 ))}
                 {(!definitions || definitions.length === 0) && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <GitBranch className="mx-auto h-12 w-12 text-theme-muted" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhum workflow configurado</p>
                     <Link

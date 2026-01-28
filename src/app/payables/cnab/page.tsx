@@ -168,7 +168,7 @@ export default function CnabPage() {
             </div>
           ) : !bankAccounts?.length ? (
             <div className="text-center py-4">
-              <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+              <Building2 className="w-12 h-12 text-theme-muted mx-auto mb-2" />
               <p className="text-theme-muted">Nenhuma conta bancária cadastrada</p>
               <Link
                 href="/settings/bank-accounts"
@@ -191,7 +191,7 @@ export default function CnabPage() {
                   className={`p-4 rounded-lg border-2 text-left transition-all ${
                     selectedBankAccountId === account.id
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      : "border-theme hover:border-theme"
                   }`}
                 >
                   <div className="font-medium text-theme">{account.name}</div>

@@ -128,7 +128,7 @@ export default function ProductionDashboardPage() {
                 </p>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-theme-tertiary rounded-full h-2">
               <div 
                 className={`h-2 rounded-full ${oeePercentage >= 85 ? "bg-green-500" : oeePercentage >= 60 ? "bg-yellow-500" : "bg-red-500"}`}
                 style={{ width: `${Math.min(oeePercentage, 100)}%` }}
@@ -165,7 +165,7 @@ export default function ProductionDashboardPage() {
                   {availabilityPercentage.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-theme-tertiary rounded-full h-3">
                 <div 
                   className={`h-3 rounded-full ${availabilityPercentage >= 90 ? "bg-green-500" : availabilityPercentage >= 70 ? "bg-yellow-500" : "bg-red-500"}`}
                   style={{ width: `${Math.min(availabilityPercentage, 100)}%` }}
@@ -181,7 +181,7 @@ export default function ProductionDashboardPage() {
                   {performancePercentage.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-theme-tertiary rounded-full h-3">
                 <div 
                   className={`h-3 rounded-full ${performancePercentage >= 95 ? "bg-green-500" : performancePercentage >= 80 ? "bg-yellow-500" : "bg-red-500"}`}
                   style={{ width: `${Math.min(performancePercentage, 100)}%` }}
@@ -197,7 +197,7 @@ export default function ProductionDashboardPage() {
                   {qualityPercentage.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-theme-tertiary rounded-full h-3">
                 <div 
                   className={`h-3 rounded-full ${qualityPercentage >= 99 ? "bg-green-500" : qualityPercentage >= 95 ? "bg-yellow-500" : "bg-red-500"}`}
                   style={{ width: `${Math.min(qualityPercentage, 100)}%` }}
@@ -243,7 +243,7 @@ export default function ProductionDashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-theme">{product.name}</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div className="w-full bg-theme-tertiary rounded-full h-2 mt-1">
                       <div 
                         className="h-2 rounded-full bg-purple-500"
                         style={{ width: `${Math.min((product.quantity / (kpis?.productionByProduct[0]?.quantity || 1)) * 100, 100)}%` }}

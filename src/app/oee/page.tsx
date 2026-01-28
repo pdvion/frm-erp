@@ -45,7 +45,7 @@ function OeeGauge({ value, target, label }: { value: number; target: number; lab
             stroke="currentColor"
             strokeWidth="8"
             fill="none"
-            className="text-gray-200"
+            className="text-theme-muted"
           />
           <circle
             cx="48"
@@ -130,7 +130,7 @@ export default function OeeDashboardPage() {
           </div>
         ) : !dashboard ? (
           <div className="text-center py-12">
-            <Activity className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+            <Activity className="w-12 h-12 mx-auto text-theme-muted mb-4" />
             <p className="text-theme-muted">Nenhum dado disponível</p>
           </div>
         ) : (
@@ -242,7 +242,7 @@ export default function OeeDashboardPage() {
                                 {item.oee.toFixed(1)}%
                               </span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="w-full bg-theme-tertiary rounded-full h-2">
                               <div
                                 className={`h-2 rounded-full ${isGood ? "bg-green-500" : "bg-red-500"}`}
                                 style={{ width: `${Math.min(item.oee, 100)}%` }}

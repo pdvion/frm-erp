@@ -31,7 +31,7 @@ const statusConfig: Record<BoletoStatus, { label: string; color: string; bgColor
   REJEITADO: { label: "Rejeitado", color: "text-red-800", bgColor: "bg-red-100", icon: X },
   PAGO: { label: "Pago", color: "text-green-800", bgColor: "bg-green-100", icon: DollarSign },
   VENCIDO: { label: "Vencido", color: "text-orange-800", bgColor: "bg-orange-100", icon: AlertTriangle },
-  CANCELADO: { label: "Cancelado", color: "text-gray-800", bgColor: "bg-gray-100", icon: X },
+  CANCELADO: { label: "Cancelado", color: "text-theme", bgColor: "bg-theme-tertiary", icon: X },
 };
 
 export default function DdaPage() {
@@ -129,10 +129,10 @@ export default function DdaPage() {
               <Clock className="h-5 w-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-bold text-theme dark:text-theme-muted">
                 {loadingDashboard ? "-" : dashboard?.totalPendentes || 0}
               </p>
-              <p className="text-sm text-gray-500">Pendentes</p>
+              <p className="text-sm text-theme-muted">Pendentes</p>
             </div>
           </div>
         </PageCard>
@@ -143,10 +143,10 @@ export default function DdaPage() {
               <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-bold text-theme dark:text-theme-muted">
                 {loadingDashboard ? "-" : dashboard?.vencendoHoje || 0}
               </p>
-              <p className="text-sm text-gray-500">Vencendo Hoje</p>
+              <p className="text-sm text-theme-muted">Vencendo Hoje</p>
             </div>
           </div>
         </PageCard>
@@ -157,10 +157,10 @@ export default function DdaPage() {
               <Calendar className="h-5 w-5 text-orange-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-bold text-theme dark:text-theme-muted">
                 {loadingDashboard ? "-" : dashboard?.vencendoSemana || 0}
               </p>
-              <p className="text-sm text-gray-500">Próx. 7 dias</p>
+              <p className="text-sm text-theme-muted">Próx. 7 dias</p>
             </div>
           </div>
         </PageCard>
@@ -171,10 +171,10 @@ export default function DdaPage() {
               <DollarSign className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-bold text-theme dark:text-theme-muted">
                 {loadingDashboard ? "-" : formatCurrency(dashboard?.valorPendente || 0)}
               </p>
-              <p className="text-sm text-gray-500">Valor Pendente</p>
+              <p className="text-sm text-theme-muted">Valor Pendente</p>
             </div>
           </div>
         </PageCard>
@@ -185,22 +185,22 @@ export default function DdaPage() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Buscar por cedente, nosso número ou código de barras..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
+            <Filter className="h-4 w-4 text-theme-muted" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as BoletoStatus | "")}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos os status</option>
               <option value="PENDENTE">Pendentes</option>
@@ -217,19 +217,19 @@ export default function DdaPage() {
       <PageCard title="Boletos">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-theme-muted" />
           </div>
         ) : data?.boletos && data.boletos.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Cedente</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Vencimento</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Valor</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Vinculado</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Ações</th>
+                <tr className="border-b border-theme">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Cedente</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-theme-muted">Vencimento</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-theme-muted">Valor</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Status</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-theme-muted">Vinculado</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-theme-muted">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -241,27 +241,27 @@ export default function DdaPage() {
                   return (
                     <tr
                       key={boleto.id}
-                      className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
+                      className={`border-b border-theme dark:border-theme hover:bg-theme-secondary dark:hover:bg-theme-card/50 ${
                         isVencido ? "bg-red-50 dark:bg-red-900/10" : ""
                       }`}
                     >
                       <td className="py-3 px-4">
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-gray-100">
+                          <p className="font-medium text-theme dark:text-theme-muted">
                             {boleto.cedenteNome || "Cedente não informado"}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-theme-muted">
                             {boleto.cedenteCnpj || boleto.nossoNumero || "-"}
                           </p>
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <span className={isVencido ? "text-red-600 font-medium" : "text-gray-900 dark:text-gray-100"}>
+                        <span className={isVencido ? "text-red-600 font-medium" : "text-theme dark:text-theme-muted"}>
                           {formatDate(boleto.dataVencimento)}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                        <span className="font-medium text-theme dark:text-theme-muted">
                           {formatCurrency(Number(boleto.valorFinal))}
                         </span>
                       </td>
@@ -281,7 +281,7 @@ export default function DdaPage() {
                             <Building2 className="h-4 w-4 inline" /> {boleto.supplier.tradeName || boleto.supplier.companyName}
                           </span>
                         ) : (
-                          <span className="text-gray-400 text-sm">-</span>
+                          <span className="text-theme-muted text-sm">-</span>
                         )}
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -333,7 +333,7 @@ export default function DdaPage() {
                               // TODO: Implementar modal de detalhes do boleto
                               setSelectedBoleto(boleto.id);
                             }}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="p-1.5 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
                             title="Ver Detalhes"
                           >
                             <Eye className="h-4 w-4" />
@@ -348,29 +348,29 @@ export default function DdaPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Nenhum boleto encontrado</p>
+            <FileText className="h-12 w-12 text-theme-muted mx-auto mb-4" />
+            <p className="text-theme-muted">Nenhum boleto encontrado</p>
           </div>
         )}
 
         {/* Paginação */}
         {data?.pagination && data.pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-theme">
+            <p className="text-sm text-theme-muted">
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.pagination.total)} de {data.pagination.total}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme dark:border-theme rounded-lg disabled:opacity-50"
               >
                 Anterior
               </button>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page >= data.pagination.totalPages}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 border border-theme dark:border-theme rounded-lg disabled:opacity-50"
               >
                 Próximo
               </button>
@@ -382,19 +382,19 @@ export default function DdaPage() {
       {/* Modal de Rejeição */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-theme dark:text-theme-muted mb-4">
               Rejeitar Boleto
             </h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Motivo da Rejeição
               </label>
               <textarea
                 value={motivoRejeicao}
                 onChange={(e) => setMotivoRejeicao(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
                 placeholder="Informe o motivo da rejeição..."
               />
             </div>
@@ -405,7 +405,7 @@ export default function DdaPage() {
                   setMotivoRejeicao("");
                   setSelectedBoleto(null);
                 }}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="px-4 py-2 border border-theme dark:border-theme rounded-lg hover:bg-theme-secondary dark:hover:bg-theme-secondary"
               >
                 Cancelar
               </button>

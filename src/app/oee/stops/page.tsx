@@ -50,8 +50,8 @@ export default function OEEStopsPage() {
     { value: "SETUP", label: "Setup", color: "bg-purple-100 text-purple-800" },
     { value: "MAINTENANCE", label: "Manutenção", color: "bg-orange-100 text-orange-800" },
     { value: "QUALITY", label: "Qualidade", color: "bg-yellow-100 text-yellow-800" },
-    { value: "MATERIAL", label: "Falta Material", color: "bg-gray-100 text-gray-800" },
-    { value: "OTHER", label: "Outros", color: "bg-gray-100 text-gray-800" },
+    { value: "MATERIAL", label: "Falta Material", color: "bg-theme-tertiary text-theme" },
+    { value: "OTHER", label: "Outros", color: "bg-theme-tertiary text-theme" },
   ];
 
   const getStopTypeInfo = (type: string) => {

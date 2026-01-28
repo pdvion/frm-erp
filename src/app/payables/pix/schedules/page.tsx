@@ -172,7 +172,7 @@ export default function PixSchedulesPage() {
             </div>
           ) : filteredSchedules.length === 0 ? (
             <div className="p-8 text-center">
-              <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Calendar className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <p className="text-theme-muted">Nenhum agendamento encontrado</p>
               <Link
                 href="/payables/pix/new"

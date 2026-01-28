@@ -53,7 +53,7 @@ export default function TimesheetPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filtros */}
-        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-theme-secondary mb-1">Data</label>
@@ -90,14 +90,14 @@ export default function TimesheetPage() {
 
         {/* Resumo */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-theme-muted mb-2">
               <User className="w-4 h-4" />
               <span className="text-sm">Total Funcionários</span>
             </div>
             <p className="text-2xl font-bold text-theme">{employees?.employees?.length || 0}</p>
           </div>
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-green-500 mb-2">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm">Presentes</span>
@@ -106,7 +106,7 @@ export default function TimesheetPage() {
               {timeEntries?.filter((e) => e.workedHours > 0).length || 0}
             </p>
           </div>
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-yellow-500 mb-2">
               <AlertTriangle className="w-4 h-4" />
               <span className="text-sm">Pendentes</span>
@@ -115,7 +115,7 @@ export default function TimesheetPage() {
               {timeEntries?.filter((e) => e.status === "PENDING").length || 0}
             </p>
           </div>
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-blue-500 mb-2">
               <Clock className="w-4 h-4" />
               <span className="text-sm">Horas Totais</span>
@@ -130,15 +130,15 @@ export default function TimesheetPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : !timeEntries || timeEntries.length === 0 ? (
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-12 text-center">
+            <Clock className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Nenhum registro encontrado</h3>
             <p className="text-theme-muted">Não há registros de ponto para esta data</p>
           </div>
         ) : (
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
             <table className="w-full">
-              <thead className="bg-theme-tertiary border-b border-gray-100">
+              <thead className="bg-theme-tertiary border-b border-theme">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Funcionário

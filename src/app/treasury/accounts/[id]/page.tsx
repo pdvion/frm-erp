@@ -65,7 +65,7 @@ export default function AccountDetailPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <Landmark className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <Landmark className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">Conta não encontrada</h3>
           <Link href="/treasury" className="text-indigo-600 hover:text-indigo-800">
             Voltar para tesouraria
@@ -173,7 +173,7 @@ export default function AccountDetailPage() {
 
           {!transactions?.transactions.length ? (
             <div className="px-4 py-12 text-center text-theme-muted">
-              <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <Calendar className="w-12 h-12 mx-auto mb-4 text-theme-muted" />
               <p>Nenhuma transação encontrada</p>
             </div>
           ) : (
@@ -405,7 +405,7 @@ function TransactionModal({
                 className={`flex-1 py-2 rounded-lg border-2 ${
                   type === "CREDIT"
                     ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-gray-200 text-theme-secondary"
+                    : "border-theme text-theme-secondary"
                 }`}
               >
                 <TrendingUp className="w-4 h-4 inline mr-1" />
@@ -416,7 +416,7 @@ function TransactionModal({
                 className={`flex-1 py-2 rounded-lg border-2 ${
                   type === "DEBIT"
                     ? "border-red-500 bg-red-50 text-red-700"
-                    : "border-gray-200 text-theme-secondary"
+                    : "border-theme text-theme-secondary"
                 }`}
               >
                 <TrendingDown className="w-4 h-4 inline mr-1" />

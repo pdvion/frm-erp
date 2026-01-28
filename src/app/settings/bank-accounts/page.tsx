@@ -288,7 +288,7 @@ export default function BankAccountsPage() {
                       type="checkbox"
                       checked={formData.isDefault}
                       onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 rounded border-gray-300"
+                      className="w-4 h-4 text-blue-600 rounded border-theme"
                     />
                     <span className="text-sm text-theme-secondary">Conta Padrão</span>
                   </label>
@@ -328,7 +328,7 @@ export default function BankAccountsPage() {
         {/* Lista */}
         {accounts?.length === 0 ? (
           <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
-            <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <Building2 className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <p className="text-theme-muted mb-4">Nenhuma conta bancária cadastrada</p>
             <button
               onClick={() => setShowForm(true)}
@@ -357,7 +357,7 @@ export default function BankAccountsPage() {
                   const typeConfig = accountTypeConfig[account.accountType];
                   const TypeIcon = typeConfig.icon;
                   return (
-                    <tr key={account.id} className="border-t border-gray-100 hover:bg-theme-hover">
+                    <tr key={account.id} className="border-t border-theme hover:bg-theme-hover">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-sm bg-theme-tertiary px-2 py-1 rounded">{account.code}</span>

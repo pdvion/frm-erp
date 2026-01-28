@@ -56,7 +56,7 @@ const inventoryTypeColors: Record<string, string> = {
   SEMI_FINISHED: "bg-yellow-500/20 text-yellow-400",
   FINISHED: "bg-green-500/20 text-green-400",
   CRITICAL: "bg-red-500/20 text-red-400",
-  DEAD: "bg-zinc-500/20 text-zinc-400",
+  DEAD: "bg-theme-secondary0/20 text-theme-muted",
   SCRAP: "bg-orange-500/20 text-orange-400",
 };
 

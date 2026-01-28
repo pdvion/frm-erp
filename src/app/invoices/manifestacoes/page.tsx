@@ -103,7 +103,7 @@ export default function ManifestacaoHistoryPage() {
           </div>
         ) : !data?.manifestacoes?.length ? (
           <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
-            <FileText className="w-12 h-12 mb-2 text-gray-300" />
+            <FileText className="w-12 h-12 mb-2 text-theme-muted" />
             <p className="font-medium">Nenhuma manifestação encontrada</p>
             <p className="text-sm">As manifestações registradas aparecerão aqui</p>
           </div>
@@ -215,7 +215,7 @@ export default function ManifestacaoHistoryPage() {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -223,7 +223,7 @@ export default function ManifestacaoHistoryPage() {
                   <button
                     onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                     disabled={page === data.pages}
-                    className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-4 h-4" />

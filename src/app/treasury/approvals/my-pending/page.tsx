@@ -85,7 +85,7 @@ export default function MyPendingApprovalsPage() {
       URGENT: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
       HIGH: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400",
       NORMAL: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-      LOW: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
+      LOW: "bg-theme-tertiary text-theme-secondary dark:text-theme-muted",
     };
     const labels: Record<string, string> = {
       URGENT: "Urgente",

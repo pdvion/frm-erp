@@ -186,7 +186,7 @@ export default function SystemDashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-theme">{module.name}</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div className="w-full bg-theme-tertiary rounded-full h-2 mt-1">
                       <div 
                         className="h-2 rounded-full bg-indigo-500"
                         style={{ width: `${Math.min((module.count / (kpis?.activityByModule[0]?.count || 1)) * 100, 100)}%` }}
@@ -250,8 +250,8 @@ export default function SystemDashboardPage() {
             href="/settings"
             className="flex items-center gap-4 p-4 bg-theme-card rounded-xl border border-theme hover:shadow-md transition-shadow"
           >
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Settings className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-theme-tertiary rounded-lg flex items-center justify-center">
+              <Settings className="w-6 h-6 text-theme-secondary" />
             </div>
             <div>
               <p className="font-medium text-theme">Configurações</p>

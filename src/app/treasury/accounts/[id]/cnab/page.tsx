@@ -339,7 +339,7 @@ export default function CnabConfigPage() {
             Importar Arquivo de Retorno
           </h2>
 
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-4">
+          <div className="border-2 border-dashed border-theme rounded-lg p-6 text-center mb-4">
             <input
               type="file"
               accept=".ret,.txt,.RET,.TXT"

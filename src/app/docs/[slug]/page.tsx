@@ -38,7 +38,7 @@ export default function TutorialPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <BookOpen className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+          <BookOpen className="w-12 h-12 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted mb-4">Tutorial não encontrado</p>
           <Link href="/docs" className="text-blue-600 hover:underline">
             Ver todos os tutoriais
@@ -188,7 +188,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${elements.length}`} className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6 text-sm">
+          <pre key={`code-${elements.length}`} className="bg-theme text-theme-muted p-4 rounded-lg overflow-x-auto my-6 text-sm">
             <code className={codeLang ? `language-${codeLang}` : ""}>{codeContent.trim()}</code>
           </pre>
         );

@@ -271,7 +271,7 @@ export default function WorkCentersPage() {
         {/* Lista */}
         {workCenters?.length === 0 ? (
           <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
-            <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <p className="text-theme-muted mb-4">Nenhum centro de trabalho cadastrado</p>
             <button
               onClick={() => setShowForm(true)}
@@ -298,7 +298,7 @@ export default function WorkCentersPage() {
               </thead>
               <tbody>
                 {workCenters?.map((wc) => (
-                  <tr key={wc.id} className="border-t border-gray-100 hover:bg-theme-hover">
+                  <tr key={wc.id} className="border-t border-theme hover:bg-theme-hover">
                     <td className="py-3 px-4">
                       <span className="font-mono text-sm bg-theme-tertiary px-2 py-1 rounded">{wc.code}</span>
                     </td>

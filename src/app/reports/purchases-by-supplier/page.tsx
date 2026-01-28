@@ -152,7 +152,7 @@ export default function PurchasesBySupplierReportPage() {
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium text-theme">{formatCurrency(item.totalValue)}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                            <div className="w-16 bg-theme-tertiary rounded-full h-2">
                               <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${Math.min(percent, 100)}%` }} />
                             </div>
                             <span className="text-sm text-theme-secondary w-12 text-right">{percent.toFixed(1)}%</span>
@@ -166,7 +166,7 @@ export default function PurchasesBySupplierReportPage() {
             </div>
             {filteredItems.length === 0 && (
               <div className="text-center py-12">
-                <ArrowLeftRight className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <ArrowLeftRight className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                 <p className="text-theme-muted">Nenhum registro encontrado</p>
               </div>
             )}

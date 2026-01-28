@@ -156,7 +156,7 @@ export default function ReservationsPage() {
             </div>
           ) : !data?.reservations.length ? (
             <div className="text-center py-12">
-              <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Package className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma reserva encontrada</h3>
               <p className="text-theme-muted">Crie uma nova reserva para começar.</p>
             </div>

@@ -226,7 +226,7 @@ export default function GpdDashboardPage() {
                     </div>
                     {indicator.targetExpected !== null && indicator.currentValue !== null && (
                       <div className="mt-2">
-                        <div className="h-2 w-full rounded-full bg-gray-200">
+                        <div className="h-2 w-full rounded-full bg-theme-tertiary">
                           <div
                             className={`h-2 rounded-full ${
                               indicator.status === "BELOW"
@@ -303,7 +303,7 @@ export default function GpdDashboardPage() {
                   </Link>
                 ))}
                 {(!goals || goals.length === 0) && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <Target className="mx-auto h-12 w-12 text-theme-muted" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhuma meta cadastrada</p>
                     <Link
@@ -365,7 +365,7 @@ export default function GpdDashboardPage() {
                   </Link>
                 ))}
                 {pendingActions.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhuma ação pendente</p>
                   </div>

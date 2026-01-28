@@ -32,7 +32,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
   COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 border-green-200", icon: <CheckCircle className="w-4 h-4" /> },
   PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 border-orange-200", icon: <AlertTriangle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 border-red-200", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme border-gray-200", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme border-theme", icon: <XCircle className="w-4 h-4" /> },
 };
 
 interface ItemConference {
@@ -121,7 +121,7 @@ export default function ReceivingDetailPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+          <Package className="w-12 h-12 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted">Recebimento não encontrado</p>
           <Link href="/receiving" className="text-blue-600 hover:underline mt-2 inline-block">
             Voltar para lista

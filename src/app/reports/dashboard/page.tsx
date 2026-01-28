@@ -138,7 +138,7 @@ export default function ReportsDashboardPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-theme">{user.name}</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div className="w-full bg-theme-tertiary rounded-full h-2 mt-1">
                       <div 
                         className="h-2 rounded-full bg-indigo-500"
                         style={{ width: `${Math.min((user.count / (kpis?.byUser[0]?.count || 1)) * 100, 100)}%` }}
@@ -178,7 +178,7 @@ export default function ReportsDashboardPage() {
               <Link
                 key={index}
                 href={report.href}
-                className="flex items-center gap-3 p-4 bg-theme-hover rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 p-4 bg-theme-hover rounded-lg hover:bg-theme-tertiary dark:hover:bg-theme-secondary transition-colors"
               >
                 <span className="text-2xl">{report.icon}</span>
                 <span className="font-medium text-theme">{report.name}</span>

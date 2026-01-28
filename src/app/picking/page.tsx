@@ -161,7 +161,7 @@ export default function PickingDashboardPage() {
               </div>
             </div>
 
-            <div className={`rounded-lg border p-6 shadow-sm ${priority.URGENT > 0 ? "border-red-200 bg-red-50" : "border-gray-200 bg-theme-card"}`}>
+            <div className={`rounded-lg border p-6 shadow-sm ${priority.URGENT > 0 ? "border-red-200 bg-red-50" : "border-theme bg-theme-card"}`}>
               <div className="flex items-center gap-3">
                 <div className={`rounded-lg p-3 ${priority.URGENT > 0 ? "bg-red-100" : "bg-orange-100"}`}>
                   <AlertTriangle className={`h-6 w-6 ${priority.URGENT > 0 ? "text-red-600" : "text-orange-600"}`} />
@@ -188,7 +188,7 @@ export default function PickingDashboardPage() {
                     className={`block rounded-lg border p-4 transition-shadow hover:shadow-md ${
                       list.priority === "URGENT" ? "border-red-200 bg-red-50" :
                       list.priority === "HIGH" ? "border-orange-200 bg-orange-50" :
-                      "border-gray-200 bg-theme-card"
+                      "border-theme bg-theme-card"
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -207,7 +207,7 @@ export default function PickingDashboardPage() {
                   </Link>
                 ))}
                 {myPendingLists.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <CheckCircle className="mx-auto h-12 w-12 text-green-400" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhuma lista pendente para você</p>
                   </div>
@@ -245,7 +245,7 @@ export default function PickingDashboardPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-gray-400" />
+                      <div className="h-3 w-3 rounded-full bg-theme-tertiary" />
                       <span className="text-sm text-theme-secondary">Baixa</span>
                     </div>
                     <span className="text-lg font-semibold text-theme">{priority.LOW}</span>

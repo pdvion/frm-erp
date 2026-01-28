@@ -22,7 +22,7 @@ function StatusBadge({ status }: { status: string }) {
     ACCEPTED: { color: "bg-blue-100 text-blue-800", label: "Aceita", icon: <Play className="h-3 w-3" /> },
     IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
     COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluída", icon: <CheckCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-gray-100 text-gray-800", label: "Cancelada", icon: <XCircle className="h-3 w-3" /> },
+    CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelada", icon: <XCircle className="h-3 w-3" /> },
   };
 
   const { color, label, icon } = config[status] || config.PENDING;
@@ -40,7 +40,7 @@ function PriorityBadge({ priority }: { priority: string }) {
     URGENT: { color: "bg-red-100 text-red-800", label: "Urgente" },
     HIGH: { color: "bg-orange-100 text-orange-800", label: "Alta" },
     NORMAL: { color: "bg-blue-100 text-blue-800", label: "Normal" },
-    LOW: { color: "bg-gray-100 text-gray-800", label: "Baixa" },
+    LOW: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
   };
 
   const { color, label } = config[priority] || config.NORMAL;

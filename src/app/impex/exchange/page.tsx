@@ -283,7 +283,7 @@ export default function ExchangeContractsPage() {
                     <td className="py-3 px-4 text-center">
                       <span
                         className={`px-2 py-1 text-xs rounded-full ${
-                          STATUS_LABELS[contract.status]?.color || "bg-gray-100 text-gray-700"
+                          STATUS_LABELS[contract.status]?.color || "bg-theme-tertiary text-theme-secondary"
                         }`}
                       >
                         {STATUS_LABELS[contract.status]?.label || contract.status}

@@ -30,7 +30,7 @@ const categoryConfig: Record<string, { label: string; icon: React.ReactNode; col
   PENSION: { label: "Previdência", icon: <Award className="w-4 h-4" />, color: "bg-indigo-100 text-indigo-800" },
   EDUCATION: { label: "Auxílio Educação", icon: <GraduationCap className="w-4 h-4" />, color: "bg-cyan-100 text-cyan-800" },
   CHILDCARE: { label: "Auxílio Creche", icon: <Users className="w-4 h-4" />, color: "bg-yellow-100 text-yellow-800" },
-  OTHER: { label: "Outros", icon: <Gift className="w-4 h-4" />, color: "bg-gray-100 text-gray-800" },
+  OTHER: { label: "Outros", icon: <Gift className="w-4 h-4" />, color: "bg-theme-tertiary text-theme" },
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -201,7 +201,7 @@ export default function BenefitsPage() {
                 </div>
               ) : !benefitTypes?.length ? (
                 <div className="text-center py-12">
-                  <Gift className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <Gift className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                   <p className="text-theme-muted">Nenhum tipo de benefício cadastrado</p>
                 </div>
               ) : (
@@ -250,7 +250,7 @@ export default function BenefitsPage() {
                 </div>
               ) : !employeeBenefits?.benefits.length ? (
                 <div className="text-center py-12">
-                  <Users className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <Users className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                   <p className="text-theme-muted">Nenhum benefício atribuído</p>
                 </div>
               ) : (
@@ -335,7 +335,7 @@ export default function BenefitsPage() {
                 </div>
               ) : !trainings?.length ? (
                 <div className="text-center py-12">
-                  <GraduationCap className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <GraduationCap className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                   <p className="text-theme-muted">Nenhum treinamento cadastrado</p>
                 </div>
               ) : (
@@ -388,7 +388,7 @@ export default function BenefitsPage() {
                 </div>
               ) : !skillsSummary?.length ? (
                 <div className="text-center py-12">
-                  <Award className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                  <Award className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                   <p className="text-theme-muted">Nenhuma competência cadastrada</p>
                   <p className="text-sm text-theme-muted mt-2">
                     A Matriz de Polivalência permite mapear as competências dos funcionários
@@ -419,7 +419,7 @@ export default function BenefitsPage() {
                                   className={`w-4 h-4 rounded ${
                                     level <= Math.round(skill.avgLevel)
                                       ? "bg-purple-600"
-                                      : "bg-gray-200"
+                                      : "bg-theme-tertiary"
                                   }`}
                                 />
                               ))}

@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-700" },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary" },
   PENDING_SHIPMENT: { label: "Aguardando Embarque", color: "bg-yellow-100 text-yellow-700" },
   IN_TRANSIT: { label: "Em Trânsito", color: "bg-blue-100 text-blue-700" },
   ARRIVED: { label: "Chegou", color: "bg-purple-100 text-purple-700" },
@@ -113,7 +113,7 @@ export default function ImportProcessDetailPage({
               <h3 className="font-semibold text-theme">Informações Gerais</h3>
               <span
                 className={`px-3 py-1 text-sm rounded-full ${
-                  STATUS_LABELS[process.status]?.color || "bg-gray-100 text-gray-700"
+                  STATUS_LABELS[process.status]?.color || "bg-theme-tertiary text-theme-secondary"
                 }`}
               >
                 {STATUS_LABELS[process.status]?.label || process.status}

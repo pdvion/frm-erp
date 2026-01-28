@@ -42,7 +42,7 @@ export function PageHeader({
         {backHref && (
           <Link
             href={backHref}
-            className="flex items-center gap-1 text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-gray-500 light:hover:text-gray-700 transition-colors flex-shrink-0"
+            className="flex items-center gap-1 text-zinc-400 hover:text-white dark:text-zinc-400 dark:hover:text-white light:text-theme-muted light:hover:text-theme-secondary transition-colors flex-shrink-0"
             title={backLabel}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -58,7 +58,7 @@ export function PageHeader({
         
         <div className="min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-gray-900 truncate">
+            <h1 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-theme truncate">
               {title}
             </h1>
             {badge && (
@@ -68,7 +68,7 @@ export function PageHeader({
             )}
           </div>
           {subtitle && (
-            <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-gray-500 mt-0.5">{subtitle}</p>
+            <p className="text-sm text-zinc-400 dark:text-zinc-400 light:text-theme-muted mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
@@ -78,7 +78,7 @@ export function PageHeader({
           <>
             <Link
               href="/docs"
-              className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 light:text-gray-500 light:hover:text-gray-700 light:hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 light:text-theme-muted light:hover:text-theme-secondary light:hover:bg-theme-tertiary rounded-full transition-colors"
               title="Documentação"
             >
               <BookOpen className="w-5 h-5" />

@@ -311,7 +311,7 @@ export default function DashboardPage() {
 
                   {!activity.tasks.length && !activity.invoices.length && !activity.requisitions.length && (
                     <div className="text-center py-8 text-theme-muted">
-                      <CheckCircle className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                      <CheckCircle className="w-12 h-12 mx-auto text-theme-muted mb-2" />
                       <p>Nenhuma atividade recente</p>
                     </div>
                   )}

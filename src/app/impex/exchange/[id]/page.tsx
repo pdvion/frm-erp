@@ -151,7 +151,7 @@ export default function ExchangeContractDetailPage({
               <h3 className="font-semibold text-theme">Informações do Contrato</h3>
               <span
                 className={`px-3 py-1 text-sm rounded-full ${
-                  STATUS_LABELS[contract.status]?.color || "bg-gray-100 text-gray-700"
+                  STATUS_LABELS[contract.status]?.color || "bg-theme-tertiary text-theme-secondary"
                 }`}
               >
                 {STATUS_LABELS[contract.status]?.label || contract.status}
