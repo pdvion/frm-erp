@@ -101,7 +101,7 @@ export default function CustomersPage() {
             </div>
           ) : !data?.customers.length ? (
             <div className="text-center py-12">
-              <Users className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+              <Users className="w-12 h-12 mx-auto text-theme-muted mb-4" />
               <p className="text-theme-muted">Nenhum cliente encontrado</p>
             </div>
           ) : (

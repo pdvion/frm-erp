@@ -128,7 +128,7 @@ export default function HeadcountReportPage() {
                     <div key={item.department} className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`} />
                       <span className="text-sm text-theme-secondary flex-1 truncate">{item.department}</span>
-                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="w-32 bg-theme-tertiary rounded-full h-2">
                         <div className={`h-2 rounded-full ${colors[idx % colors.length]}`} style={{ width: `${percent}%` }} />
                       </div>
                       <span className="text-sm font-medium text-theme w-12 text-right">{item.count}</span>
@@ -175,7 +175,7 @@ export default function HeadcountReportPage() {
               </div>
               {filteredItems.length === 0 && (
                 <div className="text-center py-12">
-                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <Users className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                   <p className="text-theme-muted">Nenhum departamento encontrado</p>
                 </div>
               )}

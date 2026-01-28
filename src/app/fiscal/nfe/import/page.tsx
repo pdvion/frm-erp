@@ -133,7 +133,7 @@ export default function NFeImportPage() {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "upload"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-gray-300"
+                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-theme"
                 }`}
               >
                 <FileUp className="w-5 h-5" />
@@ -144,7 +144,7 @@ export default function NFeImportPage() {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "email"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
-                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-gray-300"
+                    : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-theme"
                 }`}
               >
                 <Mail className="w-5 h-5" />
@@ -163,7 +163,7 @@ export default function NFeImportPage() {
                   className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
                     xmlContent
                       ? "border-green-300 bg-green-50"
-                      : "border-gray-300 hover:border-[var(--frm-primary)] hover:bg-[var(--frm-50)]"
+                      : "border-theme hover:border-[var(--frm-primary)] hover:bg-[var(--frm-50)]"
                   }`}
                 >
                   {xmlContent ? (
@@ -237,7 +237,7 @@ export default function NFeImportPage() {
 
             {activeTab === "email" && (
               <div className="text-center py-8">
-                <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <Mail className="w-16 h-16 text-theme-muted mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-theme mb-2">
                   Importação por Email
                 </h3>

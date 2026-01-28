@@ -161,7 +161,7 @@ export default function ReceivablesAgingReportPage() {
             </div>
             {filteredDetails.length === 0 && (
               <div className="text-center py-12">
-                <TrendingUp className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <TrendingUp className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                 <p className="text-theme-muted">Nenhum registro encontrado</p>
               </div>
             )}

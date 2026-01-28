@@ -102,7 +102,7 @@ export function CompareInvoiceModal({
       case "BOTH_DIVERGENT":
         return <XCircle className="w-4 h-4 text-red-600" />;
       case "NOT_IN_PO":
-        return <XCircle className="w-4 h-4 text-gray-500" />;
+        return <XCircle className="w-4 h-4 text-theme-muted" />;
       default:
         return null;
     }
@@ -127,7 +127,7 @@ export function CompareInvoiceModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-theme-card rounded-xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -135,17 +135,17 @@ export function CompareInvoiceModal({
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-theme">
                 Conferir NFe {invoiceNumber}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-theme-muted">
                 Compare com o pedido de compra
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-theme-tertiary rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -156,19 +156,19 @@ export function CompareInvoiceModal({
           {/* Seleção de Pedido */}
           {!selectedPO && (
             <div className="p-6">
-              <h3 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-gray-500" />
+              <h3 className="font-medium text-theme mb-4 flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-theme-muted" />
                 Selecione o Pedido de Compra
               </h3>
 
               {loadingPOs ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                  <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
                 </div>
               ) : purchaseOrders?.length === 0 ? (
                 <div className="text-center py-12">
-                  <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">
+                  <ShoppingCart className="w-12 h-12 text-theme-muted mx-auto mb-3" />
+                  <p className="text-theme-muted">
                     Nenhum pedido de compra encontrado para este fornecedor
                   </p>
                 </div>
@@ -178,22 +178,22 @@ export function CompareInvoiceModal({
                     <button
                       key={po.id}
                       onClick={() => setSelectedPO(po.id)}
-                      className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
+                      className="w-full flex items-center justify-between p-4 border border-theme rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Package className="w-6 h-6 text-gray-500" />
+                        <div className="w-12 h-12 bg-theme-tertiary rounded-lg flex items-center justify-center">
+                          <Package className="w-6 h-6 text-theme-muted" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-theme">
                             Pedido #{po.code}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-theme-muted">
                             {po.itemsCount} itens • {formatCurrency(po.totalValue)}
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-gray-400" />
+                      <ArrowRight className="w-5 h-5 text-theme-muted" />
                     </button>
                   ))}
                 </div>
@@ -206,15 +206,15 @@ export function CompareInvoiceModal({
             <div className="p-6">
               {loadingComparison ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                  <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
                 </div>
               ) : comparison ? (
                 <>
                   {/* Resumo */}
                   <div className="grid grid-cols-4 gap-4 mb-6">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-sm text-gray-500">Total Itens</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                    <div className="bg-theme-secondary rounded-lg p-4">
+                      <p className="text-sm text-theme-muted">Total Itens</p>
+                      <p className="text-2xl font-bold text-theme">
                         {comparison.summary.totalItems}
                       </p>
                     </div>
@@ -237,7 +237,7 @@ export function CompareInvoiceModal({
                           ? "text-red-600"
                           : comparison.summary.totalValueDivergence < 0
                           ? "text-green-600"
-                          : "text-gray-600"
+                          : "text-theme-secondary"
                       }`}>
                         {formatCurrency(comparison.summary.totalValueDivergence)}
                       </p>
@@ -247,24 +247,24 @@ export function CompareInvoiceModal({
                   {/* Tabela de Comparação */}
                   <div className="border rounded-lg overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-theme-secondary">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                             Material
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Qtd NFe
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Qtd Pedido
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Preço NFe
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Preço Pedido
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                             Status
                           </th>
                         </tr>
@@ -278,7 +278,7 @@ export function CompareInvoiceModal({
                             }
                           >
                             <td className="px-4 py-3">
-                              <p className="font-medium text-gray-900 text-sm">
+                              <p className="font-medium text-theme text-sm">
                                 {item.materialDescription}
                               </p>
                             </td>
@@ -351,7 +351,7 @@ export function CompareInvoiceModal({
                   {/* Itens faltantes no pedido */}
                   {comparison.missingInInvoice.length > 0 && (
                     <div className="mt-6">
-                      <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <h4 className="font-medium text-theme mb-3 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-yellow-600" />
                         Itens do pedido não encontrados na NFe
                       </h4>
@@ -362,7 +362,7 @@ export function CompareInvoiceModal({
                               <span className="font-medium">
                                 {item.materialDescription}
                               </span>
-                              <span className="text-gray-500 ml-2">
+                              <span className="text-theme-muted ml-2">
                                 ({item.quantity} x {formatCurrency(item.unitPrice)})
                               </span>
                             </li>
@@ -378,12 +378,12 @@ export function CompareInvoiceModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-t bg-theme-secondary flex items-center justify-between">
           <div>
             {selectedPO && (
               <button
                 onClick={() => setSelectedPO(null)}
-                className="text-sm text-gray-600 hover:text-gray-800"
+                className="text-sm text-theme-secondary hover:text-theme"
               >
                 ← Voltar para seleção
               </button>
@@ -392,7 +392,7 @@ export function CompareInvoiceModal({
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
             >
               Cancelar
             </button>

@@ -121,7 +121,7 @@ export default function ProductionPage() {
           </Link>
           <Link
             href="/production/work-centers"
-            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-gray-400 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-4 bg-theme-card rounded-lg border border-theme hover:border-theme hover:shadow-sm transition-all"
           >
             <div className="p-2 bg-theme-tertiary rounded-lg">
               <Settings className="w-5 h-5 text-theme-secondary" />
@@ -152,7 +152,7 @@ export default function ProductionPage() {
                         <span>Progresso</span>
                         <span>{progress}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-theme-tertiary rounded-full h-2">
                         <div
                           className="bg-purple-600 h-2 rounded-full"
                           style={{ width: `${progress}%` }}
@@ -229,7 +229,7 @@ export default function ProductionPage() {
             </div>
           ) : !data?.orders.length ? (
             <div className="text-center py-12">
-              <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma OP encontrada</h3>
               <p className="text-theme-muted mb-4">
                 {search || statusFilter !== "ALL"
@@ -306,7 +306,7 @@ export default function ProductionPage() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div className="flex-1 bg-theme-tertiary rounded-full h-2">
                                 <div
                                   className={`h-2 rounded-full ${
                                     progress >= 100 ? "bg-green-500" : "bg-indigo-500"

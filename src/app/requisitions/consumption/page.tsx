@@ -72,10 +72,10 @@ export default function ConsumptionReportPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-theme">
               Relatório de Consumo
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-theme-muted">
               Análise de consumo de materiais por requisições
             </p>
           </div>
@@ -90,36 +90,36 @@ export default function ConsumptionReportPage() {
         </div>
 
         {/* Filtros */}
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
-          <div className="mb-4 flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
+          <div className="mb-4 flex items-center gap-2 text-sm font-medium text-theme-secondary">
             <Filter className="h-4 w-4" />
             Filtros
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-theme-secondary">
                 Data Inicial
               </label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-theme-secondary">
                 Data Final
               </label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-theme-secondary">
                 Centro de Custo
               </label>
               <input
@@ -127,11 +127,11 @@ export default function ConsumptionReportPage() {
                 value={costCenter}
                 onChange={(e) => setCostCenter(e.target.value)}
                 placeholder="Filtrar por CC..."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="mb-1 block text-sm font-medium text-theme-secondary">
                 Departamento
               </label>
               <input
@@ -139,14 +139,14 @@ export default function ConsumptionReportPage() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="Filtrar por depto..."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
               />
             </div>
           </div>
 
           {/* Agrupamento */}
           <div className="mt-4">
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="mb-2 block text-sm font-medium text-theme-secondary">
               Agrupar por
             </label>
             <div className="flex flex-wrap gap-2">
@@ -157,7 +157,7 @@ export default function ConsumptionReportPage() {
                   className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     groupBy === option.value
                       ? "bg-teal-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                      : "bg-theme-tertiary text-theme-secondary hover:bg-theme-tertiary dark:bg-theme-secondary dark:text-theme-muted dark:hover:bg-theme-secondary"
                   }`}
                 >
                   {option.icon}
@@ -171,53 +171,53 @@ export default function ConsumptionReportPage() {
         {/* KPIs */}
         {data && (
           <div className="grid gap-4 md:grid-cols-4">
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
                   <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Grupos</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-muted">Total Grupos</p>
+                  <p className="text-xl font-bold text-theme">
                     {data.data.length}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-2 dark:bg-green-900">
                   <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Itens</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-muted">Total Itens</p>
+                  <p className="text-xl font-bold text-theme">
                     {data.totals.totalItems}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
                   <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Quantidade Total</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-muted">Quantidade Total</p>
+                  <p className="text-xl font-bold text-theme">
                     {data.totals.totalQty.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
                   <Calendar className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Valor Total</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-sm text-theme-muted">Valor Total</p>
+                  <p className="text-xl font-bold text-theme">
                     {formatCurrency(data.totals.totalValue)}
                   </p>
                 </div>
@@ -227,24 +227,24 @@ export default function ConsumptionReportPage() {
         )}
 
         {/* Tabela de Resultados */}
-        <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-theme bg-theme-card dark:border-theme dark:bg-theme-card">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+              <thead className="border-b border-theme bg-theme-secondary dark:border-theme dark:bg-theme">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">
                     {groupByOptions.find((o) => o.value === groupBy)?.label || "Grupo"}
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                     Itens
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                     Quantidade
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                     Valor
                   </th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                     % do Total
                   </th>
                 </tr>
@@ -252,13 +252,13 @@ export default function ConsumptionReportPage() {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={5} className="px-4 py-8 text-center text-theme-muted">
                       Carregando...
                     </td>
                   </tr>
                 ) : !data || data.data.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={5} className="px-4 py-8 text-center text-theme-muted">
                       Nenhum dado encontrado para o período selecionado
                     </td>
                   </tr>
@@ -266,21 +266,21 @@ export default function ConsumptionReportPage() {
                   data.data.map((group: { key: string; label: string; items: number; totalQty: number; totalValue: number }) => (
                     <tr
                       key={group.key}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      className="hover:bg-theme-secondary dark:hover:bg-theme-secondary"
                     >
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                      <td className="px-4 py-3 text-sm text-theme">
                         {group.label}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-right text-sm text-theme-muted">
                         {group.items}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-right text-sm text-theme-muted">
                         {group.totalQty.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">
+                      <td className="px-4 py-3 text-right text-sm font-medium text-theme">
                         {formatCurrency(group.totalValue)}
                       </td>
-                      <td className="px-4 py-3 text-right text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-right text-sm text-theme-muted">
                         {data.totals.totalValue > 0
                           ? ((group.totalValue / data.totals.totalValue) * 100).toFixed(1)
                           : "0.0"}
@@ -291,21 +291,21 @@ export default function ConsumptionReportPage() {
                 )}
               </tbody>
               {data && data.data.length > 0 && (
-                <tfoot className="border-t-2 border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-900">
+                <tfoot className="border-t-2 border-theme bg-theme-tertiary dark:border-theme dark:bg-theme">
                   <tr className="font-bold">
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-theme">
                       TOTAL
                     </td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-right text-sm text-theme">
                       {data.totals.totalItems}
                     </td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-right text-sm text-theme">
                       {data.totals.totalQty.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}
                     </td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-right text-sm text-theme">
                       {formatCurrency(data.totals.totalValue)}
                     </td>
-                    <td className="px-4 py-3 text-right text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-right text-sm text-theme">
                       100%
                     </td>
                   </tr>

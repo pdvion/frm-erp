@@ -230,7 +230,7 @@ export default function PixPage() {
                     <tr>
                       <td colSpan={6} className="px-4 py-8 text-center text-theme-muted">
                         <div className="flex flex-col items-center gap-2">
-                          <QrCode className="w-12 h-12 text-gray-300" />
+                          <QrCode className="w-12 h-12 text-theme-muted" />
                           <p>Nenhuma transação PIX encontrada</p>
                           <Link
                             href="/payables/pix/new"

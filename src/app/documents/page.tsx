@@ -33,7 +33,7 @@ function getFileIcon(fileType: string) {
   if (fileType.includes("image")) return <FileIcon className="w-5 h-5 text-blue-500" />;
   if (fileType.includes("spreadsheet") || fileType.includes("excel") || fileType.includes("csv")) 
     return <FileSpreadsheet className="w-5 h-5 text-green-500" />;
-  return <File className="w-5 h-5 text-gray-500" />;
+  return <File className="w-5 h-5 text-theme-muted" />;
 }
 
 function formatFileSize(bytes: number): string {

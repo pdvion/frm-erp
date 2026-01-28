@@ -46,7 +46,7 @@ export default function GPDGoalsPage() {
     ACTIVE: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
     ACHIEVED: "text-green-600 bg-green-100 dark:bg-green-900/30",
     NOT_ACHIEVED: "text-red-600 bg-red-100 dark:bg-red-900/30",
-    CANCELLED: "text-gray-600 bg-gray-100 dark:bg-gray-900/30",
+    CANCELLED: "text-theme-secondary bg-theme-tertiary dark:bg-theme/30",
   };
 
   const statusLabels = {

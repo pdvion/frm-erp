@@ -41,7 +41,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
   if (!payslip) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <FileText className="w-16 h-16 text-gray-300 mb-4" />
+        <FileText className="w-16 h-16 text-theme-muted mb-4" />
         <p className="text-theme-muted">Holerite não encontrado</p>
         <button
           onClick={() => router.push(`/hr/payroll/${id}`)}
@@ -80,7 +80,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Cabeçalho do Holerite */}
-        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-6 mb-6">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-xl font-bold text-theme">
@@ -142,7 +142,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
         </div>
 
         {/* Resumo de Horas */}
-        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-6 mb-6">
           <h3 className="text-lg font-semibold text-theme mb-4">Resumo de Horas</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="text-center p-3 bg-blue-50 rounded-lg">
@@ -181,7 +181,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
         {/* Proventos e Descontos */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Proventos */}
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
             <div className="p-4 bg-green-50 border-b border-green-100">
               <h3 className="text-lg font-semibold text-green-800 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
@@ -215,7 +215,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
           </div>
 
           {/* Descontos */}
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
             <div className="p-4 bg-red-50 border-b border-red-100">
               <h3 className="text-lg font-semibold text-red-800 flex items-center gap-2">
                 <TrendingDown className="w-5 h-5" />
@@ -270,7 +270,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
                 {formatCurrency(payslip.totals.fgts)}
               </p>
             </div>
-            <div className="bg-white/20 rounded-lg p-3">
+            <div className="bg-theme-card/20 rounded-lg p-3">
               <p className="text-blue-100 text-sm">Salário Líquido</p>
               <p className="text-3xl font-bold">
                 {formatCurrency(payslip.totals.netSalary)}

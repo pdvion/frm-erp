@@ -32,7 +32,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 const priorityConfig: Record<string, { label: string; color: string }> = {
   URGENT: { label: "Urgente", color: "text-red-600 bg-red-50 border-red-200" },
   HIGH: { label: "Alta", color: "text-orange-600 bg-orange-50 border-orange-200" },
-  NORMAL: { label: "Normal", color: "text-theme-secondary bg-theme-tertiary border-gray-200" },
+  NORMAL: { label: "Normal", color: "text-theme-secondary bg-theme-tertiary border-theme" },
   LOW: { label: "Baixa", color: "text-blue-600 bg-blue-50 border-blue-200" },
 };
 
@@ -104,7 +104,7 @@ export default function TaskDetailPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <ClipboardList className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+          <ClipboardList className="w-12 h-12 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted">Tarefa não encontrada</p>
           <Link href="/tasks" className="text-indigo-600 hover:underline mt-2 inline-block">
             Voltar para tarefas

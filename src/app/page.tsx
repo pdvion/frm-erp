@@ -285,7 +285,7 @@ export default function LandingPage() {
                     type="checkbox" 
                     id="remember-me"
                     aria-label="Lembrar-me neste dispositivo"
-                    className="w-4 h-4 rounded border-gray-300 text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" 
+                    className="w-4 h-4 rounded border-theme text-[var(--frm-primary)] focus:ring-[var(--frm-light)]" 
                   />
                   <span className="text-sm text-theme-secondary">Lembrar-me</span>
                 </label>

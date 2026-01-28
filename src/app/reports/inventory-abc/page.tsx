@@ -183,7 +183,7 @@ export default function InventoryAbcReportPage() {
             </div>
             {filteredItems.length === 0 && (
               <div className="text-center py-12">
-                <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <Package className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                 <p className="text-theme-muted">Nenhum item encontrado</p>
               </div>
             )}

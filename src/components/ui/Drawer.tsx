@@ -65,20 +65,20 @@ export function Drawer({
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex h-full flex-col bg-white shadow-xl">
+          <div className="flex h-full flex-col bg-theme-card shadow-xl">
             {/* Header */}
-            <div className="border-b border-gray-200 px-6 py-4">
+            <div className="border-b border-theme px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                  <h2 className="text-lg font-semibold text-theme">{title}</h2>
                   {description && (
-                    <p className="mt-1 text-sm text-gray-500">{description}</p>
+                    <p className="mt-1 text-sm text-theme-muted">{description}</p>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors"
+                  className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>

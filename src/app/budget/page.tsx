@@ -238,7 +238,7 @@ export default function BudgetDashboardPage() {
                       <StatusBadge status={account.status} />
                     </div>
                     <div className="mt-3">
-                      <div className="h-2 w-full rounded-full bg-gray-200">
+                      <div className="h-2 w-full rounded-full bg-theme-tertiary">
                         <div
                           className={`h-2 rounded-full ${
                             account.status === "EXCEEDED"
@@ -262,7 +262,7 @@ export default function BudgetDashboardPage() {
                   </div>
                 ))}
                 {byAccount.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-8 text-center">
+                  <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-8 text-center">
                     <Wallet className="mx-auto h-12 w-12 text-theme-muted" />
                     <p className="mt-2 text-sm text-theme-muted">Nenhum orçamento cadastrado</p>
                     <Link
@@ -311,7 +311,7 @@ export default function BudgetDashboardPage() {
                     </Link>
                   ))}
                   {(!versions || versions.length === 0) && (
-                    <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-6 text-center">
+                    <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-6 text-center">
                       <Calendar className="mx-auto h-10 w-10 text-theme-muted" />
                       <p className="mt-2 text-sm text-theme-muted">Nenhuma versão criada</p>
                     </div>
@@ -350,7 +350,7 @@ export default function BudgetDashboardPage() {
                     </div>
                   ))}
                   {activeAlerts.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-gray-300 bg-theme-tertiary p-6 text-center">
+                    <div className="rounded-lg border border-dashed border-theme bg-theme-tertiary p-6 text-center">
                       <CheckCircle className="mx-auto h-10 w-10 text-green-400" />
                       <p className="mt-2 text-sm text-theme-muted">Nenhum alerta ativo</p>
                     </div>

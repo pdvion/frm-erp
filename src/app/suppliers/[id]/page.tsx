@@ -21,7 +21,7 @@ import { PageHeader } from "@/components/PageHeader";
 
 const statusConfig = {
   ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
-  INACTIVE: { label: "Inativo", color: "bg-zinc-800 text-zinc-400", icon: XCircle },
+  INACTIVE: { label: "Inativo", color: "bg-theme-card text-theme-muted", icon: XCircle },
   BLOCKED: { label: "Bloqueado", color: "bg-red-900/50 text-red-400", icon: AlertTriangle },
 };
 

@@ -22,7 +22,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { SupplierReturnStatus, ReturnReason } from "@prisma/client";
 
 const statusConfig: Record<SupplierReturnStatus, { label: string; color: string }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800" },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800" },
   APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800" },
   INVOICED: { label: "Faturada", color: "bg-purple-100 text-purple-800" },
@@ -366,7 +366,7 @@ export default function SupplierReturnDetailPage({
           <h2 className="text-lg font-semibold text-theme mb-4">Histórico</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 mt-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 mt-2 rounded-full bg-theme-tertiary"></div>
               <div>
                 <p className="text-sm text-theme">Devolução criada</p>
                 <p className="text-xs text-theme-muted">{formatDate(supplierReturn.createdAt)}</p>

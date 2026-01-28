@@ -196,7 +196,7 @@ export default function MesPage() {
                   <div key={stop.id} className="bg-theme-secondary rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{stop.workCenter.name}</span>
-                      <span className={`px-2 py-0.5 rounded text-xs ${stopTypeConfig[stop.stopType]?.color || "bg-gray-600"}`}>
+                      <span className={`px-2 py-0.5 rounded text-xs ${stopTypeConfig[stop.stopType]?.color || "bg-theme-secondary"}`}>
                         {stopTypeConfig[stop.stopType]?.label || stop.stopType}
                       </span>
                     </div>
@@ -331,7 +331,7 @@ export default function MesPage() {
                   <button
                     onClick={() => setShowReportModal(true)}
                     disabled={!workCenterStatus?.activeOrder || workCenterStatus?.status === "STOPPED"}
-                    className="flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-lg font-medium"
+                    className="flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-theme-secondary disabled:cursor-not-allowed rounded-lg text-lg font-medium"
                   >
                     <Plus className="w-6 h-6" />
                     Apontar Produção

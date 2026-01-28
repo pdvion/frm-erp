@@ -72,7 +72,7 @@ export default function AuthLogsPage() {
                   <ArrowLeft className="w-5 h-5" />
                   <span>Voltar</span>
                 </Link>
-                <div className="h-6 w-px bg-gray-300" />
+                <div className="h-6 w-px bg-theme-tertiary" />
                 <div className="flex items-center gap-2">
                   <Shield className="w-6 h-6 text-[var(--frm-primary)]" />
                   <h1 className="text-xl font-semibold text-theme">
@@ -156,7 +156,7 @@ export default function AuthLogsPage() {
               </div>
             ) : data?.logs.length === 0 ? (
               <div className="text-center py-12">
-                <Shield className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <Shield className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                 <p className="text-theme-muted">Nenhum log de autenticação encontrado</p>
               </div>
             ) : (

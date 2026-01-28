@@ -54,7 +54,7 @@ export default function ApprovalsRequestsPage() {
 
   const getPriorityBadge = (priority: ApprovalRequest["priority"]) => {
     const styles = {
-      LOW: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
+      LOW: "bg-theme-tertiary text-theme dark:bg-theme/30 dark:text-theme-muted",
       MEDIUM: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
       HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
       URGENT: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",

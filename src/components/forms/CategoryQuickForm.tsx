@@ -35,7 +35,7 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium text-theme-secondary mb-1">
           Nome da Categoria *
         </label>
         <input
@@ -44,7 +44,7 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Ex: Matéria Prima"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           autoFocus
           required
         />
@@ -56,9 +56,9 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
           id="isActive"
           checked={isActive}
           onChange={(e) => setIsActive(e.target.checked)}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-theme rounded"
         />
-        <label htmlFor="isActive" className="text-sm text-gray-700">
+        <label htmlFor="isActive" className="text-sm text-theme-secondary">
           Categoria ativa
         </label>
       </div>
@@ -69,11 +69,11 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
         </div>
       )}
 
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4 border-t border-theme">
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-secondary transition-colors"
         >
           <X className="w-4 h-4" />
           Cancelar

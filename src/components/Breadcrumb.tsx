@@ -60,7 +60,7 @@ const moduleMap: Record<string, ModuleConfig> = {
   bi: { name: "BI", icon: TrendingUp, color: "text-indigo-500" },
   gpd: { name: "GPD", icon: TrendingUp, color: "text-purple-500" },
   budget: { name: "Orçamento", icon: DollarSign, color: "text-green-500" },
-  settings: { name: "Configurações", icon: Settings, color: "text-gray-500" },
+  settings: { name: "Configurações", icon: Settings, color: "text-theme-muted" },
   admin: { name: "Administração", icon: Shield, color: "text-red-500" },
   audit: { name: "Auditoria", icon: Shield, color: "text-indigo-500" },
   profile: { name: "Perfil", icon: Users, color: "text-blue-500" },
@@ -140,7 +140,7 @@ export function Breadcrumb() {
   const moduleConfig = moduleMap[firstSegment] || { 
     name: firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1), 
     icon: Home, 
-    color: "text-gray-500" 
+    color: "text-theme-muted" 
   };
   const ModuleIcon = moduleConfig.icon;
 

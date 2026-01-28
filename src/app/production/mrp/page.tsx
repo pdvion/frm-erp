@@ -239,7 +239,7 @@ export default function MrpPage() {
                   {runsData?.runs.map((run) => (
                     <tr 
                       key={run.id} 
-                      className={`border-b border-gray-100 hover:bg-theme-hover cursor-pointer ${selectedRunId === run.id ? 'bg-purple-50' : ''}`}
+                      className={`border-b border-theme hover:bg-theme-hover cursor-pointer ${selectedRunId === run.id ? 'bg-purple-50' : ''}`}
                       onClick={() => setSelectedRunId(run.id)}
                     >
                       <td className="py-3 px-3 text-sm">{formatDate(run.runDate)}</td>
@@ -334,7 +334,7 @@ export default function MrpPage() {
                       const statusInfo = statusConfig[suggestion.status] || statusConfig.PENDING;
                       
                       return (
-                        <tr key={suggestion.id} className="border-b border-gray-100 hover:bg-theme-hover">
+                        <tr key={suggestion.id} className="border-b border-theme hover:bg-theme-hover">
                           <td className="py-3 px-3">
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${typeInfo.color}`}>
                               {typeInfo.icon}

@@ -204,7 +204,7 @@ export default function FinanceDashboardPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="mt-4 pt-4 border-t border-theme">
                     <div className="flex items-center justify-between">
                       <span className="text-theme-secondary">Fluxo Líquido (7 dias)</span>
                       <span className={`text-lg font-bold ${(treasuryData?.netFlowWeek || 0) >= 0 ? "text-green-600" : "text-red-600"}`}>
@@ -318,7 +318,7 @@ export default function FinanceDashboardPage() {
                         {formatCurrency(receivablesStats?.receivedThisMonth?.value)}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <div className="flex items-center justify-between pt-2 border-t border-theme">
                       <span className="text-sm text-theme-secondary">Conciliação Pendente</span>
                       <span className={`text-sm font-medium ${(treasuryData?.pendingReconciliation || 0) > 0 ? "text-yellow-600" : "text-green-600"}`}>
                         {treasuryData?.pendingReconciliation || 0} transação(ões)

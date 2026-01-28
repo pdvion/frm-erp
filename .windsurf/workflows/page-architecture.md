@@ -68,9 +68,32 @@ O sistema suporta 3 modos de tema:
 
 O usuário pode alternar via `ThemeSwitcher` no rodapé do sidebar.
 
+## ⛔ PROIBIDO: Cores Hardcoded
+
+**NUNCA usar cores fixas que não respondem ao tema:**
+
+| ❌ Proibido | ✅ Usar |
+|-------------|---------|
+| `bg-white` | `bg-theme-card` |
+| `bg-gray-50` | `bg-theme-secondary` |
+| `bg-gray-100` | `bg-theme-tertiary` |
+| `bg-gray-800/900` | `bg-theme` ou `bg-theme-card` |
+| `bg-zinc-*` | `bg-theme-*` |
+| `text-gray-900` | `text-theme` |
+| `text-gray-700` | `text-theme-secondary` |
+| `text-gray-500/400` | `text-theme-muted` |
+| `text-zinc-*` | `text-theme-*` |
+| `border-gray-200/300` | `border-theme` |
+| `border-zinc-*` | `border-theme` |
+
+**Exceções permitidas:**
+- Cores semânticas: `text-red-*`, `text-green-*`, `text-blue-*`, `text-yellow-*`
+- Badges de status com cores específicas
+- Botão primário: `bg-blue-600`
+
 ## Checklist para Nova Página
 
-1. **NÃO usar** `min-h-screen` ou cores fixas (`bg-gray-*`, `bg-zinc-*`)
+1. **NÃO usar** `min-h-screen` ou cores fixas (`bg-gray-*`, `bg-zinc-*`, `bg-white`)
 2. **NÃO criar** `<header>` próprio
 3. **NÃO duplicar** `CompanySwitcher`
 4. **USAR** classes de tema: `bg-theme-*`, `text-theme-*`, `border-theme-*`

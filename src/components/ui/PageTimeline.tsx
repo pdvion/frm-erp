@@ -20,7 +20,7 @@ interface PageTimelineProps {
 export function PageTimeline({ events }: PageTimelineProps) {
   if (events.length === 0) {
     return (
-      <div className="text-center py-4 text-zinc-400 text-sm">
+      <div className="text-center py-4 text-theme-muted text-sm">
         Nenhum evento registrado
       </div>
     );
@@ -38,13 +38,13 @@ export function PageTimeline({ events }: PageTimelineProps) {
               {event.title}
             </div>
             {event.timestamp && (
-              <div className="text-sm text-zinc-400">{event.timestamp}</div>
+              <div className="text-sm text-theme-muted">{event.timestamp}</div>
             )}
             {event.user && (
-              <div className="text-xs text-zinc-500">por {event.user}</div>
+              <div className="text-xs text-theme-muted">por {event.user}</div>
             )}
             {event.description && (
-              <div className="text-sm text-zinc-400 mt-1">{event.description}</div>
+              <div className="text-sm text-theme-muted mt-1">{event.description}</div>
             )}
           </div>
         </div>

@@ -208,7 +208,7 @@ export default function PayablesAgingReportPage() {
 
               {data.details.length === 0 && (
                 <div className="text-center py-12">
-                  <TrendingDown className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <TrendingDown className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                   <p className="text-theme-muted">Nenhuma conta a pagar em aberto</p>
                 </div>
               )}

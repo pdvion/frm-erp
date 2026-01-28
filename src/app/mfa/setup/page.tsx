@@ -153,7 +153,7 @@ export default function MFASetupPage() {
               
               <div className="flex justify-center mb-4">
                 {/* QR Code renderizado como imagem base64 para evitar XSS */}
-                <div className="p-4 bg-theme-card border-2 border-gray-200 rounded-xl">
+                <div className="p-4 bg-theme-card border-2 border-theme rounded-xl">
                   {enrollData.qrCode.startsWith('data:') ? (
                     <Image src={enrollData.qrCode} alt="QR Code para autenticação" width={200} height={200} unoptimized />
                   ) : (

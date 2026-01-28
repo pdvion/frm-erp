@@ -165,7 +165,7 @@ export default function RequisitionsPage() {
             </div>
           ) : !data?.requisitions.length ? (
             <div className="text-center py-12">
-              <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Package className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma requisição encontrada</h3>
               <p className="text-theme-muted mb-4">
                 {search || statusFilter !== "ALL" || typeFilter !== "ALL"

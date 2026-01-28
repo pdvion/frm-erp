@@ -86,14 +86,14 @@ export default function SpedPage() {
               {/* Seleção de Período */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     <Calendar className="inline h-4 w-4 mr-1" />
                     Mês de Referência
                   </label>
                   <select
                     value={mes}
                     onChange={(e) => setMes(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
                   >
                     {meses.map((m) => (
                       <option key={m.value} value={m.value}>
@@ -103,13 +103,13 @@ export default function SpedPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Ano
                   </label>
                   <select
                     value={ano}
                     onChange={(e) => setAno(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
                   >
                     {anos.map((a) => (
                       <option key={a} value={a}>
@@ -121,20 +121,20 @@ export default function SpedPage() {
               </div>
 
               {/* Opções */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="border-t border-theme pt-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={incluirInventario}
                     onChange={(e) => setIncluirInventario(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="w-5 h-5 rounded border-theme text-blue-600 focus:ring-blue-500"
                   />
                   <div>
-                    <span className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <span className="font-medium text-theme dark:text-theme-muted flex items-center gap-2">
                       <Package className="h-4 w-4" />
                       Incluir Inventário (Bloco H)
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-theme-muted">
                       Obrigatório em dezembro ou quando houver mudança de regime
                     </span>
                   </div>
@@ -214,8 +214,8 @@ export default function SpedPage() {
                       )}
                     </div>
                     {resultado.nomeArquivo && (
-                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Arquivo: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{resultado.nomeArquivo}</code>
+                      <p className="mt-1 text-sm text-theme-muted">
+                        Arquivo: <code className="bg-theme-tertiary px-1 rounded">{resultado.nomeArquivo}</code>
                       </p>
                     )}
                     {resultado.validacao?.erros && resultado.validacao.erros.length > 0 && (
@@ -229,10 +229,10 @@ export default function SpedPage() {
 
                   {/* Preview */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <h4 className="text-sm font-medium text-theme-secondary mb-2">
                       Preview (primeiras 20 linhas)
                     </h4>
-                    <pre className="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto text-xs font-mono max-h-64 overflow-y-auto">
+                    <pre className="p-4 bg-theme text-theme-muted rounded-lg overflow-x-auto text-xs font-mono max-h-64 overflow-y-auto">
                       {resultado.conteudo?.split("\r\n").slice(0, 20).join("\n")}
                       {(resultado.conteudo?.split("\r\n").length || 0) > 20 && "\n..."}
                     </pre>
@@ -248,7 +248,7 @@ export default function SpedPage() {
           <PageCard title="Períodos com Dados">
             {loadingPeriodos ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-theme-muted" />
               </div>
             ) : periodos && periodos.length > 0 ? (
               <div className="space-y-2">
@@ -262,7 +262,7 @@ export default function SpedPage() {
                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                       mes === p.mes && ano === p.ano
                         ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+                        : "hover:bg-theme-tertiary dark:hover:bg-theme-card text-theme-secondary"
                     }`}
                   >
                     <span className="font-medium">
@@ -277,7 +277,7 @@ export default function SpedPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+              <p className="text-sm text-theme-muted text-center py-4">
                 Nenhum período com dados fiscais encontrado.
               </p>
             )}
@@ -285,7 +285,7 @@ export default function SpedPage() {
 
           {/* Informações */}
           <PageCard title="Informações" className="mt-6">
-            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-3">
+            <div className="text-sm text-theme-muted space-y-3">
               <p>
                 O <strong>SPED Fiscal (EFD ICMS/IPI)</strong> é a escrituração digital dos livros fiscais.
               </p>
@@ -299,7 +299,7 @@ export default function SpedPage() {
                 <li>Bloco H - Inventário (opcional)</li>
                 <li>Bloco 9 - Encerramento</li>
               </ul>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-4">
+              <p className="text-xs text-theme-muted dark:text-theme-muted mt-4">
                 Versão do layout: 018 (2024)
               </p>
             </div>

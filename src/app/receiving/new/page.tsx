@@ -176,7 +176,7 @@ export default function NewReceivingPage() {
         {/* Upload XML */}
         {!parsedNfe && (
           <div
-            className="bg-theme-card rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-blue-400 transition-colors"
+            className="bg-theme-card rounded-lg border-2 border-dashed border-theme p-12 text-center hover:border-blue-400 transition-colors"
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >

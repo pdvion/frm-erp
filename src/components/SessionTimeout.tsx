@@ -24,17 +24,17 @@ export function SessionTimeout({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+      <div className="bg-theme-card rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
         <div className="text-center">
           <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Clock className="w-8 h-8 text-yellow-600" />
           </div>
           
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-xl font-semibold text-theme mb-2">
             Sessão expirando
           </h2>
           
-          <p className="text-gray-600 mb-4">
+          <p className="text-theme-secondary mb-4">
             Sua sessão irá expirar por inatividade em:
           </p>
           
@@ -45,7 +45,7 @@ export function SessionTimeout({
           <div className="flex gap-3">
             <button
               onClick={signOut}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-theme text-theme-secondary rounded-lg hover:bg-theme-secondary transition-colors font-medium"
             >
               <LogOut className="w-5 h-5" />
               Sair

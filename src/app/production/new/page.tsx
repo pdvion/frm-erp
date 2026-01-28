@@ -366,7 +366,7 @@ export default function NewProductionOrderPage() {
 
             {materials.length === 0 ? (
               <div className="text-center py-8 text-theme-muted">
-                <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <Package className="w-12 h-12 mx-auto mb-2 text-theme-muted" />
                 <p>Nenhum material adicionado</p>
                 <p className="text-sm">Materiais podem ser adicionados depois</p>
               </div>

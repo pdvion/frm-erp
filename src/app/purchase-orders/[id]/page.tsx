@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "text-zinc-300", bgColor: "bg-zinc-700", icon: <FileText className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
   PENDING: { label: "Pendente", color: "text-yellow-400", bgColor: "bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "text-blue-400", bgColor: "bg-blue-900/30", icon: <CheckCircle className="w-4 h-4" /> },
   SENT: { label: "Enviado", color: "text-purple-400", bgColor: "bg-purple-900/30", icon: <Truck className="w-4 h-4" /> },

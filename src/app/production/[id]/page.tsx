@@ -82,7 +82,7 @@ export default function ProductionOrderDetailPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">OP não encontrada</h3>
           <Link href="/production" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
@@ -190,7 +190,7 @@ export default function ProductionOrderDetailPage() {
                       <span className="text-theme-secondary">Progresso</span>
                       <span className="font-medium">{order.producedQty} / {order.quantity} {order.product.unit}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-theme-tertiary rounded-full h-3">
                       <div
                         className={`h-3 rounded-full ${progress >= 100 ? "bg-green-500" : "bg-indigo-500"}`}
                         style={{ width: `${Math.min(progress, 100)}%` }}

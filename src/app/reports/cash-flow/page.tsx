@@ -250,7 +250,7 @@ export default function CashFlowReportPage() {
 
               {data.flowData.length === 0 && (
                 <div className="text-center py-12">
-                  <Wallet className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <Wallet className="w-12 h-12 text-theme-muted mx-auto mb-4" />
                   <p className="text-theme-muted">Nenhuma movimentação no período</p>
                 </div>
               )}

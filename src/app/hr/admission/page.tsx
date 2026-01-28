@@ -21,14 +21,14 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800", icon: <FileText className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <FileText className="w-4 h-4" /> },
   DOCUMENTS: { label: "Documentos", color: "bg-blue-100 text-blue-800", icon: <FileText className="w-4 h-4" /> },
   EXAM: { label: "Exame", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
   APPROVAL: { label: "Aprovação", color: "bg-purple-100 text-purple-800", icon: <AlertCircle className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
   COMPLETED: { label: "Concluído", color: "bg-emerald-100 text-emerald-800", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-600", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function AdmissionPage() {
@@ -86,7 +86,7 @@ export default function AdmissionPage() {
                 <FileText className="w-4 h-4" />
                 <span className="text-sm">Rascunho</span>
               </div>
-              <p className="text-2xl font-bold text-gray-600">{dashboard?.draft || 0}</p>
+              <p className="text-2xl font-bold text-theme-secondary">{dashboard?.draft || 0}</p>
             </div>
 
             <div className="bg-theme-card rounded-lg border border-theme p-4">
@@ -161,7 +161,7 @@ export default function AdmissionPage() {
               </div>
             ) : !admissions?.admissions.length ? (
               <div className="text-center py-12">
-                <UserPlus className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <UserPlus className="w-12 h-12 mx-auto text-theme-muted mb-4" />
                 <p className="text-theme-muted">Nenhum processo de admissão encontrado</p>
               </div>
             ) : (
@@ -209,7 +209,7 @@ export default function AdmissionPage() {
                                 <span className="text-sm font-medium">{admission.currentStep}</span>
                                 <span className="text-xs text-theme-muted">/ {admission.totalSteps}</span>
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                              <div className="w-full bg-theme-tertiary rounded-full h-1.5 mt-1">
                                 <div
                                   className="bg-blue-600 h-1.5 rounded-full"
                                   style={{ width: `${(admission.currentStep / admission.totalSteps) * 100}%` }}

@@ -95,7 +95,7 @@ export default function BIKPIsPage() {
       SALES: "text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/30",
       HR: "text-cyan-600 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-900/30",
     };
-    return colors[category] || "text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30";
+    return colors[category] || "text-theme-muted bg-theme-tertiary dark:bg-theme/30";
   };
 
   const categoryOptions: { value: KpiCategory | "ALL"; label: string }[] = [

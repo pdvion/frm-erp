@@ -118,7 +118,7 @@ export default function ReconciliationPage() {
                   type="checkbox"
                   checked={showReconciled}
                   onChange={(e) => setShowReconciled(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-theme text-blue-600 focus:ring-blue-500"
                 />
                 Mostrar conciliados
               </label>
@@ -168,7 +168,7 @@ export default function ReconciliationPage() {
         {/* Lista de Transações */}
         {!selectedAccountId ? (
           <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
-            <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <Building2 className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Selecione uma conta</h3>
             <p className="text-theme-muted">Escolha uma conta bancária para iniciar a conciliação</p>
           </div>
@@ -231,7 +231,7 @@ export default function ReconciliationPage() {
                           {transaction.reconciled ? (
                             <CheckCircle className="w-5 h-5 text-green-500" />
                           ) : (
-                            <Circle className="w-5 h-5 text-gray-300" />
+                            <Circle className="w-5 h-5 text-theme-muted" />
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">

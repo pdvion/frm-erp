@@ -437,7 +437,7 @@ export default function LandingSettingsPage() {
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--frm-primary)] transition-colors bg-gradient-to-br from-[var(--frm-primary)] to-[var(--frm-dark)]"
+                      className="w-full h-48 border-2 border-dashed border-theme rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--frm-primary)] transition-colors bg-gradient-to-br from-[var(--frm-primary)] to-[var(--frm-dark)]"
                     >
                       {isUploading ? (
                         <Loader2 className="w-8 h-8 animate-spin text-white" />

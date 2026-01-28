@@ -212,7 +212,7 @@ export default function PayablesPage() {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
-                  showFilters ? "bg-indigo-50 border-indigo-300 text-indigo-700" : "border-gray-300 text-theme-secondary"
+                  showFilters ? "bg-indigo-50 border-indigo-300 text-indigo-700" : "border-theme text-theme-secondary"
                 }`}
               >
                 <Filter className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function PayablesPage() {
             </div>
           ) : !data?.payables.length ? (
             <div className="text-center py-12">
-              <DollarSign className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <DollarSign className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhum título encontrado</h3>
               <p className="text-theme-muted">
                 {search || statusFilter !== "ALL"

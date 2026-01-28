@@ -302,7 +302,7 @@ export default function ApprovalLevelsPage() {
                 type="checkbox"
                 checked={formData.requiresAllApprovers}
                 onChange={(e) => setFormData({ ...formData, requiresAllApprovers: e.target.checked })}
-                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="w-4 h-4 rounded border-theme text-indigo-600 focus:ring-indigo-500"
               />
               <label htmlFor="requires-all" className="text-sm text-theme-secondary">
                 Requer aprovação de todos os aprovadores (em sequência)
@@ -363,7 +363,7 @@ export default function ApprovalLevelsPage() {
                             type="checkbox"
                             checked={approver.canApprove}
                             onChange={() => toggleApproverPermission(approver.userId, "canApprove")}
-                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                            className="w-4 h-4 rounded border-theme text-green-600 focus:ring-green-500"
                           />
                           <CheckCircle className="w-4 h-4 text-green-600" />
                           Aprovar
@@ -374,7 +374,7 @@ export default function ApprovalLevelsPage() {
                             type="checkbox"
                             checked={approver.canReject}
                             onChange={() => toggleApproverPermission(approver.userId, "canReject")}
-                            className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                            className="w-4 h-4 rounded border-theme text-red-600 focus:ring-red-500"
                           />
                           <XCircle className="w-4 h-4 text-red-600" />
                           Rejeitar
@@ -425,7 +425,7 @@ export default function ApprovalLevelsPage() {
           </div>
         ) : levels?.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
-            <Shield className="w-12 h-12 mb-3 text-gray-300" />
+            <Shield className="w-12 h-12 mb-3 text-theme-muted" />
             <p className="font-medium">Nenhum nível de alçada configurado</p>
             <p className="text-sm">Crie níveis para controlar aprovações por faixa de valor</p>
           </div>

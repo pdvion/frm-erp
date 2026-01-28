@@ -33,10 +33,10 @@ export function ProtectedRoute({ children, requireMFA = false }: ProtectedRouteP
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-theme-secondary">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-[var(--frm-primary)] mx-auto mb-4" />
-          <p className="text-gray-600">Carregando...</p>
+          <p className="text-theme-secondary">Carregando...</p>
         </div>
       </div>
     );

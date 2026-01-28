@@ -155,7 +155,7 @@ export default function OEEWorkCentersPage() {
                   <td className="px-4 py-3 text-sm text-theme">{wc.setupTimeMinutes}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      wc.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                      wc.isActive ? "bg-green-100 text-green-800" : "bg-theme-tertiary text-theme"
                     }`}>
                       {wc.isActive ? "Ativo" : "Inativo"}
                     </span>
@@ -171,7 +171,7 @@ export default function OEEWorkCentersPage() {
                       </button>
                       <button
                         onClick={() => handleToggleActive(wc.id, wc.isActive)}
-                        className={`p-1 ${wc.isActive ? "text-gray-600 hover:text-gray-700" : "text-green-600 hover:text-green-700"}`}
+                        className={`p-1 ${wc.isActive ? "text-theme-secondary hover:text-theme-secondary" : "text-green-600 hover:text-green-700"}`}
                         title={wc.isActive ? "Desativar" : "Ativar"}
                       >
                         {wc.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}

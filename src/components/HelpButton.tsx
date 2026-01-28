@@ -22,7 +22,7 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors ${className}`}
+        className={`p-2 text-theme-muted hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors ${className}`}
         title="Ajuda"
       >
         <HelpCircle className="w-5 h-5" />
@@ -34,9 +34,9 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
             className="absolute inset-0 bg-black/50"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <div className="relative bg-theme-card rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
+              <h2 className="text-lg font-semibold text-theme flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-blue-600" />
                 {tutorial?.title || "Ajuda"}
               </h2>
@@ -46,7 +46,7 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
                     href={`/docs/${tutorial.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-gray-400 hover:text-blue-600"
+                    className="p-2 text-theme-muted hover:text-blue-600"
                     title="Abrir em nova aba"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -54,7 +54,7 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600"
+                  className="p-2 text-theme-muted hover:text-theme-secondary"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -71,8 +71,8 @@ export function HelpButton({ module, className = "" }: HelpButtonProps) {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <HelpCircle className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-                  <p className="text-gray-500">
+                  <HelpCircle className="w-12 h-12 mx-auto text-theme-muted mb-4" />
+                  <p className="text-theme-muted">
                     Nenhum tutorial disponível para este módulo.
                   </p>
                   <Link
@@ -120,9 +120,9 @@ function MarkdownContent({ content }: { content: string }) {
       elements.push(
         <table key={`table-${elements.length}`} className="w-full my-4 border-collapse">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-theme-secondary">
               {header.map((cell, i) => (
-                <th key={i} className="border border-gray-200 px-3 py-2 text-left text-sm font-medium">
+                <th key={i} className="border border-theme px-3 py-2 text-left text-sm font-medium">
                   {cell}
                 </th>
               ))}
@@ -132,7 +132,7 @@ function MarkdownContent({ content }: { content: string }) {
             {body.filter(row => !row.every(cell => cell.match(/^-+$/))).map((row, i) => (
               <tr key={i}>
                 {row.map((cell, j) => (
-                  <td key={j} className="border border-gray-200 px-3 py-2 text-sm">
+                  <td key={j} className="border border-theme px-3 py-2 text-sm">
                     {cell}
                   </td>
                 ))}
@@ -153,7 +153,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${elements.length}`} className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm">
+          <pre key={`code-${elements.length}`} className="bg-theme text-theme-muted p-4 rounded-lg overflow-x-auto my-4 text-sm">
             <code>{codeContent.trim()}</code>
           </pre>
         );
@@ -187,7 +187,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("# ")) {
       flushList();
       elements.push(
-        <h1 key={`h1-${elements.length}`} className="text-2xl font-bold text-gray-900 mt-6 mb-4">
+        <h1 key={`h1-${elements.length}`} className="text-2xl font-bold text-theme mt-6 mb-4">
           {line.slice(2)}
         </h1>
       );
@@ -196,7 +196,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("## ")) {
       flushList();
       elements.push(
-        <h2 key={`h2-${elements.length}`} className="text-xl font-semibold text-gray-900 mt-5 mb-3">
+        <h2 key={`h2-${elements.length}`} className="text-xl font-semibold text-theme mt-5 mb-3">
           {line.slice(3)}
         </h2>
       );
@@ -205,7 +205,7 @@ function MarkdownContent({ content }: { content: string }) {
     if (line.startsWith("### ")) {
       flushList();
       elements.push(
-        <h3 key={`h3-${elements.length}`} className="text-lg font-medium text-gray-900 mt-4 mb-2">
+        <h3 key={`h3-${elements.length}`} className="text-lg font-medium text-theme mt-4 mb-2">
           {line.slice(4)}
         </h3>
       );
@@ -231,7 +231,7 @@ function MarkdownContent({ content }: { content: string }) {
 
     // Paragraphs
     elements.push(
-      <p key={`p-${elements.length}`} className="my-2 text-gray-700">
+      <p key={`p-${elements.length}`} className="my-2 text-theme-secondary">
         {formatInline(line)}
       </p>
     );
@@ -249,7 +249,7 @@ function formatInline(text: string): React.ReactNode {
   // Italic
   text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
   // Code
-  text = text.replace(/`(.+?)`/g, '<code class="bg-gray-100 px-1 rounded text-sm">$1</code>');
+  text = text.replace(/`(.+?)`/g, '<code class="bg-theme-tertiary px-1 rounded text-sm">$1</code>');
   // Links
   text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>');
 

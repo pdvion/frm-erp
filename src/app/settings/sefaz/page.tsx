@@ -425,7 +425,7 @@ export default function SefazConfigPage() {
                 type="checkbox"
                 checked={syncEnabled}
                 onChange={(e) => setSyncEnabled(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
               />
               <div>
                 <span className="text-sm font-medium text-theme">Habilitar sincronização automática</span>
@@ -442,7 +442,7 @@ export default function SefazConfigPage() {
                       type="checkbox"
                       checked={autoManifest}
                       onChange={(e) => setAutoManifest(e.target.checked)}
-                      className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
                     />
                     <div>
                       <span className="text-sm font-medium text-theme flex items-center gap-2">
@@ -493,7 +493,7 @@ export default function SefazConfigPage() {
                       type="checkbox"
                       checked={notifyOnNewNfe}
                       onChange={(e) => setNotifyOnNewNfe(e.target.checked)}
-                      className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
                     />
                     <div>
                       <span className="text-sm font-medium text-theme flex items-center gap-2">

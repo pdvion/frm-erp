@@ -214,7 +214,7 @@ export default function BoletosPage() {
                     <tr>
                       <td colSpan={6} className="px-4 py-8 text-center text-theme-muted">
                         <div className="flex flex-col items-center gap-2">
-                          <FileText className="w-12 h-12 text-gray-300" />
+                          <FileText className="w-12 h-12 text-theme-muted" />
                           <p>Nenhum boleto encontrado</p>
                           <Link
                             href="/payables/boletos/new"

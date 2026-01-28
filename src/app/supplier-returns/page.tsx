@@ -21,7 +21,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { SupplierReturnStatus } from "@prisma/client";
 
 const statusConfig: Record<SupplierReturnStatus, { label: string; color: string }> = {
-  DRAFT: { label: "Rascunho", color: "bg-gray-100 text-gray-800" },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800" },
   APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800" },
   INVOICED: { label: "Faturada", color: "bg-purple-100 text-purple-800" },

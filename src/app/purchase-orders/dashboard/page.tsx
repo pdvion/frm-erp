@@ -207,8 +207,8 @@ export default function PurchasesDashboardPage() {
                   <tr key={index} className="border-b border-theme last:border-0">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-gray-600" />
+                        <div className="w-8 h-8 bg-theme-tertiary rounded-full flex items-center justify-center">
+                          <Users className="w-4 h-4 text-theme-secondary" />
                         </div>
                         <span className="font-medium text-theme">{supplier.name}</span>
                       </div>

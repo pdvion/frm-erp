@@ -43,7 +43,7 @@ export default function GPDActionsPage() {
     PENDING: "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30",
     IN_PROGRESS: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
     COMPLETED: "text-green-600 bg-green-100 dark:bg-green-900/30",
-    CANCELLED: "text-gray-600 bg-gray-100 dark:bg-gray-900/30",
+    CANCELLED: "text-theme-secondary bg-theme-tertiary dark:bg-theme/30",
   };
 
   const statusLabels = {

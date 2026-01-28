@@ -58,7 +58,7 @@ export default function BillingDetailPage() {
     return (
       <div className="space-y-6 flex items-center justify-center">
         <div className="text-center">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">Nota fiscal não encontrada</h3>
           <Link href="/billing" className="text-indigo-600 hover:text-indigo-800">
             Voltar para lista
@@ -663,7 +663,7 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
 
         <button
           onClick={addInstallment}
-          className="w-full mb-4 px-4 py-2 border border-dashed border-gray-300 text-theme-secondary rounded-lg hover:bg-theme-hover"
+          className="w-full mb-4 px-4 py-2 border border-dashed border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
         >
           + Adicionar Parcela
         </button>

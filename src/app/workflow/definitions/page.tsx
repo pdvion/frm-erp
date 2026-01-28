@@ -88,7 +88,7 @@ export default function WorkflowDefinitionsPage() {
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         def.isActive 
                           ? "bg-green-100 text-green-700" 
-                          : "bg-gray-100 text-gray-700"
+                          : "bg-theme-tertiary text-theme-secondary"
                       }`}>
                         {def.isActive ? "Ativo" : "Inativo"}
                       </span>

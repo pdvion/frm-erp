@@ -109,7 +109,7 @@ export function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+        className="relative p-2 text-theme-muted hover:text-theme-secondary hover:bg-theme-tertiary rounded-full transition-colors"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -125,9 +125,9 @@ export function NotificationBell() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-              <h3 className="font-semibold text-gray-900">Notificações</h3>
+          <div className="absolute right-0 mt-2 w-80 bg-theme-card rounded-lg shadow-xl border border-theme z-50 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-theme bg-theme-secondary">
+              <h3 className="font-semibold text-theme">Notificações</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
@@ -145,7 +145,7 @@ export function NotificationBell() {
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-theme-muted hover:text-theme-secondary"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -159,8 +159,8 @@ export function NotificationBell() {
                 </div>
               ) : !notifications?.length ? (
                 <div className="text-center py-8">
-                  <Bell className="w-10 h-10 mx-auto text-gray-300 mb-2" />
-                  <p className="text-gray-500 text-sm">Nenhuma notificação</p>
+                  <Bell className="w-10 h-10 mx-auto text-theme-muted mb-2" />
+                  <p className="text-theme-muted text-sm">Nenhuma notificação</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
@@ -171,7 +171,7 @@ export function NotificationBell() {
                     return (
                       <div
                         key={notification.id}
-                        className={`p-4 hover:bg-gray-50 transition-colors ${
+                        className={`p-4 hover:bg-theme-secondary transition-colors ${
                           !notification.isRead ? "bg-blue-50/50" : ""
                         }`}
                       >
@@ -181,15 +181,15 @@ export function NotificationBell() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
-                              <p className="font-medium text-gray-900 text-sm">
+                              <p className="font-medium text-theme text-sm">
                                 {notification.title}
                               </p>
-                              <span className="text-xs text-gray-400 whitespace-nowrap">
+                              <span className="text-xs text-theme-muted whitespace-nowrap">
                                 {formatTime(notification.createdAt)}
                               </span>
                             </div>
                             {notification.message && (
-                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                              <p className="text-sm text-theme-secondary mt-1 line-clamp-2">
                                 {notification.message}
                               </p>
                             )}
@@ -210,7 +210,7 @@ export function NotificationBell() {
                               {!notification.isRead && (
                                 <button
                                   onClick={() => handleMarkAsRead(notification.id)}
-                                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                                  className="text-xs text-theme-muted hover:text-theme-secondary flex items-center gap-1"
                                 >
                                   <Check className="w-3 h-3" />
                                   Marcar como lida
@@ -226,7 +226,7 @@ export function NotificationBell() {
               )}
             </div>
 
-            <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+            <div className="px-4 py-3 border-t border-theme bg-theme-secondary">
               <Link
                 href="/notifications"
                 onClick={() => setIsOpen(false)}

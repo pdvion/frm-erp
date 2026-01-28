@@ -176,7 +176,7 @@ export default function CompanyUsersPage() {
             </div>
           ) : (
             <div className="p-8 text-center text-theme-muted">
-              <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <Users className="w-12 h-12 mx-auto mb-4 text-theme-muted" />
               <p>Nenhum usuário vinculado a esta empresa</p>
             </div>
           )}

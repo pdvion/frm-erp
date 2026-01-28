@@ -17,7 +17,7 @@ export function PageInfoList({ items, className = "" }: PageInfoListProps) {
     <div className={`space-y-3 text-sm ${className}`}>
       {items.map((item, index) => (
         <div key={index} className="flex justify-between items-start gap-4">
-          <span className="text-zinc-400 flex-shrink-0">{item.label}</span>
+          <span className="text-theme-muted flex-shrink-0">{item.label}</span>
           <span className="font-medium text-white text-right">{item.value}</span>
         </div>
       ))}

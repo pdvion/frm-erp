@@ -167,15 +167,15 @@ export default function NewPixPage() {
             }`}>
               {step === "key" ? "1" : <CheckCircle className="w-5 h-5" />}
             </div>
-            <div className={`w-16 h-1 ${step !== "key" ? "bg-green-500" : "bg-gray-300"}`} />
+            <div className={`w-16 h-1 ${step !== "key" ? "bg-green-500" : "bg-theme-tertiary"}`} />
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "confirm" ? "bg-purple-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-theme-secondary"
+              step === "confirm" ? "bg-purple-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-theme-tertiary text-theme-secondary"
             }`}>
               {step === "success" ? <CheckCircle className="w-5 h-5" /> : "2"}
             </div>
-            <div className={`w-16 h-1 ${step === "success" ? "bg-green-500" : "bg-gray-300"}`} />
+            <div className={`w-16 h-1 ${step === "success" ? "bg-green-500" : "bg-theme-tertiary"}`} />
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "success" ? "bg-green-500 text-white" : "bg-gray-300 text-theme-secondary"
+              step === "success" ? "bg-green-500 text-white" : "bg-theme-tertiary text-theme-secondary"
             }`}>
               3
             </div>
@@ -217,7 +217,7 @@ export default function NewPixPage() {
                       className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
                         keyType === type
                           ? "border-purple-500 bg-purple-50 text-purple-700"
-                          : "border-gray-200 hover:border-gray-300 text-theme-secondary"
+                          : "border-theme hover:border-theme text-theme-secondary"
                       }`}
                     >
                       <Icon className="w-5 h-5" />

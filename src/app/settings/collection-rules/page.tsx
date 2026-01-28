@@ -27,7 +27,7 @@ const actionTypeConfig = {
   SMS: { label: "SMS", icon: MessageSquare, color: "text-green-600" },
   WHATSAPP: { label: "WhatsApp", icon: MessageSquare, color: "text-emerald-600" },
   PHONE: { label: "Telefone", icon: Phone, color: "text-purple-600" },
-  LETTER: { label: "Carta", icon: FileText, color: "text-gray-600" },
+  LETTER: { label: "Carta", icon: FileText, color: "text-theme-secondary" },
   NEGATIVATION: { label: "Negativação", icon: AlertTriangle, color: "text-orange-600" },
   PROTEST: { label: "Protesto", icon: Scale, color: "text-red-600" },
 };
@@ -163,23 +163,23 @@ export default function CollectionRulesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-theme-secondary">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/settings"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            className="inline-flex items-center gap-2 text-theme-secondary hover:text-theme mb-4"
           >
             <ChevronLeft className="w-4 h-4" />
             Voltar para Configurações
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-theme">
                 Réguas de Cobrança
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-theme-secondary mt-1">
                 Configure as etapas automáticas de cobrança para títulos vencidos
               </p>
             </div>
@@ -195,14 +195,14 @@ export default function CollectionRulesPage() {
 
         {/* Form */}
         {showForm && (
-          <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="bg-theme-card rounded-lg shadow-sm border p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4">
               {editingId ? "Editar Régua" : "Nova Régua de Cobrança"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Nome *
                   </label>
                   <input
@@ -217,7 +217,7 @@ export default function CollectionRulesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição
                   </label>
                   <input
@@ -241,7 +241,7 @@ export default function CollectionRulesPage() {
                     }
                     className="w-4 h-4 text-blue-600 rounded"
                   />
-                  <span className="text-sm text-gray-700">Ativa</span>
+                  <span className="text-sm text-theme-secondary">Ativa</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -252,14 +252,14 @@ export default function CollectionRulesPage() {
                     }
                     className="w-4 h-4 text-blue-600 rounded"
                   />
-                  <span className="text-sm text-gray-700">Régua Padrão</span>
+                  <span className="text-sm text-theme-secondary">Régua Padrão</span>
                 </label>
               </div>
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-theme-secondary border rounded-lg hover:bg-theme-secondary"
                 >
                   Cancelar
                 </button>
@@ -287,8 +287,8 @@ export default function CollectionRulesPage() {
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : !data?.rules.length ? (
-          <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
-            <p className="text-gray-500">Nenhuma régua de cobrança cadastrada</p>
+          <div className="bg-theme-card rounded-lg shadow-sm border p-12 text-center">
+            <p className="text-theme-muted">Nenhuma régua de cobrança cadastrada</p>
             <button
               onClick={() => setShowForm(true)}
               className="mt-4 text-blue-600 hover:underline"
@@ -301,11 +301,11 @@ export default function CollectionRulesPage() {
             {data.rules.map((rule) => (
               <div
                 key={rule.id}
-                className="bg-white rounded-lg shadow-sm border overflow-hidden"
+                className="bg-theme-card rounded-lg shadow-sm border overflow-hidden"
               >
                 {/* Rule Header */}
                 <div
-                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-theme-secondary"
                   onClick={() =>
                     setExpandedRuleId(
                       expandedRuleId === rule.id ? null : rule.id
@@ -317,23 +317,23 @@ export default function CollectionRulesPage() {
                       {rule.isActive ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-gray-400" />
+                        <XCircle className="w-5 h-5 text-theme-muted" />
                       )}
                       {rule.isDefault && (
                         <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                       )}
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{rule.name}</h3>
+                      <h3 className="font-medium text-theme">{rule.name}</h3>
                       {rule.description && (
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-theme-muted">
                           {rule.description}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-theme-muted">
                       {rule.steps.length} etapa(s)
                     </span>
                     <div className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function CollectionRulesPage() {
                           e.stopPropagation();
                           handleEdit(rule);
                         }}
-                        className="p-2 text-gray-400 hover:text-blue-600"
+                        className="p-2 text-theme-muted hover:text-blue-600"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
@@ -355,15 +355,15 @@ export default function CollectionRulesPage() {
                             deleteMutation.mutate({ id: rule.id });
                           }
                         }}
-                        className="p-2 text-gray-400 hover:text-red-600"
+                        className="p-2 text-theme-muted hover:text-red-600"
                         disabled={deleteMutation.isPending}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                       {expandedRuleId === rule.id ? (
-                        <ChevronUp className="w-5 h-5 text-gray-400" />
+                        <ChevronUp className="w-5 h-5 text-theme-muted" />
                       ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                        <ChevronDown className="w-5 h-5 text-theme-muted" />
                       )}
                     </div>
                   </div>
@@ -371,9 +371,9 @@ export default function CollectionRulesPage() {
 
                 {/* Steps */}
                 {expandedRuleId === rule.id && (
-                  <div className="border-t bg-gray-50 p-4">
+                  <div className="border-t bg-theme-secondary p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-medium text-gray-700">
+                      <h4 className="font-medium text-theme-secondary">
                         Etapas da Régua
                       </h4>
                       <button
@@ -394,11 +394,11 @@ export default function CollectionRulesPage() {
                     {showStepForm === rule.id && (
                       <form
                         onSubmit={(e) => handleStepSubmit(e, rule.id)}
-                        className="bg-white rounded-lg border p-4 mb-4 space-y-4"
+                        className="bg-theme-card rounded-lg border p-4 mb-4 space-y-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-theme-secondary mb-1">
                               Nome da Etapa *
                             </label>
                             <input
@@ -416,7 +416,7 @@ export default function CollectionRulesPage() {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-theme-secondary mb-1">
                               Dias (relativo ao vencimento) *
                             </label>
                             <input
@@ -431,12 +431,12 @@ export default function CollectionRulesPage() {
                               className="w-full px-3 py-2 border rounded-lg text-sm"
                               placeholder="-5 = 5 dias antes"
                             />
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-theme-muted mt-1">
                               Negativo = antes, Positivo = depois
                             </p>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-theme-secondary mb-1">
                               Tipo de Ação *
                             </label>
                             <select
@@ -460,7 +460,7 @@ export default function CollectionRulesPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-theme-secondary mb-1">
                             Assunto do Template
                           </label>
                           <input
@@ -477,7 +477,7 @@ export default function CollectionRulesPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-theme-secondary mb-1">
                             Corpo do Template
                           </label>
                           <textarea
@@ -497,7 +497,7 @@ export default function CollectionRulesPage() {
                           <button
                             type="button"
                             onClick={resetStepForm}
-                            className="px-3 py-1.5 text-sm text-gray-700 border rounded-lg hover:bg-gray-50"
+                            className="px-3 py-1.5 text-sm text-theme-secondary border rounded-lg hover:bg-theme-secondary"
                           >
                             Cancelar
                           </button>
@@ -518,7 +518,7 @@ export default function CollectionRulesPage() {
 
                     {/* Steps List */}
                     {rule.steps.length === 0 ? (
-                      <p className="text-sm text-gray-500 text-center py-4">
+                      <p className="text-sm text-theme-muted text-center py-4">
                         Nenhuma etapa configurada
                       </p>
                     ) : (
@@ -529,29 +529,29 @@ export default function CollectionRulesPage() {
                           return (
                             <div
                               key={step.id}
-                              className="bg-white rounded-lg border p-3 flex items-center justify-between"
+                              className="bg-theme-card rounded-lg border p-3 flex items-center justify-between"
                             >
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`p-2 rounded-lg bg-gray-100 ${config?.color || "text-gray-600"}`}
+                                  className={`p-2 rounded-lg bg-theme-tertiary ${config?.color || "text-theme-secondary"}`}
                                 >
                                   <Icon className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xs font-medium text-gray-400">
+                                    <span className="text-xs font-medium text-theme-muted">
                                       #{step.stepOrder}
                                     </span>
-                                    <span className="font-medium text-gray-900">
+                                    <span className="font-medium text-theme">
                                       {step.name}
                                     </span>
                                     {!step.isActive && (
-                                      <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
+                                      <span className="text-xs px-2 py-0.5 bg-theme-tertiary text-theme-muted rounded">
                                         Inativa
                                       </span>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                                  <div className="flex items-center gap-3 text-sm text-theme-muted">
                                     <span>{formatDaysOffset(step.daysOffset)}</span>
                                     <span>•</span>
                                     <span>{config?.label || step.actionType}</span>
@@ -568,7 +568,7 @@ export default function CollectionRulesPage() {
                                     });
                                   }
                                 }}
-                                className="p-2 text-gray-400 hover:text-red-600"
+                                className="p-2 text-theme-muted hover:text-red-600"
                                 disabled={deleteStepMutation.isPending}
                               >
                                 <Trash2 className="w-4 h-4" />

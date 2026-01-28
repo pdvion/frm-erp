@@ -166,7 +166,7 @@ export default function MobileReceivingPage() {
     return (
       <div className="space-y-6 flex items-center justify-center p-4">
         <div className="text-center">
-          <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+          <Package className="w-16 h-16 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted text-lg">Recebimento não encontrado</p>
           <Link 
             href="/receiving" 
@@ -299,7 +299,7 @@ export default function MobileReceivingPage() {
 
               {/* Área Expandida - Conferência */}
               {isExpanded && isConferencing && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 border-t border-theme">
                   {/* Controle de Quantidade */}
                   <div className="flex items-center justify-center gap-4 py-4">
                     <button
@@ -312,7 +312,7 @@ export default function MobileReceivingPage() {
                       type="number"
                       value={conf?.receivedQuantity ?? item.nfeQuantity}
                       onChange={(e) => handleSetQuantity(item.id, parseInt(e.target.value) || 0)}
-                      className="w-24 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                      className="w-24 h-14 text-center text-2xl font-bold border-2 border-theme rounded-xl focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       onClick={() => handleQuantityChange(item.id, 1)}
@@ -348,7 +348,7 @@ export default function MobileReceivingPage() {
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => handleTakePhoto()}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-theme-tertiary text-theme-secondary rounded-xl active:bg-gray-200"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-theme-tertiary text-theme-secondary rounded-xl active:bg-theme-tertiary"
                     >
                       <Camera className="w-5 h-5" />
                       Foto
@@ -394,7 +394,7 @@ export default function MobileReceivingPage() {
           <div className="flex gap-3">
             <Link
               href={`/receiving/${id}`}
-              className="flex-1 py-4 bg-theme-tertiary text-theme-secondary text-lg font-semibold rounded-xl text-center active:bg-gray-200"
+              className="flex-1 py-4 bg-theme-tertiary text-theme-secondary text-lg font-semibold rounded-xl text-center active:bg-theme-tertiary"
             >
               Versão Desktop
             </Link>
@@ -434,7 +434,7 @@ export default function MobileReceivingPage() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="aspect-square bg-gray-200 rounded-xl flex items-center justify-center mb-4">
+            <div className="aspect-square bg-theme-tertiary rounded-xl flex items-center justify-center mb-4">
               <Camera className="w-16 h-16 text-theme-muted" />
             </div>
             <p className="text-sm text-theme-muted text-center mb-4">

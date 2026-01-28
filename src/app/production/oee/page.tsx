@@ -306,7 +306,7 @@ export default function OeeDashboardPage() {
 
           {!dashboard?.oeeByWorkCenter?.length ? (
             <div className="text-center py-8">
-              <Factory className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <p className="text-theme-muted">Nenhum dado de produção no período selecionado</p>
               <Link
                 href="/production/work-centers"
@@ -331,7 +331,7 @@ export default function OeeDashboardPage() {
                 </thead>
                 <tbody>
                   {dashboard.oeeByWorkCenter.map((wc) => (
-                    <tr key={wc.workCenter.id} className="border-b border-gray-100 hover:bg-theme-hover">
+                    <tr key={wc.workCenter.id} className="border-b border-theme hover:bg-theme-hover">
                       <td className="py-3 px-4">
                         <div className="font-medium">{wc.workCenter.name}</div>
                         <div className="text-xs text-theme-muted">{wc.workCenter.code}</div>

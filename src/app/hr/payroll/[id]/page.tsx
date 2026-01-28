@@ -56,7 +56,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
   if (!payroll) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <FileText className="w-16 h-16 text-gray-300 mb-4" />
+        <FileText className="w-16 h-16 text-theme-muted mb-4" />
         <p className="text-theme-muted">Folha não encontrada</p>
         <button
           onClick={() => router.push("/hr/payroll")}
@@ -74,7 +74,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
   ];
 
   const statusColors: Record<string, string> = {
-    DRAFT: "bg-gray-100 text-gray-800",
+    DRAFT: "bg-theme-tertiary text-theme",
     CALCULATED: "bg-blue-100 text-blue-800",
     PROCESSED: "bg-blue-100 text-blue-800",
     APPROVED: "bg-green-100 text-green-800",
@@ -140,21 +140,21 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Status e Resumo */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-theme-muted mb-2">
               <Clock className="w-4 h-4" />
               <span className="text-sm">Status</span>
             </div>
             <span
               className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                statusColors[payroll.status] || "bg-gray-100 text-gray-800"
+                statusColors[payroll.status] || "bg-theme-tertiary text-theme"
               }`}
             >
               {statusLabels[payroll.status] || payroll.status}
             </span>
           </div>
 
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-theme-muted mb-2">
               <Users className="w-4 h-4" />
               <span className="text-sm">Funcionários</span>
@@ -162,7 +162,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
             <p className="text-2xl font-bold text-theme">{payroll.employeeCount}</p>
           </div>
 
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-blue-500 mb-2">
               <TrendingUp className="w-4 h-4" />
               <span className="text-sm">Total Bruto</span>
@@ -172,7 +172,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
             </p>
           </div>
 
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-red-500 mb-2">
               <TrendingDown className="w-4 h-4" />
               <span className="text-sm">Descontos</span>
@@ -182,7 +182,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
             </p>
           </div>
 
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-4">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
             <div className="flex items-center gap-2 text-green-500 mb-2">
               <DollarSign className="w-4 h-4" />
               <span className="text-sm">Total Líquido</span>
@@ -195,7 +195,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
 
         {/* Encargos */}
         {chargesSummary && (
-          <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-6 mb-6">
             <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
               <Building className="w-5 h-5 text-purple-600" />
               Encargos e Provisões
@@ -250,7 +250,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
         )}
 
         {/* Lista de Funcionários */}
-        <div className="bg-theme-card rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
           <div className="p-4 border-b border-theme">
             <h3 className="text-lg font-semibold text-theme flex items-center gap-2">
               <Users className="w-5 h-5 text-indigo-600" />

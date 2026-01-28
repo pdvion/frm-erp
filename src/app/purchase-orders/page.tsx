@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-zinc-700 text-zinc-300", icon: <FileText className="w-4 h-4" /> },
+  DRAFT: { label: "Rascunho", color: "bg-theme-secondary text-theme-muted", icon: <FileText className="w-4 h-4" /> },
   PENDING: { label: "Pendente", color: "bg-yellow-900/30 text-yellow-400", icon: <Clock className="w-4 h-4" /> },
   APPROVED: { label: "Aprovado", color: "bg-blue-900/30 text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
   SENT: { label: "Enviado", color: "bg-purple-900/30 text-purple-400", icon: <Truck className="w-4 h-4" /> },
@@ -119,7 +119,7 @@ export default function PurchaseOrdersPage() {
       title={`#${item.code.toString().padStart(6, "0")}`}
       subtitle={item.supplier.tradeName || item.supplier.companyName}
       footer={
-        <div className="flex items-center justify-between text-xs text-zinc-500">
+        <div className="flex items-center justify-between text-xs text-theme-muted">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
             {formatDate(item.createdAt)}
