@@ -19,12 +19,18 @@ grep -l "PlaceholderPage" src/app/**/page.tsx
 ```
 
 ### 2. Verificar Router tRPC Existente
-Antes de criar, verificar se já existe router para o módulo:
+
+**OBRIGATÓRIO**: Usar `/router-integration` antes de implementar!
 
 ```bash
 ls src/server/routers/
 grep -l "Router" src/server/routers/*.ts
+
+# Ler o router para mapear procedures e estruturas de retorno
+cat src/server/routers/<modulo>.ts | head -100
 ```
+
+Ver workflow `/router-integration` para checklist completo de validação.
 
 ### 3. Estrutura da Nova Página
 
