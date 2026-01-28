@@ -627,6 +627,258 @@ export const impexRouter = createTRPCRouter({
     }),
 
   // ==========================================================================
+  // EXCHANGE CONTRACTS (Contratos de Câmbio)
+  // ==========================================================================
+
+  listExchangeContracts: tenantProcedure
+    .input(
+      z.object({
+        search: z.string().optional(),
+        status: z.enum(["OPEN", "PARTIALLY_LIQUIDATED", "LIQUIDATED", "CANCELLED"]).optional(),
+        bankAccountId: z.string().uuid().optional(),
+        processId: z.string().uuid().optional(),
+        maturityFrom: z.string().optional(),
+        maturityTo: z.string().optional(),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const { search, status, bankAccountId, processId, maturityFrom, maturityTo } = input ?? {};
+
+      return ctx.prisma.exchangeContract.findMany({
+        where: {
+          companyId: ctx.companyId,
+          ...(search && {
+            OR: [
+              { contractNumber: { contains: search, mode: "insensitive" as const } },
+            ],
+          }),
+          ...(status && { status }),
+          ...(bankAccountId && { bankAccountId }),
+          ...(processId && { processId }),
+          ...(maturityFrom && { maturityDate: { gte: new Date(maturityFrom) } }),
+          ...(maturityTo && { maturityDate: { lte: new Date(maturityTo) } }),
+        },
+        include: {
+          bankAccount: { select: { id: true, name: true, bankName: true } },
+          process: { select: { id: true, processNumber: true } },
+          _count: { select: { liquidations: true } },
+        },
+        orderBy: { maturityDate: "asc" },
+      });
+    }),
+
+  getExchangeContract: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.exchangeContract.findUnique({
+        where: { id: input.id },
+        include: {
+          bankAccount: true,
+          process: { select: { id: true, processNumber: true, supplier: { select: { companyName: true } } } },
+          liquidations: { orderBy: { liquidationDate: "desc" } },
+        },
+      });
+    }),
+
+  createExchangeContract: tenantProcedure
+    .input(
+      z.object({
+        contractNumber: z.string().min(1),
+        bankAccountId: z.string().uuid(),
+        processId: z.string().uuid().optional(),
+        foreignValue: z.number().min(0),
+        foreignCurrency: z.string().default("USD"),
+        contractRate: z.number().min(0),
+        contractDate: z.string(),
+        maturityDate: z.string(),
+        notes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const brlValue = input.foreignValue * input.contractRate;
+
+      return ctx.prisma.exchangeContract.create({
+        data: {
+          contractNumber: input.contractNumber,
+          bankAccountId: input.bankAccountId,
+          processId: input.processId,
+          foreignValue: input.foreignValue,
+          foreignCurrency: input.foreignCurrency,
+          contractRate: input.contractRate,
+          brlValue,
+          contractDate: new Date(input.contractDate),
+          maturityDate: new Date(input.maturityDate),
+          notes: input.notes,
+          companyId: ctx.companyId,
+        },
+      });
+    }),
+
+  updateExchangeContract: tenantProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        contractNumber: z.string().min(1).optional(),
+        bankAccountId: z.string().uuid().optional(),
+        processId: z.string().uuid().optional().nullable(),
+        foreignValue: z.number().min(0).optional(),
+        foreignCurrency: z.string().optional(),
+        contractRate: z.number().min(0).optional(),
+        contractDate: z.string().optional(),
+        maturityDate: z.string().optional(),
+        status: z.enum(["OPEN", "PARTIALLY_LIQUIDATED", "LIQUIDATED", "CANCELLED"]).optional(),
+        notes: z.string().optional().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, contractDate, maturityDate, foreignValue, contractRate, ...rest } = input;
+
+      // Recalculate BRL value if needed
+      let brlValue: number | undefined;
+      if (foreignValue !== undefined || contractRate !== undefined) {
+        const current = await ctx.prisma.exchangeContract.findUnique({ where: { id } });
+        if (current) {
+          const fv = foreignValue ?? Number(current.foreignValue);
+          const cr = contractRate ?? Number(current.contractRate);
+          brlValue = fv * cr;
+        }
+      }
+
+      return ctx.prisma.exchangeContract.update({
+        where: { id },
+        data: {
+          ...rest,
+          ...(foreignValue !== undefined && { foreignValue }),
+          ...(contractRate !== undefined && { contractRate }),
+          ...(brlValue !== undefined && { brlValue }),
+          ...(contractDate && { contractDate: new Date(contractDate) }),
+          ...(maturityDate && { maturityDate: new Date(maturityDate) }),
+        },
+      });
+    }),
+
+  deleteExchangeContract: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.exchangeContract.delete({
+        where: { id: input.id },
+      });
+    }),
+
+  // ==========================================================================
+  // EXCHANGE LIQUIDATIONS
+  // ==========================================================================
+
+  liquidateContract: tenantProcedure
+    .input(
+      z.object({
+        contractId: z.string().uuid(),
+        foreignValue: z.number().min(0),
+        liquidationRate: z.number().min(0),
+        liquidationDate: z.string(),
+        notes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const contract = await ctx.prisma.exchangeContract.findUnique({
+        where: { id: input.contractId },
+      });
+
+      if (!contract) throw new Error("Contrato não encontrado");
+
+      const brlValue = input.foreignValue * input.liquidationRate;
+      const expectedBrl = input.foreignValue * Number(contract.contractRate);
+      const variation = brlValue - expectedBrl; // Positivo = perda, Negativo = ganho
+
+      // Create liquidation record
+      const liquidation = await ctx.prisma.exchangeLiquidation.create({
+        data: {
+          contractId: input.contractId,
+          foreignValue: input.foreignValue,
+          liquidationRate: input.liquidationRate,
+          brlValue,
+          variation,
+          liquidationDate: new Date(input.liquidationDate),
+          notes: input.notes,
+        },
+      });
+
+      // Update contract totals
+      const totalLiquidated = Number(contract.liquidatedValue || 0) + input.foreignValue;
+      const totalVariation = Number(contract.exchangeVariation || 0) + variation;
+      const remainingValue = Number(contract.foreignValue) - totalLiquidated;
+
+      let newStatus: "OPEN" | "PARTIALLY_LIQUIDATED" | "LIQUIDATED" = "PARTIALLY_LIQUIDATED";
+      if (remainingValue <= 0.01) {
+        newStatus = "LIQUIDATED";
+      }
+
+      await ctx.prisma.exchangeContract.update({
+        where: { id: input.contractId },
+        data: {
+          liquidatedValue: totalLiquidated,
+          liquidationRate: input.liquidationRate,
+          exchangeVariation: totalVariation,
+          liquidationDate: new Date(input.liquidationDate),
+          status: newStatus,
+        },
+      });
+
+      return liquidation;
+    }),
+
+  // ==========================================================================
+  // EXCHANGE SUMMARY
+  // ==========================================================================
+
+  getExchangeSummary: tenantProcedure.query(async ({ ctx }) => {
+    const contracts = await ctx.prisma.exchangeContract.findMany({
+      where: { companyId: ctx.companyId },
+      select: {
+        status: true,
+        foreignValue: true,
+        foreignCurrency: true,
+        brlValue: true,
+        liquidatedValue: true,
+        exchangeVariation: true,
+        maturityDate: true,
+      },
+    });
+
+    const today = new Date();
+    const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    const summary = {
+      totalContracts: contracts.length,
+      openContracts: 0,
+      totalForeignOpen: 0,
+      totalBrlOpen: 0,
+      totalVariation: 0,
+      expiringIn30Days: 0,
+      expiredContracts: 0,
+    };
+
+    for (const contract of contracts) {
+      if (contract.status === "OPEN" || contract.status === "PARTIALLY_LIQUIDATED") {
+        summary.openContracts++;
+        const remaining = Number(contract.foreignValue) - Number(contract.liquidatedValue || 0);
+        summary.totalForeignOpen += remaining;
+        summary.totalBrlOpen += remaining * (Number(contract.brlValue) / Number(contract.foreignValue));
+
+        if (contract.maturityDate <= today) {
+          summary.expiredContracts++;
+        } else if (contract.maturityDate <= thirtyDaysFromNow) {
+          summary.expiringIn30Days++;
+        }
+      }
+
+      summary.totalVariation += Number(contract.exchangeVariation || 0);
+    }
+
+    return summary;
+  }),
+
+  // ==========================================================================
   // DASHBOARD
   // ==========================================================================
 

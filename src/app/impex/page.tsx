@@ -2,7 +2,7 @@
 
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Ship, Anchor, Users, Package, FileText, Loader2, ClipboardList } from "lucide-react";
+import { Ship, Anchor, Users, Package, FileText, Loader2, ClipboardList, Banknote } from "lucide-react";
 import Link from "next/link";
 
 export default function ImpExPage() {
@@ -16,6 +16,13 @@ export default function ImpExPage() {
       icon: ClipboardList,
       color: "bg-indigo-100 text-indigo-600",
       count: dashboard?.processesCount,
+    },
+    {
+      title: "Contratos de Câmbio",
+      description: "Controle cambial e liquidações",
+      href: "/impex/exchange",
+      icon: Banknote,
+      color: "bg-emerald-100 text-emerald-600",
     },
     {
       title: "Portos",

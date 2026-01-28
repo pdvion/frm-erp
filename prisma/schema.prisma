@@ -1650,6 +1650,7 @@ model BankAccount {
   receivablePayments  ReceivablePayment[]
   receivables         AccountsReceivable[]
   pixTransactions     PixTransaction[]
+  exchangeContracts   ExchangeContract[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -6040,6 +6041,7 @@ model ImportProcess {
   items           ImportProcessItem[]
   events          ImportProcessEvent[]
   costs           ImportProcessCost[]
+  exchangeContracts ExchangeContract[]
 
   @@unique([processNumber])
   @@index([companyId])
@@ -6102,4 +6104,82 @@ model ImportProcessCost {
 
   @@index([processId])
   @@map("import_process_costs")
+}
+
+// =============================================================================
+// CONTROLE CAMBIAL
+// =============================================================================
+
+enum ExchangeStatus {
+  OPEN
+  PARTIALLY_LIQUIDATED
+  LIQUIDATED
+  CANCELLED
+
+  @@map("exchange_status")
+}
+
+model ExchangeContract {
+  id              String         @id @default(uuid()) @db.Uuid
+  contractNumber  String         // Número do contrato bancário
+  bankAccountId   String         @db.Uuid
+  processId       String?        @db.Uuid // Vinculação opcional com processo de importação
+  
+  // Valores
+  foreignValue    Decimal        @db.Decimal(15,2)
+  foreignCurrency String         @default("USD")
+  contractRate    Decimal        @db.Decimal(10,6) // Taxa contratada
+  brlValue        Decimal        @db.Decimal(15,2) // Valor em BRL
+  
+  // Datas
+  contractDate    DateTime
+  maturityDate    DateTime       // Data de vencimento
+  liquidationDate DateTime?      // Data de liquidação efetiva
+  
+  // Liquidação
+  liquidatedValue   Decimal?     @db.Decimal(15,2) // Valor já liquidado
+  liquidationRate   Decimal?     @db.Decimal(10,6) // Taxa de liquidação
+  exchangeVariation Decimal?     @db.Decimal(15,2) // Variação cambial (ganho/perda)
+  
+  status          ExchangeStatus @default(OPEN)
+  notes           String?
+  
+  companyId       String         @db.Uuid
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  // Relations
+  bankAccount     BankAccount    @relation(fields: [bankAccountId], references: [id])
+  process         ImportProcess? @relation(fields: [processId], references: [id])
+  liquidations    ExchangeLiquidation[]
+  
+  @@unique([contractNumber, companyId])
+  @@index([companyId])
+  @@index([bankAccountId])
+  @@index([processId])
+  @@index([status])
+  @@index([maturityDate])
+  @@map("exchange_contracts")
+}
+
+model ExchangeLiquidation {
+  id              String           @id @default(uuid()) @db.Uuid
+  contractId      String           @db.Uuid
+  
+  // Valores da liquidação
+  foreignValue    Decimal          @db.Decimal(15,2) // Valor liquidado em moeda estrangeira
+  liquidationRate Decimal          @db.Decimal(10,6) // Taxa de liquidação
+  brlValue        Decimal          @db.Decimal(15,2) // Valor em BRL
+  variation       Decimal          @db.Decimal(15,2) // Variação cambial desta liquidação
+  
+  liquidationDate DateTime
+  notes           String?
+  
+  createdAt       DateTime         @default(now())
+  
+  contract        ExchangeContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  @@index([contractId])
+  @@index([liquidationDate])
+  @@map("exchange_liquidations")
 }
