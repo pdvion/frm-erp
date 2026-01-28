@@ -1,16 +1,42 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export function createClient() {
+let clientInstance: SupabaseClient | null = null;
+
+export function createClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      "@supabase/ssr: Your project's URL and API key are required to create a Supabase client!\n\n" +
-      "Check your Supabase project's API settings to find these values\n\n" +
-      "https://supabase.com/dashboard/project/_/settings/api"
-    );
+    console.warn("Supabase environment variables not configured");
+    // Return a mock client that won't crash but won't work either
+    // This allows the app to render during build/preview without env vars
+    return {
+      auth: {
+        getSession: async () => ({ data: { session: null }, error: null }),
+        getUser: async () => ({ data: { user: null }, error: null }),
+        signInWithPassword: async () => ({ data: { user: null, session: null }, error: new Error("Supabase not configured") }),
+        signOut: async () => ({ error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      },
+      from: () => ({
+        select: () => ({ data: null, error: new Error("Supabase not configured") }),
+        insert: () => ({ data: null, error: new Error("Supabase not configured") }),
+        update: () => ({ data: null, error: new Error("Supabase not configured") }),
+        delete: () => ({ data: null, error: new Error("Supabase not configured") }),
+      }),
+      storage: {
+        from: () => ({
+          upload: async () => ({ data: null, error: new Error("Supabase not configured") }),
+          getPublicUrl: () => ({ data: { publicUrl: "" } }),
+        }),
+      },
+    } as unknown as SupabaseClient;
   }
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+  if (!clientInstance) {
+    clientInstance = createBrowserClient(supabaseUrl, supabaseAnonKey);
+  }
+  
+  return clientInstance;
 }
