@@ -67,9 +67,12 @@ test.describe('Materiais (CP10)', () => {
     const emptyMessage = page.getByText('Nenhum material encontrado');
     await expect(table.or(emptyMessage)).toBeVisible({ timeout: 10000 });
     
-    // Se houver materiais, clicar no link de editar (usa title="Editar")
+    // Se a tabela estiver vazia, verificar mensagem; senão, verificar link de editar
     const editLink = page.locator('a[title="Editar"]').first();
-    if (await editLink.isVisible({ timeout: 2000 }).catch(() => false)) {
+    if (await emptyMessage.isVisible().catch(() => false)) {
+      await expect(emptyMessage).toBeVisible();
+    } else {
+      await expect(editLink).toBeVisible({ timeout: 2000 });
       await editLink.click();
       await expect(page).toHaveURL(/\/materials\/.*\/edit/, { timeout: 5000 });
     }
@@ -84,9 +87,12 @@ test.describe('Materiais (CP10)', () => {
     const emptyMessage = page.getByText('Nenhum material encontrado');
     await expect(table.or(emptyMessage)).toBeVisible({ timeout: 10000 });
     
-    // Se houver materiais, clicar no link de visualizar (usa title="Visualizar")
+    // Se a tabela estiver vazia, verificar mensagem; senão, verificar link de visualizar
     const viewLink = page.locator('a[title="Visualizar"]').first();
-    if (await viewLink.isVisible({ timeout: 2000 }).catch(() => false)) {
+    if (await emptyMessage.isVisible().catch(() => false)) {
+      await expect(emptyMessage).toBeVisible();
+    } else {
+      await expect(viewLink).toBeVisible({ timeout: 2000 });
       await viewLink.click();
       await expect(page).toHaveURL(/\/materials\/[a-f0-9-]+$/, { timeout: 5000 });
     }
