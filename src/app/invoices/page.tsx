@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   Upload,
@@ -72,17 +73,12 @@ export default function InvoicesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <FileText className="w-6 h-6 text-indigo-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">NFe Recebidas</h1>
-            <p className="text-sm text-theme-muted">Gerencie notas fiscais recebidas</p>
-          </div>
-        </div>
+      <PageHeader
+        title="NFe Recebidas"
+        subtitle="Gerencie notas fiscais recebidas"
+        icon={<FileText className="w-6 h-6" />}
+        module="fiscal"
+        actions={
         <div className="flex items-center gap-3">
           <Link
             href="/invoices/pending"
@@ -99,7 +95,8 @@ export default function InvoicesPage() {
             Importar XML
           </button>
         </div>
-      </div>
+        }
+      />
 
       <div>
         {/* Stats Cards */}

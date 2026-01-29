@@ -6,6 +6,7 @@ import {
   ArrowRight, Loader2, BarChart3, DollarSign
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { SimpleBarChart, DonutChart, ChartCard } from "@/components/charts";
@@ -26,27 +27,28 @@ export default function SalesDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard de Vendas</h1>
-            <p className="text-theme-muted">Visão geral do módulo comercial</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/sales"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              Pedidos de Venda
-            </Link>
-            <Link
-              href="/customers"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              Clientes
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard de Vendas"
+          subtitle="Visão geral do módulo comercial"
+          icon={<BarChart3 className="w-6 h-6" />}
+          module="sales"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/sales"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                Pedidos de Venda
+              </Link>
+              <Link
+                href="/customers"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                Clientes
+              </Link>
+            </div>
+          }
+        />
 
         {/* KPIs Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

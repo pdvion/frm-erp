@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ShoppingCart,
   Loader2,
@@ -41,16 +42,12 @@ export default function SalesDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-500/10 rounded-lg">
-          <ShoppingCart className="w-6 h-6 text-blue-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Vendas</h1>
-          <p className="text-sm text-theme-muted">Dashboard comercial</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Vendas"
+        subtitle="Dashboard comercial"
+        icon={<ShoppingCart className="w-6 h-6" />}
+        module="sales"
+      />
 
       <div>
         {isLoading ? (
