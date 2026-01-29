@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import {
   Shield,
   Upload,
@@ -19,6 +20,7 @@ import {
   Clock,
   Bell,
   Send,
+  Save,
 } from "lucide-react";
 
 interface Notification {
@@ -28,8 +30,7 @@ interface Notification {
 }
 
 export default function SefazConfigPage() {
-  const [cnpj, setCnpj] = useState("");
-  const [uf, setUf] = useState("SP");
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [environment, setEnvironment] = useState<"homologacao" | "producao">("homologacao");
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
   const [certificatePassword, setCertificatePassword] = useState("");
@@ -61,14 +62,23 @@ export default function SefazConfigPage() {
   const { data: status, isLoading, refetch } = trpc.sefaz.status.useQuery();
   const { data: currentConfig } = trpc.sefaz.getConfig.useQuery();
   const { data: syncConfig } = trpc.sefaz.getSyncConfig.useQuery();
+  const { data: companies } = trpc.companies.list.useQuery();
+
+  // Encontrar empresa selecionada para exibir dados
+  const selectedCompany = companies?.find(c => c.id === selectedCompanyId);
 
   useEffect(() => {
     if (currentConfig) {
-      setCnpj(currentConfig.cnpj || "");
-      setUf(currentConfig.uf || "SP");
       setEnvironment(currentConfig.environment as "homologacao" | "producao" || "homologacao");
+      // Se já existe config, tentar encontrar a empresa pelo CNPJ
+      if (currentConfig.cnpj && companies) {
+        const company = companies.find(c => c.cnpj?.replace(/\D/g, "") === currentConfig.cnpj);
+        if (company) {
+          setSelectedCompanyId(company.id);
+        }
+      }
     }
-  }, [currentConfig]);
+  }, [currentConfig, companies]);
 
   useEffect(() => {
     if (syncConfig) {
@@ -143,8 +153,18 @@ export default function SefazConfigPage() {
   };
 
   const handleSave = async () => {
-    if (!cnpj || !uf) {
-      addNotification("error", "Preencha CNPJ e UF");
+    if (!selectedCompanyId || !selectedCompany) {
+      addNotification("error", "Selecione uma empresa");
+      return;
+    }
+
+    if (!selectedCompany.cnpj) {
+      addNotification("error", "A empresa selecionada não possui CNPJ cadastrado");
+      return;
+    }
+
+    if (!selectedCompany.state) {
+      addNotification("error", "A empresa selecionada não possui UF cadastrada");
       return;
     }
 
@@ -162,19 +182,13 @@ export default function SefazConfigPage() {
     }
 
     saveConfigMutation.mutate({
-      cnpj,
-      uf,
+      cnpj: selectedCompany.cnpj.replace(/\D/g, ""),
+      uf: selectedCompany.state,
       environment,
       certificateBase64,
       certificatePassword: certificatePassword || undefined,
     });
   };
-
-  const UF_OPTIONS = [
-    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
-    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
-    "RS", "RO", "RR", "SC", "SP", "SE", "TO"
-  ];
 
   return (
     <div className="space-y-6">
@@ -276,39 +290,46 @@ export default function SefazConfigPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
           <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-theme-muted" />
-            Dados da Empresa
+            Empresa para Integração SEFAZ
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                CNPJ *
-              </label>
-              <input
-                type="text"
-                value={cnpj}
-                onChange={(e) => setCnpj(e.target.value.replace(/\D/g, ""))}
-                placeholder="00000000000000"
-                maxLength={14}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                UF *
-              </label>
-              <select
-                value={uf}
-                onChange={(e) => setUf(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
-              >
-                {UF_OPTIONS.map((estado) => (
-                  <option key={estado} value={estado}>{estado}</option>
-                ))}
-              </select>
-            </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Selecione a Empresa *
+            </label>
+            <select
+              value={selectedCompanyId}
+              onChange={(e) => setSelectedCompanyId(e.target.value)}
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 bg-theme-card text-theme"
+            >
+              <option value="">Selecione uma empresa...</option>
+              {companies?.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.tradeName || company.name} {company.cnpj && `- ${company.cnpj}`}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-theme-muted mt-1">
+              Apenas empresas com CNPJ e UF cadastrados podem ser integradas ao SEFAZ.
+            </p>
           </div>
+
+          {selectedCompany && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-theme-tertiary rounded-lg">
+              <div>
+                <span className="text-xs text-theme-muted">CNPJ</span>
+                <p className="text-sm font-medium text-theme">{selectedCompany.cnpj || "Não cadastrado"}</p>
+              </div>
+              <div>
+                <span className="text-xs text-theme-muted">UF</span>
+                <p className="text-sm font-medium text-theme">{selectedCompany.state || "Não cadastrada"}</p>
+              </div>
+              <div>
+                <span className="text-xs text-theme-muted">IE</span>
+                <p className="text-sm font-medium text-theme">{selectedCompany.ie || "Não cadastrada"}</p>
+              </div>
+            </div>
+          )}
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-theme-secondary mb-1">
@@ -379,29 +400,20 @@ export default function SefazConfigPage() {
                 value={certificatePassword}
                 onChange={(e) => setCertificatePassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                autoComplete="new-password"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 bg-theme-card text-theme"
               />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <button
+            <Button
               onClick={handleSave}
-              disabled={saveConfigMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              isLoading={saveConfigMutation.isPending}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {saveConfigMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4" />
-                  Salvar Configuração
-                </>
-              )}
-            </button>
+              Salvar Configuração
+            </Button>
           </div>
         </div>
 
@@ -522,23 +534,13 @@ export default function SefazConfigPage() {
           </div>
 
           <div className="flex justify-end mt-6">
-            <button
+            <Button
               onClick={handleSaveSyncConfig}
-              disabled={saveSyncConfigMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              isLoading={saveSyncConfigMutation.isPending}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {saveSyncConfigMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4" />
-                  Salvar Configuração
-                </>
-              )}
-            </button>
+              Salvar Configuração
+            </Button>
           </div>
 
           {syncConfig?.lastSyncAt && (
@@ -565,18 +567,15 @@ export default function SefazConfigPage() {
               <p className="text-xs text-theme-muted mb-4">
                 Busca todas as NFe destinadas ao CNPJ da empresa nos últimos dias.
               </p>
-              <button
+              <Button
                 onClick={() => consultarMutation.mutate({})}
-                disabled={consultarMutation.isPending || !status?.configured}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 w-full justify-center"
+                disabled={!status?.configured}
+                isLoading={consultarMutation.isPending}
+                leftIcon={<RefreshCw className="w-4 h-4" />}
+                className="w-full"
               >
-                {consultarMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4" />
-                )}
                 Buscar NFe
-              </button>
+              </Button>
             </div>
 
             {/* Consulta por chave */}
@@ -592,18 +591,15 @@ export default function SefazConfigPage() {
                 maxLength={44}
                 className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 mb-3"
               />
-              <button
+              <Button
                 onClick={() => consultarChaveMutation.mutate({ chaveAcesso: chaveConsulta })}
-                disabled={consultarChaveMutation.isPending || chaveConsulta.length !== 44}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 w-full justify-center"
+                disabled={chaveConsulta.length !== 44}
+                isLoading={consultarChaveMutation.isPending}
+                leftIcon={<Search className="w-4 h-4" />}
+                className="w-full"
               >
-                {consultarChaveMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Search className="w-4 h-4" />
-                )}
                 Consultar
-              </button>
+              </Button>
             </div>
           </div>
 

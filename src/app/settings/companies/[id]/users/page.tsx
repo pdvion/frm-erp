@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Building2,
   ChevronLeft,
@@ -12,6 +14,7 @@ import {
   Loader2,
   AlertTriangle,
   CheckCircle,
+  UserPlus,
 } from "lucide-react";
 
 export default function CompanyUsersPage() {
@@ -20,6 +23,9 @@ export default function CompanyUsersPage() {
   
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [isDefault, setIsDefault] = useState(false);
 
   // Query para buscar empresa
   const { data: company, isLoading: loadingCompany } = trpc.companies.getById.useQuery(
@@ -33,6 +39,28 @@ export default function CompanyUsersPage() {
     { enabled: !!companyId }
   );
 
+  // Query para buscar todos os usuários do sistema (para o select)
+  const { data: allUsers } = trpc.users.list.useQuery(
+    { limit: 100 },
+    { enabled: showAddForm }
+  );
+
+  // Mutation para adicionar usuário
+  const addUserMutation = trpc.companies.addUser.useMutation({
+    onSuccess: () => {
+      setSuccess("Usuário vinculado com sucesso!");
+      setShowAddForm(false);
+      setSelectedUserId("");
+      setIsDefault(false);
+      refetch();
+      setTimeout(() => setSuccess(null), 3000);
+    },
+    onError: (err) => {
+      setError(err.message);
+      setTimeout(() => setError(null), 5000);
+    },
+  });
+
   // Mutation para remover usuário
   const removeUserMutation = trpc.companies.removeUser.useMutation({
     onSuccess: () => {
@@ -45,12 +73,26 @@ export default function CompanyUsersPage() {
     },
   });
 
+  const handleAddUser = () => {
+    if (!selectedUserId) {
+      setError("Selecione um usuário");
+      return;
+    }
+    setError(null);
+    addUserMutation.mutate({ companyId, userId: selectedUserId, isDefault });
+  };
+
   const handleRemoveUser = (userId: string) => {
     if (!confirm("Tem certeza que deseja remover este usuário da empresa?")) {
       return;
     }
     removeUserMutation.mutate({ companyId, userId });
   };
+
+  // Filtrar usuários que ainda não estão vinculados
+  const availableUsers = allUsers?.items.filter(
+    (u: { id: string; name: string; email: string }) => !users?.some((uc) => uc.userId === u.id)
+  ) || [];
 
   if (loadingCompany) {
     return (
@@ -97,6 +139,12 @@ export default function CompanyUsersPage() {
                 </div>
               </div>
             </div>
+            <Button
+              onClick={() => setShowAddForm(true)}
+              leftIcon={<UserPlus className="w-4 h-4" />}
+            >
+              Vincular Usuário
+            </Button>
           </div>
         </div>
       </header>
@@ -182,6 +230,78 @@ export default function CompanyUsersPage() {
           )}
         </div>
       </main>
+
+      {/* Modal para Vincular Usuário */}
+      <Modal
+        isOpen={showAddForm}
+        onClose={() => {
+          setShowAddForm(false);
+          setSelectedUserId("");
+          setIsDefault(false);
+        }}
+        title="Vincular Usuário"
+        description="Selecione um usuário do sistema para vincular a esta empresa."
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <label htmlFor="user-select" className="block text-sm font-medium text-theme-secondary">
+              Usuário <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="user-select"
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full px-3 py-2 border border-theme-input rounded-lg text-theme bg-theme-card focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Selecione um usuário...</option>
+              {availableUsers.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name || user.email} {user.name && `(${user.email})`}
+                </option>
+              ))}
+            </select>
+            {availableUsers.length === 0 && (
+              <p className="text-sm text-theme-muted mt-1">
+                Todos os usuários já estão vinculados a esta empresa.
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is-default"
+              checked={isDefault}
+              onChange={(e) => setIsDefault(e.target.checked)}
+              className="w-4 h-4 text-blue-600 border-theme-input rounded focus:ring-blue-500"
+            />
+            <label htmlFor="is-default" className="text-sm text-theme-secondary">
+              Definir como empresa padrão para este usuário
+            </label>
+          </div>
+        </div>
+
+        <ModalFooter>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowAddForm(false);
+              setSelectedUserId("");
+              setIsDefault(false);
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAddUser}
+            isLoading={addUserMutation.isPending}
+            disabled={!selectedUserId || availableUsers.length === 0}
+          >
+            Vincular
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
