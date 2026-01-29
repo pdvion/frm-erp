@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 
 import {
   Settings,
-  ChevronLeft,
   Loader2,
   Plus,
   Pencil,
@@ -106,34 +105,23 @@ export default function WorkCentersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Settings className="w-5 h-5 text-blue-600" />
-                Centros de Trabalho
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4" />
-                Novo Centro
-              </button>
-              
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Centros de Trabalho"
+        icon={<Settings className="w-6 h-6" />}
+        backHref="/production"
+        module="production"
+        actions={
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            Novo Centro
+          </button>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto">
         {/* Formulário */}
         {showForm && (
           <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
