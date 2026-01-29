@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   Plus,
@@ -52,25 +53,21 @@ export default function BillingPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <FileText className="w-6 h-6 text-indigo-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Faturamento</h1>
-            <p className="text-sm text-theme-muted">Emissão de notas fiscais</p>
-          </div>
-        </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova NFe
-        </button>
-      </div>
+      <PageHeader
+        title="Faturamento"
+        subtitle="Emissão de notas fiscais"
+        icon={<FileText className="w-6 h-6" />}
+        module="fiscal"
+        actions={
+          <button
+            onClick={() => setShowNewModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            <Plus className="w-4 h-4" />
+            Nova NFe
+          </button>
+        }
+      />
 
       <div>
         {/* Dashboard Cards */}
