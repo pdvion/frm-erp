@@ -3,7 +3,8 @@
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, FileText, Loader2, AlertCircle } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { ArrowLeft, FileText, Loader2, AlertCircle, RotateCcw } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 
@@ -77,23 +78,13 @@ export default function RegisterReturnInvoicePage({
   return (
     <ProtectedRoute>
       <div className="space-y-6 max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/supplier-returns/${id}`}
-            className="p-2 hover:bg-theme-hover rounded-lg"
-          >
-            <ArrowLeft className="w-5 h-5 text-theme-muted" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">
-              Registrar NFe de Devolução
-            </h1>
-            <p className="text-theme-muted">
-              Devolução #{supplierReturn.returnNumber} - {supplierReturn.supplier.companyName}
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          title="Registrar NFe de Devolução"
+          subtitle={`Devolução #${supplierReturn.returnNumber} - ${supplierReturn.supplier.companyName}`}
+          icon={<RotateCcw className="w-6 h-6" />}
+          backHref={`/supplier-returns/${id}`}
+          module="inventory"
+        />
 
         {error && (
           <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">

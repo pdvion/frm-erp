@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
   ArrowLeft,
@@ -172,36 +173,25 @@ export default function ApprovalLevelsPage() {
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/treasury/approvals"
-            className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
-            aria-label="Voltar para Aprovações"
-          >
-            <ArrowLeft className="w-5 h-5 text-theme-secondary" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-theme flex items-center gap-2">
-              <Shield className="w-6 h-6 text-indigo-600" />
-              Níveis de Alçada
-            </h1>
-            <p className="text-theme-secondary">Configure os níveis de aprovação por faixa de valor</p>
-          </div>
-        </div>
-
-        {!showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Nível
-          </button>
-        )}
-      </div>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <PageHeader
+        title="Níveis de Alçada"
+        subtitle="Configure os níveis de aprovação por faixa de valor"
+        icon={<Shield className="w-6 h-6" />}
+        backHref="/treasury/approvals"
+        module="finance"
+        actions={
+          !showForm ? (
+            <button
+              onClick={() => setShowForm(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Nível
+            </button>
+          ) : undefined
+        }
+      />
 
       {/* Form */}
       {showForm && (
