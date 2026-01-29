@@ -30,7 +30,7 @@ export function PageHeader({
   backHref, 
   backLabel = "Voltar",
   module,
-  breadcrumbs: _breadcrumbs,
+  // breadcrumbs - reservado para implementação futura
   badge,
   children, 
   actions 
