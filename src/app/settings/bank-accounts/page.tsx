@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { Button } from "@/components/ui/Button";
 import {
   Building2,
   Loader2,
@@ -15,6 +16,7 @@ import {
   PiggyBank,
   TrendingUp,
   Banknote,
+  Save,
 } from "lucide-react";
 
 const accountTypeConfig = {
@@ -133,13 +135,12 @@ export default function BankAccountsPage() {
             <p className="text-sm text-theme-muted">Gerenciar contas bancárias</p>
           </div>
         </div>
-        <button
+        <Button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          leftIcon={<Plus className="w-4 h-4" />}
         >
-          <Plus className="w-4 h-4" />
           Nova Conta
-        </button>
+        </Button>
       </div>
 
       <div>
@@ -304,20 +305,20 @@ export default function BankAccountsPage() {
               </div>
 
               <div className="flex justify-end gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  isLoading={createMutation.isPending || updateMutation.isPending}
+                  leftIcon={<Save className="w-4 h-4" />}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? "Salvando..." : "Salvar"}
-                </button>
+                  Salvar
+                </Button>
               </div>
             </form>
           </div>
@@ -328,13 +329,12 @@ export default function BankAccountsPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
             <Building2 className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <p className="text-theme-muted mb-4">Nenhuma conta bancária cadastrada</p>
-            <button
+            <Button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Criar Primeira Conta
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">

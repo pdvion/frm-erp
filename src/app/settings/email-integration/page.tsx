@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Mail,
   Save,
@@ -324,44 +325,34 @@ export default function EmailIntegrationPage() {
 
         {/* Ações */}
         <div className="flex flex-wrap gap-4">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={handleTestConnection}
-            disabled={isTesting || !form.host || !form.user || !form.password}
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!form.host || !form.user || !form.password}
+            isLoading={isTesting}
+            leftIcon={<TestTube className="w-4 h-4" />}
           >
-            {isTesting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <TestTube className="w-4 h-4" />
-            )}
-            {isTesting ? "Testando..." : "Testar Conexão"}
-          </button>
+            Testar Conexão
+          </Button>
 
-          <button
+          <Button
             type="button"
-            onClick={() => {
-              // Trigger manual fetch - would need to implement this
-            }}
+            variant="secondary"
             disabled={!config}
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            leftIcon={<RefreshCw className="w-4 h-4" />}
           >
-            <RefreshCw className="w-4 h-4" />
             Buscar NFes Agora
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="submit"
-            disabled={saveMutation.isPending || !form.host || !form.user}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!form.host || !form.user}
+            isLoading={saveMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {saveMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
-            {saveMutation.isPending ? "Salvando..." : "Salvar Configurações"}
-          </button>
+            Salvar Configurações
+          </Button>
         </div>
       </form>
     </div>
