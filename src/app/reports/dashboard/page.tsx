@@ -6,6 +6,7 @@ import {
   Loader2, Clock, Download
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { SimpleBarChart, ChartCard } from "@/components/charts";
 
@@ -25,21 +26,20 @@ export default function ReportsDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard de Relatórios</h1>
-            <p className="text-theme-muted">Visão geral do módulo de relatórios</p>
-          </div>
-          <div className="flex gap-2">
+        <PageHeader
+          title="Dashboard de Relatórios"
+          subtitle="Visão geral do módulo de relatórios"
+          icon={<FileText className="w-6 h-6" />}
+          module="reports"
+          actions={
             <Link
               href="/reports"
               className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
             >
               Ver Relatórios
             </Link>
-          </div>
-        </div>
+          }
+        />
 
         {/* KPIs Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   Package,
@@ -49,16 +50,12 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-indigo-500/10 rounded-lg">
-          <BarChart3 className="w-6 h-6 text-indigo-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Relatórios Gerenciais</h1>
-          <p className="text-sm text-theme-muted">Análises e indicadores do sistema</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Relatórios Gerenciais"
+        subtitle="Análises e indicadores do sistema"
+        icon={<BarChart3 className="w-6 h-6" />}
+        module="reports"
+      />
 
       <div>
         {/* Filters */}

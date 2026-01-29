@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Users,
   Loader2,
@@ -35,16 +36,12 @@ export default function HRDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-purple-500/10 rounded-lg">
-          <Users className="w-6 h-6 text-purple-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Recursos Humanos</h1>
-          <p className="text-sm text-theme-muted">Gestão de pessoas e folha</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Recursos Humanos"
+        subtitle="Gestão de pessoas e folha"
+        icon={<Users className="w-6 h-6" />}
+        module="hr"
+      />
 
       <div>
         {isLoading ? (
