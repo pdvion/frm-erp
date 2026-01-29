@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   DollarSign,
   CheckCircle,
@@ -95,23 +96,13 @@ export default function ReceivableDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-green-500/10 rounded-lg">
-          <DollarSign className="w-6 h-6 text-green-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">
-            Título #{receivable.code}
-            {receivable.totalInstallments > 1 && (
-              <span className="text-theme-muted text-lg ml-2">
-                (Parcela {receivable.installmentNumber}/{receivable.totalInstallments})
-              </span>
-            )}
-          </h1>
-          <p className="text-sm text-theme-muted">Detalhes do título a receber</p>
-        </div>
-      </div>
+      <PageHeader
+        title={`Título #${receivable.code}${receivable.totalInstallments > 1 ? ` (${receivable.installmentNumber}/${receivable.totalInstallments})` : ""}`}
+        subtitle="Detalhes do título a receber"
+        icon={<DollarSign className="w-6 h-6" />}
+        backHref="/receivables"
+        module="finance"
+      />
 
       <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   DollarSign,
   Loader2,
@@ -79,16 +80,13 @@ export default function NewReceivablePage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-green-500/10 rounded-lg">
-          <DollarSign className="w-6 h-6 text-green-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Novo Título a Receber</h1>
-          <p className="text-sm text-theme-muted">Cadastrar novo título</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Novo Título a Receber"
+        subtitle="Cadastrar novo título"
+        icon={<DollarSign className="w-6 h-6" />}
+        backHref="/receivables"
+        module="finance"
+      />
 
       <div>
         <form onSubmit={handleSubmit} className="space-y-6">
