@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ArrowLeft,
   Plus,
@@ -11,6 +12,7 @@ import {
   Loader2,
   Package,
   AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
@@ -139,19 +141,13 @@ export default function NewSupplierReturnPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/supplier-returns"
-            className="p-2 hover:bg-theme-hover rounded-lg"
-          >
-            <ArrowLeft className="w-5 h-5 text-theme-muted" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Nova Devolução</h1>
-            <p className="text-theme-muted">Registre uma devolução a fornecedor</p>
-          </div>
-        </div>
+        <PageHeader
+          title="Nova Devolução"
+          subtitle="Registre uma devolução a fornecedor"
+          icon={<RotateCcw className="w-6 h-6" />}
+          backHref="/supplier-returns"
+          module="inventory"
+        />
 
         {error && (
           <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">

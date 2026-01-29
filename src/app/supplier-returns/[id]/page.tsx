@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ArrowLeft,
   Edit,
@@ -15,6 +16,7 @@ import {
   Calendar,
   Hash,
   AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
@@ -121,75 +123,63 @@ export default function SupplierReturnDetailPage({
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link href="/supplier-returns" className="p-2 hover:bg-theme-hover rounded-lg">
-              <ArrowLeft className="w-5 h-5 text-theme-muted" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-theme">
-                  Devolução #{supplierReturn.returnNumber}
-                </h1>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[supplierReturn.status].color}`}>
-                  {statusConfig[supplierReturn.status].label}
-                </span>
-              </div>
-              <p className="text-theme-muted">
-                {supplierReturn.supplier.companyName}
-              </p>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            {supplierReturn.status === "DRAFT" && (
-              <>
+        <PageHeader
+          title={`Devolução #${supplierReturn.returnNumber}`}
+          subtitle={supplierReturn.supplier.companyName}
+          icon={<RotateCcw className="w-6 h-6" />}
+          backHref="/supplier-returns"
+          module="inventory"
+          actions={
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[supplierReturn.status].color}`}>
+                {statusConfig[supplierReturn.status].label}
+              </span>
+              {supplierReturn.status === "DRAFT" && (
+                <>
+                  <Link
+                    href={`/supplier-returns/${id}/edit`}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Editar
+                  </Link>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isPending}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4" />
+                    Enviar para Aprovação
+                  </button>
+                </>
+              )}
+              {supplierReturn.status === "PENDING" && (
+                <>
+                  <button
+                    onClick={handleCancel}
+                    disabled={isPending}
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleApprove}
+                    disabled={isPending}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Aprovar
+                  </button>
+                </>
+              )}
+              {supplierReturn.status === "APPROVED" && (
                 <Link
-                  href={`/supplier-returns/${id}/edit`}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
+                  href={`/supplier-returns/${id}/invoice`}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
                 >
-                  <Edit className="w-4 h-4" />
-                  Editar
-                </Link>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  Enviar para Aprovação
-                </button>
-              </>
-            )}
-            {supplierReturn.status === "PENDING" && (
-              <>
-                <button
-                  onClick={handleCancel}
-                  disabled={isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
-                >
-                  <XCircle className="w-4 h-4" />
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleApprove}
-                  disabled={isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  Aprovar
-                </button>
-              </>
-            )}
-            {supplierReturn.status === "APPROVED" && (
-              <Link
-                href={`/supplier-returns/${id}/invoice`}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-              >
-                <FileText className="w-4 h-4" />
-                Registrar NFe Devolução
+                  <FileText className="w-4 h-4" />
+                  Registrar NFe Devolução
               </Link>
             )}
             {supplierReturn.status === "INVOICED" && (
@@ -202,8 +192,9 @@ export default function SupplierReturnDetailPage({
                 Concluir
               </button>
             )}
-          </div>
-        </div>
+            </div>
+          }
+        />
 
         {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

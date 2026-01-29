@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
   Building2,
@@ -69,25 +70,22 @@ export default function ConsumptionReportPage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">
-              Relatório de Consumo
-            </h1>
-            <p className="text-sm text-theme-muted">
-              Análise de consumo de materiais por requisições
-            </p>
-          </div>
-          <button
-            onClick={handleExport}
-            disabled={!data || data.data.length === 0}
-            className="flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-          >
-            <Download className="h-4 w-4" />
-            Exportar CSV
-          </button>
-        </div>
+        <PageHeader
+          title="Relatório de Consumo"
+          subtitle="Análise de consumo de materiais por requisições"
+          icon={<BarChart3 className="w-6 h-6" />}
+          module="inventory"
+          actions={
+            <button
+              onClick={handleExport}
+              disabled={!data || data.data.length === 0}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              <Download className="h-4 w-4" />
+              Exportar CSV
+            </button>
+          }
+        />
 
         {/* Filtros */}
         <div className="rounded-lg border border-theme bg-theme-card p-4 dark:border-theme dark:bg-theme-card">
