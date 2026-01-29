@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ChevronLeft,
   Loader2,
@@ -20,6 +21,7 @@ import {
   Scale,
   ChevronDown,
   ChevronUp,
+  Bell,
 } from "lucide-react";
 
 const actionTypeConfig = {
@@ -167,30 +169,22 @@ export default function CollectionRulesPage() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link
-            href="/settings"
-            className="inline-flex items-center gap-2 text-theme-secondary hover:text-theme mb-4"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Voltar para Configurações
-          </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-theme">
-                Réguas de Cobrança
-              </h1>
-              <p className="text-theme-secondary mt-1">
-                Configure as etapas automáticas de cobrança para títulos vencidos
-              </p>
-            </div>
-            <button
-              onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4" />
-              Nova Régua
-            </button>
-          </div>
+          <PageHeader
+            title="Réguas de Cobrança"
+            subtitle="Configure as etapas automáticas de cobrança para títulos vencidos"
+            icon={<Bell className="w-6 h-6" />}
+            backHref="/settings"
+            module="settings"
+            actions={
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4" />
+                Nova Régua
+              </button>
+            }
+          />
         </div>
 
         {/* Form */}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Building2,
   Loader2,
@@ -124,24 +125,21 @@ export default function BankAccountsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <Building2 className="w-6 h-6 text-blue-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Contas Bancárias</h1>
-            <p className="text-sm text-theme-muted">Gerenciar contas bancárias</p>
-          </div>
-        </div>
-        <Button
-          onClick={() => setShowForm(true)}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Nova Conta
-        </Button>
-      </div>
+      <PageHeader
+        title="Contas Bancárias"
+        subtitle="Gerenciar contas bancárias"
+        icon={<Wallet className="w-6 h-6" />}
+        backHref="/settings"
+        module="settings"
+        actions={
+          <Button
+            onClick={() => setShowForm(true)}
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Nova Conta
+          </Button>
+        }
+      />
 
       <div>
         {/* Formulário */}

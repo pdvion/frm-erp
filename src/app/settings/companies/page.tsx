@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Building2,
   Plus,
@@ -100,25 +101,22 @@ export default function CompaniesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <Building2 className="w-6 h-6 text-blue-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Empresas</h1>
-            <p className="text-sm text-theme-muted">Gerenciar empresas do grupo</p>
-          </div>
-        </div>
-        <button
-          onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Empresa
-        </button>
-      </div>
+      <PageHeader
+        title="Empresas"
+        subtitle="Gerenciar empresas do grupo"
+        icon={<Building2 className="w-6 h-6" />}
+        backHref="/settings"
+        module="settings"
+        actions={
+          <button
+            onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            Nova Empresa
+          </button>
+        }
+      />
 
       <div>
         {/* Formulário */}

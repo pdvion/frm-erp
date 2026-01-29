@@ -5,10 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
   Settings,
   ChevronLeft,
+  Layout,
   Upload,
   Trash2,
   Save,
@@ -16,7 +18,6 @@ import {
   Loader2,
   Image as ImageIcon,
   Type,
-  Layout,
   Eye,
   AlertCircle,
   CheckCircle,
@@ -295,55 +296,36 @@ export default function LandingSettingsPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <header className="bg-theme-card shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/dashboard"
-                  className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </Link>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                    <Settings className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-theme">
-                      Configurações da Landing Page
-                    </h1>
-                    <p className="text-sm text-theme-muted">
-                      Personalize a página inicial do sistema
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleReset}
-                  className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Restaurar
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50"
-                >
-                  {isSaving ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  Salvar
-                </button>
-              </div>
+        <PageHeader
+          title="Configurações da Landing Page"
+          subtitle="Personalize a página inicial do sistema"
+          icon={<Layout className="w-6 h-6" />}
+          backHref="/settings"
+          module="settings"
+          actions={
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Restaurar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50"
+              >
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Salvar
+              </button>
             </div>
-          </div>
-        </header>
+          }
+        />
 
         {/* Message */}
         {message && (

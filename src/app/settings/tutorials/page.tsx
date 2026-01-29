@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   BookOpen,
   Plus,
@@ -151,35 +152,32 @@ export default function TutorialsAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <BookOpen className="w-6 h-6 text-blue-500" />
+      <PageHeader
+        title="Tutoriais"
+        subtitle="Gerenciar tutoriais do sistema"
+        icon={<BookOpen className="w-6 h-6" />}
+        backHref="/settings"
+        module="settings"
+        actions={
+          <div className="flex items-center gap-3">
+            <Link
+              href="/docs"
+              target="_blank"
+              className="flex items-center gap-2 text-theme-secondary hover:text-blue-600"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Ver Documentação
+            </Link>
+            <button
+              onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Tutorial
+            </button>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Tutoriais</h1>
-            <p className="text-sm text-theme-muted">Gerenciar tutoriais do sistema</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/docs"
-            target="_blank"
-            className="flex items-center gap-2 text-theme-secondary hover:text-blue-600"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Ver Documentação
-          </Link>
-          <button
-            onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Tutorial
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       <div>
         {/* Formulário */}

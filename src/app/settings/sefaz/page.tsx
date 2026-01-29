@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
   Upload,
@@ -192,16 +193,13 @@ export default function SefazConfigPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-indigo-500/10 rounded-lg">
-          <Shield className="w-6 h-6 text-indigo-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Configuração SEFAZ</h1>
-          <p className="text-sm text-theme-muted">Certificado digital e integração</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Configuração SEFAZ"
+        subtitle="Certificado digital e integração"
+        icon={<Shield className="w-6 h-6" />}
+        backHref="/settings"
+        module="settings"
+      />
 
       {/* Notifications */}
       <div className="fixed top-20 right-4 z-50 space-y-2 max-w-md">
