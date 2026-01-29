@@ -67,7 +67,7 @@ export default function DocsPage() {
               </Link>
               <div className="flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">Documentação</h1>
+                <h1 className="text-xl font-semibold text-theme">Tutoriais</h1>
               </div>
             </div>
           </div>

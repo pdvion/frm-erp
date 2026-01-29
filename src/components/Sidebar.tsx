@@ -184,7 +184,7 @@ const menuItems: MenuItem[] = [
       { label: "Integração Email", href: "/settings/email-integration" },
       { label: "SEFAZ", href: "/settings/sefaz" },
       { label: "Tokens de IA", href: "/settings/ai" },
-      { label: "Design System", href: "/docs" },
+      { label: "Tutoriais", href: "/docs" },
     ],
   },
 ];
@@ -361,10 +361,10 @@ export function Sidebar({ onClose }: SidebarProps) {
       </nav>
 
       {/* Theme Switcher */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-theme p-3">
+      <div className="absolute bottom-0 left-0 right-0 border-t border-theme p-3 bg-theme-sidebar">
         <div className="flex items-center justify-between">
           <span className="text-xs text-theme-muted">Tema</span>
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-theme-hover">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-theme-tertiary">
             {themeOptions.map(({ value, icon: Icon, label }) => (
               <button
                 key={value}

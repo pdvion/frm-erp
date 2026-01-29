@@ -4741,6 +4741,8 @@ enum SefazManifestacao {
   CONFIRMACAO
   DESCONHECIMENTO
   NAO_REALIZADA
+
+  @@map("sefaz_manifestacao")
 }
 
 model SefazSyncConfig {

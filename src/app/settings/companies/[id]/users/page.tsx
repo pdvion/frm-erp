@@ -36,7 +36,10 @@ export default function CompanyUsersPage() {
   // Query para buscar usuários da empresa
   const { data: users, isLoading: loadingUsers, refetch } = trpc.companies.listUsers.useQuery(
     { companyId },
-    { enabled: !!companyId }
+    { 
+      enabled: !!companyId,
+      refetchOnMount: true, // VIO-806: Garantir refetch ao navegar entre empresas
+    }
   );
 
   // Query para buscar todos os usuários do sistema (para o select)
