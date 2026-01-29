@@ -70,6 +70,7 @@ import { aiClassifierRouter } from "./aiClassifier";
 import { chartBuilderRouter } from "./chartBuilder";
 import { usersRouter } from "./users";
 import { impexRouter } from "./impex";
+import { delphiImportRouter } from "./delphiImport";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -143,6 +144,7 @@ export const appRouter = createTRPCRouter({
   chartBuilder: chartBuilderRouter,
   users: usersRouter,
   impex: impexRouter,
+  delphiImport: delphiImportRouter,
 });
 
 export type AppRouter = typeof appRouter;
