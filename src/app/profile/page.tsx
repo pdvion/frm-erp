@@ -7,6 +7,7 @@ import { useUser } from "@/hooks/useUser";
 import { useMFA } from "@/hooks/useMFA";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { createClient } from "@/lib/supabase/client";
+import { PageHeader } from "@/components/PageHeader";
 import {
   User,
   Mail,
@@ -22,6 +23,7 @@ import {
   Lock,
   Eye,
   EyeOff,
+  LogOut,
 } from "lucide-react";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/password";
@@ -98,24 +100,21 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute>
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Page Title */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <User className="w-6 h-6 text-blue-500" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-theme">Meu Perfil</h1>
-              <p className="text-sm text-theme-muted">Gerencie suas informações e segurança</p>
-            </div>
-          </div>
-          <button
-            onClick={signOut}
-            className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-colors"
-          >
-            Sair
-          </button>
-        </div>
+        <PageHeader
+          title="Meu Perfil"
+          subtitle="Gerencie suas informações e segurança"
+          icon={<User className="w-6 h-6" />}
+          module="settings"
+          actions={
+            <button
+              onClick={signOut}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
+          }
+        />
 
         <div className="space-y-6">
           {/* User Info Card */}

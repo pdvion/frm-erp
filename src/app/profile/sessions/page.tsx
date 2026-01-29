@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { createClient } from "@/lib/supabase/client";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ArrowLeft,
   Monitor,
@@ -130,28 +131,14 @@ export default function SessionsPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <header className="bg-theme-card border-b border-theme">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center h-16">
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 text-theme-secondary hover:text-[var(--frm-primary)]"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Voltar ao Perfil</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-theme">Sessões Ativas</h1>
-            <p className="text-theme-secondary mt-1">
-              Gerencie os dispositivos conectados à sua conta
-            </p>
-          </div>
+        <div className="max-w-3xl mx-auto space-y-6">
+          <PageHeader
+            title="Sessões Ativas"
+            subtitle="Gerencie os dispositivos conectados à sua conta"
+            icon={<Monitor className="w-6 h-6" />}
+            backHref="/profile"
+            module="settings"
+          />
 
           {message && (
             <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
@@ -256,7 +243,7 @@ export default function SessionsPage() {
               </>
             )}
           </div>
-        </main>
+        </div>
       </div>
     </ProtectedRoute>
   );
