@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 
 import {
   Factory,
-  ChevronLeft,
   Loader2,
   Plus,
   Trash2,
@@ -134,25 +134,14 @@ export default function NewProductionOrderPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Factory className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-theme">Nova Ordem de Produção</h1>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Nova Ordem de Produção"
+        icon={<Factory className="w-6 h-6" />}
+        backHref="/production"
+        module="production"
+      />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto">
         <div className="space-y-6">
           {/* Produto */}
           <div className="bg-theme-card rounded-lg border border-theme p-6">
