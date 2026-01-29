@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Factory,
   Search,
@@ -60,25 +61,21 @@ export default function ProductionPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <Factory className="w-6 h-6 text-indigo-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Ordens de Produção</h1>
-            <p className="text-sm text-theme-muted">Gerencie ordens de produção</p>
-          </div>
-        </div>
-        <Link
-          href="/production/new"
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova OP
-        </Link>
-      </div>
+      <PageHeader
+        title="Ordens de Produção"
+        subtitle="Gerencie ordens de produção"
+        icon={<Factory className="w-6 h-6" />}
+        module="production"
+        actions={
+          <Link
+            href="/production/new"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            <Plus className="w-4 h-4" />
+            Nova OP
+          </Link>
+        }
+      />
 
       <div>
         {/* Quick Access Menu */}

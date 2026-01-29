@@ -6,6 +6,7 @@ import {
   ArrowRight, Loader2, BarChart3, Clock, CheckCircle
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { SimpleBarChart, ChartCard } from "@/components/charts";
 
@@ -30,27 +31,28 @@ export default function ProductionDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard de Produção</h1>
-            <p className="text-theme-muted">Visão geral do módulo de produção</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/production"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              Ordens de Produção
-            </Link>
-            <Link
-              href="/oee"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              OEE
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard de Produção"
+          subtitle="Visão geral do módulo de produção"
+          icon={<Factory className="w-6 h-6" />}
+          module="production"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/production"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                Ordens de Produção
+              </Link>
+              <Link
+                href="/oee"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                OEE
+              </Link>
+            </div>
+          }
+        />
 
         {/* Alertas */}
         {(kpis?.orders.delayed || 0) > 0 && (

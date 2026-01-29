@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Factory,
   ChevronLeft,
@@ -105,70 +106,57 @@ export default function ProductionOrderDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Factory className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-theme">
-                  OP #{order.code}
-                </h1>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
-                {config.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              
-              
-              {canCancel && (
-                <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
-                >
-                  <Ban className="w-4 h-4" />
-                  Cancelar
-                </button>
-              )}
-
-              {canRelease && (
-                <button
-                  onClick={() => releaseMutation.mutate({ id })}
-                  disabled={releaseMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {releaseMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Check className="w-4 h-4" />
-                  )}
-                  Liberar
-                </button>
-              )}
-
-              {canStart && (
-                <button
-                  onClick={() => startMutation.mutate({ id })}
-                  disabled={startMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
-                >
-                  {startMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Play className="w-4 h-4" />
-                  )}
-                  Iniciar Produção
-                </button>
-              )}
-            </div>
+      <PageHeader
+        title={`OP #${order.code}`}
+        subtitle={order.product?.description || "Produto não identificado"}
+        icon={<Factory className="w-6 h-6" />}
+        backHref="/production"
+        module="production"
+        actions={
+          <div className="flex items-center gap-4">
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
+              {config.label}
+            </span>
+            {canCancel && (
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+              >
+                <Ban className="w-4 h-4" />
+                Cancelar
+              </button>
+            )}
+            {canRelease && (
+              <button
+                onClick={() => releaseMutation.mutate({ id })}
+                disabled={releaseMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {releaseMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4" />
+                )}
+                Liberar
+              </button>
+            )}
+            {canStart && (
+              <button
+                onClick={() => startMutation.mutate({ id })}
+                disabled={startMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+              >
+                {startMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Play className="w-4 h-4" />
+                )}
+                Iniciar Produção
+              </button>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
