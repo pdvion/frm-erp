@@ -37,6 +37,8 @@ export function NotificationBell() {
 
   const { data: unreadCount = 0 } = trpc.notifications.countUnread.useQuery(undefined, {
     refetchInterval: 30000, // Atualizar a cada 30 segundos
+    retry: false, // Não retentar em caso de erro 401
+    refetchOnWindowFocus: false, // Evitar refetch desnecessário
   });
 
   const { data: notifications, isLoading } = trpc.notifications.unread.useQuery(
