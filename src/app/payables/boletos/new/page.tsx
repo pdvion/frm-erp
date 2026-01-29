@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import {
   FileBarChart,
-  Loader2,
   ArrowLeft,
   Building2,
   Calendar,
@@ -267,25 +267,23 @@ export default function NewBoletoPage() {
 
           {/* Ações */}
           <div className="flex gap-4">
-            <Link
-              href="/payables/boletos"
-              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Cancelar
+            <Link href="/payables/boletos">
+              <Button
+                type="button"
+                variant="secondary"
+                leftIcon={<ArrowLeft className="w-4 h-4" />}
+              >
+                Cancelar
+              </Button>
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={generateMutation.isPending || !form.valor || !form.dataVencimento || !form.nossoNumero}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!form.valor || !form.dataVencimento || !form.nossoNumero}
+              isLoading={generateMutation.isPending}
+              leftIcon={<FileBarChart className="w-4 h-4" />}
             >
-              {generateMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <FileBarChart className="w-4 h-4" />
-              )}
-              {generateMutation.isPending ? "Gerando..." : "Gerar Boleto"}
-            </button>
+              Gerar Boleto
+            </Button>
           </div>
         </form>
 
