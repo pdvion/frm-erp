@@ -283,13 +283,12 @@ export default function DesignSystemPage() {
             size="md"
           >
             <div className="space-y-4">
-              <FormField label="Nome" required>
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Digite seu nome"
-                />
-              </FormField>
+              <Input
+                label="Nome"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Digite seu nome"
+              />
             </div>
             <ModalFooter>
               <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -329,24 +328,13 @@ export default function DesignSystemPage() {
           <p className="text-theme-muted">Campos de formulário com labels, validação e estados.</p>
 
           <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4 max-w-md">
-            <FormField label="Nome completo" required>
-              <Input placeholder="Digite seu nome" />
-            </FormField>
+            <FormField label="Nome completo" required placeholder="Digite seu nome" />
 
-            <FormField label="E-mail" hint="Usaremos para enviar notificações">
-              <Input type="email" placeholder="email@exemplo.com" />
-            </FormField>
+            <FormField label="E-mail" hint="Usaremos para enviar notificações" type="email" placeholder="email@exemplo.com" />
 
-            <FormField label="Senha" error="Senha deve ter no mínimo 8 caracteres">
-              <Input type="password" placeholder="********" />
-            </FormField>
+            <FormField label="Senha" error="Senha deve ter no mínimo 8 caracteres" type="password" placeholder="********" />
 
-            <FormField label="Buscar">
-              <Input
-                placeholder="Pesquisar..."
-                leftIcon={<Search className="w-4 h-4" />}
-              />
-            </FormField>
+            <FormField label="Buscar" placeholder="Pesquisar..." leftIcon={<Search className="w-4 h-4" />} />
           </div>
 
           <CodeBlock
@@ -354,19 +342,15 @@ export default function DesignSystemPage() {
             copied={copied}
             onCopy={copyToClipboard}
             code={`import { FormField } from "@/components/ui/FormField";
-import { Input } from "@/components/ui/Input";
 
 <FormField 
   label="Nome" 
   required
   hint="Texto de ajuda"
   error="Mensagem de erro"
->
-  <Input 
-    placeholder="Digite..."
-    leftIcon={<Search className="w-4 h-4" />}
-  />
-</FormField>`}
+  placeholder="Digite..."
+  leftIcon={<Search className="w-4 h-4" />}
+/>`}
           />
         </section>
 
