@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 
 const actionConfig = {
   CREATE: { label: "Criação", color: "bg-green-100 text-green-800", icon: Plus },
@@ -77,16 +78,12 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-indigo-500/10 rounded-lg">
-          <Shield className="w-6 h-6 text-indigo-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Auditoria</h1>
-          <p className="text-sm text-theme-muted">Histórico de ações do sistema</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Auditoria"
+        subtitle="Histórico de ações do sistema"
+        icon={<Shield className="w-6 h-6" />}
+        module="admin"
+      />
 
       <div>
         {/* Filters */}
