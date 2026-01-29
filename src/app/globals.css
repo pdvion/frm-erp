@@ -288,11 +288,22 @@ label:has(input[type="radio"]) {
   top: 0;
 }
 
-/* Contraste melhorado para texto muted */
-.light {
-  --foreground-muted: #4b5563; /* gray-600 em vez de gray-500 para melhor contraste */
+/* Contraste melhorado para texto muted - WCAG AA compliance */
+.light .text-theme-muted,
+.light .placeholder-theme-muted::placeholder {
+  color: #4b5563 !important; /* gray-600 - contraste 7:1 */
 }
 
-.dark {
-  --foreground-muted: #9ca3af; /* gray-400 para melhor contraste no dark */
+.dark .text-theme-muted,
+.dark .placeholder-theme-muted::placeholder {
+  color: #d1d5db !important; /* gray-300 - contraste 10:1 no dark */
+}
+
+/* Contraste para texto secundário */
+.light .text-theme-secondary {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+.dark .text-theme-secondary {
+  color: #e5e7eb !important; /* gray-200 */
 }
