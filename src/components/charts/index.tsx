@@ -21,9 +21,11 @@ import {
 
 // Hook para detectar se o container tem dimensões válidas
 // VIO-697: Melhorado para evitar warnings de width/height -1
+// VIO-761: Aumentado threshold e adicionado debounce para resize mobile
 function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
   const [isReady, setIsReady] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -31,8 +33,8 @@ function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
     const checkDimensions = () => {
       if (ref.current) {
         const { width, height } = ref.current.getBoundingClientRect();
-        // Garantir dimensões mínimas de 50px para evitar warnings
-        if (width >= 50 && height >= 50) {
+        // VIO-761: Aumentado threshold para 100px e verificação mais rigorosa
+        if (width >= 100 && height >= 100) {
           setIsReady(true);
           setDimensions({ width, height });
         } else {
@@ -46,14 +48,22 @@ function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
       checkDimensions();
     });
 
-    // Usar ResizeObserver para detectar mudanças
+    // VIO-761: Debounce no ResizeObserver para evitar múltiplos re-renders
     const observer = new ResizeObserver(() => {
-      requestAnimationFrame(checkDimensions);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+      debounceRef.current = setTimeout(() => {
+        requestAnimationFrame(checkDimensions);
+      }, 100);
     });
     observer.observe(ref.current);
 
     return () => {
       cancelAnimationFrame(rafId);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
       observer.disconnect();
     };
   }, [ref]);
