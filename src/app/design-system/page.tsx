@@ -9,9 +9,9 @@ import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Palette,
-  ChevronLeft,
   Save,
   Trash2,
   Plus,
@@ -65,32 +65,25 @@ export default function DesignSystemPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/settings" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Palette className="w-6 h-6 text-purple-600" />
-                <h1 className="text-xl font-semibold text-theme">Design System</h1>
-              </div>
-            </div>
-            <a
-              href="https://github.com/pdvion/frm-erp/tree/main/src/components/ui"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-theme-muted hover:text-theme"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Ver no GitHub
-            </a>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Design System"
+        icon={<Palette className="w-6 h-6" />}
+        backHref="/settings"
+        module="settings"
+        actions={
+          <a
+            href="https://github.com/pdvion/frm-erp/tree/main/src/components/ui"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-theme-muted hover:text-theme"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Ver no GitHub
+          </a>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+      <main className="max-w-7xl mx-auto space-y-12">
         {/* Introdução */}
         <section>
           <p className="text-theme-secondary max-w-3xl">
