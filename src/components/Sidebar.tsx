@@ -185,6 +185,7 @@ const menuItems: MenuItem[] = [
       { label: "SEFAZ", href: "/settings/sefaz" },
       { label: "Tokens de IA", href: "/settings/ai" },
       { label: "Tutoriais", href: "/docs" },
+      { label: "Design System", href: "/design-system" },
     ],
   },
 ];
