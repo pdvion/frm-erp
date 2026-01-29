@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Users,
   Search,
@@ -37,25 +38,21 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <Users className="w-6 h-6 text-blue-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Clientes</h1>
-            <p className="text-sm text-theme-muted">Gerencie seus clientes</p>
-          </div>
-        </div>
-        <Link
-          href="/customers/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          Novo Cliente
-        </Link>
-      </div>
+      <PageHeader
+        title="Clientes"
+        subtitle="Gerencie seus clientes"
+        icon={<Users className="w-6 h-6" />}
+        module="sales"
+        actions={
+          <Link
+            href="/customers/new"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4" />
+            Novo Cliente
+          </Link>
+        }
+      />
 
       <div>
         {/* Filters */}
