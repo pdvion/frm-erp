@@ -126,6 +126,23 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
+// Procedure que requer apenas autenticação (userId), sem exigir empresa ativa
+// Útil para endpoints como notificações que funcionam independente da empresa
+export const authProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.tenant.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Você precisa estar autenticado para acessar este recurso.",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      userId: ctx.tenant.userId,
+    },
+  });
+});
+
 // Procedure que requer empresa ativa
 export const tenantProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.tenant.companyId) {

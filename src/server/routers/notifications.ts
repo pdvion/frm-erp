@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, authProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { notificationService } from "../services/notifications";
 
@@ -47,41 +47,29 @@ export const notificationsRouter = createTRPCRouter({
       };
     }),
 
-  // Obter notificações não lidas
-  unread: tenantProcedure
+  // Obter notificações não lidas (usa authProcedure pois não precisa de empresa ativa)
+  unread: authProcedure
     .input(z.object({ limit: z.number().default(10) }).optional())
     .query(async ({ input, ctx }) => {
-      const userId = ctx.tenant.userId;
-      if (!userId) return [];
-
-      return notificationService.getUnread(userId, input?.limit || 10);
+      return notificationService.getUnread(ctx.userId, input?.limit || 10);
     }),
 
-  // Contar notificações não lidas
-  countUnread: tenantProcedure.query(async ({ ctx }) => {
-    const userId = ctx.tenant.userId;
-    if (!userId) return 0;
-
-    return notificationService.countUnread(userId);
+  // Contar notificações não lidas (usa authProcedure pois não precisa de empresa ativa)
+  countUnread: authProcedure.query(async ({ ctx }) => {
+    return notificationService.countUnread(ctx.userId);
   }),
 
-  // Marcar como lida
-  markAsRead: tenantProcedure
+  // Marcar como lida (usa authProcedure pois não precisa de empresa ativa)
+  markAsRead: authProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.tenant.userId;
-      if (!userId) return { success: false };
-
-      await notificationService.markAsRead(input.id, userId);
+      await notificationService.markAsRead(input.id, ctx.userId);
       return { success: true };
     }),
 
-  // Marcar todas como lidas
-  markAllAsRead: tenantProcedure.mutation(async ({ ctx }) => {
-    const userId = ctx.tenant.userId;
-    if (!userId) return { success: false };
-
-    await notificationService.markAllAsRead(userId);
+  // Marcar todas como lidas (usa authProcedure pois não precisa de empresa ativa)
+  markAllAsRead: authProcedure.mutation(async ({ ctx }) => {
+    await notificationService.markAllAsRead(ctx.userId);
     return { success: true };
   }),
 
@@ -100,18 +88,15 @@ export const notificationsRouter = createTRPCRouter({
       return notificationService.create(input);
     }),
 
-  // Obter preferências de notificação
-  getPreferences: tenantProcedure.query(async ({ ctx }) => {
-    const userId = ctx.tenant.userId;
-    if (!userId) return [];
-
+  // Obter preferências de notificação (usa authProcedure pois não precisa de empresa ativa)
+  getPreferences: authProcedure.query(async ({ ctx }) => {
     return prisma.notificationPreference.findMany({
-      where: { userId },
+      where: { userId: ctx.userId },
     });
   }),
 
-  // Atualizar preferências
-  updatePreferences: tenantProcedure
+  // Atualizar preferências (usa authProcedure pois não precisa de empresa ativa)
+  updatePreferences: authProcedure
     .input(z.object({
       category: z.string(),
       emailEnabled: z.boolean().optional(),
@@ -119,18 +104,15 @@ export const notificationsRouter = createTRPCRouter({
       inAppEnabled: z.boolean().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.tenant.userId;
-      if (!userId) return null;
-
       return prisma.notificationPreference.upsert({
         where: {
           userId_category: {
-            userId,
+            userId: ctx.userId,
             category: input.category,
           },
         },
         create: {
-          userId,
+          userId: ctx.userId,
           category: input.category,
           emailEnabled: input.emailEnabled ?? true,
           pushEnabled: input.pushEnabled ?? true,

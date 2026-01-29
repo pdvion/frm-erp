@@ -123,7 +123,7 @@ export default function DashboardPage() {
               {kpis.tasks.overdue > 0 && (
                 <div className="mt-2 text-xs text-red-600 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />
-                  {kpis.tasks.overdue} atrasadas
+                  {kpis.tasks.overdue} {kpis.tasks.overdue === 1 ? 'atrasada' : 'atrasadas'}
                 </div>
               )}
             </div>

@@ -57,7 +57,7 @@ export default function TasksPage() {
   const { data, isLoading } = trpc.tasks.list.useQuery({
     search: search || undefined,
     status: statusFilter as "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED" | "ALL",
-    priority: priorityFilter as "URGENT" | "HIGH" | "NORMAL" | "LOW" | undefined,
+    priority: priorityFilter ? (priorityFilter as "URGENT" | "HIGH" | "NORMAL" | "LOW") : undefined,
     myTasks: viewMode === "my",
     availableTasks: viewMode === "available",
     page,
