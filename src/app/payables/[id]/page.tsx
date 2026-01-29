@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   DollarSign,
   ChevronLeft,
@@ -136,65 +137,55 @@ export default function PayableDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/payables" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-indigo-600" />
-                <h1 className="text-xl font-semibold text-theme">
-                  Título #{payable.code}
-                </h1>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
-                {config.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              
-              {canPay && (
-                <button
-                  onClick={() => {
-                    setRescheduleDate(new Date(payable.dueDate).toISOString().split("T")[0]);
-                    setShowRescheduleModal(true);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
-                >
-                  <Calendar className="w-4 h-4" />
-                  Reprogramar
-                </button>
-              )}
-              {canCancel && (
-                <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
-                >
-                  <Ban className="w-4 h-4" />
-                  Cancelar
-                </button>
-              )}
-              {canPay && (
-                <button
-                  onClick={() => {
-                    setPaymentValue(balance.toFixed(2));
-                    setShowPaymentModal(true);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  <CreditCard className="w-4 h-4" />
-                  Registrar Pagamento
-                </button>
-              )}
-            </div>
+      <PageHeader
+        title={`Título #${payable.code}`}
+        subtitle={payable.description}
+        icon={<DollarSign className="w-6 h-6" />}
+        backHref="/payables"
+        module="finance"
+        actions={
+          <div className="flex items-center gap-4">
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
+              {config.label}
+            </span>
+            {canPay && (
+              <button
+                onClick={() => {
+                  setRescheduleDate(new Date(payable.dueDate).toISOString().split("T")[0]);
+                  setShowRescheduleModal(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
+              >
+                <Calendar className="w-4 h-4" />
+                Reprogramar
+              </button>
+            )}
+            {canCancel && (
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+              >
+                <Ban className="w-4 h-4" />
+                Cancelar
+              </button>
+            )}
+            {canPay && (
+              <button
+                onClick={() => {
+                  setPaymentValue(balance.toFixed(2));
+                  setShowPaymentModal(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                <CreditCard className="w-4 h-4" />
+                Registrar Pagamento
+              </button>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
@@ -518,7 +509,7 @@ export default function PayableDetailPage() {
             )}
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Payment Modal */}
       {showPaymentModal && (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Building2,
   ChevronLeft,
@@ -136,25 +137,15 @@ export default function CnabPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/payables" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-blue-600" />
-                Integração Bancária - CNAB
-              </h1>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Integração Bancária - CNAB"
+        subtitle="Remessa e retorno de arquivos bancários"
+        icon={<Building2 className="w-6 h-6" />}
+        backHref="/payables"
+        module="finance"
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Seleção de Conta Bancária */}
         <div className="bg-theme-card rounded-lg border border-theme p-6 mb-6">
           <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
@@ -511,7 +502,7 @@ export default function CnabPage() {
             )}
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 }

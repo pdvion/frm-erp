@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   TrendingUp,
   TrendingDown,
@@ -45,25 +46,15 @@ export default function CashflowPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/payables" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                Fluxo de Caixa Projetado
-              </h1>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Fluxo de Caixa Projetado"
+        subtitle="Projeção de entradas e saídas"
+        icon={<BarChart3 className="w-6 h-6" />}
+        backHref="/payables"
+        module="finance"
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div>
         {/* Filtros */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center gap-2">
@@ -325,7 +316,7 @@ export default function CashflowPage() {
             )}
           </>
         )}
-      </main>
+      </div>
     </div>
   );
 }
