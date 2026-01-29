@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Loader2,
   Wallet,
@@ -40,16 +41,12 @@ export default function FinanceDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-green-500/10 rounded-lg">
-          <DollarSign className="w-6 h-6 text-green-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Dashboard Financeiro</h1>
-          <p className="text-sm text-theme-muted">Visão geral das finanças</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Dashboard Financeiro"
+        subtitle="Visão geral das finanças"
+        icon={<DollarSign className="w-6 h-6" />}
+        module="finance"
+      />
 
       <div>
         {hasError && (

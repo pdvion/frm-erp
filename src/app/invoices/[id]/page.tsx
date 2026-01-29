@@ -8,6 +8,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
 import { LinkMaterialModal } from "@/components/LinkMaterialModal";
 import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   ChevronLeft,
@@ -125,27 +126,19 @@ export default function InvoiceDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/invoices" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-600" />
-                NFe {invoice.invoiceNumber}
-              </h1>
-              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
-                {config.icon}
-                {config.label}
-              </span>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title={`NFe ${invoice.invoiceNumber}`}
+        subtitle={invoice.supplier?.companyName || "Fornecedor não identificado"}
+        icon={<FileText className="w-6 h-6" />}
+        backHref="/invoices"
+        module="fiscal"
+        actions={
+          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
+            {config.icon}
+            {config.label}
+          </span>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Info Cards */}
