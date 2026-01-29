@@ -6,6 +6,7 @@ import {
   Factory, Package, Loader2, BarChart3, PieChart
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -28,27 +29,28 @@ export default function BIDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard BI & Gestão</h1>
-            <p className="text-theme-muted">Indicadores estratégicos consolidados</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/bi/reports"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              Relatórios BI
-            </Link>
-            <Link
-              href="/bi/analytics"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              Analytics
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard BI & Gestão"
+          subtitle="Indicadores estratégicos consolidados"
+          icon={<BarChart3 className="w-6 h-6" />}
+          module="bi"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/bi/reports"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                Relatórios BI
+              </Link>
+              <Link
+                href="/bi/analytics"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                Analytics
+              </Link>
+            </div>
+          }
+        />
 
         {/* Resumo Financeiro */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
