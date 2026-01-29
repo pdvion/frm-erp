@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Plus,
   Search,
@@ -71,20 +72,21 @@ export default function SupplierReturnsPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Devoluções a Fornecedor</h1>
-            <p className="text-theme-muted">Gerencie devoluções de materiais</p>
-          </div>
-          <Link
-            href="/supplier-returns/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Devolução
-          </Link>
-        </div>
+        <PageHeader
+          title="Devoluções a Fornecedor"
+          subtitle="Gerencie devoluções de materiais"
+          icon={<RotateCcw className="w-6 h-6" />}
+          module="inventory"
+          actions={
+            <Link
+              href="/supplier-returns/new"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Nova Devolução
+            </Link>
+          }
+        />
 
         {/* Filters */}
         <div className="bg-theme-card rounded-xl border border-theme p-4">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Bell,
   Check,
@@ -67,30 +68,26 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <Bell className="w-6 h-6 text-blue-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Notificações</h1>
-            <p className="text-sm text-theme-muted">Gerencie suas notificações e alertas</p>
-          </div>
-        </div>
-        <button
-          onClick={() => markAllAsReadMutation.mutate()}
-          disabled={markAllAsReadMutation.isPending}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-        >
-          {markAllAsReadMutation.isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <CheckCheck className="w-4 h-4" />
-          )}
-          Marcar todas como lidas
-        </button>
-      </div>
+      <PageHeader
+        title="Notificações"
+        subtitle="Gerencie suas notificações e alertas"
+        icon={<Bell className="w-6 h-6" />}
+        module="settings"
+        actions={
+          <button
+            onClick={() => markAllAsReadMutation.mutate()}
+            disabled={markAllAsReadMutation.isPending}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            {markAllAsReadMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <CheckCheck className="w-4 h-4" />
+            )}
+            Marcar todas como lidas
+          </button>
+        }
+      />
 
       <div className="space-y-6">
         {/* Filtros */}

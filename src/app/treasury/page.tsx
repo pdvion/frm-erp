@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Landmark,
   Loader2,
@@ -37,34 +38,30 @@ export default function TreasuryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <Landmark className="w-6 h-6 text-indigo-500" />
+      <PageHeader
+        title="Tesouraria"
+        subtitle="Gestão de contas bancárias"
+        icon={<Landmark className="w-6 h-6" />}
+        module="finance"
+        actions={
+          <div className="flex items-center gap-3">
+            <Link
+              href="/treasury/reconciliation"
+              className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Conciliação
+            </Link>
+            <Link
+              href="/treasury/accounts/new"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Nova Conta
+            </Link>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Tesouraria</h1>
-            <p className="text-sm text-theme-muted">Gestão de contas bancárias</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/treasury/reconciliation"
-            className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Conciliação
-          </Link>
-          <Link
-            href="/treasury/accounts/new"
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Conta
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
       <div>
         {isLoading ? (
