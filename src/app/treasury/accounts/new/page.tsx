@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Building2,
   Save,
-  Loader2,
   ArrowLeft,
   CreditCard,
   Wallet,
@@ -347,25 +347,23 @@ export default function NewBankAccountPage() {
 
         {/* Ações */}
         <div className="flex gap-4">
-          <Link
-            href="/settings/bank-accounts"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Cancelar
+          <Link href="/settings/bank-accounts">
+            <Button
+              type="button"
+              variant="secondary"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
+            >
+              Cancelar
+            </Button>
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={createMutation.isPending || !form.code || !form.name}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!form.code || !form.name}
+            isLoading={createMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {createMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
-            {createMutation.isPending ? "Salvando..." : "Salvar Conta"}
-          </button>
+            Salvar Conta
+          </Button>
         </div>
       </form>
     </div>
