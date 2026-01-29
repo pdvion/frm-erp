@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { formatChaveAcesso } from "@/lib/nfe-parser";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   ArrowLeft,
@@ -169,62 +170,54 @@ export default function PendingInvoicesPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/invoices"
-            className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
-            aria-label="Voltar para Notas Fiscais"
-          >
-            <ArrowLeft className="w-5 h-5 text-theme-secondary" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">NFe Pendentes SEFAZ</h1>
-            <p className="text-theme-secondary">Notas fiscais aguardando importação da SEFAZ</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {selectedNfes.length > 0 && (
-            <button
-              onClick={() => setShowBatchManifestModal(true)}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              Manifestar ({selectedNfes.length})
-            </button>
-          )}
-          <Link
-            href="/invoices/manifestacoes"
-            className="px-4 py-2 text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover transition-colors flex items-center gap-2"
-          >
-            <History className="w-4 h-4" />
-            Histórico
-          </Link>
-          {!syncStatus?.configured && (
-            <Link
-              href="/settings/sefaz"
-              className="px-4 py-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-2"
-            >
-              <AlertCircle className="w-4 h-4" />
-              Configurar SEFAZ
-            </Link>
-          )}
-          <button
-            onClick={() => syncMutation.mutate()}
-            disabled={syncMutation.isPending || !syncStatus?.configured}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {syncMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4" />
+      <PageHeader
+        title="NFe Pendentes SEFAZ"
+        subtitle="Notas fiscais aguardando importação da SEFAZ"
+        icon={<Clock className="w-6 h-6" />}
+        backHref="/invoices"
+        module="fiscal"
+        actions={
+          <div className="flex items-center gap-3">
+            {selectedNfes.length > 0 && (
+              <button
+                onClick={() => setShowBatchManifestModal(true)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <Send className="w-4 h-4" />
+                Manifestar ({selectedNfes.length})
+              </button>
             )}
-            Sincronizar SEFAZ
-          </button>
-        </div>
-      </div>
+            <Link
+              href="/invoices/manifestacoes"
+              className="px-4 py-2 text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover transition-colors flex items-center gap-2"
+            >
+              <History className="w-4 h-4" />
+              Histórico
+            </Link>
+            {!syncStatus?.configured && (
+              <Link
+                href="/settings/sefaz"
+                className="px-4 py-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-2"
+              >
+                <AlertCircle className="w-4 h-4" />
+                Configurar SEFAZ
+              </Link>
+            )}
+            <button
+              onClick={() => syncMutation.mutate()}
+              disabled={syncMutation.isPending || !syncStatus?.configured}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              Sincronizar SEFAZ
+            </button>
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

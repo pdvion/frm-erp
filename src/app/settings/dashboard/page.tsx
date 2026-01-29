@@ -6,6 +6,7 @@ import {
   Loader2, BarChart3, Clock, AlertTriangle
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { SimpleBarChart, ChartCard } from "@/components/charts";
 
@@ -25,27 +26,29 @@ export default function SystemDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard do Sistema</h1>
-            <p className="text-theme-muted">Visão geral de administração</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/settings/users"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              Usuários
-            </Link>
-            <Link
-              href="/audit"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              Auditoria
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard do Sistema"
+          subtitle="Visão geral de administração"
+          icon={<BarChart3 className="w-6 h-6" />}
+          backHref="/settings"
+          module="settings"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/settings/users"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                Usuários
+              </Link>
+              <Link
+                href="/audit"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                Auditoria
+              </Link>
+            </div>
+          }
+        />
 
         {/* Alertas */}
         {(kpis?.auth.failed || 0) > 5 && (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime, formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   ArrowLeft,
   History,
@@ -45,25 +46,13 @@ export default function ManifestacaoHistoryPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/invoices/pending"
-            className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="w-5 h-5 text-theme-secondary" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-theme flex items-center gap-2">
-              <History className="w-6 h-6 text-purple-600" />
-              Histórico de Manifestações
-            </h1>
-            <p className="text-theme-secondary">Registro de todas as manifestações do destinatário enviadas à SEFAZ</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Histórico de Manifestações"
+        subtitle="Registro de todas as manifestações do destinatário enviadas à SEFAZ"
+        icon={<History className="w-6 h-6" />}
+        backHref="/invoices/pending"
+        module="fiscal"
+      />
 
       {/* Filters */}
       <div className="bg-theme-card rounded-xl shadow-sm border p-4 mb-6">
