@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatNumber } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 
 import {
   Calculator,
-  ChevronLeft,
   Loader2,
   Play,
   Clock,
@@ -101,25 +100,14 @@ export default function MrpPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-purple-600" />
-                MRP - Planejamento de Necessidades
-              </h1>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="MRP - Planejamento de Necessidades"
+        icon={<Calculator className="w-6 h-6" />}
+        backHref="/production"
+        module="production"
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto">
         {/* Cards de Resumo */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-theme-card rounded-lg border border-theme p-4">
