@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 
 import {
   Users,
@@ -54,34 +55,23 @@ export default function LeadsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/sales" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Users className="w-6 h-6 text-orange-600" />
-                <h1 className="text-xl font-semibold text-theme">Leads / CRM</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              
-              <Link
-                href="/sales/leads/new"
-                className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-              >
-                <Plus className="w-4 h-4" />
-                Novo Lead
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Leads / CRM"
+        icon={<Users className="w-6 h-6" />}
+        backHref="/sales"
+        module="sales"
+        actions={
+          <Link
+            href="/sales/leads/new"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+          >
+            <Plus className="w-4 h-4" />
+            Novo Lead
+          </Link>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto">
         {/* Filters */}
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
