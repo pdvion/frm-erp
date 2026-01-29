@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   PackagePlus,
   Search,
@@ -309,14 +310,14 @@ export default function NewPickingPage() {
           ← Cancelar e voltar
         </Link>
 
-        <button
+        <Button
           onClick={handleSubmit}
-          disabled={items.length === 0 || createMutation.isPending}
-          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          disabled={items.length === 0}
+          isLoading={createMutation.isPending}
+          leftIcon={<Save className="w-4 h-4" />}
         >
-          <Save className="w-4 h-4" />
-          {createMutation.isPending ? "Criando..." : "Criar Separação"}
-        </button>
+          Criar Separação
+        </Button>
       </div>
     </div>
   );

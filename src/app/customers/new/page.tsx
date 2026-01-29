@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import {
   Users,
-  Loader2,
   Save,
 } from "lucide-react";
 
@@ -468,24 +468,19 @@ export default function NewCustomerPage() {
 
           {/* Actions */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/customers"
-              className="px-6 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-            >
-              Cancelar
+            <Link href="/customers">
+              <Button type="button" variant="secondary">
+                Cancelar
+              </Button>
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={!code || !companyName || createMutation.isPending}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              disabled={!code || !companyName}
+              isLoading={createMutation.isPending}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {createMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {createMutation.isPending ? "Salvando..." : "Salvar"}
-            </button>
+              Salvar
+            </Button>
           </div>
         </form>
       </div>

@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   UserMinus,
   Save,
-  Loader2,
   ArrowLeft,
   AlertTriangle,
   Calendar,
@@ -289,25 +289,23 @@ export default function NewTerminationPage() {
 
         {/* Ações */}
         <div className="flex gap-4">
-          <Link
-            href="/hr/terminations"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Cancelar
+          <Link href="/hr/terminations">
+            <Button
+              type="button"
+              variant="secondary"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
+            >
+              Cancelar
+            </Button>
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={createMutation.isPending || !form.employeeId || !form.terminationDate}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!form.employeeId || !form.terminationDate}
+            isLoading={createMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {createMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
-            {createMutation.isPending ? "Salvando..." : "Criar Rescisão"}
-          </button>
+            Criar Rescisão
+          </Button>
         </div>
       </form>
     </div>

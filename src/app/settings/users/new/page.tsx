@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { UserPlus, Save, ArrowLeft, Shield, Check } from "lucide-react";
 import Link from "next/link";
 
@@ -186,21 +187,22 @@ export default function NewUserPage() {
 
         {/* Actions */}
         <div className="flex gap-4">
-          <Link
-            href="/settings/users"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Cancelar
+          <Link href="/settings/users">
+            <Button
+              type="button"
+              variant="secondary"
+              leftIcon={<ArrowLeft className="w-4 h-4" />}
+            >
+              Cancelar
+            </Button>
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={inviteMutation.isPending}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            isLoading={inviteMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            <Save className="w-4 h-4" />
-            {inviteMutation.isPending ? "Enviando..." : "Convidar Usuário"}
-          </button>
+            Convidar Usuário
+          </Button>
         </div>
       </form>
     </div>
