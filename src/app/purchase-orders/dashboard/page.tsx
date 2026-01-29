@@ -6,6 +6,7 @@ import {
   ArrowRight, Loader2, BarChart3
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { SimpleBarChart, DonutChart, ChartCard } from "@/components/charts";
@@ -26,27 +27,28 @@ export default function PurchasesDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard de Compras</h1>
-            <p className="text-theme-muted">Visão geral do módulo de compras</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/quotes"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              Cotações
-            </Link>
-            <Link
-              href="/purchase-orders"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              Pedidos de Compra
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard de Compras"
+          subtitle="Visão geral do módulo de compras"
+          icon={<BarChart3 className="w-6 h-6" />}
+          module="purchases"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/quotes"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                Cotações
+              </Link>
+              <Link
+                href="/purchase-orders"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                Pedidos de Compra
+              </Link>
+            </div>
+          }
+        />
 
         {/* KPIs Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

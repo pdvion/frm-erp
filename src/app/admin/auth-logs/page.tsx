@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
   ArrowLeft,
@@ -60,40 +61,24 @@ export default function AuthLogsPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <header className="bg-theme-card border-b border-theme">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/"
-                  className="flex items-center gap-2 text-theme-secondary hover:text-[var(--frm-primary)]"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  <span>Voltar</span>
-                </Link>
-                <div className="h-6 w-px bg-theme-tertiary" />
-                <div className="flex items-center gap-2">
-                  <Shield className="w-6 h-6 text-[var(--frm-primary)]" />
-                  <h1 className="text-xl font-semibold text-theme">
-                    Logs de Autenticação
-                  </h1>
-                </div>
-              </div>
+        <PageHeader
+          title="Logs de Autenticação"
+          icon={<Shield className="w-6 h-6" />}
+          backHref="/"
+          module="admin"
+          actions={
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
+              Atualizar
+            </button>
+          }
+        />
 
-              <button
-                onClick={() => refetch()}
-                disabled={isFetching}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
-                Atualizar
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto">
           {/* Stats Cards */}
           {stats && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

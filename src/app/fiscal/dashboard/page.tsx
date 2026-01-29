@@ -6,6 +6,7 @@ import {
   ArrowRight, Loader2, BarChart3, AlertTriangle
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { SimpleBarChart, ChartCard } from "@/components/charts";
@@ -26,27 +27,28 @@ export default function FiscalDashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard Fiscal</h1>
-            <p className="text-theme-muted">Visão geral do módulo fiscal</p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href="/invoices"
-              className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-            >
-              NFes Recebidas
-            </Link>
-            <Link
-              href="/billing"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
-              NFes Emitidas
-            </Link>
-          </div>
-        </div>
+        <PageHeader
+          title="Dashboard Fiscal"
+          subtitle="Visão geral do módulo fiscal"
+          icon={<BarChart3 className="w-6 h-6" />}
+          module="fiscal"
+          actions={
+            <div className="flex gap-2">
+              <Link
+                href="/invoices"
+                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
+              >
+                NFes Recebidas
+              </Link>
+              <Link
+                href="/billing"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              >
+                NFes Emitidas
+              </Link>
+            </div>
+          }
+        />
 
         {/* Alertas */}
         {(kpis?.received.pending || 0) > 0 && (

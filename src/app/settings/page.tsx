@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Settings,
   Building2,
@@ -89,16 +90,12 @@ const quickLinks = [
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-500/10 rounded-lg">
-          <Settings className="w-6 h-6 text-blue-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Configurações</h1>
-          <p className="text-sm text-theme-muted">Configurações do sistema</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Configurações"
+        subtitle="Configurações do sistema"
+        icon={<Settings className="w-6 h-6" />}
+        module="settings"
+      />
 
       <div>
         {/* Settings Grid */}

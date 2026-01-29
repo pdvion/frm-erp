@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Activity,
   Loader2,
@@ -94,19 +95,14 @@ export default function OeeDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <Activity className="w-6 h-6 text-indigo-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Dashboard OEE</h1>
-            <p className="text-sm text-theme-muted">Eficiência global de equipamentos</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <input
+      <PageHeader
+        title="Dashboard OEE"
+        subtitle="Eficiência global de equipamentos"
+        icon={<Activity className="w-6 h-6" />}
+        module="production"
+        actions={
+          <div className="flex items-center gap-2">
+            <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
@@ -119,8 +115,9 @@ export default function OeeDashboardPage() {
             onChange={(e) => setEndDate(e.target.value)}
             className="border border-theme-input rounded-lg px-3 py-1.5 text-sm"
           />
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       <div>
         {isLoading ? (
