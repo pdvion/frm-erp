@@ -46,6 +46,35 @@ export const hrRouter = createTRPCRouter({
       return ctx.prisma.department.create({ data: { ...input, companyId: ctx.companyId } });
     }),
 
+  updateDepartment: tenantProcedure
+    .input(z.object({
+      id: z.string(),
+      code: z.string().optional(),
+      name: z.string().optional(),
+      description: z.string().optional(),
+      parentId: z.string().nullable().optional(),
+      isActive: z.boolean().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { id, ...data } = input;
+      return ctx.prisma.department.update({
+        where: { id, companyId: ctx.companyId },
+        data: { ...data, parentId: data.parentId === null ? null : data.parentId },
+      });
+    }),
+
+  deleteDepartment: tenantProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const hasEmployees = await ctx.prisma.employee.count({
+        where: { departmentId: input.id, companyId: ctx.companyId },
+      });
+      if (hasEmployees > 0) {
+        throw new Error("Não é possível excluir departamento com funcionários vinculados");
+      }
+      return ctx.prisma.department.delete({ where: { id: input.id, companyId: ctx.companyId } });
+    }),
+
   // ==========================================================================
   // CARGOS
   // ==========================================================================

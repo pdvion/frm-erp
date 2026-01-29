@@ -38,19 +38,63 @@ export default function DepartmentsPage() {
     },
   });
 
+  const updateMutation = trpc.hr.updateDepartment.useMutation({
+    onSuccess: () => {
+      refetch();
+      setShowForm(false);
+      resetForm();
+    },
+  });
+
+  const deleteMutation = trpc.hr.deleteDepartment.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (error) => {
+      alert(error.message);
+    },
+  });
+
   const resetForm = () => {
     setFormData({ code: "", name: "", description: "", parentId: "" });
     setEditingId(null);
   };
 
+  const handleEdit = (dept: { id: string; code: string; name: string; description: string | null; parentId: string | null }) => {
+    setFormData({
+      code: dept.code,
+      name: dept.name,
+      description: dept.description || "",
+      parentId: dept.parentId || "",
+    });
+    setEditingId(dept.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Deseja excluir o departamento "${name}"?`)) {
+      deleteMutation.mutate({ id });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate({
-      code: formData.code,
-      name: formData.name,
-      description: formData.description || undefined,
-      parentId: formData.parentId || undefined,
-    });
+    if (editingId) {
+      updateMutation.mutate({
+        id: editingId,
+        code: formData.code,
+        name: formData.name,
+        description: formData.description || undefined,
+        parentId: formData.parentId || undefined,
+      });
+    } else {
+      createMutation.mutate({
+        code: formData.code,
+        name: formData.name,
+        description: formData.description || undefined,
+        parentId: formData.parentId || undefined,
+      });
+    }
   };
 
   const filteredDepartments = departments?.filter(
@@ -139,10 +183,19 @@ export default function DepartmentsPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button className="p-1.5 text-theme-muted hover:text-blue-600 hover:bg-blue-50 rounded">
+                    <button 
+                      onClick={() => handleEdit(dept)}
+                      className="p-1.5 text-theme-muted hover:text-blue-600 hover:bg-blue-50 rounded"
+                      title="Editar"
+                    >
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded">
+                    <button 
+                      onClick={() => handleDelete(dept.id, dept.name)}
+                      disabled={dept._count.employees > 0}
+                      className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={dept._count.employees > 0 ? "Não é possível excluir departamento com funcionários" : "Excluir"}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
