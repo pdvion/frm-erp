@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 
 import {
   BarChart3,
-  ChevronLeft,
   Loader2,
   TrendingUp,
   TrendingDown,
@@ -90,54 +90,44 @@ export default function OeeDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/production" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
-                Dashboard OEE
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              {/* Seletor de período */}
-              <div className="flex items-center gap-1 bg-theme-tertiary rounded-lg p-1">
-                <button
-                  onClick={() => setDateRange("today")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "today" ? "bg-theme-card shadow" : ""}`}
-                >
-                  Hoje
-                </button>
-                <button
-                  onClick={() => setDateRange("week")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "week" ? "bg-theme-card shadow" : ""}`}
-                >
-                  Semana
-                </button>
-                <button
-                  onClick={() => setDateRange("month")}
-                  className={`px-3 py-1 rounded text-sm ${dateRange === "month" ? "bg-theme-card shadow" : ""}`}
-                >
-                  Mês
-                </button>
-              </div>
+      <PageHeader
+        title="Dashboard OEE"
+        icon={<BarChart3 className="w-6 h-6" />}
+        backHref="/production"
+        module="production"
+        actions={
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 bg-theme-tertiary rounded-lg p-1">
               <button
-                onClick={() => refetch()}
-                className="p-2 text-theme-muted hover:text-theme-secondary rounded-lg hover:bg-theme-hover"
+                onClick={() => setDateRange("today")}
+                className={`px-3 py-1 rounded text-sm ${dateRange === "today" ? "bg-theme-card shadow" : ""}`}
               >
-                <RefreshCw className="w-5 h-5" />
+                Hoje
               </button>
-              
+              <button
+                onClick={() => setDateRange("week")}
+                className={`px-3 py-1 rounded text-sm ${dateRange === "week" ? "bg-theme-card shadow" : ""}`}
+              >
+                Semana
+              </button>
+              <button
+                onClick={() => setDateRange("month")}
+                className={`px-3 py-1 rounded text-sm ${dateRange === "month" ? "bg-theme-card shadow" : ""}`}
+              >
+                Mês
+              </button>
             </div>
+            <button
+              onClick={() => refetch()}
+              className="p-2 text-theme-muted hover:text-theme-secondary rounded-lg hover:bg-theme-hover"
+            >
+              <RefreshCw className="w-5 h-5" />
+            </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto">
         {/* OEE Consolidado */}
         <div className="bg-theme-card rounded-xl border border-theme p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
