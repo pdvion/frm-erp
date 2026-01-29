@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Users,
   Save,
@@ -85,16 +86,13 @@ export default function NewCustomerPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-500/10 rounded-lg">
-          <Users className="w-6 h-6 text-blue-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Novo Cliente</h1>
-          <p className="text-sm text-theme-muted">Cadastrar novo cliente</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Novo Cliente"
+        subtitle="Cadastrar novo cliente"
+        icon={<Users className="w-6 h-6" />}
+        backHref="/customers"
+        module="sales"
+      />
 
       <div>
         <form onSubmit={handleSubmit} className="space-y-6">
