@@ -10,6 +10,7 @@ import {
   Loader2,
   Search
 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 
 interface MovementFormData {
@@ -103,16 +104,13 @@ export default function InventoryExitPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-red-500/10 rounded-lg">
-          <ArrowUpCircle className="w-6 h-6 text-red-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Saída de Estoque</h1>
-          <p className="text-sm text-theme-muted">Registrar saída de materiais</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Saída de Estoque"
+        subtitle="Registrar saída de materiais"
+        icon={<ArrowUpCircle className="w-6 h-6" />}
+        backHref="/inventory"
+        module="inventory"
+      />
 
       <div>
         <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">

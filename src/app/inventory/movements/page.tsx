@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Filter
 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
 
@@ -39,16 +40,12 @@ export default function MovementsHistoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-indigo-500/10 rounded-lg">
-          <History className="w-6 h-6 text-indigo-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Histórico de Movimentações</h1>
-          <p className="text-sm text-theme-muted">Todas as movimentações de estoque</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Histórico de Movimentações"
+        subtitle="Todas as movimentações de estoque"
+        icon={<History className="w-6 h-6" />}
+        module="inventory"
+      />
 
       <div>
         {/* Filters */}

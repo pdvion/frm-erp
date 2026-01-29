@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
   Loader2,
@@ -71,25 +72,21 @@ export default function ReservationsPage() {
   
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-500/10 rounded-lg">
-            <Package className="w-6 h-6 text-indigo-500" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-theme">Reservas de Estoque</h1>
-            <p className="text-sm text-theme-muted">Gerenciar reservas de materiais</p>
-          </div>
-        </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Reserva
-        </button>
-      </div>
+      <PageHeader
+        title="Reservas de Estoque"
+        subtitle="Gerenciar reservas de materiais"
+        icon={<Package className="w-6 h-6" />}
+        module="inventory"
+        actions={
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            <Plus className="w-4 h-4" />
+            Nova Reserva
+          </button>
+        }
+      />
 
       <div>
         {/* Erro de mutation */}

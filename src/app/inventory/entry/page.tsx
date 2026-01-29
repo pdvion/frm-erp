@@ -10,6 +10,7 @@ import {
   Loader2,
   Search
 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
@@ -105,16 +106,13 @@ export default function InventoryEntryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Title */}
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-green-500/10 rounded-lg">
-          <ArrowDownCircle className="w-6 h-6 text-green-500" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-theme">Entrada de Estoque</h1>
-          <p className="text-sm text-theme-muted">Registrar entrada de materiais</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Entrada de Estoque"
+        subtitle="Registrar entrada de materiais"
+        icon={<ArrowDownCircle className="w-6 h-6" />}
+        backHref="/inventory"
+        module="inventory"
+      />
 
       <div>
         <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
