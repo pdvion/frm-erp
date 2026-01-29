@@ -51,8 +51,11 @@ export const vacationsRouter = createTRPCRouter({
   getById: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      return ctx.prisma.vacation.findUnique({
-        where: { id: input.id },
+      return ctx.prisma.vacation.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         include: {
           employee: true,
         },
@@ -142,26 +145,34 @@ export const vacationsRouter = createTRPCRouter({
   approve: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.vacation.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.vacation.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           status: "APPROVED",
           approvedBy: ctx.tenant.userId,
           approvedAt: new Date(),
         },
       });
+      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 
   // Iniciar férias
   start: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const vacation = await ctx.prisma.vacation.findUnique({
-        where: { id: input.id },
+      const vacation = await ctx.prisma.vacation.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         include: { employee: true },
       });
 
-      if (!vacation) throw new Error("Férias não encontradas");
+      if (!vacation) throw new Error("Férias não encontradas ou sem permissão");
 
       // Atualizar status do funcionário
       await ctx.prisma.employee.update({
@@ -170,7 +181,7 @@ export const vacationsRouter = createTRPCRouter({
       });
 
       return ctx.prisma.vacation.update({
-        where: { id: input.id },
+        where: { id: vacation.id },
         data: { status: "IN_PROGRESS" },
       });
     }),
@@ -179,11 +190,14 @@ export const vacationsRouter = createTRPCRouter({
   complete: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const vacation = await ctx.prisma.vacation.findUnique({
-        where: { id: input.id },
+      const vacation = await ctx.prisma.vacation.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
       });
 
-      if (!vacation) throw new Error("Férias não encontradas");
+      if (!vacation) throw new Error("Férias não encontradas ou sem permissão");
 
       // Retornar status do funcionário para ativo
       await ctx.prisma.employee.update({
@@ -192,7 +206,7 @@ export const vacationsRouter = createTRPCRouter({
       });
 
       return ctx.prisma.vacation.update({
-        where: { id: input.id },
+        where: { id: vacation.id },
         data: { status: "COMPLETED" },
       });
     }),
@@ -201,13 +215,18 @@ export const vacationsRouter = createTRPCRouter({
   cancel: tenantProcedure
     .input(z.object({ id: z.string(), reason: z.string().optional() }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.vacation.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.vacation.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           status: "CANCELLED",
           notes: input.reason,
         },
       });
+      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 
   // Registrar pagamento
@@ -217,10 +236,15 @@ export const vacationsRouter = createTRPCRouter({
       paymentDate: z.date(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.vacation.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.vacation.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: { paymentDate: input.paymentDate },
       });
+      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 
   // Listar funcionários com férias vencidas

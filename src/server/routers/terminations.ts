@@ -50,8 +50,11 @@ export const terminationsRouter = createTRPCRouter({
   getById: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      return ctx.prisma.termination.findUnique({
-        where: { id: input.id },
+      return ctx.prisma.termination.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         include: { employee: true },
       });
     }),
@@ -107,12 +110,15 @@ export const terminationsRouter = createTRPCRouter({
   calculate: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const termination = await ctx.prisma.termination.findUnique({
-        where: { id: input.id },
+      const termination = await ctx.prisma.termination.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         include: { employee: true },
       });
 
-      if (!termination) throw new Error("Rescisão não encontrada");
+      if (!termination) throw new Error("Rescisão não encontrada ou sem permissão");
 
       const { employee, type, terminationDate, baseSalary, noticePeriodDays, noticePeriodIndemnity } = termination;
       const hireDate = new Date(employee.hireDate);
@@ -213,14 +219,19 @@ export const terminationsRouter = createTRPCRouter({
   approve: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.termination.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.termination.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           status: "APPROVED",
           approvedBy: ctx.tenant.userId,
           approvedAt: new Date(),
         },
       });
+      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
   // Registrar pagamento
@@ -230,11 +241,14 @@ export const terminationsRouter = createTRPCRouter({
       paymentDate: z.date(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const termination = await ctx.prisma.termination.findUnique({
-        where: { id: input.id },
+      const termination = await ctx.prisma.termination.findFirst({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
       });
 
-      if (!termination) throw new Error("Rescisão não encontrada");
+      if (!termination) throw new Error("Rescisão não encontrada ou sem permissão");
 
       // Atualizar status do funcionário
       await ctx.prisma.employee.update({
@@ -262,39 +276,54 @@ export const terminationsRouter = createTRPCRouter({
       trctNumber: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.termination.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.termination.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           status: "HOMOLOGATED",
           homologationDate: input.homologationDate,
           trctNumber: input.trctNumber,
         },
       });
+      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
   // Gerar GRRF
   generateGrrf: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.termination.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.termination.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           grffGenerated: true,
           grffDate: new Date(),
         },
       });
+      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
   // Cancelar rescisão
   cancel: tenantProcedure
     .input(z.object({ id: z.string(), reason: z.string().optional() }))
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.termination.update({
-        where: { id: input.id },
+      const result = await ctx.prisma.termination.updateMany({
+        where: { 
+          id: input.id,
+          companyId: ctx.companyId,
+        },
         data: {
           status: "CANCELLED",
           notes: input.reason,
         },
       });
+      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 });

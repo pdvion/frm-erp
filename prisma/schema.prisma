@@ -194,6 +194,8 @@ model Company {
   savedReports        SavedReport[]
   collectionRules     CollectionRule[]
   supplierReturns     SupplierReturn[]
+  hoursBank           HoursBank[]
+  timeClockAdjustments TimeClockAdjustment[]
 
   @@map("companies")
 }
@@ -2885,17 +2887,19 @@ model Employee {
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   
-  timeClockEntries   TimeClockEntry[]
-  timesheetDays      TimesheetDay[]
-  payrollItems       PayrollItem[]
-  vacations          Vacation[]
-  thirteenthSalaries ThirteenthSalary[]
-  terminations       Termination[]
-  schedules          EmployeeSchedule[]
-  benefits           EmployeeBenefit[]
-  transportVouchers  TransportVoucher[]
-  trainings          EmployeeTraining[]
-  skills             SkillMatrix[]
+  timeClockEntries      TimeClockEntry[]
+  timesheetDays         TimesheetDay[]
+  payrollItems          PayrollItem[]
+  vacations             Vacation[]
+  thirteenthSalaries    ThirteenthSalary[]
+  terminations          Termination[]
+  schedules             EmployeeSchedule[]
+  benefits              EmployeeBenefit[]
+  transportVouchers     TransportVoucher[]
+  trainings             EmployeeTraining[]
+  skills                SkillMatrix[]
+  hoursBank             HoursBank[]
+  timeClockAdjustments  TimeClockAdjustment[]
   
   @@unique([code, companyId])
   @@index([companyId])
@@ -3038,7 +3042,9 @@ enum HoursBankType {
 model HoursBank {
   id           String        @id @default(uuid()) @db.Uuid
   companyId    String?       @db.Uuid
+  company      Company?      @relation(fields: [companyId], references: [id])
   employeeId   String        @db.Uuid
+  employee     Employee      @relation(fields: [employeeId], references: [id])
   type         HoursBankType
   date         DateTime      @db.Date
   hours        Float         // positivo=crédito, negativo=débito
@@ -3068,7 +3074,9 @@ enum TimeClockAdjustmentStatus {
 model TimeClockAdjustment {
   id              String                    @id @default(uuid()) @db.Uuid
   companyId       String?                   @db.Uuid
+  company         Company?                  @relation(fields: [companyId], references: [id])
   employeeId      String                    @db.Uuid
+  employee        Employee                  @relation(fields: [employeeId], references: [id])
   date            DateTime                  @db.Date
   originalEntryId String?                   @db.Uuid
   adjustmentType  String                    // ADD, MODIFY, DELETE
