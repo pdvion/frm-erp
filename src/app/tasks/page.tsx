@@ -62,9 +62,13 @@ export default function TasksPage() {
     availableTasks: viewMode === "available",
     page,
     limit: 20,
+  }, {
+    refetchOnMount: true, // VIO-774: Garantir dados atualizados
   });
 
-  const { data: stats } = trpc.tasks.stats.useQuery();
+  const { data: stats } = trpc.tasks.stats.useQuery(undefined, {
+    refetchOnMount: true, // VIO-774: Garantir dados atualizados
+  });
 
   const isOverdue = (deadline: Date | string | null) => {
     if (!deadline) return false;
