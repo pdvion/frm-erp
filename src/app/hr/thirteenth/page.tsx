@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Calculator,
   Search,
@@ -59,34 +60,35 @@ export default function ThirteenthPage() {
   );
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Calculator className="w-8 h-8 text-green-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-theme">13º Salário</h1>
-            <p className="text-sm text-theme-muted">Cálculo e pagamento do décimo terceiro</p>
+    <div className="space-y-6">
+      <PageHeader
+        title="13º Salário"
+        subtitle="Cálculo e pagamento do décimo terceiro"
+        icon={<Calculator className="w-6 h-6" />}
+        module="hr"
+        actions={
+          <div className="flex gap-2">
+            <button
+              onClick={() => calculateFirstMutation.mutate({ year })}
+              disabled={calculateFirstMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover transition-colors disabled:opacity-50"
+            >
+              <Calculator className="w-4 h-4" />
+              Calcular 1ª Parcela
+            </button>
+            <button
+              onClick={() => calculateSecondMutation.mutate({ year })}
+              disabled={calculateSecondMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              <Calculator className="w-4 h-4" />
+              Calcular 2ª Parcela
+            </button>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => calculateFirstMutation.mutate({ year })}
-            disabled={calculateFirstMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover transition-colors disabled:opacity-50"
-          >
-            <Calculator className="w-4 h-4" />
-            Calcular 1ª Parcela
-          </button>
-          <button
-            onClick={() => calculateSecondMutation.mutate({ year })}
-            disabled={calculateSecondMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-          >
-            <Calculator className="w-4 h-4" />
-            Calcular 2ª Parcela
-          </button>
-        </div>
-      </div>
+        }
+      />
+
+      <div>
 
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -245,6 +247,7 @@ export default function ThirteenthPage() {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
