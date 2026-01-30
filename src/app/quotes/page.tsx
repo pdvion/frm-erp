@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
 import {
@@ -146,12 +147,10 @@ export default function QuotesPage() {
           <BarChart3 className="w-4 h-4" />
           Comparar
         </Link>
-        <Link
-          href="/quotes/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Cotação
+        <Link href="/quotes/new">
+          <Button leftIcon={<Plus className="w-4 h-4" />}>
+            Nova Cotação
+          </Button>
         </Link>
       </PageHeader>
 
@@ -245,12 +244,10 @@ export default function QuotesPage() {
               ? "Tente ajustar os filtros de busca"
               : "Comece criando sua primeira cotação"}
           </p>
-          <Link
-            href="/quotes/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Cotação
+          <Link href="/quotes/new">
+            <Button leftIcon={<Plus className="w-4 h-4" />}>
+              Nova Cotação
+            </Button>
           </Link>
         </div>
       ) : view === "kanban" ? (
