@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ClipboardCheck, Plus, Trash2, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -232,14 +233,14 @@ export default function NewQualityInspectionPage() {
             <ArrowLeft className="w-4 h-4" />
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={createMutation.isPending || quantity <= 0}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            disabled={quantity <= 0}
+            isLoading={createMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            <Save className="w-4 h-4" />
-            {createMutation.isPending ? "Criando..." : "Criar Inspeção"}
-          </button>
+            Criar Inspeção
+          </Button>
         </div>
       </form>
     </div>

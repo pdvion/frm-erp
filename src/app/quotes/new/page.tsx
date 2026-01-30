@@ -6,12 +6,12 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
 import {
   FileText,
   Save,
-  Loader2,
   AlertCircle,
   Plus,
   Trash2,
@@ -496,23 +496,15 @@ export default function NewQuotePage() {
 
             {/* Actions */}
             <div className="flex flex-col gap-3">
-              <button
+              <Button
                 type="submit"
-                disabled={createMutation.isPending}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                isLoading={createMutation.isPending}
+                leftIcon={<Save className="w-5 h-5" />}
+                className="w-full"
+                size="lg"
               >
-                {createMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    Criar Cotação
-                  </>
-                )}
-              </button>
+                Criar Cotação
+              </Button>
               <Link
                 href="/quotes"
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover font-medium"
