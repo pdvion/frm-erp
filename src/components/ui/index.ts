@@ -21,3 +21,5 @@ export { FormField } from "./FormField";
 export { AccessibleTable } from "./AccessibleTable";
 export { Alert } from "./Alert";
 export { EmptyState } from "./EmptyState";
+export { Tabs, TabPanel } from "./Tabs";
+export type { Tab, TabsProps, TabPanelProps } from "./Tabs";
