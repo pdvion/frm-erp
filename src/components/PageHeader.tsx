@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, BookOpen } from "lucide-react";
 import { HelpButton } from "@/components/HelpButton";
-import type { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import { ReactNode } from "react";
 
 interface PageHeaderProps {
@@ -30,13 +30,16 @@ export function PageHeader({
   backHref, 
   backLabel = "Voltar",
   module,
-  // breadcrumbs - reservado para implementação futura
+  breadcrumbs,
   badge,
   children, 
   actions 
 }: PageHeaderProps) {
   return (
     <div className="mb-6">
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <Breadcrumbs items={breadcrumbs} showHome={false} className="mb-3" />
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           {backHref && (
