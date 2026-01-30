@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Search,
@@ -74,12 +75,10 @@ export default function RequisitionsPage() {
         icon={<Package className="w-6 h-6 text-amber-600" />}
         module="MATERIAL_OUT"
       >
-        <Link
-          href="/requisitions/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Requisição
+        <Link href="/requisitions/new">
+          <Button leftIcon={<Plus className="w-4 h-4" />}>
+            Nova Requisição
+          </Button>
         </Link>
       </PageHeader>
 
@@ -172,12 +171,10 @@ export default function RequisitionsPage() {
                   ? "Tente ajustar os filtros de busca"
                   : "Crie uma nova requisição para solicitar materiais"}
               </p>
-              <Link
-                href="/requisitions/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova Requisição
+              <Link href="/requisitions/new">
+                <Button leftIcon={<Plus className="w-4 h-4" />}>
+                  Nova Requisição
+                </Button>
               </Link>
             </div>
           ) : (
