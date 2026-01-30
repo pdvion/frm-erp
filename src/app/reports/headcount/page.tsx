@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-
-import { Users, ChevronLeft, Download, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { Users, Download, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
 
 export default function HeadcountReportPage() {
   const [search, setSearch] = useState("");
@@ -53,35 +52,23 @@ export default function HeadcountReportPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Headcount por Departamento</h1>
-                <p className="text-sm text-theme-muted">Funcionários ativos por área</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleExportCSV}
-                disabled={!filteredItems?.length}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </button>
-              
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Headcount por Departamento"
+        subtitle="Funcionários ativos por área"
+        icon={<Users className="w-6 h-6" />}
+        backHref="/reports"
+        module="reports"
+        actions={
+          <button
+            onClick={handleExportCSV}
+            disabled={!filteredItems?.length}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </button>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {data && (

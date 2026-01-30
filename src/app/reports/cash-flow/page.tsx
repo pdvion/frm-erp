@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Wallet,
-  ChevronLeft,
   Download,
   Loader2,
   Calendar,
@@ -50,36 +49,23 @@ export default function CashFlowReportPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary" aria-label="Voltar aos relatórios">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Fluxo de Caixa</h1>
-                <p className="text-sm text-theme-muted">Entradas e saídas por período</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleExportCSV}
-                disabled={!data?.flowData?.length}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </button>
-              
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Fluxo de Caixa"
+        subtitle="Entradas e saídas por período"
+        icon={<Wallet className="w-6 h-6" />}
+        backHref="/reports"
+        module="reports"
+        actions={
+          <button
+            onClick={handleExportCSV}
+            disabled={!data?.flowData?.length}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </button>
+        }
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

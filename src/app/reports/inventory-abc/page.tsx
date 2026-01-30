@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-
-import { Package, ChevronLeft, Download, Loader2, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { Package, Download, Loader2, Search } from "lucide-react";
 
 const classColors: Record<string, { bg: string; text: string; label: string }> = {
   A: { bg: "bg-green-100", text: "text-green-800", label: "Classe A (80%)" },
@@ -52,35 +51,23 @@ export default function InventoryAbcReportPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Curva ABC de Estoque</h1>
-                <p className="text-sm text-theme-muted">Classificação de itens por valor</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleExportCSV}
-                disabled={!filteredItems?.length}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </button>
-              
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Curva ABC de Estoque"
+        subtitle="Classificação de itens por valor"
+        icon={<Package className="w-6 h-6" />}
+        backHref="/reports"
+        module="reports"
+        actions={
+          <button
+            onClick={handleExportCSV}
+            disabled={!filteredItems?.length}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </button>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {data && (

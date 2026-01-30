@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-
-import { TrendingUp, ChevronLeft, Download, Loader2, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
+import { TrendingUp, Download, Loader2, Search } from "lucide-react";
 
 export default function ReceivablesAgingReportPage() {
   const [search, setSearch] = useState("");
@@ -46,36 +45,23 @@ export default function ReceivablesAgingReportPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/reports" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-theme">Aging Contas a Receber</h1>
-                <p className="text-sm text-theme-muted">Análise de vencimentos por faixa</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleExportCSV}
-                disabled={!filteredDetails?.length}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                <Download className="w-4 h-4" />
-                Exportar CSV
-              </button>
-              
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <PageHeader
+        title="Aging Contas a Receber"
+        subtitle="Análise de vencimentos por faixa"
+        icon={<TrendingUp className="w-6 h-6" />}
+        backHref="/reports"
+        module="reports"
+        actions={
+          <button
+            onClick={handleExportCSV}
+            disabled={!filteredDetails?.length}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </button>
+        }
+      />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {data && (
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
