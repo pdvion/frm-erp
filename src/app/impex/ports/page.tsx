@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Anchor, Plus, Search, Edit2, Trash2, Ship, Plane, Truck } from "lucide-react";
 
 type PortType = "MARITIME" | "AIRPORT" | "BORDER";
@@ -114,13 +115,12 @@ export default function PortsPage() {
           { label: "Portos" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => { resetForm(); setShowModal(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Porto
-          </button>
+          </Button>
         }
       />
 
@@ -287,13 +287,13 @@ export default function PortsPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 onClick={handleSubmit}
-                disabled={!formData.code || !formData.name || createMutation.isPending || updateMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!formData.code || !formData.name}
+                isLoading={createMutation.isPending || updateMutation.isPending}
               >
-                {createMutation.isPending || updateMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>
