@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Target,
   Plus,
@@ -119,13 +120,12 @@ export default function BIKPIsPage() {
           { label: "KPIs" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo KPI
-          </button>
+          </Button>
         }
       />
 
@@ -327,13 +327,14 @@ export default function BIKPIsPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 onClick={handleCreate}
-                disabled={!newKpi.code.trim() || !newKpi.name.trim() || createMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                disabled={!newKpi.code.trim() || !newKpi.name.trim()}
+                isLoading={createMutation.isPending}
+                className="flex-1"
               >
-                {createMutation.isPending ? "Criando..." : "Criar"}
-              </button>
+                Criar
+              </Button>
             </div>
           </div>
         </div>
