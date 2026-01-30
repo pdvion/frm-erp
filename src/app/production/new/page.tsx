@@ -161,12 +161,13 @@ export default function NewProductionOrderPage() {
                     placeholder="Selecione um produto..."
                     className="flex-1 px-3 py-2 border border-theme-input rounded-lg bg-theme-tertiary"
                   />
-                  <button
+                  <Button
                     onClick={() => setShowProductSearch(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    size="sm"
+                    leftIcon={<Search className="w-4 h-4" />}
                   >
-                    <Search className="w-4 h-4" />
-                  </button>
+                    Buscar
+                  </Button>
                 </div>
               </div>
 
@@ -345,13 +346,13 @@ export default function NewProductionOrderPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium text-theme">Materiais Necessários</h3>
-              <button
+              <Button
                 onClick={() => setShowMaterialSearch(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                size="sm"
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
                 Adicionar Material
-              </button>
+              </Button>
             </div>
 
             {materials.length === 0 ? (

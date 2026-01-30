@@ -118,9 +118,9 @@ export default function NewBillingPage() {
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-theme">Itens da Fatura</h3>
-              <button onClick={addItem} className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <Plus className="w-4 h-4" /> Adicionar
-              </button>
+              <Button onClick={addItem} size="sm" leftIcon={<Plus className="w-4 h-4" />}>
+                Adicionar
+              </Button>
             </div>
             <div className="space-y-2">
               {items.map((item, index) => (
