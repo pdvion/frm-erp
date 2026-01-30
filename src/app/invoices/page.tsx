@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Upload,
@@ -87,13 +88,12 @@ export default function InvoicesPage() {
             <Clock className="w-4 h-4" />
             NFe Pendentes SEFAZ
           </Link>
-          <button
+          <Button
             onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Upload className="w-4 h-4" />}
           >
-            <Upload className="w-4 h-4" />
             Importar XML
-          </button>
+          </Button>
         </div>
         }
       />
@@ -162,13 +162,12 @@ export default function InvoicesPage() {
               <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
               <p className="text-theme-muted mb-4">Importe um XML para começar</p>
-              <button
+              <Button
                 onClick={() => setShowUploadModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Upload className="w-4 h-4" />}
               >
-                <Upload className="w-4 h-4" />
                 Importar XML
-              </button>
+              </Button>
             </div>
           ) : (
             <>
@@ -356,13 +355,14 @@ export default function InvoicesPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 onClick={handleUpload}
-                disabled={!xmlContent || uploadMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!xmlContent}
+                isLoading={uploadMutation.isPending}
+                className="flex-1"
               >
                 {uploadMutation.isPending ? "Importando..." : "Importar"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
