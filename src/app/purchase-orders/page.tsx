@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
 import {
@@ -143,12 +144,10 @@ export default function PurchaseOrdersPage() {
           { label: "Pedidos de Compra" },
         ]}
       >
-        <Link
-          href="/purchase-orders/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Novo Pedido
+        <Link href="/purchase-orders/new">
+          <Button leftIcon={<Plus className="w-4 h-4" />}>
+            Novo Pedido
+          </Button>
         </Link>
       </PageHeader>
 
