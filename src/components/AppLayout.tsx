@@ -60,17 +60,19 @@ function AppLayoutContent({ children }: AppLayoutProps) {
       )}
 
       {/* Sidebar - hidden on mobile unless open */}
-      <div
-        className={`${
-          isMobile
-            ? sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full pointer-events-none"
-            : "translate-x-0"
-        } fixed z-40 transition-transform duration-300`}
-      >
-        <Sidebar onClose={() => setSidebarOpen(false)} />
-      </div>
+      {(!isMobile || sidebarOpen) && (
+        <div
+          className={`${
+            isMobile
+              ? "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out"
+              : "fixed z-40"
+          } ${
+            isMobile && !sidebarOpen ? "-translate-x-full" : "translate-x-0"
+          }`}
+        >
+          <Sidebar onClose={() => setSidebarOpen(false)} />
+        </div>
+      )}
 
       {/* Main content */}
       <div className={`transition-all duration-300 ${sidebarWidth}`}>

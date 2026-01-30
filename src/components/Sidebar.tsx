@@ -201,6 +201,9 @@ export function Sidebar({ onClose }: SidebarProps) {
   const { theme, setTheme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
+  // Em mobile, sempre mostrar sidebar expandido (não colapsado)
+  const effectiveCollapsed = isMobile ? false : isCollapsed;
+
   const themeOptions = [
     { value: "light" as const, icon: Sun, label: "Claro" },
     { value: "dark" as const, icon: Moon, label: "Escuro" },
@@ -247,7 +250,7 @@ export function Sidebar({ onClose }: SidebarProps) {
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
-  if (isCollapsed) {
+  if (effectiveCollapsed) {
     return (
       <aside className="fixed left-0 top-0 z-40 h-screen w-16 border-r border-theme bg-theme-sidebar transition-all duration-300">
         <div className="flex h-14 items-center justify-center border-b border-theme">
@@ -287,14 +290,14 @@ export function Sidebar({ onClose }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-theme bg-theme-sidebar transition-all duration-300">
       <div className="flex h-14 items-center justify-between border-b border-theme px-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2" onClick={isMobile ? onClose : undefined}>
           <Building2 className="h-6 w-6 text-blue-500" />
           <span className="font-semibold text-theme">FRM ERP</span>
         </Link>
         <button
-          onClick={() => setIsCollapsed(true)}
+          onClick={isMobile ? onClose : () => setIsCollapsed(true)}
           className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme"
-          aria-label="Colapsar menu"
+          aria-label={isMobile ? "Fechar menu" : "Colapsar menu"}
         >
           <ChevronLeft className="h-5 w-5" />
         </button>

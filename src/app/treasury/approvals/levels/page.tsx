@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
-  ArrowLeft,
   Plus,
   Edit2,
   Trash2,
@@ -173,20 +171,20 @@ export default function ApprovalLevelsPage() {
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
         title="Níveis de Alçada"
         subtitle="Configure os níveis de aprovação por faixa de valor"
-        icon={<Shield className="w-6 h-6" />}
+        icon={<Shield className="h-6 w-6" />}
         backHref="/treasury/approvals"
         module="finance"
         actions={
           !showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
               Novo Nível
             </button>
           ) : undefined
@@ -195,15 +193,18 @@ export default function ApprovalLevelsPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-theme-card rounded-xl shadow-sm border p-6 mb-6">
-          <h2 className="text-lg font-semibold text-theme mb-4">
+        <div className="bg-theme-card mb-6 rounded-xl border p-6 shadow-sm">
+          <h2 className="text-theme mb-4 text-lg font-semibold">
             {editingId ? "Editar Nível de Alçada" : "Novo Nível de Alçada"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label htmlFor="level-code" className="block text-sm font-medium text-theme-secondary mb-1">
+                <label
+                  htmlFor="level-code"
+                  className="text-theme-secondary mb-1 block text-sm font-medium"
+                >
                   Código *
                 </label>
                 <input
@@ -214,12 +215,15 @@ export default function ApprovalLevelsPage() {
                   required
                   disabled={!!editingId}
                   placeholder="Ex: NIVEL_1"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-theme-tertiary"
+                  className="border-theme-input disabled:bg-theme-tertiary w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="level-name" className="block text-sm font-medium text-theme-secondary mb-1">
+                <label
+                  htmlFor="level-name"
+                  className="text-theme-secondary mb-1 block text-sm font-medium"
+                >
                   Nome *
                 </label>
                 <input
@@ -229,13 +233,16 @@ export default function ApprovalLevelsPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="Ex: Aprovação Gerencial"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="level-description" className="block text-sm font-medium text-theme-secondary mb-1">
+              <label
+                htmlFor="level-description"
+                className="text-theme-secondary mb-1 block text-sm font-medium"
+              >
                 Descrição
               </label>
               <textarea
@@ -244,28 +251,36 @@ export default function ApprovalLevelsPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Descrição do nível de alçada..."
                 rows={2}
-                className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label htmlFor="level-min-value" className="block text-sm font-medium text-theme-secondary mb-1">
+                <label
+                  htmlFor="level-min-value"
+                  className="text-theme-secondary mb-1 block text-sm font-medium"
+                >
                   Valor Mínimo (R$)
                 </label>
                 <input
                   id="level-min-value"
                   type="number"
                   value={formData.minValue}
-                  onChange={(e) => setFormData({ ...formData, minValue: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, minValue: parseFloat(e.target.value) || 0 })
+                  }
                   min={0}
                   step={0.01}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="level-max-value" className="block text-sm font-medium text-theme-secondary mb-1">
+                <label
+                  htmlFor="level-max-value"
+                  className="text-theme-secondary mb-1 block text-sm font-medium"
+                >
                   Valor Máximo (R$)
                 </label>
                 <input
@@ -281,7 +296,7 @@ export default function ApprovalLevelsPage() {
                   min={0}
                   step={0.01}
                   placeholder="Sem limite"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -291,18 +306,20 @@ export default function ApprovalLevelsPage() {
                 id="requires-all"
                 type="checkbox"
                 checked={formData.requiresAllApprovers}
-                onChange={(e) => setFormData({ ...formData, requiresAllApprovers: e.target.checked })}
-                className="w-4 h-4 rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                onChange={(e) =>
+                  setFormData({ ...formData, requiresAllApprovers: e.target.checked })
+                }
+                className="border-theme h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500"
               />
-              <label htmlFor="requires-all" className="text-sm text-theme-secondary">
+              <label htmlFor="requires-all" className="text-theme-secondary text-sm">
                 Requer aprovação de todos os aprovadores (em sequência)
               </label>
             </div>
 
             {/* Approvers Section */}
             <div className="border-t pt-4">
-              <h3 className="text-sm font-medium text-theme mb-3 flex items-center gap-2">
-                <Users className="w-4 h-4" />
+              <h3 className="text-theme mb-3 flex items-center gap-2 text-sm font-medium">
+                <Users className="h-4 w-4" />
                 Aprovadores *
               </h3>
 
@@ -318,7 +335,7 @@ export default function ApprovalLevelsPage() {
                       e.target.value = "";
                     }
                   }}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Selecione um usuário para adicionar...</option>
                   {usersData
@@ -332,19 +349,19 @@ export default function ApprovalLevelsPage() {
               </div>
 
               {formData.approvers.length === 0 ? (
-                <p className="text-sm text-theme-muted italic">Nenhum aprovador adicionado</p>
+                <p className="text-theme-muted text-sm italic">Nenhum aprovador adicionado</p>
               ) : (
                 <div className="space-y-2">
                   {formData.approvers.map((approver, idx) => (
                     <div
                       key={approver.userId}
-                      className="flex items-center justify-between p-3 bg-theme-tertiary rounded-lg"
+                      className="bg-theme-tertiary flex items-center justify-between rounded-lg p-3"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-medium">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-700">
                           {idx + 1}
                         </span>
-                        <span className="text-sm font-medium text-theme">{approver.userName}</span>
+                        <span className="text-theme text-sm font-medium">{approver.userName}</span>
                       </div>
 
                       <div className="flex items-center gap-4">
@@ -353,9 +370,9 @@ export default function ApprovalLevelsPage() {
                             type="checkbox"
                             checked={approver.canApprove}
                             onChange={() => toggleApproverPermission(approver.userId, "canApprove")}
-                            className="w-4 h-4 rounded border-theme text-green-600 focus:ring-green-500"
+                            className="border-theme h-4 w-4 rounded text-green-600 focus:ring-green-500"
                           />
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <CheckCircle className="h-4 w-4 text-green-600" />
                           Aprovar
                         </label>
 
@@ -364,19 +381,19 @@ export default function ApprovalLevelsPage() {
                             type="checkbox"
                             checked={approver.canReject}
                             onChange={() => toggleApproverPermission(approver.userId, "canReject")}
-                            className="w-4 h-4 rounded border-theme text-red-600 focus:ring-red-500"
+                            className="border-theme h-4 w-4 rounded text-red-600 focus:ring-red-500"
                           />
-                          <XCircle className="w-4 h-4 text-red-600" />
+                          <XCircle className="h-4 w-4 text-red-600" />
                           Rejeitar
                         </label>
 
                         <button
                           type="button"
                           onClick={() => removeApprover(approver.userId)}
-                          className="p-1 text-theme-muted hover:text-red-600 transition-colors"
+                          className="text-theme-muted p-1 transition-colors hover:text-red-600"
                           aria-label="Remover aprovador"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
@@ -386,20 +403,20 @@ export default function ApprovalLevelsPage() {
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end gap-3 pt-4 border-t">
+            <div className="flex justify-end gap-3 border-t pt-4">
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
+                className="text-theme-secondary hover:bg-theme-hover rounded-lg px-4 py-2 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
               >
-                {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {editingId ? "Salvar Alterações" : "Criar Nível"}
               </button>
             </div>
@@ -408,14 +425,14 @@ export default function ApprovalLevelsPage() {
       )}
 
       {/* Levels List */}
-      <div className="bg-theme-card rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-theme-card overflow-hidden rounded-xl border shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
           </div>
         ) : levels?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
-            <Shield className="w-12 h-12 mb-3 text-theme-muted" />
+          <div className="text-theme-muted flex flex-col items-center justify-center py-12">
+            <Shield className="text-theme-muted mb-3 h-12 w-12" />
             <p className="font-medium">Nenhum nível de alçada configurado</p>
             <p className="text-sm">Crie níveis para controlar aprovações por faixa de valor</p>
           </div>
@@ -424,35 +441,37 @@ export default function ApprovalLevelsPage() {
             {levels?.map((level) => (
               <div key={level.id} className="p-4">
                 <div
-                  className="flex items-center justify-between cursor-pointer"
+                  className="flex cursor-pointer items-center justify-between"
                   onClick={() => setExpandedLevel(expandedLevel === level.id ? null : level.id)}
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        level.isActive ? "bg-indigo-100 text-indigo-600" : "bg-theme-tertiary text-theme-muted"
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                        level.isActive
+                          ? "bg-indigo-100 text-indigo-600"
+                          : "bg-theme-tertiary text-theme-muted"
                       }`}
                     >
-                      <Shield className="w-5 h-5" />
+                      <Shield className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-theme">{level.name}</h3>
-                        <span className="text-xs text-theme-muted font-mono">{level.code}</span>
+                        <h3 className="text-theme font-medium">{level.name}</h3>
+                        <span className="text-theme-muted font-mono text-xs">{level.code}</span>
                         {!level.isActive && (
-                          <span className="px-2 py-0.5 bg-theme-tertiary text-theme-secondary text-xs rounded-full">
+                          <span className="bg-theme-tertiary text-theme-secondary rounded-full px-2 py-0.5 text-xs">
                             Inativo
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-theme-secondary">
+                      <div className="text-theme-secondary flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1">
-                          <DollarSign className="w-3 h-3" />
+                          <DollarSign className="h-3 w-3" />
                           {formatCurrency(level.minValue)}
                           {level.maxValue ? ` - ${formatCurrency(level.maxValue)}` : "+"}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
+                          <Users className="h-3 w-3" />
                           {level.approvers.length} aprovador(es)
                         </span>
                         <span className="text-theme-muted">
@@ -468,10 +487,10 @@ export default function ApprovalLevelsPage() {
                         e.stopPropagation();
                         handleEdit(level);
                       }}
-                      className="p-2 text-theme-muted hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
                       aria-label="Editar nível"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={(e) => {
@@ -479,7 +498,7 @@ export default function ApprovalLevelsPage() {
                         setDeleteConfirm(level.id);
                       }}
                       disabled={level._count.paymentRequests > 0}
-                      className="p-2 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
                       aria-label="Excluir nível"
                       title={
                         level._count.paymentRequests > 0
@@ -487,25 +506,25 @@ export default function ApprovalLevelsPage() {
                           : "Excluir nível"
                       }
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                     {expandedLevel === level.id ? (
-                      <ChevronUp className="w-5 h-5 text-theme-muted" />
+                      <ChevronUp className="text-theme-muted h-5 w-5" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-theme-muted" />
+                      <ChevronDown className="text-theme-muted h-5 w-5" />
                     )}
                   </div>
                 </div>
 
                 {/* Expanded Details */}
                 {expandedLevel === level.id && (
-                  <div className="mt-4 pl-14 space-y-3">
+                  <div className="mt-4 space-y-3 pl-14">
                     {level.description && (
-                      <p className="text-sm text-theme-secondary">{level.description}</p>
+                      <p className="text-theme-secondary text-sm">{level.description}</p>
                     )}
 
                     <div className="flex items-center gap-2 text-sm">
-                      <Settings className="w-4 h-4 text-theme-muted" />
+                      <Settings className="text-theme-muted h-4 w-4" />
                       <span className="text-theme-secondary">
                         {level.requiresAllApprovers
                           ? "Requer aprovação de todos em sequência"
@@ -514,7 +533,7 @@ export default function ApprovalLevelsPage() {
                     </div>
 
                     <div className="bg-theme-tertiary rounded-lg p-3">
-                      <h4 className="text-xs font-medium text-theme-muted uppercase mb-2">
+                      <h4 className="text-theme-muted mb-2 text-xs font-medium uppercase">
                         Aprovadores
                       </h4>
                       <div className="space-y-2">
@@ -524,7 +543,7 @@ export default function ApprovalLevelsPage() {
                             className="flex items-center justify-between text-sm"
                           >
                             <div className="flex items-center gap-2">
-                              <span className="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs">
+                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-xs text-indigo-700">
                                 {idx + 1}
                               </span>
                               <span className="text-theme">
@@ -534,13 +553,13 @@ export default function ApprovalLevelsPage() {
                             <div className="flex items-center gap-3 text-xs">
                               {approver.canApprove && (
                                 <span className="flex items-center gap-1 text-green-600">
-                                  <CheckCircle className="w-3 h-3" />
+                                  <CheckCircle className="h-3 w-3" />
                                   Aprovar
                                 </span>
                               )}
                               {approver.canReject && (
                                 <span className="flex items-center gap-1 text-red-600">
-                                  <XCircle className="w-3 h-3" />
+                                  <XCircle className="h-3 w-3" />
                                   Rejeitar
                                 </span>
                               )}
@@ -559,13 +578,13 @@ export default function ApprovalLevelsPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="w-6 h-6 text-red-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-theme-card mx-4 w-full max-w-md rounded-xl p-6 shadow-xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="rounded-lg bg-red-100 p-2">
+                <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-theme">Excluir Nível de Alçada</h3>
+              <h3 className="text-theme text-lg font-semibold">Excluir Nível de Alçada</h3>
             </div>
             <p className="text-theme-secondary mb-6">
               Tem certeza que deseja excluir este nível de alçada? Esta ação não pode ser desfeita.
@@ -573,16 +592,16 @@ export default function ApprovalLevelsPage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
+                className="text-theme-secondary hover:bg-theme-hover rounded-lg px-4 py-2 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
               >
-                {deleteMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {deleteMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 Excluir
               </button>
             </div>

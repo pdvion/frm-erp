@@ -4,16 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Search,
-  Loader2,
-  Package,
-  AlertCircle,
-  RotateCcw,
-} from "lucide-react";
+import { Plus, Trash2, Search, Loader2, Package, AlertCircle, RotateCcw } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
@@ -144,27 +135,25 @@ export default function NewSupplierReturnPage() {
         <PageHeader
           title="Nova Devolução"
           subtitle="Registre uma devolução a fornecedor"
-          icon={<RotateCcw className="w-6 h-6" />}
+          icon={<RotateCcw className="h-6 w-6" />}
           backHref="/supplier-returns"
           module="inventory"
         />
 
         {error && (
-          <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            <AlertCircle className="w-5 h-5" />
+          <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+            <AlertCircle className="h-5 w-5" />
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados Básicos */}
-          <div className="bg-theme-card rounded-xl border border-theme p-6">
-            <h2 className="text-lg font-semibold text-theme mb-4">Dados da Devolução</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-theme-card border-theme rounded-xl border p-6">
+            <h2 className="text-theme mb-4 text-lg font-semibold">Dados da Devolução</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Fornecedor *
-                </label>
+                <label className="text-theme mb-1 block text-sm font-medium">Fornecedor *</label>
                 <select
                   value={supplierId}
                   onChange={(e) => {
@@ -172,7 +161,7 @@ export default function NewSupplierReturnPage() {
                     setReceivedInvoiceId("");
                   }}
                   required
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
                 >
                   <option value="">Selecione...</option>
                   {suppliersData?.suppliers.map((s) => (
@@ -184,14 +173,12 @@ export default function NewSupplierReturnPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  NFe de Origem
-                </label>
+                <label className="text-theme mb-1 block text-sm font-medium">NFe de Origem</label>
                 <select
                   value={receivedInvoiceId}
                   onChange={(e) => setReceivedInvoiceId(e.target.value)}
                   disabled={!supplierId}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme disabled:opacity-50"
+                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2 disabled:opacity-50"
                 >
                   <option value="">Nenhuma (manual)</option>
                   {invoicesData?.invoices.map((inv) => (
@@ -203,7 +190,7 @@ export default function NewSupplierReturnPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
+                <label className="text-theme mb-1 block text-sm font-medium">
                   Data da Devolução *
                 </label>
                 <input
@@ -211,19 +198,17 @@ export default function NewSupplierReturnPage() {
                   value={returnDate}
                   onChange={(e) => setReturnDate(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
                 />
               </div>
 
               <div className="md:col-span-2 lg:col-span-3">
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Observações
-                </label>
+                <label className="text-theme mb-1 block text-sm font-medium">Observações</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
                   placeholder="Observações gerais sobre a devolução..."
                 />
               </div>
@@ -231,15 +216,15 @@ export default function NewSupplierReturnPage() {
           </div>
 
           {/* Itens */}
-          <div className="bg-theme-card rounded-xl border border-theme p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-theme">Itens da Devolução</h2>
+          <div className="bg-theme-card border-theme rounded-xl border p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-theme text-lg font-semibold">Itens da Devolução</h2>
               <button
                 type="button"
                 onClick={() => setShowMaterialSearch(true)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-700"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 Adicionar Item
               </button>
             </div>
@@ -247,23 +232,23 @@ export default function NewSupplierReturnPage() {
             {/* Material Search Modal */}
             {showMaterialSearch && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-theme-card rounded-xl border border-theme p-6 w-full max-w-lg mx-4">
-                  <h3 className="text-lg font-semibold text-theme mb-4">Buscar Material</h3>
+                <div className="bg-theme-card border-theme mx-4 w-full max-w-lg rounded-xl border p-6">
+                  <h3 className="text-theme mb-4 text-lg font-semibold">Buscar Material</h3>
                   <div className="relative mb-4">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
+                    <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <input
                       type="text"
                       value={searchMaterial}
                       onChange={(e) => setSearchMaterial(e.target.value)}
                       placeholder="Digite código ou descrição..."
                       autoFocus
-                      className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+                      className="border-theme bg-theme-card text-theme w-full rounded-lg border py-2 pr-4 pl-10"
                     />
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {loadingMaterials ? (
                       <div className="flex items-center justify-center py-8">
-                        <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+                        <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
                       </div>
                     ) : materialsData?.materials.length ? (
                       <div className="space-y-2">
@@ -272,14 +257,14 @@ export default function NewSupplierReturnPage() {
                             key={m.id}
                             type="button"
                             onClick={() => addItem(m)}
-                            className="w-full flex items-center gap-3 p-3 hover:bg-theme-hover rounded-lg text-left"
+                            className="hover:bg-theme-hover flex w-full items-center gap-3 rounded-lg p-3 text-left"
                           >
-                            <Package className="w-5 h-5 text-theme-muted" />
+                            <Package className="text-theme-muted h-5 w-5" />
                             <div className="flex-1">
-                              <div className="font-medium text-theme">
+                              <div className="text-theme font-medium">
                                 {m.code} - {m.description}
                               </div>
-                              <div className="text-sm text-theme-muted">
+                              <div className="text-theme-muted text-sm">
                                 {m.unit} | Último preço: {formatCurrency(m.lastPurchasePrice || 0)}
                               </div>
                             </div>
@@ -287,23 +272,23 @@ export default function NewSupplierReturnPage() {
                         ))}
                       </div>
                     ) : searchMaterial.length >= 2 ? (
-                      <p className="text-center text-theme-muted py-8">
+                      <p className="text-theme-muted py-8 text-center">
                         Nenhum material encontrado
                       </p>
                     ) : (
-                      <p className="text-center text-theme-muted py-8">
+                      <p className="text-theme-muted py-8 text-center">
                         Digite pelo menos 2 caracteres
                       </p>
                     )}
                   </div>
-                  <div className="flex justify-end mt-4">
+                  <div className="mt-4 flex justify-end">
                     <button
                       type="button"
                       onClick={() => {
                         setShowMaterialSearch(false);
                         setSearchMaterial("");
                       }}
-                      className="px-4 py-2 text-theme-muted hover:text-theme"
+                      className="text-theme-muted hover:text-theme px-4 py-2"
                     >
                       Cancelar
                     </button>
@@ -314,8 +299,8 @@ export default function NewSupplierReturnPage() {
 
             {/* Items Table */}
             {items.length === 0 ? (
-              <div className="text-center py-8 text-theme-muted">
-                <Package className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <div className="text-theme-muted py-8 text-center">
+                <Package className="mx-auto mb-2 h-12 w-12 opacity-50" />
                 <p>Nenhum item adicionado</p>
               </div>
             ) : (
@@ -323,35 +308,35 @@ export default function NewSupplierReturnPage() {
                 <table className="w-full">
                   <thead className="bg-theme-hover">
                     <tr>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-left text-sm font-medium">
                         Material
                       </th>
-                      <th className="px-3 py-2 text-center text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-center text-sm font-medium">
                         Qtd
                       </th>
-                      <th className="px-3 py-2 text-right text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-right text-sm font-medium">
                         Preço Unit.
                       </th>
-                      <th className="px-3 py-2 text-right text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-right text-sm font-medium">
                         Total
                       </th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-left text-sm font-medium">
                         Motivo
                       </th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-theme-muted">
+                      <th className="text-theme-muted px-3 py-2 text-left text-sm font-medium">
                         Local
                       </th>
                       <th className="px-3 py-2"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-theme">
+                  <tbody className="divide-theme divide-y">
                     {items.map((item, index) => (
                       <tr key={item.materialId}>
                         <td className="px-3 py-2">
-                          <div className="text-sm font-medium text-theme">
+                          <div className="text-theme text-sm font-medium">
                             {item.materialCode} - {item.materialDescription}
                           </div>
-                          <div className="text-xs text-theme-muted">{item.materialUnit}</div>
+                          <div className="text-theme-muted text-xs">{item.materialUnit}</div>
                         </td>
                         <td className="px-3 py-2">
                           <input
@@ -362,7 +347,7 @@ export default function NewSupplierReturnPage() {
                             }
                             min="0.001"
                             step="0.001"
-                            className="w-20 px-2 py-1 border border-theme rounded text-center text-sm"
+                            className="border-theme w-20 rounded border px-2 py-1 text-center text-sm"
                           />
                         </td>
                         <td className="px-3 py-2">
@@ -374,10 +359,10 @@ export default function NewSupplierReturnPage() {
                             }
                             min="0"
                             step="0.01"
-                            className="w-24 px-2 py-1 border border-theme rounded text-right text-sm"
+                            className="border-theme w-24 rounded border px-2 py-1 text-right text-sm"
                           />
                         </td>
-                        <td className="px-3 py-2 text-right text-sm font-medium text-theme">
+                        <td className="text-theme px-3 py-2 text-right text-sm font-medium">
                           {formatCurrency(item.quantity * item.unitPrice)}
                         </td>
                         <td className="px-3 py-2">
@@ -386,7 +371,7 @@ export default function NewSupplierReturnPage() {
                             onChange={(e) =>
                               updateItem(index, "reason", e.target.value as ReturnReason)
                             }
-                            className="w-full px-2 py-1 border border-theme rounded text-sm"
+                            className="border-theme w-full rounded border px-2 py-1 text-sm"
                           >
                             {reasons?.map((r) => (
                               <option key={r.value} value={r.value}>
@@ -398,10 +383,8 @@ export default function NewSupplierReturnPage() {
                         <td className="px-3 py-2">
                           <select
                             value={item.stockLocationId || ""}
-                            onChange={(e) =>
-                              updateItem(index, "stockLocationId", e.target.value)
-                            }
-                            className="w-full px-2 py-1 border border-theme rounded text-sm"
+                            onChange={(e) => updateItem(index, "stockLocationId", e.target.value)}
+                            className="border-theme w-full rounded border px-2 py-1 text-sm"
                           >
                             <option value="">-</option>
                             {stockLocations?.map((loc) => (
@@ -415,9 +398,9 @@ export default function NewSupplierReturnPage() {
                           <button
                             type="button"
                             onClick={() => removeItem(index)}
-                            className="p-1 text-red-500 hover:bg-red-50 rounded"
+                            className="rounded p-1 text-red-500 hover:bg-red-50"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </td>
                       </tr>
@@ -425,10 +408,10 @@ export default function NewSupplierReturnPage() {
                   </tbody>
                   <tfoot className="bg-theme-hover">
                     <tr>
-                      <td colSpan={3} className="px-3 py-2 text-right font-medium text-theme">
+                      <td colSpan={3} className="text-theme px-3 py-2 text-right font-medium">
                         Total:
                       </td>
-                      <td className="px-3 py-2 text-right font-bold text-theme">
+                      <td className="text-theme px-3 py-2 text-right font-bold">
                         {formatCurrency(totalValue)}
                       </td>
                       <td colSpan={3}></td>
@@ -441,18 +424,15 @@ export default function NewSupplierReturnPage() {
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-4">
-            <Link
-              href="/supplier-returns"
-              className="px-4 py-2 text-theme-muted hover:text-theme"
-            >
+            <Link href="/supplier-returns" className="text-theme-muted hover:text-theme px-4 py-2">
               Cancelar
             </Link>
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
             >
-              {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Salvar Devolução
             </button>
           </div>

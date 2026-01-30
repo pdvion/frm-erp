@@ -430,22 +430,6 @@ export default function BatchPaymentPage() {
         </div>
       </div>
 
-      {/* Links rápidos */}
-      <div className="flex gap-4">
-        <Link
-          href="/payables"
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          ← Voltar para Contas a Pagar
-        </Link>
-        <Link
-          href="/payables/cnab"
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Gerar Arquivo CNAB →
-        </Link>
-      </div>
-
       {/* Modal de confirmação */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
