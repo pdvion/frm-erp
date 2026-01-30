@@ -7,12 +7,12 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Alert } from "@/components/ui/Alert";
 import {
   Loader2,
   Upload,
   FileText,
   CheckCircle,
-  AlertCircle,
   Building2,
   Calendar,
   ArrowRight,
@@ -135,19 +135,9 @@ export default function ImportOFXPage() {
 
         {/* Erro */}
         {importMutation.isError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-lg font-medium text-red-800 mb-1">
-                  Erro na Importação
-                </h3>
-                <p className="text-red-700">
-                  {importMutation.error?.message || "Erro desconhecido ao importar arquivo"}
-                </p>
-              </div>
-            </div>
-          </div>
+          <Alert variant="error" title="Erro na Importação" className="mb-6">
+            {importMutation.error?.message || "Erro desconhecido ao importar arquivo"}
+          </Alert>
         )}
 
         {/* Formulário */}

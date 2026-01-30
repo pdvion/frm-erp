@@ -7,13 +7,13 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { PageHeader } from "@/components/PageHeader";
+import { Alert } from "@/components/ui/Alert";
 import {
   Building2,
   Users,
   Trash2,
   Loader2,
   AlertTriangle,
-  CheckCircle,
   UserPlus,
 } from "lucide-react";
 
@@ -139,21 +139,15 @@ export default function CompanyUsersPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              <p className="text-red-800">{error}</p>
-            </div>
-          </div>
+          <Alert variant="error" className="mb-6">
+            {error}
+          </Alert>
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <p className="text-green-800">{success}</p>
-            </div>
-          </div>
+          <Alert variant="success" className="mb-6">
+            {success}
+          </Alert>
         )}
 
         {/* Lista de Usuários */}
