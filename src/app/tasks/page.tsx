@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   ClipboardList,
   Search,
@@ -82,12 +83,10 @@ export default function TasksPage() {
         icon={<ClipboardList className="w-6 h-6 text-blue-600" />}
         module="SETTINGS"
       >
-        <Link
-          href="/tasks/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Tarefa
+        <Link href="/tasks/new">
+          <Button leftIcon={<Plus className="w-4 h-4" />}>
+            Nova Tarefa
+          </Button>
         </Link>
       </PageHeader>
 
