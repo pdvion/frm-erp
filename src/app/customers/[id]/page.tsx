@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof CheckCircle }> = {
   ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
@@ -29,6 +30,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 export default function CustomerDetailPage() {
   const params = useParams();
   const customerId = params.id as string;
+  const breadcrumbs = useRouteBreadcrumbs();
 
   const { data: customer, isLoading, error } = trpc.customers.byId.useQuery({ id: customerId });
 
@@ -103,6 +105,7 @@ export default function CustomerDetailPage() {
         subtitle={`Código: ${customer.code}`}
         icon={<Building2 className="w-6 h-6" />}
         backHref="/customers"
+        breadcrumbs={breadcrumbs}
         badge={customer.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
         actions={
           <Link

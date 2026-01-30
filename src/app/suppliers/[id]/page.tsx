@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig = {
   ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
@@ -28,6 +29,7 @@ const statusConfig = {
 export default function SupplierDetailPage() {
   const params = useParams();
   const supplierId = params.id as string;
+  const breadcrumbs = useRouteBreadcrumbs();
 
   const { data: supplier, isLoading, error } = trpc.suppliers.byId.useQuery({ id: supplierId });
 
@@ -90,6 +92,7 @@ export default function SupplierDetailPage() {
         subtitle={`Código: ${supplier.code}`}
         icon={<Users className="w-6 h-6" />}
         backHref="/suppliers"
+        breadcrumbs={breadcrumbs}
         badge={supplier.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
         actions={
           <Link

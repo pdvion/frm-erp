@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig = {
   ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
@@ -34,6 +36,7 @@ const statusConfig = {
 export default function MaterialDetailPage() {
   const params = useParams();
   const idOrCode = params.id as string;
+  const breadcrumbs = useRouteBreadcrumbs();
 
   const { data: material, isLoading, error } = trpc.materials.byIdOrCode.useQuery({ idOrCode });
 
@@ -71,6 +74,7 @@ export default function MaterialDetailPage() {
         subtitle={`Código: ${material.code}${material.internalCode ? ` • ${material.internalCode}` : ""}`}
         icon={<Package className="w-6 h-6" />}
         backHref="/materials"
+        breadcrumbs={breadcrumbs}
         badge={material.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
         actions={
           <Link
