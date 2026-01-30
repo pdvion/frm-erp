@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Goal, Plus, Target, Users, TrendingUp, DollarSign, Briefcase } from "lucide-react";
 import Link from "next/link";
 
@@ -67,12 +68,10 @@ export default function GPDGoalsPage() {
           { label: "Metas" },
         ]}
         actions={
-          <Link
-            href="/gpd/goals/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Meta
+          <Link href="/gpd/goals/new">
+            <Button leftIcon={<Plus className="w-4 h-4" />}>
+              Nova Meta
+            </Button>
           </Link>
         }
       />
