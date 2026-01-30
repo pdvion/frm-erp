@@ -6,12 +6,12 @@ import Link from "next/link";
 import { 
   Users, 
   Save,
-  X,
-  Loader2
+  X
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
@@ -701,18 +701,13 @@ export default function NewSupplierPage() {
             <X className="w-4 h-4" />
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            isLoading={isSubmitting}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
             Salvar
-          </button>
+          </Button>
         </div>
       </form>
     </div>
