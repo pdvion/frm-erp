@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 interface CategoryChild {
   id: string;
@@ -341,18 +342,14 @@ function CategoryModal({
             >
               Cancelar
             </button>
-            <button
+            <Button
               type="submit"
-              disabled={isLoading || !formData.name.trim()}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={!formData.name.trim()}
+              isLoading={isLoading}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -449,13 +446,12 @@ function CategoriesContent() {
           { label: "Categorias" },
         ]}
         actions={
-          <button
+          <Button
             onClick={handleNewCategory}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-5 h-5" />}
           >
-            <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">Nova Categoria</span>
-          </button>
+          </Button>
         }
       />
 
@@ -469,13 +465,12 @@ function CategoriesContent() {
           <div className="p-8 text-center text-theme-muted">
             <FolderOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p className="mb-4">Nenhuma categoria cadastrada</p>
-            <button
+            <Button
               onClick={handleNewCategory}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Criar primeira categoria
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="divide-y divide-theme">
