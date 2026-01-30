@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   BookOpen,
-  ChevronLeft,
   Loader2,
   Calendar,
   ArrowLeft,
@@ -50,26 +50,13 @@ export default function TutorialPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/docs" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">{tutorial.title}</h1>
-              </div>
-            </div>
-            {tutorial.module && (
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-                {tutorial.module}
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title={tutorial.title}
+        icon={<BookOpen className="w-6 h-6" />}
+        backHref="/docs"
+        module="docs"
+        badge={tutorial.module ? { label: tutorial.module, color: "text-blue-700", bgColor: "bg-blue-100" } : undefined}
+      />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <article className="bg-theme-card rounded-lg border border-theme p-8">

@@ -5,8 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
-  ChevronLeft,
   Building2,
   Settings,
   Upload,
@@ -145,23 +145,12 @@ export default function CnabConfigPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href={`/treasury/accounts/${accountId}`} className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <Settings className="w-5 h-5 text-blue-600" />
-                Configuração CNAB
-              </h1>
-            </div>
-            
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Configuração CNAB"
+        icon={<Settings className="w-6 h-6" />}
+        backHref={`/treasury/accounts/${accountId}`}
+        module="treasury"
+      />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Conta Info */}

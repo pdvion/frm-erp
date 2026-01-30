@@ -6,9 +6,9 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
-  ChevronLeft,
   Clock,
   CheckCircle,
   XCircle,
@@ -72,64 +72,52 @@ export default function BillingDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/billing" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-600" />
-                NFe {invoice.invoiceNumber}
-              </h1>
-              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-                {config.icon}
-                {config.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              
-              {invoice.status === "DRAFT" && (
+      <PageHeader
+        title={`NFe ${invoice.invoiceNumber}`}
+        icon={<FileText className="w-6 h-6" />}
+        backHref="/billing"
+        module="billing"
+        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        actions={
+          <div className="flex items-center gap-3">
+            {invoice.status === "DRAFT" && (
+              <button
+                onClick={() => authorizeMutation.mutate({ id })}
+                disabled={authorizeMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+                {authorizeMutation.isPending ? "Autorizando..." : "Autorizar NFe"}
+              </button>
+            )}
+            {invoice.status === "AUTHORIZED" && (
+              <>
                 <button
-                  onClick={() => authorizeMutation.mutate({ id })}
-                  disabled={authorizeMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  onClick={() => setShowReceivablesModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  <Send className="w-4 h-4" />
-                  {authorizeMutation.isPending ? "Autorizando..." : "Autorizar NFe"}
+                  <CreditCard className="w-4 h-4" />
+                  Gerar Títulos
                 </button>
-              )}
-              {invoice.status === "AUTHORIZED" && (
-                <>
-                  <button
-                    onClick={() => setShowReceivablesModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    Gerar Títulos
-                  </button>
-                  <button
-                    onClick={() => setShowCorrectionModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-                  >
-                    <FileEdit className="w-4 h-4" />
-                    Carta Correção
-                  </button>
-                  <button
-                    onClick={() => setShowCancelModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
-                  >
-                    <Ban className="w-4 h-4" />
-                    Cancelar
-                  </button>
-                </>
-              )}
-            </div>
+                <button
+                  onClick={() => setShowCorrectionModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                >
+                  <FileEdit className="w-4 h-4" />
+                  Carta Correção
+                </button>
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                >
+                  <Ban className="w-4 h-4" />
+                  Cancelar
+                </button>
+              </>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

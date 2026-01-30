@@ -6,9 +6,9 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Landmark,
-  ChevronLeft,
   Loader2,
   Plus,
   TrendingUp,
@@ -79,46 +79,31 @@ export default function AccountDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/treasury" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${config.color}`}>
-                  {config.icon}
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-theme">{account.name}</h1>
-                  <p className="text-sm text-theme-muted">
-                    {account.bankName} {account.agency && `• Ag ${account.agency}`} {account.accountNumber && `• CC ${account.accountNumber}`}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              
-              <button
-                onClick={() => setShowTransferModal(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-              >
-                <ArrowRightLeft className="w-4 h-4" />
-                Transferir
-              </button>
-              <button
-                onClick={() => setShowTransactionModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" />
-                Lançamento
-              </button>
-            </div>
+      <PageHeader
+        title={account.name}
+        subtitle={`${account.bankName}${account.agency ? ` • Ag ${account.agency}` : ""}${account.accountNumber ? ` • CC ${account.accountNumber}` : ""}`}
+        icon={<Landmark className="w-6 h-6" />}
+        backHref="/treasury"
+        module="treasury"
+        actions={
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowTransferModal(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            >
+              <ArrowRightLeft className="w-4 h-4" />
+              Transferir
+            </button>
+            <button
+              onClick={() => setShowTransactionModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Lançamento
+            </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Balance Card */}

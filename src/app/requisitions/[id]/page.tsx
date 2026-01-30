@@ -6,9 +6,9 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Package,
-  ChevronLeft,
   Clock,
   CheckCircle,
   XCircle,
@@ -108,84 +108,71 @@ export default function RequisitionDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header - Responsivo */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Mobile Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:h-16 gap-2 sm:gap-0">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-              <Link href="/requisitions" className="text-theme-muted hover:text-theme-secondary flex-shrink-0">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2 min-w-0">
-                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 flex-shrink-0" />
-                <h1 className="text-lg sm:text-xl font-semibold text-theme truncate">
-                  Requisição #{requisition.code}
-                </h1>
-              </div>
-              <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap flex-shrink-0 ${config.bgColor} ${config.color}`}>
-                {config.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
-              {canCancel && (
-                <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
-                >
-                  <Ban className="w-4 h-4" />
-                  Cancelar
-                </button>
-              )}
+      <PageHeader
+        title={`Requisição #${requisition.code}`}
+        icon={<Package className="w-6 h-6" />}
+        backHref="/requisitions"
+        module="requisitions"
+        badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
+        actions={
+          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
+            {canCancel && (
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+              >
+                <Ban className="w-4 h-4" />
+                Cancelar
+              </button>
+            )}
 
-              {canSubmit && (
-                <button
-                  onClick={() => submitMutation.mutate({ id })}
-                  disabled={submitMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  {submitMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                  Enviar para Aprovação
-                </button>
-              )}
+            {canSubmit && (
+              <button
+                onClick={() => submitMutation.mutate({ id })}
+                disabled={submitMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {submitMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+                Enviar para Aprovação
+              </button>
+            )}
 
-              {canApprove && (
-                <button
-                  onClick={() => approveMutation.mutate({ id })}
-                  disabled={approveMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                >
-                  {approveMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Check className="w-4 h-4" />
-                  )}
-                  Aprovar
-                </button>
-              )}
+            {canApprove && (
+              <button
+                onClick={() => approveMutation.mutate({ id })}
+                disabled={approveMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {approveMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4" />
+                )}
+                Aprovar
+              </button>
+            )}
 
-              {canStartSeparation && (
-                <button
-                  onClick={() => startSeparationMutation.mutate({ id })}
-                  disabled={startSeparationMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
-                >
-                  {startSeparationMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Play className="w-4 h-4" />
-                  )}
-                  Iniciar Separação
-                </button>
-              )}
-            </div>
+            {canStartSeparation && (
+              <button
+                onClick={() => startSeparationMutation.mutate({ id })}
+                disabled={startSeparationMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+              >
+                {startSeparationMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Play className="w-4 h-4" />
+                )}
+                Iniciar Separação
+              </button>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

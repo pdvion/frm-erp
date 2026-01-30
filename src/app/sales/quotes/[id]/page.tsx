@@ -4,9 +4,9 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
-  ChevronLeft,
   Loader2,
   Building2,
   Calendar,
@@ -127,76 +127,65 @@ export default function SalesQuoteDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/sales/quotes" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">Orçamento #{quote.code}</h1>
-                <span className={`ml-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-                  {config.icon}
-                  {config.label}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {quote.status === "DRAFT" && (
-                <button
-                  onClick={handleSend}
-                  disabled={sendMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  Enviar
-                </button>
-              )}
-              {["SENT", "VIEWED"].includes(quote.status) && (
-                <>
-                  <button
-                    onClick={handleAccept}
-                    disabled={acceptMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    Aceitar
-                  </button>
-                  <button
-                    onClick={handleReject}
-                    disabled={rejectMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                  >
-                    <XCircle className="w-4 h-4" />
-                    Rejeitar
-                  </button>
-                </>
-              )}
-              {quote.status === "ACCEPTED" && !quote.convertedToOrderId && (
-                <button
-                  onClick={handleConvert}
-                  disabled={convertMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                  Converter em Pedido
-                </button>
-              )}
+      <PageHeader
+        title={`Orçamento #${quote.code}`}
+        icon={<FileText className="w-6 h-6" />}
+        backHref="/sales/quotes"
+        module="sales"
+        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        actions={
+          <div className="flex items-center gap-2">
+            {quote.status === "DRAFT" && (
               <button
-                onClick={handleDuplicate}
-                disabled={duplicateMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover disabled:opacity-50"
+                onClick={handleSend}
+                disabled={sendMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                <Copy className="w-4 h-4" />
-                Duplicar
+                <Send className="w-4 h-4" />
+                Enviar
               </button>
-            </div>
+            )}
+            {["SENT", "VIEWED"].includes(quote.status) && (
+              <>
+                <button
+                  onClick={handleAccept}
+                  disabled={acceptMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Aceitar
+                </button>
+                <button
+                  onClick={handleReject}
+                  disabled={rejectMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Rejeitar
+                </button>
+              </>
+            )}
+            {quote.status === "ACCEPTED" && !quote.convertedToOrderId && (
+              <button
+                onClick={handleConvert}
+                disabled={convertMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Converter em Pedido
+              </button>
+            )}
+            <button
+              onClick={handleDuplicate}
+              disabled={duplicateMutation.isPending}
+              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover disabled:opacity-50"
+            >
+              <Copy className="w-4 h-4" />
+              Duplicar
+            </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

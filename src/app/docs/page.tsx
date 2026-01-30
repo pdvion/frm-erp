@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 import {
   BookOpen,
-  ChevronLeft,
   Search,
   Loader2,
   Building2,
@@ -58,21 +58,12 @@ export default function DocsPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">Tutoriais</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Tutoriais"
+        icon={<BookOpen className="w-6 h-6" />}
+        backHref="/dashboard"
+        module="docs"
+      />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters */}

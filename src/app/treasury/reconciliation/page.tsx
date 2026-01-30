@@ -5,8 +5,8 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
-  ChevronLeft,
   Loader2,
   CheckCircle,
   Circle,
@@ -56,32 +56,21 @@ export default function ReconciliationPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/treasury" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-blue-600" />
-                Conciliação Bancária
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/treasury/import-ofx"
-                className="flex items-center gap-2 px-3 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm"
-              >
-                <Upload className="w-4 h-4" />
-                Importar OFX
-              </Link>
-              
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Conciliação Bancária"
+        icon={<RefreshCw className="w-6 h-6" />}
+        backHref="/treasury"
+        module="treasury"
+        actions={
+          <Link
+            href="/treasury/import-ofx"
+            className="flex items-center gap-2 px-3 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 text-sm"
+          >
+            <Upload className="w-4 h-4" />
+            Importar OFX
+          </Link>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Seleção de Conta */}

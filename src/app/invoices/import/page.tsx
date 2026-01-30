@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
   Upload,
-  ChevronLeft,
   Loader2,
   CheckCircle,
   XCircle,
@@ -186,57 +186,38 @@ export default function ImportNFePage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-        {/* Header */}
-        <header className="bg-theme-card shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/invoices"
-                  className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
+        <PageHeader
+          title="Importar XML de NFe"
+          subtitle="Arraste arquivos XML ou clique para selecionar"
+          icon={<FileUp className="w-6 h-6" />}
+          backHref="/invoices"
+          module="invoices"
+          actions={
+            files.length > 0 ? (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setFiles([])}
+                  className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5" />
-                </Link>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                    <FileUp className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-theme">
-                      Importar XML de NFe
-                    </h1>
-                    <p className="text-sm text-theme-muted">
-                      Arraste arquivos XML ou clique para selecionar
-                    </p>
-                  </div>
-                </div>
+                  <Trash2 className="w-4 h-4" />
+                  Limpar
+                </button>
+                <button
+                  onClick={importAll}
+                  disabled={isImporting || pendingCount === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {isImporting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                  Importar Todos ({pendingCount})
+                </button>
               </div>
-              {files.length > 0 && (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setFiles([])}
-                    className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Limpar
-                  </button>
-                  <button
-                    onClick={importAll}
-                    disabled={isImporting || pendingCount === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-                  >
-                    {isImporting ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                    Importar Todos ({pendingCount})
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
+            ) : undefined
+          }
+        />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Drop Zone */}

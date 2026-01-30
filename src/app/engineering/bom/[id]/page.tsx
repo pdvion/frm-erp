@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
   Layers,
-  ChevronLeft,
   Loader2,
   Plus,
   Trash2,
@@ -47,60 +46,45 @@ export default function BomDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/engineering/bom" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div>
-                <h1 className="text-xl font-semibold text-theme flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-indigo-600" />
-                  Estrutura de Produto
-                </h1>
-                {data?.parentMaterial && (
-                  <p className="text-sm text-theme-muted">
-                    {data.parentMaterial.code} - {data.parentMaterial.description}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              
-              <button
-                onClick={() => setShowCostModal(true)}
-                className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
-              >
-                <Calculator className="w-4 h-4" />
-                Custo
-              </button>
-              <button
-                onClick={() => setShowExplodeModal(true)}
-                className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
-              >
-                <ChevronDown className="w-4 h-4" />
-                Explodir
-              </button>
-              <button
-                onClick={() => setShowCopyModal(true)}
-                className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
-              >
-                <Copy className="w-4 h-4" />
-                Copiar
-              </button>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" />
-                Adicionar
-              </button>
-            </div>
+      <PageHeader
+        title="Estrutura de Produto"
+        subtitle={data?.parentMaterial ? `${data.parentMaterial.code} - ${data.parentMaterial.description}` : undefined}
+        icon={<Layers className="w-6 h-6" />}
+        backHref="/engineering/bom"
+        module="engineering"
+        actions={
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCostModal(true)}
+              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+            >
+              <Calculator className="w-4 h-4" />
+              Custo
+            </button>
+            <button
+              onClick={() => setShowExplodeModal(true)}
+              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+            >
+              <ChevronDown className="w-4 h-4" />
+              Explodir
+            </button>
+            <button
+              onClick={() => setShowCopyModal(true)}
+              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+            >
+              <Copy className="w-4 h-4" />
+              Copiar
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Adicionar
+            </button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Summary */}

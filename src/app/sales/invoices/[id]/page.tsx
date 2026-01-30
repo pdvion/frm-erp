@@ -4,9 +4,9 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
+import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
-  ChevronLeft,
   Loader2,
   Building2,
   Calendar,
@@ -104,58 +104,47 @@ export default function IssuedInvoiceDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/sales/invoices" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">NF {invoice.invoiceNumber}</h1>
-                <span className={`ml-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-                  {config.icon}
-                  {config.label}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {invoice.status === "DRAFT" && (
-                <button
-                  onClick={handleAuthorize}
-                  disabled={authorizeMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  Autorizar
-                </button>
-              )}
-              {invoice.status === "AUTHORIZED" && (
-                <button
-                  onClick={handleCorrection}
-                  disabled={correctionMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Carta Correção
-                </button>
-              )}
-              {["DRAFT", "AUTHORIZED"].includes(invoice.status) && (
-                <button
-                  onClick={handleCancel}
-                  disabled={cancelMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                >
-                  <Ban className="w-4 h-4" />
-                  Cancelar
-                </button>
-              )}
-            </div>
+      <PageHeader
+        title={`NF ${invoice.invoiceNumber}`}
+        icon={<FileText className="w-6 h-6" />}
+        backHref="/sales/invoices"
+        module="sales"
+        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        actions={
+          <div className="flex items-center gap-2">
+            {invoice.status === "DRAFT" && (
+              <button
+                onClick={handleAuthorize}
+                disabled={authorizeMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+                Autorizar
+              </button>
+            )}
+            {invoice.status === "AUTHORIZED" && (
+              <button
+                onClick={handleCorrection}
+                disabled={correctionMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+              >
+                <Edit3 className="w-4 h-4" />
+                Carta Correção
+              </button>
+            )}
+            {["DRAFT", "AUTHORIZED"].includes(invoice.status) && (
+              <button
+                onClick={handleCancel}
+                disabled={cancelMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                <Ban className="w-4 h-4" />
+                Cancelar
+              </button>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

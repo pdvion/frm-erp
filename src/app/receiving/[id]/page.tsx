@@ -6,8 +6,8 @@ import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
+import { PageHeader } from "@/components/PageHeader";
 import {
-  ChevronLeft,
   Package,
   Building2,
   Calendar,
@@ -135,73 +135,61 @@ export default function ReceivingDetailPage() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link href="/receiving" className="text-theme-muted hover:text-theme-secondary">
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <Package className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-theme">
-                  Entrada #{receiving.code}
-                </h1>
-              </div>
-              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${config.color}`}>
-                {config.icon}
-                {config.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href={`/receiving/${id}/mobile`}
-                className="hidden sm:flex items-center gap-1 px-3 py-1.5 text-sm text-theme-secondary hover:text-theme border border-theme-input rounded-lg hover:bg-theme-hover"
+      <PageHeader
+        title={`Entrada #${receiving.code}`}
+        icon={<Package className="w-6 h-6" />}
+        backHref="/receiving"
+        module="receiving"
+        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        actions={
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/receiving/${id}/mobile`}
+              className="hidden sm:flex items-center gap-1 px-3 py-1.5 text-sm text-theme-secondary hover:text-theme border border-theme-input rounded-lg hover:bg-theme-hover"
+            >
+              <Package className="w-4 h-4" />
+              Versão Mobile
+            </Link>
+            
+            {receiving.status === "PENDING" && !isConferencing && (
+              <button
+                onClick={handleStartConference}
+                disabled={startConferenceMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                <Package className="w-4 h-4" />
-                Versão Mobile
-              </Link>
-              
-              {receiving.status === "PENDING" && !isConferencing && (
+                {startConferenceMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Edit className="w-4 h-4" />
+                )}
+                Iniciar Conferência
+              </button>
+            )}
+            {isConferencing && (
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={handleStartConference}
-                  disabled={startConferenceMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  onClick={() => setIsConferencing(false)}
+                  className="px-4 py-2 text-theme-secondary hover:text-theme"
                 >
-                  {startConferenceMutation.isPending ? (
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleCompleteConference}
+                  disabled={completeReceivingMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  {completeReceivingMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Edit className="w-4 h-4" />
+                    <Save className="w-4 h-4" />
                   )}
-                  Iniciar Conferência
+                  Finalizar Conferência
                 </button>
-              )}
-              {isConferencing && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setIsConferencing(false)}
-                    className="px-4 py-2 text-theme-secondary hover:text-theme"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleCompleteConference}
-                    disabled={completeReceivingMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    {completeReceivingMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4" />
-                    )}
-                    Finalizar Conferência
-                  </button>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
