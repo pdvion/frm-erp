@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ArrowLeftRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -106,12 +107,12 @@ export default function NewTransferPage() {
           </div>
 
           <div className="flex gap-2">
-            <button
+            <Button
               disabled={!sourceAccountId || !destinationAccountId || amount <= 0}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="flex-1"
             >
               Realizar Transferência
-            </button>
+            </Button>
             <Link href="/transfers" className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover">
               Cancelar
             </Link>

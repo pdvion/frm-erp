@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -260,13 +261,14 @@ export default function NewSalePage() {
               </div>
             </div>
             <div className="mt-6 space-y-2">
-              <button
+              <Button
                 onClick={handleSubmit}
-                disabled={!selectedCustomer || items.length === 0 || isSubmitting}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!selectedCustomer || items.length === 0}
+                isLoading={isSubmitting}
+                className="w-full"
               >
-                {isSubmitting ? "Processando..." : "Finalizar Venda"}
-              </button>
+                Finalizar Venda
+              </Button>
               <Link href="/sales" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
                 Cancelar
               </Link>
