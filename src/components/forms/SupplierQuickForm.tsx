@@ -71,9 +71,10 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.code}
             onChange={handleChange}
             placeholder="Ex: 101"
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             autoFocus
             required
+            data-testid="input-code"
           />
         </div>
         <div>
@@ -87,7 +88,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.cnpj}
             onChange={handleChange}
             placeholder="00.000.000/0000-00"
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>
@@ -103,8 +104,9 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
           value={formData.companyName}
           onChange={handleChange}
           placeholder="Nome completo da empresa"
-          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
+          data-testid="input-name"
         />
       </div>
 
@@ -119,7 +121,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
           value={formData.tradeName}
           onChange={handleChange}
           placeholder="Nome comercial"
-          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
 
@@ -135,7 +137,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.phone}
             onChange={handleChange}
             placeholder="(00) 0000-0000"
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
@@ -149,7 +151,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.email}
             onChange={handleChange}
             placeholder="contato@empresa.com"
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>
@@ -166,7 +168,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             value={formData.city}
             onChange={handleChange}
             placeholder="São Paulo"
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div>
@@ -178,7 +180,7 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
             name="state"
             value={formData.state}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Selecione</option>
             {STATES.map((uf) => (
@@ -206,7 +208,8 @@ export function SupplierQuickForm({ onSuccess, onCancel }: SupplierQuickFormProp
         <button
           type="submit"
           disabled={createMutation.isPending || !formData.companyName.trim() || !formData.code}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          data-testid="submit-btn"
         >
           {createMutation.isPending ? (
             <Loader2 className="w-4 h-4 animate-spin" />

@@ -97,4 +97,29 @@ test.describe('Materiais (CP10)', () => {
       await expect(page).toHaveURL(/\/materials\/[a-f0-9-]+$/, { timeout: 5000 });
     }
   });
+
+  test('deve validar campos obrigatórios no formulário', async ({ page }) => {
+    await page.goto('/materials/new');
+    await page.waitForLoadState('networkidle');
+    
+    // Verificar que o formulário carregou
+    await expect(page.getByTestId('input-code')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId('input-description')).toBeVisible();
+    await expect(page.getByTestId('submit-btn')).toBeVisible();
+    
+    // Tentar submeter sem preencher campos obrigatórios
+    // O HTML5 validation deve impedir o submit
+    const submitBtn = page.getByTestId('submit-btn');
+    await submitBtn.click();
+    
+    // Verificar que ainda estamos na página de criação (form não foi submetido)
+    await expect(page).toHaveURL(/\/materials\/new/);
+    
+    // Preencher apenas código e tentar submeter
+    await page.getByTestId('input-code').fill('999');
+    await submitBtn.click();
+    
+    // Ainda deve estar na página (descrição é obrigatória)
+    await expect(page).toHaveURL(/\/materials\/new/);
+  });
 });

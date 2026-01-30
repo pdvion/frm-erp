@@ -253,7 +253,7 @@ export default function NewMaterialPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div>
                 <label htmlFor="code" className={labelClass}>Código *</label>
-                <input type="number" id="code" name="code" required value={formData.code || ""} onChange={handleChange} className={inputClass} />
+                <input type="number" id="code" name="code" required value={formData.code || ""} onChange={handleChange} className={inputClass} data-testid="input-code" />
               </div>
               <div>
                 <label htmlFor="internalCode" className={labelClass}>Código Interno</label>
@@ -265,7 +265,7 @@ export default function NewMaterialPage() {
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
                 <label htmlFor="description" className={labelClass}>Descrição *</label>
-                <input type="text" id="description" name="description" required value={formData.description} onChange={handleChange} className={inputClass} />
+                <input type="text" id="description" name="description" required value={formData.description} onChange={handleChange} className={inputClass} data-testid="input-description" />
               </div>
               <SelectWithAdd
                 id="categoryId"
@@ -282,7 +282,7 @@ export default function NewMaterialPage() {
               />
               <div>
                 <label htmlFor="unit" className={labelClass}>Unidade Estoque *</label>
-                <select id="unit" name="unit" required value={formData.unit} onChange={handleChange} className={inputClass}>
+                <select id="unit" name="unit" required value={formData.unit} onChange={handleChange} className={inputClass} data-testid="select-unit">
                   <option value="UN">UN - Unidade</option>
                   <option value="KG">KG - Quilograma</option>
                   <option value="M">M - Metro</option>
@@ -530,6 +530,7 @@ export default function NewMaterialPage() {
             type="submit"
             disabled={isSubmitting}
             className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            data-testid="submit-btn"
           >
             {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
