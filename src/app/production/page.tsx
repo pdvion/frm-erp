@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Factory,
   Search,
@@ -67,12 +68,10 @@ export default function ProductionPage() {
         icon={<Factory className="w-6 h-6" />}
         module="production"
         actions={
-          <Link
-            href="/production/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova OP
+          <Link href="/production/new">
+            <Button leftIcon={<Plus className="w-4 h-4" />}>
+              Nova OP
+            </Button>
           </Link>
         }
       />
@@ -233,12 +232,10 @@ export default function ProductionPage() {
                   ? "Tente ajustar os filtros"
                   : "Crie uma nova ordem de produção"}
               </p>
-              <Link
-                href="/production/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4" />
-                Nova OP
+              <Link href="/production/new">
+                <Button leftIcon={<Plus className="w-4 h-4" />}>
+                  Nova OP
+                </Button>
               </Link>
             </div>
           ) : (
