@@ -9,7 +9,6 @@ import { formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Factory,
-  ChevronLeft,
   Clock,
   CheckCircle,
   XCircle,

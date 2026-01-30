@@ -8,7 +8,6 @@ import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Building2,
-  ChevronLeft,
   Loader2,
   Upload,
   Download,

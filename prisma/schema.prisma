@@ -3768,6 +3768,7 @@ model Task {
   // Relações
   history            TaskHistory[]
   notifications      Notification[]
+  attachments        TaskAttachment[]
 
   @@unique([code, companyId])
   @@index([companyId])
@@ -3797,6 +3798,25 @@ model TaskHistory {
 
   @@index([taskId])
   @@map("task_history")
+}
+
+// =============================================================================
+// ANEXOS DE TAREFAS
+// =============================================================================
+model TaskAttachment {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @db.Uuid @map("task_id")
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fileName    String   @map("file_name")
+  fileType    String   @map("file_type")
+  fileSize    Int      @map("file_size")
+  fileUrl     String   @map("file_url")
+  description String?
+  uploadedBy  String?  @db.Uuid @map("uploaded_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([taskId])
+  @@map("task_attachments")
 }
 
 // =============================================================================

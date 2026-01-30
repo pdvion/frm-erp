@@ -8,7 +8,6 @@ import { formatChaveAcesso } from "@/lib/nfe-parser";
 import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
-  ArrowLeft,
   RefreshCw,
   Download,
   XCircle,

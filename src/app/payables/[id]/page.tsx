@@ -9,7 +9,6 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
   DollarSign,
-  ChevronLeft,
   CheckCircle,
   Loader2,
   Ban,

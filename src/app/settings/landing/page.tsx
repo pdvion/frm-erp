@@ -8,8 +8,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
-  Settings,
-  ChevronLeft,
   Layout,
   Upload,
   Trash2,

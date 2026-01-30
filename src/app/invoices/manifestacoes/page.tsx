@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime, formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
-  ArrowLeft,
   History,
   Eye,
   CheckCheck,

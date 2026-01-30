@@ -11,7 +11,6 @@ import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
 import { PageHeader } from "@/components/PageHeader";
 import {
   FileText,
-  ChevronLeft,
   Clock,
   CheckCircle,
   XCircle,
