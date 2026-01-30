@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function SetPasswordPage() {
   const router = useRouter();
@@ -271,20 +272,15 @@ export default function SetPasswordPage() {
             )}
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
-              disabled={isLoading || password.length < 8 || password !== confirmPassword}
-              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-indigo-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={password.length < 8 || password !== confirmPassword}
+              isLoading={isLoading}
+              className="w-full"
+              size="lg"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Definindo senha...
-                </>
-              ) : (
-                "Definir Senha e Entrar"
-              )}
-            </button>
+              Definir Senha e Entrar
+            </Button>
           </form>
         </div>
 

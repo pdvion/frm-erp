@@ -5,17 +5,18 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 import {
   Users,
   Save,
-  Loader2,
   User,
   Building2,
   CreditCard,
   Phone,
   Mail,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 
 const contractTypes = [
@@ -360,18 +361,13 @@ export default function EditEmployeePage({ params }: PageProps) {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              isLoading={isSubmitting}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       </main>
