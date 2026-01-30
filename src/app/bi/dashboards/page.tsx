@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   LayoutDashboard,
   Plus,
@@ -51,13 +52,12 @@ export default function BIDashboardsPage() {
           { label: "Dashboards" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Dashboard
-          </button>
+          </Button>
         }
       />
 
@@ -131,12 +131,10 @@ export default function BIDashboardsPage() {
                 </div>
 
                 <div className="flex gap-2 mt-3">
-                  <Link
-                    href={`/bi/dashboards/${dashboard.id}`}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm transition-colors"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Visualizar
+                  <Link href={`/bi/dashboards/${dashboard.id}`} className="flex-1">
+                    <Button size="sm" leftIcon={<Eye className="w-4 h-4" />} className="w-full">
+                      Visualizar
+                    </Button>
                   </Link>
                   <Link
                     href={`/bi/dashboards/${dashboard.id}/edit`}
@@ -227,13 +225,14 @@ export default function BIDashboardsPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 onClick={handleCreate}
-                disabled={!newDashboard.name.trim() || createMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                disabled={!newDashboard.name.trim()}
+                isLoading={createMutation.isPending}
+                className="flex-1"
               >
-                {createMutation.isPending ? "Criando..." : "Criar"}
-              </button>
+                Criar
+              </Button>
             </div>
           </div>
         </div>
