@@ -16,6 +16,7 @@ import {
   Copy,
   Check
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function MFASetupPage() {
   const router = useRouter();
@@ -228,20 +229,14 @@ export default function MFASetupPage() {
                   autoFocus
                 />
 
-                <button
+                <Button
                   type="submit"
-                  disabled={isLoading || code.length !== 6}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 font-medium"
+                  disabled={code.length !== 6}
+                  isLoading={isLoading}
+                  className="w-full"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Verificando...
-                    </>
-                  ) : (
-                    "Verificar e Ativar"
-                  )}
-                </button>
+                  {isLoading ? "Verificando..." : "Verificar e Ativar"}
+                </Button>
               </form>
 
               <button

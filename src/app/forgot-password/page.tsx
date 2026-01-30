@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Mail, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -99,20 +100,13 @@ export default function ForgotPasswordPage() {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  isLoading={isLoading}
+                  className="w-full"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    "Enviar link de recuperação"
-                  )}
-                </button>
+                  {isLoading ? "Enviando..." : "Enviar link de recuperação"}
+                </Button>
 
                 <div className="text-center">
                   <Link

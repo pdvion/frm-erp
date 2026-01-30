@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogIn, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 function LoginForm() {
   const router = useRouter();
@@ -135,23 +136,14 @@ function LoginForm() {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              isLoading={isLoading}
+              leftIcon={<LogIn className="w-5 h-5" />}
+              className="w-full"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5" />
-                  Entrar
-                </>
-              )}
-            </button>
+              {isLoading ? "Entrando..." : "Entrar"}
+            </Button>
 
             <div className="text-center">
               <a 

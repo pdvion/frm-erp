@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/password";
 
@@ -159,20 +160,13 @@ export default function ResetPasswordPage() {
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  isLoading={isLoading}
+                  className="w-full"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : (
-                    "Redefinir senha"
-                  )}
-                </button>
+                  {isLoading ? "Salvando..." : "Redefinir senha"}
+                </Button>
 
                 <div className="text-center">
                   <Link

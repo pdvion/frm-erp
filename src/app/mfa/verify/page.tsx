@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMFA } from "@/hooks/useMFA";
 import { Shield, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function MFAVerifyPage() {
   const router = useRouter();
@@ -128,20 +129,14 @@ export default function MFAVerifyPage() {
               />
             </div>
 
-            <button
+            <Button
               type="submit"
-              disabled={isLoading || code.length !== 6}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 font-medium"
+              disabled={code.length !== 6}
+              isLoading={isLoading}
+              className="w-full"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Verificando...
-                </>
-              ) : (
-                "Verificar"
-              )}
-            </button>
+              {isLoading ? "Verificando..." : "Verificar"}
+            </Button>
           </form>
 
           <div className="mt-6 pt-4 border-t border-theme text-center">

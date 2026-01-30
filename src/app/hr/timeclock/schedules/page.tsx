@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   CalendarDays,
   Plus,
@@ -173,10 +174,9 @@ export default function TimeclockSchedulesPage() {
           </button>
         </div>
 
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" />
+        <Button leftIcon={<Plus className="w-4 h-4" />}>
           Nova Escala
-        </button>
+        </Button>
       </div>
 
       {/* Cards de Escalas */}

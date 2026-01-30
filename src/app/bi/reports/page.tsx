@@ -21,6 +21,7 @@ import {
   Mail,
   Printer,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 // Categorias de relatórios
 const reportCategories = [
@@ -281,9 +282,9 @@ export default function BIReportsPage() {
                           <StarOff className="w-5 h-5 text-theme-muted" />
                         )}
                       </button>
-                      <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                      <Button size="sm" className="p-2">
                         <Play className="w-5 h-5" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
 

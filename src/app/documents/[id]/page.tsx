@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -371,17 +372,19 @@ export default function DocumentDetailPage({
 
           {/* Actions */}
           <div className="bg-theme-card border border-theme rounded-lg p-4 space-y-3">
-            <button
+            <Button
               onClick={handleDownload}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              leftIcon={<Download className="w-5 h-5" />}
+              className="w-full bg-green-600 hover:bg-green-700"
             >
-              <Download className="w-5 h-5" />
               Download
-            </button>
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              <Upload className="w-5 h-5" />
+            </Button>
+            <Button
+              leftIcon={<Upload className="w-5 h-5" />}
+              className="w-full"
+            >
               Nova Versão
-            </button>
+            </Button>
             <Link
               href="/documents"
               className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-theme text-theme rounded-lg hover:bg-theme-secondary transition-colors"

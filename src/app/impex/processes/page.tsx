@@ -88,7 +88,7 @@ export default function ImportProcessesPage() {
         actions={
           <Link
             href="/impex/processes/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
           >
             <Plus className="w-4 h-4" />
             Novo Processo
@@ -152,7 +152,7 @@ export default function ImportProcessesPage() {
           {!search && !statusFilter && (
             <Link
               href="/impex/processes/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
             >
               <Plus className="w-4 h-4" />
               Novo Processo
