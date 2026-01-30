@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Loader2,
@@ -305,18 +306,14 @@ export default function NewRequisitionPage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               onClick={handleSubmit}
-              disabled={createMutation.isPending || items.length === 0}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              disabled={items.length === 0}
+              isLoading={createMutation.isPending}
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              {createMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Plus className="w-4 h-4" />
-              )}
               Criar Requisição
-            </button>
+            </Button>
           </div>
 
           {createMutation.error && (

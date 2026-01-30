@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Receipt, Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -202,12 +203,12 @@ export default function NewBillingPage() {
               </div>
             </div>
             <div className="mt-6 space-y-2">
-              <button
+              <Button
                 disabled={!selectedCustomer || items.length === 0 || !dueDate}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="w-full"
               >
                 Emitir Fatura
-              </button>
+              </Button>
               <Link href="/billing" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
                 Cancelar
               </Link>

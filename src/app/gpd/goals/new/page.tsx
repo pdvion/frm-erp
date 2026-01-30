@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -156,13 +157,13 @@ export default function NewGPDGoalPage() {
           >
             Cancelar
           </Link>
-          <button
+          <Button
             onClick={() => createMutation.mutate(form)}
-            disabled={!form.title || createMutation.isPending}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            disabled={!form.title}
+            isLoading={createMutation.isPending}
           >
-            {createMutation.isPending ? "Salvando..." : "Salvar"}
-          </button>
+            Salvar
+          </Button>
         </div>
       </div>
     </div>
