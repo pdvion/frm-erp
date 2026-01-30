@@ -180,7 +180,7 @@ export default function PendingInvoicesPage() {
             {selectedNfes.length > 0 && (
               <button
                 onClick={() => setShowBatchManifestModal(true)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 Manifestar ({selectedNfes.length})
@@ -205,7 +205,7 @@ export default function PendingInvoicesPage() {
             <button
               onClick={() => syncMutation.mutate()}
               disabled={syncMutation.isPending || !syncStatus?.configured}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {syncMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -285,7 +285,7 @@ export default function PendingInvoicesPage() {
               setSituacaoFilter(e.target.value as SituacaoNfe | "");
               setPage(1);
             }}
-            className="border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             aria-label="Filtrar por situação"
           >
             <option value="">Todas as situações</option>
@@ -302,7 +302,7 @@ export default function PendingInvoicesPage() {
                 setSituacaoFilter("");
                 setPage(1);
               }}
-              className="text-sm text-indigo-600 hover:text-indigo-800"
+              className="text-sm text-blue-600 hover:text-indigo-800"
             >
               Limpar filtros
             </button>
@@ -314,7 +314,7 @@ export default function PendingInvoicesPage() {
       <div className="bg-theme-card rounded-xl shadow-sm border overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-12 text-red-600">
@@ -343,7 +343,7 @@ export default function PendingInvoicesPage() {
                         type="checkbox"
                         checked={selectedNfes.length > 0 && selectedNfes.length === (data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).length || 0)}
                         onChange={(e) => e.target.checked ? selectAllPending() : setSelectedNfes([])}
-                        className="rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                        className="rounded border-theme text-blue-600 focus:ring-blue-500"
                         aria-label="Selecionar todas"
                       />
                     </th>
@@ -383,7 +383,7 @@ export default function PendingInvoicesPage() {
                               type="checkbox"
                               checked={selectedNfes.includes(nfe.id)}
                               onChange={() => toggleNfeSelection(nfe.id)}
-                              className="rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-theme text-blue-600 focus:ring-blue-500"
                               aria-label={`Selecionar NFe ${nfe.chaveAcesso}`}
                             />
                           )}
@@ -478,7 +478,7 @@ export default function PendingInvoicesPage() {
                             {nfe.situacao === "IMPORTADA" && nfe.receivedInvoiceId && (
                               <Link
                                 href={`/invoices/${nfe.receivedInvoiceId}`}
-                                className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                className="p-1.5 text-blue-600 hover:bg-indigo-50 rounded-lg transition-colors"
                                 title="Ver NFe importada"
                               >
                                 <Eye className="w-4 h-4" />
@@ -540,7 +540,7 @@ export default function PendingInvoicesPage() {
                 value={ignoreMotivo}
                 onChange={(e) => setIgnoreMotivo(e.target.value)}
                 placeholder="Ex: NFe de devolução, já lançada manualmente..."
-                className="w-full border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
                 rows={3}
               />
             </div>
@@ -654,7 +654,7 @@ export default function PendingInvoicesPage() {
                   manifestMutation.isPending ||
                   (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
                 }
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {manifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Registrar Manifestação
@@ -755,7 +755,7 @@ export default function PendingInvoicesPage() {
                   batchManifestMutation.isPending ||
                   (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
                 }
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {batchManifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Manifestar {selectedNfes.length} NFe(s)

@@ -79,12 +79,12 @@ export default function TasksPage() {
     <div className="space-y-6">
       <PageHeader 
         title="Tarefas" 
-        icon={<ClipboardList className="w-6 h-6 text-indigo-600" />}
+        icon={<ClipboardList className="w-6 h-6 text-blue-600" />}
         module="SETTINGS"
       >
         <Link
           href="/tasks/new"
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" />
           Nova Tarefa
@@ -139,7 +139,7 @@ export default function TasksPage() {
             onClick={() => setViewMode("all")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               viewMode === "all"
-                ? "bg-indigo-600 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
             }`}
           >
@@ -149,7 +149,7 @@ export default function TasksPage() {
             onClick={() => setViewMode("my")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               viewMode === "my"
-                ? "bg-indigo-600 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
             }`}
           >
@@ -159,7 +159,7 @@ export default function TasksPage() {
             onClick={() => setViewMode("available")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               viewMode === "available"
-                ? "bg-indigo-600 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
             }`}
           >
@@ -176,7 +176,7 @@ export default function TasksPage() {
               placeholder="Buscar tarefas..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             />
           </div>
 
@@ -184,7 +184,7 @@ export default function TasksPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Todos os Status</option>
               <option value="PENDING">Pendente</option>
@@ -198,7 +198,7 @@ export default function TasksPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas as Prioridades</option>
               <option value="URGENT">Urgente</option>
@@ -212,7 +212,7 @@ export default function TasksPage() {
         {/* Tasks List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : !data?.tasks.length ? (
           <div className="text-center py-12 bg-theme-card rounded-lg border border-theme">
@@ -285,7 +285,7 @@ export default function TasksPage() {
                         {task.owner ? (
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                              <User className="w-4 h-4 text-indigo-600" />
+                              <User className="w-4 h-4 text-blue-600" />
                             </div>
                             <span className="text-sm text-theme">{task.owner.name}</span>
                           </div>
@@ -318,7 +318,7 @@ export default function TasksPage() {
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/tasks/${task.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-indigo-50 rounded-lg transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                           Ver

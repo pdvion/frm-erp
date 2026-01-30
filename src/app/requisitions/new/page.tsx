@@ -130,7 +130,7 @@ export default function NewRequisitionPage() {
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as typeof type)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="PRODUCTION">Produção</option>
                   <option value="MAINTENANCE">Manutenção</option>
@@ -147,7 +147,7 @@ export default function NewRequisitionPage() {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value={1}>Urgente</option>
                   <option value={2}>Alta</option>
@@ -165,7 +165,7 @@ export default function NewRequisitionPage() {
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   placeholder="Ex: OP-12345"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -178,7 +178,7 @@ export default function NewRequisitionPage() {
                   value={costCenter}
                   onChange={(e) => setCostCenter(e.target.value)}
                   placeholder="Ex: CC-001"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -191,7 +191,7 @@ export default function NewRequisitionPage() {
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
                   placeholder="Ex: Produção"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export default function NewRequisitionPage() {
                   value={projectCode}
                   onChange={(e) => setProjectCode(e.target.value)}
                   placeholder="Ex: PRJ-2024-001"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function NewRequisitionPage() {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="Observações adicionais..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function NewRequisitionPage() {
               <h3 className="font-medium text-theme">Itens</h3>
               <button
                 onClick={() => setShowMaterialSearch(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm"
+                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Adicionar Material
@@ -308,7 +308,7 @@ export default function NewRequisitionPage() {
             <button
               onClick={handleSubmit}
               disabled={createMutation.isPending || items.length === 0}
-              className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {createMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -358,7 +358,7 @@ export default function NewRequisitionPage() {
                   value={materialSearch}
                   onChange={(e) => setMaterialSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   autoFocus
                 />
               </div>
@@ -367,7 +367,7 @@ export default function NewRequisitionPage() {
             <div className="max-h-96 overflow-y-auto">
               {loadingMaterials ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
                 </div>
               ) : materialSearch.length < 2 ? (
                 <div className="text-center py-8 text-theme-muted">
@@ -390,7 +390,7 @@ export default function NewRequisitionPage() {
                       <div className="text-sm text-theme-muted">
                         Cód: {material.code} | {material.unit}
                         {items.some((i) => i.materialId === material.id) && (
-                          <span className="ml-2 text-indigo-600">(já adicionado)</span>
+                          <span className="ml-2 text-blue-600">(já adicionado)</span>
                         )}
                       </div>
                     </button>

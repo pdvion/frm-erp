@@ -89,7 +89,7 @@ export default function PixSchedulesPage() {
             </Link>
             <Link
               href="/payables/pix/new"
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Plus className="w-5 h-5" />
               <span>Novo Agendamento</span>
@@ -176,7 +176,7 @@ export default function PixSchedulesPage() {
               <p className="text-theme-muted">Nenhum agendamento encontrado</p>
               <Link
                 href="/payables/pix/new"
-                className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-5 h-5" />
                 Criar Agendamento

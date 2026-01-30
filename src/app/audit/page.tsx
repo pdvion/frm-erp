@@ -102,7 +102,7 @@ export default function AuditPage() {
                 setPage(1);
               }}
               aria-label="Buscar logs"
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             />
           </div>
 
@@ -118,7 +118,7 @@ export default function AuditPage() {
                 setPage(1);
               }}
               aria-label="Filtrar por ação"
-              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             >
               <option value="">Todas as ações</option>
               <option value="CREATE">Criação</option>
@@ -142,7 +142,7 @@ export default function AuditPage() {
               setPage(1);
             }}
             aria-label="Filtrar por entidade"
-            className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
           >
             <option value="">Todas as entidades</option>
             <option value="Material">Material</option>

@@ -39,7 +39,7 @@ export default function BomDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -124,7 +124,7 @@ export default function BomDetailPage() {
               </p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 Adicionar Componente
@@ -312,7 +312,7 @@ function AddComponentModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <h3 id="add-component-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-indigo-600" />
+          <Plus className="w-5 h-5 text-blue-600" />
           Adicionar Componente
         </h3>
 
@@ -326,7 +326,7 @@ function AddComponentModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
@@ -357,7 +357,7 @@ function AddComponentModal({
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 step="0.0001"
               />
             </div>
@@ -367,7 +367,7 @@ function AddComponentModal({
                 type="text"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -379,7 +379,7 @@ function AddComponentModal({
                 type="number"
                 value={scrapPercentage}
                 onChange={(e) => setScrapPercentage(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
                 max="100"
               />
@@ -390,7 +390,7 @@ function AddComponentModal({
                 type="number"
                 value={leadTimeDays}
                 onChange={(e) => setLeadTimeDays(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
               />
             </div>
@@ -400,7 +400,7 @@ function AddComponentModal({
                 type="number"
                 value={sequence}
                 onChange={(e) => setSequence(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
               />
             </div>
@@ -412,7 +412,7 @@ function AddComponentModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -445,7 +445,7 @@ function AddComponentModal({
               })
             }
             disabled={!childMaterialId || addMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {addMutation.isPending ? "Adicionando..." : "Adicionar"}
           </button>
@@ -500,7 +500,7 @@ function EditItemModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
         <h3 id="edit-component-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Edit2 className="w-5 h-5 text-indigo-600" />
+          <Edit2 className="w-5 h-5 text-blue-600" />
           Editar Componente
         </h3>
 
@@ -512,7 +512,7 @@ function EditItemModal({
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 step="0.0001"
               />
             </div>
@@ -522,7 +522,7 @@ function EditItemModal({
                 type="text"
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -534,7 +534,7 @@ function EditItemModal({
                 type="number"
                 value={scrapPercentage}
                 onChange={(e) => setScrapPercentage(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
                 max="100"
               />
@@ -545,7 +545,7 @@ function EditItemModal({
                 type="number"
                 value={leadTimeDays}
                 onChange={(e) => setLeadTimeDays(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
               />
             </div>
@@ -555,7 +555,7 @@ function EditItemModal({
                 type="number"
                 value={sequence}
                 onChange={(e) => setSequence(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 min="0"
               />
             </div>
@@ -581,7 +581,7 @@ function EditItemModal({
               })
             }
             disabled={updateMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {updateMutation.isPending ? "Salvando..." : "Salvar"}
           </button>
@@ -615,7 +615,7 @@ function CostModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <h3 id="cost-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Calculator className="w-5 h-5 text-indigo-600" />
+          <Calculator className="w-5 h-5 text-blue-600" />
           Cálculo de Custo
         </h3>
 
@@ -625,20 +625,20 @@ function CostModal({
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             min="1"
           />
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
           </div>
         ) : data ? (
           <>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="bg-indigo-50 rounded-lg p-4">
-                <div className="text-sm text-indigo-600">Custo Total</div>
+                <div className="text-sm text-blue-600">Custo Total</div>
                 <div className="text-2xl font-bold text-indigo-900">
                   {formatCurrency(data.totalCost)}
                 </div>
@@ -726,7 +726,7 @@ function ExplodeModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
         <h3 id="explode-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <ChevronDown className="w-5 h-5 text-indigo-600" />
+          <ChevronDown className="w-5 h-5 text-blue-600" />
           Explosão da Estrutura
         </h3>
 
@@ -737,7 +737,7 @@ function ExplodeModal({
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               min="1"
             />
           </div>
@@ -747,7 +747,7 @@ function ExplodeModal({
               type="number"
               value={maxLevels}
               onChange={(e) => setMaxLevels(e.target.value)}
-              className="w-20 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-20 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               min="1"
               max="10"
             />
@@ -757,7 +757,7 @@ function ExplodeModal({
             <select
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value as "detailed" | "summarized")}
-              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="detailed">Detalhada</option>
               <option value="summarized">Resumida</option>
@@ -767,7 +767,7 @@ function ExplodeModal({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
           </div>
         ) : data ? (
           <>
@@ -815,7 +815,7 @@ function ExplodeModal({
                       <td className="px-4 py-2 text-sm">
                         <span className="font-medium">{item.materialCode}</span> - {item.materialDescription}
                         {item.hasChildren && (
-                          <span className="ml-2 text-xs text-indigo-600">(tem filhos)</span>
+                          <span className="ml-2 text-xs text-blue-600">(tem filhos)</span>
                         )}
                       </td>
                       <td className="px-4 py-2 text-sm text-right">
@@ -880,7 +880,7 @@ function CopyBomModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
         <h3 id="copy-bom-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Copy className="w-5 h-5 text-indigo-600" />
+          <Copy className="w-5 h-5 text-blue-600" />
           Copiar Estrutura
         </h3>
 
@@ -896,7 +896,7 @@ function CopyBomModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
@@ -924,7 +924,7 @@ function CopyBomModal({
               type="checkbox"
               checked={replaceExisting}
               onChange={(e) => setReplaceExisting(e.target.checked)}
-              className="rounded border-theme text-indigo-600 focus:ring-indigo-500"
+              className="rounded border-theme text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm text-theme-secondary">
               Substituir estrutura existente no destino
@@ -954,7 +954,7 @@ function CopyBomModal({
               })
             }
             disabled={!targetMaterialId || copyMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {copyMutation.isPending ? "Copiando..." : "Copiar"}
           </button>

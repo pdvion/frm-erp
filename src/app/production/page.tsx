@@ -69,7 +69,7 @@ export default function ProductionPage() {
         actions={
           <Link
             href="/production/new"
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" />
             Nova OP
@@ -151,7 +151,7 @@ export default function ProductionPage() {
                       </div>
                       <div className="w-full bg-theme-tertiary rounded-full h-2">
                         <div
-                          className="bg-purple-600 h-2 rounded-full"
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -196,7 +196,7 @@ export default function ProductionPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -206,7 +206,7 @@ export default function ProductionPage() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Todos os Status</option>
               <option value="PLANNED">Planejadas</option>
@@ -222,7 +222,7 @@ export default function ProductionPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.orders.length ? (
             <div className="text-center py-12">
@@ -235,7 +235,7 @@ export default function ProductionPage() {
               </p>
               <Link
                 href="/production/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 Nova OP
@@ -339,7 +339,7 @@ export default function ProductionPage() {
                           <td className="px-4 py-3 text-center">
                             <Link
                               href={`/production/${order.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-indigo-600 hover:text-indigo-800"
+                              className="inline-flex items-center gap-1 px-3 py-1 text-blue-600 hover:text-indigo-800"
                             >
                               <Eye className="w-4 h-4" />
                               Ver

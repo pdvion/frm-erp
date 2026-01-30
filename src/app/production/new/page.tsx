@@ -162,7 +162,7 @@ export default function NewProductionOrderPage() {
                   />
                   <button
                     onClick={() => setShowProductSearch(true)}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Search className="w-4 h-4" />
                   </button>
@@ -181,7 +181,7 @@ export default function NewProductionOrderPage() {
                     placeholder="0"
                     min={0.01}
                     step={0.01}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -193,7 +193,7 @@ export default function NewProductionOrderPage() {
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function NewProductionOrderPage() {
                 <select
                   value={priority}
                   onChange={(e) => setPriority(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value={1}>Urgente</option>
                   <option value={2}>Alta</option>
@@ -230,7 +230,7 @@ export default function NewProductionOrderPage() {
                   value={salesOrderNumber}
                   onChange={(e) => setSalesOrderNumber(e.target.value)}
                   placeholder="Ex: PV-12345"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -243,7 +243,7 @@ export default function NewProductionOrderPage() {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Nome do cliente"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -255,7 +255,7 @@ export default function NewProductionOrderPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -273,7 +273,7 @@ export default function NewProductionOrderPage() {
                 <select
                   value={requestType}
                   onChange={(e) => setRequestType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Selecione</option>
                   <option value="SALES">Venda</option>
@@ -291,7 +291,7 @@ export default function NewProductionOrderPage() {
                 <select
                   value={executionType}
                   onChange={(e) => setExecutionType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Selecione</option>
                   <option value="MANUFACTURE">Fabricação</option>
@@ -306,7 +306,7 @@ export default function NewProductionOrderPage() {
                 <select
                   value={deliveryType}
                   onChange={(e) => setDeliveryType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Selecione</option>
                   <option value="ASSEMBLED">Montado</option>
@@ -322,7 +322,7 @@ export default function NewProductionOrderPage() {
                   type="date"
                   value={plannedStart}
                   onChange={(e) => setPlannedStart(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -334,7 +334,7 @@ export default function NewProductionOrderPage() {
                   type="date"
                   value={plannedEnd}
                   onChange={(e) => setPlannedEnd(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -346,7 +346,7 @@ export default function NewProductionOrderPage() {
               <h3 className="font-medium text-theme">Materiais Necessários</h3>
               <button
                 onClick={() => setShowMaterialSearch(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm"
+                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
               >
                 <Plus className="w-4 h-4" />
                 Adicionar Material
@@ -419,7 +419,7 @@ export default function NewProductionOrderPage() {
             <button
               onClick={handleSubmit}
               disabled={createMutation.isPending || !productId}
-              className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {createMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -469,7 +469,7 @@ export default function NewProductionOrderPage() {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   autoFocus
                 />
               </div>
@@ -478,7 +478,7 @@ export default function NewProductionOrderPage() {
             <div className="max-h-96 overflow-y-auto">
               {loadingProducts ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
                 </div>
               ) : productSearch.length < 2 ? (
                 <div className="text-center py-8 text-theme-muted">
@@ -538,7 +538,7 @@ export default function NewProductionOrderPage() {
                   value={materialSearch}
                   onChange={(e) => setMaterialSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   autoFocus
                 />
               </div>
@@ -547,7 +547,7 @@ export default function NewProductionOrderPage() {
             <div className="max-h-96 overflow-y-auto">
               {loadingMaterials ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
                 </div>
               ) : materialSearch.length < 2 ? (
                 <div className="text-center py-8 text-theme-muted">
@@ -570,7 +570,7 @@ export default function NewProductionOrderPage() {
                       <div className="text-sm text-theme-muted">
                         Cód: {material.code} | {material.unit}
                         {materials.some((m) => m.materialId === material.id) && (
-                          <span className="ml-2 text-indigo-600">(já adicionado)</span>
+                          <span className="ml-2 text-blue-600">(já adicionado)</span>
                         )}
                       </div>
                     </button>

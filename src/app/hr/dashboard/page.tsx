@@ -18,7 +18,7 @@ export default function HRDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -42,7 +42,7 @@ export default function HRDashboardPage() {
               </Link>
               <Link
                 href="/hr/payroll"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Folha de Pagamento
               </Link>
@@ -148,7 +148,7 @@ export default function HRDashboardPage() {
             title="Admissões" 
             subtitle="Últimos 6 meses"
             actions={
-              <Link href="/reports/hr" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+              <Link href="/reports/hr" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                 <BarChart3 className="w-4 h-4" />
                 Ver relatório
               </Link>
@@ -222,7 +222,7 @@ export default function HRDashboardPage() {
               <h3 className="text-lg font-semibold text-theme">Quadro por Departamento</h3>
               <p className="text-sm text-theme-muted">Funcionários ativos</p>
             </div>
-            <Link href="/hr/departments" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+            <Link href="/hr/departments" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
               Ver todos
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -232,7 +232,7 @@ export default function HRDashboardPage() {
             {kpis?.employeesByDepartment.map((dept, index) => (
               <div key={index} className="flex items-center gap-4 p-4 bg-theme-hover rounded-lg">
                 <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-indigo-600" />
+                  <Building2 className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-theme">{dept.name}</p>

@@ -54,7 +54,7 @@ export default function PayablesPage() {
     <div className="space-y-6">
       <PageHeader 
         title="Contas a Pagar" 
-        icon={<DollarSign className="w-6 h-6 text-indigo-600" />}
+        icon={<DollarSign className="w-6 h-6 text-blue-600" />}
         module="SETTINGS"
       >
         <Link
@@ -73,7 +73,7 @@ export default function PayablesPage() {
         </Link>
         <Link
           href="/payables/new"
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" />
           Novo Título
@@ -129,7 +129,7 @@ export default function PayablesPage() {
             </div>
 
             <div className="bg-theme-card rounded-lg border border-theme p-4">
-              <div className="flex items-center gap-2 text-indigo-600 mb-2">
+              <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <DollarSign className="w-5 h-5" />
                 <span className="text-sm font-medium">Total Pendente</span>
               </div>
@@ -188,7 +188,7 @@ export default function PayablesPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function PayablesPage() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
               >
                 <option value="ALL">Todos os Status</option>
                 <option value="PENDING">Pendentes</option>
@@ -226,7 +226,7 @@ export default function PayablesPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.payables.length ? (
             <div className="text-center py-12">
@@ -335,7 +335,7 @@ export default function PayablesPage() {
                             <div className="flex items-center justify-center gap-2">
                               <Link
                                 href={`/payables/${payable.id}`}
-                                className="p-1 text-theme-muted hover:text-indigo-600"
+                                className="p-1 text-theme-muted hover:text-blue-600"
                                 title="Ver detalhes"
                               >
                                 <Eye className="w-4 h-4" />

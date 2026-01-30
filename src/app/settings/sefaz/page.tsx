@@ -298,7 +298,7 @@ export default function SefazConfigPage() {
             <select
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 bg-theme-card text-theme"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
             >
               <option value="">Selecione uma empresa...</option>
               {companies?.map((company) => (
@@ -341,7 +341,7 @@ export default function SefazConfigPage() {
                   value="homologacao"
                   checked={environment === "homologacao"}
                   onChange={() => setEnvironment("homologacao")}
-                  className="text-indigo-600 focus:ring-indigo-500"
+                  className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-theme-secondary">Homologação (Testes)</span>
               </label>
@@ -352,7 +352,7 @@ export default function SefazConfigPage() {
                   value="producao"
                   checked={environment === "producao"}
                   onChange={() => setEnvironment("producao")}
-                  className="text-indigo-600 focus:ring-indigo-500"
+                  className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-theme-secondary">Produção</span>
               </label>
@@ -399,7 +399,7 @@ export default function SefazConfigPage() {
                 onChange={(e) => setCertificatePassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="new-password"
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 bg-theme-card text-theme"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
               />
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function SefazConfigPage() {
                 type="checkbox"
                 checked={syncEnabled}
                 onChange={(e) => setSyncEnabled(e.target.checked)}
-                className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                className="w-5 h-5 rounded border-theme text-blue-600 focus:ring-blue-500"
               />
               <div>
                 <span className="text-sm font-medium text-theme">Habilitar sincronização automática</span>
@@ -450,7 +450,7 @@ export default function SefazConfigPage() {
                       type="checkbox"
                       checked={autoManifest}
                       onChange={(e) => setAutoManifest(e.target.checked)}
-                      className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                      className="w-5 h-5 rounded border-theme text-blue-600 focus:ring-blue-500"
                     />
                     <div>
                       <span className="text-sm font-medium text-theme flex items-center gap-2">
@@ -474,7 +474,7 @@ export default function SefazConfigPage() {
                             value="CIENCIA"
                             checked={manifestType === "CIENCIA"}
                             onChange={() => setManifestType("CIENCIA")}
-                            className="text-indigo-600 focus:ring-indigo-500"
+                            className="text-blue-600 focus:ring-blue-500"
                           />
                           <span className="text-sm text-theme-secondary">Ciência da Operação</span>
                         </label>
@@ -485,7 +485,7 @@ export default function SefazConfigPage() {
                             value="CONFIRMACAO"
                             checked={manifestType === "CONFIRMACAO"}
                             onChange={() => setManifestType("CONFIRMACAO")}
-                            className="text-indigo-600 focus:ring-indigo-500"
+                            className="text-blue-600 focus:ring-blue-500"
                           />
                           <span className="text-sm text-theme-secondary">Confirmação da Operação</span>
                         </label>
@@ -501,7 +501,7 @@ export default function SefazConfigPage() {
                       type="checkbox"
                       checked={notifyOnNewNfe}
                       onChange={(e) => setNotifyOnNewNfe(e.target.checked)}
-                      className="w-5 h-5 rounded border-theme text-indigo-600 focus:ring-indigo-500"
+                      className="w-5 h-5 rounded border-theme text-blue-600 focus:ring-blue-500"
                     />
                     <div>
                       <span className="text-sm font-medium text-theme flex items-center gap-2">
@@ -522,7 +522,7 @@ export default function SefazConfigPage() {
                         value={notifyEmail}
                         onChange={(e) => setNotifyEmail(e.target.value)}
                         placeholder="email@empresa.com.br"
-                        className="w-full max-w-md px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-full max-w-md px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   )}
@@ -587,7 +587,7 @@ export default function SefazConfigPage() {
                 onChange={(e) => setChaveConsulta(e.target.value.replace(/\D/g, ""))}
                 placeholder="Chave de acesso (44 dígitos)"
                 maxLength={44}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 mb-3"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 mb-3"
               />
               <Button
                 onClick={() => consultarChaveMutation.mutate({ chaveAcesso: chaveConsulta })}

@@ -56,7 +56,7 @@ export default function AccountDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function AccountDetailPage() {
         <div className="text-center">
           <Landmark className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">Conta não encontrada</h3>
-          <Link href="/treasury" className="text-indigo-600 hover:text-indigo-800">
+          <Link href="/treasury" className="text-blue-600 hover:text-indigo-800">
             Voltar para tesouraria
           </Link>
         </div>
@@ -130,13 +130,13 @@ export default function AccountDetailPage() {
                 placeholder="Buscar por descrição..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos os tipos</option>
               {Object.entries(transactionTypeLabels).map(([value, label]) => (
@@ -263,7 +263,7 @@ function TransferModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
         <h3 id="transfer-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
+          <ArrowRightLeft className="w-5 h-5 text-blue-600" />
           Transferência entre Contas
         </h3>
 
@@ -279,7 +279,7 @@ function TransferModal({
             <select
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Selecione...</option>
               {otherAccounts.map((account) => (
@@ -296,7 +296,7 @@ function TransferModal({
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
               step="0.01"
             />
@@ -308,7 +308,7 @@ function TransferModal({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Transferência entre contas"
             />
           </div>
@@ -338,7 +338,7 @@ function TransferModal({
               })
             }
             disabled={!toAccountId || !value || parseFloat(value) > currentBalance || transferMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {transferMutation.isPending ? "Transferindo..." : "Transferir"}
           </button>
@@ -377,7 +377,7 @@ function TransactionModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
         <h3 id="transaction-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-indigo-600" />
+          <Plus className="w-5 h-5 text-blue-600" />
           Novo Lançamento
         </h3>
 
@@ -416,7 +416,7 @@ function TransactionModal({
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
               step="0.01"
             />
@@ -428,7 +428,7 @@ function TransactionModal({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Descrição do lançamento"
             />
           </div>
@@ -439,7 +439,7 @@ function TransactionModal({
               type="date"
               value={transactionDate}
               onChange={(e) => setTransactionDate(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -449,7 +449,7 @@ function TransactionModal({
               type="text"
               value={documentNumber}
               onChange={(e) => setDocumentNumber(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Número do documento"
             />
           </div>
@@ -480,7 +480,7 @@ function TransactionModal({
               })
             }
             disabled={!value || !description || transactionMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {transactionMutation.isPending ? "Salvando..." : "Salvar"}
           </button>

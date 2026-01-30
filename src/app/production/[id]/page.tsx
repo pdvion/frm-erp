@@ -73,7 +73,7 @@ export default function ProductionOrderDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function ProductionOrderDetailPage() {
         <div className="text-center">
           <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">OP não encontrada</h3>
-          <Link href="/production" className="text-indigo-600 hover:text-indigo-800">
+          <Link href="/production" className="text-blue-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
         </div>
@@ -143,7 +143,7 @@ export default function ProductionOrderDetailPage() {
               <button
                 onClick={() => startMutation.mutate({ id })}
                 disabled={startMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {startMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -166,7 +166,7 @@ export default function ProductionOrderDetailPage() {
               <h3 className="font-medium text-theme mb-4">Produto</h3>
               <div className="flex items-start gap-4">
                 <div className="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-8 h-8 text-indigo-600" />
+                  <Package className="w-8 h-8 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <div className="text-lg font-medium text-theme">{order.product.description}</div>
@@ -529,7 +529,7 @@ export default function ProductionOrderDetailPage() {
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 

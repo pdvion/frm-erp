@@ -18,7 +18,7 @@ export default function SalesDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -42,7 +42,7 @@ export default function SalesDashboardPage() {
               </Link>
               <Link
                 href="/customers"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Clientes
               </Link>
@@ -104,7 +104,7 @@ export default function SalesDashboardPage() {
           <Link href="/billing" className="bg-theme-card rounded-xl border border-theme p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-indigo-600" />
+                <FileText className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-theme-muted">NFes Emitidas</p>
@@ -113,7 +113,7 @@ export default function SalesDashboardPage() {
             </div>
             <div className="mt-2">
               <p className="text-sm text-theme-muted">Valor Total</p>
-              <p className="text-lg font-semibold text-indigo-600">
+              <p className="text-lg font-semibold text-blue-600">
                 {formatCurrency(kpis?.invoices.totalValue || 0)}
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function SalesDashboardPage() {
             title="Evolução de Vendas" 
             subtitle="Últimos 6 meses"
             actions={
-              <Link href="/reports/sales" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+              <Link href="/reports/sales" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                 <BarChart3 className="w-4 h-4" />
                 Ver relatório
               </Link>
@@ -183,7 +183,7 @@ export default function SalesDashboardPage() {
               <h3 className="text-lg font-semibold text-theme">Top Clientes</h3>
               <p className="text-sm text-theme-muted">Últimos 30 dias por valor de venda</p>
             </div>
-            <Link href="/customers" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+            <Link href="/customers" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
               Ver todos
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -262,7 +262,7 @@ export default function SalesDashboardPage() {
             className="flex items-center gap-4 p-4 bg-theme-card rounded-xl border border-theme hover:shadow-md transition-shadow"
           >
             <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-6 h-6 text-indigo-600" />
+              <FileText className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-theme">Faturamento</p>

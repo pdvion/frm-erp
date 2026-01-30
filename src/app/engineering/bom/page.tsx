@@ -42,7 +42,7 @@ export default function BomListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar produto por código ou descrição..."
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function BomListPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.products.length ? (
             <div className="text-center py-12">
@@ -64,7 +64,7 @@ export default function BomListPage() {
               </p>
               <Link
                 href="/materials"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 Ir para Materiais
@@ -80,7 +80,7 @@ export default function BomListPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <Package className="w-5 h-5 text-indigo-600" />
+                      <Package className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
                       <div className="font-medium text-theme">

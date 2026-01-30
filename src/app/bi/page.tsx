@@ -114,7 +114,7 @@ export default function BiDashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="Business Intelligence"
-        icon={<BarChart3 className="h-6 w-6 text-indigo-600" />}
+        icon={<BarChart3 className="h-6 w-6 text-blue-600" />}
         module="REPORTS"
       >
         <button
@@ -133,7 +133,7 @@ export default function BiDashboardPage() {
         </Link>
         <Link
           href="/bi/kpis"
-          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           <Plus className="h-4 w-4" />
           Configurar KPIs
@@ -143,7 +143,7 @@ export default function BiDashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
         ) : (
           <div className="space-y-8">
@@ -331,10 +331,10 @@ export default function BiDashboardPage() {
               <section>
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-indigo-600" />
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
                     <h2 className="text-lg font-semibold text-theme">Meus Dashboards</h2>
                   </div>
-                  <Link href="/bi/dashboards" className="text-sm text-indigo-600 hover:text-indigo-800">
+                  <Link href="/bi/dashboards" className="text-sm text-blue-600 hover:text-indigo-800">
                     Ver todos →
                   </Link>
                 </div>

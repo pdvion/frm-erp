@@ -95,7 +95,7 @@ export default function InvoiceDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function InvoiceDetailPage() {
         <div className="text-center">
           <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">NFe não encontrada</h3>
-          <Link href="/invoices" className="text-indigo-600 hover:text-indigo-800">
+          <Link href="/invoices" className="text-blue-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
         </div>
@@ -163,7 +163,7 @@ export default function InvoiceDetailPage() {
               {invoice.supplier ? (
                 <Link
                   href={`/suppliers/${invoice.supplier.id}`}
-                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                  className="text-sm text-blue-600 hover:text-indigo-800"
                 >
                   Ver cadastro →
                 </Link>
@@ -479,7 +479,7 @@ export default function InvoiceDetailPage() {
               <button
                 onClick={() => generatePayablesMutation.mutate({ invoiceId: id })}
                 disabled={generatePayablesMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {generatePayablesMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

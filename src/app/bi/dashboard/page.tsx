@@ -17,7 +17,7 @@ export default function BIDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -44,7 +44,7 @@ export default function BIDashboardPage() {
               </Link>
               <Link
                 href="/bi/analytics"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Analytics
               </Link>
@@ -251,7 +251,7 @@ export default function BIDashboardPage() {
             className="flex items-center gap-4 p-4 bg-theme-card rounded-xl border border-theme hover:shadow-md transition-shadow"
           >
             <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-indigo-600" />
+              <DollarSign className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-theme">Análise Financeira</p>

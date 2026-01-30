@@ -59,7 +59,7 @@ export default function BoletosPage() {
     <div className="space-y-6">
       <PageHeader
         title="Boletos Bancários"
-        icon={<FileText className="w-6 h-6 text-indigo-600" />}
+        icon={<FileText className="w-6 h-6 text-blue-600" />}
         actions={
           <div className="flex items-center gap-2">
             <Link

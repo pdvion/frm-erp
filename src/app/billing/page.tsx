@@ -61,7 +61,7 @@ export default function BillingPage() {
         actions={
           <button
             onClick={() => setShowNewModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" />
             Nova NFe
@@ -158,7 +158,7 @@ export default function BillingPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
               />
             </div>
             {statusFilter && (
@@ -176,7 +176,7 @@ export default function BillingPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : data?.invoices.length === 0 ? (
             <div className="text-center py-12">
@@ -185,7 +185,7 @@ export default function BillingPage() {
               <p className="text-theme-muted mb-4">Crie uma nova nota fiscal para começar</p>
               <button
                 onClick={() => setShowNewModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 Nova NFe
@@ -271,7 +271,7 @@ export default function BillingPage() {
                             <div className="flex items-center justify-center gap-2">
                               <Link
                                 href={`/billing/${invoice.id}`}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg"
                               >
                                 <Eye className="w-4 h-4" />
                                 Ver
@@ -370,7 +370,7 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
         <h3 id="new-invoice-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-indigo-600" />
+          <Plus className="w-5 h-5 text-blue-600" />
           Nova Nota Fiscal
         </h3>
 
@@ -381,7 +381,7 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
           <select
             value={selectedOrderId}
             onChange={(e) => setSelectedOrderId(e.target.value)}
-            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Selecione...</option>
             {orders?.orders?.map((order) => (
@@ -414,7 +414,7 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
           <button
             onClick={handleCreate}
             disabled={!selectedOrderId || createFromOrderMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {createFromOrderMutation.isPending ? "Criando..." : "Criar NFe"}
           </button>

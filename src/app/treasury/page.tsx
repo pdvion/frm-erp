@@ -66,7 +66,7 @@ export default function TreasuryPage() {
       <div>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : (
           <>
@@ -142,7 +142,7 @@ export default function TreasuryPage() {
                     {selectedAccount && (
                       <Link
                         href={`/treasury/accounts/${selectedAccount}`}
-                        className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                        className="text-sm text-blue-600 hover:text-indigo-800 flex items-center gap-1"
                       >
                         <Eye className="w-4 h-4" />
                         Ver detalhes

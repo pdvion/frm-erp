@@ -100,7 +100,7 @@ export default function CompanyUsersPage() {
   if (loadingCompany) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -111,7 +111,7 @@ export default function CompanyUsersPage() {
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-theme">Empresa não encontrada</h2>
-          <Link href="/settings/companies" className="text-indigo-600 hover:underline mt-2 inline-block">
+          <Link href="/settings/companies" className="text-blue-600 hover:underline mt-2 inline-block">
             Voltar para empresas
           </Link>
         </div>
@@ -169,7 +169,7 @@ export default function CompanyUsersPage() {
 
           {loadingUsers ? (
             <div className="p-8 text-center">
-              <Loader2 className="w-6 h-6 animate-spin text-indigo-600 mx-auto" />
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600 mx-auto" />
             </div>
           ) : users && users.length > 0 ? (
             <div className="divide-y divide-theme-table">
@@ -177,7 +177,7 @@ export default function CompanyUsersPage() {
                 <div key={userCompany.id} className="px-6 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <span className="text-indigo-600 font-medium">
+                      <span className="text-blue-600 font-medium">
                         {userCompany.user?.email?.charAt(0).toUpperCase() || "U"}
                       </span>
                     </div>

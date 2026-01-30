@@ -78,7 +78,7 @@ export default function TimeclockPage() {
             </Link>
             <Link
               href="/hr/timeclock/hours-bank"
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Clock className="w-4 h-4" />
               Banco de Horas
@@ -103,7 +103,7 @@ export default function TimeclockPage() {
             <Clock className="w-4 h-4" />
             Marcações Hoje
           </div>
-          <div className="text-2xl font-bold text-indigo-600">{data?.total || 0}</div>
+          <div className="text-2xl font-bold text-blue-600">{data?.total || 0}</div>
         </div>
         <div className="bg-theme-card p-4 rounded-lg shadow">
           <div className="flex items-center gap-2 text-theme-muted text-sm mb-1">
@@ -112,7 +112,7 @@ export default function TimeclockPage() {
           </div>
           <div className="text-2xl font-bold text-yellow-600">{pendingAdjustments?.total || 0}</div>
           {(pendingAdjustments?.total || 0) > 0 && (
-            <Link href="/hr/timeclock/adjustments" className="text-xs text-indigo-600 hover:underline">
+            <Link href="/hr/timeclock/adjustments" className="text-xs text-blue-600 hover:underline">
               Ver pendentes →
             </Link>
           )}
@@ -139,7 +139,7 @@ export default function TimeclockPage() {
                 placeholder="Buscar por funcionário..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function TimeclockPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : (
           <div className="overflow-x-auto">

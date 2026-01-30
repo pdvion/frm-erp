@@ -139,7 +139,7 @@ export default function SetPasswordPage() {
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Ir para Login
           </Link>
@@ -155,7 +155,7 @@ export default function SetPasswordPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-indigo-600" />
+              <Lock className="w-8 h-8 text-blue-600" />
             </div>
             <h1 className="text-2xl font-bold text-theme mb-2">
               Bem-vindo ao FRM ERP
@@ -163,7 +163,7 @@ export default function SetPasswordPage() {
             <p className="text-theme-secondary">
               Defina sua senha para acessar o sistema
             </p>
-            <p className="text-sm text-indigo-600 mt-2 font-medium">
+            <p className="text-sm text-blue-600 mt-2 font-medium">
               {userEmail}
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function SetPasswordPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
+                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500 pr-12"
                   placeholder="Mínimo 8 caracteres"
                   required
                   minLength={8}
@@ -217,7 +217,7 @@ export default function SetPasswordPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-12"
+                  className="w-full px-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500 pr-12"
                   placeholder="Repita a senha"
                   required
                 />
@@ -274,7 +274,7 @@ export default function SetPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || password.length < 8 || password !== confirmPassword}
-              className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-indigo-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -291,7 +291,7 @@ export default function SetPasswordPage() {
         {/* Footer */}
         <p className="text-center text-sm text-theme-muted mt-6">
           Já tem uma conta?{" "}
-          <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+          <Link href="/login" className="text-blue-600 hover:text-indigo-800 font-medium">
             Fazer login
           </Link>
         </p>

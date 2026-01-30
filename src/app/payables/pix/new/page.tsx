@@ -163,13 +163,13 @@ export default function NewPixPage() {
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center gap-2">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "key" ? "bg-purple-600 text-white" : "bg-green-500 text-white"
+              step === "key" ? "bg-blue-600 text-white" : "bg-green-500 text-white"
             }`}>
               {step === "key" ? "1" : <CheckCircle className="w-5 h-5" />}
             </div>
             <div className={`w-16 h-1 ${step !== "key" ? "bg-green-500" : "bg-theme-tertiary"}`} />
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === "confirm" ? "bg-purple-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-theme-tertiary text-theme-secondary"
+              step === "confirm" ? "bg-blue-600 text-white" : step === "success" ? "bg-green-500 text-white" : "bg-theme-tertiary text-theme-secondary"
             }`}>
               {step === "success" ? <CheckCircle className="w-5 h-5" /> : "2"}
             </div>
@@ -283,7 +283,7 @@ export default function NewPixPage() {
             <button
               onClick={handleValidateKey}
               disabled={!pixKey || !value || isValidating}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isValidating ? (
                 <>
@@ -360,7 +360,7 @@ export default function NewPixPage() {
               <button
                 onClick={handleSendPix}
                 disabled={isSending}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSending ? (
                   <>
@@ -422,7 +422,7 @@ export default function NewPixPage() {
                   setRecipientData(null);
                   setTransactionId(null);
                 }}
-                className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Novo PIX
               </button>

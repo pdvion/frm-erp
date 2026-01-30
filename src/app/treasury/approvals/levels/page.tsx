@@ -215,7 +215,7 @@ export default function ApprovalLevelsPage() {
                   required
                   disabled={!!editingId}
                   placeholder="Ex: NIVEL_1"
-                  className="border-theme-input disabled:bg-theme-tertiary w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="border-theme-input disabled:bg-theme-tertiary w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -233,7 +233,7 @@ export default function ApprovalLevelsPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="Ex: Aprovação Gerencial"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function ApprovalLevelsPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Descrição do nível de alçada..."
                 rows={2}
-                className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -272,7 +272,7 @@ export default function ApprovalLevelsPage() {
                   }
                   min={0}
                   step={0.01}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -296,7 +296,7 @@ export default function ApprovalLevelsPage() {
                   min={0}
                   step={0.01}
                   placeholder="Sem limite"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function ApprovalLevelsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, requiresAllApprovers: e.target.checked })
                 }
-                className="border-theme h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500"
+                className="border-theme h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
               />
               <label htmlFor="requires-all" className="text-theme-secondary text-sm">
                 Requer aprovação de todos os aprovadores (em sequência)
@@ -335,7 +335,7 @@ export default function ApprovalLevelsPage() {
                       e.target.value = "";
                     }
                   }}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Selecione um usuário para adicionar...</option>
                   {usersData
@@ -414,7 +414,7 @@ export default function ApprovalLevelsPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
               >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {editingId ? "Salvar Alterações" : "Criar Nível"}
@@ -428,7 +428,7 @@ export default function ApprovalLevelsPage() {
       <div className="bg-theme-card overflow-hidden rounded-xl border shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
         ) : levels?.length === 0 ? (
           <div className="text-theme-muted flex flex-col items-center justify-center py-12">
@@ -448,7 +448,7 @@ export default function ApprovalLevelsPage() {
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         level.isActive
-                          ? "bg-indigo-100 text-indigo-600"
+                          ? "bg-indigo-100 text-blue-600"
                           : "bg-theme-tertiary text-theme-muted"
                       }`}
                     >
@@ -487,7 +487,7 @@ export default function ApprovalLevelsPage() {
                         e.stopPropagation();
                         handleEdit(level);
                       }}
-                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-indigo-50 hover:text-blue-600"
                       aria-label="Editar nível"
                     >
                       <Edit2 className="h-4 w-4" />

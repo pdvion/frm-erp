@@ -46,7 +46,7 @@ export default function RegisterReturnInvoicePage({ params }: { params: Promise<
     return (
       <ProtectedRoute>
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -60,7 +60,7 @@ export default function RegisterReturnInvoicePage({ params }: { params: Promise<
           <p className="text-theme-muted">Devolução não encontrada ou não está aprovada</p>
           <Link
             href="/supplier-returns"
-            className="mt-2 inline-block text-indigo-600 hover:underline"
+            className="mt-2 inline-block text-blue-600 hover:underline"
           >
             Voltar para lista
           </Link>
@@ -146,7 +146,7 @@ export default function RegisterReturnInvoicePage({ params }: { params: Promise<
             <button
               type="submit"
               disabled={markAsInvoicedMutation.isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-6 py-2 text-white hover:bg-purple-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
             >
               {markAsInvoicedMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Registrar NFe

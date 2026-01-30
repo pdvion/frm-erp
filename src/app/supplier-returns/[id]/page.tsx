@@ -93,7 +93,7 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
     return (
       <ProtectedRoute>
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -107,7 +107,7 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
           <p className="text-theme-muted">Devolução não encontrada</p>
           <Link
             href="/supplier-returns"
-            className="mt-2 inline-block text-indigo-600 hover:underline"
+            className="mt-2 inline-block text-blue-600 hover:underline"
           >
             Voltar para lista
           </Link>
@@ -180,7 +180,7 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
               {supplierReturn.status === "APPROVED" && (
                 <Link
                   href={`/supplier-returns/${id}/invoice`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 >
                   <FileText className="h-4 w-4" />
                   Registrar NFe Devolução
@@ -249,7 +249,7 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
           <div className="bg-theme-card border-theme rounded-xl border p-4">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-indigo-100 p-2">
-                <Package className="h-5 w-5 text-indigo-600" />
+                <Package className="h-5 w-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-theme-muted text-sm">Valor Total</p>

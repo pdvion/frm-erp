@@ -101,7 +101,7 @@ export default function SupplierReturnsPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="border-theme bg-theme-card text-theme w-full rounded-lg border py-2 pr-4 pl-10 focus:ring-2 focus:ring-indigo-500"
+                className="border-theme bg-theme-card text-theme w-full rounded-lg border py-2 pr-4 pl-10 focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export default function SupplierReturnsPage() {
                   setStatusFilter(e.target.value as SupplierReturnStatus | "");
                   setPage(1);
                 }}
-                className="border-theme bg-theme-card text-theme rounded-lg border px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="border-theme bg-theme-card text-theme rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Todos os status</option>
                 {Object.entries(statusConfig).map(([value, { label }]) => (
@@ -139,7 +139,7 @@ export default function SupplierReturnsPage() {
         <div className="bg-theme-card border-theme overflow-hidden rounded-xl border">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.data.length ? (
             <div className="py-12 text-center">
@@ -147,7 +147,7 @@ export default function SupplierReturnsPage() {
               <p className="text-theme-muted">Nenhuma devolução encontrada</p>
               <Link
                 href="/supplier-returns/new"
-                className="mt-4 inline-flex items-center gap-2 text-indigo-600 hover:underline"
+                className="mt-4 inline-flex items-center gap-2 text-blue-600 hover:underline"
               >
                 <Plus className="h-4 w-4" />
                 Criar primeira devolução
@@ -219,7 +219,7 @@ export default function SupplierReturnsPage() {
                         <div className="flex items-center justify-center gap-1">
                           <Link
                             href={`/supplier-returns/${item.id}`}
-                            className="text-theme-muted rounded p-1.5 hover:text-indigo-600"
+                            className="text-theme-muted rounded p-1.5 hover:text-blue-600"
                             title="Visualizar"
                           >
                             <Eye className="h-4 w-4" />

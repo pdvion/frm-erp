@@ -28,7 +28,7 @@ const eventTypeConfig: Record<string, { label: string; icon: React.ElementType; 
   user_updated: { label: "Atualização", icon: Key, color: "text-yellow-600 bg-yellow-50" },
   token_refreshed: { label: "Token Refresh", icon: RefreshCw, color: "text-purple-600 bg-purple-50" },
   user_recovery_requested: { label: "Recuperação", icon: Key, color: "text-orange-600 bg-orange-50" },
-  user_invited: { label: "Convite", icon: UserPlus, color: "text-indigo-600 bg-indigo-50" },
+  user_invited: { label: "Convite", icon: UserPlus, color: "text-blue-600 bg-indigo-50" },
   mfa_challenge_verified: { label: "MFA Verificado", icon: Shield, color: "text-green-600 bg-green-50" },
   unknown: { label: "Outro", icon: AlertTriangle, color: "text-theme-muted bg-theme-tertiary" },
 };

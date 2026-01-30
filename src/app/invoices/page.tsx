@@ -82,14 +82,14 @@ export default function InvoicesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/invoices/pending"
-            className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50"
+            className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-blue-600 rounded-lg hover:bg-indigo-50"
           >
             <Clock className="w-4 h-4" />
             NFe Pendentes SEFAZ
           </Link>
           <button
             onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Upload className="w-4 h-4" />
             Importar XML
@@ -137,7 +137,7 @@ export default function InvoicesPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
               />
             </div>
             {statusFilter && (
@@ -155,7 +155,7 @@ export default function InvoicesPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : data?.invoices.length === 0 ? (
             <div className="text-center py-12">
@@ -164,7 +164,7 @@ export default function InvoicesPage() {
               <p className="text-theme-muted mb-4">Importe um XML para começar</p>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Upload className="w-4 h-4" />
                 Importar XML
@@ -249,7 +249,7 @@ export default function InvoicesPage() {
                           <td className="px-6 py-4 text-center">
                             <Link
                               href={`/invoices/${invoice.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg"
                             >
                               <Eye className="w-4 h-4" />
                               Ver
@@ -306,7 +306,7 @@ export default function InvoicesPage() {
         >
           <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
             <h3 id="upload-xml-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <Upload className="w-5 h-5 text-indigo-600" />
+              <Upload className="w-5 h-5 text-blue-600" />
               Importar XML NFe
             </h3>
 
@@ -318,7 +318,7 @@ export default function InvoicesPage() {
                 type="file"
                 accept=".xml"
                 onChange={handleFileUpload}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -359,7 +359,7 @@ export default function InvoicesPage() {
               <button
                 onClick={handleUpload}
                 disabled={!xmlContent || uploadMutation.isPending}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {uploadMutation.isPending ? "Importando..." : "Importar"}
               </button>

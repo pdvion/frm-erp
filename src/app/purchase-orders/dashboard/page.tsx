@@ -18,7 +18,7 @@ export default function PurchasesDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -42,7 +42,7 @@ export default function PurchasesDashboardPage() {
               </Link>
               <Link
                 href="/purchase-orders"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Pedidos de Compra
               </Link>
@@ -110,7 +110,7 @@ export default function PurchasesDashboardPage() {
           <Link href="/invoices" className="bg-theme-card rounded-xl border border-theme p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-indigo-600" />
+                <Package className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-theme-muted">NFes no Mês</p>
@@ -119,7 +119,7 @@ export default function PurchasesDashboardPage() {
             </div>
             <div className="mt-2">
               <p className="text-sm text-theme-muted">Valor Total</p>
-              <p className="text-lg font-semibold text-indigo-600">
+              <p className="text-lg font-semibold text-blue-600">
                 {formatCurrency(kpis?.nfes.totalValue || 0)}
               </p>
             </div>
@@ -154,7 +154,7 @@ export default function PurchasesDashboardPage() {
             title="Evolução de Compras" 
             subtitle="Últimos 6 meses"
             actions={
-              <Link href="/reports/purchases" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+              <Link href="/reports/purchases" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                 <BarChart3 className="w-4 h-4" />
                 Ver relatório
               </Link>
@@ -189,7 +189,7 @@ export default function PurchasesDashboardPage() {
               <h3 className="text-lg font-semibold text-theme">Top Fornecedores</h3>
               <p className="text-sm text-theme-muted">Últimos 30 dias por valor de compra</p>
             </div>
-            <Link href="/suppliers" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+            <Link href="/suppliers" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
               Ver todos
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -268,7 +268,7 @@ export default function PurchasesDashboardPage() {
             className="flex items-center gap-4 p-4 bg-theme-card rounded-xl border border-theme hover:shadow-md transition-shadow"
           >
             <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <Package className="w-6 h-6 text-indigo-600" />
+              <Package className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-theme">Importar NFe</p>

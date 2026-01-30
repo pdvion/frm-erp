@@ -149,11 +149,11 @@ export default function CalculatePayrollPage() {
             {/* Funcionários */}
             <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-6">
               <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-600" />
+                <Users className="w-5 h-5 text-blue-600" />
                 Funcionários
               </h2>
               <div className="flex items-center gap-4">
-                <div className="text-4xl font-bold text-indigo-600">
+                <div className="text-4xl font-bold text-blue-600">
                   {employees?.employees?.length || 0}
                 </div>
                 <div className="text-theme-secondary">

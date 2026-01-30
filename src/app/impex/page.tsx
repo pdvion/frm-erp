@@ -21,7 +21,7 @@ export default function ImpExPage() {
       description: "Gestão completa de processos de importação",
       href: "/impex/processes",
       icon: ClipboardList,
-      color: "bg-indigo-100 text-indigo-600",
+      color: "bg-indigo-100 text-blue-600",
       count: dashboard?.processesCount,
     },
     {

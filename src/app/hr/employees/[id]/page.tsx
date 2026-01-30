@@ -69,7 +69,7 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
           <p className="text-theme-muted mb-4">O funcionário solicitado não foi encontrado.</p>
           <Link
             href="/hr/employees"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar para lista
@@ -99,7 +99,7 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
             </Link>
             <Link
               href={`/hr/employees/${id}/edit`}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Edit className="w-4 h-4" />
               Editar

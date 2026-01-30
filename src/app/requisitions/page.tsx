@@ -76,7 +76,7 @@ export default function RequisitionsPage() {
       >
         <Link
           href="/requisitions/new"
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="w-4 h-4" />
           Nova Requisição
@@ -115,7 +115,7 @@ export default function RequisitionsPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
               />
             </div>
 
@@ -126,7 +126,7 @@ export default function RequisitionsPage() {
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="ALL">Todos os Status</option>
                 <option value="DRAFT">Rascunho</option>
@@ -144,7 +144,7 @@ export default function RequisitionsPage() {
                   setTypeFilter(e.target.value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="ALL">Todos os Tipos</option>
                 <option value="PRODUCTION">Produção</option>
@@ -161,7 +161,7 @@ export default function RequisitionsPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.requisitions.length ? (
             <div className="text-center py-12">
@@ -174,7 +174,7 @@ export default function RequisitionsPage() {
               </p>
               <Link
                 href="/requisitions/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 Nova Requisição
@@ -259,7 +259,7 @@ export default function RequisitionsPage() {
                           <td className="px-4 py-3 text-center">
                             <Link
                               href={`/requisitions/${req.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-indigo-600 hover:text-indigo-800"
+                              className="inline-flex items-center gap-1 px-3 py-1 text-blue-600 hover:text-indigo-800"
                             >
                               <Eye className="w-4 h-4" />
                               Ver

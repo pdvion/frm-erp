@@ -80,7 +80,7 @@ export default function ReservationsPage() {
         actions={
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-4 h-4" />
             Nova Reserva
@@ -116,7 +116,7 @@ export default function ReservationsPage() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filtrar por status"
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Todos os status</option>
                 {Object.entries(statusConfig).map(([value, config]) => (
@@ -132,7 +132,7 @@ export default function ReservationsPage() {
                 value={documentTypeFilter}
                 onChange={(e) => setDocumentTypeFilter(e.target.value)}
                 aria-label="Filtrar por tipo de documento"
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Todos os tipos</option>
                 {Object.entries(documentTypeLabels).map(([value, label]) => (
@@ -147,7 +147,7 @@ export default function ReservationsPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
           ) : !data?.reservations.length ? (
             <div className="text-center py-12">
@@ -331,7 +331,7 @@ function CreateReservationModal({
     >
       <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
         <h3 id="modal-title-reserva" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-indigo-600" />
+          <Plus className="w-5 h-5 text-blue-600" />
           Nova Reserva de Estoque
         </h3>
 
@@ -345,7 +345,7 @@ function CreateReservationModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
@@ -372,7 +372,7 @@ function CreateReservationModal({
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
               step="0.01"
             />
@@ -383,7 +383,7 @@ function CreateReservationModal({
             <select
               value={documentType}
               onChange={(e) => setDocumentType(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               {Object.entries(documentTypeLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -398,7 +398,7 @@ function CreateReservationModal({
                 type="text"
                 value={documentId}
                 onChange={(e) => setDocumentId(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="UUID"
               />
             </div>
@@ -408,7 +408,7 @@ function CreateReservationModal({
                 type="text"
                 value={documentNumber}
                 onChange={(e) => setDocumentNumber(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Ex: REQ-001"
               />
             </div>
@@ -420,7 +420,7 @@ function CreateReservationModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -450,7 +450,7 @@ function CreateReservationModal({
               })
             }
             disabled={!materialId || !quantity || !documentId || createMutation.isPending}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {createMutation.isPending ? "Criando..." : "Criar Reserva"}
           </button>

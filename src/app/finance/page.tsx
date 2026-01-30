@@ -35,7 +35,7 @@ export default function FinanceDashboardPage() {
     { href: "/receivables", label: "Contas a Receber", icon: TrendingUp, color: "text-green-600 bg-green-50" },
     { href: "/payables/cashflow", label: "Fluxo de Caixa", icon: BarChart3, color: "text-blue-600 bg-blue-50" },
     { href: "/treasury", label: "Tesouraria", icon: Building2, color: "text-purple-600 bg-purple-50" },
-    { href: "/treasury/reconciliation", label: "Conciliação", icon: RefreshCw, color: "text-indigo-600 bg-indigo-50" },
+    { href: "/treasury/reconciliation", label: "Conciliação", icon: RefreshCw, color: "text-blue-600 bg-indigo-50" },
     { href: "/payables/cnab", label: "CNAB", icon: FileText, color: "text-theme-secondary bg-theme-tertiary" },
   ];
 

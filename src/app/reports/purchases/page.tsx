@@ -64,11 +64,11 @@ export default function PurchasesReportsPage() {
             className="bg-theme-card border border-theme rounded-lg p-4 hover:shadow-lg transition-shadow group"
           >
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+              <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-blue-600 dark:text-indigo-400">
                 {report.icon}
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-theme group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <h3 className="font-semibold text-theme group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors">
                   {report.title}
                 </h3>
                 <p className="text-sm text-theme-muted mt-1">{report.description}</p>

@@ -79,7 +79,7 @@ export default function HeadcountReportPage() {
             </div>
             <div className="bg-indigo-50 rounded-lg shadow-sm border border-indigo-200 p-4">
               <p className="text-sm text-indigo-700">Total de Departamentos</p>
-              <p className="text-3xl font-bold text-indigo-600">{data.totals.totalDepartments}</p>
+              <p className="text-3xl font-bold text-blue-600">{data.totals.totalDepartments}</p>
             </div>
           </div>
         )}
@@ -92,14 +92,14 @@ export default function HeadcountReportPage() {
               placeholder="Buscar departamento..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-9 pr-4 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
         {isLoading && (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         )}
 
@@ -145,7 +145,7 @@ export default function HeadcountReportPage() {
                         )}
                         <span className="font-medium text-theme">{item.department}</span>
                       </div>
-                      <span className="text-sm font-bold text-indigo-600">{item.count} funcionários</span>
+                      <span className="text-sm font-bold text-blue-600">{item.count} funcionários</span>
                     </button>
                     {expandedDepts.has(item.department) && (
                       <div className="bg-theme-tertiary px-8 py-2">

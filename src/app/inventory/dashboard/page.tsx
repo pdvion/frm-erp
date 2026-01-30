@@ -18,7 +18,7 @@ export default function InventoryDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -42,7 +42,7 @@ export default function InventoryDashboardPage() {
               </Link>
               <Link
                 href="/inventory/movements"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Movimentações
               </Link>
@@ -139,7 +139,7 @@ export default function InventoryDashboardPage() {
             title="Movimentação de Estoque" 
             subtitle="Últimos 6 meses"
             actions={
-              <Link href="/reports/inventory" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+              <Link href="/reports/inventory" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                 <BarChart3 className="w-4 h-4" />
                 Ver relatório
               </Link>
@@ -175,7 +175,7 @@ export default function InventoryDashboardPage() {
               <h3 className="text-lg font-semibold text-theme">Estoque por Localização</h3>
               <p className="text-sm text-theme-muted">Distribuição do estoque por local</p>
             </div>
-            <Link href="/locations" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+            <Link href="/locations" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
               Gerenciar locais
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -185,7 +185,7 @@ export default function InventoryDashboardPage() {
             {kpis?.stockByLocation.map((location, index) => (
               <div key={index} className="flex items-center gap-4 p-4 bg-theme-hover rounded-lg">
                 <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-indigo-600" />
+                  <MapPin className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-theme">{location.name}</p>

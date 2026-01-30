@@ -122,7 +122,7 @@ export default function OeeDashboardPage() {
       <div>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
         ) : !dashboard ? (
           <div className="py-12 text-center">
@@ -134,7 +134,7 @@ export default function OeeDashboardPage() {
             {/* OEE Geral */}
             <div className="bg-theme-card border-theme mb-8 rounded-lg border p-6">
               <h2 className="text-theme mb-6 flex items-center gap-2 text-lg font-medium">
-                <Gauge className="h-5 w-5 text-indigo-600" />
+                <Gauge className="h-5 w-5 text-blue-600" />
                 OEE Geral do Período
               </h2>
               <div className="grid grid-cols-4 gap-8">
@@ -323,7 +323,7 @@ export default function OeeDashboardPage() {
                 href="/oee/work-centers"
                 className="bg-theme-card border-theme flex items-center gap-3 rounded-lg border p-4 transition-all hover:border-indigo-300 hover:shadow-sm"
               >
-                <Factory className="h-8 w-8 text-indigo-600" />
+                <Factory className="h-8 w-8 text-blue-600" />
                 <div>
                   <div className="text-theme font-medium">Centros de Trabalho</div>
                   <div className="text-theme-muted text-sm">Gerenciar</div>

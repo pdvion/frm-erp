@@ -17,7 +17,7 @@ export default function ReportsDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -34,7 +34,7 @@ export default function ReportsDashboardPage() {
           actions={
             <Link
               href="/reports"
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
               Ver Relatórios
             </Link>
@@ -47,7 +47,7 @@ export default function ReportsDashboardPage() {
           <div className="bg-theme-card rounded-xl border border-theme p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-indigo-600" />
+                <FileText className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-theme-muted">Total Gerados</p>
@@ -134,7 +134,7 @@ export default function ReportsDashboardPage() {
               {kpis?.byUser.map((user, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-indigo-600" />
+                    <Users className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-theme">{user.name}</p>

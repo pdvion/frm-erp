@@ -222,7 +222,7 @@ export default function NewSupplierReturnPage() {
               <button
                 type="button"
                 onClick={() => setShowMaterialSearch(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-700"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4" />
                 Adicionar Item
@@ -248,7 +248,7 @@ export default function NewSupplierReturnPage() {
                   <div className="max-h-64 overflow-y-auto">
                     {loadingMaterials ? (
                       <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
                       </div>
                     ) : materialsData?.materials.length ? (
                       <div className="space-y-2">
@@ -430,7 +430,7 @@ export default function NewSupplierReturnPage() {
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
             >
               {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Salvar Devolução

@@ -140,7 +140,7 @@ export default function PurchasesBySupplierReportPage() {
                         <td className="px-4 py-3 whitespace-nowrap text-right">
                           <div className="flex items-center justify-end gap-2">
                             <div className="w-16 bg-theme-tertiary rounded-full h-2">
-                              <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${Math.min(percent, 100)}%` }} />
+                              <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${Math.min(percent, 100)}%` }} />
                             </div>
                             <span className="text-sm text-theme-secondary w-12 text-right">{percent.toFixed(1)}%</span>
                           </div>

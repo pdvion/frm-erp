@@ -95,7 +95,7 @@ export default function TaskDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function TaskDetailPage() {
         <div className="text-center">
           <ClipboardList className="w-12 h-12 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted">Tarefa não encontrada</p>
-          <Link href="/tasks" className="text-indigo-600 hover:underline mt-2 inline-block">
+          <Link href="/tasks" className="text-blue-600 hover:underline mt-2 inline-block">
             Voltar para tarefas
           </Link>
         </div>
@@ -125,7 +125,7 @@ export default function TaskDetailPage() {
     <div className="space-y-6">
       <PageHeader
         title={`Tarefa #${task.code}`}
-        icon={<ClipboardList className="w-6 h-6 text-indigo-600" />}
+        icon={<ClipboardList className="w-6 h-6 text-blue-600" />}
         backHref="/tasks"
         module="SETTINGS"
       />
@@ -178,7 +178,7 @@ export default function TaskDetailPage() {
                   <button
                     onClick={() => startMutation.mutate({ taskId })}
                     disabled={startMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
                     {startMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -265,7 +265,7 @@ export default function TaskDetailPage() {
                     placeholder="Adicionar comentário..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="flex-1 px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                   <button
                     onClick={() => {
@@ -274,7 +274,7 @@ export default function TaskDetailPage() {
                       }
                     }}
                     disabled={!comment.trim() || addCommentMutation.isPending}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
                     {addCommentMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -416,7 +416,7 @@ export default function TaskDetailPage() {
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}
               rows={4}
-              className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 mb-4"
+              className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
             />
             <div className="flex justify-end gap-3">
               <button

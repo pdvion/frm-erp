@@ -60,7 +60,7 @@ export default function ApprovalsPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function ApprovalsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Alçadas de Aprovação"
-        icon={<Shield className="h-6 w-6 text-indigo-600" />}
+        icon={<Shield className="h-6 w-6 text-blue-600" />}
         module="FINANCE"
       >
         <Link
@@ -92,7 +92,7 @@ export default function ApprovalsPage() {
         </Link>
         <Link
           href="/treasury/approvals/requests"
-          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           <FileText className="h-4 w-4" />
           Ver Solicitações
@@ -183,7 +183,7 @@ export default function ApprovalsPage() {
             <section>
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-theme">Minhas Pendências</h2>
-                <Link href="/treasury/approvals/my-pending" className="text-sm text-indigo-600 hover:text-indigo-800">
+                <Link href="/treasury/approvals/my-pending" className="text-sm text-blue-600 hover:text-indigo-800">
                   Ver todas →
                 </Link>
               </div>
@@ -275,7 +275,7 @@ export default function ApprovalsPage() {
           <section>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-theme">Aprovações Recentes</h2>
-              <Link href="/treasury/approvals/history" className="text-sm text-indigo-600 hover:text-indigo-800">
+              <Link href="/treasury/approvals/history" className="text-sm text-blue-600 hover:text-indigo-800">
                 Ver histórico →
               </Link>
             </div>

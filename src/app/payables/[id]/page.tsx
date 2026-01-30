@@ -87,7 +87,7 @@ export default function PayableDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function PayableDetailPage() {
         <div className="text-center">
           <DollarSign className="w-12 h-12 text-theme-muted mx-auto mb-4" />
           <h3 className="text-lg font-medium text-theme mb-2">Título não encontrado</h3>
-          <Link href="/payables" className="text-indigo-600 hover:text-indigo-800">
+          <Link href="/payables" className="text-blue-600 hover:text-indigo-800">
             Voltar para lista
           </Link>
         </div>
@@ -334,7 +334,7 @@ export default function PayableDetailPage() {
               <div className="mt-4">
                 <Link
                   href={`/suppliers/${payable.supplier.id}`}
-                  className="text-indigo-600 hover:text-indigo-800 text-sm"
+                  className="text-blue-600 hover:text-indigo-800 text-sm"
                 >
                   Ver cadastro do fornecedor →
                 </Link>
@@ -361,7 +361,7 @@ export default function PayableDetailPage() {
                 <div className="mt-4">
                   <Link
                     href={`/invoices/${payable.invoice.id}`}
-                    className="text-indigo-600 hover:text-indigo-800 text-sm"
+                    className="text-blue-600 hover:text-indigo-800 text-sm"
                   >
                     Ver detalhes da NFe →
                   </Link>
@@ -531,7 +531,7 @@ export default function PayableDetailPage() {
                   type="date"
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -545,7 +545,7 @@ export default function PayableDetailPage() {
                   value={paymentValue}
                   onChange={(e) => setPaymentValue(e.target.value)}
                   placeholder={balance.toFixed(2)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-theme-muted mt-1">Saldo: {formatCurrency(balance)}</p>
               </div>
@@ -558,7 +558,7 @@ export default function PayableDetailPage() {
                     step="0.01"
                     value={discountValue}
                     onChange={(e) => setDiscountValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -568,7 +568,7 @@ export default function PayableDetailPage() {
                     step="0.01"
                     value={interestValue}
                     onChange={(e) => setInterestValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -578,7 +578,7 @@ export default function PayableDetailPage() {
                     step="0.01"
                     value={fineValue}
                     onChange={(e) => setFineValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -590,7 +590,7 @@ export default function PayableDetailPage() {
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Selecione...</option>
                   <option value="Boleto">Boleto</option>
@@ -610,7 +610,7 @@ export default function PayableDetailPage() {
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -669,7 +669,7 @@ export default function PayableDetailPage() {
                   type="date"
                   value={rescheduleDate}
                   onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -682,7 +682,7 @@ export default function PayableDetailPage() {
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   rows={3}
                   placeholder="Informe o motivo da reprogramação..."
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -756,7 +756,7 @@ export default function PayableDetailPage() {
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo do cancelamento..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 

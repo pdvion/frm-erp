@@ -62,7 +62,7 @@ export default function DashboardPage() {
         {/* KPIs Grid */}
         {kpisLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : kpis && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -140,7 +140,7 @@ export default function DashboardPage() {
 
             {/* NFes Pendentes */}
             <div className="bg-theme-card rounded-xl border border-theme p-4">
-              <div className="flex items-center gap-2 text-indigo-600 mb-2">
+              <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <FileInput className="w-5 h-5" />
                 <span className="text-sm font-medium">NFes Pendentes</span>
               </div>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
               title="Fluxo de Caixa Projetado" 
               subtitle="Próximos 30 dias"
               actions={
-                <Link href="/treasury" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                <Link href="/treasury" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                   <BarChart3 className="w-4 h-4" />
                     Ver mais
                 </Link>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
               title="Pagamentos por Mês" 
               subtitle="Últimos 6 meses"
               actions={
-                <Link href="/payables" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                <Link href="/payables" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                   <BarChart3 className="w-4 h-4" />
                     Ver mais
                 </Link>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
               title="Estoque por Categoria" 
               subtitle="Valor em estoque"
               actions={
-                <Link href="/inventory" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                <Link href="/inventory" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                   <BarChart3 className="w-4 h-4" />
                     Ver mais
                 </Link>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
               title="Requisições por Mês" 
               subtitle="Últimos 6 meses"
               actions={
-                <Link href="/requisitions" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+                <Link href="/requisitions" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                   <BarChart3 className="w-4 h-4" />
                     Ver mais
                 </Link>

@@ -18,7 +18,7 @@ export default function FinancialDashboardPage() {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       </ProtectedRoute>
     );
@@ -42,7 +42,7 @@ export default function FinancialDashboardPage() {
               </Link>
               <Link
                 href="/receivables"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Contas a Receber
               </Link>
@@ -188,7 +188,7 @@ export default function FinancialDashboardPage() {
             title="Fluxo de Caixa Projetado" 
             subtitle="Próximos 30 dias"
             actions={
-              <Link href="/treasury" className="text-sm text-indigo-600 hover:underline flex items-center gap-1">
+              <Link href="/treasury" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                 <BarChart3 className="w-4 h-4" />
                 Ver tesouraria
               </Link>
@@ -263,7 +263,7 @@ export default function FinancialDashboardPage() {
             className="flex items-center gap-4 p-4 bg-theme-card rounded-xl border border-theme hover:shadow-md transition-shadow"
           >
             <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-indigo-600" />
+              <CreditCard className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-theme">Tesouraria</p>

@@ -407,7 +407,7 @@ export default function BenefitsPage() {
                                   key={level}
                                   className={`w-4 h-4 rounded ${
                                     level <= Math.round(skill.avgLevel)
-                                      ? "bg-purple-600"
+                                      ? "bg-blue-600"
                                       : "bg-theme-tertiary"
                                   }`}
                                 />

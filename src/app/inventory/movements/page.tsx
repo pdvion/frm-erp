@@ -61,7 +61,7 @@ export default function MovementsHistoryPage() {
                 setPage(1);
               }}
               aria-label="Filtrar por tipo de movimento"
-              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             >
               <option value="">Todos os tipos</option>
               <option value="ENTRY">Entrada</option>
@@ -151,7 +151,7 @@ export default function MovementsHistoryPage() {
                             {movement.inventory?.material?.id ? (
                               <Link 
                                 href={`/materials/${movement.inventory.material.id}`}
-                                className="text-sm font-medium text-theme hover:text-indigo-600"
+                                className="text-sm font-medium text-theme hover:text-blue-600"
                               >
                                 {movement.inventory.material.code ?? "—"} - {movement.inventory.material.description ?? "—"}
                               </Link>

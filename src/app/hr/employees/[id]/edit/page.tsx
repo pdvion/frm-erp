@@ -136,7 +136,7 @@ export default function EditEmployeePage({ params }: PageProps) {
           <p className="text-theme-muted mb-4">O funcionário solicitado não foi encontrado.</p>
           <Link
             href="/hr/employees"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar para lista
@@ -363,7 +363,7 @@ export default function EditEmployeePage({ params }: PageProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

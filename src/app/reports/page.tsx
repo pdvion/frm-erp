@@ -67,7 +67,7 @@ export default function ReportsPage() {
               placeholder="Buscar relatórios..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
             />
           </div>
           <div className="flex gap-2">
@@ -75,7 +75,7 @@ export default function ReportsPage() {
               onClick={() => setSelectedCategory(null)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 !selectedCategory
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-blue-600 text-white"
                   : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
               }`}
             >
@@ -87,7 +87,7 @@ export default function ReportsPage() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedCategory === category
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
                 }`}
               >
@@ -100,7 +100,7 @@ export default function ReportsPage() {
         {/* Loading */}
         {isLoading && (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         )}
 
@@ -114,12 +114,12 @@ export default function ReportsPage() {
                 className="bg-theme-card rounded-xl border border-theme p-6 hover:shadow-md hover:border-indigo-300 transition-all group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     {iconMap[report.icon] || <FileText className="w-6 h-6" />}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-theme group-hover:text-indigo-600 transition-colors">
+                      <h3 className="font-semibold text-theme group-hover:text-blue-600 transition-colors">
                         {report.name}
                       </h3>
                     </div>

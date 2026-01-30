@@ -253,7 +253,7 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
         <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
           <div className="p-4 border-b border-theme">
             <h3 className="text-lg font-semibold text-theme flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-600" />
+              <Users className="w-5 h-5 text-blue-600" />
               Funcionários ({payroll.items?.length || 0})
             </h3>
           </div>
