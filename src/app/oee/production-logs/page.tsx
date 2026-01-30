@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { FileText, Plus } from "lucide-react";
 
 export default function ProductionLogsPage() {
@@ -58,13 +59,12 @@ export default function ProductionLogsPage() {
           { label: "Logs de Produção" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Registrar Produção
-          </button>
+          </Button>
         }
       />
 
@@ -260,13 +260,13 @@ export default function ProductionLogsPage() {
                 >
                   Cancelar
                 </button>
-                <button
+                <Button
                   type="submit"
-                  disabled={logMutation.isPending || !logForm.workCenterId}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  disabled={!logForm.workCenterId}
+                  isLoading={logMutation.isPending}
                 >
-                  {logMutation.isPending ? "Salvando..." : "Salvar"}
-                </button>
+                  Salvar
+                </Button>
               </div>
             </form>
           </div>
