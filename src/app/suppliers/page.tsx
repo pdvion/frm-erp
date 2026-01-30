@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ExportButtons } from "@/components/ui/export-buttons";
 
 interface Supplier {
@@ -69,12 +70,10 @@ export default function SuppliersPage() {
           { label: "Fornecedores" },
         ]}
         actions={
-          <Link
-            href="/suppliers/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Novo Fornecedor</span>
+          <Link href="/suppliers/new">
+            <Button leftIcon={<Plus className="w-5 h-5" />}>
+              <span className="hidden sm:inline">Novo Fornecedor</span>
+            </Button>
           </Link>
         }
       />

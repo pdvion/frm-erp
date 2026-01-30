@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Users,
   Search,
@@ -44,12 +45,10 @@ export default function CustomersPage() {
         icon={<Users className="w-6 h-6" />}
         module="sales"
         actions={
-          <Link
-            href="/customers/new"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Cliente
+          <Link href="/customers/new">
+            <Button leftIcon={<Plus className="w-4 h-4" />}>
+              Novo Cliente
+            </Button>
           </Link>
         }
       />
