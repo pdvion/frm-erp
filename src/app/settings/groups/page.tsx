@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Shield,
   Plus,
@@ -141,13 +142,12 @@ export default function GroupsPage() {
           { label: "Grupos" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Grupo
-          </button>
+          </Button>
         }
       />
 
@@ -338,13 +338,12 @@ export default function GroupsPage() {
                 >
                   Cancelar
                 </button>
-                <button
+                <Button
                   type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  isLoading={createMutation.isPending || updateMutation.isPending}
                 >
                   {editingId ? "Salvar" : "Criar Grupo"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
