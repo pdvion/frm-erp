@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ClipboardList, Search, Check, Save } from "lucide-react";
 import Link from "next/link";
 
@@ -121,14 +122,13 @@ export default function InventoryCountPage() {
                 <p className="text-sm text-theme-muted">
                   {isLoading ? "Carregando..." : `${inventoryData?.inventory.length || 0} itens encontrados`}
                 </p>
-                <button
+                <Button
                   onClick={startCount}
                   disabled={isLoading || !inventoryData?.inventory.length}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  leftIcon={<ClipboardList className="w-4 h-4" />}
                 >
-                  <ClipboardList className="w-4 h-4" />
                   Iniciar Contagem
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -273,11 +273,8 @@ export default function InventoryCountPage() {
             >
               Cancelar Contagem
             </button>
-            <Link
-              href="/inventory"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Finalizar e Voltar
+            <Link href="/inventory">
+              <Button>Finalizar e Voltar</Button>
             </Link>
           </div>
         </>
