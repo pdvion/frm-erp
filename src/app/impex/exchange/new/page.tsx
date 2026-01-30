@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Banknote, Save, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Banknote, Save, X } from "lucide-react";
 import Link from "next/link";
 
 export default function NewExchangeContractPage() {
@@ -261,18 +262,13 @@ export default function NewExchangeContractPage() {
             <X className="w-4 h-4" />
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={createMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={createMutation.isPending}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {createMutation.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
             Salvar
-          </button>
+          </Button>
         </div>
 
         {createMutation.error && (

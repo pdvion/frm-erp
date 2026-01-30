@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { FileText, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -268,13 +269,14 @@ export default function NewSalesQuotePage() {
               </div>
             </div>
             <div className="mt-6 space-y-2">
-              <button
+              <Button
                 onClick={handleSubmit}
-                disabled={!selectedCustomer || items.length === 0 || createQuoteMutation.isPending}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!selectedCustomer || items.length === 0}
+                isLoading={createQuoteMutation.isPending}
+                className="w-full"
               >
-                {createQuoteMutation.isPending ? "Criando..." : "Criar Cotação"}
-              </button>
+                Criar Cotação
+              </Button>
               <Link href="/sales/quotes" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
                 Cancelar
               </Link>
