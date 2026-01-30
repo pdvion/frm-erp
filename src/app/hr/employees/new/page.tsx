@@ -6,11 +6,11 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
 
 import {
   Users,
   Save,
-  Loader2,
   User,
   Building2,
   Calendar,
@@ -544,18 +544,13 @@ export default function NewEmployeePage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              isLoading={isSubmitting}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Salvar
-            </button>
+            </Button>
           </div>
         </form>
       </main>
