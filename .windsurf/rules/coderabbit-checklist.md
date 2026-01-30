@@ -96,6 +96,23 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 - [ ] Documentar lógica complexa
 - [ ] Manter TODOs com contexto
 
+## Testes (OBRIGATÓRIO)
+
+### Backend
+- [ ] ALWAYS run related unit tests after modifying backend logic
+- [ ] Rodar `pnpm test` para testes unitários do módulo alterado
+- [ ] Verificar cobertura de testes para novas funções
+
+### Frontend
+- [ ] Run strict linting after modifying UI components
+- [ ] Rodar `pnpm lint` e `pnpm type-check` após alterações
+- [ ] Para alterações críticas de UI, rodar testes E2E relacionados
+
+### E2E
+- [ ] Rodar testes E2E específicos para fluxos alterados
+- [ ] Comando: `npx playwright test tests/e2e/<spec>.spec.ts`
+- [ ] Verificar que testes passam antes de commit
+
 ## Antes de Commit
 
 ```bash
@@ -104,6 +121,9 @@ pnpm lint
 
 # Verificar tipos
 pnpm type-check
+
+# Rodar testes unitários (se houver)
+pnpm test
 
 # Verificar build
 pnpm build
