@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Plus,
@@ -59,13 +60,12 @@ export default function BillingPage() {
         icon={<FileText className="w-6 h-6" />}
         module="fiscal"
         actions={
-          <button
+          <Button
             onClick={() => setShowNewModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Nova NFe
-          </button>
+          </Button>
         }
       />
 
@@ -183,13 +183,12 @@ export default function BillingPage() {
               <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
               <p className="text-theme-muted mb-4">Crie uma nova nota fiscal para começar</p>
-              <button
+              <Button
                 onClick={() => setShowNewModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
                 Nova NFe
-              </button>
+              </Button>
             </div>
           ) : (
             <>
@@ -411,13 +410,14 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
           >
             Cancelar
           </button>
-          <button
+          <Button
             onClick={handleCreate}
-            disabled={!selectedOrderId || createFromOrderMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            disabled={!selectedOrderId}
+            isLoading={createFromOrderMutation.isPending}
+            className="flex-1"
           >
             {createFromOrderMutation.isPending ? "Criando..." : "Criar NFe"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
