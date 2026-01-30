@@ -195,14 +195,14 @@ export default function NewQuotePage() {
                   Itens da Cotação
                 </h2>
                 <div className="relative">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowMaterialSearch(!showMaterialSearch)}
-                    className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    size="sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
                   >
-                    <Plus className="w-4 h-4" />
                     Adicionar Item
-                  </button>
+                  </Button>
 
                   {showMaterialSearch && (
                     <div className="absolute right-0 top-full mt-2 w-96 bg-theme-input rounded-lg shadow-lg border border-theme z-10">

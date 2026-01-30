@@ -151,13 +151,14 @@ export default function NewQualityInspectionPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-theme">Itens a Inspecionar</h3>
-            <button
+            <Button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" /> Adicionar Item
-            </button>
+              Adicionar Item
+            </Button>
           </div>
           <div className="space-y-3">
             {items.map((item, index) => (

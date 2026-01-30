@@ -228,13 +228,13 @@ export default function NewRequisitionPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium text-theme">Itens</h3>
-              <button
+              <Button
                 onClick={() => setShowMaterialSearch(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                size="sm"
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
                 Adicionar Material
-              </button>
+              </Button>
             </div>
 
             {items.length === 0 ? (
