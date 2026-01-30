@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { CategoryQuickForm } from "@/components/forms/CategoryQuickForm";
 
@@ -546,18 +547,13 @@ export default function EditMaterialPage() {
             <X className="w-4 h-4" />
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
-            disabled={isSubmitting}
-            className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            isLoading={isSubmitting}
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
             Salvar Alterações
-          </button>
+          </Button>
         </div>
       </form>
     </div>
