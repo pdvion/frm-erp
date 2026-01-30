@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 type PixKeyType = "CPF" | "CNPJ" | "EMAIL" | "PHONE" | "EVP";
 
@@ -280,23 +281,15 @@ export default function NewPixPage() {
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
               onClick={handleValidateKey}
-              disabled={!pixKey || !value || isValidating}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={!pixKey || !value}
+              isLoading={isValidating}
+              leftIcon={<Send className="w-5 h-5" />}
+              className="w-full"
             >
-              {isValidating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Validando chave...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  Continuar
-                </>
-              )}
-            </button>
+              {isValidating ? "Validando chave..." : "Continuar"}
+            </Button>
           </div>
         )}
 
@@ -357,23 +350,14 @@ export default function NewPixPage() {
               >
                 Voltar
               </button>
-              <button
+              <Button
                 onClick={handleSendPix}
-                disabled={isSending}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                isLoading={isSending}
+                leftIcon={<Send className="w-5 h-5" />}
+                className="flex-1"
               >
-                {isSending ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    Confirmar PIX
-                  </>
-                )}
-              </button>
+                {isSending ? "Enviando..." : "Confirmar PIX"}
+              </Button>
             </div>
           </div>
         )}
@@ -413,7 +397,7 @@ export default function NewPixPage() {
               >
                 Ver Transações
               </button>
-              <button
+              <Button
                 onClick={() => {
                   setStep("key");
                   setPixKey("");
@@ -422,10 +406,10 @@ export default function NewPixPage() {
                   setRecipientData(null);
                   setTransactionId(null);
                 }}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1"
               >
                 Novo PIX
-              </button>
+              </Button>
             </div>
           </div>
         )}
