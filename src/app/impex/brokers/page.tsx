@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Users, Plus, Search, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface BrokerFormData {
@@ -120,13 +121,12 @@ export default function BrokersPage() {
           { label: "Despachantes" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => { resetForm(); setShowModal(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Despachante
-          </button>
+          </Button>
         }
       />
 
@@ -301,13 +301,13 @@ export default function BrokersPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 onClick={handleSubmit}
-                disabled={!formData.name || !formData.cnpj || createMutation.isPending || updateMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!formData.name || !formData.cnpj}
+                isLoading={createMutation.isPending || updateMutation.isPending}
               >
-                {createMutation.isPending || updateMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>
