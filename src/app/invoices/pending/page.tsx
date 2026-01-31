@@ -6,6 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { formatChaveAcesso } from "@/lib/nfe-parser";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   FileText,
   RefreshCw,
@@ -178,42 +180,38 @@ export default function PendingInvoicesPage() {
         actions={
           <div className="flex items-center gap-3">
             {selectedNfes.length > 0 && (
-              <button
+              <Button
                 onClick={() => setShowBatchManifestModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                leftIcon={<Send className="w-4 h-4" />}
               >
-                <Send className="w-4 h-4" />
                 Manifestar ({selectedNfes.length})
-              </button>
+              </Button>
             )}
-            <Link
+            <LinkButton
               href="/invoices/manifestacoes"
-              className="px-4 py-2 text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover transition-colors flex items-center gap-2"
+              variant="outline"
+              leftIcon={<History className="w-4 h-4" />}
             >
-              <History className="w-4 h-4" />
               Histórico
-            </Link>
+            </LinkButton>
             {!syncStatus?.configured && (
-              <Link
+              <LinkButton
                 href="/settings/sefaz"
-                className="px-4 py-2 text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-2"
+                variant="outline"
+                leftIcon={<AlertCircle className="w-4 h-4" />}
+                className="text-amber-700 bg-amber-50 border-amber-200 hover:bg-amber-100"
               >
-                <AlertCircle className="w-4 h-4" />
                 Configurar SEFAZ
-              </Link>
+              </LinkButton>
             )}
-            <button
+            <Button
               onClick={() => syncMutation.mutate()}
-              disabled={syncMutation.isPending || !syncStatus?.configured}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!syncStatus?.configured}
+              isLoading={syncMutation.isPending}
+              leftIcon={<RefreshCw className="w-4 h-4" />}
             >
-              {syncMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
-              )}
               Sincronizar SEFAZ
-            </button>
+            </Button>
           </div>
         }
       />
