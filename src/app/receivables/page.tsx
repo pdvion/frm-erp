@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   DollarSign,
   Search,
@@ -16,7 +17,6 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Loader2,
   Calendar,
   Building2,
   TrendingUp,
@@ -205,9 +205,7 @@ export default function ReceivablesPage() {
         {/* Table */}
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-green-600" />
-            </div>
+            <TableSkeleton rows={5} columns={6} />
           ) : !data?.receivables.length ? (
             <div className="text-center py-12">
               <DollarSign className="w-12 h-12 mx-auto text-theme-muted mb-4" />
