@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Landmark,
   Loader2,
@@ -75,20 +76,19 @@ export default function AccountDetailPage() {
         module="treasury"
         actions={
           <div className="flex items-center gap-3">
-            <button
+            <Button
               onClick={() => setShowTransferModal(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+              variant="outline"
+              leftIcon={<ArrowRightLeft className="w-4 h-4" />}
             >
-              <ArrowRightLeft className="w-4 h-4" />
               Transferir
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowTransactionModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Lançamento
-            </button>
+            </Button>
           </div>
         }
       />
