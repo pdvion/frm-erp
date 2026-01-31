@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Loader2,
   Plus,
@@ -174,13 +175,12 @@ export default function CollectionRulesPage() {
             backHref="/settings"
             module="settings"
             actions={
-              <button
+              <Button
                 onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
                 Nova Régua
-              </button>
+              </Button>
             }
           />
         </div>
