@@ -303,64 +303,77 @@ export function Sidebar({ onClose }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="h-[calc(100vh-7rem)] overflow-y-auto p-3" data-testid="sidebar-nav">
-        <ul className="space-y-1">
-          {menuItems.map((item) => (
-            <li key={item.label}>
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isActive(item.href)
-                      ? "bg-blue-600 text-white"
-                      : "text-theme-muted hover:bg-theme-hover hover:text-theme"
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              ) : (
-                <>
-                  <button
-                    onClick={() => toggleExpand(item.label)}
-                    className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                      item.children?.some((c) => isActive(c.href))
-                        ? "bg-theme-hover text-theme"
-                        : "text-theme-muted hover:bg-theme-hover hover:text-theme"
+      <nav className="h-[calc(100vh-7rem)] overflow-y-auto px-2 py-3" data-testid="sidebar-nav">
+        <ul className="flex flex-col gap-0.5">
+          {menuItems.map((item, index) => {
+            // Separadores visuais entre seções principais
+            const showSeparator = index === 1 || index === 10; // Após Dashboard e antes de Tarefas
+            
+            return (
+              <li key={item.label}>
+                {showSeparator && index === 1 && (
+                  <div className="my-2 mx-2 border-t border-theme opacity-50" />
+                )}
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? "bg-blue-600 text-white"
+                        : "text-theme-secondary hover:bg-theme-hover hover:text-theme"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </div>
-                    {expandedItems.includes(item.label) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
+                    <span className="flex-shrink-0">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => toggleExpand(item.label)}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                        item.children?.some((c) => isActive(c.href))
+                          ? "bg-theme-hover text-theme"
+                          : "text-theme-secondary hover:bg-theme-hover hover:text-theme"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="flex-shrink-0">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </div>
+                      <span className="flex-shrink-0">
+                        {expandedItems.includes(item.label) ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </span>
+                    </button>
+                    {expandedItems.includes(item.label) && item.children && (
+                      <ul className="mt-1 ml-3 space-y-0.5 border-l-2 border-theme-tertiary pl-3">
+                        {item.children.map((child) => (
+                          <li key={child.href}>
+                            <Link
+                              href={child.href}
+                              className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                                isActive(child.href)
+                                  ? "bg-blue-600 text-white font-medium"
+                                  : "text-theme-muted hover:bg-theme-hover hover:text-theme"
+                              }`}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </button>
-                  {expandedItems.includes(item.label) && item.children && (
-                    <ul className="ml-4 mt-1 space-y-1 border-l border-theme pl-4">
-                      {item.children.map((child) => (
-                        <li key={child.href}>
-                          <Link
-                            href={child.href}
-                            className={`block rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                              isActive(child.href)
-                                ? "bg-blue-600 text-white"
-                                : "text-theme-muted hover:bg-theme-hover hover:text-theme"
-                            }`}
-                          >
-                            {child.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              )}
-            </li>
-          ))}
+                  </>
+                )}
+                {showSeparator && index === 10 && (
+                  <div className="my-2 mx-2 border-t border-theme opacity-50" />
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

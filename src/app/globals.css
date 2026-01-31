@@ -131,6 +131,7 @@ body {
 .border-theme-table { border-color: var(--table-border); }
 .border-theme-header { border-color: var(--header-border); }
 .border-theme-sidebar { border-color: var(--sidebar-border); }
+.border-theme-tertiary { border-color: var(--background-tertiary); }
 
 .hover\:bg-theme-hover:hover { background-color: var(--card-hover); }
 .hover\:bg-theme-table-hover:hover { background-color: var(--table-hover); }
