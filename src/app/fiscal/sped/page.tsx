@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Download,
@@ -143,32 +144,23 @@ export default function SpedPage() {
 
               {/* Botão Gerar */}
               <div className="flex gap-3">
-                <button
+                <Button
                   onClick={handleGerar}
-                  disabled={gerarMutation.isPending}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
+                  isLoading={gerarMutation.isPending}
+                  leftIcon={<FileCheck className="h-5 w-5" />}
+                  className="flex-1"
                 >
-                  {gerarMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Gerando...
-                    </>
-                  ) : (
-                    <>
-                      <FileCheck className="h-5 w-5" />
-                      Gerar SPED Fiscal
-                    </>
-                  )}
-                </button>
+                  {gerarMutation.isPending ? "Gerando..." : "Gerar SPED Fiscal"}
+                </Button>
 
                 {resultado?.conteudo && (
-                  <button
+                  <Button
                     onClick={handleDownload}
-                    className="flex items-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                    variant="success"
+                    leftIcon={<Download className="h-5 w-5" />}
                   >
-                    <Download className="h-5 w-5" />
                     Download
-                  </button>
+                  </Button>
                 )}
               </div>
 
