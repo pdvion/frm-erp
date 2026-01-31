@@ -9,6 +9,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { LinkMaterialModal } from "@/components/LinkMaterialModal";
 import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Clock,
@@ -293,26 +294,26 @@ export default function InvoiceDetailPage() {
             </div>
             {canApprove && (
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   onClick={() => autoLinkMutation.mutate({ invoiceId: id })}
-                  disabled={autoLinkMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50"
+                  isLoading={autoLinkMutation.isPending}
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Wand2 className="w-4 h-4" />}
+                  className="bg-blue-50 text-blue-700 hover:bg-blue-100"
                 >
-                  {autoLinkMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Wand2 className="w-4 h-4" />
-                  )}
                   Auto-vincular
-                </button>
+                </Button>
                 {invoice.supplierId && (
-                  <button
+                  <Button
                     onClick={() => setShowCompareModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100"
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<FileCheck className="w-4 h-4" />}
+                    className="bg-purple-50 text-purple-700 hover:bg-purple-100"
                   >
-                    <FileCheck className="w-4 h-4" />
                     Conferir com Pedido
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
