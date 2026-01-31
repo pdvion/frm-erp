@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Upload, FileText, Users, FileCheck, AlertTriangle, CheckCircle, Loader2, Download } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 
 type ImportType = "customers" | "invoices";
@@ -232,23 +233,14 @@ export default function ImportPage() {
             </label>
           </div>
 
-          <button
+          <Button
             onClick={handleImport}
-            disabled={isImporting}
-            className="mt-6 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            isLoading={isImporting}
+            leftIcon={<FileCheck className="w-5 h-5" />}
+            className="mt-6 w-full py-3"
           >
-            {isImporting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Importando...
-              </>
-            ) : (
-              <>
-                <FileCheck className="w-5 h-5" />
-                {dryRun ? "Simular Importação" : "Executar Importação"}
-              </>
-            )}
-          </button>
+            {dryRun ? "Simular Importação" : "Executar Importação"}
+          </Button>
         </div>
       )}
 

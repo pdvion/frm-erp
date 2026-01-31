@@ -4,7 +4,8 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import { FileText, Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import { FileText, AlertCircle, Loader2, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 
@@ -143,14 +144,13 @@ export default function RegisterReturnInvoicePage({ params }: { params: Promise<
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={markAsInvoicedMutation.isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+              isLoading={markAsInvoicedMutation.isPending}
+              leftIcon={<FileText className="h-4 w-4" />}
             >
-              {markAsInvoicedMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Registrar NFe
-            </button>
+            </Button>
           </div>
         </form>
       </div>

@@ -11,6 +11,7 @@ import {
   Save,
   Search,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function NewReceivablePage() {
   const router = useRouter();
@@ -314,18 +315,15 @@ export default function NewReceivablePage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={!customerId || !description || !originalValue || !dueDate || isLoading}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              disabled={!customerId || !description || !originalValue || !dueDate}
+              isLoading={isLoading}
+              leftIcon={<Save className="w-4 h-4" />}
+              className="bg-green-600 hover:bg-green-700"
             >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {isLoading ? "Salvando..." : "Salvar"}
-            </button>
+              Salvar
+            </Button>
           </div>
         </form>
       </div>

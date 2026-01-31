@@ -8,7 +8,6 @@ import { PageHeader } from "@/components/PageHeader";
 import {
   ClipboardList,
   Save,
-  Loader2,
   AlertTriangle,
   User,
   Building2,
@@ -16,6 +15,7 @@ import {
   Shield,
   Calendar,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const targetTypeConfig = {
   user: {
@@ -367,23 +367,13 @@ export default function NewTaskPage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={createMutation.isPending}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+              isLoading={createMutation.isPending}
+              leftIcon={<Save className="h-5 w-5" />}
             >
-              {createMutation.isPending ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Criando...
-                </>
-              ) : (
-                <>
-                  <Save className="h-5 w-5" />
-                  Criar Tarefa
-                </>
-              )}
-            </button>
+              Criar Tarefa
+            </Button>
           </div>
         </form>
       </div>

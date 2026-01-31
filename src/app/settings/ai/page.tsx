@@ -9,13 +9,14 @@ import {
   Key,
   Eye,
   EyeOff,
+  Loader2,
   Save,
   Trash2,
   CheckCircle,
   AlertCircle,
-  Loader2,
   Sparkles,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const PROVIDERS = [
   {
@@ -220,35 +221,33 @@ export default function AIConfigPage() {
                   </button>
                 </div>
 
-                <button
+                <Button
                   onClick={() => handleSaveToken(provider.id)}
-                  disabled={!tokens[provider.id] || savingProvider === provider.id}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!tokens[provider.id]}
+                  isLoading={savingProvider === provider.id}
+                  leftIcon={<Save className="w-4 h-4" />}
                 >
-                  {savingProvider === provider.id ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
                   Salvar
-                </button>
+                </Button>
 
                 {isConfigured(provider.id) && (
                   <>
-                    <button
+                    <Button
                       onClick={() => handleRemoveToken(provider.id)}
-                      className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
+                      variant="outline"
+                      className="border-red-300 text-red-600 hover:bg-red-50"
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
 
                     {config?.defaultProvider !== provider.id && (
-                      <button
+                      <Button
                         onClick={() => setDefaultMutation.mutate({ provider: provider.id })}
-                        className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover text-sm"
+                        variant="outline"
+                        size="sm"
                       >
                         Definir como padrão
-                      </button>
+                      </Button>
                     )}
                   </>
                 )}

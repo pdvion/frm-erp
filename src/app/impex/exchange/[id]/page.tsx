@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   CheckCircle,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -434,18 +435,14 @@ export default function ExchangeContractDetailPage({
                 >
                   Cancelar
                 </button>
-                <button
+                <Button
                   type="submit"
-                  disabled={liquidateMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  variant="success"
+                  isLoading={liquidateMutation.isPending}
+                  leftIcon={<CheckCircle className="w-4 h-4" />}
                 >
-                  {liquidateMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4" />
-                  )}
                   Confirmar Liquidação
-                </button>
+                </Button>
               </div>
 
               {liquidateMutation.error && (

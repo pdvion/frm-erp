@@ -18,7 +18,9 @@ import {
   ChevronDown,
   ChevronUp,
   Settings,
+  Save,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface ApproverInput {
   userId: string;
@@ -411,14 +413,13 @@ export default function ApprovalLevelsPage() {
               >
                 Cancelar
               </button>
-              <button
+              <Button
                 type="submit"
-                disabled={isPending}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                isLoading={isPending}
+                leftIcon={<Save className="h-4 w-4" />}
               >
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {editingId ? "Salvar Alterações" : "Criar Nível"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
