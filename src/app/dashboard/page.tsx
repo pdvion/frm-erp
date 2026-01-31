@@ -5,12 +5,13 @@ import {
   Package, Users, Warehouse, FileText, Settings, Shield, 
   ShoppingCart, FileInput, DollarSign, User, AlertTriangle,
   TrendingUp, TrendingDown, Clock, CheckCircle, ClipboardList, ArrowRight,
-  Loader2, BarChart3
+  BarChart3
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { SimpleBarChart, SimpleAreaChart, DonutChart, ChartCard } from "@/components/charts";
+import { KPISkeleton } from "@/components/ui/Skeleton";
 
 const modules = [
   { title: "Materiais", description: "Cadastro e gestão", href: "/materials", icon: Package, color: "bg-blue-500" },
@@ -61,9 +62,7 @@ export default function DashboardPage() {
 
         {/* KPIs Grid */}
         {kpisLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
+          <KPISkeleton count={4} />
         ) : kpis && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {/* Estoque */}
