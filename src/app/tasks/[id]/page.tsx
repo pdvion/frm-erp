@@ -16,7 +16,6 @@ import {
   User,
   History as HistoryIcon,
   Send,
-  X,
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";

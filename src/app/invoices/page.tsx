@@ -80,21 +80,21 @@ export default function InvoicesPage() {
         icon={<FileText className="w-6 h-6" />}
         module="fiscal"
         actions={
-        <div className="flex items-center gap-3">
-          <Link
-            href="/invoices/pending"
-            className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-blue-600 rounded-lg hover:bg-indigo-50"
-          >
-            <Clock className="w-4 h-4" />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/invoices/pending"
+              className="flex items-center gap-2 px-4 py-2 border border-indigo-600 text-blue-600 rounded-lg hover:bg-indigo-50"
+            >
+              <Clock className="w-4 h-4" />
             NFe Pendentes SEFAZ
-          </Link>
-          <Button
-            onClick={() => setShowUploadModal(true)}
-            leftIcon={<Upload className="w-4 h-4" />}
-          >
+            </Link>
+            <Button
+              onClick={() => setShowUploadModal(true)}
+              leftIcon={<Upload className="w-4 h-4" />}
+            >
             Importar XML
-          </Button>
-        </div>
+            </Button>
+          </div>
         }
       />
 

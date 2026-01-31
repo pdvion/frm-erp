@@ -11,7 +11,6 @@ import {
   FileText,
   X,
   Save,
-  Loader2,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";

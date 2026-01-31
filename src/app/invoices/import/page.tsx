@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -10,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Upload,
-  Loader2,
   CheckCircle,
   XCircle,
   AlertCircle,

@@ -7,7 +7,6 @@ import {
   QrCode, 
   ArrowLeft,
   Send,
-  Loader2,
   User,
   Building2,
   Mail,

@@ -15,7 +15,6 @@ import {
   XCircle,
   AlertTriangle,
   Loader2,
-  Play,
   Send,
   Ban,
   Check,

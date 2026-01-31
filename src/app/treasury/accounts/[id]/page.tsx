@@ -13,21 +13,11 @@ import {
   Plus,
   TrendingUp,
   TrendingDown,
-  CreditCard,
-  PiggyBank,
-  Banknote,
   ArrowRightLeft,
   Calendar,
   Search,
   Download,
 } from "lucide-react";
-
-const accountTypeConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  CHECKING: { label: "Conta Corrente", icon: <CreditCard className="w-5 h-5" />, color: "text-blue-600 bg-blue-100" },
-  SAVINGS: { label: "Poupança", icon: <PiggyBank className="w-5 h-5" />, color: "text-green-600 bg-green-100" },
-  INVESTMENT: { label: "Investimento", icon: <TrendingUp className="w-5 h-5" />, color: "text-purple-600 bg-purple-100" },
-  CASH: { label: "Caixa", icon: <Banknote className="w-5 h-5" />, color: "text-yellow-600 bg-yellow-100" },
-};
 
 const transactionTypeLabels: Record<string, string> = {
   CREDIT: "Crédito",
@@ -74,8 +64,6 @@ export default function AccountDetailPage() {
       </div>
     );
   }
-
-  const config = accountTypeConfig[account.accountType] || accountTypeConfig.CHECKING;
 
   return (
     <div className="space-y-6">

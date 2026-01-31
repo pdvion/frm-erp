@@ -88,8 +88,6 @@ export default function ThirteenthPage() {
         }
       />
 
-      <div>
-
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-theme-card p-4 rounded-lg shadow">
@@ -247,7 +245,6 @@ export default function ThirteenthPage() {
             </button>
           </div>
         )}
-      </div>
       </div>
     </div>
   );

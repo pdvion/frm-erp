@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Button } from "@/components/ui/Button";
 import {
   MapPin,
   Loader2,

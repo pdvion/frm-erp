@@ -4,7 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
-import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle, Loader2 } from "lucide-react";
+import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
 

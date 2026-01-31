@@ -6,22 +6,12 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
-  ArrowLeft,
-  Calendar,
   DollarSign,
-  User,
-  FileText,
   CreditCard,
   Receipt,
   Ban,
-  Clock,
   CheckCircle,
-  XCircle,
-  AlertCircle,
   Building2,
-  Percent,
-  TrendingUp,
-  Wallet,
   Loader2,
   History as HistoryIcon,
 } from "lucide-react";

@@ -69,8 +69,6 @@ export default function TerminationsPage() {
         }
       />
 
-      <div>
-
       <div className="bg-theme-card rounded-lg shadow">
         <div className="p-4 border-b border-theme">
           <div className="flex flex-col md:flex-row gap-4">
@@ -203,7 +201,6 @@ export default function TerminationsPage() {
             </button>
           </div>
         )}
-      </div>
       </div>
     </div>
   );
