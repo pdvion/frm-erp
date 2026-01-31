@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   ClipboardList,
   Search,
@@ -15,7 +16,6 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Loader2,
   Plus,
   Eye,
   Play,
@@ -210,9 +210,7 @@ export default function TasksPage() {
 
         {/* Tasks List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
+          <TableSkeleton rows={5} columns={5} />
         ) : !data?.tasks.length ? (
           <div className="text-center py-12 bg-theme-card rounded-lg border border-theme">
             <ClipboardList className="w-12 h-12 mx-auto text-theme-muted mb-4" />
