@@ -17,6 +17,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 interface InventoryItem {
   id: string;
@@ -184,12 +185,7 @@ export default function InventoryPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-theme-card rounded-xl border border-theme p-8">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <span className="ml-3 text-theme-muted">Carregando estoque...</span>
-            </div>
-          </div>
+          <TableSkeleton rows={5} columns={6} />
         )}
 
         {/* Inventory Table */}
