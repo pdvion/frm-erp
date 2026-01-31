@@ -194,13 +194,13 @@ export default function ImportNFePage() {
           actions={
             files.length > 0 ? (
               <div className="flex items-center gap-3">
-                <button
+                <Button
                   onClick={() => setFiles([])}
-                  className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
+                  variant="ghost"
+                  leftIcon={<Trash2 className="w-4 h-4" />}
                 >
-                  <Trash2 className="w-4 h-4" />
                   Limpar
-                </button>
+                </Button>
                 <Button
                   onClick={importAll}
                   disabled={pendingCount === 0}
