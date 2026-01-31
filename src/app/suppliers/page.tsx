@@ -19,6 +19,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import { ExportButtons } from "@/components/ui/export-buttons";
 
 interface Supplier {
@@ -144,12 +145,7 @@ export default function SuppliersPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-theme-card rounded-xl border border-theme p-8">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-              <span className="ml-3 text-theme-secondary">Carregando fornecedores...</span>
-            </div>
-          </div>
+          <TableSkeleton rows={5} columns={6} />
         )}
 
         {/* Suppliers Table */}
