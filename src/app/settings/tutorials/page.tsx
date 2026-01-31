@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   BookOpen,
   Plus,
@@ -168,13 +169,12 @@ export default function TutorialsAdminPage() {
               <ExternalLink className="w-4 h-4" />
               Ver Documentação
             </Link>
-            <button
+            <Button
               onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Novo Tutorial
-            </button>
+            </Button>
           </div>
         }
       />
