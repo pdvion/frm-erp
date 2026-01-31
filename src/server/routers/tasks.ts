@@ -259,6 +259,39 @@ export const tasksRouter = createTRPCRouter({
       return taskService.addComment(input.taskId, ctx.tenant.userId, input.comment);
     }),
 
+  // Atualizar status da tarefa (para Kanban drag-and-drop)
+  updateStatus: tenantProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(["PENDING", "ACCEPTED", "IN_PROGRESS", "ON_HOLD", "COMPLETED", "CANCELLED"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.tenant.userId) {
+        throw new Error("Usuário não autenticado");
+      }
+      
+      const task = await prisma.task.findFirst({
+        where: {
+          id: input.id,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!task) {
+        throw new Error("Tarefa não encontrada");
+      }
+
+      return prisma.task.update({
+        where: { id: input.id },
+        data: {
+          status: input.status,
+          updatedAt: new Date(),
+        },
+      });
+    }),
+
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [byStatus, byPriority, overdue, myPending] = await Promise.all([

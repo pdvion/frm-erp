@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
+import type { KanbanColumn } from "@/components/ui";
 import {
   ClipboardList,
   Search,
@@ -23,6 +26,7 @@ import {
   Building2,
   Users,
   Shield,
+  Calendar,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -49,10 +53,12 @@ const targetTypeConfig: Record<string, { label: string; icon: React.ReactNode }>
 };
 
 export default function TasksPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [priorityFilter, setPriorityFilter] = useState<string>("");
   const [viewMode, setViewMode] = useState<"all" | "my" | "available">("all");
+  const [view, setView] = useState<"list" | "kanban">("list");
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = trpc.tasks.list.useQuery({
@@ -74,6 +80,83 @@ export default function TasksPage() {
   const isOverdue = (deadline: Date | string | null) => {
     if (!deadline) return false;
     return new Date(deadline) < new Date();
+  };
+
+  // Kanban columns configuration
+  const kanbanColumns = useMemo((): KanbanColumn<NonNullable<typeof data>["tasks"][number]>[] => {
+    if (!data?.tasks) return [];
+    
+    const statusOrder = ["PENDING", "ACCEPTED", "IN_PROGRESS", "ON_HOLD", "COMPLETED"];
+    const statusColors: Record<string, string> = {
+      PENDING: "#eab308",
+      ACCEPTED: "#3b82f6",
+      IN_PROGRESS: "#8b5cf6",
+      ON_HOLD: "#f97316",
+      COMPLETED: "#22c55e",
+    };
+
+    return statusOrder.map((status) => ({
+      id: status,
+      title: statusConfig[status]?.label || status,
+      color: statusColors[status] || "#6b7280",
+      items: data.tasks.filter((task) => task.status === status),
+    }));
+  }, [data]);
+
+  const handleCardClick = (task: NonNullable<typeof data>["tasks"][number]) => {
+    router.push(`/tasks/${task.id}`);
+  };
+
+  const utils = trpc.useUtils();
+  const updateTaskStatus = trpc.tasks.updateStatus.useMutation({
+    onSuccess: () => {
+      utils.tasks.list.invalidate();
+      utils.tasks.stats.invalidate();
+    },
+  });
+
+  const handleCardMove = (taskId: string, _fromColumnId: string, toColumnId: string) => {
+    updateTaskStatus.mutate({
+      id: taskId,
+      status: toColumnId as "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "ON_HOLD" | "COMPLETED" | "CANCELLED",
+    });
+  };
+
+  const renderTaskCard = ({ item: task }: { item: NonNullable<typeof data>["tasks"][number]; onClick?: (item: NonNullable<typeof data>["tasks"][number]) => void }) => {
+    const priority = priorityConfig[task.priority];
+    const overdue = isOverdue(task.deadline);
+
+    const footer = (
+      <div className="flex items-center justify-between text-xs text-theme-muted">
+        <div className="flex items-center gap-1">
+          <User className="w-3 h-3" />
+          <span className="truncate max-w-[80px]">
+            {task.owner?.name || "Não atribuída"}
+          </span>
+        </div>
+        {task.deadline && (
+          <div className={`flex items-center gap-1 ${overdue ? "text-red-600 font-medium" : ""}`}>
+            <Calendar className="w-3 h-3" />
+            <span>{formatDate(task.deadline)}</span>
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <KanbanCard
+        title={task.title}
+        subtitle={task.description || undefined}
+        badge={{
+          text: priority.label,
+          color: priority.color.includes("red") ? "#dc2626" :
+            priority.color.includes("orange") ? "#ea580c" :
+              priority.color.includes("blue") ? "#2563eb" : "#6b7280",
+        }}
+        footer={footer}
+        className={overdue ? "border-l-4 border-l-red-500" : ""}
+      />
+    );
   };
 
   return (
@@ -205,10 +288,11 @@ export default function TasksPage() {
               <option value="NORMAL">Normal</option>
               <option value="LOW">Baixa</option>
             </select>
+            <ViewToggle view={view} onViewChange={setView} />
           </div>
         </div>
 
-        {/* Tasks List */}
+        {/* Tasks Content */}
         {isLoading ? (
           <TableSkeleton rows={5} columns={5} />
         ) : !data?.tasks.length ? (
@@ -216,7 +300,17 @@ export default function TasksPage() {
             <ClipboardList className="w-12 h-12 mx-auto text-theme-muted mb-4" />
             <p className="text-theme-muted">Nenhuma tarefa encontrada</p>
           </div>
+        ) : view === "kanban" ? (
+          /* Kanban View */
+          <KanbanBoard
+            columns={kanbanColumns}
+            renderCard={renderTaskCard}
+            onCardClick={handleCardClick}
+            onCardMove={handleCardMove}
+            emptyMessage="Nenhuma tarefa encontrada"
+          />
         ) : (
+          /* Table View */
           <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
             <table className="min-w-full divide-y divide-theme-table">
               <thead className="bg-theme-tertiary">
