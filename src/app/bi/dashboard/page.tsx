@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -36,18 +37,12 @@ export default function BIDashboardPage() {
           module="bi"
           actions={
             <div className="flex gap-2">
-              <Link
-                href="/bi/reports"
-                className="px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme rounded-lg hover:bg-theme-hover"
-              >
+              <LinkButton href="/bi/reports" variant="outline">
                 Relatórios BI
-              </Link>
-              <Link
-                href="/bi/analytics"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-              >
+              </LinkButton>
+              <LinkButton href="/bi/analytics">
                 Analytics
-              </Link>
+              </LinkButton>
             </div>
           }
         />
