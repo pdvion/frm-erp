@@ -3,15 +3,24 @@
  * Delphi Legacy Data Validator
  * VIO-835: Validação de dados do sistema Delphi antes da migração
  * 
- * Este script lê arquivos CSV/JSON do Delphi e valida contra os schemas Zod
+ * Este script lê arquivos CSV/JSON/XML do Delphi e valida contra os schemas Zod
  * do sistema novo, gerando um relatório de Pass/Fail.
+ * 
+ * Suporta:
+ *   - CSV: Dados tabulares (clientes, materiais, fornecedores, etc.)
+ *   - JSON: Dados estruturados
+ *   - XML: Notas Fiscais Eletrônicas (NFe) - use validate-nfe-xml.ts para lotes
  * 
  * Uso:
  *   npx tsx scripts/validate-legacy-data.ts <arquivo> [--entity <tipo>] [--output <arquivo>]
  * 
+ * Para XMLs de NFe em lote, use:
+ *   npx tsx scripts/validate-nfe-xml.ts <pasta> [--type entrada|saida|all]
+ * 
  * Exemplos:
  *   npx tsx scripts/validate-legacy-data.ts data/clientes.csv --entity customer
  *   npx tsx scripts/validate-legacy-data.ts data/materiais.json --entity material --output report.json
+ *   npx tsx scripts/validate-legacy-data.ts nota.xml --entity nfe-xml
  */
 
 import { z } from "zod";
@@ -122,12 +131,32 @@ const stockMovementSchema = z.object({
   vlrUnitario: z.string().optional(),
 });
 
+// Schema para validação de XML de NFe (arquivo único)
+const nfeXmlSchema = z.object({
+  chaveAcesso: z.string().length(44, "Chave de acesso deve ter 44 dígitos"),
+  numero: z.number().int().positive("Número da NF obrigatório"),
+  serie: z.number().int().min(0),
+  dataEmissao: z.string().min(1, "Data de emissão obrigatória"),
+  tipoNF: z.enum(["entrada", "saida"]),
+  emitente: z.object({
+    cnpj: z.string().length(14, "CNPJ do emitente deve ter 14 dígitos"),
+    razaoSocial: z.string().min(1, "Razão social do emitente obrigatória"),
+  }),
+  destinatario: z.object({
+    cnpj: z.string().min(11, "CNPJ/CPF do destinatário obrigatório"),
+    razaoSocial: z.string().min(1, "Razão social do destinatário obrigatória"),
+  }),
+  valorTotal: z.number().positive("Valor total deve ser positivo"),
+  itensCount: z.number().int().positive("Deve ter pelo menos 1 item"),
+});
+
 const schemas: Record<string, z.ZodSchema> = {
   customer: customerSchema,
   material: materialSchema,
   supplier: supplierSchema,
   nfe: nfeEmitidaSchema,
   stock: stockMovementSchema,
+  "nfe-xml": nfeXmlSchema,
 };
 
 // ============================================================================
@@ -159,6 +188,70 @@ function parseCSV(content: string): Record<string, string>[] {
 function parseJSON(content: string): Record<string, unknown>[] {
   const data = JSON.parse(content);
   return Array.isArray(data) ? data : [data];
+}
+
+// Parser de XML de NFe para validação individual
+function extractTag(xml: string, tag: string): string | null {
+  const regex = new RegExp(`<${tag}[^>]*>([^<]*)</${tag}>`, "i");
+  const match = xml.match(regex);
+  return match ? match[1].trim() : null;
+}
+
+function extractTagContent(xml: string, tag: string): string | null {
+  const startTag = `<${tag}`;
+  const endTag = `</${tag}>`;
+  const startIdx = xml.indexOf(startTag);
+  if (startIdx === -1) return null;
+  const contentStart = xml.indexOf(">", startIdx) + 1;
+  const endIdx = xml.indexOf(endTag, contentStart);
+  if (endIdx === -1) return null;
+  return xml.substring(contentStart, endIdx);
+}
+
+function parseNFeXml(content: string): Record<string, unknown>[] {
+  if (!content.includes("<nfeProc") && !content.includes("<NFe")) {
+    throw new Error("Não é um XML de NFe válido");
+  }
+
+  const infNFe = extractTagContent(content, "infNFe");
+  if (!infNFe) throw new Error("Tag infNFe não encontrada");
+
+  const idMatch = content.match(/Id="NFe(\d{44})"/);
+  const chaveAcesso = idMatch ? idMatch[1] : "";
+
+  const ide = extractTagContent(infNFe, "ide");
+  const numero = ide ? parseInt(extractTag(ide, "nNF") || "0") : 0;
+  const serie = ide ? parseInt(extractTag(ide, "serie") || "1") : 1;
+  const dhEmi = ide ? extractTag(ide, "dhEmi") || "" : "";
+  const tpNF = ide ? extractTag(ide, "tpNF") : "1";
+  const tipoNF = tpNF === "0" ? "entrada" : "saida";
+
+  const emit = extractTagContent(infNFe, "emit");
+  const emitCnpj = emit ? extractTag(emit, "CNPJ") || "" : "";
+  const emitRazao = emit ? extractTag(emit, "xNome") || "" : "";
+
+  const dest = extractTagContent(infNFe, "dest");
+  const destCnpj = dest ? (extractTag(dest, "CNPJ") || extractTag(dest, "CPF") || "") : "";
+  const destRazao = dest ? extractTag(dest, "xNome") || "" : "";
+
+  const total = extractTagContent(infNFe, "total");
+  const icmsTot = total ? extractTagContent(total, "ICMSTot") : null;
+  const valorTotal = icmsTot ? parseFloat(extractTag(icmsTot, "vNF") || "0") : 0;
+
+  const itensMatch = infNFe.match(/<det nItem/g);
+  const itensCount = itensMatch ? itensMatch.length : 0;
+
+  return [{
+    chaveAcesso,
+    numero,
+    serie,
+    dataEmissao: dhEmi,
+    tipoNF,
+    emitente: { cnpj: emitCnpj, razaoSocial: emitRazao },
+    destinatario: { cnpj: destCnpj, razaoSocial: destRazao },
+    valorTotal,
+    itensCount,
+  }];
 }
 
 // ============================================================================
@@ -271,14 +364,23 @@ Uso:
   npx tsx scripts/validate-legacy-data.ts <arquivo> [opções]
 
 Opções:
-  --entity <tipo>    Tipo de entidade: customer, material, supplier, nfe, stock
+  --entity <tipo>    Tipo de entidade: customer, material, supplier, nfe, stock, nfe-xml
   --output <arquivo> Arquivo de saída para o relatório JSON
   --verbose          Mostrar detalhes de cada registro com falha
   --help             Mostrar esta ajuda
 
+Formatos suportados:
+  .csv  - Dados tabulares (auto-detecta separador ; ou ,)
+  .json - Dados estruturados
+  .xml  - Notas Fiscais Eletrônicas (use --entity nfe-xml)
+
 Exemplos:
   npx tsx scripts/validate-legacy-data.ts data/clientes.csv --entity customer
   npx tsx scripts/validate-legacy-data.ts data/materiais.json --entity material --output report.json
+  npx tsx scripts/validate-legacy-data.ts nota.xml --entity nfe-xml
+
+Para validação em lote de XMLs de NFe, use:
+  npx tsx scripts/validate-nfe-xml.ts <pasta> [--type entrada|saida|all]
 `);
 }
 
@@ -289,6 +391,7 @@ function getIdField(entity: string): string {
     supplier: "codFornecedor",
     nfe: "codEmissaoNF",
     stock: "codMovimento",
+    "nfe-xml": "chaveAcesso",
   };
   return idFields[entity] || "id";
 }
@@ -306,7 +409,7 @@ async function main() {
   const outputIndex = args.indexOf("--output");
   const verbose = args.includes("--verbose");
 
-  const entity = entityIndex !== -1 ? args[entityIndex + 1] : "customer";
+  let entity = entityIndex !== -1 ? args[entityIndex + 1] : "customer";
   const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : null;
 
   if (!schemas[entity]) {
@@ -332,10 +435,20 @@ async function main() {
     records = parseJSON(content);
   } else if (ext === ".csv") {
     records = parseCSV(content);
+  } else if (ext === ".xml") {
+    if (entity !== "nfe-xml") {
+      console.log(`ℹ️  Arquivo XML detectado. Usando entidade nfe-xml automaticamente.`);
+    }
+    records = parseNFeXml(content);
   } else {
     console.error(`❌ Formato de arquivo não suportado: ${ext}`);
-    console.error(`   Formatos suportados: .csv, .json`);
+    console.error(`   Formatos suportados: .csv, .json, .xml`);
     process.exit(1);
+  }
+  
+  // Auto-detectar entidade para XML
+  if (ext === ".xml" && entity !== "nfe-xml") {
+    entity = "nfe-xml";
   }
 
   console.log(`📊 Total de registros: ${records.length}\n`);
