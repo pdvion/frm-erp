@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   ArrowRightLeft,
   ChevronLeft,
@@ -48,13 +49,9 @@ export default function TransfersPage() {
         icon={<ArrowRightLeft className="w-6 h-6" />}
         module="inventory"
         actions={
-          <Link
-            href="/transfers/new"
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-          >
-            <Plus className="w-4 h-4" />
+          <LinkButton href="/transfers/new" variant="success" leftIcon={<Plus className="w-4 h-4" />}>
             Nova Transferência
-          </Link>
+          </LinkButton>
         }
       />
 
