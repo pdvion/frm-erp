@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { Goal, Plus, Target, Users, TrendingUp, DollarSign, Briefcase } from "lucide-react";
-import Link from "next/link";
 
 type GoalCategory = "FINANCIAL" | "OPERATIONAL" | "CUSTOMER" | "GROWTH" | "PEOPLE" | undefined;
 
@@ -68,11 +67,9 @@ export default function GPDGoalsPage() {
           { label: "Metas" },
         ]}
         actions={
-          <Link href="/gpd/goals/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              Nova Meta
-            </Button>
-          </Link>
+          <LinkButton href="/gpd/goals/new" leftIcon={<Plus className="w-4 h-4" />}>
+            Nova Meta
+          </LinkButton>
         }
       />
 
@@ -155,9 +152,9 @@ export default function GPDGoalsPage() {
       )}
 
       <div className="flex gap-4">
-        <Link href="/gpd" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+        <LinkButton href="/gpd" variant="ghost" size="sm">
           ← Voltar para GPD
-        </Link>
+        </LinkButton>
       </div>
     </div>
   );
