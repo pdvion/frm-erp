@@ -22,6 +22,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
 
@@ -117,44 +118,31 @@ export default function NFeDetailPage() {
           <div className="flex items-center gap-2">
             {invoice.status === "PENDING" && (
               <>
-                <button
+                <Button
                   onClick={handleReject}
-                  disabled={isRejecting}
-                  className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                  isLoading={isRejecting}
+                  variant="ghost"
+                  leftIcon={<XCircle className="w-5 h-5" />}
+                  className="text-red-600 hover:bg-red-50"
                 >
-                  {isRejecting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <XCircle className="w-5 h-5" />
-                  )}
-                  <span>Rejeitar</span>
-                </button>
-                <button
+                  Rejeitar
+                </Button>
+                <Button
                   onClick={handleApprove}
-                  disabled={isApproving}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                  isLoading={isApproving}
+                  variant="success"
+                  leftIcon={<CheckCircle className="w-5 h-5" />}
                 >
-                  {isApproving ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-5 h-5" />
-                  )}
-                  <span>Aprovar</span>
-                </button>
+                  Aprovar
+                </Button>
               </>
             )}
-            <button
-              className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
-              title="Imprimir"
-            >
+            <Button variant="ghost" size="icon" title="Imprimir">
               <Printer className="w-5 h-5" />
-            </button>
-            <button
-              className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
-              title="Download XML"
-            >
+            </Button>
+            <Button variant="ghost" size="icon" title="Download XML">
               <Download className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         }
       />
