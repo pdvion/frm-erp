@@ -357,4 +357,135 @@ export const tasksRouter = createTRPCRouter({
       pendingTasks: d._count.tasks,
     }));
   }),
+
+  // Listar anexos de uma tarefa
+  listAttachments: tenantProcedure
+    .input(z.object({ taskId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const task = await prisma.task.findFirst({
+        where: {
+          id: input.taskId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!task) {
+        throw new Error("Tarefa não encontrada");
+      }
+
+      return prisma.taskAttachment.findMany({
+        where: { taskId: input.taskId },
+        orderBy: { createdAt: "desc" },
+      });
+    }),
+
+  // Adicionar anexo a uma tarefa
+  addAttachment: tenantProcedure
+    .input(
+      z.object({
+        taskId: z.string(),
+        fileName: z.string(),
+        fileType: z.string(),
+        fileSize: z.number(),
+        fileUrl: z.string(),
+        description: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.tenant.userId) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const task = await prisma.task.findFirst({
+        where: {
+          id: input.taskId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!task) {
+        throw new Error("Tarefa não encontrada");
+      }
+
+      return prisma.taskAttachment.create({
+        data: {
+          taskId: input.taskId,
+          fileName: input.fileName,
+          fileType: input.fileType,
+          fileSize: input.fileSize,
+          fileUrl: input.fileUrl,
+          description: input.description,
+          uploadedBy: ctx.tenant.userId,
+        },
+      });
+    }),
+
+  // Remover anexo de uma tarefa
+  removeAttachment: tenantProcedure
+    .input(z.object({ attachmentId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.tenant.userId) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const attachment = await prisma.taskAttachment.findFirst({
+        where: { id: input.attachmentId },
+        include: {
+          task: {
+            select: { companyId: true },
+          },
+        },
+      });
+
+      if (!attachment) {
+        throw new Error("Anexo não encontrado");
+      }
+
+      // Verificar se pertence à mesma empresa
+      if (attachment.task.companyId !== ctx.companyId) {
+        throw new Error("Anexo não encontrado");
+      }
+
+      return prisma.taskAttachment.delete({
+        where: { id: input.attachmentId },
+      });
+    }),
+
+  // Obter URL de upload para Supabase Storage
+  getUploadUrl: tenantProcedure
+    .input(
+      z.object({
+        taskId: z.string(),
+        fileName: z.string(),
+        contentType: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.tenant.userId) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const task = await prisma.task.findFirst({
+        where: {
+          id: input.taskId,
+          ...tenantFilter(ctx.companyId, false),
+        },
+      });
+
+      if (!task) {
+        throw new Error("Tarefa não encontrada");
+      }
+
+      // Gerar path único para o arquivo
+      const timestamp = Date.now();
+      const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+      const filePath = `tasks/${input.taskId}/${timestamp}-${sanitizedFileName}`;
+
+      // Retornar informações para upload direto
+      return {
+        filePath,
+        bucket: "documents",
+        publicUrl: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/documents/${filePath}`,
+      };
+    }),
 });

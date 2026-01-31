@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { TaskAttachments } from "@/components/tasks/TaskAttachments";
 import {
   ClipboardList,
   Clock,
@@ -208,6 +209,9 @@ export default function TaskDetailPage() {
                 )}
               </div>
             </div>
+
+            {/* Attachments */}
+            <TaskAttachments taskId={taskId} />
 
             {/* History */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
