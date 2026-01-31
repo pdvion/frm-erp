@@ -6,6 +6,8 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   Users,
   Loader2,
@@ -146,29 +148,29 @@ export default function LeadDetailPage() {
         actions={
           <div className="flex items-center gap-2">
             {!lead.customerId && lead.status !== "LOST" && (
-              <button
+              <Button
                 onClick={handleConvert}
-                disabled={convertMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={convertMutation.isPending}
+                variant="success"
+                leftIcon={<UserPlus className="w-4 h-4" />}
               >
-                <UserPlus className="w-4 h-4" />
                 Converter em Cliente
-              </button>
+              </Button>
             )}
-            <Link
+            <LinkButton
               href={`/sales/leads/${id}/edit`}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Edit className="w-4 h-4" />}
             >
-              <Edit className="w-4 h-4" />
               Editar
-            </Link>
-            <button
+            </LinkButton>
+            <Button
               onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              isLoading={deleteMutation.isPending}
+              variant="danger"
+              size="icon"
             >
               <Trash2 className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         }
       />
