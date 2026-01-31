@@ -72,8 +72,10 @@ import { usersRouter } from "./users";
 import { impexRouter } from "./impex";
 import { delphiImportRouter } from "./delphiImport";
 import { nfeQueueRouter } from "./nfeQueue";
+import { nfeBatchImportRouter } from "./nfeBatchImport";
 
 export const appRouter = createTRPCRouter({
+  nfeBatchImport: nfeBatchImportRouter,
   dashboard: dashboardRouter,
   tenant: tenantRouter,
   materials: materialsRouter,
