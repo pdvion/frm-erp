@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   ShoppingCart,
   CheckCircle,
@@ -117,14 +118,13 @@ export default function PurchaseOrderDetailPage() {
         badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
       >
         {canSend && order.status !== "SENT" && (
-          <button
+          <Button
             onClick={() => updateStatusMutation.mutate({ id, status: "SENT" })}
-            disabled={updateStatusMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={updateStatusMutation.isPending}
+            leftIcon={<Send className="w-4 h-4" />}
           >
-            <Send className="w-4 h-4" />
             Enviar ao Fornecedor
-          </button>
+          </Button>
         )}
       </PageHeader>
 

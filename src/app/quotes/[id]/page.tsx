@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   FileText,
   CheckCircle,
@@ -120,31 +121,31 @@ export default function QuoteDetailPage() {
         badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
       >
         {canEdit && (
-          <Link
+          <LinkButton
             href={`/quotes/${id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
+            variant="outline"
+            leftIcon={<Edit className="w-4 h-4" />}
           >
-            <Edit className="w-4 h-4" />
             Editar
-          </Link>
+          </LinkButton>
         )}
         {canApprove && (
           <>
-            <button
+            <Button
               onClick={() => approveMutation.mutate({ id })}
-              disabled={approveMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              isLoading={approveMutation.isPending}
+              variant="success"
+              leftIcon={<CheckCircle className="w-4 h-4" />}
             >
-              <CheckCircle className="w-4 h-4" />
               Aprovar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowRejectModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              variant="danger"
+              leftIcon={<XCircle className="w-4 h-4" />}
             >
-              <XCircle className="w-4 h-4" />
               Rejeitar
-            </button>
+            </Button>
           </>
         )}
       </PageHeader>
