@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Loader2,
@@ -122,44 +123,43 @@ export default function SalesOrderDetailPage() {
         actions={
           <div className="flex items-center gap-2">
             {order.status === "PENDING" && (
-              <button
+              <Button
                 onClick={handleConfirm}
-                disabled={confirmMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={confirmMutation.isPending}
+                leftIcon={<CheckCircle className="w-4 h-4" />}
               >
-                <CheckCircle className="w-4 h-4" />
                 Confirmar
-              </button>
+              </Button>
             )}
             {["CONFIRMED", "READY"].includes(order.status) && (
-              <button
+              <Button
                 onClick={handleShip}
-                disabled={shipMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
+                isLoading={shipMutation.isPending}
+                className="bg-orange-600 hover:bg-orange-700"
+                leftIcon={<Truck className="w-4 h-4" />}
               >
-                <Truck className="w-4 h-4" />
                 Enviar
-              </button>
+              </Button>
             )}
             {order.status === "SHIPPED" && (
-              <button
+              <Button
                 onClick={handleDeliver}
-                disabled={deliverMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={deliverMutation.isPending}
+                variant="success"
+                leftIcon={<CheckCircle className="w-4 h-4" />}
               >
-                <CheckCircle className="w-4 h-4" />
                 Entregar
-              </button>
+              </Button>
             )}
             {!["DELIVERED", "CANCELLED"].includes(order.status) && (
-              <button
+              <Button
                 onClick={handleCancel}
-                disabled={cancelMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                variant="danger"
+                leftIcon={<XCircle className="w-4 h-4" />}
               >
-                <XCircle className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             )}
           </div>
         }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Loader2,
@@ -113,34 +114,34 @@ export default function IssuedInvoiceDetailPage() {
         actions={
           <div className="flex items-center gap-2">
             {invoice.status === "DRAFT" && (
-              <button
+              <Button
                 onClick={handleAuthorize}
-                disabled={authorizeMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={authorizeMutation.isPending}
+                variant="success"
+                leftIcon={<Send className="w-4 h-4" />}
               >
-                <Send className="w-4 h-4" />
                 Autorizar
-              </button>
+              </Button>
             )}
             {invoice.status === "AUTHORIZED" && (
-              <button
+              <Button
                 onClick={handleCorrection}
-                disabled={correctionMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+                isLoading={correctionMutation.isPending}
+                className="bg-yellow-600 hover:bg-yellow-700"
+                leftIcon={<Edit3 className="w-4 h-4" />}
               >
-                <Edit3 className="w-4 h-4" />
                 Carta Correção
-              </button>
+              </Button>
             )}
             {["DRAFT", "AUTHORIZED"].includes(invoice.status) && (
-              <button
+              <Button
                 onClick={handleCancel}
-                disabled={cancelMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                variant="danger"
+                leftIcon={<Ban className="w-4 h-4" />}
               >
-                <Ban className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             )}
           </div>
         }
