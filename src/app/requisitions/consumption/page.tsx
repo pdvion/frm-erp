@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Building2,
@@ -76,14 +77,13 @@ export default function ConsumptionReportPage() {
           icon={<BarChart3 className="w-6 h-6" />}
           module="inventory"
           actions={
-            <button
+            <Button
               onClick={handleExport}
               disabled={!data || data.data.length === 0}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              leftIcon={<Download className="h-4 w-4" />}
             >
-              <Download className="h-4 w-4" />
               Exportar CSV
-            </button>
+            </Button>
           }
         />
 
