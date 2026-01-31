@@ -24,3 +24,15 @@ export { Alert } from "./Alert";
 export { EmptyState } from "./EmptyState";
 export { Tabs, TabPanel } from "./Tabs";
 export type { Tab, TabsProps, TabPanelProps } from "./Tabs";
+
+export { 
+  Skeleton, 
+  TableSkeleton, 
+  CardSkeleton, 
+  KPISkeleton, 
+  ProcessCardSkeleton, 
+  DashboardSkeleton,
+  ChartSkeleton,
+  FormSkeleton,
+  ListSkeleton
+} from "./Skeleton";
