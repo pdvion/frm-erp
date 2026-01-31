@@ -14,12 +14,18 @@
  *   --output <arquivo>          Arquivo de saída para relatório JSON
  *   --verbose                   Mostrar detalhes de cada XML
  *   --dry-run                   Apenas validar, não importar
- *   --cnpj <cnpj>               Filtrar por CNPJ da empresa
+ *   --cnpj <cnpj>               Filtrar por CNPJ (emitente ou destinatário)
+ *   --company-cnpj <cnpj>       CNPJ da empresa para classificar Entrada/Saída
  *   --help                      Mostrar ajuda
  * 
+ * IMPORTANTE: Use --company-cnpj para classificação correta!
+ *   - Se dest.CNPJ = company-cnpj → Entrada (nota recebida)
+ *   - Se emit.CNPJ = company-cnpj → Saída (nota emitida)
+ * 
  * Exemplos:
- *   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --type entrada
- *   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --output report.json --verbose
+ *   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --company-cnpj 44072254000200
+ *   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --type entrada --output report.json
+ *   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --verbose
  */
 
 import * as fs from "fs";
@@ -61,6 +67,7 @@ interface BatchReport {
   options: {
     type: string;
     cnpjFilter?: string;
+    companyCnpj?: string;
   };
   summary: {
     total: number;
@@ -139,8 +146,10 @@ function parseNFeXml(xmlContent: string): NFeValidationResult {
       result.serie = extractTag(ide, "serie") || undefined;
       result.dataEmissao = extractTag(ide, "dhEmi") || undefined;
       
-      // tpNF: 0=Entrada, 1=Saída
+      // tpNF: 0=Entrada, 1=Saída (do ponto de vista do EMITENTE)
+      // Nota: A classificação real será feita depois com base no CNPJ da empresa
       const tpNF = extractTag(ide, "tpNF");
+      // Temporariamente usa tpNF, será reclassificado se --company-cnpj for fornecido
       result.type = tpNF === "0" ? "entrada" : tpNF === "1" ? "saida" : "unknown";
     }
 
@@ -256,16 +265,23 @@ function findXmlFiles(folder: string): string[] {
 
 function processXmlFiles(
   folder: string,
-  options: { type: string; cnpjFilter?: string }
+  options: { type: string; cnpjFilter?: string; companyCnpj?: string }
 ): BatchReport {
   const files = findXmlFiles(folder);
   const results: NFeValidationResult[] = [];
   
   console.log(`\n📂 Processando: ${folder}`);
-  console.log(`📄 Arquivos XML encontrados: ${files.length}\n`);
+  console.log(`📄 Arquivos XML encontrados: ${files.length}`);
+  if (options.companyCnpj) {
+    console.log(`🏢 CNPJ da empresa: ${options.companyCnpj} (classificação por CNPJ ativa)`);
+  } else {
+    console.log(`⚠️  Sem --company-cnpj: classificação baseada em tpNF (pode ser imprecisa)`);
+  }
+  console.log();
   
   let processed = 0;
   const startTime = Date.now();
+  const companyCnpjClean = options.companyCnpj?.replace(/\D/g, "");
   
   for (const file of files) {
     try {
@@ -273,6 +289,17 @@ function processXmlFiles(
       const result = parseNFeXml(content);
       result.file = path.basename(file);
       result.relativePath = path.relative(folder, file);
+      
+      // Reclassificar baseado no CNPJ da empresa (se fornecido)
+      if (companyCnpjClean && result.status === "valid") {
+        if (result.destinatario?.cnpj === companyCnpjClean) {
+          result.type = "entrada"; // Empresa é destinatária = recebeu a nota
+        } else if (result.emitente?.cnpj === companyCnpjClean) {
+          result.type = "saida"; // Empresa é emitente = emitiu a nota
+        } else {
+          result.type = "unknown"; // Nota de terceiros
+        }
+      }
       
       // Filtrar por tipo
       if (options.type !== "all" && result.type !== options.type) {
@@ -402,8 +429,12 @@ Opções:
   --type <entrada|saida|all>  Filtrar por tipo (default: all)
   --output <arquivo>          Arquivo de saída para relatório JSON
   --verbose                   Mostrar detalhes de cada XML inválido
-  --cnpj <cnpj>               Filtrar por CNPJ da empresa
+  --cnpj <cnpj>               Filtrar por CNPJ (emitente ou destinatário)
+  --company-cnpj <cnpj>       CNPJ da empresa para classificar Entrada/Saída
   --help                      Mostrar ajuda
+
+IMPORTANTE: Use --company-cnpj para classificação correta de Entrada/Saída!
+  Sem este parâmetro, a classificação usa tpNF (ponto de vista do emitente).
 
 Exemplos:
   npx tsx scripts/validate-nfe-xml.ts "/path/to/xmls" --type entrada
@@ -434,11 +465,13 @@ async function main() {
   const typeIndex = args.indexOf("--type");
   const outputIndex = args.indexOf("--output");
   const cnpjIndex = args.indexOf("--cnpj");
+  const companyCnpjIndex = args.indexOf("--company-cnpj");
   const verbose = args.includes("--verbose");
   
   const type = typeIndex !== -1 ? args[typeIndex + 1] : "all";
   const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : null;
   const cnpjFilter = cnpjIndex !== -1 ? args[cnpjIndex + 1] : undefined;
+  const companyCnpj = companyCnpjIndex !== -1 ? args[companyCnpjIndex + 1] : undefined;
   
   if (!fs.existsSync(folder)) {
     console.error(`❌ Pasta não encontrada: ${folder}`);
@@ -451,7 +484,7 @@ async function main() {
   }
   
   // Processar XMLs
-  const report = processXmlFiles(folder, { type, cnpjFilter });
+  const report = processXmlFiles(folder, { type, cnpjFilter, companyCnpj });
   
   // Exibir resumo
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
