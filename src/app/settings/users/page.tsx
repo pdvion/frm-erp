@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   Users,
   Plus,
@@ -77,13 +78,9 @@ export default function UsersPage() {
           { label: "Usuários" },
         ]}
         actions={
-          <Link
-            href="/settings/users/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
+          <LinkButton href="/settings/users/new" leftIcon={<Plus className="w-4 h-4" />}>
             Convidar Usuário
-          </Link>
+          </LinkButton>
         }
       />
 

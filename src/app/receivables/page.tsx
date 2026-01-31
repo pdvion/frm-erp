@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   DollarSign,
   Search,
@@ -56,13 +57,9 @@ export default function ReceivablesPage() {
         icon={<DollarSign className="w-6 h-6" />}
         module="finance"
         actions={
-          <Link
-            href="/receivables/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
+          <LinkButton href="/receivables/new" leftIcon={<Plus className="w-4 h-4" />}>
             Novo Título
-          </Link>
+          </LinkButton>
         }
       />
 

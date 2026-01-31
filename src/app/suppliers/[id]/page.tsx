@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig = {
@@ -95,13 +96,12 @@ export default function SupplierDetailPage() {
         breadcrumbs={breadcrumbs}
         badge={supplier.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
         actions={
-          <Link
+          <LinkButton
             href={`/suppliers/${supplierId}/edit`}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Edit className="w-4 h-4" />}
           >
-            <Edit className="w-4 h-4" />
             <span className="hidden sm:inline">Editar</span>
-          </Link>
+          </LinkButton>
         }
       />
 
