@@ -293,20 +293,20 @@ export default function OEEWorkCentersPage() {
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => { setShowModal(false); setEditingId(null); }}
-                  className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary text-theme"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending || !form.code || !form.name}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  disabled={!form.code || !form.name}
+                  isLoading={createMutation.isPending || updateMutation.isPending}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? "Salvando..." : "Salvar"}
-                </button>
+                  Salvar
+                </Button>
               </div>
             </form>
           </div>

@@ -248,26 +248,20 @@ export default function CollectionRulesPage() {
                 </label>
               </div>
               <div className="flex justify-end gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={resetForm}
-                  className="px-4 py-2 text-theme-secondary border rounded-lg hover:bg-theme-secondary"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  isLoading={createMutation.isPending || updateMutation.isPending}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : editingId ? (
-                    "Salvar"
-                  ) : (
-                    "Criar"
-                  )}
-                </button>
+                  {editingId ? "Salvar" : "Criar"}
+                </Button>
               </div>
             </form>
           </div>
@@ -486,24 +480,22 @@ export default function CollectionRulesPage() {
                           />
                         </div>
                         <div className="flex justify-end gap-3">
-                          <button
+                          <Button
                             type="button"
+                            variant="outline"
+                            size="sm"
                             onClick={resetStepForm}
-                            className="px-3 py-1.5 text-sm text-theme-secondary border rounded-lg hover:bg-theme-secondary"
                           >
                             Cancelar
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="submit"
+                            size="sm"
                             disabled={addStepMutation.isPending}
-                            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                            isLoading={addStepMutation.isPending}
                           >
-                            {addStepMutation.isPending ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              "Adicionar"
-                            )}
-                          </button>
+                            Adicionar
+                          </Button>
                         </div>
                       </form>
                     )}
