@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
 import {
@@ -20,7 +21,6 @@ import {
   XCircle,
   Clock,
   Send,
-  Loader2,
   AlertCircle,
   Filter,
   BarChart3,
@@ -225,9 +225,7 @@ export default function QuotesPage() {
 
       {/* Content */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        </div>
+        <TableSkeleton rows={5} columns={5} />
       ) : error ? (
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-400" />
