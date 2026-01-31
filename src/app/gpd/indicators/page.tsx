@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { BarChart2, Plus, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -184,27 +185,27 @@ export default function GPDIndicatorsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowModal(false);
                   setSelectedIndicator(null);
                 }}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => recordMutation.mutate({
                   indicatorId: selectedIndicator,
                   period: newValue.period,
                   value: newValue.value,
                   notes: newValue.notes || undefined,
                 })}
-                disabled={!newValue.period || recordMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!newValue.period}
+                isLoading={recordMutation.isPending}
               >
-                {recordMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>

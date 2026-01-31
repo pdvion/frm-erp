@@ -6,15 +6,26 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
+  ArrowLeft,
+  Calendar,
   DollarSign,
-  CheckCircle,
-  Loader2,
-  Ban,
+  User,
+  FileText,
   CreditCard,
-  Building2,
-  History,
   Receipt,
+  Ban,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Building2,
+  Percent,
+  TrendingUp,
+  Wallet,
+  Loader2,
+  History as HistoryIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   PENDING: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100" },
@@ -178,7 +189,7 @@ export default function ReceivableDetailPage() {
             {/* Histórico de Recebimentos */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-theme-muted" />
+                <HistoryIcon className="w-5 h-5 text-theme-muted" />
                 <h3 className="text-lg font-medium text-theme">Histórico de Recebimentos</h3>
               </div>
               {receivable.payments.length === 0 ? (
@@ -276,34 +287,36 @@ export default function ReceivableDetailPage() {
               <div className="bg-theme-card rounded-lg border border-theme p-6">
                 <h3 className="text-lg font-medium text-theme mb-4">Ações</h3>
                 <div className="space-y-3">
-                  <button
+                  <Button
                     onClick={() => {
                       setPaymentValue(remaining.toFixed(2));
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    leftIcon={<CreditCard className="w-4 h-4" />}
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    <CreditCard className="w-4 h-4" />
                     Registrar Recebimento
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setPaymentValue("");
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                    leftIcon={<Receipt className="w-4 h-4" />}
+                    className="w-full"
                   >
-                    <Receipt className="w-4 h-4" />
                     Baixa Parcial
-                  </button>
+                  </Button>
                   {receivable.paidValue === 0 && (
-                    <button
+                    <Button
+                      variant="outline"
                       onClick={() => setShowCancelModal(true)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
+                      leftIcon={<Ban className="w-4 h-4" />}
+                      className="w-full border-red-300 text-red-600 hover:bg-red-50"
                     >
-                      <Ban className="w-4 h-4" />
                       Cancelar Título
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -430,16 +443,17 @@ export default function ReceivableDetailPage() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowPaymentModal(false);
                   resetPaymentForm();
                 }}
-                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   paymentMutation.mutate({
                     receivableId: id,
@@ -454,10 +468,11 @@ export default function ReceivableDetailPage() {
                   });
                 }}
                 disabled={paymentMutation.isPending}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={paymentMutation.isPending}
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                {paymentMutation.isPending ? "Processando..." : "Confirmar"}
-              </button>
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>
@@ -490,24 +505,26 @@ export default function ReceivableDetailPage() {
               />
             </div>
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                className="flex-1"
               >
                 Voltar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   cancelMutation.mutate({ id, reason: cancelReason });
                 }}
                 disabled={!cancelReason || cancelMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                className="flex-1 bg-red-600 hover:bg-red-700"
               >
-                {cancelMutation.isPending ? "Cancelando..." : "Confirmar Cancelamento"}
-              </button>
+                Confirmar Cancelamento
+              </Button>
             </div>
           </div>
         </div>

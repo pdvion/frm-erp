@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   FileText,
   Clock,
@@ -35,6 +37,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 export default function BillingDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const breadcrumbs = useRouteBreadcrumbs();
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
@@ -77,42 +80,43 @@ export default function BillingDetailPage() {
         icon={<FileText className="w-6 h-6" />}
         backHref="/billing"
         module="billing"
+        breadcrumbs={breadcrumbs}
         badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
         actions={
           <div className="flex items-center gap-3">
             {invoice.status === "DRAFT" && (
-              <button
+              <Button
                 onClick={() => authorizeMutation.mutate({ id })}
-                disabled={authorizeMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={authorizeMutation.isPending}
+                leftIcon={<Send className="w-4 h-4" />}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <Send className="w-4 h-4" />
-                {authorizeMutation.isPending ? "Autorizando..." : "Autorizar NFe"}
-              </button>
+                Autorizar NFe
+              </Button>
             )}
             {invoice.status === "AUTHORIZED" && (
               <>
-                <button
+                <Button
                   onClick={() => setShowReceivablesModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  leftIcon={<CreditCard className="w-4 h-4" />}
                 >
-                  <CreditCard className="w-4 h-4" />
                   Gerar Títulos
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowCorrectionModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                  variant="outline"
+                  leftIcon={<FileEdit className="w-4 h-4" />}
                 >
-                  <FileEdit className="w-4 h-4" />
                   Carta Correção
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowCancelModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                  variant="outline"
+                  leftIcon={<Ban className="w-4 h-4" />}
+                  className="border-red-300 text-red-700 hover:bg-red-50"
                 >
-                  <Ban className="w-4 h-4" />
                   Cancelar
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -376,14 +380,12 @@ export default function BillingDetailPage() {
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <h2 className="text-lg font-medium text-theme mb-4">Ações</h2>
               <div className="space-y-2">
-                <button className="w-full flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover">
-                  <Printer className="w-4 h-4" />
+                <Button variant="outline" className="w-full justify-start" leftIcon={<Printer className="w-4 h-4" />}>
                   Imprimir DANFE
-                </button>
-                <button className="w-full flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover">
-                  <Download className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" className="w-full justify-start" leftIcon={<Download className="w-4 h-4" />}>
                   Baixar XML
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -475,19 +477,17 @@ function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onC
         )}
 
         <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-          >
+          <Button variant="outline" onClick={onClose} className="flex-1">
             Voltar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => cancelMutation.mutate({ id: invoiceId, reason })}
-            disabled={reason.length < 15 || cancelMutation.isPending}
-            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+            disabled={reason.length < 15}
+            isLoading={cancelMutation.isPending}
+            className="flex-1 bg-red-600 hover:bg-red-700"
           >
-            {cancelMutation.isPending ? "Cancelando..." : "Confirmar Cancelamento"}
-          </button>
+            Confirmar Cancelamento
+          </Button>
         </div>
       </div>
     </div>
@@ -539,19 +539,17 @@ function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string;
         )}
 
         <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-          >
+          <Button variant="outline" onClick={onClose} className="flex-1">
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => correctionMutation.mutate({ id: invoiceId, correction })}
-            disabled={correction.length < 15 || correctionMutation.isPending}
-            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+            disabled={correction.length < 15}
+            isLoading={correctionMutation.isPending}
+            className="flex-1 bg-yellow-600 hover:bg-yellow-700"
           >
-            {correctionMutation.isPending ? "Enviando..." : "Enviar Correção"}
-          </button>
+            Enviar Correção
+          </Button>
         </div>
       </div>
     </div>
@@ -638,23 +636,26 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
                 />
               </div>
               {installments.length > 1 && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => removeInstallment(index)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg mt-4"
+                  className="p-2 text-red-600 hover:bg-red-50 mt-4"
                 >
                   <XCircle className="w-5 h-5" />
-                </button>
+                </Button>
               )}
             </div>
           ))}
         </div>
 
-        <button
+        <Button
+          variant="outline"
           onClick={addInstallment}
-          className="w-full mb-4 px-4 py-2 border border-dashed border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
+          className="w-full mb-4 border-dashed"
         >
           + Adicionar Parcela
-        </button>
+        </Button>
 
         {generateMutation.error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -663,19 +664,16 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
         )}
 
         <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
-          >
+          <Button variant="outline" onClick={onClose} className="flex-1">
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => generateMutation.mutate({ invoiceId, installments })}
-            disabled={generateMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={generateMutation.isPending}
+            className="flex-1"
           >
-            {generateMutation.isPending ? "Gerando..." : "Gerar Títulos"}
-          </button>
+            Gerar Títulos
+          </Button>
         </div>
       </div>
     </div>

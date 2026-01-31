@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Upload,
@@ -202,18 +203,14 @@ export default function ImportNFePage() {
                   <Trash2 className="w-4 h-4" />
                   Limpar
                 </button>
-                <button
+                <Button
                   onClick={importAll}
-                  disabled={isImporting || pendingCount === 0}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  disabled={pendingCount === 0}
+                  isLoading={isImporting}
+                  leftIcon={<Upload className="w-4 h-4" />}
                 >
-                  {isImporting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4" />
-                  )}
                   Importar Todos ({pendingCount})
-                </button>
+                </Button>
               </div>
             ) : undefined
           }

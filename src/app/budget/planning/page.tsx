@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Calendar, Calculator } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -176,24 +177,21 @@ export default function BudgetPlanningPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setShowDistributeModal(false)}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover"
-              >
+              <Button variant="outline" onClick={() => setShowDistributeModal(false)}>
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => distributeMutation.mutate({
                   versionId: selectedVersion!,
                   accountId: distributeForm.accountId,
                   annualAmount: distributeForm.annualAmount,
                   distribution: distributeForm.distribution,
                 })}
-                disabled={!distributeForm.accountId || !distributeForm.annualAmount || distributeMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!distributeForm.accountId || !distributeForm.annualAmount}
+                isLoading={distributeMutation.isPending}
               >
-                {distributeMutation.isPending ? "Distribuindo..." : "Distribuir"}
-              </button>
+                Distribuir
+              </Button>
             </div>
           </div>
         </div>

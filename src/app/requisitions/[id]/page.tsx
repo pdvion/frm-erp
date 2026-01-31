@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Clock,
@@ -117,58 +118,45 @@ export default function RequisitionDetailPage() {
         actions={
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
             {canCancel && (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowCancelModal(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                leftIcon={<Ban className="w-4 h-4" />}
+                className="border-red-300 text-red-700 hover:bg-red-50"
               >
-                <Ban className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             )}
 
             {canSubmit && (
-              <button
+              <Button
                 onClick={() => submitMutation.mutate({ id })}
-                disabled={submitMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={submitMutation.isPending}
+                leftIcon={<Send className="w-4 h-4" />}
               >
-                {submitMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
                 Enviar para Aprovação
-              </button>
+              </Button>
             )}
 
             {canApprove && (
-              <button
+              <Button
+                variant="success"
                 onClick={() => approveMutation.mutate({ id })}
-                disabled={approveMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={approveMutation.isPending}
+                leftIcon={<Check className="w-4 h-4" />}
               >
-                {approveMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Check className="w-4 h-4" />
-                )}
                 Aprovar
-              </button>
+              </Button>
             )}
 
             {canStartSeparation && (
-              <button
+              <Button
                 onClick={() => startSeparationMutation.mutate({ id })}
-                disabled={startSeparationMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={startSeparationMutation.isPending}
+                leftIcon={<Package className="w-4 h-4" />}
               >
-                {startSeparationMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
                 Iniciar Separação
-              </button>
+              </Button>
             )}
           </div>
         }
@@ -486,33 +474,29 @@ export default function RequisitionDetailPage() {
             )}
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => {
                   if (!cancelReason.trim()) {
-                    alert("Informe o motivo");
+                    alert("Por favor, informe o motivo do cancelamento");
                     return;
                   }
                   cancelMutation.mutate({ id, reason: cancelReason });
                 }}
-                disabled={cancelMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                leftIcon={<Ban className="w-4 h-4" />}
               >
-                {cancelMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Ban className="w-4 h-4" />
-                )}
                 Confirmar
-              </button>
+              </Button>
             </div>
           </div>
         </div>

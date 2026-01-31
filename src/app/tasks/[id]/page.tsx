@@ -12,13 +12,14 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Loader2,
   Play,
   User,
-  History,
+  History as HistoryIcon,
   Send,
   X,
+  Loader2,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -160,62 +161,51 @@ export default function TaskDetailPage() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4 border-t border-theme">
                 {canAccept && (
-                  <button
+                  <Button
                     onClick={() => acceptMutation.mutate({ taskId })}
                     disabled={acceptMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    isLoading={acceptMutation.isPending}
+                    leftIcon={<User className="w-4 h-4" />}
                   >
-                    {acceptMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
                     Aceitar Tarefa
-                  </button>
+                  </Button>
                 )}
 
                 {canStart && (
-                  <button
+                  <Button
                     onClick={() => startMutation.mutate({ taskId })}
                     disabled={startMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    isLoading={startMutation.isPending}
+                    leftIcon={<Play className="w-4 h-4" />}
                   >
-                    {startMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Play className="w-4 h-4" />
-                    )}
                     Iniciar Trabalho
-                  </button>
+                  </Button>
                 )}
 
                 {canComplete && (
-                  <button
+                  <Button
                     onClick={() => setShowCompleteModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    leftIcon={<CheckCircle className="w-4 h-4" />}
+                    className="bg-green-600 hover:bg-green-700"
                   >
-                    <CheckCircle className="w-4 h-4" />
                     Concluir
-                  </button>
+                  </Button>
                 )}
 
                 {canCancel && (
-                  <button
+                  <Button
                     onClick={() => {
                       if (confirm("Tem certeza que deseja cancelar esta tarefa?")) {
                         cancelMutation.mutate({ taskId });
                       }
                     }}
                     disabled={cancelMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                    isLoading={cancelMutation.isPending}
+                    leftIcon={<XCircle className="w-4 h-4" />}
+                    variant="destructive"
                   >
-                    {cancelMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <X className="w-4 h-4" />
-                    )}
-                    Cancelar
-                  </button>
+                    Cancelar Tarefa
+                  </Button>
                 )}
               </div>
             </div>
@@ -223,7 +213,7 @@ export default function TaskDetailPage() {
             {/* History */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
-                <History className="w-5 h-5" />
+                <HistoryIcon className="w-5 h-5" />
                 Histórico
               </h3>
 
@@ -267,21 +257,19 @@ export default function TaskDetailPage() {
                     onChange={(e) => setComment(e.target.value)}
                     className="flex-1 px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
-                  <button
+                  <Button
                     onClick={() => {
                       if (comment.trim()) {
                         addCommentMutation.mutate({ taskId, comment });
                       }
                     }}
                     disabled={!comment.trim() || addCommentMutation.isPending}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    isLoading={addCommentMutation.isPending}
+                    leftIcon={<Send className="w-4 h-4" />}
+                    size="icon"
                   >
-                    {addCommentMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </button>
+                    <span className="sr-only">Enviar</span>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -419,23 +407,20 @@ export default function TaskDetailPage() {
               className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
             />
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setShowCompleteModal(false)}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => completeMutation.mutate({ taskId, resolution })}
                 disabled={completeMutation.isPending}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={completeMutation.isPending}
+                className="bg-green-600 hover:bg-green-700"
               >
-                {completeMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  "Concluir"
-                )}
-              </button>
+                Concluir
+              </Button>
             </div>
           </div>
         </div>

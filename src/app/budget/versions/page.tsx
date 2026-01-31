@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { GitBranch, Plus, Lock, CheckCircle2, FileEdit } from "lucide-react";
 import Link from "next/link";
 import { formatDateTime } from "@/lib/formatters";
@@ -125,13 +126,15 @@ export default function BudgetVersionsPage() {
               <div className="flex gap-2">
                 {version.status === "DRAFT" && (
                   <>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => updateMutation.mutate({ id: version.id, status: "APPROVED" })}
-                      className="flex items-center gap-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+                      className="text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                      leftIcon={<CheckCircle2 className="w-3 h-3" />}
                     >
-                      <CheckCircle2 className="w-3 h-3" />
                       Aprovar
-                    </button>
+                    </Button>
                     <Link
                       href={`/budget/planning?version=${version.id}`}
                       className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
@@ -142,13 +145,15 @@ export default function BudgetVersionsPage() {
                   </>
                 )}
                 {version.status === "APPROVED" && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => updateMutation.mutate({ id: version.id, status: "LOCKED" })}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded"
+                    className="text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                    leftIcon={<Lock className="w-3 h-3" />}
                   >
-                    <Lock className="w-3 h-3" />
                     Bloquear
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -237,19 +242,16 @@ export default function BudgetVersionsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover"
-              >
+              <Button variant="outline" onClick={() => setShowModal(false)}>
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => createMutation.mutate(newVersion)}
-                disabled={!newVersion.name || createMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!newVersion.name}
+                isLoading={createMutation.isPending}
               >
-                {createMutation.isPending ? "Criando..." : "Criar"}
-              </button>
+                Criar
+              </Button>
             </div>
           </div>
         </div>

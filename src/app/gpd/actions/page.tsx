@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
-import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
 
@@ -79,13 +80,9 @@ export default function GPDActionsPage() {
           { label: "Ações" },
         ]}
         actions={
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
+          <Button onClick={() => setShowModal(true)} leftIcon={<Plus className="w-4 h-4" />}>
             Nova Ação
-          </button>
+          </Button>
         }
       />
 
@@ -260,19 +257,16 @@ export default function GPDActionsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover"
-              >
+              <Button variant="outline" onClick={() => setShowModal(false)}>
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => createMutation.mutate(newAction)}
-                disabled={!newAction.title || createMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                disabled={!newAction.title}
+                isLoading={createMutation.isPending}
               >
-                {createMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>

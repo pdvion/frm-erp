@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   Layers,
   Loader2,
@@ -23,6 +24,7 @@ import {
 export default function BomDetailPage() {
   const params = useParams();
   const materialId = params.id as string;
+  const breadcrumbs = useRouteBreadcrumbs();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
@@ -52,6 +54,7 @@ export default function BomDetailPage() {
         icon={<Layers className="w-6 h-6" />}
         backHref="/engineering/bom"
         module="engineering"
+        breadcrumbs={breadcrumbs}
         actions={
           <div className="flex items-center gap-3">
             <button

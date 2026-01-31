@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   DollarSign,
   CheckCircle,
@@ -148,37 +149,39 @@ export default function PayableDetailPage() {
               {config.label}
             </span>
             {canPay && (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setRescheduleDate(new Date(payable.dueDate).toISOString().split("T")[0]);
                   setShowRescheduleModal(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50"
+                leftIcon={<Calendar className="w-4 h-4" />}
+                className="border-blue-300 text-blue-700 hover:bg-blue-50"
               >
-                <Calendar className="w-4 h-4" />
                 Reprogramar
-              </button>
+              </Button>
             )}
             {canCancel && (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowCancelModal(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                leftIcon={<Ban className="w-4 h-4" />}
+                className="border-red-300 text-red-700 hover:bg-red-50"
               >
-                <Ban className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             )}
             {canPay && (
-              <button
+              <Button
                 onClick={() => {
                   setPaymentValue(balance.toFixed(2));
                   setShowPaymentModal(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                leftIcon={<CreditCard className="w-4 h-4" />}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <CreditCard className="w-4 h-4" />
                 Registrar Pagamento
-              </button>
+              </Button>
             )}
           </div>
         }
@@ -483,26 +486,27 @@ export default function PayableDetailPage() {
               <div className="bg-theme-card rounded-lg border border-theme p-6">
                 <h3 className="text-lg font-medium text-theme mb-4">Ações Rápidas</h3>
                 <div className="space-y-2">
-                  <button
+                  <Button
                     onClick={() => {
                       setPaymentValue(balance.toFixed(2));
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    leftIcon={<CreditCard className="w-4 h-4" />}
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    <CreditCard className="w-4 h-4" />
                     Baixa Total ({formatCurrency(balance)})
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setPaymentValue("");
                       setShowPaymentModal(true);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                    leftIcon={<Receipt className="w-4 h-4" />}
+                    className="w-full"
                   >
-                    <Receipt className="w-4 h-4" />
                     Baixa Parcial
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -622,27 +626,23 @@ export default function PayableDetailPage() {
             )}
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowPaymentModal(false);
                   resetPaymentForm();
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handlePayment}
-                disabled={paymentMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={paymentMutation.isPending}
+                leftIcon={<CheckCircle className="w-4 h-4" />}
+                className="bg-green-600 hover:bg-green-700"
               >
-                {paymentMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4" />
-                )}
                 Confirmar Pagamento
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -694,17 +694,17 @@ export default function PayableDetailPage() {
             )}
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowRescheduleModal(false);
                   setRescheduleDate("");
                   setRescheduleReason("");
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   if (!rescheduleDate || !rescheduleReason.trim()) {
                     alert("Preencha todos os campos obrigatórios");
@@ -716,16 +716,11 @@ export default function PayableDetailPage() {
                     reason: rescheduleReason,
                   });
                 }}
-                disabled={rescheduleMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={rescheduleMutation.isPending}
+                leftIcon={<Calendar className="w-4 h-4" />}
               >
-                {rescheduleMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Calendar className="w-4 h-4" />
-                )}
                 Confirmar Reprogramação
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -767,16 +762,16 @@ export default function PayableDetailPage() {
             )}
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   if (!cancelReason.trim()) {
                     alert("Informe o motivo do cancelamento");
@@ -784,16 +779,12 @@ export default function PayableDetailPage() {
                   }
                   cancelMutation.mutate({ id, reason: cancelReason });
                 }}
-                disabled={cancelMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                leftIcon={<Ban className="w-4 h-4" />}
+                className="bg-red-600 hover:bg-red-700"
               >
-                {cancelMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Ban className="w-4 h-4" />
-                )}
                 Confirmar Cancelamento
-              </button>
+              </Button>
             </div>
           </div>
         </div>
