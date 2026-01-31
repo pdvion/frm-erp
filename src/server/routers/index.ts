@@ -71,6 +71,7 @@ import { chartBuilderRouter } from "./chartBuilder";
 import { usersRouter } from "./users";
 import { impexRouter } from "./impex";
 import { delphiImportRouter } from "./delphiImport";
+import { nfeQueueRouter } from "./nfeQueue";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -145,6 +146,7 @@ export const appRouter = createTRPCRouter({
   users: usersRouter,
   impex: impexRouter,
   delphiImport: delphiImportRouter,
+  nfeQueue: nfeQueueRouter,
 });
 
 export type AppRouter = typeof appRouter;
