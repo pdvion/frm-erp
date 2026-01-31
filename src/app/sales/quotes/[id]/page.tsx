@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Loader2,
@@ -136,53 +137,51 @@ export default function SalesQuoteDetailPage() {
         actions={
           <div className="flex items-center gap-2">
             {quote.status === "DRAFT" && (
-              <button
+              <Button
                 onClick={handleSend}
-                disabled={sendMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={sendMutation.isPending}
+                leftIcon={<Send className="w-4 h-4" />}
               >
-                <Send className="w-4 h-4" />
                 Enviar
-              </button>
+              </Button>
             )}
             {["SENT", "VIEWED"].includes(quote.status) && (
               <>
-                <button
+                <Button
                   onClick={handleAccept}
-                  disabled={acceptMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  isLoading={acceptMutation.isPending}
+                  variant="success"
+                  leftIcon={<CheckCircle className="w-4 h-4" />}
                 >
-                  <CheckCircle className="w-4 h-4" />
                   Aceitar
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleReject}
-                  disabled={rejectMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  isLoading={rejectMutation.isPending}
+                  variant="danger"
+                  leftIcon={<XCircle className="w-4 h-4" />}
                 >
-                  <XCircle className="w-4 h-4" />
                   Rejeitar
-                </button>
+                </Button>
               </>
             )}
             {quote.status === "ACCEPTED" && !quote.convertedToOrderId && (
-              <button
+              <Button
                 onClick={handleConvert}
-                disabled={convertMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={convertMutation.isPending}
+                leftIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <ArrowRight className="w-4 h-4" />
                 Converter em Pedido
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               onClick={handleDuplicate}
-              disabled={duplicateMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover disabled:opacity-50"
+              isLoading={duplicateMutation.isPending}
+              variant="outline"
+              leftIcon={<Copy className="w-4 h-4" />}
             >
-              <Copy className="w-4 h-4" />
               Duplicar
-            </button>
+            </Button>
           </div>
         }
       />
