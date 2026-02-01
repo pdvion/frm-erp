@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { 
   Users, 
   Save,
@@ -13,8 +12,9 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
-const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
 interface SupplierFormData {
@@ -352,18 +352,15 @@ export default function NewSupplierPage() {
 
           <div>
             <label htmlFor="state" className={labelClass}>UF</label>
-            <select
-              id="state"
-              name="state"
+            <Select
               value={formData.state}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              {STATES.map(uf => (
-                <option key={uf} value={uf}>{uf}</option>
-              ))}
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, state: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                ...STATES.map(uf => ({ value: uf, label: uf })),
+              ]}
+            />
           </div>
         </div>
 
@@ -489,19 +486,18 @@ export default function NewSupplierPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
           <div>
             <label htmlFor="certificationType" className={labelClass}>Tipo de Certificação</label>
-            <select
-              id="certificationType"
-              name="certificationType"
+            <Select
               value={formData.certificationType}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              <option value="UNDEFINED">Indefinido</option>
-              <option value="ISO_RBS">ISO/RBS</option>
-              <option value="INITIAL_EVAL">Avaliação Inicial</option>
-              <option value="STRATEGIC">Estratégico</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, certificationType: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                { value: "UNDEFINED", label: "Indefinido" },
+                { value: "ISO_RBS", label: "ISO/RBS" },
+                { value: "INITIAL_EVAL", label: "Avaliação Inicial" },
+                { value: "STRATEGIC", label: "Estratégico" },
+              ]}
+            />
           </div>
           <Input
             label="Validade Certificação"
@@ -541,31 +537,28 @@ export default function NewSupplierPage() {
           />
           <div>
             <label htmlFor="iqfStatus" className={labelClass}>Status IQF</label>
-            <select
-              id="iqfStatus"
-              name="iqfStatus"
+            <Select
               value={formData.iqfStatus}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              <option value="NEW">Novo</option>
-              <option value="APPROVED">Aprovado</option>
-              <option value="REJECTED">Reprovado</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, iqfStatus: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                { value: "NEW", label: "Novo" },
+                { value: "APPROVED", label: "Aprovado" },
+                { value: "REJECTED", label: "Reprovado" },
+              ]}
+            />
           </div>
         </div>
 
         {/* Observações */}
         <div className="mb-6">
           <label htmlFor="notes" className={labelClass}>Observações</label>
-          <textarea
+          <Textarea
             id="notes"
-            name="notes"
-            rows={3}
             value={formData.notes}
-            onChange={handleChange}
-            className={inputClass}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            rows={3}
           />
         </div>
 
@@ -586,13 +579,13 @@ export default function NewSupplierPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 pt-6 border-t border-theme">
-          <Link
-            href="/suppliers"
-            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/suppliers")}
+            leftIcon={<X className="w-4 h-4" />}
           >
-            <X className="w-4 h-4" />
             Cancelar
-          </Link>
+          </Button>
           <Button
             type="submit"
             isLoading={isSubmitting}
