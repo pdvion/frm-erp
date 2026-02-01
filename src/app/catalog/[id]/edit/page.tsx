@@ -269,7 +269,7 @@ export default function EditProductPage() {
       />
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-theme">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
             <Button
@@ -279,7 +279,7 @@ export default function EditProductPage() {
               className={`py-3 px-1 rounded-none border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
               }`}
             >
               {tab.label}
@@ -293,8 +293,8 @@ export default function EditProductPage() {
         {activeTab === "general" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">
                   Informações Básicas
                 </h3>
 
@@ -312,7 +312,7 @@ export default function EditProductPage() {
                     onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Categoria
                     </label>
                     <Select
@@ -331,7 +331,7 @@ export default function EditProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição Curta
                   </label>
                   <Textarea
@@ -343,7 +343,7 @@ export default function EditProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Status
                   </label>
                   <Select
@@ -359,8 +359,8 @@ export default function EditProductPage() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">
                   Descrição Completa
                 </h3>
                 <RichTextEditor
@@ -373,8 +373,8 @@ export default function EditProductPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">Tags</h3>
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">Tags</h3>
                 <Input
                   value={formData.tags}
                   onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
@@ -407,7 +407,7 @@ export default function EditProductPage() {
         {/* Media Tab */}
         {activeTab === "media" && (
           <div className="space-y-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <ProductImageUpload
                 productId={productId}
                 images={images.map((img) => ({
@@ -427,7 +427,7 @@ export default function EditProductPage() {
               />
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <ProductVideoManager
                 productId={productId}
                 videos={videos.map((v) => ({
@@ -454,7 +454,7 @@ export default function EditProductPage() {
               />
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-theme-card rounded-lg border border-theme p-6">
               <ProductAttachmentManager
                 productId={productId}
                 attachments={attachments.map((a) => ({
@@ -477,16 +477,16 @@ export default function EditProductPage() {
         {/* Pricing Tab */}
         {activeTab === "pricing" && (
           <div className="max-w-2xl">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <h3 className="font-medium text-gray-900 dark:text-gray-100">Preços</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+              <h3 className="font-medium text-theme">Preços</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço de Custo
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10">R$</span>
                     <Input
                       type="number"
                       step={0.01}
@@ -498,11 +498,11 @@ export default function EditProductPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço de Tabela
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10">R$</span>
                     <Input
                       type="number"
                       step={0.01}
@@ -514,11 +514,11 @@ export default function EditProductPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço Promocional
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10">R$</span>
                     <Input
                       type="number"
                       step={0.01}
@@ -537,11 +537,11 @@ export default function EditProductPage() {
         {/* SEO Tab */}
         {activeTab === "seo" && (
           <div className="max-w-2xl">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <h3 className="font-medium text-gray-900 dark:text-gray-100">SEO</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+              <h3 className="font-medium text-theme">SEO</h3>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   URL Amigável (Slug)
                 </label>
                 <div className="flex gap-2">
@@ -569,7 +569,7 @@ export default function EditProductPage() {
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Descrição SEO
                 </label>
                 <Textarea
