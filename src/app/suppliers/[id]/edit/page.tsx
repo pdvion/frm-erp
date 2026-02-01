@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Input } from "@/components/ui/Input";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
@@ -336,51 +337,40 @@ export default function EditSupplierPage() {
         {/* Dados Básicos */}
         <h2 className="text-lg font-semibold text-theme mb-4">Dados Básicos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className={labelClass}>Código</label>
-            <input
-              type="number"
-              value={formData.code}
-              disabled
-              className="w-full px-3 py-2 bg-theme-secondary border border-theme rounded-lg text-theme-muted cursor-not-allowed"
-            />
-          </div>
+          <Input
+            label="Código"
+            type="number"
+            value={formData.code}
+            disabled
+          />
 
-          <div>
-            <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
-            <input
-              type="text"
-              id="cnpj"
-              name="cnpj"
-              value={formatCNPJ(formData.cnpj)}
-              onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
-              placeholder="00.000.000/0000-00"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CNPJ"
+            id="cnpj"
+            name="cnpj"
+            value={formatCNPJ(formData.cnpj)}
+            onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
+            placeholder="00.000.000/0000-00"
+          />
 
           <div className="md:col-span-2">
-            <label htmlFor="companyName" className={labelClass}>Razão Social *</label>
-            <input
-              type="text"
+            <Input
+              label="Razão Social *"
               id="companyName"
               name="companyName"
               required
               value={formData.companyName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="tradeName" className={labelClass}>Nome Fantasia</label>
-            <input
-              type="text"
+            <Input
+              label="Nome Fantasia"
               id="tradeName"
               name="tradeName"
               value={formData.tradeName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
@@ -399,121 +389,88 @@ export default function EditSupplierPage() {
             </select>
           </div>
 
-          <div>
-            <label htmlFor="qualityIndex" className={labelClass}>Índice de Qualidade (IQF)</label>
-            <input
-              type="number"
-              id="qualityIndex"
-              name="qualityIndex"
-              min="0"
-              max="100"
-              step="0.1"
-              value={formData.qualityIndex || ""}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Índice de Qualidade (IQF)"
+            type="number"
+            id="qualityIndex"
+            name="qualityIndex"
+            min="0"
+            max="100"
+            step="0.1"
+            value={formData.qualityIndex || ""}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="ie" className={labelClass}>Inscrição Estadual</label>
-            <input
-              type="text"
-              id="ie"
-              name="ie"
-              value={formData.ie}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Estadual"
+            id="ie"
+            name="ie"
+            value={formData.ie}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="im" className={labelClass}>Inscrição Municipal</label>
-            <input
-              type="text"
-              id="im"
-              name="im"
-              value={formData.im}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Municipal"
+            id="im"
+            name="im"
+            value={formData.im}
+            onChange={handleChange}
+          />
         </div>
 
         {/* Endereço */}
         <h2 className="text-lg font-semibold text-theme mb-4">Endereço</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div>
-            <label htmlFor="zipCode" className={labelClass}>CEP</label>
-            <input
-              type="text"
-              id="zipCode"
-              name="zipCode"
-              value={formatCEP(formData.zipCode)}
-              onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
-              placeholder="00000-000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CEP"
+            id="zipCode"
+            name="zipCode"
+            value={formatCEP(formData.zipCode)}
+            onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
+            placeholder="00000-000"
+          />
 
           <div className="md:col-span-2">
-            <label htmlFor="address" className={labelClass}>Endereço</label>
-            <input
-              type="text"
+            <Input
+              label="Endereço"
               id="address"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
-          <div>
-            <label htmlFor="number" className={labelClass}>Número</label>
-            <input
-              type="text"
-              id="number"
-              name="number"
-              value={formData.number}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Número"
+            id="number"
+            name="number"
+            value={formData.number}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="complement" className={labelClass}>Complemento</label>
-            <input
-              type="text"
-              id="complement"
-              name="complement"
-              value={formData.complement}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Complemento"
+            id="complement"
+            name="complement"
+            value={formData.complement}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="neighborhood" className={labelClass}>Bairro</label>
-            <input
-              type="text"
-              id="neighborhood"
-              name="neighborhood"
-              value={formData.neighborhood}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Bairro"
+            id="neighborhood"
+            name="neighborhood"
+            value={formData.neighborhood}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="city" className={labelClass}>Cidade</label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Cidade"
+            id="city"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+          />
 
           <div>
             <label htmlFor="state" className={labelClass}>UF</label>
@@ -535,68 +492,49 @@ export default function EditSupplierPage() {
         {/* Contato */}
         <h2 className="text-lg font-semibold text-theme mb-4">Contato</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="phone" className={labelClass}>Telefone</label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              value={formatPhone(formData.phone)}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 0000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Telefone"
+            id="phone"
+            name="phone"
+            value={formatPhone(formData.phone)}
+            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 0000-0000"
+          />
 
-          <div>
-            <label htmlFor="mobile" className={labelClass}>Celular</label>
-            <input
-              type="text"
-              id="mobile"
-              name="mobile"
-              value={formatPhone(formData.mobile)}
-              onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 00000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Celular"
+            id="mobile"
+            name="mobile"
+            value={formatPhone(formData.mobile)}
+            onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 00000-0000"
+          />
 
-          <div>
-            <label htmlFor="email" className={labelClass}>E-mail</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="E-mail"
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="website" className={labelClass}>Website</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Website"
+            id="website"
+            name="website"
+            value={formData.website}
+            onChange={handleChange}
+            placeholder="https://"
+          />
 
-          <div>
-            <label htmlFor="contactName" className={labelClass}>Nome do Contato</label>
-            <input
-              type="text"
-              id="contactName"
-              name="contactName"
-              value={formData.contactName}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Nome do Contato"
+            id="contactName"
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+          />
 
           <div>
             <label htmlFor="paymentTerms" className={labelClass}>Condições de Pagamento</label>

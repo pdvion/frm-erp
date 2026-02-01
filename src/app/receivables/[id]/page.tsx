@@ -16,6 +16,7 @@ import {
   History as HistoryIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   PENDING: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100" },
@@ -327,61 +328,42 @@ export default function ReceivableDetailPage() {
           <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
             <h3 id="payment-receivable-title" className="text-lg font-medium text-theme mb-4">Registrar Recebimento</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Data do Recebimento
-                </label>
-                <input
-                  type="date"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Valor Recebido
-                </label>
-                <input
+              <Input
+                label="Data do Recebimento"
+                type="date"
+                value={paymentDate}
+                onChange={(e) => setPaymentDate(e.target.value)}
+              />
+              <Input
+                label="Valor Recebido"
+                type="number"
+                step="0.01"
+                value={paymentValue}
+                onChange={(e) => setPaymentValue(e.target.value)}
+                placeholder={remaining.toFixed(2)}
+              />
+              <div className="grid grid-cols-3 gap-2">
+                <Input
+                  label="Desconto"
                   type="number"
                   step="0.01"
-                  value={paymentValue}
-                  onChange={(e) => setPaymentValue(e.target.value)}
-                  placeholder={remaining.toFixed(2)}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
+                  value={discountValue}
+                  onChange={(e) => setDiscountValue(e.target.value)}
                 />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-theme-secondary mb-1">Desconto</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={discountValue}
-                    onChange={(e) => setDiscountValue(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-theme-secondary mb-1">Juros</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={interestValue}
-                    onChange={(e) => setInterestValue(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-theme-secondary mb-1">Multa</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={fineValue}
-                    onChange={(e) => setFineValue(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-2 py-1 text-sm"
-                  />
-                </div>
+                <Input
+                  label="Juros"
+                  type="number"
+                  step="0.01"
+                  value={interestValue}
+                  onChange={(e) => setInterestValue(e.target.value)}
+                />
+                <Input
+                  label="Multa"
+                  type="number"
+                  step="0.01"
+                  value={fineValue}
+                  onChange={(e) => setFineValue(e.target.value)}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
