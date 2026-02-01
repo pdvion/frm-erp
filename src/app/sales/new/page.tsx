@@ -5,7 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Search, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -269,9 +269,9 @@ export default function NewSalePage() {
               >
                 Finalizar Venda
               </Button>
-              <Link href="/sales" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
+              <LinkButton href="/sales" variant="outline" className="w-full">
                 Cancelar
-              </Link>
+              </LinkButton>
             </div>
           </div>
         </div>

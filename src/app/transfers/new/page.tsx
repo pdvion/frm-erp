@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { ArrowLeftRight, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency } from "@/lib/formatters";
 
 export default function NewTransferPage() {
@@ -103,9 +103,9 @@ export default function NewTransferPage() {
             >
               Realizar Transferência
             </Button>
-            <Link href="/transfers" className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover">
+            <LinkButton href="/transfers" variant="outline">
               Cancelar
-            </Link>
+            </LinkButton>
           </div>
         </div>
 

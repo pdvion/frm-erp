@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Receipt, Search, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency } from "@/lib/formatters";
 
 interface InvoiceItem {
@@ -206,9 +206,9 @@ export default function NewBillingPage() {
               >
                 Emitir Fatura
               </Button>
-              <Link href="/billing" className="block w-full px-4 py-2 text-center border border-theme rounded-lg text-theme hover:bg-theme-hover">
+              <LinkButton href="/billing" variant="outline" className="w-full">
                 Cancelar
-              </Link>
+              </LinkButton>
             </div>
           </div>
         </div>

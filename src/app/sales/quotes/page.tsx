@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
@@ -132,10 +131,15 @@ export default function SalesQuotesPage() {
                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Link href={`/sales/quotes/${quote.id}`} className="inline-flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded">
-                              <Eye className="w-4 h-4" />
+                            <LinkButton
+                              href={`/sales/quotes/${quote.id}`}
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="w-4 h-4" />}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
                               Ver
-                            </Link>
+                            </LinkButton>
                           </td>
                         </tr>
                       );
