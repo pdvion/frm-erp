@@ -68,7 +68,8 @@ export default function NewEmployeePage() {
   // Buscar cargos
   const { data: positions } = trpc.hr.listPositions.useQuery({});
   
-  // Escalas de trabalho - TODO: implementar listWorkSchedules no router HR
+  // Buscar escalas de trabalho
+  const { data: workSchedules } = trpc.timeclock.listSchedules.useQuery({ isActive: true });
 
   const createEmployee = trpc.hr.createEmployee.useMutation({
     onSuccess: () => {
@@ -365,7 +366,7 @@ export default function NewEmployeePage() {
                   placeholder="Selecione"
                   options={[
                     { value: "", label: "Selecione" },
-                    // TODO: implementar listWorkSchedules
+                    ...(workSchedules?.map((s) => ({ value: s.id, label: s.name })) || []),
                   ]}
                 />
               </div>
