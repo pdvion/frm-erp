@@ -195,20 +195,23 @@ export default function GroupsPage() {
                 </div>
                 {!group.isSystem && (
                   <div className="flex gap-1">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleEdit(group)}
-                      className="p-1.5 hover:bg-theme-secondary rounded transition-colors"
                       title="Editar"
                     >
-                      <Edit2 className="w-4 h-4 text-theme-muted" />
-                    </button>
-                    <button
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setDeleteConfirm(group.id)}
-                      className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
                       title="Excluir"
+                      className="text-red-600 hover:bg-red-100"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-                    </button>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 )}
               </div>
@@ -241,12 +244,13 @@ export default function GroupsPage() {
               <h2 className="text-lg font-semibold text-theme">
                 {editingId ? "Editar Grupo" : "Novo Grupo"}
               </h2>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={resetForm}
-                className="p-1 hover:bg-theme-secondary rounded"
               >
-                <X className="w-5 h-5 text-theme-muted" />
-              </button>
+                <X className="w-5 h-5" />
+              </Button>
             </div>
 
             <form onSubmit={handleSubmit} className="flex-1 overflow-auto p-4 space-y-4">
@@ -285,20 +289,21 @@ export default function GroupsPage() {
                   {groupedPermissions &&
                     Object.entries(groupedPermissions).map(([module, perms]) => (
                       <div key={module}>
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
                           onClick={() => toggleModule(module)}
-                          className="w-full px-3 py-2 flex items-center justify-between hover:bg-theme-secondary"
+                          className="w-full justify-between"
                         >
-                          <span className="font-medium text-theme capitalize">
+                          <span className="font-medium capitalize">
                             {module}
                           </span>
                           {expandedModules.includes(module) ? (
-                            <ChevronDown className="w-4 h-4 text-theme-muted" />
+                            <ChevronDown className="w-4 h-4" />
                           ) : (
-                            <ChevronRight className="w-4 h-4 text-theme-muted" />
+                            <ChevronRight className="w-4 h-4" />
                           )}
-                        </button>
+                        </Button>
                         {expandedModules.includes(module) && (
                           <div className="px-3 pb-2 space-y-1">
                             {perms?.map((perm) => (
@@ -331,13 +336,13 @@ export default function GroupsPage() {
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-theme">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
                 >
                   Cancelar
-                </button>
+                </Button>
                 <Button
                   type="submit"
                   isLoading={createMutation.isPending || updateMutation.isPending}
@@ -362,19 +367,20 @@ export default function GroupsPage() {
               deste grupo.
             </p>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={deleteMutation.isPending}
               >
                 Excluir
-              </button>
+              </Button>
             </div>
           </div>
         </div>
