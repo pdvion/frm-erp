@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   GitBranch,
   ArrowLeft,
@@ -93,11 +96,10 @@ export default function StartWorkflowPage({
               <label className="block text-sm font-medium text-theme mb-1">
                 Observações (opcional)
               </label>
-              <textarea
+              <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                 placeholder="Adicione observações sobre esta execução..."
               />
             </div>
@@ -107,18 +109,18 @@ export default function StartWorkflowPage({
                 <label className="block text-sm font-medium text-theme mb-1">
                   Tipo de Entidade (opcional)
                 </label>
-                <select
+                <Select
                   value={entityType}
-                  onChange={(e) => setEntityType(e.target.value)}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                >
-                  <option value="">Nenhum</option>
-                  <option value="PURCHASE_ORDER">Pedido de Compra</option>
-                  <option value="SALES_ORDER">Pedido de Venda</option>
-                  <option value="INVOICE">Nota Fiscal</option>
-                  <option value="PAYMENT">Pagamento</option>
-                  <option value="REQUISITION">Requisição</option>
-                </select>
+                  onChange={setEntityType}
+                  placeholder="Nenhum"
+                  options={[
+                    { value: "PURCHASE_ORDER", label: "Pedido de Compra" },
+                    { value: "SALES_ORDER", label: "Pedido de Venda" },
+                    { value: "INVOICE", label: "Nota Fiscal" },
+                    { value: "PAYMENT", label: "Pagamento" },
+                    { value: "REQUISITION", label: "Requisição" },
+                  ]}
+                />
               </div>
               <Input
                 label="ID da Entidade (opcional)"
@@ -135,14 +137,14 @@ export default function StartWorkflowPage({
               >
                 Cancelar
               </Link>
-              <button
+              <Button
                 onClick={handleStart}
-                disabled={startMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50"
+                isLoading={startMutation.isPending}
+                leftIcon={<Play className="w-4 h-4" />}
+                className="bg-violet-600 hover:bg-violet-700"
               >
-                <Play className="w-4 h-4" />
-                {startMutation.isPending ? "Iniciando..." : "Iniciar Workflow"}
-              </button>
+                Iniciar Workflow
+              </Button>
             </div>
           </div>
         </div>

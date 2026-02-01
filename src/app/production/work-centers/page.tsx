@@ -4,8 +4,9 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Settings,
   Loader2,
@@ -112,13 +113,12 @@ export default function WorkCentersPage() {
         backHref="/production"
         module="production"
         actions={
-          <button
+          <Button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Centro
-          </button>
+          </Button>
         }
       />
 
@@ -151,11 +151,10 @@ export default function WorkCentersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="Descrição do centro de trabalho..."
                 />
               </div>
@@ -214,20 +213,19 @@ export default function WorkCentersPage() {
               </div>
 
               <div className="flex justify-end gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  isLoading={createMutation.isPending || updateMutation.isPending}
                 >
-                  {createMutation.isPending || updateMutation.isPending ? "Salvando..." : "Salvar"}
-                </button>
+                  Salvar
+                </Button>
               </div>
             </form>
           </div>

@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Palmtree,
   Save,
@@ -99,22 +101,14 @@ export default function NewVacationPage() {
             <label className="block text-sm font-medium text-theme mb-1">
               Selecione o Funcionário *
             </label>
-            <select
+            <Select
               value={form.employeeId}
-              onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(value) => setForm({ ...form, employeeId: value })}
+              placeholder={loadingEmployees ? "Carregando..." : "Selecione um funcionário"}
               required
               disabled={loadingEmployees}
-            >
-              <option value="">
-                {loadingEmployees ? "Carregando..." : "Selecione um funcionário"}
-              </option>
-              {employees?.employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.code} - {emp.name}
-                </option>
-              ))}
-            </select>
+              options={employees?.employees.map((emp) => ({ value: emp.id, label: `${emp.code} - ${emp.name}` })) || []}
+            />
           </div>
 
           {selectedEmployee && (
@@ -198,30 +192,30 @@ export default function NewVacationPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Total de Dias
               </label>
-              <select
-                value={form.totalDays}
-                onChange={(e) => setForm({ ...form, totalDays: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value={30}>30 dias</option>
-                <option value={20}>20 dias</option>
-                <option value={15}>15 dias</option>
-                <option value={10}>10 dias</option>
-              </select>
+              <Select
+                value={String(form.totalDays)}
+                onChange={(value) => setForm({ ...form, totalDays: parseInt(value) })}
+                options={[
+                  { value: "30", label: "30 dias" },
+                  { value: "20", label: "20 dias" },
+                  { value: "15", label: "15 dias" },
+                  { value: "10", label: "10 dias" },
+                ]}
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Dias Vendidos (Abono)
               </label>
-              <select
-                value={form.soldDays}
-                onChange={(e) => setForm({ ...form, soldDays: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value={0}>Nenhum</option>
-                <option value={10}>10 dias (máximo permitido)</option>
-              </select>
+              <Select
+                value={String(form.soldDays)}
+                onChange={(value) => setForm({ ...form, soldDays: parseInt(value) })}
+                options={[
+                  { value: "0", label: "Nenhum" },
+                  { value: "10", label: "10 dias (máximo permitido)" },
+                ]}
+              />
               <p className="text-xs text-theme-muted mt-1">
                 O funcionário pode vender até 1/3 das férias
               </p>
@@ -272,12 +266,11 @@ export default function NewVacationPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="text-lg font-semibold text-theme mb-4">Observações</h3>
 
-          <textarea
+          <Textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             placeholder="Observações adicionais..."
             rows={3}
-            className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
           />
         </div>
 

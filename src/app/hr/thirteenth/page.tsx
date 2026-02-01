@@ -4,6 +4,9 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import {
   Calculator,
   Search,
@@ -68,22 +71,22 @@ export default function ThirteenthPage() {
         module="hr"
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => calculateFirstMutation.mutate({ year })}
-              disabled={calculateFirstMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 border border-theme-input rounded-lg hover:bg-theme-hover transition-colors disabled:opacity-50"
+              isLoading={calculateFirstMutation.isPending}
+              leftIcon={<Calculator className="w-4 h-4" />}
             >
-              <Calculator className="w-4 h-4" />
               Calcular 1ª Parcela
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => calculateSecondMutation.mutate({ year })}
-              disabled={calculateSecondMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              isLoading={calculateSecondMutation.isPending}
+              leftIcon={<Calculator className="w-4 h-4" />}
+              className="bg-green-600 hover:bg-green-700"
             >
-              <Calculator className="w-4 h-4" />
               Calcular 2ª Parcela
-            </button>
+            </Button>
           </div>
         }
       />
@@ -119,46 +122,41 @@ export default function ThirteenthPage() {
         <div className="p-4 border-b border-theme">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4 z-10" />
+              <Input
                 placeholder="Buscar por funcionário..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500"
+                className="pl-10"
               />
             </div>
-            <select
+            <Select
               value={typeFilter}
-              onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 border border-theme-input rounded-lg"
-            >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="FIRST_INSTALLMENT">1ª Parcela</option>
-              <option value="SECOND_INSTALLMENT">2ª Parcela</option>
-              <option value="FULL">Integral</option>
-              <option value="PROPORTIONAL">Proporcional</option>
-            </select>
-            <select
+              onChange={(value) => { setTypeFilter(value); setPage(1); }}
+              options={[
+                { value: "ALL", label: "Todos os Tipos" },
+                { value: "FIRST_INSTALLMENT", label: "1ª Parcela" },
+                { value: "SECOND_INSTALLMENT", label: "2ª Parcela" },
+                { value: "FULL", label: "Integral" },
+                { value: "PROPORTIONAL", label: "Proporcional" },
+              ]}
+            />
+            <Select
               value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 border border-theme-input rounded-lg"
-            >
-              <option value="ALL">Todos os Status</option>
-              <option value="PENDING">Pendente</option>
-              <option value="CALCULATED">Calculado</option>
-              <option value="PAID">Pago</option>
-              <option value="CANCELLED">Cancelado</option>
-            </select>
-            <select
-              value={year}
-              onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-              className="px-4 py-2 border border-theme-input rounded-lg"
-            >
-              {[2024, 2025, 2026, 2027].map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+              onChange={(value) => { setStatusFilter(value); setPage(1); }}
+              options={[
+                { value: "ALL", label: "Todos os Status" },
+                { value: "PENDING", label: "Pendente" },
+                { value: "CALCULATED", label: "Calculado" },
+                { value: "PAID", label: "Pago" },
+                { value: "CANCELLED", label: "Cancelado" },
+              ]}
+            />
+            <Select
+              value={String(year)}
+              onChange={(value) => { setYear(Number(value)); setPage(1); }}
+              options={[2024, 2025, 2026, 2027].map((y) => ({ value: String(y), label: String(y) }))}
+            />
           </div>
         </div>
 

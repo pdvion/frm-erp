@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import { BarChart2, Plus, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -171,10 +172,9 @@ export default function GPDIndicatorsPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Observações</label>
-                <textarea
+                <Textarea
                   value={newValue.notes}
                   onChange={(e) => setNewValue({ ...newValue, notes: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
                   rows={2}
                 />
               </div>
