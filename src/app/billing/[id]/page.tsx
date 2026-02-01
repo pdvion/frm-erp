@@ -9,6 +9,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   FileText,
@@ -462,11 +463,10 @@ function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onC
           <label className="block text-sm font-medium text-theme-secondary mb-2">
             Motivo do Cancelamento (mínimo 15 caracteres)
           </label>
-          <textarea
+          <Textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
             placeholder="Descreva o motivo do cancelamento..."
           />
         </div>
@@ -524,11 +524,10 @@ function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string;
           <label className="block text-sm font-medium text-theme-secondary mb-2">
             Texto da Correção (mínimo 15 caracteres)
           </label>
-          <textarea
+          <Textarea
             value={correction}
             onChange={(e) => setCorrection(e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-yellow-500"
             placeholder="Descreva a correção a ser feita..."
           />
         </div>

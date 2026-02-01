@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   PENDING: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100" },
@@ -369,48 +371,48 @@ export default function ReceivableDetailPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Forma de Recebimento
                 </label>
-                <select
+                <Select
                   value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                >
-                  <option value="">Selecione...</option>
-                  <option value="PIX">PIX</option>
-                  <option value="Boleto">Boleto</option>
-                  <option value="Transferência">Transferência</option>
-                  <option value="Cartão">Cartão</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                  <option value="Cheque">Cheque</option>
-                </select>
+                  onChange={setPaymentMethod}
+                  placeholder="Selecione..."
+                  options={[
+                    { value: "", label: "Selecione..." },
+                    { value: "PIX", label: "PIX" },
+                    { value: "Boleto", label: "Boleto" },
+                    { value: "Transferência", label: "Transferência" },
+                    { value: "Cartão", label: "Cartão" },
+                    { value: "Dinheiro", label: "Dinheiro" },
+                    { value: "Cheque", label: "Cheque" },
+                  ]}
+                />
               </div>
               {bankAccounts && bankAccounts.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Conta Bancária
                   </label>
-                  <select
+                  <Select
                     value={selectedBankAccount}
-                    onChange={(e) => setSelectedBankAccount(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  >
-                    <option value="">Selecione...</option>
-                    {bankAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name} - {account.bankName}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setSelectedBankAccount}
+                    placeholder="Selecione..."
+                    options={[
+                      { value: "", label: "Selecione..." },
+                      ...bankAccounts.map((account) => ({
+                        value: account.id,
+                        label: `${account.name} - ${account.bankName}`,
+                      })),
+                    ]}
+                  />
                 </div>
               )}
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Observações
                 </label>
-                <textarea
+                <Textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
@@ -468,11 +470,10 @@ export default function ReceivableDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento
               </label>
-              <textarea
+              <Textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
-                className="w-full border border-theme-input rounded-lg px-3 py-2"
                 placeholder="Informe o motivo..."
               />
             </div>

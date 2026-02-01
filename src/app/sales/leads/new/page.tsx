@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Users, Loader2, Save } from "lucide-react";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
+import { Users, Save } from "lucide-react";
 
 export default function NewLeadPage() {
   const router = useRouter();
@@ -79,19 +82,19 @@ export default function NewLeadPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Origem
                 </label>
-                <select
+                <Select
                   value={formData.source}
-                  onChange={(e) => setFormData({ ...formData, source: e.target.value as typeof formData.source })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                >
-                  <option value="WEBSITE">Site</option>
-                  <option value="REFERRAL">Indicação</option>
-                  <option value="COLD_CALL">Prospecção</option>
-                  <option value="TRADE_SHOW">Feira</option>
-                  <option value="SOCIAL_MEDIA">Redes Sociais</option>
-                  <option value="EMAIL">Email</option>
-                  <option value="OTHER">Outros</option>
-                </select>
+                  onChange={(value) => setFormData({ ...formData, source: value as typeof formData.source })}
+                  options={[
+                    { value: "WEBSITE", label: "Site" },
+                    { value: "REFERRAL", label: "Indicação" },
+                    { value: "COLD_CALL", label: "Prospecção" },
+                    { value: "TRADE_SHOW", label: "Feira" },
+                    { value: "SOCIAL_MEDIA", label: "Redes Sociais" },
+                    { value: "EMAIL", label: "Email" },
+                    { value: "OTHER", label: "Outros" },
+                  ]}
+                />
               </div>
               <Input
                 label="Email"
@@ -148,11 +151,10 @@ export default function NewLeadPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Descreva a oportunidade..."
                 />
               </div>
@@ -160,11 +162,10 @@ export default function NewLeadPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Observações
                 </label>
-                <textarea
+                <Textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Observações internas..."
                 />
               </div>
@@ -179,18 +180,14 @@ export default function NewLeadPage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={createMutation.isPending || !formData.companyName.trim()}
-              className="flex items-center gap-2 px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
+              disabled={!formData.companyName.trim()}
+              isLoading={createMutation.isPending}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {createMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Salvar Lead
-            </button>
+            </Button>
           </div>
 
           {createMutation.isError && (
