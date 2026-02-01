@@ -18,6 +18,8 @@ import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { LinkButton } from "@/components/ui/LinkButton";
 
 interface InventoryItem {
@@ -103,38 +105,38 @@ export default function InventoryPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por descrição ou código do material..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10"
             />
           </div>
 
           {/* Type Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={inventoryType ?? ""}
-              onChange={(e) => {
-                setInventoryType(e.target.value || undefined);
+              onChange={(value) => {
+                setInventoryType(value || undefined);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todos os tipos</option>
-              <option value="RAW_MATERIAL">Matéria Prima</option>
-              <option value="SEMI_FINISHED">Semi-Acabado</option>
-              <option value="FINISHED">Acabado</option>
-              <option value="CRITICAL">Crítico</option>
-              <option value="DEAD">Morto</option>
-              <option value="SCRAP">Sucata</option>
-            </select>
+              placeholder="Todos os tipos"
+              options={[
+                { value: "", label: "Todos os tipos" },
+                { value: "RAW_MATERIAL", label: "Matéria Prima" },
+                { value: "SEMI_FINISHED", label: "Semi-Acabado" },
+                { value: "FINISHED", label: "Acabado" },
+                { value: "CRITICAL", label: "Crítico" },
+                { value: "DEAD", label: "Morto" },
+                { value: "SCRAP", label: "Sucata" },
+              ]}
+            />
           </div>
 
           {/* Below Minimum Filter */}
