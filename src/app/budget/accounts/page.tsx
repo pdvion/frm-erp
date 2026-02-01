@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Wallet, Plus, ChevronRight, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 import Link from "next/link";
 
@@ -63,33 +65,34 @@ export default function BudgetAccountsPage() {
           { label: "Contas" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Nova Conta
-          </button>
+          </Button>
         }
       />
 
       {/* Filtros */}
       <div className="flex gap-2">
-        <button
+        <Button
+          variant={!typeFilter ? "primary" : "outline"}
+          size="sm"
           onClick={() => setTypeFilter(undefined)}
-          className={`px-3 py-1.5 rounded-lg text-sm ${!typeFilter ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
         >
           Todas
-        </button>
+        </Button>
         {(["REVENUE", "EXPENSE", "INVESTMENT"] as const).map((type) => (
-          <button
+          <Button
             key={type}
+            variant={typeFilter === type ? "primary" : "outline"}
+            size="sm"
             onClick={() => setTypeFilter(type)}
-            className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${typeFilter === type ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
+            leftIcon={typeIcons[type]}
           >
-            {typeIcons[type]}
             {typeLabels[type]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -162,22 +165,21 @@ export default function BudgetAccountsPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                <select
+                <Select
                   value={newAccount.type}
-                  onChange={(e) => setNewAccount({ ...newAccount, type: e.target.value as "REVENUE" | "EXPENSE" | "INVESTMENT" })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="REVENUE">Receita</option>
-                  <option value="EXPENSE">Despesa</option>
-                  <option value="INVESTMENT">Investimento</option>
-                </select>
+                  onChange={(value) => setNewAccount({ ...newAccount, type: value as "REVENUE" | "EXPENSE" | "INVESTMENT" })}
+                  options={[
+                    { value: "REVENUE", label: "Receita" },
+                    { value: "EXPENSE", label: "Despesa" },
+                    { value: "INVESTMENT", label: "Investimento" },
+                  ]}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={newAccount.description}
                   onChange={(e) => setNewAccount({ ...newAccount, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
                   rows={2}
                 />
               </div>

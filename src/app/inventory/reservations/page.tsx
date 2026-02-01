@@ -6,6 +6,8 @@ import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Package,
   Loader2,
@@ -112,37 +114,31 @@ export default function ReservationsPage() {
         {/* Filters */}
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
-            <div>
-              <label htmlFor="status-filter" className="sr-only">Filtrar por status</label>
-              <select
-                id="status-filter"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                aria-label="Filtrar por status"
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos os status</option>
-                {Object.entries(statusConfig).map(([value, config]) => (
-                  <option key={value} value={value}>{config.label}</option>
-                ))}
-              </select>
-            </div>
+            <Select
+              value={statusFilter}
+              onChange={(value) => setStatusFilter(value)}
+              placeholder="Todos os status"
+              options={[
+                { value: "", label: "Todos os status" },
+                ...Object.entries(statusConfig).map(([value, config]) => ({
+                  value,
+                  label: config.label,
+                })),
+              ]}
+            />
 
-            <div>
-              <label htmlFor="doctype-filter" className="sr-only">Filtrar por tipo de documento</label>
-              <select
-                id="doctype-filter"
-                value={documentTypeFilter}
-                onChange={(e) => setDocumentTypeFilter(e.target.value)}
-                aria-label="Filtrar por tipo de documento"
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos os tipos</option>
-                {Object.entries(documentTypeLabels).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ))}
-              </select>
-            </div>
+            <Select
+              value={documentTypeFilter}
+              onChange={(value) => setDocumentTypeFilter(value)}
+              placeholder="Todos os tipos"
+              options={[
+                { value: "", label: "Todos os tipos" },
+                ...Object.entries(documentTypeLabels).map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+              ]}
+            />
           </div>
         </div>
 
@@ -348,13 +344,12 @@ function CreateReservationModal({
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Material</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
@@ -388,15 +383,14 @@ function CreateReservationModal({
 
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo de Documento</label>
-            <select
+            <Select
               value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              {Object.entries(documentTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+              onChange={(value) => setDocumentType(value)}
+              options={Object.entries(documentTypeLabels).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -416,11 +410,10 @@ function CreateReservationModal({
 
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Observações (opcional)</label>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
