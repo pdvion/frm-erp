@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
+import { Button } from "@/components/ui/Button";
 import {
   FileText,
   Check,
@@ -108,16 +109,15 @@ export default function DdaPage() {
         icon={<FileText className="h-6 w-6" />}
         backHref="/treasury"
         actions={
-          <button
+          <Button
             onClick={() => {
               // TODO: Implementar sincronização real com API bancária (VIO-597)
               alert("Sincronização com bancos será implementada após cadastro das credenciais bancárias.");
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            leftIcon={<RefreshCw className="h-4 w-4" />}
           >
-            <RefreshCw className="h-4 w-4" />
             Sincronizar
-          </button>
+          </Button>
         }
       />
 
@@ -288,56 +288,65 @@ export default function DdaPage() {
                         <div className="flex items-center justify-end gap-2">
                           {boleto.status === "PENDENTE" && (
                             <>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleAprovar(boleto.id)}
                                 disabled={aprovarMutation.isPending}
-                                className="p-1.5 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
                                 title="Aprovar"
+                                className="text-green-600 hover:bg-green-100"
                               >
                                 <Check className="h-4 w-4" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => {
                                   setSelectedBoleto(boleto.id);
                                   setShowRejectModal(true);
                                 }}
-                                className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                                 title="Rejeitar"
+                                className="text-red-600 hover:bg-red-100"
                               >
                                 <X className="h-4 w-4" />
-                              </button>
+                              </Button>
                             </>
                           )}
                           {boleto.status === "APROVADO" && (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleMarcarPago(boleto.id)}
                               disabled={marcarPagoMutation.isPending}
-                              className="p-1.5 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
                               title="Marcar como Pago"
+                              className="text-green-600 hover:bg-green-100"
                             >
                               <DollarSign className="h-4 w-4" />
-                            </button>
+                            </Button>
                           )}
                           {!boleto.accountsPayableId && boleto.status !== "REJEITADO" && boleto.status !== "CANCELADO" && (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleCriarContaPagar(boleto.id)}
                               disabled={criarContaPagarMutation.isPending}
-                              className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                               title="Criar Conta a Pagar"
+                              className="text-blue-600 hover:bg-blue-100"
                             >
                               <Plus className="h-4 w-4" />
-                            </button>
+                            </Button>
                           )}
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               // TODO: Implementar modal de detalhes do boleto
                               setSelectedBoleto(boleto.id);
                             }}
-                            className="p-1.5 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
                             title="Ver Detalhes"
                           >
                             <Eye className="h-4 w-4" />
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -360,20 +369,22 @@ export default function DdaPage() {
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.pagination.total)} de {data.pagination.total}
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-theme dark:border-theme rounded-lg disabled:opacity-50"
               >
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page + 1)}
                 disabled={page >= data.pagination.totalPages}
-                className="px-3 py-1 border border-theme dark:border-theme rounded-lg disabled:opacity-50"
               >
                 Próximo
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -399,23 +410,24 @@ export default function DdaPage() {
               />
             </div>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowRejectModal(false);
                   setMotivoRejeicao("");
                   setSelectedBoleto(null);
                 }}
-                className="px-4 py-2 border border-theme dark:border-theme rounded-lg hover:bg-theme-secondary dark:hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={handleRejeitar}
                 disabled={!motivoRejeicao || rejeitarMutation.isPending}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:opacity-50"
+                isLoading={rejeitarMutation.isPending}
               >
-                {rejeitarMutation.isPending ? "Rejeitando..." : "Rejeitar"}
-              </button>
+                Rejeitar
+              </Button>
             </div>
           </div>
         </div>
