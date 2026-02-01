@@ -16,6 +16,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function PayrollPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -66,17 +68,18 @@ export default function PayrollPage() {
         backHref="/hr"
         actions={
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover">
-              <Download className="w-5 h-5" />
-              <span>Exportar</span>
-            </button>
-            <Link
-              href="/hr/payroll/calculate"
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+            <Button
+              variant="outline"
+              leftIcon={<Download className="w-5 h-5" />}
             >
-              <Plus className="w-5 h-5" />
-              <span>Calcular Folha</span>
-            </Link>
+              Exportar
+            </Button>
+            <Button
+              onClick={() => window.location.href = "/hr/payroll/calculate"}
+              leftIcon={<Plus className="w-5 h-5" />}
+            >
+              Calcular Folha
+            </Button>
           </div>
         }
       />
@@ -85,25 +88,22 @@ export default function PayrollPage() {
         {/* Filtros */}
         <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="w-48">
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Competência</label>
-              <input
-                type="month"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Competência"
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-48"
+            />
             <div className="flex-1 relative">
               <label className="block text-sm font-medium text-theme-secondary mb-1">Buscar</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-                <input
-                  type="text"
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+                <Input
                   placeholder="Buscar por funcionário..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="pl-10"
                 />
               </div>
             </div>
@@ -154,13 +154,12 @@ export default function PayrollPage() {
             <DollarSign className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Nenhuma folha encontrada</h3>
             <p className="text-theme-muted mb-4">Calcule a folha de pagamento para este mês</p>
-            <Link
-              href="/hr/payroll/calculate"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)]"
+            <Button
+              onClick={() => window.location.href = "/hr/payroll/calculate"}
+              leftIcon={<Plus className="w-5 h-5" />}
             >
-              <Plus className="w-5 h-5" />
               Calcular Folha
-            </Link>
+            </Button>
           </div>
         ) : (
           <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">
