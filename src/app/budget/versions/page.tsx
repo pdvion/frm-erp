@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { GitBranch, Plus, Lock, CheckCircle2, FileEdit } from "lucide-react";
 import Link from "next/link";
 import { formatDateTime } from "@/lib/formatters";
@@ -174,15 +175,12 @@ export default function BudgetVersionsPage() {
             <h3 className="text-lg font-semibold text-theme mb-4">Nova Versão de Orçamento</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Ano</label>
-                  <input
-                    type="number"
-                    value={newVersion.year}
-                    onChange={(e) => setNewVersion({ ...newVersion, year: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  />
-                </div>
+                <Input
+                  label="Ano"
+                  type="number"
+                  value={newVersion.year}
+                  onChange={(e) => setNewVersion({ ...newVersion, year: Number(e.target.value) })}
+                />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
                   <select
@@ -196,16 +194,12 @@ export default function BudgetVersionsPage() {
                   </select>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome</label>
-                <input
-                  type="text"
-                  value={newVersion.name}
-                  onChange={(e) => setNewVersion({ ...newVersion, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  placeholder="Ex: Orçamento 2026 - Original"
-                />
-              </div>
+              <Input
+                label="Nome"
+                value={newVersion.name}
+                onChange={(e) => setNewVersion({ ...newVersion, name: e.target.value })}
+                placeholder="Ex: Orçamento 2026 - Original"
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Copiar de (opcional)</label>
                 <select
@@ -220,16 +214,13 @@ export default function BudgetVersionsPage() {
                 </select>
               </div>
               {newVersion.copyFromVersionId && (
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Ajuste % (opcional)</label>
-                  <input
-                    type="number"
-                    value={newVersion.adjustmentPercent}
-                    onChange={(e) => setNewVersion({ ...newVersion, adjustmentPercent: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                    placeholder="Ex: 5 para +5%"
-                  />
-                </div>
+                <Input
+                  label="Ajuste % (opcional)"
+                  type="number"
+                  value={newVersion.adjustmentPercent}
+                  onChange={(e) => setNewVersion({ ...newVersion, adjustmentPercent: Number(e.target.value) })}
+                  placeholder="Ex: 5 para +5%"
+                />
               )}
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>

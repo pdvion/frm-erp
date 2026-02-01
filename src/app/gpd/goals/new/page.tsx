@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -56,15 +57,12 @@ export default function NewGPDGoalPage() {
       <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-2xl">
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Ano</label>
-              <input
-                type="number"
-                value={form.year}
-                onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-              />
-            </div>
+            <Input
+              label="Ano"
+              type="number"
+              value={form.year}
+              onChange={(e) => setForm({ ...form, year: Number(e.target.value) })}
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
               <select
@@ -79,16 +77,12 @@ export default function NewGPDGoalPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">Título</label>
-            <input
-              type="text"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-              placeholder="Ex: Aumentar faturamento em 20%"
-            />
-          </div>
+          <Input
+            label="Título"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="Ex: Aumentar faturamento em 20%"
+          />
 
           <div>
             <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
@@ -101,37 +95,27 @@ export default function NewGPDGoalPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Valor Meta</label>
-              <input
-                type="number"
-                value={form.targetValue ?? ""}
-                onChange={(e) => setForm({ ...form, targetValue: e.target.value ? Number(e.target.value) : undefined })}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                placeholder="Ex: 1000000"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Unidade</label>
-              <input
-                type="text"
-                value={form.unit}
-                onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                placeholder="Ex: R$, %, un"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Peso (1-10)</label>
-              <input
-                type="number"
-                min={1}
-                max={10}
-                value={form.weight}
-                onChange={(e) => setForm({ ...form, weight: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-              />
-            </div>
+            <Input
+              label="Valor Meta"
+              type="number"
+              value={form.targetValue ?? ""}
+              onChange={(e) => setForm({ ...form, targetValue: e.target.value ? Number(e.target.value) : undefined })}
+              placeholder="Ex: 1000000"
+            />
+            <Input
+              label="Unidade"
+              value={form.unit}
+              onChange={(e) => setForm({ ...form, unit: e.target.value })}
+              placeholder="Ex: R$, %, un"
+            />
+            <Input
+              label="Peso (1-10)"
+              type="number"
+              min={1}
+              max={10}
+              value={form.weight}
+              onChange={(e) => setForm({ ...form, weight: Number(e.target.value) })}
+            />
           </div>
 
 

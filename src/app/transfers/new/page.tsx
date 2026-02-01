@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { ArrowLeftRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -72,27 +73,21 @@ export default function NewTransferPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Valor</label>
-                <input
-                  type="number"
-                  min={0.01}
-                  step={0.01}
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Valor"
+                type="number"
+                min={0.01}
+                step={0.01}
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Data</label>
-                <input
-                  type="date"
-                  value={transferDate}
-                  onChange={(e) => setTransferDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Data"
+                type="date"
+                value={transferDate}
+                onChange={(e) => setTransferDate(e.target.value)}
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
