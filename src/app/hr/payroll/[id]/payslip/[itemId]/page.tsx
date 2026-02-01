@@ -17,6 +17,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 interface PayslipPageProps {
   params: Promise<{ id: string; itemId: string }>;
@@ -43,12 +45,9 @@ export default function PayslipPage({ params }: PayslipPageProps) {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <FileText className="w-16 h-16 text-theme-muted mb-4" />
         <p className="text-theme-muted">Holerite não encontrado</p>
-        <button
-          onClick={() => router.push(`/hr/payroll/${id}`)}
-          className="mt-4 text-blue-600 hover:underline"
-        >
-          Voltar para folha
-        </button>
+        <LinkButton href={`/hr/payroll/${id}`} variant="ghost" className="mt-4">
+          Voltar para Folha
+        </LinkButton>
       </div>
     );
   }
@@ -66,14 +65,12 @@ export default function PayslipPage({ params }: PayslipPageProps) {
         backHref={`/hr/payroll/${id}`}
         actions={
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover">
-              <Printer className="w-4 h-4" />
+            <Button variant="outline" leftIcon={<Printer className="w-4 h-4" />}>
               Imprimir
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover">
-              <Download className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" leftIcon={<Download className="w-4 h-4" />}>
               PDF
-            </button>
+            </Button>
           </div>
         }
       />
