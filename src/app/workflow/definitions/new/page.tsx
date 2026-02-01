@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   GitBranch,
   ArrowLeft,
@@ -113,17 +114,13 @@ export default function NewWorkflowDefinitionPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h2 className="text-lg font-semibold text-theme mb-4">Informações Básicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                placeholder="Ex: Aprovação de Compras"
-              />
-            </div>
+            <Input
+              label="Nome *"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              placeholder="Ex: Aprovação de Compras"
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
               <select
@@ -175,17 +172,13 @@ export default function NewWorkflowDefinitionPage() {
                     <span className="font-medium">#{step.stepOrder}</span>
                   </div>
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-theme mb-1">Nome da Etapa *</label>
-                      <input
-                        type="text"
-                        value={step.name}
-                        onChange={(e) => updateStep(index, "name", e.target.value)}
-                        required
-                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                        placeholder="Ex: Aprovação Gerente"
-                      />
-                    </div>
+                    <Input
+                      label="Nome da Etapa *"
+                      value={step.name}
+                      onChange={(e) => updateStep(index, "name", e.target.value)}
+                      required
+                      placeholder="Ex: Aprovação Gerente"
+                    />
                     <div>
                       <label className="block text-sm font-medium text-theme mb-1">Tipo de Responsável</label>
                       <select
@@ -199,16 +192,12 @@ export default function NewWorkflowDefinitionPage() {
                         <option value="requester_manager">Gestor do Solicitante</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme mb-1">ID do Responsável</label>
-                      <input
-                        type="text"
-                        value={step.assigneeId}
-                        onChange={(e) => updateStep(index, "assigneeId", e.target.value)}
-                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                        placeholder="UUID ou deixe vazio"
-                      />
-                    </div>
+                    <Input
+                      label="ID do Responsável"
+                      value={step.assigneeId}
+                      onChange={(e) => updateStep(index, "assigneeId", e.target.value)}
+                      placeholder="UUID ou deixe vazio"
+                    />
                   </div>
                   <button
                     type="button"

@@ -84,10 +84,12 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.2",
+    "glob": "^13.0.0",
     "jsdom": "^27.4.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^7.2.0",
     "tailwindcss": "^4",
+    "ts-morph": "^27.0.2",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }
