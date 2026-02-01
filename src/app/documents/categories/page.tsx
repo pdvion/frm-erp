@@ -16,6 +16,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 
 interface CategoryChild {
   id: string;
@@ -283,11 +285,10 @@ function CategoryModal({
             <label className="block text-sm font-medium text-theme mb-1">
               Descrição
             </label>
-            <textarea
+            <Textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={2}
-              className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
               placeholder="Descrição opcional"
             />
           </div>
@@ -316,22 +317,22 @@ function CategoryModal({
               <label className="block text-sm font-medium text-theme mb-1">
                 Categoria Pai
               </label>
-              <select
+              <Select
                 value={formData.parentId || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, parentId: e.target.value || null })
+                onChange={(value) =>
+                  setFormData({ ...formData, parentId: value || null })
                 }
-                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              >
-                <option value="">Nenhuma (raiz)</option>
-                {flatCategories
-                  .filter((c) => c.id !== category?.id)
-                  .map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-              </select>
+                placeholder="Nenhuma (raiz)"
+                options={[
+                  { value: "", label: "Nenhuma (raiz)" },
+                  ...flatCategories
+                    .filter((c) => c.id !== category?.id)
+                    .map((cat) => ({
+                      value: cat.id,
+                      label: cat.name,
+                    })),
+                ]}
+              />
             </div>
           </div>
 
