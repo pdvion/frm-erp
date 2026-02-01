@@ -19,6 +19,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -102,13 +105,12 @@ export default function ExchangeContractsPage() {
           { label: "Câmbio" },
         ]}
         actions={
-          <Link
-            href="/impex/exchange/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+          <Button
+            onClick={() => window.location.href = "/impex/exchange/new"}
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Contrato
-          </Link>
+          </Button>
         }
       />
 
@@ -168,40 +170,39 @@ export default function ExchangeContractsPage() {
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por número do contrato..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
+              className="pl-10"
             />
           </div>
-          <button
+          <Button
+            variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
+            leftIcon={<Filter className="w-4 h-4" />}
           >
-            <Filter className="w-4 h-4" />
             Filtros
-          </button>
+          </Button>
         </div>
 
         {showFilters && (
           <div className="mt-4 pt-4 border-t border-theme grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Status</label>
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as StatusKey | "")}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Todos</option>
-                {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setStatusFilter(value as StatusKey | "")}
+                placeholder="Todos"
+                options={[
+                  { value: "", label: "Todos" },
+                  ...Object.entries(STATUS_LABELS).map(([key, { label }]) => ({
+                    value: key,
+                    label,
+                  })),
+                ]}
+              />
             </div>
           </div>
         )}
@@ -219,13 +220,12 @@ export default function ExchangeContractsPage() {
               : "Comece criando seu primeiro contrato de câmbio"}
           </p>
           {!search && !statusFilter && (
-            <Link
-              href="/impex/exchange/new"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+            <Button
+              onClick={() => window.location.href = "/impex/exchange/new"}
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Novo Contrato
-            </Link>
+            </Button>
           )}
         </div>
       ) : (
@@ -322,14 +322,15 @@ export default function ExchangeContractsPage() {
                         >
                           <Edit className="w-4 h-4" />
                         </Link>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleDelete(contract.id, contract.contractNumber)}
                           disabled={deleteMutation.isPending}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50"
                           title="Excluir"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -345,23 +346,25 @@ export default function ExchangeContractsPage() {
                 {Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total} contratos
               </p>
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                </button>
+                </Button>
                 <span className="text-sm text-theme px-2">
                   Página {pagination.page} de {pagination.totalPages}
                 </span>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(page + 1)}
                   disabled={page >= pagination.totalPages}
-                  className="p-2 border border-theme rounded-lg hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           )}
