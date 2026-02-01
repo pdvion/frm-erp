@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { formatCostUSD } from "@/lib/ai/costs";
 
 function formatNumber(num: number): string {
@@ -139,13 +140,13 @@ export default function AiUsagePage() {
         subtitle="Métricas e custos de chamadas de IA"
         icon={<Activity size={24} />}
         actions={
-          <button
+          <Button
+            variant="outline"
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+            leftIcon={<Download size={18} />}
           >
-            <Download size={18} />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -410,23 +411,25 @@ export default function AiUsagePage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-50"
             >
               Anterior
-            </button>
+            </Button>
             <span className="text-sm text-gray-500">
               Página {page} de {totalPages}
             </span>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-50"
             >
               Próxima
-            </button>
+            </Button>
           </div>
         )}
       </div>

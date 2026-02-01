@@ -82,8 +82,15 @@ Se QUALQUER comando falhar, **NÃO FAÇA COMMIT**. Corrija os erros primeiro.
 
 ### ESLint
 - [ ] Não deixar variáveis não utilizadas
-- [ ] Usar `_` prefix para variáveis intencionalmente não usadas
+- [ ] Usar variável em vez de prefixo `_` (lint ainda reclama)
 - [ ] Não usar `console.log` em produção (usar logger)
+- [ ] Executar `pnpm lint --fix` para corrigir indentação automaticamente
+
+### Design System
+- [ ] Usar componentes de `src/components/ui/` (Button, Card, etc.)
+- [ ] Incluir classes dark mode em todos os elementos
+- [ ] Usar PageHeader para cabeçalhos de página
+- [ ] Ícones sempre do Lucide
 
 ## Erros Frequentes e Soluções
 

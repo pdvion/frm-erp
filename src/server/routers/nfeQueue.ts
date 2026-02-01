@@ -421,21 +421,22 @@ export const nfeQueueRouter = createTRPCRouter({
 /**
  * Simula emissão na SEFAZ (substituir por integração real)
  */
-async function simulateSefazEmission(_nfeId: string): Promise<{
+async function simulateSefazEmission(nfeId: string): Promise<{
   success: boolean;
   protocol?: string;
   error?: string;
 }> {
-  // Simular delay de rede
+  // Simular delay de rede baseado no ID para consistência
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  // Simular 90% de sucesso
-  const success = Math.random() > 0.1;
+  // Simular 90% de sucesso (usar nfeId para seed)
+  const seed = nfeId.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const success = seed % 10 !== 0;
 
   if (success) {
     return {
       success: true,
-      protocol: `${Date.now()}${Math.random().toString(36).substring(2, 8)}`.toUpperCase(),
+      protocol: `${Date.now()}${nfeId.substring(0, 6)}`.toUpperCase(),
     };
   } else {
     return {

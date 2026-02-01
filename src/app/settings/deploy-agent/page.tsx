@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { ValidationTable, type ValidationItem } from "@/components/deploy-agent";
 import { ConfidenceBadge } from "@/components/deploy-agent";
 
@@ -241,14 +242,14 @@ export default function DeployAgentPage() {
           </div>
 
           <div className="flex justify-end">
-            <button
+            <Button
+              size="lg"
               onClick={handleAnalyze}
               disabled={xmlFiles.length === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              rightIcon={<ArrowRight size={20} />}
             >
               Analisar XMLs
-              <ArrowRight size={20} />
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -354,20 +355,17 @@ export default function DeployAgentPage() {
 
           {/* Actions */}
           <div className="flex justify-between">
-            <button
-              onClick={() => setStep("upload")}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
+            <Button variant="outline" onClick={() => setStep("upload")}>
               Voltar
-            </button>
-            <button
+            </Button>
+            <Button
+              size="lg"
               onClick={handleApply}
               disabled={itemsToApply.length === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              rightIcon={<ArrowRight size={20} />}
             >
               Aplicar {itemsToApply.length} item(s)
-              <ArrowRight size={20} />
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -391,23 +389,20 @@ export default function DeployAgentPage() {
                 {itemsToApply.length} registro(s) foram criados com sucesso
               </p>
               <div className="flex justify-center gap-4">
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setStep("upload");
                     setXmlFiles([]);
                     setValidationItems([]);
                     setStats(null);
                   }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Nova Importação
-                </button>
-                <button
-                  onClick={() => router.push("/materials")}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
+                </Button>
+                <Button onClick={() => router.push("/materials")}>
                   Ver Materiais
-                </button>
+                </Button>
               </div>
             </>
           )}

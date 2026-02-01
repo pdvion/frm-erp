@@ -95,14 +95,26 @@ const total = result._sum?.valorFinal || 0;
 
 ### 6. Filtros com tenantFilter
 ```typescript
-// ❌ ERRADO - tenantFilter retorna tipo complexo
+// ❌ ERRADO - tenantFilter retorna tipo complexo para modelos sem isShared
 where: { id: input.id, ...tenantFilter(ctx.companyId) }
 
-// ✅ CORRETO - usar tipo explícito
+// ✅ CORRETO - usar companyId diretamente para modelos simples
 const where: Prisma.ModeloWhereInput = {
   id: input.id,
   companyId: ctx.companyId,
 };
+
+// ✅ CORRETO - usar tenantFilter apenas para modelos com isShared
+// (Material, Category, etc.)
+```
+
+### 6b. ctx.userId não existe em todos os contextos
+```typescript
+// ❌ ERRADO - ctx.userId pode não existir
+userId: ctx.userId,
+
+// ✅ CORRETO - usar ctx.tenant?.userId
+userId: ctx.tenant?.userId ?? null,
 ```
 
 ### 7. Upsert com índice parcial (system_settings)

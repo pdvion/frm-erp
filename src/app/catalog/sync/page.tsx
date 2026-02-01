@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 export default function CatalogSyncPage() {
   const router = useRouter();
@@ -85,13 +86,13 @@ export default function CatalogSyncPage() {
         title="Sincronizar Materiais → Produtos"
         subtitle="Crie produtos do catálogo a partir de materiais do estoque"
         actions={
-          <button
+          <Button
+            variant="outline"
             onClick={() => router.push("/catalog")}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+            leftIcon={<ArrowLeft size={20} />}
           >
-            <ArrowLeft size={20} />
             Voltar
-          </button>
+          </Button>
         }
       />
 
@@ -142,12 +143,9 @@ export default function CatalogSyncPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
             />
           </div>
-          <button
-            onClick={() => refetch()}
-            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
+          <Button variant="outline" size="icon" onClick={() => refetch()}>
             <RefreshCw size={20} />
-          </button>
+          </Button>
         </div>
 
         {selectedMaterials.length > 0 && (
@@ -176,18 +174,14 @@ export default function CatalogSyncPage() {
               />
               Publicar
             </label>
-            <button
+            <Button
+              size="sm"
               onClick={handleSync}
-              disabled={syncMultipleMutation.isPending}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm disabled:opacity-50"
+              isLoading={syncMultipleMutation.isPending}
+              rightIcon={<ArrowRight size={16} />}
             >
-              {syncMultipleMutation.isPending ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <ArrowRight size={16} />
-              )}
               Criar Produtos
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -301,23 +295,23 @@ export default function CatalogSyncPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
-          <button
+          <Button
+            variant="outline"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             Anterior
-          </button>
+          </Button>
           <span className="text-sm text-gray-500">
             Página {page} de {totalPages}
           </span>
-          <button
+          <Button
+            variant="outline"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             Próxima
-          </button>
+          </Button>
         </div>
       )}
 

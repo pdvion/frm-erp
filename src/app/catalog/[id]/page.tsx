@@ -8,7 +8,6 @@ import {
   GlobeLock,
   Package,
   Tag,
-  Calendar,
   Loader2,
   Play,
   FileText,
@@ -223,15 +222,15 @@ export default function ProductDetailPage() {
                   product.status === "active"
                     ? "bg-green-100 text-green-700"
                     : product.status === "draft"
-                    ? "bg-gray-100 text-gray-700"
-                    : "bg-yellow-100 text-yellow-700"
+                      ? "bg-gray-100 text-gray-700"
+                      : "bg-yellow-100 text-yellow-700"
                 }`}
               >
                 {product.status === "active"
                   ? "Ativo"
                   : product.status === "draft"
-                  ? "Rascunho"
-                  : product.status}
+                    ? "Rascunho"
+                    : product.status}
               </span>
             </div>
 
