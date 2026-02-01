@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -180,13 +181,15 @@ export default function CustomersPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Link
+                            <LinkButton
                               href={`/customers/${customer.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="w-4 h-4" />}
+                              className="text-blue-600 hover:text-blue-800"
                             >
-                              <Eye className="w-4 h-4" />
                               Ver
-                            </Link>
+                            </LinkButton>
                           </td>
                         </tr>
                       );

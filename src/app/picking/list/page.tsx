@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { PageHeader } from "@/components/PageHeader";
 import {
   List,
@@ -17,7 +19,6 @@ import {
   Play,
   Eye,
 } from "lucide-react";
-import Link from "next/link";
 
 type StatusFilter = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "ALL";
 type PriorityFilter = "LOW" | "NORMAL" | "HIGH" | "URGENT" | "ALL";
@@ -255,13 +256,15 @@ export default function PickingListPage() {
                       {getStatusBadge(picking.status)}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <Link
+                      <LinkButton
                         href={`/picking/${picking.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        leftIcon={<Eye className="w-4 h-4" />}
+                        className="text-blue-600 hover:text-blue-800"
                       >
-                        <Eye className="w-4 h-4" />
                         Ver
-                      </Link>
+                      </LinkButton>
                     </td>
                   </tr>
                 ))

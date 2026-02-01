@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -335,13 +336,15 @@ export default function ProductionPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Link
+                            <LinkButton
                               href={`/production/${order.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-blue-600 hover:text-indigo-800"
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="w-4 h-4" />}
+                              className="text-blue-600 hover:text-blue-800"
                             >
-                              <Eye className="w-4 h-4" />
                               Ver
-                            </Link>
+                            </LinkButton>
                           </td>
                         </tr>
                       );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -271,13 +271,15 @@ export default function BillingPage() {
                           </td>
                           <td className="px-6 py-4 text-center">
                             <div className="flex items-center justify-center gap-2">
-                              <Link
+                              <LinkButton
                                 href={`/billing/${invoice.id}`}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg"
+                                variant="ghost"
+                                size="sm"
+                                leftIcon={<Eye className="w-4 h-4" />}
+                                className="text-blue-600 hover:text-blue-800"
                               >
-                                <Eye className="w-4 h-4" />
                                 Ver
-                              </Link>
+                              </LinkButton>
                               {invoice.status === "DRAFT" && (
                                 <Button
                                   variant="ghost"

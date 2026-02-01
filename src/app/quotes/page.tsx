@@ -328,13 +328,15 @@ export default function QuotesPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <Link
+                          <LinkButton
                             href={`/quotes/${quote.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
+                            variant="ghost"
+                            size="sm"
+                            leftIcon={<Eye className="w-4 h-4" />}
+                            className="text-blue-600 hover:text-blue-800"
                           >
-                            <Eye className="w-4 h-4" />
-                          Ver
-                          </Link>
+                            Ver
+                          </LinkButton>
                         </td>
                       </tr>
                     );

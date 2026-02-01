@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -175,13 +175,15 @@ export default function IssuedInvoicesPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Link
+                            <LinkButton
                               href={`/sales/invoices/${invoice.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="w-4 h-4" />}
+                              className="text-blue-600 hover:text-blue-800"
                             >
-                              <Eye className="w-4 h-4" />
                               Ver
-                            </Link>
+                            </LinkButton>
                           </td>
                         </tr>
                       );

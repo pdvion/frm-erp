@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -396,13 +397,15 @@ export default function TasksPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link
+                        <LinkButton
                           href={`/tasks/${task.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          variant="ghost"
+                          size="sm"
+                          leftIcon={<Eye className="w-4 h-4" />}
+                          className="text-blue-600 hover:text-blue-800"
                         >
-                          <Eye className="w-4 h-4" />
                           Ver
-                        </Link>
+                        </LinkButton>
                       </td>
                     </tr>
                   );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
-import { LinkButton } from "@/components/ui/LinkButton";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -180,13 +179,15 @@ export default function ReceivingPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Link
+                            <LinkButton
                               href={`/receiving/${receiving.id}`}
-                              className="inline-flex items-center gap-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                              variant="ghost"
+                              size="sm"
+                              leftIcon={<Eye className="w-4 h-4" />}
+                              className="text-blue-600 hover:text-blue-800"
                             >
-                              <Eye className="w-4 h-4" />
                               {receiving.status === "PENDING" ? "Conferir" : "Ver"}
-                            </Link>
+                            </LinkButton>
                           </td>
                         </tr>
                       );
