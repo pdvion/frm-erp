@@ -146,26 +146,28 @@ export default function QualityPage() {
 
         {/* Tabs */}
         <div className="flex border-b border-theme mb-6">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => { setActiveTab("inspections"); setPage(1); setStatusFilter("ALL"); }}
-            className={`px-4 py-2 font-medium border-b-2 -mb-px ${
+            className={`px-4 py-2 font-medium border-b-2 -mb-px rounded-none ${
               activeTab === "inspections"
                 ? "border-teal-600 text-teal-600"
                 : "border-transparent text-theme-muted hover:text-theme"
             }`}
           >
             Inspeções
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => { setActiveTab("nonconformities"); setPage(1); setStatusFilter("ALL"); }}
-            className={`px-4 py-2 font-medium border-b-2 -mb-px ${
+            className={`px-4 py-2 font-medium border-b-2 -mb-px rounded-none ${
               activeTab === "nonconformities"
                 ? "border-teal-600 text-teal-600"
                 : "border-transparent text-theme-muted hover:text-theme"
             }`}
           >
             Não-Conformidades
-          </button>
+          </Button>
         </div>
 
         {/* Filtros */}
@@ -306,12 +308,12 @@ export default function QualityPage() {
                   <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
                     <div className="text-sm text-theme-muted">Página {page} de {inspectionsData.pages}</div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                      <Button variant="outline" size="sm" onClick={() => setPage(page - 1)} disabled={page === 1}>
                         <ChevronLeft className="w-5 h-5" />
-                      </button>
-                      <button onClick={() => setPage(page + 1)} disabled={page === inspectionsData.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setPage(page + 1)} disabled={page === inspectionsData.pages}>
                         <ChevronRight className="w-5 h-5" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -392,12 +394,12 @@ export default function QualityPage() {
                   <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
                     <div className="text-sm text-theme-muted">Página {page} de {ncData.pages}</div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                      <Button variant="outline" size="sm" onClick={() => setPage(page - 1)} disabled={page === 1}>
                         <ChevronLeft className="w-5 h-5" />
-                      </button>
-                      <button onClick={() => setPage(page + 1)} disabled={page === ncData.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setPage(page + 1)} disabled={page === ncData.pages}>
                         <ChevronRight className="w-5 h-5" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}

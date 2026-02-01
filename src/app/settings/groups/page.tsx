@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Shield,
   Plus,
@@ -155,13 +156,12 @@ export default function GroupsPage() {
       {/* Search */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-          <input
-            type="text"
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+          <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar grupos..."
-            className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted"
+            className="pl-10"
           />
         </div>
       </div>
@@ -266,13 +266,12 @@ export default function GroupsPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
                   rows={2}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
                 />
               </div>
 

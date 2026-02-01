@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import {
   Calendar,
   Plus,
@@ -155,34 +157,35 @@ export default function HolidaysPage() {
           { label: "Feriados" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Novo Feriado
-          </button>
+          </Button>
         }
       />
 
       {/* Seletor de ano */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex items-center justify-center gap-4">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setYear((y) => y - 1)}
-            className="p-2 rounded-lg border border-theme hover:bg-theme-secondary transition-colors"
           >
-            <ChevronLeft className="w-5 h-5 text-theme" />
-          </button>
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
           <span className="text-2xl font-bold text-theme min-w-[100px] text-center">
             {year}
           </span>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setYear((y) => y + 1)}
-            className="p-2 rounded-lg border border-theme hover:bg-theme-secondary transition-colors"
           >
-            <ChevronRight className="w-5 h-5 text-theme" />
-          </button>
+            <ChevronRight className="w-5 h-5" />
+          </Button>
         </div>
       </div>
 
@@ -195,12 +198,13 @@ export default function HolidaysPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-8 text-center">
           <Calendar className="w-12 h-12 mx-auto text-theme-muted mb-3" />
           <p className="text-theme-muted">Nenhum feriado cadastrado para {year}</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setShowModal(true)}
-            className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-4"
           >
             Adicionar feriado
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -229,12 +233,14 @@ export default function HolidaysPage() {
                           {getTypeBadge(holiday.type, holiday.isOptional)}
                         </div>
                         {holiday.type === "COMPANY" && (
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleDelete(holiday.id, holiday.name)}
-                            className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -316,17 +322,14 @@ export default function HolidaysPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Tipo
                 </label>
-                <select
+                <Select
                   value={newHoliday.type}
-                  onChange={(e) => setNewHoliday({ ...newHoliday, type: e.target.value as HolidayType })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                >
-                  {holidayTypes.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setNewHoliday({ ...newHoliday, type: value as HolidayType })}
+                  options={holidayTypes.map((t) => ({
+                    value: t.value,
+                    label: t.label,
+                  }))}
+                />
               </div>
 
               <label className="flex items-center gap-2 cursor-pointer">
@@ -341,23 +344,25 @@ export default function HolidaysPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowModal(false);
                   setNewHoliday(initialNewHoliday);
                   setError("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCreate}
                 disabled={createMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                isLoading={createMutation.isPending}
+                className="flex-1"
               >
-                {createMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>

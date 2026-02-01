@@ -16,6 +16,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface CategoryFormData {
   name: string;
@@ -241,31 +243,30 @@ export default function CategoriesPage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Categoria Pai
               </label>
-              <select
+              <Select
                 value={formData.parentId}
-                onChange={(e) => setFormData((prev) => ({ ...prev, parentId: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-              >
-                <option value="">Nenhuma (categoria raiz)</option>
-                {categories
-                  ?.filter((c) => c.id !== editingId)
-                  .map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-              </select>
+                onChange={(value) => setFormData((prev) => ({ ...prev, parentId: value }))}
+                placeholder="Nenhuma (categoria raiz)"
+                options={[
+                  { value: "", label: "Nenhuma (categoria raiz)" },
+                  ...(categories
+                    ?.filter((c) => c.id !== editingId)
+                    .map((cat) => ({
+                      value: cat.id,
+                      label: cat.name,
+                    })) || []),
+                ]}
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Descrição
               </label>
-              <textarea
+              <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
               />
             </div>
 
