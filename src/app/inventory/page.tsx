@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { 
   Warehouse, 
   Search, 
@@ -18,6 +17,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 interface InventoryItem {
   id: string;
@@ -153,26 +154,26 @@ export default function InventoryPage() {
 
           {/* Movement Buttons */}
           <div className="flex gap-2">
-            <Link
+            <LinkButton
               href="/inventory/movements"
-              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+              variant="outline"
             >
-              <span>Histórico</span>
-            </Link>
-            <Link
+              Histórico
+            </LinkButton>
+            <LinkButton
               href="/inventory/entry"
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              leftIcon={<ArrowDownCircle className="w-4 h-4" />}
+              className="bg-green-600 hover:bg-green-700 text-white border-green-600"
             >
-              <ArrowDownCircle className="w-5 h-5" />
-              <span>Entrada</span>
-            </Link>
-            <Link
+              Entrada
+            </LinkButton>
+            <LinkButton
               href="/inventory/exit"
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              leftIcon={<ArrowUpCircle className="w-4 h-4" />}
+              className="bg-red-600 hover:bg-red-700 text-white border-red-600"
             >
-              <ArrowUpCircle className="w-5 h-5" />
-              <span>Saída</span>
-            </Link>
+              Saída
+            </LinkButton>
           </div>
         </div>
 
@@ -305,25 +306,27 @@ export default function InventoryPage() {
                   {pagination.total} itens
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                     aria-label="Página anterior"
-                    className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-muted">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
                     aria-label="Próxima página"
-                    className="p-2 border border-theme-input rounded-lg text-theme-muted disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
