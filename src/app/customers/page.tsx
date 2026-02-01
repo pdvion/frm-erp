@@ -5,6 +5,8 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   Users,
@@ -58,33 +60,32 @@ export default function CustomersPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 placeholder="Buscar por nome, código, CNPJ ou email..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10"
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
+                onChange={(value) => {
+                  setStatusFilter(value);
                   setPage(1);
                 }}
-                className="border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="ALL">Todos os status</option>
-                <option value="ACTIVE">Ativos</option>
-                <option value="INACTIVE">Inativos</option>
-                <option value="BLOCKED">Bloqueados</option>
-              </select>
+                options={[
+                  { value: "ALL", label: "Todos os status" },
+                  { value: "ACTIVE", label: "Ativos" },
+                  { value: "INACTIVE", label: "Inativos" },
+                  { value: "BLOCKED", label: "Bloqueados" },
+                ]}
+              />
             </div>
           </div>
         </div>
