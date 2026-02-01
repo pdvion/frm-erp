@@ -286,12 +286,14 @@ export default function SuppliersPage() {
                             >
                               <Edit className="w-4 h-4" />
                             </Link>
-                            <button
-                              className="p-1 text-theme-muted hover:text-red-400 transition-colors"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-1 text-theme-muted hover:text-red-400"
                               title="Excluir"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -310,23 +312,25 @@ export default function SuppliersPage() {
                   {pagination.total} fornecedores
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
