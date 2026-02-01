@@ -20,6 +20,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { CategoryQuickForm } from "@/components/forms/CategoryQuickForm";
 
@@ -223,7 +225,6 @@ export default function EditMaterialPage() {
     }));
   };
 
-  const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
   const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
   if (isLoading) {
@@ -277,19 +278,20 @@ export default function EditMaterialPage() {
               { id: "quality", label: "Qualidade", icon: FileText },
               { id: "extra", label: "Extras", icon: Settings },
             ].map((tab) => (
-              <button
+              <Button
                 key={tab.id}
                 type="button"
+                variant="ghost"
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 rounded-none whitespace-nowrap ${
                   activeTab === tab.id
                     ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-theme-muted hover:text-theme hover:border-theme"
+                    : "border-transparent text-theme-muted hover:text-theme"
                 }`}
+                leftIcon={<tab.icon className="w-4 h-4" />}
               >
-                <tab.icon className="w-4 h-4" />
                 {tab.label}
-              </button>
+              </Button>
             ))}
           </nav>
         </div>
@@ -343,38 +345,51 @@ export default function EditMaterialPage() {
               />
               <div>
                 <label htmlFor="status" className={labelClass}>Status</label>
-                <select id="status" name="status" value={formData.status} onChange={handleChange} className={inputClass}>
-                  <option value="ACTIVE">Ativo</option>
-                  <option value="INACTIVE">Inativo</option>
-                  <option value="BLOCKED">Bloqueado</option>
-                </select>
+                <Select
+                  value={formData.status}
+                  onChange={(value) => setFormData(prev => ({ ...prev, status: value as typeof formData.status }))}
+                  options={[
+                    { value: "ACTIVE", label: "Ativo" },
+                    { value: "INACTIVE", label: "Inativo" },
+                    { value: "BLOCKED", label: "Bloqueado" },
+                  ]}
+                />
               </div>
               <div>
                 <label htmlFor="unit" className={labelClass}>Unidade Estoque *</label>
-                <select id="unit" name="unit" required value={formData.unit} onChange={handleChange} className={inputClass}>
-                  <option value="UN">UN - Unidade</option>
-                  <option value="KG">KG - Quilograma</option>
-                  <option value="M">M - Metro</option>
-                  <option value="M2">M² - Metro Quadrado</option>
-                  <option value="M3">M³ - Metro Cúbico</option>
-                  <option value="L">L - Litro</option>
-                  <option value="PC">PC - Peça</option>
-                  <option value="CX">CX - Caixa</option>
-                  <option value="PCT">PCT - Pacote</option>
-                  <option value="ROL">ROL - Rolo</option>
-                </select>
+                <Select
+                  value={formData.unit}
+                  onChange={(value) => setFormData(prev => ({ ...prev, unit: value }))}
+                  options={[
+                    { value: "UN", label: "UN - Unidade" },
+                    { value: "KG", label: "KG - Quilograma" },
+                    { value: "M", label: "M - Metro" },
+                    { value: "M2", label: "M² - Metro Quadrado" },
+                    { value: "M3", label: "M³ - Metro Cúbico" },
+                    { value: "L", label: "L - Litro" },
+                    { value: "PC", label: "PC - Peça" },
+                    { value: "CX", label: "CX - Caixa" },
+                    { value: "PCT", label: "PCT - Pacote" },
+                    { value: "ROL", label: "ROL - Rolo" },
+                  ]}
+                />
               </div>
               <div>
                 <label htmlFor="purchaseUnit" className={labelClass}>Unidade Compra</label>
-                <select id="purchaseUnit" name="purchaseUnit" value={formData.purchaseUnit} onChange={handleChange} className={inputClass}>
-                  <option value="">Mesma do estoque</option>
-                  <option value="UN">UN - Unidade</option>
-                  <option value="KG">KG - Quilograma</option>
-                  <option value="M">M - Metro</option>
-                  <option value="CX">CX - Caixa</option>
-                  <option value="PCT">PCT - Pacote</option>
-                  <option value="ROL">ROL - Rolo</option>
-                </select>
+                <Select
+                  value={formData.purchaseUnit}
+                  onChange={(value) => setFormData(prev => ({ ...prev, purchaseUnit: value }))}
+                  placeholder="Mesma do estoque"
+                  options={[
+                    { value: "", label: "Mesma do estoque" },
+                    { value: "UN", label: "UN - Unidade" },
+                    { value: "KG", label: "KG - Quilograma" },
+                    { value: "M", label: "M - Metro" },
+                    { value: "CX", label: "CX - Caixa" },
+                    { value: "PCT", label: "PCT - Pacote" },
+                    { value: "ROL", label: "ROL - Rolo" },
+                  ]}
+                />
               </div>
               {formData.purchaseUnit && formData.purchaseUnit !== formData.unit && (
                 <Input
@@ -398,7 +413,12 @@ export default function EditMaterialPage() {
               />
               <div className="sm:col-span-2 lg:col-span-3">
                 <label htmlFor="notes" className={labelClass}>Observações</label>
-                <textarea id="notes" name="notes" rows={3} value={formData.notes} onChange={handleChange} className={inputClass} />
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  rows={3}
+                />
               </div>
             </div>
           )}
@@ -426,11 +446,15 @@ export default function EditMaterialPage() {
               />
               <div>
                 <label htmlFor="minQuantityCalcType" className={labelClass}>Cálculo Qtd. Mínima</label>
-                <select id="minQuantityCalcType" name="minQuantityCalcType" value={formData.minQuantityCalcType} onChange={handleChange} className={inputClass}>
-                  <option value="MANUAL">Manual</option>
-                  <option value="CMM">Consumo Médio Mensal</option>
-                  <option value="PEAK_12M">Pico 12 Meses</option>
-                </select>
+                <Select
+                  value={formData.minQuantityCalcType}
+                  onChange={(value) => setFormData(prev => ({ ...prev, minQuantityCalcType: value }))}
+                  options={[
+                    { value: "MANUAL", label: "Manual" },
+                    { value: "CMM", label: "Consumo Médio Mensal" },
+                    { value: "PEAK_12M", label: "Pico 12 Meses" },
+                  ]}
+                />
               </div>
               <Input
                 label="Tempo Médio Entrega (dias)"
@@ -452,11 +476,15 @@ export default function EditMaterialPage() {
                     value={formData.weight || ""}
                     onChange={handleChange}
                   />
-                  <select id="weightUnit" name="weightUnit" value={formData.weightUnit} onChange={handleChange} className="w-24 px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme">
-                    <option value="KG">KG</option>
-                    <option value="G">G</option>
-                    <option value="T">T</option>
-                  </select>
+                  <Select
+                    value={formData.weightUnit}
+                    onChange={(value) => setFormData(prev => ({ ...prev, weightUnit: value }))}
+                    options={[
+                      { value: "KG", label: "KG" },
+                      { value: "G", label: "G" },
+                      { value: "T", label: "T" },
+                    ]}
+                  />
                 </div>
               </div>
             </div>
@@ -620,13 +648,13 @@ export default function EditMaterialPage() {
 
         {/* Actions */}
         <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 p-6 border-t border-theme">
-          <Link
-            href="/materials"
-            className="flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/materials")}
+            leftIcon={<X className="w-4 h-4" />}
           >
-            <X className="w-4 h-4" />
             Cancelar
-          </Link>
+          </Button>
           <Button
             type="submit"
             isLoading={isSubmitting}
