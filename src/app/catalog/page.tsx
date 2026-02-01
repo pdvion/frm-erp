@@ -271,7 +271,7 @@ export default function CatalogPage() {
                 <div className="absolute top-2 left-2">
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded ${
-                      STATUS_LABELS[product.status as ProductStatus]?.color ?? "bg-gray-100"
+                      STATUS_LABELS[product.status as ProductStatus]?.color ?? "bg-theme-tertiary text-theme-secondary"
                     }`}
                   >
                     {STATUS_LABELS[product.status as ProductStatus]?.label ?? product.status}
@@ -402,7 +402,7 @@ export default function CatalogPage() {
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded ${
-                        STATUS_LABELS[product.status as ProductStatus]?.color ?? "bg-gray-100"
+                        STATUS_LABELS[product.status as ProductStatus]?.color ?? "bg-theme-tertiary text-theme-secondary"
                       }`}
                     >
                       {STATUS_LABELS[product.status as ProductStatus]?.label ?? product.status}

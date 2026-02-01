@@ -179,7 +179,7 @@ export default function BIReportsPage() {
       inventory: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
       hr: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
     };
-    return colors[category] || "bg-gray-100 text-gray-800";
+    return colors[category] || "bg-theme-tertiary text-theme-secondary";
   };
 
   const getCategoryLabel = (category: string) => {

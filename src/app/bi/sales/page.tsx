@@ -229,7 +229,7 @@ export default function BISalesPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {idx === 0 && <span className="text-yellow-500">🥇</span>}
-                    {idx === 1 && <span className="text-gray-400">🥈</span>}
+                    {idx === 1 && <span className="text-theme-muted">🥈</span>}
                     {idx === 2 && <span className="text-orange-600">🥉</span>}
                     <span className="font-medium text-theme">{seller.name}</span>
                   </div>
