@@ -8,6 +8,8 @@ import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   Layers,
@@ -398,11 +400,10 @@ function AddComponentModal({
 
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Observações</label>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -729,14 +730,14 @@ function ExplodeModal({
           </div>
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Visualização</label>
-            <select
+            <Select
               value={viewMode}
-              onChange={(e) => setViewMode(e.target.value as "detailed" | "summarized")}
-              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="detailed">Detalhada</option>
-              <option value="summarized">Resumida</option>
-            </select>
+              onChange={(value) => setViewMode(value as "detailed" | "summarized")}
+              options={[
+                { value: "detailed", label: "Detalhada" },
+                { value: "summarized", label: "Resumida" },
+              ]}
+            />
           </div>
         </div>
 
@@ -865,13 +866,12 @@ function CopyBomModal({
               Material de Destino
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
