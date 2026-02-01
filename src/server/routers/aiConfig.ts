@@ -6,6 +6,12 @@ import {
   getDefaultModel,
   type AIProvider,
 } from "@/lib/ai/models";
+import {
+  AI_TASK_TYPES,
+  DEFAULT_TASK_CONFIG,
+  getTaskConfigKey,
+  type AITaskType,
+} from "@/lib/ai/taskConfig";
 
 // Schema para providers
 const aiProviderSchema = z.enum(AI_PROVIDERS);
@@ -301,4 +307,148 @@ export const aiConfigRouter = createTRPCRouter({
       // TODO: Implementar validação real com chamada à API
       return { valid: true };
     }),
+
+  // ==========================================
+  // CONFIGURAÇÃO POR TIPO DE TAREFA
+  // ==========================================
+
+  // Listar tipos de tarefa disponíveis
+  listTaskTypes: tenantProcedure.query(() => {
+    return Object.entries(AI_TASK_TYPES).map(([key, value]) => ({
+      taskId: key as AITaskType,
+      label: value.label,
+      description: value.description,
+      defaultConfig: DEFAULT_TASK_CONFIG[key as AITaskType],
+    }));
+  }),
+
+  // Obter configuração de todas as tarefas
+  getTaskConfigs: tenantProcedure.query(async ({ ctx }) => {
+    const settings = await ctx.prisma.systemSetting.findMany({
+      where: {
+        category: "ai",
+        companyId: ctx.companyId,
+        key: { startsWith: "ai_task_" },
+      },
+    });
+
+    const configs: Record<string, { provider: string; model: string; temperature?: number }> = {};
+
+    for (const setting of settings) {
+      const taskKey = setting.key.replace("ai_task_", "").toUpperCase();
+      const value = setting.value as { provider?: string; model?: string; temperature?: number };
+      if (value.provider) {
+        configs[taskKey] = {
+          provider: value.provider,
+          model: value.model || "",
+          temperature: value.temperature,
+        };
+      }
+    }
+
+    return configs;
+  }),
+
+  // Obter configuração para uma tarefa específica
+  getTaskConfig: tenantProcedure
+    .input(z.object({ task: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const taskType = input.task as AITaskType;
+      const key = getTaskConfigKey(taskType);
+
+      const setting = await ctx.prisma.systemSetting.findFirst({
+        where: {
+          category: "ai",
+          key,
+          companyId: ctx.companyId,
+        },
+      });
+
+      if (setting) {
+        const value = setting.value as { provider: string; model: string; temperature?: number };
+        return {
+          isCustom: true,
+          provider: value.provider,
+          model: value.model,
+          temperature: value.temperature,
+        };
+      }
+
+      const defaultConfig = DEFAULT_TASK_CONFIG[taskType];
+      return {
+        isCustom: false,
+        provider: defaultConfig?.preferredProvider || "openai",
+        model: defaultConfig?.preferredModel || "gpt-4o-mini",
+        temperature: defaultConfig?.temperature || 0.5,
+        reason: defaultConfig?.reason,
+      };
+    }),
+
+  // Salvar configuração para uma tarefa
+  setTaskConfig: tenantProcedure
+    .input(
+      z.object({
+        task: z.string(),
+        provider: z.enum([...AI_PROVIDERS, "auto"]),
+        model: z.string().optional(),
+        temperature: z.number().min(0).max(2).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const taskType = input.task as AITaskType;
+      const key = getTaskConfigKey(taskType);
+
+      if (input.provider === "auto") {
+        // Remover configuração customizada, usar padrão
+        await ctx.prisma.systemSetting.deleteMany({
+          where: {
+            key,
+            companyId: ctx.companyId,
+          },
+        });
+        return { success: true, isCustom: false };
+      }
+
+      // Salvar configuração customizada
+      const existing = await ctx.prisma.systemSetting.findFirst({
+        where: { key, companyId: ctx.companyId },
+      });
+
+      const value = {
+        provider: input.provider,
+        model: input.model || "",
+        temperature: input.temperature,
+      };
+
+      if (existing) {
+        await ctx.prisma.systemSetting.update({
+          where: { id: existing.id },
+          data: { value },
+        });
+      } else {
+        await ctx.prisma.systemSetting.create({
+          data: {
+            key,
+            value,
+            category: "ai",
+            companyId: ctx.companyId,
+          },
+        });
+      }
+
+      return { success: true, isCustom: true };
+    }),
+
+  // Resetar todas as configurações de tarefas para padrão
+  resetTaskConfigs: tenantProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.systemSetting.deleteMany({
+      where: {
+        category: "ai",
+        companyId: ctx.companyId,
+        key: { startsWith: "ai_task_" },
+      },
+    });
+
+    return { success: true };
+  }),
 });
