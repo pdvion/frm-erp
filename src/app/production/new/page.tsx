@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 import {
   Factory,
@@ -202,16 +203,16 @@ export default function NewProductionOrderPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Prioridade
                 </label>
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value={1}>Urgente</option>
-                  <option value={2}>Alta</option>
-                  <option value={3}>Normal</option>
-                  <option value={4}>Baixa</option>
-                </select>
+                <Select
+                  value={String(priority)}
+                  onChange={(value) => setPriority(Number(value))}
+                  options={[
+                    { value: "1", label: "Urgente" },
+                    { value: "2", label: "Alta" },
+                    { value: "3", label: "Normal" },
+                    { value: "4", label: "Baixa" },
+                  ]}
+                />
               </div>
 
               <Input
@@ -234,11 +235,10 @@ export default function NewProductionOrderPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Observações
                 </label>
-                <textarea
+                <Textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -253,48 +253,51 @@ export default function NewProductionOrderPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Solicitação
                 </label>
-                <select
+                <Select
                   value={requestType}
-                  onChange={(e) => setRequestType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Selecione</option>
-                  <option value="SALES">Venda</option>
-                  <option value="STOCK">Estoque</option>
-                  <option value="EXPORT">Exportação</option>
-                  <option value="NORMAL">Normal</option>
-                  <option value="REWORK">Retrabalho</option>
-                </select>
+                  onChange={(value) => setRequestType(value)}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    { value: "SALES", label: "Venda" },
+                    { value: "STOCK", label: "Estoque" },
+                    { value: "EXPORT", label: "Exportação" },
+                    { value: "NORMAL", label: "Normal" },
+                    { value: "REWORK", label: "Retrabalho" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Execução
                 </label>
-                <select
+                <Select
                   value={executionType}
-                  onChange={(e) => setExecutionType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Selecione</option>
-                  <option value="MANUFACTURE">Fabricação</option>
-                  <option value="ALTER">Alteração</option>
-                </select>
+                  onChange={(value) => setExecutionType(value)}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    { value: "MANUFACTURE", label: "Fabricação" },
+                    { value: "ALTER", label: "Alteração" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Entrega
                 </label>
-                <select
+                <Select
                   value={deliveryType}
-                  onChange={(e) => setDeliveryType(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Selecione</option>
-                  <option value="ASSEMBLED">Montado</option>
-                  <option value="LOOSE">Solto</option>
-                </select>
+                  onChange={(value) => setDeliveryType(value)}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    { value: "ASSEMBLED", label: "Montado" },
+                    { value: "LOOSE", label: "Solto" },
+                  ]}
+                />
               </div>
 
               <Input
@@ -383,12 +386,12 @@ export default function NewProductionOrderPage() {
 
           {/* Actions */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/production"
-              className="px-6 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/production")}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               onClick={handleSubmit}
               disabled={!productId}
