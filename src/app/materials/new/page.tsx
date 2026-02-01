@@ -324,10 +324,16 @@ export default function NewMaterialPage() {
                 </select>
               </div>
               {formData.purchaseUnit && formData.purchaseUnit !== formData.unit && (
-                <div>
-                  <label htmlFor="unitConversionFactor" className={labelClass}>Fator Conversão</label>
-                  <input type="number" id="unitConversionFactor" name="unitConversionFactor" step="0.0001" value={formData.unitConversionFactor} onChange={handleChange} className={inputClass} placeholder="1 CX = X UN" />
-                </div>
+                <Input
+                  label="Fator Conversão"
+                  type="number"
+                  id="unitConversionFactor"
+                  name="unitConversionFactor"
+                  step="0.0001"
+                  value={formData.unitConversionFactor}
+                  onChange={handleChange}
+                  placeholder="1 CX = X UN"
+                />
               )}
               <Input
                 label="Localização"
@@ -393,7 +399,14 @@ export default function NewMaterialPage() {
               <div>
                 <label htmlFor="weight" className={labelClass}>Peso</label>
                 <div className="flex gap-2">
-                  <input type="number" id="weight" name="weight" step="0.001" value={formData.weight || ""} onChange={handleChange} className={inputClass} />
+                  <Input
+                    type="number"
+                    id="weight"
+                    name="weight"
+                    step="0.001"
+                    value={formData.weight || ""}
+                    onChange={handleChange}
+                  />
                   <select id="weightUnit" name="weightUnit" value={formData.weightUnit} onChange={handleChange} className="w-24 px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme">
                     <option value="KG">KG</option>
                     <option value="G">G</option>
@@ -513,8 +526,14 @@ export default function NewMaterialPage() {
                     </label>
                     {formData.isEpi && (
                       <div className="ml-6">
-                        <label htmlFor="epiCaCode" className="block text-xs font-medium text-theme-muted mb-1">Código CA (EPI)</label>
-                        <input type="text" id="epiCaCode" name="epiCaCode" value={formData.epiCaCode} onChange={handleChange} placeholder="Ex: 12345" className="w-full px-3 py-1.5 text-sm bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+                        <Input
+                          label="Código CA (EPI)"
+                          id="epiCaCode"
+                          name="epiCaCode"
+                          value={formData.epiCaCode}
+                          onChange={handleChange}
+                          placeholder="Ex: 12345"
+                        />
                       </div>
                     )}
                     <label className="flex items-center gap-2">
