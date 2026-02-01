@@ -129,13 +129,12 @@ export default function PortsPage() {
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por código ou nome..."
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+              className="pl-10"
             />
           </div>
           <select
