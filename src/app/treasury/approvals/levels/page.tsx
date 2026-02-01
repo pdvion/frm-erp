@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 
 interface ApproverInput {
   userId: string;
@@ -183,13 +185,12 @@ export default function ApprovalLevelsPage() {
         module="finance"
         actions={
           !showForm ? (
-            <button
+            <Button
               onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              leftIcon={<Plus className="h-4 w-4" />}
             >
-              <Plus className="h-4 w-4" />
               Novo Nível
-            </button>
+            </Button>
           ) : undefined
         }
       />
@@ -227,13 +228,12 @@ export default function ApprovalLevelsPage() {
               >
                 Descrição
               </label>
-              <textarea
+              <Textarea
                 id="level-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Descrição do nível de alçada..."
                 rows={2}
-                className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -287,28 +287,24 @@ export default function ApprovalLevelsPage() {
               </h3>
 
               <div className="mb-3">
-                <label htmlFor="add-approver" className="sr-only">
-                  Adicionar aprovador
-                </label>
-                <select
-                  id="add-approver"
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      addApprover(e.target.value);
-                      e.target.value = "";
+                <Select
+                  value=""
+                  onChange={(value) => {
+                    if (value) {
+                      addApprover(value);
                     }
                   }}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Selecione um usuário para adicionar...</option>
-                  {usersData
-                    ?.filter((u) => !formData.approvers.some((a) => a.userId === u.userId))
-                    .map((u) => (
-                      <option key={u.userId} value={u.userId}>
-                        {u.user?.name || u.user?.email}
-                      </option>
-                    ))}
-                </select>
+                  placeholder="Selecione um usuário para adicionar..."
+                  options={[
+                    { value: "", label: "Selecione um usuário para adicionar..." },
+                    ...(usersData
+                      ?.filter((u) => !formData.approvers.some((a) => a.userId === u.userId))
+                      .map((u) => ({
+                        value: u.userId,
+                        label: u.user?.name || u.user?.email || u.userId,
+                      })) || []),
+                  ]}
+                />
               </div>
 
               {formData.approvers.length === 0 ? (
@@ -350,14 +346,14 @@ export default function ApprovalLevelsPage() {
                           Rejeitar
                         </label>
 
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => removeApprover(approver.userId)}
-                          className="text-theme-muted p-1 transition-colors hover:text-red-600"
-                          aria-label="Remover aprovador"
+                          className="text-theme-muted hover:text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -367,13 +363,12 @@ export default function ApprovalLevelsPage() {
 
             {/* Form Actions */}
             <div className="flex justify-end gap-3 border-t pt-4">
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 onClick={resetForm}
-                className="text-theme-secondary hover:bg-theme-hover rounded-lg px-4 py-2 transition-colors"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 type="submit"
                 isLoading={isPending}
@@ -444,24 +439,26 @@ export default function ApprovalLevelsPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleEdit(level);
                       }}
-                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-indigo-50 hover:text-blue-600"
-                      aria-label="Editar nível"
+                      className="text-theme-muted hover:text-blue-600"
                     >
                       <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeleteConfirm(level.id);
                       }}
                       disabled={level._count.paymentRequests > 0}
-                      className="text-theme-muted rounded-lg p-2 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
-                      aria-label="Excluir nível"
+                      className="text-theme-muted hover:text-red-600"
                       title={
                         level._count.paymentRequests > 0
                           ? "Não é possível excluir nível com solicitações"
@@ -469,7 +466,7 @@ export default function ApprovalLevelsPage() {
                       }
                     >
                       <Trash2 className="h-4 w-4" />
-                    </button>
+                    </Button>
                     {expandedLevel === level.id ? (
                       <ChevronUp className="text-theme-muted h-5 w-5" />
                     ) : (
@@ -552,20 +549,20 @@ export default function ApprovalLevelsPage() {
               Tem certeza que deseja excluir este nível de alçada? Esta ação não pode ser desfeita.
             </p>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setDeleteConfirm(null)}
-                className="text-theme-secondary hover:bg-theme-hover rounded-lg px-4 py-2 transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                isLoading={deleteMutation.isPending}
               >
-                {deleteMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 Excluir
-              </button>
+              </Button>
             </div>
           </div>
         </div>
