@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Button } from "@/components/ui/Button";
 import {
   Users,
   Plus,
@@ -255,25 +256,29 @@ export default function UsersPage() {
                         <MoreVertical className="w-4 h-4 text-theme-muted" />
                       </Link>
                       {user.isActive ? (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() =>
                             deactivateMutation.mutate({ id: user.id })
                           }
-                          className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="Desativar"
+                          className="text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
                         >
-                          <UserX className="w-4 h-4 text-red-600 dark:text-red-400" />
-                        </button>
+                          <UserX className="w-4 h-4" />
+                        </Button>
                       ) : (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() =>
                             activateMutation.mutate({ id: user.id })
                           }
-                          className="p-2 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                           title="Reativar"
+                          className="text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30"
                         >
-                          <UserCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        </button>
+                          <UserCheck className="w-4 h-4" />
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -292,22 +297,24 @@ export default function UsersPage() {
               {data.pagination.total} usuários
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1 border border-theme rounded-lg text-sm text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() =>
                   setPage((p) => Math.min(data.pagination.totalPages, p + 1))
                 }
                 disabled={page === data.pagination.totalPages}
-                className="px-3 py-1 border border-theme rounded-lg text-sm text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Próximo
-              </button>
+              </Button>
             </div>
           </div>
         )}
