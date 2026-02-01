@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import {
   FileText,
   Loader2,
@@ -118,53 +120,41 @@ export default function ImpExReportsPage() {
           { label: "Relatórios" },
         ]}
         actions={
-          <button
+          <Button
             onClick={exportToCSV}
             disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+            leftIcon={<Download className="w-4 h-4" />}
+            className="bg-green-600 hover:bg-green-700"
           >
-            <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
       {/* Tipo de Relatório */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex flex-wrap gap-4">
-          <button
+          <Button
+            variant={reportType === "processes" ? "primary" : "outline"}
             onClick={() => setReportType("processes")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-              reportType === "processes"
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-theme hover:bg-theme-secondary"
-            }`}
+            leftIcon={<Package className="w-4 h-4" />}
           >
-            <Package className="w-4 h-4" />
             Processos
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={reportType === "costs" ? "primary" : "outline"}
             onClick={() => setReportType("costs")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-              reportType === "costs"
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-theme hover:bg-theme-secondary"
-            }`}
+            leftIcon={<DollarSign className="w-4 h-4" />}
           >
-            <DollarSign className="w-4 h-4" />
             Custos
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={reportType === "exchange" ? "primary" : "outline"}
             onClick={() => setReportType("exchange")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-              reportType === "exchange"
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-theme hover:bg-theme-secondary"
-            }`}
+            leftIcon={<Banknote className="w-4 h-4" />}
           >
-            <Banknote className="w-4 h-4" />
             Câmbio
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -190,45 +180,45 @@ export default function ImpExReportsPage() {
           {reportType !== "costs" && (
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Status</label>
-              <select
+              <Select
                 value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Todos</option>
-                {reportType === "processes" ? (
-                  <>
-                    <option value="DRAFT">Rascunho</option>
-                    <option value="PENDING_SHIPMENT">Aguardando Embarque</option>
-                    <option value="IN_TRANSIT">Em Trânsito</option>
-                    <option value="ARRIVED">Chegou</option>
-                    <option value="IN_CLEARANCE">Em Desembaraço</option>
-                    <option value="CLEARED">Desembaraçado</option>
-                    <option value="DELIVERED">Entregue</option>
-                    <option value="CANCELLED">Cancelado</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="OPEN">Aberto</option>
-                    <option value="PARTIALLY_LIQUIDATED">Parcialmente Liquidado</option>
-                    <option value="LIQUIDATED">Liquidado</option>
-                    <option value="CANCELLED">Cancelado</option>
-                  </>
-                )}
-              </select>
+                onChange={setStatus}
+                placeholder="Todos"
+                options={
+                  reportType === "processes"
+                    ? [
+                      { value: "", label: "Todos" },
+                      { value: "DRAFT", label: "Rascunho" },
+                      { value: "PENDING_SHIPMENT", label: "Aguardando Embarque" },
+                      { value: "IN_TRANSIT", label: "Em Trânsito" },
+                      { value: "ARRIVED", label: "Chegou" },
+                      { value: "IN_CLEARANCE", label: "Em Desembaraço" },
+                      { value: "CLEARED", label: "Desembaraçado" },
+                      { value: "DELIVERED", label: "Entregue" },
+                      { value: "CANCELLED", label: "Cancelado" },
+                    ]
+                    : [
+                      { value: "", label: "Todos" },
+                      { value: "OPEN", label: "Aberto" },
+                      { value: "PARTIALLY_LIQUIDATED", label: "Parcialmente Liquidado" },
+                      { value: "LIQUIDATED", label: "Liquidado" },
+                      { value: "CANCELLED", label: "Cancelado" },
+                    ]
+                }
+              />
             </div>
           )}
           <div className="flex items-end">
-            <button
+            <Button
+              variant="outline"
               onClick={() => {
                 setDateFrom("");
                 setDateTo("");
                 setStatus("");
               }}
-              className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
             >
               Limpar Filtros
-            </button>
+            </Button>
           </div>
         </div>
       </div>
