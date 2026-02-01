@@ -19,6 +19,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { ExportButtons } from "@/components/ui/export-buttons";
 
@@ -85,35 +87,35 @@ export default function SuppliersPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por razão social, nome fantasia ou CNPJ..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              className="pl-10"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={statusFilter ?? ""}
-              onChange={(e) => {
-                setStatusFilter(e.target.value as typeof statusFilter || undefined);
+              onChange={(value) => {
+                setStatusFilter(value as typeof statusFilter || undefined);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="">Todos os status</option>
-              <option value="ACTIVE">Ativos</option>
-              <option value="INACTIVE">Inativos</option>
-              <option value="BLOCKED">Bloqueados</option>
-            </select>
+              placeholder="Todos os status"
+              options={[
+                { value: "", label: "Todos os status" },
+                { value: "ACTIVE", label: "Ativos" },
+                { value: "INACTIVE", label: "Inativos" },
+                { value: "BLOCKED", label: "Bloqueados" },
+              ]}
+            />
           </div>
 
           {/* Export Buttons */}
