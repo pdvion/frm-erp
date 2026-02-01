@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Building2,
@@ -150,25 +151,19 @@ export default function BankAccountsPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Código *</label>
-                  <input
-                    type="text"
-                    value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    required
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="001"
-                  />
-                </div>
+                <Input
+                  label="Código *"
+                  value={formData.code}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  required
+                  placeholder="001"
+                />
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Nome *</label>
-                  <input
-                    type="text"
+                  <Input
+                    label="Nome *"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Banco do Brasil - CC"
                   />
                 </div>
@@ -188,97 +183,69 @@ export default function BankAccountsPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Cód. Banco</label>
-                  <input
-                    type="text"
-                    value={formData.bankCode}
-                    onChange={(e) => setFormData({ ...formData, bankCode: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="001"
-                    maxLength={3}
-                  />
-                </div>
+                <Input
+                  label="Cód. Banco"
+                  value={formData.bankCode}
+                  onChange={(e) => setFormData({ ...formData, bankCode: e.target.value })}
+                  placeholder="001"
+                  maxLength={3}
+                />
                 <div className="md:col-span-3">
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Banco</label>
-                  <input
-                    type="text"
+                  <Input
+                    label="Nome do Banco"
                     value={formData.bankName}
                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Banco do Brasil S.A."
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Agência</label>
-                  <input
-                    type="text"
-                    value={formData.agency}
-                    onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="1234"
-                    maxLength={5}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
-                  <input
-                    type="text"
-                    value={formData.agencyDigit}
-                    onChange={(e) => setFormData({ ...formData, agencyDigit: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="X"
-                    maxLength={1}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Conta</label>
-                  <input
-                    type="text"
-                    value={formData.accountNumber}
-                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="12345678"
-                    maxLength={12}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Conta</label>
-                  <input
-                    type="text"
-                    value={formData.accountDigit}
-                    onChange={(e) => setFormData({ ...formData, accountDigit: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="X"
-                    maxLength={1}
-                  />
-                </div>
+                <Input
+                  label="Agência"
+                  value={formData.agency}
+                  onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
+                  placeholder="1234"
+                  maxLength={5}
+                />
+                <Input
+                  label="Dígito Ag."
+                  value={formData.agencyDigit}
+                  onChange={(e) => setFormData({ ...formData, agencyDigit: e.target.value })}
+                  placeholder="X"
+                  maxLength={1}
+                />
+                <Input
+                  label="Conta"
+                  value={formData.accountNumber}
+                  onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                  placeholder="12345678"
+                  maxLength={12}
+                />
+                <Input
+                  label="Dígito Conta"
+                  value={formData.accountDigit}
+                  onChange={(e) => setFormData({ ...formData, accountDigit: e.target.value })}
+                  placeholder="X"
+                  maxLength={1}
+                />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Saldo Inicial</label>
-                  <input
-                    type="number"
-                    value={formData.initialBalance}
-                    onChange={(e) => setFormData({ ...formData, initialBalance: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Limite de Crédito</label>
-                  <input
-                    type="number"
-                    value={formData.creditLimit}
-                    onChange={(e) => setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    step="0.01"
-                  />
-                </div>
+                <Input
+                  label="Saldo Inicial"
+                  type="number"
+                  value={formData.initialBalance}
+                  onChange={(e) => setFormData({ ...formData, initialBalance: parseFloat(e.target.value) || 0 })}
+                  step="0.01"
+                />
+                <Input
+                  label="Limite de Crédito"
+                  type="number"
+                  value={formData.creditLimit}
+                  onChange={(e) => setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })}
+                  step="0.01"
+                />
                 <div className="flex items-end">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -391,35 +358,34 @@ export default function BankAccountsPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleToggleActive(account.id, account.isActive)}
-                          className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                            account.isActive
-                              ? "bg-green-100 text-green-800"
-                              : "bg-theme-tertiary text-theme-secondary"
-                          }`}
+                          className={account.isActive ? "text-green-600" : "text-theme-muted"}
                         >
                           {account.isActive ? (
                             <>
-                              <CheckCircle className="w-3 h-3" />
+                              <CheckCircle className="w-3 h-3 mr-1" />
                               Ativa
                             </>
                           ) : (
                             <>
-                              <XCircle className="w-3 h-3" />
+                              <XCircle className="w-3 h-3 mr-1" />
                               Inativa
                             </>
                           )}
-                        </button>
+                        </Button>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleEdit(account)}
-                          className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                           title="Editar"
                         >
                           <Pencil className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   );
