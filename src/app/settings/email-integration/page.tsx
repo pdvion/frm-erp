@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Mail,
   Save,
@@ -136,33 +137,22 @@ export default function EmailIntegrationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Servidor IMAP *
-              </label>
-              <input
-                type="text"
-                value={form.host}
-                onChange={(e) => setForm({ ...form, host: e.target.value })}
-                placeholder="imap.gmail.com"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Servidor IMAP *"
+              value={form.host}
+              onChange={(e) => setForm({ ...form, host: e.target.value })}
+              placeholder="imap.gmail.com"
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Porta *
-              </label>
-              <input
-                type="number"
-                value={form.port}
-                onChange={(e) => setForm({ ...form, port: parseInt(e.target.value) || 993 })}
-                placeholder="993"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Porta *"
+              type="number"
+              value={form.port}
+              onChange={(e) => setForm({ ...form, port: parseInt(e.target.value) || 993 })}
+              placeholder="993"
+              required
+            />
 
             <div className="md:col-span-2">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -186,38 +176,23 @@ export default function EmailIntegrationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                E-mail / Usuário *
-              </label>
-              <input
-                type="text"
-                value={form.user}
-                onChange={(e) => setForm({ ...form, user: e.target.value })}
-                placeholder="nfe@empresa.com.br"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="E-mail / Usuário *"
+              value={form.user}
+              onChange={(e) => setForm({ ...form, user: e.target.value })}
+              placeholder="nfe@empresa.com.br"
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Senha *
-              </label>
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder="••••••••"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required={!config}
-              />
-              {config && (
-                <p className="text-xs text-theme-muted mt-1">
-                  Deixe em branco para manter a senha atual
-                </p>
-              )}
-            </div>
+            <Input
+              label="Senha *"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="••••••••"
+              required={!config}
+              hint={config ? "Deixe em branco para manter a senha atual" : undefined}
+            />
           </div>
 
           <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
@@ -238,20 +213,14 @@ export default function EmailIntegrationPage() {
             <h3 className="text-lg font-semibold text-theme">Pasta de Monitoramento</h3>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">
-              Pasta IMAP
-            </label>
-            <input
-              type="text"
+          <div className="max-w-md">
+            <Input
+              label="Pasta IMAP"
               value={form.folder}
               onChange={(e) => setForm({ ...form, folder: e.target.value })}
               placeholder="INBOX"
-              className="w-full max-w-md px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              hint="Pasta onde os e-mails com NFes serão buscados (padrão: INBOX)"
             />
-            <p className="text-xs text-theme-muted mt-1">
-              Pasta onde os e-mails com NFes serão buscados (padrão: INBOX)
-            </p>
           </div>
         </div>
 
@@ -276,11 +245,9 @@ export default function EmailIntegrationPage() {
             </label>
 
             {form.autoFetch && (
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Intervalo de busca (minutos)
-                </label>
-                <input
+              <div className="w-32">
+                <Input
+                  label="Intervalo de busca (minutos)"
                   type="number"
                   value={form.fetchInterval}
                   onChange={(e) =>
@@ -288,7 +255,6 @@ export default function EmailIntegrationPage() {
                   }
                   min={5}
                   max={1440}
-                  className="w-32 px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             )}

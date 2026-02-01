@@ -19,6 +19,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { CategoryQuickForm } from "@/components/forms/CategoryQuickForm";
 
@@ -297,21 +298,35 @@ export default function EditMaterialPage() {
           {/* Tab: Dados Básicos */}
           {activeTab === "basic" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div>
-                <label className={labelClass}>Código</label>
-                <input type="number" value={formData.code} disabled className="w-full px-3 py-2 min-h-[44px] bg-theme-secondary border border-theme rounded-lg text-theme-muted cursor-not-allowed" />
-              </div>
-              <div>
-                <label htmlFor="internalCode" className={labelClass}>Código Interno</label>
-                <input type="text" id="internalCode" name="internalCode" value={formData.internalCode} onChange={handleChange} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="barcode" className={labelClass}>Código de Barras</label>
-                <input type="text" id="barcode" name="barcode" value={formData.barcode} onChange={handleChange} className={inputClass} />
-              </div>
+              <Input
+                label="Código"
+                type="number"
+                value={formData.code}
+                disabled
+              />
+              <Input
+                label="Código Interno"
+                id="internalCode"
+                name="internalCode"
+                value={formData.internalCode}
+                onChange={handleChange}
+              />
+              <Input
+                label="Código de Barras"
+                id="barcode"
+                name="barcode"
+                value={formData.barcode}
+                onChange={handleChange}
+              />
               <div className="sm:col-span-2 lg:col-span-3">
-                <label htmlFor="description" className={labelClass}>Descrição *</label>
-                <input type="text" id="description" name="description" required value={formData.description} onChange={handleChange} className={inputClass} />
+                <Input
+                  label="Descrição *"
+                  id="description"
+                  name="description"
+                  required
+                  value={formData.description}
+                  onChange={handleChange}
+                />
               </div>
               <SelectWithAdd
                 id="categoryId"
@@ -367,10 +382,14 @@ export default function EditMaterialPage() {
                   <input type="number" id="unitConversionFactor" name="unitConversionFactor" step="0.0001" value={formData.unitConversionFactor} onChange={handleChange} className={inputClass} placeholder="1 CX = X UN" />
                 </div>
               )}
-              <div>
-                <label htmlFor="location" className={labelClass}>Localização</label>
-                <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} placeholder="Ex: Prateleira A-01" className={inputClass} />
-              </div>
+              <Input
+                label="Localização"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Ex: Prateleira A-01"
+              />
               <div className="sm:col-span-2 lg:col-span-3">
                 <label htmlFor="notes" className={labelClass}>Observações</label>
                 <textarea id="notes" name="notes" rows={3} value={formData.notes} onChange={handleChange} className={inputClass} />
@@ -381,14 +400,24 @@ export default function EditMaterialPage() {
           {/* Tab: Estoque */}
           {activeTab === "stock" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div>
-                <label htmlFor="minQuantity" className={labelClass}>Qtd. Mínima</label>
-                <input type="number" id="minQuantity" name="minQuantity" step="0.01" value={formData.minQuantity || ""} onChange={handleChange} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="maxQuantity" className={labelClass}>Qtd. Máxima</label>
-                <input type="number" id="maxQuantity" name="maxQuantity" step="0.01" value={formData.maxQuantity || ""} onChange={handleChange} className={inputClass} />
-              </div>
+              <Input
+                label="Qtd. Mínima"
+                type="number"
+                id="minQuantity"
+                name="minQuantity"
+                step="0.01"
+                value={formData.minQuantity || ""}
+                onChange={handleChange}
+              />
+              <Input
+                label="Qtd. Máxima"
+                type="number"
+                id="maxQuantity"
+                name="maxQuantity"
+                step="0.01"
+                value={formData.maxQuantity || ""}
+                onChange={handleChange}
+              />
               <div>
                 <label htmlFor="minQuantityCalcType" className={labelClass}>Cálculo Qtd. Mínima</label>
                 <select id="minQuantityCalcType" name="minQuantityCalcType" value={formData.minQuantityCalcType} onChange={handleChange} className={inputClass}>
@@ -397,10 +426,15 @@ export default function EditMaterialPage() {
                   <option value="PEAK_12M">Pico 12 Meses</option>
                 </select>
               </div>
-              <div>
-                <label htmlFor="avgDeliveryDays" className={labelClass}>Tempo Médio Entrega (dias)</label>
-                <input type="number" id="avgDeliveryDays" name="avgDeliveryDays" step="1" value={formData.avgDeliveryDays || ""} onChange={handleChange} className={inputClass} />
-              </div>
+              <Input
+                label="Tempo Médio Entrega (dias)"
+                type="number"
+                id="avgDeliveryDays"
+                name="avgDeliveryDays"
+                step="1"
+                value={formData.avgDeliveryDays || ""}
+                onChange={handleChange}
+              />
               <div>
                 <label htmlFor="weight" className={labelClass}>Peso</label>
                 <div className="flex gap-2">
@@ -418,18 +452,33 @@ export default function EditMaterialPage() {
           {/* Tab: Fiscal */}
           {activeTab === "fiscal" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div>
-                <label htmlFor="ncm" className={labelClass}>NCM</label>
-                <input type="text" id="ncm" name="ncm" value={formData.ncm} onChange={handleChange} placeholder="00000000" maxLength={8} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="ipiRate" className={labelClass}>% IPI</label>
-                <input type="number" id="ipiRate" name="ipiRate" step="0.01" value={formData.ipiRate || ""} onChange={handleChange} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="icmsRate" className={labelClass}>% ICMS</label>
-                <input type="number" id="icmsRate" name="icmsRate" step="0.01" value={formData.icmsRate || ""} onChange={handleChange} className={inputClass} />
-              </div>
+              <Input
+                label="NCM"
+                id="ncm"
+                name="ncm"
+                value={formData.ncm}
+                onChange={handleChange}
+                placeholder="00000000"
+                maxLength={8}
+              />
+              <Input
+                label="% IPI"
+                type="number"
+                id="ipiRate"
+                name="ipiRate"
+                step="0.01"
+                value={formData.ipiRate || ""}
+                onChange={handleChange}
+              />
+              <Input
+                label="% ICMS"
+                type="number"
+                id="icmsRate"
+                name="icmsRate"
+                step="0.01"
+                value={formData.icmsRate || ""}
+                onChange={handleChange}
+              />
               <div className="flex items-center gap-2 pt-6">
                 <input type="checkbox" id="requiresFiscalEntry" name="requiresFiscalEntry" checked={formData.requiresFiscalEntry} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
                 <label htmlFor="requiresFiscalEntry" className="text-sm font-medium text-theme-secondary">Requer entrada fiscal</label>
@@ -505,14 +554,20 @@ export default function EditMaterialPage() {
               <div className="border-t border-theme pt-4">
                 <h3 className="text-sm font-semibold text-theme mb-3">Marca Obrigatória</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="requiredBrand" className={labelClass}>Marca</label>
-                    <input type="text" id="requiredBrand" name="requiredBrand" value={formData.requiredBrand} onChange={handleChange} className={inputClass} />
-                  </div>
-                  <div>
-                    <label htmlFor="requiredBrandReason" className={labelClass}>Motivo</label>
-                    <input type="text" id="requiredBrandReason" name="requiredBrandReason" value={formData.requiredBrandReason} onChange={handleChange} className={inputClass} />
-                  </div>
+                  <Input
+                    label="Marca"
+                    id="requiredBrand"
+                    name="requiredBrand"
+                    value={formData.requiredBrand}
+                    onChange={handleChange}
+                  />
+                  <Input
+                    label="Motivo"
+                    id="requiredBrandReason"
+                    name="requiredBrandReason"
+                    value={formData.requiredBrandReason}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             </div>
@@ -526,14 +581,20 @@ export default function EditMaterialPage() {
                   <Factory className="w-4 h-4" /> Fabricante
                 </h3>
               </div>
-              <div>
-                <label htmlFor="manufacturer" className={labelClass}>Fabricante</label>
-                <input type="text" id="manufacturer" name="manufacturer" value={formData.manufacturer} onChange={handleChange} className={inputClass} />
-              </div>
-              <div>
-                <label htmlFor="manufacturerCode" className={labelClass}>Código Fabricante</label>
-                <input type="text" id="manufacturerCode" name="manufacturerCode" value={formData.manufacturerCode} onChange={handleChange} className={inputClass} />
-              </div>
+              <Input
+                label="Fabricante"
+                id="manufacturer"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+              />
+              <Input
+                label="Código Fabricante"
+                id="manufacturerCode"
+                name="manufacturerCode"
+                value={formData.manufacturerCode}
+                onChange={handleChange}
+              />
             </div>
           )}
         </div>

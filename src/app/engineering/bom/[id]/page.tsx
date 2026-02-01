@@ -7,6 +7,7 @@ import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   Layers,
@@ -357,59 +358,43 @@ function AddComponentModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Quantidade</label>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                step="0.0001"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Unidade</label>
-              <input
-                type="text"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Quantidade"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              step="0.0001"
+            />
+            <Input
+              label="Unidade"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+            />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Perda %</label>
-              <input
-                type="number"
-                value={scrapPercentage}
-                onChange={(e) => setScrapPercentage(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-                max="100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Lead Time (dias)</label>
-              <input
-                type="number"
-                value={leadTimeDays}
-                onChange={(e) => setLeadTimeDays(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Sequência</label>
-              <input
-                type="number"
-                value={sequence}
-                onChange={(e) => setSequence(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
+            <Input
+              label="Perda %"
+              type="number"
+              value={scrapPercentage}
+              onChange={(e) => setScrapPercentage(e.target.value)}
+              min="0"
+              max="100"
+            />
+            <Input
+              label="Lead Time (dias)"
+              type="number"
+              value={leadTimeDays}
+              onChange={(e) => setLeadTimeDays(e.target.value)}
+              min="0"
+            />
+            <Input
+              label="Sequência"
+              type="number"
+              value={sequence}
+              onChange={(e) => setSequence(e.target.value)}
+              min="0"
+            />
           </div>
 
           <div>
@@ -514,59 +499,43 @@ function EditItemModal({
 
         <div className="space-y-4 mb-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Quantidade</label>
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                step="0.0001"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Unidade</label>
-              <input
-                type="text"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Quantidade"
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              step="0.0001"
+            />
+            <Input
+              label="Unidade"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+            />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Perda %</label>
-              <input
-                type="number"
-                value={scrapPercentage}
-                onChange={(e) => setScrapPercentage(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-                max="100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Lead Time</label>
-              <input
-                type="number"
-                value={leadTimeDays}
-                onChange={(e) => setLeadTimeDays(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Sequência</label>
-              <input
-                type="number"
-                value={sequence}
-                onChange={(e) => setSequence(e.target.value)}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                min="0"
-              />
-            </div>
+            <Input
+              label="Perda %"
+              type="number"
+              value={scrapPercentage}
+              onChange={(e) => setScrapPercentage(e.target.value)}
+              min="0"
+              max="100"
+            />
+            <Input
+              label="Lead Time"
+              type="number"
+              value={leadTimeDays}
+              onChange={(e) => setLeadTimeDays(e.target.value)}
+              min="0"
+            />
+            <Input
+              label="Sequência"
+              type="number"
+              value={sequence}
+              onChange={(e) => setSequence(e.target.value)}
+              min="0"
+            />
           </div>
         </div>
 
@@ -629,13 +598,12 @@ function CostModal({
           Cálculo de Custo
         </h3>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-theme-secondary mb-1">Quantidade</label>
-          <input
+        <div className="mb-4 w-32">
+          <Input
+            label="Quantidade"
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             min="1"
           />
         </div>
@@ -741,23 +709,21 @@ function ExplodeModal({
         </h3>
 
         <div className="flex gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Quantidade</label>
-            <input
+          <div className="w-32">
+            <Input
+              label="Quantidade"
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               min="1"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Níveis</label>
-            <input
+          <div className="w-20">
+            <Input
+              label="Níveis"
               type="number"
               value={maxLevels}
               onChange={(e) => setMaxLevels(e.target.value)}
-              className="w-20 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               min="1"
               max="10"
             />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { ClipboardCheck, Plus, Trash2, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -112,38 +113,28 @@ export default function NewQualityInspectionPage() {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Número do Lote</label>
-              <input
-                type="text"
-                value={lotNumber}
-                onChange={(e) => setLotNumber(e.target.value)}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                placeholder="Ex: LOTE-2026-001"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Quantidade</label>
-              <input
-                type="number"
-                min={1}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Tamanho da Amostra</label>
-              <input
-                type="number"
-                min={1}
-                value={sampleSize || ""}
-                onChange={(e) => setSampleSize(e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                placeholder="Opcional"
-              />
-            </div>
+            <Input
+              label="Número do Lote"
+              value={lotNumber}
+              onChange={(e) => setLotNumber(e.target.value)}
+              placeholder="Ex: LOTE-2026-001"
+            />
+            <Input
+              label="Quantidade"
+              type="number"
+              min={1}
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              required
+            />
+            <Input
+              label="Tamanho da Amostra"
+              type="number"
+              min={1}
+              value={sampleSize || ""}
+              onChange={(e) => setSampleSize(e.target.value ? Number(e.target.value) : undefined)}
+              placeholder="Opcional"
+            />
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { formatCurrency } from "@/lib/formatters";
 import {
   FileBarChart,
@@ -135,60 +136,36 @@ export default function NewBoletoPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Agência *
-                </label>
-                <input
-                  type="text"
-                  value={form.agencia}
-                  onChange={(e) => setForm({ ...form, agencia: e.target.value.replace(/\D/g, "") })}
-                  placeholder="0000"
-                  maxLength={4}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
+              <Input
+                label="Agência *"
+                value={form.agencia}
+                onChange={(e) => setForm({ ...form, agencia: e.target.value.replace(/\D/g, "") })}
+                placeholder="0000"
+                maxLength={4}
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Conta *
-                </label>
-                <input
-                  type="text"
-                  value={form.conta}
-                  onChange={(e) => setForm({ ...form, conta: e.target.value.replace(/\D/g, "") })}
-                  placeholder="00000000"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
+              <Input
+                label="Conta *"
+                value={form.conta}
+                onChange={(e) => setForm({ ...form, conta: e.target.value.replace(/\D/g, "") })}
+                placeholder="00000000"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Convênio
-                </label>
-                <input
-                  type="text"
-                  value={form.convenio}
-                  onChange={(e) => setForm({ ...form, convenio: e.target.value })}
-                  placeholder="000000"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+              <Input
+                label="Convênio"
+                value={form.convenio}
+                onChange={(e) => setForm({ ...form, convenio: e.target.value })}
+                placeholder="000000"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Carteira
-                </label>
-                <input
-                  type="text"
-                  value={form.carteira}
-                  onChange={(e) => setForm({ ...form, carteira: e.target.value })}
-                  placeholder="17"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+              <Input
+                label="Carteira"
+                value={form.carteira}
+                onChange={(e) => setForm({ ...form, carteira: e.target.value })}
+                placeholder="17"
+              />
             </div>
           </div>
 
@@ -237,15 +214,11 @@ export default function NewBoletoPage() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nosso Número *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Nosso Número *"
                   value={form.nossoNumero}
                   onChange={(e) => setForm({ ...form, nossoNumero: e.target.value.replace(/\D/g, "") })}
                   placeholder="00000000000"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <p className="text-xs text-theme-muted mt-1">
