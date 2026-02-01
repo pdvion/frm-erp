@@ -6,8 +6,9 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Banknote, Save, X } from "lucide-react";
-import Link from "next/link";
 
 export default function NewExchangeContractPage() {
   const router = useRouter();
@@ -107,38 +108,29 @@ export default function NewExchangeContractPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Banco *
               </label>
-              <select
-                name="bankAccountId"
+              <Select
                 value={formData.bankAccountId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {bankAccounts?.map((bank) => (
-                  <option key={bank.id} value={bank.id}>
-                    {bank.bankName || bank.name} - {bank.accountNumber}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, bankAccountId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(bankAccounts?.map((bank) => ({ value: bank.id, label: `${bank.bankName || bank.name} - ${bank.accountNumber}` })) || []),
+                ]}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Processo de Importação
               </label>
-              <select
-                name="processId"
+              <Select
                 value={formData.processId}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Nenhum (contrato avulso)</option>
-                {processes?.map((process) => (
-                  <option key={process.id} value={process.id}>
-                    {process.processNumber} - {process.supplier?.companyName}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, processId: value }))}
+                placeholder="Nenhum (contrato avulso)"
+                options={[
+                  { value: "", label: "Nenhum (contrato avulso)" },
+                  ...(processes?.map((process) => ({ value: process.id, label: `${process.processNumber} - ${process.supplier?.companyName}` })) || []),
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -160,18 +152,17 @@ export default function NewExchangeContractPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Moeda
               </label>
-              <select
-                name="foreignCurrency"
+              <Select
                 value={formData.foreignCurrency}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="USD">USD - Dólar Americano</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - Libra Esterlina</option>
-                <option value="CNY">CNY - Yuan Chinês</option>
-                <option value="JPY">JPY - Iene Japonês</option>
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, foreignCurrency: value }))}
+                options={[
+                  { value: "USD", label: "USD - Dólar Americano" },
+                  { value: "EUR", label: "EUR - Euro" },
+                  { value: "GBP", label: "GBP - Libra Esterlina" },
+                  { value: "CNY", label: "CNY - Yuan Chinês" },
+                  { value: "JPY", label: "JPY - Iene Japonês" },
+                ]}
+              />
             </div>
             <Input
               label="Taxa Contratada *"
@@ -219,24 +210,22 @@ export default function NewExchangeContractPage() {
 
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Observações</h3>
-          <textarea
-            name="notes"
+          <Textarea
             value={formData.notes}
-            onChange={handleChange}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
-            className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
             placeholder="Observações adicionais..."
           />
         </div>
 
         <div className="flex justify-end gap-4">
-          <Link
-            href="/impex/exchange"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/impex/exchange")}
+            leftIcon={<X className="w-4 h-4" />}
           >
-            <X className="w-4 h-4" />
             Cancelar
-          </Link>
+          </Button>
           <Button
             type="submit"
             isLoading={createMutation.isPending}
