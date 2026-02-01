@@ -166,7 +166,7 @@ export default function DeployAgentPage() {
       />
 
       {/* Progress Steps */}
-      <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between bg-theme-card rounded-lg p-4 border border-theme">
         {[
           { id: "upload", label: "Upload", icon: Upload },
           { id: "analyze", label: "Análise", icon: FileText },
@@ -181,14 +181,14 @@ export default function DeployAgentPage() {
                   : ["upload", "analyze", "review", "apply"].indexOf(step) >
                       ["upload", "analyze", "review", "apply"].indexOf(s.id)
                     ? "text-green-600"
-                    : "text-gray-400"
+                    : "text-theme-muted"
               }`}
             >
               <s.icon size={20} />
               <span className="font-medium">{s.label}</span>
             </div>
             {i < 3 && (
-              <ArrowRight size={20} className="mx-4 text-gray-300" />
+              <ArrowRight size={20} className="mx-4 text-theme-muted" />
             )}
           </div>
         ))}
@@ -197,19 +197,19 @@ export default function DeployAgentPage() {
       {/* Step: Upload */}
       {step === "upload" && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
             <h3 className="text-lg font-medium mb-4">Upload de XMLs de NFe</h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-theme-muted mb-6">
               Faça upload dos XMLs de NFe para que o Deploy Agent analise e sugira
               configurações automáticas.
             </p>
 
-            <label className="block border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
-              <Upload size={48} className="mx-auto mb-4 text-gray-400" />
-              <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            <label className="block border-2 border-dashed border-theme rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
+              <Upload size={48} className="mx-auto mb-4 text-theme-muted" />
+              <p className="text-lg font-medium text-theme-secondary">
                 Arraste XMLs aqui ou clique para selecionar
               </p>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-theme-muted mt-2">
                 Suporta múltiplos arquivos XML de NFe
               </p>
               <input
@@ -230,7 +230,7 @@ export default function DeployAgentPage() {
                   {xmlFiles.map((file, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                      className="flex items-center gap-2 text-sm text-theme-muted"
                     >
                       <FileText size={16} />
                       {file.name}
@@ -256,10 +256,10 @@ export default function DeployAgentPage() {
 
       {/* Step: Analyze */}
       {step === "analyze" && isAnalyzing && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div className="bg-theme-card rounded-lg border border-theme p-12 text-center">
           <Loader2 size={48} className="mx-auto mb-4 text-blue-600 animate-spin" />
           <h3 className="text-xl font-medium mb-2">Analisando XMLs...</h3>
-          <p className="text-gray-500">
+          <p className="text-theme-muted">
             O Deploy Agent está processando {xmlFiles.length} arquivo(s)
           </p>
         </div>
@@ -270,63 +270,63 @@ export default function DeployAgentPage() {
         <div className="space-y-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="bg-theme-card rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3">
                 <Package size={24} className="text-blue-600" />
                 <div>
                   <div className="text-2xl font-bold">{stats.materials}</div>
-                  <div className="text-sm text-gray-500">Materiais</div>
+                  <div className="text-sm text-theme-muted">Materiais</div>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="bg-theme-card rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3">
                 <Users size={24} className="text-green-600" />
                 <div>
                   <div className="text-2xl font-bold">{stats.suppliers}</div>
-                  <div className="text-sm text-gray-500">Fornecedores</div>
+                  <div className="text-sm text-theme-muted">Fornecedores</div>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="bg-theme-card rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3">
                 <Building2 size={24} className="text-purple-600" />
                 <div>
                   <div className="text-2xl font-bold">{stats.customers}</div>
-                  <div className="text-sm text-gray-500">Clientes</div>
+                  <div className="text-sm text-theme-muted">Clientes</div>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="bg-theme-card rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3">
                 <FileCheck size={24} className="text-orange-600" />
                 <div>
                   <div className="text-2xl font-bold">{stats.fiscalRules}</div>
-                  <div className="text-sm text-gray-500">Regras Fiscais</div>
+                  <div className="text-sm text-theme-muted">Regras Fiscais</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Confidence Summary */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-theme-card rounded-lg border border-theme p-4">
             <h4 className="font-medium mb-3">Resumo de Confiança</h4>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <ConfidenceBadge confidence={95} size="sm" />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-theme-muted">
                   {validationItems.filter((i) => i.confidence >= 80).length} itens
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <ConfidenceBadge confidence={60} size="sm" />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-theme-muted">
                   {validationItems.filter((i) => i.confidence >= 50 && i.confidence < 80).length} itens
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <ConfidenceBadge confidence={30} size="sm" />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-theme-muted">
                   {validationItems.filter((i) => i.confidence < 50).length} itens
                 </span>
               </div>
@@ -339,7 +339,7 @@ export default function DeployAgentPage() {
               <h3 className="text-lg font-medium">Itens para Validação</h3>
               <div className="flex items-center gap-2">
                 <AlertTriangle size={16} className="text-yellow-500" />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-theme-muted">
                   {validationItems.filter((i) => i.action === "review").length} item(s) requerem revisão
                 </span>
               </div>
@@ -372,12 +372,12 @@ export default function DeployAgentPage() {
 
       {/* Step: Apply */}
       {step === "apply" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div className="bg-theme-card rounded-lg border border-theme p-12 text-center">
           {isApplying ? (
             <>
               <Loader2 size={48} className="mx-auto mb-4 text-blue-600 animate-spin" />
               <h3 className="text-xl font-medium mb-2">Aplicando configurações...</h3>
-              <p className="text-gray-500">
+              <p className="text-theme-muted">
                 Criando {itemsToApply.length} registro(s) no sistema
               </p>
             </>
@@ -385,7 +385,7 @@ export default function DeployAgentPage() {
             <>
               <CheckCircle size={48} className="mx-auto mb-4 text-green-600" />
               <h3 className="text-xl font-medium mb-2">Configuração Concluída!</h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-theme-muted mb-6">
                 {itemsToApply.length} registro(s) foram criados com sucesso
               </p>
               <div className="flex justify-center gap-4">
