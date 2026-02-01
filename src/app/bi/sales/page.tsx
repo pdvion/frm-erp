@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   TrendingUp,
   DollarSign,
@@ -13,16 +15,16 @@ import {
   Calendar,
 } from "lucide-react";
 
-// Dados mockados para KPIs de vendas
-const salesKPIs = {
-  totalSales: 1250000,
+// Dados de exemplo para fallback
+const defaultKPIs = {
+  totalSales: 0,
   salesTarget: 1500000,
-  ordersCount: 342,
-  avgTicket: 3654.97,
-  conversionRate: 23.5,
-  newCustomers: 45,
-  returningCustomers: 297,
-  growthVsLastMonth: 12.3,
+  ordersCount: 0,
+  avgTicket: 0,
+  conversionRate: 0,
+  newCustomers: 0,
+  returningCustomers: 0,
+  growthVsLastMonth: 0,
 };
 
 const topProducts = [
@@ -60,6 +62,38 @@ const monthlyData = [
 
 export default function BISalesPage() {
   const [period, setPeriod] = useState("month");
+  
+  const { data: kpisData, isLoading } = trpc.bi.getSalesKpis.useQuery();
+  
+  // Mapear dados do backend ou usar defaults
+  const salesKPIs = {
+    totalSales: kpisData?.revenueThisMonth || defaultKPIs.totalSales,
+    salesTarget: defaultKPIs.salesTarget,
+    ordersCount: kpisData?.ordersThisMonth || defaultKPIs.ordersCount,
+    avgTicket: kpisData?.ordersThisMonth && kpisData?.revenueThisMonth 
+      ? kpisData.revenueThisMonth / kpisData.ordersThisMonth 
+      : defaultKPIs.avgTicket,
+    conversionRate: kpisData?.conversionRate || defaultKPIs.conversionRate,
+    newCustomers: kpisData?.leadsThisMonth || defaultKPIs.newCustomers,
+    returningCustomers: defaultKPIs.returningCustomers,
+    growthVsLastMonth: kpisData?.revenueLastMonth && kpisData?.revenueThisMonth
+      ? ((kpisData.revenueThisMonth - kpisData.revenueLastMonth) / (kpisData.revenueLastMonth || 1)) * 100
+      : defaultKPIs.growthVsLastMonth,
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="BI Vendas"
+          subtitle="Dashboard de indicadores comerciais"
+          icon={<TrendingUp className="w-6 h-6" />}
+          module="BI"
+        />
+        <TableSkeleton rows={4} />
+      </div>
+    );
+  }
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
