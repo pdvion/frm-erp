@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { Users, Loader2, Save } from "lucide-react";
 
 export default function EditLeadPage() {
@@ -108,28 +109,18 @@ export default function EditLeadPage() {
             <h2 className="text-lg font-semibold text-theme mb-4">Dados do Lead</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nome da Empresa *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Nome da Empresa *"
                   required
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nome do Contato
-                </label>
-                <input
-                  type="text"
-                  value={formData.contactName}
-                  onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
+              <Input
+                label="Nome do Contato"
+                value={formData.contactName}
+                onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">
                   Status
@@ -166,28 +157,18 @@ export default function EditLeadPage() {
                   <option value="OTHER">Outros</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Telefone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
+              <Input
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+              <Input
+                label="Telefone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
             </div>
           </div>
 
@@ -195,43 +176,28 @@ export default function EditLeadPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <h2 className="text-lg font-semibold text-theme mb-4">Oportunidade</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Valor Estimado (R$)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.estimatedValue}
-                  onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Probabilidade (%)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.probability}
-                  onChange={(e) => setFormData({ ...formData, probability: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Previsão de Fechamento
-                </label>
-                <input
-                  type="date"
-                  value={formData.expectedCloseDate}
-                  onChange={(e) => setFormData({ ...formData, expectedCloseDate: e.target.value })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
+              <Input
+                label="Valor Estimado (R$)"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.estimatedValue}
+                onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })}
+              />
+              <Input
+                label="Probabilidade (%)"
+                type="number"
+                min="0"
+                max="100"
+                value={formData.probability}
+                onChange={(e) => setFormData({ ...formData, probability: e.target.value })}
+              />
+              <Input
+                label="Previsão de Fechamento"
+                type="date"
+                value={formData.expectedCloseDate}
+                onChange={(e) => setFormData({ ...formData, expectedCloseDate: e.target.value })}
+              />
             </div>
           </div>
 

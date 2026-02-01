@@ -118,78 +118,49 @@ export default function NewCustomerPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  {type === "COMPANY" ? "CNPJ" : "CPF"}
-                </label>
-                {type === "COMPANY" ? (
-                  <input
-                    type="text"
-                    value={cnpj}
-                    onChange={(e) => setCnpj(e.target.value)}
-                    placeholder="00.000.000/0000-00"
-                    className="border-theme-input w-full rounded-lg border px-3 py-2"
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={cpf}
-                    onChange={(e) => setCpf(e.target.value)}
-                    placeholder="000.000.000-00"
-                    className="border-theme-input w-full rounded-lg border px-3 py-2"
-                  />
-                )}
-              </div>
+              {type === "COMPANY" ? (
+                <Input
+                  label="CNPJ"
+                  value={cnpj}
+                  onChange={(e) => setCnpj(e.target.value)}
+                  placeholder="00.000.000/0000-00"
+                />
+              ) : (
+                <Input
+                  label="CPF"
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                  placeholder="000.000.000-00"
+                />
+              )}
 
               <div className="md:col-span-2">
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  {type === "COMPANY" ? "Razão Social" : "Nome"} *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label={type === "COMPANY" ? "Razão Social *" : "Nome *"}
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
                 />
               </div>
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  {type === "COMPANY" ? "Nome Fantasia" : "Apelido"}
-                </label>
-                <input
-                  type="text"
-                  value={tradeName}
-                  onChange={(e) => setTradeName(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label={type === "COMPANY" ? "Nome Fantasia" : "Apelido"}
+                value={tradeName}
+                onChange={(e) => setTradeName(e.target.value)}
+              />
 
               {type === "COMPANY" && (
                 <>
-                  <div>
-                    <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                      Inscrição Estadual
-                    </label>
-                    <input
-                      type="text"
-                      value={stateRegistration}
-                      onChange={(e) => setStateRegistration(e.target.value)}
-                      className="border-theme-input w-full rounded-lg border px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                      Inscrição Municipal
-                    </label>
-                    <input
-                      type="text"
-                      value={municipalRegistration}
-                      onChange={(e) => setMunicipalRegistration(e.target.value)}
-                      className="border-theme-input w-full rounded-lg border px-3 py-2"
-                    />
-                  </div>
+                  <Input
+                    label="Inscrição Estadual"
+                    value={stateRegistration}
+                    onChange={(e) => setStateRegistration(e.target.value)}
+                  />
+                  <Input
+                    label="Inscrição Municipal"
+                    value={municipalRegistration}
+                    onChange={(e) => setMunicipalRegistration(e.target.value)}
+                  />
                 </>
               )}
             </div>

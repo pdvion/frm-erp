@@ -14,7 +14,6 @@ import {
   Save,
   User,
   Building2,
-  Calendar,
   CreditCard,
   Phone,
   Mail,
@@ -312,20 +311,14 @@ export default function NewEmployeePage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Data de Admissão *
-                </label>
-                <input
-                  type="date"
-                  name="admissionDate"
-                  value={formData.admissionDate}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="Data de Admissão *"
+                type="date"
+                name="admissionDate"
+                value={formData.admissionDate}
+                onChange={handleChange}
+                required
+              />
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Departamento
@@ -362,22 +355,16 @@ export default function NewEmployeePage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  <CreditCard className="w-4 h-4 inline mr-1" />
-                  Salário
-                </label>
-                <input
-                  type="number"
-                  name="salary"
-                  value={formData.salary}
-                  onChange={handleChange}
-                  step="0.01"
-                  min="0"
-                  placeholder="0,00"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="Salário"
+                type="number"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                step="0.01"
+                min="0"
+                placeholder="0,00"
+              />
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Escala de Trabalho
@@ -402,66 +389,36 @@ export default function NewEmployeePage() {
               <h2 className="text-lg font-semibold text-theme">Documentos</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  PIS/PASEP
-                </label>
-                <input
-                  type="text"
-                  name="pis"
-                  value={formData.pis}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  CTPS
-                </label>
-                <input
-                  type="text"
-                  name="ctps"
-                  value={formData.ctps}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Série CTPS
-                </label>
-                <input
-                  type="text"
-                  name="ctpsSeries"
-                  value={formData.ctpsSeries}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Título de Eleitor
-                </label>
-                <input
-                  type="text"
-                  name="voterRegistration"
-                  value={formData.voterRegistration}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Certificado Reservista
-                </label>
-                <input
-                  type="text"
-                  name="militaryService"
-                  value={formData.militaryService}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="PIS/PASEP"
+                name="pis"
+                value={formData.pis}
+                onChange={handleChange}
+              />
+              <Input
+                label="CTPS"
+                name="ctps"
+                value={formData.ctps}
+                onChange={handleChange}
+              />
+              <Input
+                label="Série CTPS"
+                name="ctpsSeries"
+                value={formData.ctpsSeries}
+                onChange={handleChange}
+              />
+              <Input
+                label="Título de Eleitor"
+                name="voterRegistration"
+                value={formData.voterRegistration}
+                onChange={handleChange}
+              />
+              <Input
+                label="Certificado Reservista"
+                name="militaryService"
+                value={formData.militaryService}
+                onChange={handleChange}
+              />
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 
 import {
   Settings,
@@ -130,25 +131,19 @@ export default function WorkCentersPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Código *</label>
-                  <input
-                    type="text"
-                    value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    required
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ex: CT-001"
-                  />
-                </div>
+                <Input
+                  label="Código *"
+                  value={formData.code}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  required
+                  placeholder="Ex: CT-001"
+                />
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Nome *</label>
-                  <input
-                    type="text"
+                  <Input
+                    label="Nome *"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Ex: Torno CNC 01"
                   />
                 </div>
@@ -166,74 +161,56 @@ export default function WorkCentersPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Capacidade/Hora</label>
-                  <input
-                    type="number"
-                    value={formData.capacityPerHour}
-                    onChange={(e) => setFormData({ ...formData, capacityPerHour: parseFloat(e.target.value) || 1 })}
-                    min={0.1}
-                    step={0.1}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Horas/Dia</label>
-                  <input
-                    type="number"
-                    value={formData.hoursPerDay}
-                    onChange={(e) => setFormData({ ...formData, hoursPerDay: parseInt(e.target.value) || 8 })}
-                    min={1}
-                    max={24}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Dias/Semana</label>
-                  <input
-                    type="number"
-                    value={formData.daysPerWeek}
-                    onChange={(e) => setFormData({ ...formData, daysPerWeek: parseInt(e.target.value) || 5 })}
-                    min={1}
-                    max={7}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Meta OEE (%)</label>
-                  <input
-                    type="number"
-                    value={formData.efficiencyTarget}
-                    onChange={(e) => setFormData({ ...formData, efficiencyTarget: parseInt(e.target.value) || 85 })}
-                    min={0}
-                    max={100}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Capacidade/Hora"
+                  type="number"
+                  value={formData.capacityPerHour}
+                  onChange={(e) => setFormData({ ...formData, capacityPerHour: parseFloat(e.target.value) || 1 })}
+                  min={0.1}
+                  step={0.1}
+                />
+                <Input
+                  label="Horas/Dia"
+                  type="number"
+                  value={formData.hoursPerDay}
+                  onChange={(e) => setFormData({ ...formData, hoursPerDay: parseInt(e.target.value) || 8 })}
+                  min={1}
+                  max={24}
+                />
+                <Input
+                  label="Dias/Semana"
+                  type="number"
+                  value={formData.daysPerWeek}
+                  onChange={(e) => setFormData({ ...formData, daysPerWeek: parseInt(e.target.value) || 5 })}
+                  min={1}
+                  max={7}
+                />
+                <Input
+                  label="Meta OEE (%)"
+                  type="number"
+                  value={formData.efficiencyTarget}
+                  onChange={(e) => setFormData({ ...formData, efficiencyTarget: parseInt(e.target.value) || 85 })}
+                  min={0}
+                  max={100}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Tempo Setup (min)</label>
-                  <input
-                    type="number"
-                    value={formData.setupTimeMinutes}
-                    onChange={(e) => setFormData({ ...formData, setupTimeMinutes: parseInt(e.target.value) || 0 })}
-                    min={0}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Custo/Hora (R$)</label>
-                  <input
-                    type="number"
-                    value={formData.costPerHour}
-                    onChange={(e) => setFormData({ ...formData, costPerHour: parseFloat(e.target.value) || 0 })}
-                    min={0}
-                    step={0.01}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Tempo Setup (min)"
+                  type="number"
+                  value={formData.setupTimeMinutes}
+                  onChange={(e) => setFormData({ ...formData, setupTimeMinutes: parseInt(e.target.value) || 0 })}
+                  min={0}
+                />
+                <Input
+                  label="Custo/Hora (R$)"
+                  type="number"
+                  value={formData.costPerHour}
+                  onChange={(e) => setFormData({ ...formData, costPerHour: parseFloat(e.target.value) || 0 })}
+                  min={0}
+                  step={0.01}
+                />
               </div>
 
               <div className="flex justify-end gap-3">

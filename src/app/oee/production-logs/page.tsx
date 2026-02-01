@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { FileText, Plus } from "lucide-react";
 
 export default function ProductionLogsPage() {
@@ -84,24 +85,18 @@ export default function ProductionLogsPage() {
               ))}
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">Data Início</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">Data Fim</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-            />
-          </div>
+          <Input
+            label="Data Início"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <Input
+            label="Data Fim"
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </div>
       </div>
 
@@ -197,60 +192,42 @@ export default function ProductionLogsPage() {
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Qtd Planejada</label>
-                  <input
-                    type="number"
-                    value={logForm.plannedQuantity}
-                    onChange={(e) => setLogForm({ ...logForm, plannedQuantity: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Qtd Produzida</label>
-                  <input
-                    type="number"
-                    value={logForm.producedQuantity}
-                    onChange={(e) => setLogForm({ ...logForm, producedQuantity: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Qtd Boa</label>
-                  <input
-                    type="number"
-                    value={logForm.goodQuantity}
-                    onChange={(e) => setLogForm({ ...logForm, goodQuantity: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Refugo</label>
-                  <input
-                    type="number"
-                    value={logForm.scrapQuantity}
-                    onChange={(e) => setLogForm({ ...logForm, scrapQuantity: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Tempo Planejado (min)</label>
-                  <input
-                    type="number"
-                    value={logForm.plannedTimeMinutes}
-                    onChange={(e) => setLogForm({ ...logForm, plannedTimeMinutes: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Tempo Parada (min)</label>
-                  <input
-                    type="number"
-                    value={logForm.stopTimeMinutes}
-                    onChange={(e) => setLogForm({ ...logForm, stopTimeMinutes: Number(e.target.value) })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
+                <Input
+                  label="Qtd Planejada"
+                  type="number"
+                  value={logForm.plannedQuantity}
+                  onChange={(e) => setLogForm({ ...logForm, plannedQuantity: Number(e.target.value) })}
+                />
+                <Input
+                  label="Qtd Produzida"
+                  type="number"
+                  value={logForm.producedQuantity}
+                  onChange={(e) => setLogForm({ ...logForm, producedQuantity: Number(e.target.value) })}
+                />
+                <Input
+                  label="Qtd Boa"
+                  type="number"
+                  value={logForm.goodQuantity}
+                  onChange={(e) => setLogForm({ ...logForm, goodQuantity: Number(e.target.value) })}
+                />
+                <Input
+                  label="Refugo"
+                  type="number"
+                  value={logForm.scrapQuantity}
+                  onChange={(e) => setLogForm({ ...logForm, scrapQuantity: Number(e.target.value) })}
+                />
+                <Input
+                  label="Tempo Planejado (min)"
+                  type="number"
+                  value={logForm.plannedTimeMinutes}
+                  onChange={(e) => setLogForm({ ...logForm, plannedTimeMinutes: Number(e.target.value) })}
+                />
+                <Input
+                  label="Tempo Parada (min)"
+                  type="number"
+                  value={logForm.stopTimeMinutes}
+                  onChange={(e) => setLogForm({ ...logForm, stopTimeMinutes: Number(e.target.value) })}
+                />
               </div>
               <div className="flex justify-end gap-3 pt-4">
                 <button
