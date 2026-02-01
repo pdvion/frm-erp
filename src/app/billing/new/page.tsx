@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Receipt, Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -182,15 +183,12 @@ export default function NewBillingPage() {
           <div className="bg-theme-card border border-theme rounded-lg p-4 sticky top-4">
             <h3 className="font-semibold text-theme mb-4">Resumo</h3>
             <div className="space-y-3 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Vencimento</label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Vencimento"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
             </div>
             <div className="border-t border-theme pt-4 space-y-2">
               <div className="flex justify-between text-sm">

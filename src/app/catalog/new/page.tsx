@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { RichTextEditor } from "@/components/editor";
+import { Input } from "@/components/ui/Input";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -129,31 +130,19 @@ export default function NewProductPage() {
                   Informações Básicas
                 </h3>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nome do Produto *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Nome do Produto *"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  required
+                />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Código/SKU
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.code}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    />
-                  </div>
+                  <Input
+                    label="Código/SKU"
+                    value={formData.code}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
+                  />
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Categoria
@@ -206,16 +195,12 @@ export default function NewProductPage() {
             <div className="space-y-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100">Tags</h3>
-                <div>
-                  <input
-                    type="text"
-                    value={formData.tags}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
-                    placeholder="tag1, tag2, tag3"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Separe as tags por vírgula</p>
-                </div>
+                <Input
+                  value={formData.tags}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
+                  placeholder="tag1, tag2, tag3"
+                  hint="Separe as tags por vírgula"
+                />
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800 p-4">
