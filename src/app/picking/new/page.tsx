@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { Input } from "@/components/ui/Input";
 import {
   PackagePlus,
   Search,
@@ -14,7 +16,6 @@ import {
   Save,
   AlertCircle,
 } from "lucide-react";
-import Link from "next/link";
 
 type PickingType = "REQUISITION" | "SALES_ORDER" | "PRODUCTION_ORDER" | "TRANSFER";
 type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
@@ -146,48 +147,30 @@ export default function NewPickingPage() {
             <label className="block text-sm font-medium text-theme mb-1">
               Tipo *
             </label>
-            <select
+            <Select
               value={type}
-              onChange={(e) => setType(e.target.value as PickingType)}
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-            >
-              {typeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setType(value as PickingType)}
+              options={typeOptions}
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-theme mb-1">
               Prioridade
             </label>
-            <select
+            <Select
               value={priority}
-              onChange={(e) => setPriority(e.target.value as Priority)}
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-            >
-              {priorityOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">
-              Observações
-            </label>
-            <input
-              type="text"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Observações opcionais..."
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+              onChange={(value) => setPriority(value as Priority)}
+              options={priorityOptions}
             />
           </div>
+
+          <Input
+            label="Observações"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Observações opcionais..."
+          />
         </div>
       </div>
 
@@ -303,12 +286,12 @@ export default function NewPickingPage() {
 
       {/* Ações */}
       <div className="flex items-center justify-between">
-        <Link
-          href="/picking"
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        <Button
+          variant="outline"
+          onClick={() => router.push("/picking")}
         >
           ← Cancelar e voltar
-        </Link>
+        </Button>
 
         <Button
           onClick={handleSubmit}
