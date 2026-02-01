@@ -15,14 +15,17 @@ import {
   FileUp,
   Trash2,
   Eye,
+  Loader2,
+  Search,
 } from "lucide-react";
 
 interface FileWithContent {
   file: File;
   content: string;
-  status: "pending" | "success" | "error";
+  status: "pending" | "validating" | "valid" | "invalid" | "importing" | "success" | "error" | "duplicate";
   error?: string;
   invoiceNumber?: number;
+  chaveAcesso?: string;
 }
 
 export default function ImportNFePage() {
@@ -30,6 +33,7 @@ export default function ImportNFePage() {
   const [files, setFiles] = useState<FileWithContent[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   const importMutation = trpc.nfe.import.useMutation();
   const importBatchMutation = trpc.nfe.importBatch.useMutation();
@@ -177,10 +181,60 @@ export default function ImportNFePage() {
     }
   };
 
+  // Validar arquivos antes de importar
+  const validateFiles = async () => {
+    setIsValidating(true);
+    const pendingFiles = files.filter((f) => f.status === "pending");
+    
+    for (let i = 0; i < pendingFiles.length; i++) {
+      const fileItem = pendingFiles[i];
+      const fileIndex = files.findIndex((f) => f.file.name === fileItem.file.name);
+      
+      // Marcar como validando
+      setFiles((prev) =>
+        prev.map((f, idx) =>
+          idx === fileIndex ? { ...f, status: "validating" as const } : f
+        )
+      );
+      
+      // Validação básica do XML
+      try {
+        const hasNFeTag = fileItem.content.includes("<NFe") || fileItem.content.includes("<nfeProc");
+        const chaveMatch = fileItem.content.match(/<chNFe>([0-9]{44})<\/chNFe>/);
+        
+        if (!hasNFeTag) {
+          setFiles((prev) =>
+            prev.map((f, idx) =>
+              idx === fileIndex ? { ...f, status: "invalid" as const, error: "Arquivo não é uma NFe válida" } : f
+            )
+          );
+        } else {
+          setFiles((prev) =>
+            prev.map((f, idx) =>
+              idx === fileIndex ? { ...f, status: "valid" as const, chaveAcesso: chaveMatch?.[1] } : f
+            )
+          );
+        }
+      } catch {
+        setFiles((prev) =>
+          prev.map((f, idx) =>
+            idx === fileIndex ? { ...f, status: "invalid" as const, error: "Erro ao validar XML" } : f
+          )
+        );
+      }
+    }
+    
+    setIsValidating(false);
+  };
+
   // Contadores
   const pendingCount = files.filter((f) => f.status === "pending").length;
+  const validCount = files.filter((f) => f.status === "valid").length;
   const successCount = files.filter((f) => f.status === "success").length;
-  const errorCount = files.filter((f) => f.status === "error").length;
+  const errorCount = files.filter((f) => ["error", "invalid"].includes(f.status)).length;
+  const duplicateCount = files.filter((f) => f.status === "duplicate").length;
+  const totalProcessed = successCount + errorCount + duplicateCount;
+  const progressPercent = files.length > 0 ? Math.round((totalProcessed / files.length) * 100) : 0;
 
   return (
     <ProtectedRoute>
@@ -201,13 +255,23 @@ export default function ImportNFePage() {
                 >
                   Limpar
                 </Button>
+                {pendingCount > 0 && (
+                  <Button
+                    onClick={validateFiles}
+                    variant="outline"
+                    isLoading={isValidating}
+                    leftIcon={<Search className="w-4 h-4" />}
+                  >
+                    Validar ({pendingCount})
+                  </Button>
+                )}
                 <Button
                   onClick={importAll}
-                  disabled={pendingCount === 0}
+                  disabled={validCount === 0 && pendingCount === 0}
                   isLoading={isImporting}
                   leftIcon={<Upload className="w-4 h-4" />}
                 >
-                  Importar Todos ({pendingCount})
+                  Importar ({validCount > 0 ? validCount : pendingCount})
                 </Button>
               </div>
             ) : undefined
@@ -247,9 +311,28 @@ export default function ImportNFePage() {
             </label>
           </div>
 
+          {/* Progress Bar */}
+          {isImporting && files.length > 0 && (
+            <div className="mt-6 bg-theme-card rounded-lg p-4 border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-theme">Importando...</span>
+                <span className="text-sm text-theme-muted">{progressPercent}%</span>
+              </div>
+              <div className="w-full bg-theme-tertiary rounded-full h-3">
+                <div
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <p className="text-xs text-theme-muted mt-2">
+                {totalProcessed} de {files.length} arquivos processados
+              </p>
+            </div>
+          )}
+
           {/* Stats */}
           {files.length > 0 && (
-            <div className="grid grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-5 gap-4 mt-6">
               <div className="bg-theme-card rounded-lg p-4 border">
                 <p className="text-sm text-theme-muted">Total</p>
                 <p className="text-2xl font-bold text-theme">{files.length}</p>
@@ -257,6 +340,10 @@ export default function ImportNFePage() {
               <div className="bg-theme-card rounded-lg p-4 border">
                 <p className="text-sm text-theme-muted">Pendentes</p>
                 <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+              </div>
+              <div className="bg-theme-card rounded-lg p-4 border">
+                <p className="text-sm text-theme-muted">Válidos</p>
+                <p className="text-2xl font-bold text-blue-600">{validCount}</p>
               </div>
               <div className="bg-theme-card rounded-lg p-4 border">
                 <p className="text-sm text-theme-muted">Importados</p>
@@ -288,15 +375,27 @@ export default function ImportNFePage() {
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                           fileItem.status === "success"
                             ? "bg-green-100"
-                            : fileItem.status === "error"
-                              ? "bg-red-100"
-                              : "bg-theme-tertiary"
+                            : fileItem.status === "valid"
+                              ? "bg-blue-100"
+                              : fileItem.status === "error" || fileItem.status === "invalid"
+                                ? "bg-red-100"
+                                : fileItem.status === "duplicate"
+                                  ? "bg-yellow-100"
+                                  : fileItem.status === "validating" || fileItem.status === "importing"
+                                    ? "bg-blue-50"
+                                    : "bg-theme-tertiary"
                         }`}
                       >
                         {fileItem.status === "success" ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : fileItem.status === "error" ? (
+                        ) : fileItem.status === "valid" ? (
+                          <CheckCircle className="w-5 h-5 text-blue-600" />
+                        ) : fileItem.status === "error" || fileItem.status === "invalid" ? (
                           <XCircle className="w-5 h-5 text-red-600" />
+                        ) : fileItem.status === "duplicate" ? (
+                          <AlertCircle className="w-5 h-5 text-yellow-600" />
+                        ) : fileItem.status === "validating" || fileItem.status === "importing" ? (
+                          <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
                         ) : (
                           <FileText className="w-5 h-5 text-theme-secondary" />
                         )}
@@ -308,14 +407,22 @@ export default function ImportNFePage() {
                         <p className="text-sm text-theme-muted">
                           {fileItem.status === "success" && fileItem.invoiceNumber
                             ? `Nota ${fileItem.invoiceNumber} importada`
-                            : fileItem.status === "error"
-                              ? fileItem.error
-                              : `${(fileItem.file.size / 1024).toFixed(1)} KB`}
+                            : fileItem.status === "valid"
+                              ? `Válido${fileItem.chaveAcesso ? ` • Chave: ...${fileItem.chaveAcesso.slice(-8)}` : ""}`
+                              : fileItem.status === "error" || fileItem.status === "invalid"
+                                ? fileItem.error
+                                : fileItem.status === "duplicate"
+                                  ? "Nota já importada"
+                                  : fileItem.status === "validating"
+                                    ? "Validando..."
+                                    : fileItem.status === "importing"
+                                      ? "Importando..."
+                                      : `${(fileItem.file.size / 1024).toFixed(1)} KB`}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {fileItem.status === "pending" && (
+                      {(fileItem.status === "pending" || fileItem.status === "valid") && (
                         <button
                           onClick={() => importSingle(index)}
                           disabled={importMutation.isPending}
@@ -334,10 +441,16 @@ export default function ImportNFePage() {
                           Ver
                         </button>
                       )}
-                      {fileItem.status === "error" && (
+                      {(fileItem.status === "error" || fileItem.status === "invalid") && (
                         <span className="flex items-center gap-1 text-sm text-red-600">
                           <AlertCircle className="w-4 h-4" />
                           Erro
+                        </span>
+                      )}
+                      {fileItem.status === "duplicate" && (
+                        <span className="flex items-center gap-1 text-sm text-yellow-600">
+                          <AlertCircle className="w-4 h-4" />
+                          Duplicado
                         </span>
                       )}
                       <button
