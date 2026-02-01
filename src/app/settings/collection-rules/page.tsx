@@ -275,12 +275,13 @@ export default function CollectionRulesPage() {
         ) : !data?.rules.length ? (
           <div className="bg-theme-card rounded-lg shadow-sm border p-12 text-center">
             <p className="text-theme-muted">Nenhuma régua de cobrança cadastrada</p>
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setShowForm(true)}
-              className="mt-4 text-blue-600 hover:underline"
+              className="mt-4"
             >
               Criar primeira régua
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -323,16 +324,19 @@ export default function CollectionRulesPage() {
                       {rule.steps.length} etapa(s)
                     </span>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(rule);
                         }}
-                        className="p-2 text-theme-muted hover:text-blue-600"
                       >
                         <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (
@@ -341,11 +345,11 @@ export default function CollectionRulesPage() {
                             deleteMutation.mutate({ id: rule.id });
                           }
                         }}
-                        className="p-2 text-theme-muted hover:text-red-600"
                         disabled={deleteMutation.isPending}
+                        className="text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                       {expandedRuleId === rule.id ? (
                         <ChevronUp className="w-5 h-5 text-theme-muted" />
                       ) : (
@@ -362,18 +366,19 @@ export default function CollectionRulesPage() {
                       <h4 className="font-medium text-theme-secondary">
                         Etapas da Régua
                       </h4>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() =>
                           handleAddStep(
                             rule.id,
                             Math.max(0, ...rule.steps.map((s) => s.stepOrder))
                           )
                         }
-                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                        leftIcon={<Plus className="w-4 h-4" />}
                       >
-                        <Plus className="w-4 h-4" />
                         Adicionar Etapa
-                      </button>
+                      </Button>
                     </div>
 
                     {/* Step Form */}
@@ -542,7 +547,9 @@ export default function CollectionRulesPage() {
                                   </div>
                                 </div>
                               </div>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => {
                                   if (
                                     confirm("Deseja excluir esta etapa?")
@@ -552,11 +559,11 @@ export default function CollectionRulesPage() {
                                     });
                                   }
                                 }}
-                                className="p-2 text-theme-muted hover:text-red-600"
                                 disabled={deleteStepMutation.isPending}
+                                className="text-red-600 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
-                              </button>
+                              </Button>
                             </div>
                           );
                         })}
