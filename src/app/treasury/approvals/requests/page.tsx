@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import { FileText, Clock, CheckCircle, XCircle, Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -21,27 +23,52 @@ interface ApprovalRequest {
   priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 }
 
-const mockRequests: ApprovalRequest[] = [
-  { id: "1", code: "SOL-001", type: "PAYMENT", description: "Pagamento fornecedor ABC Ltda", amount: 15000, requester: "João Silva", requestDate: new Date("2025-01-27"), status: "PENDING", priority: "HIGH" },
-  { id: "2", code: "SOL-002", type: "TRANSFER", description: "Transferência entre contas", amount: 50000, requester: "Maria Santos", requestDate: new Date("2025-01-26"), status: "PENDING", priority: "MEDIUM" },
-  { id: "3", code: "SOL-003", type: "EXPENSE", description: "Despesa com viagem corporativa", amount: 3500, requester: "Pedro Costa", requestDate: new Date("2025-01-25"), status: "APPROVED", priority: "LOW" },
-  { id: "4", code: "SOL-004", type: "PURCHASE", description: "Compra de equipamentos TI", amount: 25000, requester: "Ana Oliveira", requestDate: new Date("2025-01-24"), status: "REJECTED", priority: "URGENT" },
-  { id: "5", code: "SOL-005", type: "PAYMENT", description: "Pagamento de aluguel", amount: 8000, requester: "Carlos Lima", requestDate: new Date("2025-01-23"), status: "PENDING", priority: "HIGH" },
-];
 
 export default function ApprovalsRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<RequestStatus>("ALL");
   const [search, setSearch] = useState("");
 
-  const filteredRequests = mockRequests.filter((req) => {
-    const matchesStatus = statusFilter === "ALL" || req.status === statusFilter;
-    const matchesSearch = req.description.toLowerCase().includes(search.toLowerCase()) ||
-      req.code.toLowerCase().includes(search.toLowerCase()) ||
-      req.requester.toLowerCase().includes(search.toLowerCase());
-    return matchesStatus && matchesSearch;
+  const { data, isLoading } = trpc.approvals.listRequests.useQuery({
+    status: statusFilter === "ALL" ? undefined : statusFilter as "PENDING" | "APPROVED" | "REJECTED",
+    search: search || undefined,
   });
 
-  const pendingCount = mockRequests.filter((r) => r.status === "PENDING").length;
+  // Mapear dados do backend para o formato esperado
+  const requests: ApprovalRequest[] = data?.requests?.map((r) => ({
+    id: r.id,
+    code: r.code,
+    type: "PAYMENT" as const,
+    description: r.justification || r.payable?.supplier?.companyName || "Solicitação de pagamento",
+    amount: r.payable?.netValue ? Number(r.payable.netValue) : 0,
+    requester: r.requester?.name || "Desconhecido",
+    requestDate: new Date(r.requestedAt),
+    status: r.status as "PENDING" | "APPROVED" | "REJECTED",
+    priority: (r.urgency === "URGENT" ? "URGENT" : r.urgency === "HIGH" ? "HIGH" : r.urgency === "NORMAL" ? "MEDIUM" : "LOW") as ApprovalRequest["priority"],
+  })) || [];
+
+  const filteredRequests = requests.filter((req) => {
+    const matchesSearch = !search || 
+      req.description.toLowerCase().includes(search.toLowerCase()) ||
+      req.code.toLowerCase().includes(search.toLowerCase()) ||
+      req.requester.toLowerCase().includes(search.toLowerCase());
+    return matchesSearch;
+  });
+
+  const pendingCount = requests.filter((r) => r.status === "PENDING").length;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Solicitações de Aprovação"
+          subtitle="Gerenciar solicitações de pagamento pendentes"
+          icon={<FileText className="w-6 h-6" />}
+          module="FINANCIAL"
+        />
+        <TableSkeleton rows={5} />
+      </div>
+    );
+  }
 
   const getStatusBadge = (status: ApprovalRequest["status"]) => {
     const styles = {
@@ -101,7 +128,7 @@ export default function ApprovalsRequestsPage() {
               <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-theme">{mockRequests.filter((r) => r.status === "APPROVED").length}</p>
+              <p className="text-2xl font-bold text-theme">{requests.filter((r) => r.status === "APPROVED").length}</p>
               <p className="text-sm text-theme-muted">Aprovadas</p>
             </div>
           </div>
@@ -112,7 +139,7 @@ export default function ApprovalsRequestsPage() {
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-theme">{mockRequests.filter((r) => r.status === "REJECTED").length}</p>
+              <p className="text-2xl font-bold text-theme">{requests.filter((r) => r.status === "REJECTED").length}</p>
               <p className="text-sm text-theme-muted">Rejeitadas</p>
             </div>
           </div>
@@ -123,7 +150,7 @@ export default function ApprovalsRequestsPage() {
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-theme">{mockRequests.length}</p>
+              <p className="text-2xl font-bold text-theme">{requests.length}</p>
               <p className="text-sm text-theme-muted">Total</p>
             </div>
           </div>
