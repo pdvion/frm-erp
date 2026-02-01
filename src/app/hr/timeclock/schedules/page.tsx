@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   CalendarDays,
   Plus,
@@ -16,84 +18,27 @@ import {
   Coffee,
 } from "lucide-react";
 
-// Dados mockados para escalas de trabalho
-const mockSchedules = [
-  {
-    id: "1",
-    name: "Comercial Padrão",
-    code: "COM-01",
-    type: "FIXED",
-    employees: 45,
-    workDays: ["SEG", "TER", "QUA", "QUI", "SEX"],
-    shifts: [
-      { start: "08:00", end: "12:00", type: "work" },
-      { start: "12:00", end: "13:00", type: "break" },
-      { start: "13:00", end: "17:00", type: "work" },
-    ],
-    weeklyHours: 40,
-    isActive: true,
-  },
-  {
-    id: "2",
-    name: "Turno Manhã",
-    code: "TUR-M",
-    type: "SHIFT",
-    employees: 12,
-    workDays: ["SEG", "TER", "QUA", "QUI", "SEX", "SAB"],
-    shifts: [
-      { start: "06:00", end: "10:00", type: "work" },
-      { start: "10:00", end: "10:15", type: "break" },
-      { start: "10:15", end: "14:00", type: "work" },
-    ],
-    weeklyHours: 44,
-    isActive: true,
-  },
-  {
-    id: "3",
-    name: "Turno Tarde",
-    code: "TUR-T",
-    type: "SHIFT",
-    employees: 10,
-    workDays: ["SEG", "TER", "QUA", "QUI", "SEX", "SAB"],
-    shifts: [
-      { start: "14:00", end: "18:00", type: "work" },
-      { start: "18:00", end: "18:15", type: "break" },
-      { start: "18:15", end: "22:00", type: "work" },
-    ],
-    weeklyHours: 44,
-    isActive: true,
-  },
-  {
-    id: "4",
-    name: "Turno Noite",
-    code: "TUR-N",
-    type: "SHIFT",
-    employees: 8,
-    workDays: ["SEG", "TER", "QUA", "QUI", "SEX"],
-    shifts: [
-      { start: "22:00", end: "02:00", type: "work" },
-      { start: "02:00", end: "02:30", type: "break" },
-      { start: "02:30", end: "06:00", type: "work" },
-    ],
-    weeklyHours: 40,
-    isActive: true,
-  },
-  {
-    id: "5",
-    name: "12x36",
-    code: "ESC-12x36",
-    type: "ROTATING",
-    employees: 6,
-    workDays: ["Escala rotativa"],
-    shifts: [
-      { start: "07:00", end: "13:00", type: "work" },
-      { start: "13:00", end: "14:00", type: "break" },
-      { start: "14:00", end: "19:00", type: "work" },
-    ],
-    weeklyHours: 36,
-    isActive: true,
-  },
-];
+// Tipos para escalas de trabalho
+interface ScheduleShift {
+  id: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  breakStart?: string | null;
+  breakEnd?: string | null;
+}
+
+interface Schedule {
+  id: string;
+  name: string;
+  code: string | null;
+  type: string;
+  weeklyHours: number;
+  isActive: boolean;
+  shifts: ScheduleShift[];
+  _count: { employees: number };
+}
+
 
 const weekDays = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"];
 
@@ -104,12 +49,41 @@ const scheduleTypeLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function TimeclockSchedulesPage() {
-  const [schedules] = useState(mockSchedules);
   const [filter, setFilter] = useState<string>("ALL");
+  
+  const { data: schedulesData, isLoading } = trpc.timeclock.listSchedules.useQuery({});
+  
+  // Usar dados do backend
+  const schedules: Schedule[] = schedulesData?.map((s) => ({
+    id: s.id,
+    name: s.name,
+    code: s.code,
+    type: s.type,
+    weeklyHours: s.weeklyHours,
+    isActive: s.isActive,
+    shifts: s.shifts,
+    _count: s._count,
+  })) || [];
 
   const filteredSchedules = filter === "ALL" 
     ? schedules 
     : schedules.filter((s) => s.type === filter);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Escalas de Trabalho"
+          subtitle="Gerenciar escalas e horários de trabalho"
+          icon={<CalendarDays className="w-6 h-6" />}
+          module="HR"
+          backHref="/hr/timeclock"
+          backLabel="Voltar"
+        />
+        <TableSkeleton rows={4} />
+      </div>
+    );
+  }
 
   const getShiftIcon = (time: string) => {
     const hour = parseInt(time.split(":")[0]);
@@ -212,20 +186,23 @@ export default function TimeclockSchedulesPage() {
               <div className="text-xs text-theme-muted mb-2">Dias de Trabalho</div>
               <div className="flex gap-1">
                 {schedule.type === "ROTATING" ? (
-                  <span className="text-sm text-theme">{schedule.workDays[0]}</span>
+                  <span className="text-sm text-theme">Escala rotativa</span>
                 ) : (
-                  weekDays.map((day) => (
-                    <span
-                      key={day}
-                      className={`w-8 h-8 flex items-center justify-center text-xs rounded-full ${
-                        schedule.workDays.includes(day)
-                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 font-medium"
-                          : "bg-theme-secondary text-theme-muted"
-                      }`}
-                    >
-                      {day.charAt(0)}
-                    </span>
-                  ))
+                  weekDays.map((day, idx) => {
+                    const hasShiftOnDay = schedule.shifts.some((s) => s.dayOfWeek === idx);
+                    return (
+                      <span
+                        key={day}
+                        className={`w-8 h-8 flex items-center justify-center text-xs rounded-full ${
+                          hasShiftOnDay
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 font-medium"
+                            : "bg-theme-secondary text-theme-muted"
+                        }`}
+                      >
+                        {day.charAt(0)}
+                      </span>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -234,19 +211,18 @@ export default function TimeclockSchedulesPage() {
             <div className="mb-4">
               <div className="text-xs text-theme-muted mb-2">Horários</div>
               <div className="flex flex-wrap gap-2">
-                {schedule.shifts.map((shift, idx) => (
+                {schedule.shifts.slice(0, 3).map((shift, idx) => (
                   <div
                     key={idx}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs ${
-                      shift.type === "work"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
-                    }`}
+                    className="flex items-center gap-1.5 px-2 py-1 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                   >
-                    {getShiftIcon(shift.start)}
-                    <span>{shift.start} - {shift.end}</span>
+                    {getShiftIcon(shift.startTime)}
+                    <span>{shift.startTime} - {shift.endTime}</span>
                   </div>
                 ))}
+                {schedule.shifts.length > 3 && (
+                  <span className="text-xs text-theme-muted">+{schedule.shifts.length - 3} mais</span>
+                )}
               </div>
             </div>
 
@@ -255,7 +231,7 @@ export default function TimeclockSchedulesPage() {
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1 text-theme-muted">
                   <Users className="w-4 h-4" />
-                  <span>{schedule.employees} funcionários</span>
+                  <span>{schedule._count.employees} funcionários</span>
                 </div>
                 <div className="flex items-center gap-1 text-theme-muted">
                   <Clock className="w-4 h-4" />
