@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Shield,
   Plus,
@@ -254,18 +255,12 @@ export default function GroupsPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex-1 overflow-auto p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nome do Grupo *
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  required
-                />
-              </div>
+              <Input
+                label="Nome do Grupo *"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">

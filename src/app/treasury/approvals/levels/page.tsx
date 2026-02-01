@@ -21,6 +21,7 @@ import {
   Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 interface ApproverInput {
   userId: string;
@@ -202,42 +203,21 @@ export default function ApprovalLevelsPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="level-code"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  Código *
-                </label>
-                <input
-                  id="level-code"
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  required
-                  disabled={!!editingId}
-                  placeholder="Ex: NIVEL_1"
-                  className="border-theme-input disabled:bg-theme-tertiary w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="level-name"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  Nome *
-                </label>
-                <input
-                  id="level-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="Ex: Aprovação Gerencial"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Código *"
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                required
+                disabled={!!editingId}
+                placeholder="Ex: NIVEL_1"
+              />
+              <Input
+                label="Nome *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                placeholder="Ex: Aprovação Gerencial"
+              />
             </div>
 
             <div>
@@ -258,49 +238,30 @@ export default function ApprovalLevelsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="level-min-value"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  Valor Mínimo (R$)
-                </label>
-                <input
-                  id="level-min-value"
-                  type="number"
-                  value={formData.minValue}
-                  onChange={(e) =>
-                    setFormData({ ...formData, minValue: parseFloat(e.target.value) || 0 })
-                  }
-                  min={0}
-                  step={0.01}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="level-max-value"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  Valor Máximo (R$)
-                </label>
-                <input
-                  id="level-max-value"
-                  type="number"
-                  value={formData.maxValue ?? ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      maxValue: e.target.value ? parseFloat(e.target.value) : null,
-                    })
-                  }
-                  min={0}
-                  step={0.01}
-                  placeholder="Sem limite"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Valor Mínimo (R$)"
+                type="number"
+                value={formData.minValue}
+                onChange={(e) =>
+                  setFormData({ ...formData, minValue: parseFloat(e.target.value) || 0 })
+                }
+                min={0}
+                step={0.01}
+              />
+              <Input
+                label="Valor Máximo (R$)"
+                type="number"
+                value={formData.maxValue ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    maxValue: e.target.value ? parseFloat(e.target.value) : null,
+                  })
+                }
+                min={0}
+                step={0.01}
+                placeholder="Sem limite"
+              />
             </div>
 
             <div className="flex items-center gap-2">
