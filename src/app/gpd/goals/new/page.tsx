@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { PlusCircle } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function NewGPDGoalPage() {
@@ -128,12 +127,12 @@ export default function NewGPDGoalPage() {
         </div>
 
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-theme">
-          <Link
-            href="/gpd/goals"
-            className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-hover"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/gpd/goals")}
           >
             Cancelar
-          </Link>
+          </Button>
           <Button
             onClick={() => createMutation.mutate(form)}
             disabled={!form.title}
