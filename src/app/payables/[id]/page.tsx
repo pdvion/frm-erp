@@ -8,6 +8,7 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   DollarSign,
   CheckCircle,
@@ -527,64 +528,47 @@ export default function PayableDetailPage() {
             <h3 id="payment-modal-title" className="text-lg font-medium text-theme mb-4">Registrar Pagamento</h3>
             
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Data do Pagamento
-                </label>
-                <input
-                  type="date"
-                  value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Data do Pagamento"
+                type="date"
+                value={paymentDate}
+                onChange={(e) => setPaymentDate(e.target.value)}
+              />
 
               <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Valor do Pagamento *
-                </label>
-                <input
+                <Input
+                  label="Valor do Pagamento *"
                   type="number"
                   step="0.01"
                   value={paymentValue}
                   onChange={(e) => setPaymentValue(e.target.value)}
                   placeholder={balance.toFixed(2)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-theme-muted mt-1">Saldo: {formatCurrency(balance)}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Desconto</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={discountValue}
-                    onChange={(e) => setDiscountValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Juros</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={interestValue}
-                    onChange={(e) => setInterestValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">Multa</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={fineValue}
-                    onChange={(e) => setFineValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Desconto"
+                  type="number"
+                  step="0.01"
+                  value={discountValue}
+                  onChange={(e) => setDiscountValue(e.target.value)}
+                />
+                <Input
+                  label="Juros"
+                  type="number"
+                  step="0.01"
+                  value={interestValue}
+                  onChange={(e) => setInterestValue(e.target.value)}
+                />
+                <Input
+                  label="Multa"
+                  type="number"
+                  step="0.01"
+                  value={fineValue}
+                  onChange={(e) => setFineValue(e.target.value)}
+                />
               </div>
 
               <div>
@@ -661,17 +645,12 @@ export default function PayableDetailPage() {
             <h3 id="reschedule-modal-title" className="text-lg font-medium text-theme mb-4">Reprogramar Vencimento</h3>
             
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Nova Data de Vencimento *
-                </label>
-                <input
-                  type="date"
-                  value={rescheduleDate}
-                  onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Nova Data de Vencimento *"
+                type="date"
+                value={rescheduleDate}
+                onChange={(e) => setRescheduleDate(e.target.value)}
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">

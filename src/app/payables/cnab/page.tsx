@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Building2,
   Loader2,
@@ -266,93 +267,61 @@ export default function CnabPage() {
                         <option value="400">CNAB 400</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Agência</label>
-                      <input
-                        type="text"
-                        value={configForm.agencia}
-                        onChange={(e) => setConfigForm({ ...configForm, agencia: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        maxLength={5}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
-                      <input
-                        type="text"
-                        value={configForm.agenciaDigito}
-                        onChange={(e) => setConfigForm({ ...configForm, agenciaDigito: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        maxLength={1}
-                      />
-                    </div>
+                    <Input
+                      label="Agência"
+                      value={configForm.agencia}
+                      onChange={(e) => setConfigForm({ ...configForm, agencia: e.target.value })}
+                      maxLength={5}
+                      required
+                    />
+                    <Input
+                      label="Dígito Ag."
+                      value={configForm.agenciaDigito}
+                      onChange={(e) => setConfigForm({ ...configForm, agenciaDigito: e.target.value })}
+                      maxLength={1}
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Conta</label>
-                      <input
-                        type="text"
-                        value={configForm.conta}
-                        onChange={(e) => setConfigForm({ ...configForm, conta: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        maxLength={12}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Conta</label>
-                      <input
-                        type="text"
-                        value={configForm.contaDigito}
-                        onChange={(e) => setConfigForm({ ...configForm, contaDigito: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        maxLength={1}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Convênio</label>
-                      <input
-                        type="text"
-                        value={configForm.convenio}
-                        onChange={(e) => setConfigForm({ ...configForm, convenio: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Carteira</label>
-                      <input
-                        type="text"
-                        value={configForm.carteira}
-                        onChange={(e) => setConfigForm({ ...configForm, carteira: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                      />
-                    </div>
+                    <Input
+                      label="Conta"
+                      value={configForm.conta}
+                      onChange={(e) => setConfigForm({ ...configForm, conta: e.target.value })}
+                      maxLength={12}
+                      required
+                    />
+                    <Input
+                      label="Dígito Conta"
+                      value={configForm.contaDigito}
+                      onChange={(e) => setConfigForm({ ...configForm, contaDigito: e.target.value })}
+                      maxLength={1}
+                      required
+                    />
+                    <Input
+                      label="Convênio"
+                      value={configForm.convenio}
+                      onChange={(e) => setConfigForm({ ...configForm, convenio: e.target.value })}
+                    />
+                    <Input
+                      label="Carteira"
+                      value={configForm.carteira}
+                      onChange={(e) => setConfigForm({ ...configForm, carteira: e.target.value })}
+                    />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Cedente</label>
-                      <input
-                        type="text"
-                        value={configForm.cedente}
-                        onChange={(e) => setConfigForm({ ...configForm, cedente: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">CNPJ/CPF do Cedente</label>
-                      <input
-                        type="text"
-                        value={configForm.cedenteDocumento}
-                        onChange={(e) => setConfigForm({ ...configForm, cedenteDocumento: e.target.value })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                        required
-                      />
-                    </div>
+                    <Input
+                      label="Nome do Cedente"
+                      value={configForm.cedente}
+                      onChange={(e) => setConfigForm({ ...configForm, cedente: e.target.value })}
+                      required
+                    />
+                    <Input
+                      label="CNPJ/CPF do Cedente"
+                      value={configForm.cedenteDocumento}
+                      onChange={(e) => setConfigForm({ ...configForm, cedenteDocumento: e.target.value })}
+                      required
+                    />
                   </div>
 
                   <div className="flex justify-end">

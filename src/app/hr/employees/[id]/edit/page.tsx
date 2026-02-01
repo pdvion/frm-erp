@@ -6,15 +6,14 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 import {
   Users,
   Save,
   User,
   Building2,
-  CreditCard,
   Phone,
-  Mail,
   ArrowLeft,
   Loader2,
 } from "lucide-react";
@@ -181,30 +180,20 @@ export default function EditEmployeePage({ params }: PageProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Nome Completo *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Nome Completo *"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  CPF
-                </label>
-                <input
-                  type="text"
-                  name="cpf"
-                  value={formData.cpf}
-                  disabled
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg bg-theme-tertiary"
-                />
-              </div>
+              <Input
+                label="CPF"
+                name="cpf"
+                value={formData.cpf}
+                disabled
+              />
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Status
@@ -232,45 +221,27 @@ export default function EditEmployeePage({ params }: PageProps) {
               <h2 className="text-lg font-semibold text-theme">Contato</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  <Mail className="w-4 h-4 inline mr-1" />
-                  E-mail
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Telefone
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="(00) 0000-0000"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Celular
-                </label>
-                <input
-                  type="text"
-                  name="mobile"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  placeholder="(00) 00000-0000"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="E-mail"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <Input
+                label="Telefone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="(00) 0000-0000"
+              />
+              <Input
+                label="Celular"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="(00) 00000-0000"
+              />
             </div>
           </div>
 
@@ -334,22 +305,16 @@ export default function EditEmployeePage({ params }: PageProps) {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  <CreditCard className="w-4 h-4 inline mr-1" />
-                  Salário
-                </label>
-                <input
-                  type="number"
-                  name="salary"
-                  value={formData.salary}
-                  onChange={handleChange}
-                  step="0.01"
-                  min="0"
-                  placeholder="0,00"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="Salário"
+                type="number"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                step="0.01"
+                min="0"
+                placeholder="0,00"
+              />
             </div>
           </div>
 

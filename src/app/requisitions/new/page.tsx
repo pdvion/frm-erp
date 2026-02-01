@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Package,
   Loader2,
@@ -157,57 +158,33 @@ export default function NewRequisitionPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Número OP/OS
-                </label>
-                <input
-                  type="text"
-                  value={orderNumber}
-                  onChange={(e) => setOrderNumber(e.target.value)}
-                  placeholder="Ex: OP-12345"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Número OP/OS"
+                value={orderNumber}
+                onChange={(e) => setOrderNumber(e.target.value)}
+                placeholder="Ex: OP-12345"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Centro de Custo
-                </label>
-                <input
-                  type="text"
-                  value={costCenter}
-                  onChange={(e) => setCostCenter(e.target.value)}
-                  placeholder="Ex: CC-001"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Centro de Custo"
+                value={costCenter}
+                onChange={(e) => setCostCenter(e.target.value)}
+                placeholder="Ex: CC-001"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Departamento
-                </label>
-                <input
-                  type="text"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="Ex: Produção"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Departamento"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                placeholder="Ex: Produção"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Código do Projeto
-                </label>
-                <input
-                  type="text"
-                  value={projectCode}
-                  onChange={(e) => setProjectCode(e.target.value)}
-                  placeholder="Ex: PRJ-2024-001"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Código do Projeto"
+                value={projectCode}
+                onChange={(e) => setProjectCode(e.target.value)}
+                placeholder="Ex: PRJ-2024-001"
+              />
             </div>
 
             <div className="mt-4">

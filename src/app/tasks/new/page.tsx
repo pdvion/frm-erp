@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   ClipboardList,
   Save,
@@ -13,7 +14,6 @@ import {
   Building2,
   Users,
   Shield,
-  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -141,23 +141,14 @@ export default function NewTaskPage() {
           <div className="bg-theme-card border-theme rounded-lg border p-6">
             <h2 className="text-theme mb-4 text-lg font-medium">Informações Básicas</h2>
             <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="title"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  Título *
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Descreva a tarefa..."
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
+              <Input
+                label="Título *"
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Descreva a tarefa..."
+                required
+              />
               <div>
                 <label
                   htmlFor="description"
@@ -238,22 +229,13 @@ export default function NewTaskPage() {
             </div>
 
             {targetType === "user" && (
-              <div>
-                <label
-                  htmlFor="targetUserId"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  ID do Usuário
-                </label>
-                <input
-                  id="targetUserId"
-                  type="text"
-                  value={targetUserId}
-                  onChange={(e) => setTargetUserId(e.target.value)}
-                  placeholder="ID do usuário destinatário"
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
+              <Input
+                label="ID do Usuário"
+                id="targetUserId"
+                value={targetUserId}
+                onChange={(e) => setTargetUserId(e.target.value)}
+                placeholder="ID do usuário destinatário"
+              />
             )}
           </div>
 
@@ -261,56 +243,31 @@ export default function NewTaskPage() {
           <div className="bg-theme-card border-theme rounded-lg border p-6">
             <h2 className="text-theme mb-4 text-lg font-medium">Prazos e SLA</h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div>
-                <label
-                  htmlFor="deadline"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  <Calendar className="mr-1 inline h-4 w-4" />
-                  Prazo Final
-                </label>
-                <input
-                  id="deadline"
-                  type="datetime-local"
-                  value={deadline}
-                  onChange={(e) => setDeadline(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="slaAccept"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  SLA Aceite (horas)
-                </label>
-                <input
-                  id="slaAccept"
-                  type="number"
-                  value={slaAcceptHours}
-                  onChange={(e) => setSlaAcceptHours(e.target.value)}
-                  placeholder="Ex: 4"
-                  min="1"
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="slaResolve"
-                  className="text-theme-secondary mb-1 block text-sm font-medium"
-                >
-                  SLA Resolução (horas)
-                </label>
-                <input
-                  id="slaResolve"
-                  type="number"
-                  value={slaResolveHours}
-                  onChange={(e) => setSlaResolveHours(e.target.value)}
-                  placeholder="Ex: 24"
-                  min="1"
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
+              <Input
+                label="Prazo Final"
+                id="deadline"
+                type="datetime-local"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+              />
+              <Input
+                label="SLA Aceite (horas)"
+                id="slaAccept"
+                type="number"
+                value={slaAcceptHours}
+                onChange={(e) => setSlaAcceptHours(e.target.value)}
+                placeholder="Ex: 4"
+                min="1"
+              />
+              <Input
+                label="SLA Resolução (horas)"
+                id="slaResolve"
+                type="number"
+                value={slaResolveHours}
+                onChange={(e) => setSlaResolveHours(e.target.value)}
+                placeholder="Ex: 24"
+                min="1"
+              />
             </div>
           </div>
 
@@ -339,22 +296,13 @@ export default function NewTaskPage() {
                 </select>
               </div>
               {entityType && (
-                <div>
-                  <label
-                    htmlFor="entityId"
-                    className="text-theme-secondary mb-1 block text-sm font-medium"
-                  >
-                    ID da Entidade
-                  </label>
-                  <input
-                    id="entityId"
-                    type="text"
-                    value={entityId}
-                    onChange={(e) => setEntityId(e.target.value)}
-                    placeholder="ID da entidade vinculada"
-                    className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+                <Input
+                  label="ID da Entidade"
+                  id="entityId"
+                  value={entityId}
+                  onChange={(e) => setEntityId(e.target.value)}
+                  placeholder="ID da entidade vinculada"
+                />
               )}
             </div>
           </div>
