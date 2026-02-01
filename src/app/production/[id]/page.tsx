@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Factory,
   Clock,
@@ -117,41 +118,34 @@ export default function ProductionOrderDetailPage() {
               {config.label}
             </span>
             {canCancel && (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowCancelModal(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                leftIcon={<Ban className="w-4 h-4" />}
+                className="border-red-300 text-red-700 hover:bg-red-50"
               >
-                <Ban className="w-4 h-4" />
                 Cancelar
-              </button>
+              </Button>
             )}
             {canRelease && (
-              <button
+              <Button
                 onClick={() => releaseMutation.mutate({ id })}
                 disabled={releaseMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={releaseMutation.isPending}
+                leftIcon={<Check className="w-4 h-4" />}
               >
-                {releaseMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Check className="w-4 h-4" />
-                )}
                 Liberar
-              </button>
+              </Button>
             )}
             {canStart && (
-              <button
+              <Button
                 onClick={() => startMutation.mutate({ id })}
                 disabled={startMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={startMutation.isPending}
+                leftIcon={<Play className="w-4 h-4" />}
               >
-                {startMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
                 Iniciar Produção
-              </button>
+              </Button>
             )}
           </div>
         }
@@ -203,7 +197,7 @@ export default function ProductionOrderDetailPage() {
                       className="w-32 px-3 py-2 border border-theme-input rounded-lg"
                     />
                     <span className="text-theme-muted">{order.product.unit}</span>
-                    <button
+                    <Button
                       onClick={() => {
                         const qty = parseFloat(reportQty) || remainingQty;
                         if (qty > 0) {
@@ -211,15 +205,12 @@ export default function ProductionOrderDetailPage() {
                         }
                       }}
                       disabled={reportMutation.isPending}
-                      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                      isLoading={reportMutation.isPending}
+                      leftIcon={<Check className="w-4 h-4" />}
+                      className="bg-green-600 hover:bg-green-700"
                     >
-                      {reportMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Check className="w-4 h-4" />
-                      )}
                       Apontar
-                    </button>
+                    </Button>
                   </div>
                   {reportMutation.error && (
                     <div className="mt-2 text-red-600 text-sm">{reportMutation.error.message}</div>
@@ -303,7 +294,9 @@ export default function ProductionOrderDetailPage() {
                                         placeholder={String(Math.min(remaining, available))}
                                         className="w-20 px-2 py-1 border border-theme-input rounded text-sm"
                                       />
-                                      <button
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
                                         onClick={() => {
                                           const qty = parseFloat(consumeQty) || Math.min(remaining, available);
                                           if (qty > 0) {
@@ -311,32 +304,31 @@ export default function ProductionOrderDetailPage() {
                                           }
                                         }}
                                         disabled={consumeMutation.isPending}
-                                        className="p-1 text-green-600 hover:text-green-800"
+                                        isLoading={consumeMutation.isPending}
+                                        className="text-green-600"
                                       >
-                                        {consumeMutation.isPending ? (
-                                          <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                          <Check className="w-4 h-4" />
-                                        )}
-                                      </button>
-                                      <button
+                                        <Check className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
                                         onClick={() => {
                                           setConsumingMaterial(null);
                                           setConsumeQty("");
                                         }}
-                                        className="p-1 text-theme-muted hover:text-theme-secondary"
                                       >
                                         <XCircle className="w-4 h-4" />
-                                      </button>
+                                      </Button>
                                     </div>
                                   ) : (
-                                    <button
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
                                       onClick={() => setConsumingMaterial(mat.id)}
                                       disabled={available <= 0}
-                                      className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:opacity-50"
                                     >
                                       Consumir
-                                    </button>
+                                    </Button>
                                   )
                                 )}
                                 {isComplete && <CheckCircle className="w-5 h-5 text-green-500 mx-auto" />}
@@ -540,16 +532,17 @@ export default function ProductionOrderDetailPage() {
             )}
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCancelModal(false);
                   setCancelReason("");
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
               >
                 Voltar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => {
                   if (!cancelReason.trim()) {
                     alert("Informe o motivo");
@@ -558,15 +551,11 @@ export default function ProductionOrderDetailPage() {
                   cancelMutation.mutate({ id, reason: cancelReason });
                 }}
                 disabled={cancelMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={cancelMutation.isPending}
+                leftIcon={<Ban className="w-4 h-4" />}
               >
-                {cancelMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Ban className="w-4 h-4" />
-                )}
                 Confirmar
-              </button>
+              </Button>
             </div>
           </div>
         </div>
