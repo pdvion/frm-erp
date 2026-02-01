@@ -4,6 +4,9 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 import {
   Calculator,
@@ -168,31 +171,22 @@ export default function MrpPage() {
             Executar MRP
           </h2>
           <div className="flex items-end gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Horizonte de Planejamento (dias)
-              </label>
-              <input
-                type="number"
-                value={horizonDays}
-                onChange={(e) => setHorizonDays(parseInt(e.target.value) || 30)}
-                min={1}
-                max={365}
-                className="w-32 px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
-            <button
+            <Input
+              label="Horizonte de Planejamento (dias)"
+              type="number"
+              value={horizonDays}
+              onChange={(e) => setHorizonDays(parseInt(e.target.value) || 30)}
+              min={1}
+              max={365}
+              className="w-32"
+            />
+            <Button
               onClick={handleRunMrp}
-              disabled={runMrpMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              isLoading={runMrpMutation.isPending}
+              leftIcon={<Play className="w-4 h-4" />}
             >
-              {runMrpMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
               Executar MRP
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -272,26 +266,26 @@ export default function MrpPage() {
                 Sugestões do MRP
               </h2>
               <div className="flex items-center gap-2">
-                <select
+                <Select
                   value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-3 py-1.5 border border-theme-input rounded-lg text-sm"
-                >
-                  <option value="ALL">Todos os tipos</option>
-                  <option value="PRODUCTION">Produção</option>
-                  <option value="PURCHASE">Compra</option>
-                </select>
-                <select
+                  onChange={(value) => setTypeFilter(value)}
+                  options={[
+                    { value: "ALL", label: "Todos os tipos" },
+                    { value: "PRODUCTION", label: "Produção" },
+                    { value: "PURCHASE", label: "Compra" },
+                  ]}
+                />
+                <Select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-1.5 border border-theme-input rounded-lg text-sm"
-                >
-                  <option value="ALL">Todos os status</option>
-                  <option value="PENDING">Pendente</option>
-                  <option value="APPROVED">Aprovada</option>
-                  <option value="REJECTED">Rejeitada</option>
-                  <option value="CONVERTED">Convertida</option>
-                </select>
+                  onChange={(value) => setStatusFilter(value)}
+                  options={[
+                    { value: "ALL", label: "Todos os status" },
+                    { value: "PENDING", label: "Pendente" },
+                    { value: "APPROVED", label: "Aprovada" },
+                    { value: "REJECTED", label: "Rejeitada" },
+                    { value: "CONVERTED", label: "Convertida" },
+                  ]}
+                />
               </div>
             </div>
 
