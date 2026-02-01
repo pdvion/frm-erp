@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -187,13 +188,12 @@ export default function DdaPage() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-muted z-10" />
+              <Input
                 placeholder="Buscar por cedente, nosso número ou código de barras..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
           </div>
