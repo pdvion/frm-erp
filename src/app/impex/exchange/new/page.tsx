@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Banknote, Save, X } from "lucide-react";
 import Link from "next/link";
 
@@ -94,20 +95,14 @@ export default function NewExchangeContractPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Informações do Contrato</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Número do Contrato *
-              </label>
-              <input
-                type="text"
-                name="contractNumber"
-                value={formData.contractNumber}
-                onChange={handleChange}
-                required
-                placeholder="Ex: CC-2026-0001"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Número do Contrato *"
+              name="contractNumber"
+              value={formData.contractNumber}
+              onChange={handleChange}
+              required
+              placeholder="Ex: CC-2026-0001"
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Banco *
@@ -151,21 +146,16 @@ export default function NewExchangeContractPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Valores</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Valor em Moeda Estrangeira *
-              </label>
-              <input
-                type="number"
-                name="foreignValue"
-                value={formData.foreignValue}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Valor em Moeda Estrangeira *"
+              type="number"
+              name="foreignValue"
+              value={formData.foreignValue}
+              onChange={handleChange}
+              required
+              min="0"
+              step="0.01"
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Moeda
@@ -183,22 +173,17 @@ export default function NewExchangeContractPage() {
                 <option value="JPY">JPY - Iene Japonês</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Taxa Contratada *
-              </label>
-              <input
-                type="number"
-                name="contractRate"
-                value={formData.contractRate}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.0001"
-                placeholder="5.1234"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Taxa Contratada *"
+              type="number"
+              name="contractRate"
+              value={formData.contractRate}
+              onChange={handleChange}
+              required
+              min="0"
+              step="0.0001"
+              placeholder="5.1234"
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Valor em BRL
@@ -213,32 +198,22 @@ export default function NewExchangeContractPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Datas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Data do Contrato *
-              </label>
-              <input
-                type="date"
-                name="contractDate"
-                value={formData.contractDate}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Data de Vencimento *
-              </label>
-              <input
-                type="date"
-                name="maturityDate"
-                value={formData.maturityDate}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Data do Contrato *"
+              type="date"
+              name="contractDate"
+              value={formData.contractDate}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Data de Vencimento *"
+              type="date"
+              name="maturityDate"
+              value={formData.maturityDate}
+              onChange={handleChange}
+              required
+            />
           </div>
         </div>
 

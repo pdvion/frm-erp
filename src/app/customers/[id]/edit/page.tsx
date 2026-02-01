@@ -13,6 +13,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
@@ -271,15 +272,11 @@ export default function EditCustomerPage() {
         {/* Identificação */}
         <h2 className="text-lg font-semibold text-theme mb-4">Identificação</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className={labelClass}>Código</label>
-            <input
-              type="text"
-              value={formData.code}
-              disabled
-              className="w-full px-3 py-2 bg-theme-secondary border border-theme rounded-lg text-theme-muted cursor-not-allowed"
-            />
-          </div>
+          <Input
+            label="Código"
+            value={formData.code}
+            disabled
+          />
 
           <div>
             <label htmlFor="type" className={labelClass}>Tipo</label>
@@ -296,81 +293,61 @@ export default function EditCustomerPage() {
           </div>
 
           {formData.type === "COMPANY" ? (
-            <div>
-              <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
-              <input
-                type="text"
-                id="cnpj"
-                name="cnpj"
-                value={formatCNPJ(formData.cnpj)}
-                onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
-                placeholder="00.000.000/0000-00"
-                className={inputClass}
-              />
-            </div>
+            <Input
+              label="CNPJ"
+              id="cnpj"
+              name="cnpj"
+              value={formatCNPJ(formData.cnpj)}
+              onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
+              placeholder="00.000.000/0000-00"
+            />
           ) : (
-            <div>
-              <label htmlFor="cpf" className={labelClass}>CPF</label>
-              <input
-                type="text"
-                id="cpf"
-                name="cpf"
-                value={formatCPF(formData.cpf)}
-                onChange={(e) => setFormData(prev => ({ ...prev, cpf: e.target.value.replace(/\D/g, "") }))}
-                placeholder="000.000.000-00"
-                className={inputClass}
-              />
-            </div>
+            <Input
+              label="CPF"
+              id="cpf"
+              name="cpf"
+              value={formatCPF(formData.cpf)}
+              onChange={(e) => setFormData(prev => ({ ...prev, cpf: e.target.value.replace(/\D/g, "") }))}
+              placeholder="000.000.000-00"
+            />
           )}
 
           <div className="md:col-span-2">
-            <label htmlFor="companyName" className={labelClass}>Razão Social *</label>
-            <input
-              type="text"
+            <Input
+              label="Razão Social *"
               id="companyName"
               name="companyName"
               required
               value={formData.companyName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="tradeName" className={labelClass}>Nome Fantasia</label>
-            <input
-              type="text"
+            <Input
+              label="Nome Fantasia"
               id="tradeName"
               name="tradeName"
               value={formData.tradeName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
-          <div>
-            <label htmlFor="stateRegistration" className={labelClass}>Inscrição Estadual</label>
-            <input
-              type="text"
-              id="stateRegistration"
-              name="stateRegistration"
-              value={formData.stateRegistration}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Estadual"
+            id="stateRegistration"
+            name="stateRegistration"
+            value={formData.stateRegistration}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="municipalRegistration" className={labelClass}>Inscrição Municipal</label>
-            <input
-              type="text"
-              id="municipalRegistration"
-              name="municipalRegistration"
-              value={formData.municipalRegistration}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Municipal"
+            id="municipalRegistration"
+            name="municipalRegistration"
+            value={formData.municipalRegistration}
+            onChange={handleChange}
+          />
 
           <div>
             <label htmlFor="status" className={labelClass}>Status</label>
@@ -391,145 +368,104 @@ export default function EditCustomerPage() {
         {/* Contato */}
         <h2 className="text-lg font-semibold text-theme mb-4">Contato</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="email" className={labelClass}>E-mail</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="E-mail"
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="contactName" className={labelClass}>Nome do Contato</label>
-            <input
-              type="text"
-              id="contactName"
-              name="contactName"
-              value={formData.contactName}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Nome do Contato"
+            id="contactName"
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="phone" className={labelClass}>Telefone</label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              value={formatPhone(formData.phone)}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 0000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Telefone"
+            id="phone"
+            name="phone"
+            value={formatPhone(formData.phone)}
+            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 0000-0000"
+          />
 
-          <div>
-            <label htmlFor="mobile" className={labelClass}>Celular</label>
-            <input
-              type="text"
-              id="mobile"
-              name="mobile"
-              value={formatPhone(formData.mobile)}
-              onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 00000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Celular"
+            id="mobile"
+            name="mobile"
+            value={formatPhone(formData.mobile)}
+            onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 00000-0000"
+          />
 
-          <div>
-            <label htmlFor="website" className={labelClass}>Website</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Website"
+            id="website"
+            name="website"
+            value={formData.website}
+            onChange={handleChange}
+            placeholder="https://"
+          />
         </div>
 
         {/* Endereço */}
         <h2 className="text-lg font-semibold text-theme mb-4">Endereço</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div>
-            <label htmlFor="addressZipCode" className={labelClass}>CEP</label>
-            <input
-              type="text"
-              id="addressZipCode"
-              name="addressZipCode"
-              value={formatCEP(formData.addressZipCode)}
-              onChange={(e) => setFormData(prev => ({ ...prev, addressZipCode: e.target.value.replace(/\D/g, "") }))}
-              placeholder="00000-000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CEP"
+            id="addressZipCode"
+            name="addressZipCode"
+            value={formatCEP(formData.addressZipCode)}
+            onChange={(e) => setFormData(prev => ({ ...prev, addressZipCode: e.target.value.replace(/\D/g, "") }))}
+            placeholder="00000-000"
+          />
 
           <div className="md:col-span-2">
-            <label htmlFor="addressStreet" className={labelClass}>Logradouro</label>
-            <input
-              type="text"
+            <Input
+              label="Logradouro"
               id="addressStreet"
               name="addressStreet"
               value={formData.addressStreet}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
-          <div>
-            <label htmlFor="addressNumber" className={labelClass}>Número</label>
-            <input
-              type="text"
-              id="addressNumber"
-              name="addressNumber"
-              value={formData.addressNumber}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Número"
+            id="addressNumber"
+            name="addressNumber"
+            value={formData.addressNumber}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="addressComplement" className={labelClass}>Complemento</label>
-            <input
-              type="text"
-              id="addressComplement"
-              name="addressComplement"
-              value={formData.addressComplement}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Complemento"
+            id="addressComplement"
+            name="addressComplement"
+            value={formData.addressComplement}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="addressNeighborhood" className={labelClass}>Bairro</label>
-            <input
-              type="text"
-              id="addressNeighborhood"
-              name="addressNeighborhood"
-              value={formData.addressNeighborhood}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Bairro"
+            id="addressNeighborhood"
+            name="addressNeighborhood"
+            value={formData.addressNeighborhood}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="addressCity" className={labelClass}>Cidade</label>
-            <input
-              type="text"
-              id="addressCity"
-              name="addressCity"
-              value={formData.addressCity}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Cidade"
+            id="addressCity"
+            name="addressCity"
+            value={formData.addressCity}
+            onChange={handleChange}
+          />
 
           <div>
             <label htmlFor="addressState" className={labelClass}>UF</label>
@@ -551,59 +487,46 @@ export default function EditCustomerPage() {
         {/* Dados Comerciais */}
         <h2 className="text-lg font-semibold text-theme mb-4">Dados Comerciais</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label htmlFor="creditLimit" className={labelClass}>Limite de Crédito</label>
-            <input
-              type="number"
-              id="creditLimit"
-              name="creditLimit"
-              min="0"
-              step="0.01"
-              value={formData.creditLimit || ""}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Limite de Crédito"
+            type="number"
+            id="creditLimit"
+            name="creditLimit"
+            min="0"
+            step="0.01"
+            value={formData.creditLimit || ""}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="paymentTermDays" className={labelClass}>Prazo de Pagamento (dias)</label>
-            <input
-              type="number"
-              id="paymentTermDays"
-              name="paymentTermDays"
-              min="0"
-              value={formData.paymentTermDays || ""}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Prazo de Pagamento (dias)"
+            type="number"
+            id="paymentTermDays"
+            name="paymentTermDays"
+            min="0"
+            value={formData.paymentTermDays || ""}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="minInvoiceValue" className={labelClass}>Valor Mínimo Fatura</label>
-            <input
-              type="number"
-              id="minInvoiceValue"
-              name="minInvoiceValue"
-              min="0"
-              step="0.01"
-              value={formData.minInvoiceValue || ""}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Valor Mínimo Fatura"
+            type="number"
+            id="minInvoiceValue"
+            name="minInvoiceValue"
+            min="0"
+            step="0.01"
+            value={formData.minInvoiceValue || ""}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="defaultPaymentCondition" className={labelClass}>Condição de Pagamento Padrão</label>
-            <input
-              type="text"
-              id="defaultPaymentCondition"
-              name="defaultPaymentCondition"
-              value={formData.defaultPaymentCondition}
-              onChange={handleChange}
-              placeholder="Ex: 30/60/90"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Condição de Pagamento Padrão"
+            id="defaultPaymentCondition"
+            name="defaultPaymentCondition"
+            value={formData.defaultPaymentCondition}
+            onChange={handleChange}
+            placeholder="Ex: 30/60/90"
+          />
         </div>
 
         {/* Flags */}
