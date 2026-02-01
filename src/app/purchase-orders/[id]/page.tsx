@@ -424,18 +424,19 @@ export default function PurchaseOrderDetailPage() {
 
           {/* Delete */}
           {canEdit && (
-            <button
+            <Button
+              variant="danger"
               onClick={() => {
                 if (confirm("Tem certeza que deseja excluir este pedido?")) {
                   deleteMutation.mutate({ id });
                 }
               }}
-              disabled={deleteMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-800 text-red-400 rounded-lg hover:bg-red-900/20 disabled:opacity-50"
+              isLoading={deleteMutation.isPending}
+              leftIcon={<Trash2 className="w-4 h-4" />}
+              className="w-full"
             >
-              <Trash2 className="w-4 h-4" />
               Excluir Pedido
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -468,25 +469,27 @@ export default function PurchaseOrderDetailPage() {
               />
             </div>
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowReceiveModal(false);
                   setSelectedItemId(null);
                 }}
-                className="flex-1 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => registerReceiptMutation.mutate({ 
                   itemId: selectedItemId, 
                   receivedQty: receiveQty 
                 })}
-                disabled={registerReceiptMutation.isPending || receiveQty <= 0}
-                className="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50"
+                disabled={receiveQty <= 0}
+                isLoading={registerReceiptMutation.isPending}
+                className="flex-1"
               >
-                {registerReceiptMutation.isPending ? "Salvando..." : "Confirmar"}
-              </button>
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>
