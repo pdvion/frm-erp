@@ -152,25 +152,27 @@ export default function IncotermsPage() {
                       </span>
                     )}
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => openEdit(incoterm)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                         title="Editar"
                       >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                        <Edit2 className="w-4 h-4 text-blue-600" />
+                      </Button>
                       {!incoterm.isShared && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             if (confirm("Excluir este incoterm?")) {
                               deleteMutation.mutate({ id: incoterm.id });
                             }
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                           title="Excluir"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
                       )}
                     </div>
                   </div>

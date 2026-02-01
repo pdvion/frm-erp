@@ -194,25 +194,27 @@ export default function PortsPage() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => openEdit(port)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                         title="Editar"
                       >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                        <Edit2 className="w-4 h-4 text-blue-600" />
+                      </Button>
                       {!port.isShared && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             if (confirm("Excluir este porto?")) {
                               deleteMutation.mutate({ id: port.id });
                             }
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                           title="Excluir"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -266,12 +268,12 @@ export default function PortsPage() {
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => { setShowModal(false); resetForm(); }}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!formData.code || !formData.name}

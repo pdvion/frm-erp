@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import { Package, Plus, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface CargoTypeFormData {
@@ -138,25 +139,27 @@ export default function CargoTypesPage() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => openEdit(ct)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                         title="Editar"
                       >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                        <Edit2 className="w-4 h-4 text-blue-600" />
+                      </Button>
                       {!ct.isShared && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             if (confirm("Excluir este tipo de carga?")) {
                               deleteMutation.mutate({ id: ct.id });
                             }
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                           title="Excluir"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -189,21 +192,20 @@ export default function CargoTypesPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
                 />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => { setShowModal(false); resetForm(); }}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!formData.code || !formData.name}
