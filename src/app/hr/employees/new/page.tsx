@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 import {
   Users,
@@ -247,41 +247,41 @@ export default function NewEmployeePage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Estado
                 </label>
-                <select
-                  name="state"
+                <Select
                   value={formData.state}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  <option value="AC">AC</option>
-                  <option value="AL">AL</option>
-                  <option value="AP">AP</option>
-                  <option value="AM">AM</option>
-                  <option value="BA">BA</option>
-                  <option value="CE">CE</option>
-                  <option value="DF">DF</option>
-                  <option value="ES">ES</option>
-                  <option value="GO">GO</option>
-                  <option value="MA">MA</option>
-                  <option value="MT">MT</option>
-                  <option value="MS">MS</option>
-                  <option value="MG">MG</option>
-                  <option value="PA">PA</option>
-                  <option value="PB">PB</option>
-                  <option value="PR">PR</option>
-                  <option value="PE">PE</option>
-                  <option value="PI">PI</option>
-                  <option value="RJ">RJ</option>
-                  <option value="RN">RN</option>
-                  <option value="RS">RS</option>
-                  <option value="RO">RO</option>
-                  <option value="RR">RR</option>
-                  <option value="SC">SC</option>
-                  <option value="SP">SP</option>
-                  <option value="SE">SE</option>
-                  <option value="TO">TO</option>
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, state: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    { value: "AC", label: "AC" },
+                    { value: "AL", label: "AL" },
+                    { value: "AP", label: "AP" },
+                    { value: "AM", label: "AM" },
+                    { value: "BA", label: "BA" },
+                    { value: "CE", label: "CE" },
+                    { value: "DF", label: "DF" },
+                    { value: "ES", label: "ES" },
+                    { value: "GO", label: "GO" },
+                    { value: "MA", label: "MA" },
+                    { value: "MT", label: "MT" },
+                    { value: "MS", label: "MS" },
+                    { value: "MG", label: "MG" },
+                    { value: "PA", label: "PA" },
+                    { value: "PB", label: "PB" },
+                    { value: "PR", label: "PR" },
+                    { value: "PE", label: "PE" },
+                    { value: "PI", label: "PI" },
+                    { value: "RJ", label: "RJ" },
+                    { value: "RN", label: "RN" },
+                    { value: "RS", label: "RS" },
+                    { value: "RO", label: "RO" },
+                    { value: "RR", label: "RR" },
+                    { value: "SC", label: "SC" },
+                    { value: "SP", label: "SP" },
+                    { value: "SE", label: "SE" },
+                    { value: "TO", label: "TO" },
+                  ]}
+                />
               </div>
             </div>
           </div>
@@ -297,19 +297,11 @@ export default function NewEmployeePage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Contrato *
                 </label>
-                <select
-                  name="contractType"
+                <Select
                   value={formData.contractType}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  {contractTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, contractType: value }))}
+                  options={contractTypes}
+                />
               </div>
               <Input
                 label="Data de Admissão *"
@@ -323,37 +315,35 @@ export default function NewEmployeePage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Departamento
                 </label>
-                <select
-                  name="departmentId"
+                <Select
                   value={formData.departmentId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  {(departments as { id: string; name: string }[] | undefined)?.map((dept) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, departmentId: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...((departments as { id: string; name: string }[] | undefined)?.map((dept) => ({
+                      value: dept.id,
+                      label: dept.name,
+                    })) || []),
+                  ]}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Cargo
                 </label>
-                <select
-                  name="positionId"
+                <Select
                   value={formData.positionId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  {(positions as { id: string; name: string }[] | undefined)?.map((pos) => (
-                    <option key={pos.id} value={pos.id}>
-                      {pos.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, positionId: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...((positions as { id: string; name: string }[] | undefined)?.map((pos) => ({
+                      value: pos.id,
+                      label: pos.name,
+                    })) || []),
+                  ]}
+                />
               </div>
               <Input
                 label="Salário"
@@ -369,15 +359,15 @@ export default function NewEmployeePage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Escala de Trabalho
                 </label>
-                <select
-                  name="workScheduleId"
+                <Select
                   value={formData.workScheduleId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  {/* TODO: implementar listWorkSchedules */}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, workScheduleId: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    // TODO: implementar listWorkSchedules
+                  ]}
+                />
               </div>
             </div>
           </div>
@@ -424,12 +414,12 @@ export default function NewEmployeePage() {
 
           {/* Botões */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/hr/employees"
-              className="px-6 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-tertiary"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/hr/employees")}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               type="submit"
               isLoading={isSubmitting}
