@@ -6,8 +6,9 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Ship, Save, X } from "lucide-react";
-import Link from "next/link";
 
 export default function NewImportProcessPage() {
   const router = useRouter();
@@ -120,76 +121,57 @@ export default function NewImportProcessPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Fornecedor *
               </label>
-              <select
-                name="supplierId"
+              <Select
                 value={formData.supplierId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {suppliers?.suppliers?.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.companyName}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, supplierId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(suppliers?.suppliers?.map((s) => ({ value: s.id, label: s.companyName })) || []),
+                ]}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Despachante
               </label>
-              <select
-                name="brokerId"
+              <Select
                 value={formData.brokerId}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {brokers?.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, brokerId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(brokers?.map((b) => ({ value: b.id, label: b.name })) || []),
+                ]}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Incoterm *
               </label>
-              <select
-                name="incotermId"
+              <Select
                 value={formData.incotermId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {incoterms?.map((i) => (
-                  <option key={i.id} value={i.id}>
-                    {i.code} - {i.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, incotermId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(incoterms?.map((i) => ({ value: i.id, label: `${i.code} - ${i.name}` })) || []),
+                ]}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Tipo de Carga *
               </label>
-              <select
-                name="cargoTypeId"
+              <Select
                 value={formData.cargoTypeId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {cargoTypes?.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.code} - {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, cargoTypeId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(cargoTypes?.map((c) => ({ value: c.id, label: `${c.code} - ${c.name}` })) || []),
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -201,39 +183,29 @@ export default function NewImportProcessPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Porto de Origem *
               </label>
-              <select
-                name="originPortId"
+              <Select
                 value={formData.originPortId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {ports?.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.code} - {p.name} ({p.country})
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, originPortId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(ports?.map((p) => ({ value: p.id, label: `${p.code} - ${p.name} (${p.country})` })) || []),
+                ]}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
                 Porto de Destino *
               </label>
-              <select
-                name="destPortId"
+              <Select
                 value={formData.destPortId}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="">Selecione...</option>
-                {ports?.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.code} - {p.name} ({p.country})
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, destPortId: value }))}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(ports?.map((p) => ({ value: p.id, label: `${p.code} - ${p.name} (${p.country})` })) || []),
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -255,17 +227,16 @@ export default function NewImportProcessPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Moeda
               </label>
-              <select
-                name="currency"
+              <Select
                 value={formData.currency}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              >
-                <option value="USD">USD - Dólar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - Libra</option>
-                <option value="CNY">CNY - Yuan</option>
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
+                options={[
+                  { value: "USD", label: "USD - Dólar" },
+                  { value: "EUR", label: "EUR - Euro" },
+                  { value: "GBP", label: "GBP - Libra" },
+                  { value: "CNY", label: "CNY - Yuan" },
+                ]}
+              />
             </div>
             <Input
               label="Taxa de Câmbio"
@@ -339,24 +310,22 @@ export default function NewImportProcessPage() {
 
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Observações</h3>
-          <textarea
-            name="notes"
+          <Textarea
             value={formData.notes}
-            onChange={handleChange}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
             rows={4}
-            className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
             placeholder="Observações adicionais..."
           />
         </div>
 
         <div className="flex justify-end gap-4">
-          <Link
-            href="/impex/processes"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/impex/processes")}
+            leftIcon={<X className="w-4 h-4" />}
           >
-            <X className="w-4 h-4" />
             Cancelar
-          </Link>
+          </Button>
           <Button
             type="submit"
             isLoading={createMutation.isPending}
