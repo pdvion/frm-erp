@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 import {
   Users,
@@ -198,18 +199,11 @@ export default function EditEmployeePage({ params }: PageProps) {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Status
                 </label>
-                <select
-                  name="status"
+                <Select
                   value={formData.status}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  {statusOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                  options={statusOptions}
+                />
               </div>
             </div>
           </div>
@@ -256,54 +250,46 @@ export default function EditEmployeePage({ params }: PageProps) {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Contrato
                 </label>
-                <select
-                  name="contractType"
+                <Select
                   value={formData.contractType}
+                  onChange={() => {}}
                   disabled
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg bg-theme-tertiary"
-                >
-                  {contractTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
+                  options={contractTypes}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Departamento
                 </label>
-                <select
-                  name="departmentId"
+                <Select
                   value={formData.departmentId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  {(departments as { id: string; name: string }[] | undefined)?.map((dept) => (
-                    <option key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, departmentId: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...((departments as { id: string; name: string }[] | undefined)?.map((dept) => ({
+                      value: dept.id,
+                      label: dept.name,
+                    })) || []),
+                  ]}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Cargo
                 </label>
-                <select
-                  name="positionId"
+                <Select
                   value={formData.positionId}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                >
-                  <option value="">Selecione</option>
-                  {(positions as { id: string; name: string }[] | undefined)?.map((pos) => (
-                    <option key={pos.id} value={pos.id}>
-                      {pos.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, positionId: value }))}
+                  placeholder="Selecione"
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...((positions as { id: string; name: string }[] | undefined)?.map((pos) => ({
+                      value: pos.id,
+                      label: pos.name,
+                    })) || []),
+                  ]}
+                />
               </div>
               <Input
                 label="Salário"
@@ -320,12 +306,12 @@ export default function EditEmployeePage({ params }: PageProps) {
 
           {/* Botões */}
           <div className="flex justify-end gap-4">
-            <Link
-              href={`/hr/employees/${id}`}
-              className="px-6 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-tertiary"
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/hr/employees/${id}`)}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               type="submit"
               isLoading={isSubmitting}
