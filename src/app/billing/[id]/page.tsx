@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
@@ -610,8 +611,8 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
           {installments.map((inst, index) => (
             <div key={index} className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-xs text-theme-muted">Vencimento</label>
-                <input
+                <Input
+                  label="Vencimento"
                   type="date"
                   value={inst.dueDate.toISOString().split("T")[0]}
                   onChange={(e) => {
@@ -619,12 +620,11 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
                     newInstallments[index].dueDate = new Date(e.target.value);
                     setInstallments(newInstallments);
                   }}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-theme-muted">Valor</label>
-                <input
+                <Input
+                  label="Valor"
                   type="number"
                   value={inst.value.toFixed(2)}
                   onChange={(e) => {
@@ -632,7 +632,6 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
                     newInstallments[index].value = parseFloat(e.target.value) || 0;
                     setInstallments(newInstallments);
                   }}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                 />
               </div>
               {installments.length > 1 && (
