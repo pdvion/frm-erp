@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Button } from "@/components/ui/Button";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   DollarSign,
@@ -319,22 +320,24 @@ export default function ReceivablesPage() {
                     Página {page} de {data.pages} ({data.total} títulos)
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
                       aria-label="Página anterior"
-                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
                       aria-label="Próxima página"
-                      className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

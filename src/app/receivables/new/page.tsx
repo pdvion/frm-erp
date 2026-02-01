@@ -115,11 +115,12 @@ export default function NewReceivablePage() {
                 ) : customers?.customers.length ? (
                   <div className="border border-theme rounded-lg divide-y">
                     {customers.customers.map((customer) => (
-                      <button
+                      <Button
                         key={customer.id}
+                        variant="ghost"
                         type="button"
                         onClick={() => setCustomerId(customer.id)}
-                        className="w-full px-4 py-3 text-left hover:bg-theme-hover flex justify-between items-center"
+                        className="w-full px-4 py-3 justify-start text-left h-auto"
                       >
                         <div>
                           <div className="font-medium text-theme">{customer.companyName}</div>
@@ -127,7 +128,7 @@ export default function NewReceivablePage() {
                             {customer.code} {customer.cnpj && `• ${customer.cnpj}`}
                           </div>
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 ) : customerSearch ? (
@@ -142,13 +143,15 @@ export default function NewReceivablePage() {
                     {selectedCustomer?.code} {selectedCustomer?.cnpj && `• ${selectedCustomer.cnpj}`}
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   type="button"
                   onClick={() => setCustomerId("")}
-                  className="text-sm text-green-600 hover:text-green-800"
+                  className="text-green-600 hover:text-green-800"
                 >
                   Alterar
-                </button>
+                </Button>
               </div>
             )}
           </div>
