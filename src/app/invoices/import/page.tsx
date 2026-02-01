@@ -423,23 +423,26 @@ export default function ImportNFePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {(fileItem.status === "pending" || fileItem.status === "valid") && (
-                        <button
+                        <Button
+                          size="sm"
                           onClick={() => importSingle(index)}
                           disabled={importMutation.isPending}
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                          leftIcon={<Upload className="w-4 h-4" />}
+                          className="bg-green-600 hover:bg-green-700"
                         >
-                          <Upload className="w-4 h-4" />
                           Importar
-                        </button>
+                        </Button>
                       )}
                       {fileItem.status === "success" && fileItem.invoiceNumber && (
-                        <button
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => router.push(`/invoices/${fileItem.invoiceNumber}`)}
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          leftIcon={<Eye className="w-4 h-4" />}
+                          className="text-green-600"
                         >
-                          <Eye className="w-4 h-4" />
                           Ver
-                        </button>
+                        </Button>
                       )}
                       {(fileItem.status === "error" || fileItem.status === "invalid") && (
                         <span className="flex items-center gap-1 text-sm text-red-600">
@@ -453,12 +456,14 @@ export default function ImportNFePage() {
                           Duplicado
                         </span>
                       )}
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => removeFile(index)}
-                        className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
