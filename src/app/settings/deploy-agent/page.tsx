@@ -17,8 +17,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
-import { ValidationTable, type ValidationItem } from "@/components/deploy-agent";
-import { ConfidenceBadge } from "@/components/deploy-agent";
+import { ValidationTable, type ValidationItem, ConfidenceBadge, EditItemModal } from "@/components/deploy-agent";
 
 type WizardStep = "upload" | "analyze" | "review" | "apply";
 
@@ -37,6 +36,8 @@ export default function DeployAgentPage() {
   const [xmlFiles, setXmlFiles] = useState<File[]>([]);
   const [stats, setStats] = useState<AnalysisStats | null>(null);
   const [validationItems, setValidationItems] = useState<ValidationItem[]>([]);
+  const [editingItem, setEditingItem] = useState<ValidationItem | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -139,8 +140,17 @@ export default function DeployAgentPage() {
   };
 
   const handleEdit = (id: string) => {
-    // TODO: Abrir modal de edição
-    alert(`Editar item ${id}`);
+    const item = validationItems.find((i) => i.id === id);
+    if (item) {
+      setEditingItem(item);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleSaveEdit = (updatedItem: ValidationItem) => {
+    setValidationItems((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
   };
 
   const handleApply = async () => {
@@ -408,6 +418,17 @@ export default function DeployAgentPage() {
           )}
         </div>
       )}
+
+      {/* Modal de Edição */}
+      <EditItemModal
+        item={editingItem}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingItem(null);
+        }}
+        onSave={handleSaveEdit}
+      />
     </div>
   );
 }
