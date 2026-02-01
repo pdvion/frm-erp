@@ -139,17 +139,14 @@ export default function BIKPIsPage() {
           <span className="text-sm text-theme-muted">Categoria:</span>
           <div className="flex flex-wrap gap-2">
             {categoryOptions.map((opt) => (
-              <button
+              <Button
                 key={opt.value}
+                variant={categoryFilter === opt.value ? "primary" : "outline"}
+                size="sm"
                 onClick={() => setCategoryFilter(opt.value)}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                  categoryFilter === opt.value
-                    ? "bg-blue-600 text-white"
-                    : "border border-theme text-theme hover:bg-theme-secondary"
-                }`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -164,12 +161,13 @@ export default function BIKPIsPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-8 text-center">
           <Target className="w-12 h-12 mx-auto text-theme-muted mb-3" />
           <p className="text-theme-muted">Nenhum KPI cadastrado</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-4"
           >
             Criar primeiro KPI
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

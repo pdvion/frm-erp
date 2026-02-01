@@ -174,25 +174,22 @@ export default function CnabPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {bankAccounts.map((account) => (
-                <button
+                <Button
                   key={account.id}
+                  variant={selectedBankAccountId === account.id ? "primary" : "outline"}
                   onClick={() => {
                     setSelectedBankAccountId(account.id);
                     setRetornoResult(null);
                     setRemessaResult(null);
                   }}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    selectedBankAccountId === account.id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-theme hover:border-theme"
-                  }`}
+                  className="p-4 h-auto flex-col items-start text-left"
                 >
-                  <div className="font-medium text-theme">{account.name}</div>
-                  <div className="text-sm text-theme-muted">{account.bankName}</div>
-                  <div className="text-xs text-theme-muted mt-1">
+                  <div className="font-medium">{account.name}</div>
+                  <div className="text-sm opacity-80">{account.bankName}</div>
+                  <div className="text-xs opacity-60 mt-1">
                     Ag: {account.agency} | Conta: {account.accountNumber}
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -235,13 +232,13 @@ export default function CnabPage() {
                 <div className="text-center py-4">
                   <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
                   <p className="text-theme-muted">Configuração CNAB não encontrada</p>
-                  <button
+                  <Button
                     onClick={() => setShowConfigForm(true)}
-                    className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    leftIcon={<Settings className="w-4 h-4" />}
+                    className="mt-2"
                   >
-                    <Settings className="w-4 h-4" />
                     Configurar Agora
-                  </button>
+                  </Button>
                 </div>
               ) : showConfigForm ? (
                 <form onSubmit={handleSaveConfig} className="space-y-4">
@@ -373,18 +370,15 @@ export default function CnabPage() {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     onClick={handleGenerateRemessa}
                     disabled={generateRemessaMutation.isPending || !receivables?.receivables?.length}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                    isLoading={generateRemessaMutation.isPending}
+                    leftIcon={<Download className="w-5 h-5" />}
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    {generateRemessaMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Download className="w-5 h-5" />
-                    )}
                     Gerar Arquivo de Remessa
-                  </button>
+                  </Button>
 
                   {remessaResult?.success && (
                     <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -397,13 +391,13 @@ export default function CnabPage() {
                         <div>Registros: {remessaResult.totalRegistros}</div>
                         <div>Valor Total: {formatCurrency(remessaResult.valorTotal || 0)}</div>
                       </div>
-                      <button
+                      <Button
                         onClick={handleDownloadRemessa}
-                        className="mt-3 flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                        leftIcon={<Download className="w-4 h-4" />}
+                        className="mt-3 bg-green-600 hover:bg-green-700"
                       >
-                        <Download className="w-4 h-4" />
                         Baixar Arquivo
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -427,18 +421,15 @@ export default function CnabPage() {
                     className="hidden"
                   />
 
-                  <button
+                  <Button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={processRetornoMutation.isPending}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    isLoading={processRetornoMutation.isPending}
+                    leftIcon={<Upload className="w-5 h-5" />}
+                    className="w-full"
                   >
-                    {processRetornoMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Upload className="w-5 h-5" />
-                    )}
                     Selecionar Arquivo de Retorno
-                  </button>
+                  </Button>
 
                   {retornoResult?.success && (
                     <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">

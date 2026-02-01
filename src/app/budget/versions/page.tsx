@@ -82,20 +82,22 @@ export default function BudgetVersionsPage() {
 
       {/* Filtros */}
       <div className="flex gap-2">
-        <button
+        <Button
+          variant={!statusFilter ? "primary" : "outline"}
+          size="sm"
           onClick={() => setStatusFilter(undefined)}
-          className={`px-3 py-1.5 rounded-lg text-sm ${!statusFilter ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
         >
           Todas
-        </button>
+        </Button>
         {(["DRAFT", "APPROVED", "LOCKED"] as const).map((status) => (
-          <button
+          <Button
             key={status}
+            variant={statusFilter === status ? "primary" : "outline"}
+            size="sm"
             onClick={() => setStatusFilter(status)}
-            className={`px-3 py-1.5 rounded-lg text-sm ${statusFilter === status ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
           >
             {statusLabels[status]}
-          </button>
+          </Button>
         ))}
       </div>
 

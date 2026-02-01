@@ -128,14 +128,13 @@ export default function DepartmentsPage() {
         <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+              <Input
                 placeholder="Buscar por nome ou código..."
                 aria-label="Buscar departamentos"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10"
               />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
@@ -185,21 +184,25 @@ export default function DepartmentsPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleEdit(dept)}
-                      className="p-1.5 text-theme-muted hover:text-blue-600 hover:bg-blue-50 rounded"
+                      className="p-1.5 text-theme-muted hover:text-blue-600"
                       title="Editar"
                     >
                       <Edit className="w-4 h-4" />
-                    </button>
-                    <button 
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDelete(dept.id, dept.name)}
                       disabled={dept._count.employees > 0}
-                      className="p-1.5 text-theme-muted hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1.5 text-theme-muted hover:text-red-600"
                       title={dept._count.employees > 0 ? "Não é possível excluir departamento com funcionários" : "Excluir"}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
