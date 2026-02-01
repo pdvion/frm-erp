@@ -554,33 +554,21 @@ export default function LandingSettingsPage() {
                               ))}
                             </select>
                           </div>
-                          <div>
-                            <label className="block text-xs font-medium text-theme-muted mb-1">
-                              Título
-                            </label>
-                            <input
-                              type="text"
-                              value={feature.title}
-                              onChange={(e) =>
-                                updateFeature(index, "title", e.target.value)
-                              }
-                              className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-theme-muted mb-1">
-                            Descrição
-                          </label>
-                          <input
-                            type="text"
-                            value={feature.description}
+                          <Input
+                            label="Título"
+                            value={feature.title}
                             onChange={(e) =>
-                              updateFeature(index, "description", e.target.value)
+                              updateFeature(index, "title", e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-theme-input rounded-lg text-sm"
                           />
                         </div>
+                        <Input
+                          label="Descrição"
+                          value={feature.description}
+                          onChange={(e) =>
+                            updateFeature(index, "description", e.target.value)
+                          }
+                        />
                       </div>
                       
                       <button
