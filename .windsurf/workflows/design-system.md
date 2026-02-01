@@ -155,6 +155,36 @@ export default function MinhaPage() {
 }
 ```
 
+## 🚫 PROIBIDO - Elementos HTML Nativos
+
+### NUNCA usar elementos HTML nativos para UI:
+
+```tsx
+// ❌ PROIBIDO: <button> inline
+<button className="px-4 py-2 bg-blue-600...">Salvar</button>
+// ✅ CORRETO: Button do Design System
+<Button>Salvar</Button>
+
+// ❌ PROIBIDO: <input> inline
+<input type="text" className="w-full px-3 py-2 border..." />
+// ✅ CORRETO: Input ou FormField
+<Input value={value} onChange={onChange} />
+<FormField label="Nome"><Input /></FormField>
+
+// ❌ PROIBIDO: <select> inline
+<select className="w-full px-3 py-2 border...">
+// ✅ CORRETO: Select ou SelectWithAdd
+<Select options={options} value={value} onChange={onChange} />
+
+// ❌ PROIBIDO: <textarea> inline
+<textarea className="w-full px-3 py-2 border..." rows={4} />
+// ✅ CORRETO: Textarea do Design System
+<Textarea value={value} onChange={onChange} rows={4} />
+```
+
+### Regra de Ouro
+> **Se existe no `src/components/ui/`, USE-O. Se não existe, CRIE-O primeiro.**
+
 ## ❌ NÃO FAZER
 
 ```tsx
