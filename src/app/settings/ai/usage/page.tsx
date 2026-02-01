@@ -36,7 +36,7 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-theme-card rounded-lg p-4 border border-theme">
       <div className="flex items-center justify-between">
         <div className={`p-2 rounded-lg ${color}`}>
           <Icon size={20} className="text-white" />
@@ -53,10 +53,10 @@ function StatCard({
         )}
       </div>
       <div className="mt-3">
-        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="text-2xl font-bold text-theme">
           {value}
         </div>
-        <div className="text-sm text-gray-500">{title}</div>
+        <div className="text-sm text-theme-muted">{title}</div>
       </div>
     </div>
   );
@@ -190,13 +190,13 @@ export default function AiUsagePage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Daily Usage Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-theme-card rounded-lg border border-theme p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium">Uso por Dia</h3>
             <select
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
-              className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+              className="px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
             >
               <option value={7}>7 dias</option>
               <option value={30}>30 dias</option>
@@ -220,7 +220,7 @@ export default function AiUsagePage() {
                 })}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
+              <div className="flex items-center justify-center h-full text-theme-muted">
                 Sem dados no período
               </div>
             )}
@@ -228,7 +228,7 @@ export default function AiUsagePage() {
         </div>
 
         {/* Provider Breakdown */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-theme-card rounded-lg border border-theme p-4">
           <h3 className="font-medium mb-4">Uso por Provider</h3>
           <div className="space-y-3">
             {providerBreakdown && providerBreakdown.length > 0 ? (
@@ -244,13 +244,13 @@ export default function AiUsagePage() {
                   <div key={item.name}>
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="capitalize">{item.name}</span>
-                      <span className="text-gray-500">
+                      <span className="text-theme-muted">
                         {item.calls} ({percentage.toFixed(0)}%)
                       </span>
                     </div>
-                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-2 bg-theme-tertiary rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${colors[item.name] || "bg-gray-500"}`}
+                        className={`h-full ${colors[item.name] || "bg-theme-muted"}`}
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -258,33 +258,33 @@ export default function AiUsagePage() {
                 );
               })
             ) : (
-              <div className="text-center py-4 text-gray-500">Sem dados</div>
+              <div className="text-center py-4 text-theme-muted">Sem dados</div>
             )}
           </div>
         </div>
       </div>
 
       {/* Task Breakdown */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div className="bg-theme-card rounded-lg border border-theme p-4">
         <h3 className="font-medium mb-4">Uso por Tipo de Tarefa</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {taskBreakdown && taskBreakdown.length > 0 ? (
             taskBreakdown.map((item) => (
               <div
                 key={item.name}
-                className="p-3 bg-gray-50 dark:bg-gray-750 rounded-lg"
+                className="p-3 bg-theme-tertiary rounded-lg"
               >
                 <div className="text-lg font-bold">{item.calls}</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-theme-muted">
                   {TASK_TYPE_LABELS[item.name] || item.name}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">
+                <div className="text-xs text-theme-muted mt-1">
                   {formatCostUSD(item.cost)}
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-4 text-gray-500">
+            <div className="col-span-full text-center py-4 text-theme-muted">
               Sem dados
             </div>
           )}
@@ -292,8 +292,8 @@ export default function AiUsagePage() {
       </div>
 
       {/* Logs Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-theme-card rounded-lg border border-theme">
+        <div className="p-4 border-b border-theme">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Histórico de Chamadas</h3>
             <div className="flex items-center gap-2">
@@ -303,7 +303,7 @@ export default function AiUsagePage() {
                   setFilterProvider(e.target.value);
                   setPage(1);
                 }}
-                className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                className="px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
               >
                 <option value="">Todos Providers</option>
                 <option value="openai">OpenAI</option>
@@ -316,7 +316,7 @@ export default function AiUsagePage() {
                   setFilterTaskType(e.target.value);
                   setPage(1);
                 }}
-                className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                className="px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
               >
                 <option value="">Todas Tarefas</option>
                 {Object.entries(TASK_TYPE_LABELS).map(([key, label]) => (
@@ -334,43 +334,43 @@ export default function AiUsagePage() {
             <Loader2 size={24} className="animate-spin text-blue-600" />
           </div>
         ) : logs.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-theme-muted">
             Nenhum registro encontrado
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+              <thead className="bg-theme-tertiary">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Data
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Tarefa
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Provider
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                     Modelo
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Tokens
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Custo
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                     Latência
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-theme-table">
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                  <tr key={log.id} className="hover:bg-theme-hover">
                     <td className="px-4 py-3 text-sm">
                       {new Date(log.createdAt).toLocaleString("pt-BR")}
                     </td>
@@ -410,7 +410,7 @@ export default function AiUsagePage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-theme">
             <Button
               variant="outline"
               size="sm"
@@ -419,7 +419,7 @@ export default function AiUsagePage() {
             >
               Anterior
             </Button>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-theme-muted">
               Página {page} de {totalPages}
             </span>
             <Button
