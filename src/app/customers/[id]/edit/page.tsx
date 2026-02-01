@@ -14,8 +14,9 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
-const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
 interface CustomerFormData {
@@ -280,16 +281,14 @@ export default function EditCustomerPage() {
 
           <div>
             <label htmlFor="type" className={labelClass}>Tipo</label>
-            <select
-              id="type"
-              name="type"
+            <Select
               value={formData.type}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="COMPANY">Pessoa Jurídica</option>
-              <option value="PERSON">Pessoa Física</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, type: value as typeof formData.type }))}
+              options={[
+                { value: "COMPANY", label: "Pessoa Jurídica" },
+                { value: "PERSON", label: "Pessoa Física" },
+              ]}
+            />
           </div>
 
           {formData.type === "COMPANY" ? (
@@ -351,17 +350,15 @@ export default function EditCustomerPage() {
 
           <div>
             <label htmlFor="status" className={labelClass}>Status</label>
-            <select
-              id="status"
-              name="status"
+            <Select
               value={formData.status}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="ACTIVE">Ativo</option>
-              <option value="INACTIVE">Inativo</option>
-              <option value="BLOCKED">Bloqueado</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, status: value as typeof formData.status }))}
+              options={[
+                { value: "ACTIVE", label: "Ativo" },
+                { value: "INACTIVE", label: "Inativo" },
+                { value: "BLOCKED", label: "Bloqueado" },
+              ]}
+            />
           </div>
         </div>
 
@@ -469,18 +466,15 @@ export default function EditCustomerPage() {
 
           <div>
             <label htmlFor="addressState" className={labelClass}>UF</label>
-            <select
-              id="addressState"
-              name="addressState"
+            <Select
               value={formData.addressState}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              {STATES.map(uf => (
-                <option key={uf} value={uf}>{uf}</option>
-              ))}
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, addressState: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                ...STATES.map(uf => ({ value: uf, label: uf })),
+              ]}
+            />
           </div>
         </div>
 
@@ -563,25 +557,23 @@ export default function EditCustomerPage() {
         {/* Observações */}
         <div className="mb-6">
           <label htmlFor="notes" className={labelClass}>Observações</label>
-          <textarea
+          <Textarea
             id="notes"
-            name="notes"
-            rows={3}
             value={formData.notes}
-            onChange={handleChange}
-            className={inputClass}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            rows={3}
           />
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 pt-6 border-t border-theme">
-          <Link
-            href="/customers"
-            className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+          <Button
+            variant="outline"
+            onClick={() => router.push("/customers")}
+            leftIcon={<X className="w-4 h-4" />}
           >
-            <X className="w-4 h-4" />
             Cancelar
-          </Link>
+          </Button>
           <Button
             type="submit"
             isLoading={isSubmitting}
