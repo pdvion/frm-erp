@@ -6,6 +6,9 @@ import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Factory,
   Loader2,
@@ -372,28 +375,27 @@ export default function MesPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-theme-muted mb-1">Tipo de Parada</label>
-                <select
+                <Select
                   value={stopType}
-                  onChange={(e) => setStopType(e.target.value)}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                >
-                  <option value="UNPLANNED">Não Planejada</option>
-                  <option value="PLANNED">Planejada</option>
-                  <option value="SETUP">Setup</option>
-                  <option value="MAINTENANCE">Manutenção</option>
-                  <option value="QUALITY">Qualidade</option>
-                  <option value="MATERIAL">Falta de Material</option>
-                  <option value="OTHER">Outro</option>
-                </select>
+                  onChange={(value) => setStopType(value)}
+                  options={[
+                    { value: "UNPLANNED", label: "Não Planejada" },
+                    { value: "PLANNED", label: "Planejada" },
+                    { value: "SETUP", label: "Setup" },
+                    { value: "MAINTENANCE", label: "Manutenção" },
+                    { value: "QUALITY", label: "Qualidade" },
+                    { value: "MATERIAL", label: "Falta de Material" },
+                    { value: "OTHER", label: "Outro" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-sm text-theme-muted mb-1">Motivo *</label>
-                <textarea
+                <Textarea
                   value={stopReason}
                   onChange={(e) => setStopReason(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted"
                   placeholder="Descreva o motivo da parada..."
                 />
               </div>
@@ -439,35 +441,32 @@ export default function MesPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-theme-muted mb-1">Quantidade Produzida *</label>
-                <input
+                <Input
                   type="number"
-                  value={reportQty}
+                  value={reportQty.toString()}
                   onChange={(e) => setReportQty(parseInt(e.target.value) || 0)}
                   min={1}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme text-2xl text-center"
+                  className="text-2xl text-center"
                 />
               </div>
 
               <div>
                 <label className="block text-sm text-theme-muted mb-1">Quantidade Refugo</label>
-                <input
+                <Input
                   type="number"
-                  value={scrapQty}
+                  value={scrapQty.toString()}
                   onChange={(e) => setScrapQty(parseInt(e.target.value) || 0)}
                   min={0}
                   max={reportQty}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                 />
               </div>
 
               {scrapQty > 0 && (
                 <div>
                   <label className="block text-sm text-theme-muted mb-1">Motivo do Refugo</label>
-                  <input
-                    type="text"
+                  <Input
                     value={scrapReason}
                     onChange={(e) => setScrapReason(e.target.value)}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted"
                     placeholder="Ex: Dimensional fora, Trinca, etc."
                   />
                 </div>
