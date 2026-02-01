@@ -89,13 +89,12 @@ export default function NewBillingPage() {
               </div>
             ) : (
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
-                  type="text"
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+                <Input
                   value={customerSearch}
                   onChange={(e) => setCustomerSearch(e.target.value)}
                   placeholder="Buscar cliente..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg bg-theme-card text-theme"
+                  className="pl-10"
                 />
                 {customers && customers.customers.length > 0 && customerSearch.length >= 2 && (
                   <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">

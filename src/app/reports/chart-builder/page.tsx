@@ -11,6 +11,7 @@ import {
   DonutChart,
   ChartCard,
 } from "@/components/charts";
+import { Input } from "@/components/ui/Input";
 import {
   BarChart3,
   Sparkles,
@@ -193,13 +194,12 @@ export default function ChartBuilderPage() {
               Gerar com IA
             </h3>
             <div className="flex gap-2">
-              <input
-                type="text"
+              <Input
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
                 placeholder="Ex: Mostre vendas por mês"
-                className="flex-1 px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme"
+                className="flex-1 text-sm"
               />
               <button
                 onClick={handleGenerate}
@@ -280,17 +280,12 @@ export default function ChartBuilderPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-theme-muted mb-1">
-                  Título
-                </label>
-                <input
-                  type="text"
-                  value={config.title}
-                  onChange={(e) => setConfig({ ...config, title: e.target.value })}
-                  className="w-full px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Título"
+                value={config.title}
+                onChange={(e) => setConfig({ ...config, title: e.target.value })}
+                className="text-sm"
+              />
 
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 text-sm text-theme">
@@ -329,12 +324,11 @@ export default function ChartBuilderPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-theme-card border border-theme rounded-lg p-6 w-96">
             <h3 className="text-lg font-semibold text-theme mb-4">Salvar Template</h3>
-            <input
-              type="text"
+            <Input
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
               placeholder="Nome do template"
-              className="w-full px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme mb-4"
+              className="text-sm mb-4"
             />
             <div className="flex justify-end gap-2">
               <button

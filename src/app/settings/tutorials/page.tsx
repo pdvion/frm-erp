@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   BookOpen,
   Plus,
@@ -188,46 +189,30 @@ export default function TutorialsAdminPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Título *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        title: e.target.value,
-                        slug: editingId ? formData.slug : generateSlug(e.target.value),
-                      });
-                    }}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Slug (URL) *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2 font-mono text-sm"
-                    required
-                    pattern="[a-z0-9-]+"
-                  />
-                </div>
+                <Input
+                  label="Título *"
+                  value={formData.title}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      title: e.target.value,
+                      slug: editingId ? formData.slug : generateSlug(e.target.value),
+                    });
+                  }}
+                  required
+                />
+                <Input
+                  label="Slug (URL) *"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="font-mono text-sm"
+                  required
+                />
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Descrição
-                  </label>
-                  <input
-                    type="text"
+                  <Input
+                    label="Descrição"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                     placeholder="Breve descrição do tutorial"
                   />
                 </div>
@@ -273,17 +258,12 @@ export default function TutorialsAdminPage() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Ordem
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.orderIndex}
-                    onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <Input
+                  label="Ordem"
+                  type="number"
+                  value={formData.orderIndex}
+                  onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
+                />
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Conteúdo (Markdown) *
@@ -334,14 +314,13 @@ export default function TutorialsAdminPage() {
 
         {/* Busca */}
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-theme-muted" />
-            <input
-              type="text"
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por título, descrição ou módulo..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 outline-none"
+              className="pl-10"
             />
           </div>
         </div>

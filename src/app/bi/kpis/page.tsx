@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Target,
   Plus,
@@ -240,16 +241,12 @@ export default function BIKPIsPage() {
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Código *</label>
-                  <input
-                    type="text"
-                    value={newKpi.code}
-                    onChange={(e) => setNewKpi({ ...newKpi, code: e.target.value })}
-                    placeholder="Ex: KPI-001"
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
+                <Input
+                  label="Código *"
+                  value={newKpi.code}
+                  onChange={(e) => setNewKpi({ ...newKpi, code: e.target.value })}
+                  placeholder="Ex: KPI-001"
+                />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Categoria *</label>
                   <select
@@ -264,16 +261,12 @@ export default function BIKPIsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-                <input
-                  type="text"
-                  value={newKpi.name}
-                  onChange={(e) => setNewKpi({ ...newKpi, name: e.target.value })}
-                  placeholder="Ex: Taxa de Conversão de Vendas"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Nome *"
+                value={newKpi.name}
+                onChange={(e) => setNewKpi({ ...newKpi, name: e.target.value })}
+                placeholder="Ex: Taxa de Conversão de Vendas"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
@@ -287,25 +280,18 @@ export default function BIKPIsPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Unidade</label>
-                  <input
-                    type="text"
-                    value={newKpi.unit}
-                    onChange={(e) => setNewKpi({ ...newKpi, unit: e.target.value })}
-                    placeholder="%"
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Meta</label>
-                  <input
-                    type="number"
-                    value={newKpi.targetExpected}
-                    onChange={(e) => setNewKpi({ ...newKpi, targetExpected: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
+                <Input
+                  label="Unidade"
+                  value={newKpi.unit}
+                  onChange={(e) => setNewKpi({ ...newKpi, unit: e.target.value })}
+                  placeholder="%"
+                />
+                <Input
+                  label="Meta"
+                  type="number"
+                  value={newKpi.targetExpected}
+                  onChange={(e) => setNewKpi({ ...newKpi, targetExpected: parseFloat(e.target.value) || 0 })}
+                />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Polaridade</label>
                   <select
