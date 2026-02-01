@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { AI_MODELS } from "@/lib/ai/models";
 
 type AIProvider = "openai" | "anthropic" | "google";
@@ -101,29 +103,26 @@ export default function AITasksConfigPage() {
         subtitle="Configure qual modelo de IA usar para cada tipo de tarefa"
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.push("/settings/ai")}
-              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
+              leftIcon={<ArrowLeft size={20} />}
             >
-              <ArrowLeft size={20} />
               Voltar
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => {
                 if (confirm("Resetar todas as configurações para o padrão?")) {
                   resetAllMutation.mutate();
                 }
               }}
               disabled={resetAllMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
+              isLoading={resetAllMutation.isPending}
+              leftIcon={!resetAllMutation.isPending ? <RotateCcw size={18} /> : undefined}
             >
-              {resetAllMutation.isPending ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <RotateCcw size={18} />
-              )}
               Resetar Tudo
-            </button>
+            </Button>
           </div>
         }
       />
@@ -146,12 +145,13 @@ export default function AITasksConfigPage() {
         <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <p className="text-yellow-700 dark:text-yellow-300 text-sm">
             <strong>Atenção:</strong> Nenhum provedor de IA está configurado.{" "}
-            <button
-              onClick={() => router.push("/settings/ai")}
-              className="underline hover:no-underline"
+            <LinkButton
+              href="/settings/ai"
+              variant="ghost"
+              className="underline hover:no-underline p-0 h-auto"
             >
               Configure seus tokens de API
-            </button>{" "}
+            </LinkButton>{" "}
             para usar esta funcionalidade.
           </p>
         </div>
