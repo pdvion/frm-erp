@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Factory,
   Loader2,
@@ -130,12 +131,13 @@ export default function MesPage() {
         backHref="/production"
         module="PRODUCTION"
         actions={
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => { refetchDashboard(); refetchStops(); refetchStatus(); }}
-            className="p-2 text-theme-muted hover:text-theme rounded-lg hover:bg-theme-hover"
           >
             <RefreshCw className="w-5 h-5" />
-          </button>
+          </Button>
         }
       />
 
@@ -206,13 +208,14 @@ export default function MesPage() {
                         <Clock className="w-3 h-3" />
                         {formatDuration(stop.startTime)}
                       </span>
-                      <button
+                      <Button
+                        size="sm"
                         onClick={() => handleEndStop(stop.id)}
                         disabled={endStopMutation.isPending}
-                        className="text-xs px-2 py-1 bg-green-600 hover:bg-green-700 rounded"
+                        className="text-xs bg-green-600 hover:bg-green-700"
                       >
                         Encerrar
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -309,41 +312,42 @@ export default function MesPage() {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Registrar Parada */}
                   {workCenterStatus?.status !== "STOPPED" ? (
-                    <button
+                    <Button
                       onClick={() => setShowStopModal(true)}
-                      className="flex items-center justify-center gap-2 p-4 bg-red-600 hover:bg-red-700 rounded-lg text-lg font-medium"
+                      className="flex items-center justify-center gap-2 p-4 bg-red-600 hover:bg-red-700 text-lg font-medium h-auto"
+                      leftIcon={<StopCircle className="w-6 h-6" />}
                     >
-                      <StopCircle className="w-6 h-6" />
                       Registrar Parada
-                    </button>
+                    </Button>
                   ) : (
-                    <button
+                    <Button
                       onClick={() => workCenterStatus?.openStop && handleEndStop(workCenterStatus.openStop.id)}
                       disabled={endStopMutation.isPending}
-                      className="flex items-center justify-center gap-2 p-4 bg-green-600 hover:bg-green-700 rounded-lg text-lg font-medium"
+                      className="flex items-center justify-center gap-2 p-4 bg-green-600 hover:bg-green-700 text-lg font-medium h-auto"
+                      leftIcon={<Play className="w-6 h-6" />}
                     >
-                      <Play className="w-6 h-6" />
                       Encerrar Parada
-                    </button>
+                    </Button>
                   )}
 
                   {/* Apontar Produção */}
-                  <button
+                  <Button
                     onClick={() => setShowReportModal(true)}
                     disabled={!workCenterStatus?.activeOrder || workCenterStatus?.status === "STOPPED"}
-                    className="flex items-center justify-center gap-2 p-4 bg-blue-600 hover:bg-blue-700 disabled:bg-theme-secondary disabled:cursor-not-allowed rounded-lg text-lg font-medium"
+                    className="flex items-center justify-center gap-2 p-4 text-lg font-medium h-auto"
+                    leftIcon={<Plus className="w-6 h-6" />}
                   >
-                    <Plus className="w-6 h-6" />
                     Apontar Produção
-                  </button>
+                  </Button>
                 </div>
 
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setSelectedWorkCenter(null)}
-                  className="mt-4 w-full text-center text-theme-muted hover:text-theme py-2"
+                  className="mt-4 w-full"
                 >
                   Trocar Centro de Trabalho
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -396,19 +400,22 @@ export default function MesPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowStopModal(false)}
-                className="flex-1 px-4 py-2 bg-theme-secondary hover:bg-theme-hover rounded-lg text-theme"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={handleStartStop}
                 disabled={!stopReason || startStopMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-theme-tertiary disabled:text-theme-muted rounded-lg text-white"
+                isLoading={startStopMutation.isPending}
+                className="flex-1"
               >
-                {startStopMutation.isPending ? "Registrando..." : "Registrar Parada"}
-              </button>
+                Registrar Parada
+              </Button>
             </div>
           </div>
         </div>
@@ -468,19 +475,21 @@ export default function MesPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowReportModal(false)}
-                className="flex-1 px-4 py-2 bg-theme-secondary hover:bg-theme-hover rounded-lg text-theme"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleQuickReport}
                 disabled={reportQty <= 0 || quickReportMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-theme-tertiary disabled:text-theme-muted rounded-lg text-white"
+                isLoading={quickReportMutation.isPending}
+                className="flex-1"
               >
-                {quickReportMutation.isPending ? "Apontando..." : "Confirmar"}
-              </button>
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>
