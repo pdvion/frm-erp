@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Activity,
   Loader2,
@@ -102,18 +103,16 @@ export default function OeeDashboardPage() {
         module="production"
         actions={
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="border-theme-input rounded-lg border px-3 py-1.5 text-sm"
             />
             <span className="text-theme-muted">até</span>
-            <input
+            <Input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="border-theme-input rounded-lg border px-3 py-1.5 text-sm"
             />
           </div>
         }

@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Layers,
   Calendar,
@@ -281,11 +282,10 @@ export default function BatchPaymentPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="date"
                 value={paymentDate}
                 onChange={(e) => setPaymentDate(e.target.value)}
-                className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
               />
             </div>
 

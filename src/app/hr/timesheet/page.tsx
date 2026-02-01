@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 
 export default function TimesheetPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
@@ -56,12 +57,11 @@ export default function TimesheetPage() {
         <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Data</label>
-              <input
+              <Input
+                label="Data"
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="flex-1">
