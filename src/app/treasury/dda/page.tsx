@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   FileText,
   Check,
@@ -197,18 +199,19 @@ export default function DdaPage() {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-theme-muted" />
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as BoletoStatus | "")}
-              className="px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos os status</option>
-              <option value="PENDENTE">Pendentes</option>
-              <option value="APROVADO">Aprovados</option>
-              <option value="PAGO">Pagos</option>
-              <option value="VENCIDO">Vencidos</option>
-              <option value="REJEITADO">Rejeitados</option>
-            </select>
+              onChange={(value) => setStatusFilter(value as BoletoStatus | "")}
+              placeholder="Todos os status"
+              options={[
+                { value: "", label: "Todos os status" },
+                { value: "PENDENTE", label: "Pendentes" },
+                { value: "APROVADO", label: "Aprovados" },
+                { value: "PAGO", label: "Pagos" },
+                { value: "VENCIDO", label: "Vencidos" },
+                { value: "REJEITADO", label: "Rejeitados" },
+              ]}
+            />
           </div>
         </div>
       </PageCard>
@@ -401,11 +404,10 @@ export default function DdaPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Motivo da Rejeição
               </label>
-              <textarea
+              <Textarea
                 value={motivoRejeicao}
                 onChange={(e) => setMotivoRejeicao(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
                 placeholder="Informe o motivo da rejeição..."
               />
             </div>

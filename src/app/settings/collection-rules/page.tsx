@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Loader2,
   Plus,
@@ -410,24 +412,21 @@ export default function CollectionRulesPage() {
                             <label className="block text-sm font-medium text-theme-secondary mb-1">
                               Tipo de Ação *
                             </label>
-                            <select
+                            <Select
                               value={stepFormData.actionType}
-                              onChange={(e) =>
+                              onChange={(value) =>
                                 setStepFormData({
                                   ...stepFormData,
-                                  actionType: e.target.value as ActionType,
+                                  actionType: value as ActionType,
                                 })
                               }
-                              className="w-full px-3 py-2 border rounded-lg text-sm"
-                            >
-                              {Object.entries(actionTypeConfig).map(
-                                ([key, config]) => (
-                                  <option key={key} value={key}>
-                                    {config.label}
-                                  </option>
-                                )
+                              options={Object.entries(actionTypeConfig).map(
+                                ([key, config]) => ({
+                                  value: key,
+                                  label: config.label,
+                                })
                               )}
-                            </select>
+                            />
                           </div>
                         </div>
                         <Input
@@ -445,7 +444,7 @@ export default function CollectionRulesPage() {
                           <label className="block text-sm font-medium text-theme-secondary mb-1">
                             Corpo do Template
                           </label>
-                          <textarea
+                          <Textarea
                             value={stepFormData.templateBody}
                             onChange={(e) =>
                               setStepFormData({
@@ -454,7 +453,6 @@ export default function CollectionRulesPage() {
                               })
                             }
                             rows={3}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
                             placeholder="Variáveis: {cliente}, {valor}, {vencimento}, {dias}"
                           />
                         </div>

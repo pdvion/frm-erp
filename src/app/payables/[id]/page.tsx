@@ -9,6 +9,8 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   DollarSign,
   CheckCircle,
@@ -575,30 +577,29 @@ export default function PayableDetailPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Forma de Pagamento
                 </label>
-                <select
+                <Select
                   value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Selecione...</option>
-                  <option value="Boleto">Boleto</option>
-                  <option value="Transferência">Transferência</option>
-                  <option value="PIX">PIX</option>
-                  <option value="Cartão">Cartão</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                  <option value="Cheque">Cheque</option>
-                </select>
+                  onChange={setPaymentMethod}
+                  placeholder="Selecione..."
+                  options={[
+                    { value: "Boleto", label: "Boleto" },
+                    { value: "Transferência", label: "Transferência" },
+                    { value: "PIX", label: "PIX" },
+                    { value: "Cartão", label: "Cartão" },
+                    { value: "Dinheiro", label: "Dinheiro" },
+                    { value: "Cheque", label: "Cheque" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Observações
                 </label>
-                <textarea
+                <Textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -656,12 +657,11 @@ export default function PayableDetailPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Motivo da Reprogramação *
                 </label>
-                <textarea
+                <Textarea
                   value={rescheduleReason}
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   rows={3}
                   placeholder="Informe o motivo da reprogramação..."
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -725,12 +725,11 @@ export default function PayableDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
-              <textarea
+              <Textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
                 placeholder="Informe o motivo do cancelamento..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
