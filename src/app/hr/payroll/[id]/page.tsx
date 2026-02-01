@@ -18,6 +18,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 interface PayrollDetailPageProps {
   params: Promise<{ id: string }>;
@@ -58,12 +60,9 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <FileText className="w-16 h-16 text-theme-muted mb-4" />
         <p className="text-theme-muted">Folha não encontrada</p>
-        <button
-          onClick={() => router.push("/hr/payroll")}
-          className="mt-4 text-blue-600 hover:underline"
-        >
-          Voltar para lista
-        </button>
+        <LinkButton href="/hr/payroll" variant="ghost" className="mt-4">
+          Voltar para Folhas
+        </LinkButton>
       </div>
     );
   }
@@ -98,41 +97,33 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
         actions={
           <div className="flex items-center gap-2">
             {payroll.status === "CALCULATED" && (
-              <button
+              <Button
                 onClick={() => approveMutation.mutate({ payrollId: id })}
                 disabled={approveMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                isLoading={approveMutation.isPending}
+                leftIcon={!approveMutation.isPending ? <CheckCircle className="w-4 h-4" /> : undefined}
+                className="bg-green-600 hover:bg-green-700"
               >
-                {approveMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4" />
-                )}
-                Aprovar
-              </button>
+                Aprovar Folha
+              </Button>
             )}
             {payroll.status === "APPROVED" && (
-              <button
+              <Button
                 onClick={() => markAsPaidMutation.mutate({ payrollId: id })}
                 disabled={markAsPaidMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                isLoading={markAsPaidMutation.isPending}
+                leftIcon={!markAsPaidMutation.isPending ? <DollarSign className="w-4 h-4" /> : undefined}
+                className="bg-emerald-600 hover:bg-emerald-700"
               >
-                {markAsPaidMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <DollarSign className="w-4 h-4" />
-                )}
                 Marcar como Paga
-              </button>
+              </Button>
             )}
-            <button className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover">
-              <Printer className="w-4 h-4" />
+            <Button variant="outline" leftIcon={<Printer className="w-4 h-4" />}>
               Imprimir
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover">
-              <Download className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" leftIcon={<Download className="w-4 h-4" />}>
               Exportar
-            </button>
+            </Button>
           </div>
         }
       />
@@ -317,14 +308,16 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
                       {formatCurrency(item.netSalary)}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() =>
                           router.push(`/hr/payroll/${id}/payslip/${item.id}`)
                         }
-                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        className="text-blue-600 hover:text-blue-800"
                       >
                         Ver Holerite
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
