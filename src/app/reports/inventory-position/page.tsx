@@ -13,6 +13,9 @@ import {
   Loader2,
   Search,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 const inventoryTypeLabels: Record<string, string> = {
   RAW_MATERIAL: "Matéria-Prima",
@@ -72,14 +75,14 @@ export default function InventoryPositionReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!filteredItems?.length}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            leftIcon={<Download className="w-4 h-4" />}
+            className="bg-green-600 hover:bg-green-700"
           >
-            <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -116,28 +119,27 @@ export default function InventoryPositionReportPage() {
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 placeholder="Buscar material..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9"
               />
             </div>
 
-            <label htmlFor="inventory-type" className="sr-only">Tipo de Estoque</label>
-            <select
-              id="inventory-type"
+            <Select
               value={inventoryType}
-              onChange={(e) => setInventoryType(e.target.value)}
-              className="px-3 py-2 border border-theme-input rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todos os tipos</option>
-              {Object.entries(inventoryTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+              onChange={(value) => setInventoryType(value)}
+              placeholder="Todos os tipos"
+              options={[
+                { value: "", label: "Todos os tipos" },
+                ...Object.entries(inventoryTypeLabels).map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+              ]}
+            />
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input
