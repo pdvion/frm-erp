@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Loader2,
@@ -78,13 +79,12 @@ export default function ReservationsPage() {
         icon={<Package className="w-6 h-6" />}
         module="inventory"
         actions={
-          <button
+          <Button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Nova Reserva
-          </button>
+          </Button>
         }
       />
 
@@ -95,13 +95,15 @@ export default function ReservationsPage() {
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-600" />
               <p className="text-red-800">{mutationError}</p>
-              <button 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setMutationError(null)}
-                className="ml-auto text-red-600 hover:text-red-800"
                 aria-label="Fechar mensagem de erro"
+                className="ml-auto text-red-600"
               >
                 <XCircle className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -229,22 +231,26 @@ export default function ReservationsPage() {
                         <td className="px-6 py-4 text-center">
                           {reservation.status === "ACTIVE" && (
                             <div className="flex items-center justify-center gap-2">
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => consumeMutation.mutate({ reservationId: reservation.id })}
                                 disabled={consumeMutation.isPending}
-                                className="p-1.5 text-green-600 hover:bg-green-50 rounded"
                                 title="Consumir reserva"
+                                className="text-green-600 hover:bg-green-50"
                               >
                                 <Play className="w-4 h-4" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => releaseMutation.mutate({ reservationId: reservation.id, reason: "Liberação manual" })}
                                 disabled={releaseMutation.isPending}
-                                className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                                 title="Liberar reserva"
+                                className="text-red-600 hover:bg-red-50"
                               >
                                 <Trash2 className="w-4 h-4" />
-                              </button>
+                              </Button>
                             </div>
                           )}
                         </td>
@@ -264,20 +270,22 @@ export default function ReservationsPage() {
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total}
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page + 1)}
                 disabled={page * 20 >= data.total}
-                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Próximo
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -351,16 +359,18 @@ function CreateReservationModal({
             {materials?.materials && materials.materials.length > 0 && search && (
               <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
                 {materials.materials.map((mat) => (
-                  <button
+                  <Button
                     key={mat.id}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       setMaterialId(mat.id);
                       setSearch(mat.description);
                     }}
-                    className="w-full px-3 py-2 text-left hover:bg-theme-hover text-sm"
+                    className="w-full justify-start text-left"
                   >
                     <span className="font-medium">{mat.code}</span> - {mat.description}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -432,13 +442,14 @@ function CreateReservationModal({
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               createMutation.mutate({
                 materialId,
@@ -450,10 +461,11 @@ function CreateReservationModal({
               })
             }
             disabled={!materialId || !quantity || !documentId || createMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={createMutation.isPending}
+            className="flex-1"
           >
-            {createMutation.isPending ? "Criando..." : "Criar Reserva"}
-          </button>
+            Criar Reserva
+          </Button>
         </div>
       </div>
     </div>
