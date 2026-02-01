@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
@@ -217,77 +219,64 @@ export default function TasksPage() {
 
         {/* View Mode Tabs */}
         <div className="flex gap-2 mb-6">
-          <button
+          <Button
+            variant={viewMode === "all" ? "primary" : "outline"}
             onClick={() => setViewMode("all")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              viewMode === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
-            }`}
           >
             Todas
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={viewMode === "my" ? "primary" : "outline"}
             onClick={() => setViewMode("my")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              viewMode === "my"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
-            }`}
           >
             Minhas Tarefas
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={viewMode === "available" ? "primary" : "outline"}
             onClick={() => setViewMode("available")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              viewMode === "available"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-card text-theme-secondary hover:bg-theme-hover border border-theme"
-            }`}
           >
             Disponíveis para Aceitar
-          </button>
+          </Button>
         </div>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar tarefas..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
+              className="pl-10"
             />
           </div>
 
           <div className="flex gap-2">
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="ALL">Todos os Status</option>
-              <option value="PENDING">Pendente</option>
-              <option value="ACCEPTED">Aceita</option>
-              <option value="IN_PROGRESS">Em Andamento</option>
-              <option value="ON_HOLD">Em Espera</option>
-              <option value="COMPLETED">Concluída</option>
-              <option value="CANCELLED">Cancelada</option>
-            </select>
+              onChange={(value) => setStatusFilter(value)}
+              options={[
+                { value: "ALL", label: "Todos os Status" },
+                { value: "PENDING", label: "Pendente" },
+                { value: "ACCEPTED", label: "Aceita" },
+                { value: "IN_PROGRESS", label: "Em Andamento" },
+                { value: "ON_HOLD", label: "Em Espera" },
+                { value: "COMPLETED", label: "Concluída" },
+                { value: "CANCELLED", label: "Cancelada" },
+              ]}
+            />
 
-            <select
+            <Select
               value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Todas as Prioridades</option>
-              <option value="URGENT">Urgente</option>
-              <option value="HIGH">Alta</option>
-              <option value="NORMAL">Normal</option>
-              <option value="LOW">Baixa</option>
-            </select>
+              onChange={(value) => setPriorityFilter(value)}
+              options={[
+                { value: "", label: "Todas as Prioridades" },
+                { value: "URGENT", label: "Urgente" },
+                { value: "HIGH", label: "Alta" },
+                { value: "NORMAL", label: "Normal" },
+                { value: "LOW", label: "Baixa" },
+              ]}
+            />
             <ViewToggle view={view} onViewChange={setView} />
           </div>
         </div>
@@ -428,20 +417,22 @@ export default function TasksPage() {
                   Página {data.page} de {data.pages} ({data.total} tarefas)
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === data.pages}
-                    className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
