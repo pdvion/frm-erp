@@ -15,6 +15,7 @@ import {
   Clock,
   Trash2,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -96,13 +97,12 @@ export default function ImportProcessDetailPage({
           { label: process.processNumber },
         ]}
         actions={
-          <Link
-            href={`/impex/processes/${id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          <Button
+            onClick={() => window.location.href = `/impex/processes/${id}/edit`}
+            leftIcon={<Edit className="w-4 h-4" />}
           >
-            <Edit className="w-4 h-4" />
             Editar
-          </Link>
+          </Button>
         }
       />
 
@@ -204,12 +204,13 @@ export default function ImportProcessDetailPage({
                           {formatCurrency(Number(item.totalPrice), process.currency)}
                         </td>
                         <td className="py-2">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => deleteItemMutation.mutate({ id: item.id })}
-                            className="p-1 text-red-600 hover:bg-red-50 rounded"
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                            <Trash2 className="w-4 h-4 text-red-600" />
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -245,12 +246,13 @@ export default function ImportProcessDetailPage({
                       <span className="text-theme font-medium">
                         {formatCurrency(Number(cost.value), cost.currency)}
                       </span>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => deleteCostMutation.mutate({ id: cost.id })}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -341,12 +343,13 @@ export default function ImportProcessDetailPage({
                         <p className="text-xs text-theme-muted mt-1">{event.description}</p>
                       )}
                     </div>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => deleteEventMutation.mutate({ id: event.id })}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded"
                     >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                      <Trash2 className="w-3 h-3 text-red-600" />
+                    </Button>
                   </div>
                 ))}
               </div>
