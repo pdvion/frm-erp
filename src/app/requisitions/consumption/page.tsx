@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Package,
   Building2,
@@ -94,52 +95,30 @@ export default function ConsumptionReportPage() {
             Filtros
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-theme-secondary">
-                Data Inicial
-              </label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-theme-secondary">
-                Data Final
-              </label>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-theme-secondary">
-                Centro de Custo
-              </label>
-              <input
-                type="text"
-                value={costCenter}
-                onChange={(e) => setCostCenter(e.target.value)}
-                placeholder="Filtrar por CC..."
-                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-theme-secondary">
-                Departamento
-              </label>
-              <input
-                type="text"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                placeholder="Filtrar por depto..."
-                className="w-full rounded-lg border border-theme px-3 py-2 text-sm dark:border-theme dark:bg-theme-secondary dark:text-white"
-              />
-            </div>
+            <Input
+              label="Data Inicial"
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+            />
+            <Input
+              label="Data Final"
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+            />
+            <Input
+              label="Centro de Custo"
+              value={costCenter}
+              onChange={(e) => setCostCenter(e.target.value)}
+              placeholder="Filtrar por CC..."
+            />
+            <Input
+              label="Departamento"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              placeholder="Filtrar por depto..."
+            />
           </div>
 
           {/* Agrupamento */}
