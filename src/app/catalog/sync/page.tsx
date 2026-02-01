@@ -156,7 +156,7 @@ export default function CatalogSyncPage() {
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="px-2 py-1 text-sm border border-blue-300 dark:border-blue-700 rounded bg-white dark:bg-gray-800"
+              className="px-2 py-1 text-sm border border-blue-300 dark:border-blue-700 rounded bg-theme-card"
             >
               <option value="">Sem categoria</option>
               {categories?.map((cat) => (

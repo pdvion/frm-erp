@@ -211,7 +211,7 @@ export default function ImportPage() {
                 type="checkbox"
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300"
+                className="w-4 h-4 rounded border-theme"
               />
               <div>
                 <span className="font-medium text-theme">Modo Simulação</span>
@@ -224,7 +224,7 @@ export default function ImportPage() {
                 type="checkbox"
                 checked={updateIfExists}
                 onChange={(e) => setUpdateIfExists(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300"
+                className="w-4 h-4 rounded border-theme"
               />
               <div>
                 <span className="font-medium text-theme">Atualizar Existentes</span>
