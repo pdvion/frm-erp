@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { 
   Factory, Settings, AlertTriangle, TrendingUp,
-  ArrowRight, Loader2, BarChart3, Clock, CheckCircle
+  ArrowRight, BarChart3, Clock, CheckCircle
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { SimpleBarChart, ChartCard } from "@/components/charts";
+import { KPISkeleton, ChartSkeleton } from "@/components/ui/Skeleton";
 
 export default function ProductionDashboardPage() {
   const { data: kpis, isLoading } = trpc.dashboard.productionKpis.useQuery();
@@ -16,8 +17,18 @@ export default function ProductionDashboardPage() {
   if (isLoading) {
     return (
       <ProtectedRoute>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <div className="space-y-6">
+          <PageHeader
+            title="Dashboard de Produção"
+            subtitle="Visão geral do módulo de produção"
+            icon={<Factory className="w-6 h-6" />}
+            module="production"
+          />
+          <KPISkeleton count={4} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartSkeleton height={200} />
+            <ChartSkeleton height={200} />
+          </div>
         </div>
       </ProtectedRoute>
     );

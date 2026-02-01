@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { 
   DollarSign, TrendingUp, TrendingDown, AlertTriangle, Clock,
-  ArrowRight, Loader2, BarChart3, CreditCard, Banknote, Calendar
+  ArrowRight, BarChart3, CreditCard, Banknote, Calendar
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { SimpleAreaChart, DonutChart, ChartCard } from "@/components/charts";
+import { KPISkeleton, ChartSkeleton } from "@/components/ui/Skeleton";
 
 export default function FinancialDashboardPage() {
   const { data: kpis, isLoading } = trpc.dashboard.financialKpis.useQuery();
@@ -17,8 +18,18 @@ export default function FinancialDashboardPage() {
   if (isLoading) {
     return (
       <ProtectedRoute>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <div className="space-y-6">
+          <PageHeader
+            title="Dashboard Financeiro"
+            subtitle="Visão geral do módulo financeiro"
+            icon={<DollarSign className="w-6 h-6" />}
+            module="finance"
+          />
+          <KPISkeleton count={4} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartSkeleton height={200} />
+            <ChartSkeleton height={200} />
+          </div>
         </div>
       </ProtectedRoute>
     );
