@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   UserMinus,
   Save,
@@ -94,22 +96,19 @@ export default function NewTerminationPage() {
             <label className="block text-sm font-medium text-theme mb-1">
               Selecione o Funcionário *
             </label>
-            <select
+            <Select
               value={form.employeeId}
-              onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
+              onChange={(value) => setForm({ ...form, employeeId: value })}
+              placeholder={loadingEmployees ? "Carregando..." : "Selecione um funcionário"}
               disabled={loadingEmployees}
-            >
-              <option value="">
-                {loadingEmployees ? "Carregando..." : "Selecione um funcionário"}
-              </option>
-              {employees?.employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.code} - {emp.name}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: "", label: loadingEmployees ? "Carregando..." : "Selecione um funcionário" },
+                ...(employees?.employees.map((emp) => ({
+                  value: emp.id,
+                  label: `${emp.code} - ${emp.name}`,
+                })) || []),
+              ]}
+            />
           </div>
 
           {selectedEmployee && (
@@ -228,12 +227,11 @@ export default function NewTerminationPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Motivo da Rescisão
               </label>
-              <textarea
+              <Textarea
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
                 placeholder="Descreva o motivo da rescisão..."
                 rows={2}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               />
             </div>
 
@@ -241,12 +239,11 @@ export default function NewTerminationPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Observações
               </label>
-              <textarea
+              <Textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 placeholder="Observações adicionais..."
                 rows={2}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               />
             </div>
           </div>

@@ -5,7 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Users, Loader2, Save } from "lucide-react";
 
 export default function EditLeadPage() {
@@ -125,37 +128,37 @@ export default function EditLeadPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Status
                 </label>
-                <select
+                <Select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as typeof formData.status })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                >
-                  <option value="NEW">Novo</option>
-                  <option value="CONTACTED">Contatado</option>
-                  <option value="QUALIFIED">Qualificado</option>
-                  <option value="PROPOSAL">Proposta</option>
-                  <option value="NEGOTIATION">Negociação</option>
-                  <option value="WON">Ganho</option>
-                  <option value="LOST">Perdido</option>
-                </select>
+                  onChange={(value) => setFormData({ ...formData, status: value as typeof formData.status })}
+                  options={[
+                    { value: "NEW", label: "Novo" },
+                    { value: "CONTACTED", label: "Contatado" },
+                    { value: "QUALIFIED", label: "Qualificado" },
+                    { value: "PROPOSAL", label: "Proposta" },
+                    { value: "NEGOTIATION", label: "Negociação" },
+                    { value: "WON", label: "Ganho" },
+                    { value: "LOST", label: "Perdido" },
+                  ]}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">
                   Origem
                 </label>
-                <select
+                <Select
                   value={formData.source}
-                  onChange={(e) => setFormData({ ...formData, source: e.target.value as typeof formData.source })}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                >
-                  <option value="WEBSITE">Site</option>
-                  <option value="REFERRAL">Indicação</option>
-                  <option value="COLD_CALL">Prospecção</option>
-                  <option value="TRADE_SHOW">Feira</option>
-                  <option value="SOCIAL_MEDIA">Redes Sociais</option>
-                  <option value="EMAIL">Email</option>
-                  <option value="OTHER">Outros</option>
-                </select>
+                  onChange={(value) => setFormData({ ...formData, source: value as typeof formData.source })}
+                  options={[
+                    { value: "WEBSITE", label: "Site" },
+                    { value: "REFERRAL", label: "Indicação" },
+                    { value: "COLD_CALL", label: "Prospecção" },
+                    { value: "TRADE_SHOW", label: "Feira" },
+                    { value: "SOCIAL_MEDIA", label: "Redes Sociais" },
+                    { value: "EMAIL", label: "Email" },
+                    { value: "OTHER", label: "Outros" },
+                  ]}
+                />
               </div>
               <Input
                 label="Email"
@@ -205,11 +208,10 @@ export default function EditLeadPage() {
           {formData.status === "LOST" && (
             <div className="bg-theme-card rounded-lg border border-red-200 p-6">
               <h2 className="text-lg font-semibold text-red-700 mb-4">Motivo da Perda</h2>
-              <textarea
+              <Textarea
                 value={formData.lostReason}
                 onChange={(e) => setFormData({ ...formData, lostReason: e.target.value })}
                 rows={3}
-                className="w-full border border-red-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 placeholder="Descreva o motivo da perda do lead..."
               />
             </div>
@@ -223,22 +225,20 @@ export default function EditLeadPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">
                   Observações
                 </label>
-                <textarea
+                <Textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
             </div>
@@ -252,18 +252,14 @@ export default function EditLeadPage() {
             >
               Cancelar
             </Link>
-            <button
+            <Button
               type="submit"
-              disabled={updateMutation.isPending || !formData.companyName.trim()}
-              className="flex items-center gap-2 px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
+              disabled={!formData.companyName.trim()}
+              isLoading={updateMutation.isPending}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {updateMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Salvar Alterações
-            </button>
+            </Button>
           </div>
 
           {updateMutation.isError && (

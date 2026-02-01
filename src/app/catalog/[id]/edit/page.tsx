@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { RichTextEditor } from "@/components/editor";
 import { ProductImageUpload } from "@/components/catalog/ProductImageUpload";
 import { ProductVideoManager } from "@/components/catalog/ProductVideoManager";
@@ -313,18 +315,18 @@ export default function EditProductPage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Categoria
                     </label>
-                    <select
+                    <Select
                       value={formData.categoryId}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, categoryId: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    >
-                      <option value="">Selecione...</option>
-                      {categories?.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => setFormData((prev) => ({ ...prev, categoryId: value }))}
+                      placeholder="Selecione..."
+                      options={[
+                        { value: "", label: "Selecione..." },
+                        ...(categories?.map((cat) => ({
+                          value: cat.id,
+                          label: cat.name,
+                        })) || []),
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -332,12 +334,11 @@ export default function EditProductPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Descrição Curta
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.shortDescription}
                     onChange={(e) => setFormData((prev) => ({ ...prev, shortDescription: e.target.value }))}
                     rows={2}
                     maxLength={255}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                   />
                 </div>
 
@@ -345,16 +346,16 @@ export default function EditProductPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
                   </label>
-                  <select
+                  <Select
                     value={formData.status}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                  >
-                    <option value="draft">Rascunho</option>
-                    <option value="active">Ativo</option>
-                    <option value="inactive">Inativo</option>
-                    <option value="discontinued">Descontinuado</option>
-                  </select>
+                    onChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
+                    options={[
+                      { value: "draft", label: "Rascunho" },
+                      { value: "active", label: "Ativo" },
+                      { value: "inactive", label: "Inativo" },
+                      { value: "discontinued", label: "Descontinuado" },
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -571,12 +572,11 @@ export default function EditProductPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Descrição SEO
                 </label>
-                <textarea
+                <Textarea
                   value={formData.metaDescription}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metaDescription: e.target.value }))}
                   rows={3}
                   maxLength={160}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                 />
               </div>
             </div>

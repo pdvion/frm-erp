@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 export default function DepartmentsPage() {
   const [search, setSearch] = useState("");
@@ -111,13 +114,12 @@ export default function DepartmentsPage() {
         icon={<Building2 className="w-6 h-6 text-purple-600" />}
         backHref="/hr"
         actions={
-          <button
+          <Button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+            leftIcon={<Plus className="w-5 h-5" />}
           >
-            <Plus className="w-5 h-5" />
-            <span>Novo Departamento</span>
-          </button>
+            Novo Departamento
+          </Button>
         }
       />
 
@@ -158,13 +160,12 @@ export default function DepartmentsPage() {
             <FolderTree className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Nenhum departamento encontrado</h3>
             <p className="text-theme-muted mb-4">Crie o primeiro departamento da empresa</p>
-            <button
+            <Button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)]"
+              leftIcon={<Plus className="w-5 h-5" />}
             >
-              <Plus className="w-5 h-5" />
               Novo Departamento
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -262,10 +263,9 @@ export default function DepartmentsPage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
                     rows={3}
                   />
                 </div>
@@ -274,38 +274,39 @@ export default function DepartmentsPage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Departamento Pai
                   </label>
-                  <select
+                  <Select
                     value={formData.parentId}
-                    onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Nenhum (raiz)</option>
-                    {departments?.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, parentId: value })}
+                    placeholder="Nenhum (raiz)"
+                    options={[
+                      { value: "", label: "Nenhum (raiz)" },
+                      ...(departments?.map((dept) => ({
+                        value: dept.id,
+                        label: dept.name,
+                      })) || []),
+                    ]}
+                  />
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => {
                       setShowForm(false);
                       resetForm();
                     }}
-                    className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                    className="flex-1"
                   >
                     Cancelar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="submit"
-                    disabled={createMutation.isPending}
-                    className="flex-1 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] disabled:opacity-50"
+                    isLoading={createMutation.isPending}
+                    className="flex-1"
                   >
-                    {createMutation.isPending ? "Salvando..." : "Salvar"}
-                  </button>
+                    Salvar
+                  </Button>
                 </div>
               </form>
             </div>

@@ -268,12 +268,12 @@ export default function BrokersPage() {
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => { setShowModal(false); resetForm(); }}
-                className="px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!formData.name || !formData.cnpj}
