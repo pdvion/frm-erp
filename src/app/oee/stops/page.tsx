@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { PauseCircle } from "lucide-react";
 
 type StopType = "PLANNED" | "UNPLANNED" | "SETUP" | "MAINTENANCE" | "QUALITY" | "MATERIAL" | "OTHER";
@@ -69,13 +72,13 @@ export default function OEEStopsPage() {
           { label: "Paradas" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            leftIcon={<PauseCircle className="w-4 h-4" />}
+            className="bg-red-600 hover:bg-red-700"
           >
-            <PauseCircle className="w-4 h-4" />
             Registrar Parada
-          </button>
+          </Button>
         }
       />
 
@@ -99,18 +102,14 @@ export default function OEEStopsPage() {
       {/* Filtro por Centro */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex items-end gap-4">
-          <div>
+          <div className="min-w-[200px]">
             <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-            <select
+            <Select
               value={workCenterId}
-              onChange={(e) => setWorkCenterId(e.target.value)}
-              className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme min-w-[200px]"
-            >
-              <option value="">Todos</option>
-              {workCenters?.map((wc) => (
-                <option key={wc.id} value={wc.id}>{wc.code} - {wc.name}</option>
-              ))}
-            </select>
+              onChange={setWorkCenterId}
+              placeholder="Todos"
+              options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+            />
           </div>
         </div>
       </div>
@@ -181,36 +180,27 @@ export default function OEEStopsPage() {
             <form onSubmit={handleStopSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-                <select
+                <Select
                   value={stopForm.workCenterId}
-                  onChange={(e) => setStopForm({ ...stopForm, workCenterId: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+                  onChange={(value) => setStopForm({ ...stopForm, workCenterId: value })}
+                  placeholder="Selecione..."
                   required
-                >
-                  <option value="">Selecione...</option>
-                  {workCenters?.map((wc) => (
-                    <option key={wc.id} value={wc.id}>{wc.code} - {wc.name}</option>
-                  ))}
-                </select>
+                  options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Tipo de Parada</label>
-                <select
+                <Select
                   value={stopForm.stopType}
-                  onChange={(e) => setStopForm({ ...stopForm, stopType: e.target.value as StopType })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                >
-                  {stopTypes.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
+                  onChange={(value) => setStopForm({ ...stopForm, stopType: value as StopType })}
+                  options={stopTypes.map((t) => ({ value: t.value, label: t.label }))}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Motivo</label>
-                <textarea
+                <Textarea
                   value={stopForm.reason}
                   onChange={(e) => setStopForm({ ...stopForm, reason: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                   rows={2}
                   required
                   placeholder="Descreva o motivo da parada..."
@@ -218,29 +208,29 @@ export default function OEEStopsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Solução (opcional)</label>
-                <textarea
+                <Textarea
                   value={stopForm.solution}
                   onChange={(e) => setStopForm({ ...stopForm, solution: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                   rows={2}
                   placeholder="Ação tomada para resolver..."
                 />
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary text-theme"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={logStopMutation.isPending || !stopForm.workCenterId || !stopForm.reason}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  disabled={!stopForm.workCenterId || !stopForm.reason}
+                  isLoading={logStopMutation.isPending}
+                  className="bg-red-600 hover:bg-red-700"
                 >
-                  {logStopMutation.isPending ? "Registrando..." : "Registrar Parada"}
-                </button>
+                  Registrar Parada
+                </Button>
               </div>
             </form>
           </div>

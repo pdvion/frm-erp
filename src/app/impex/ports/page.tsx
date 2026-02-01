@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Anchor, Plus, Search, Edit2, Trash2, Ship, Plane, Truck } from "lucide-react";
 
 type PortType = "MARITIME" | "AIRPORT" | "BORDER";
@@ -137,26 +138,22 @@ export default function PortsPage() {
               className="pl-10"
             />
           </div>
-          <select
+          <Select
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as PortType | "ALL")}
-            className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-          >
-            <option value="ALL">Todos os tipos</option>
-            <option value="MARITIME">Marítimo</option>
-            <option value="AIRPORT">Aeroporto</option>
-            <option value="BORDER">Fronteira</option>
-          </select>
-          <select
+            onChange={(value) => setTypeFilter(value as PortType | "ALL")}
+            options={[
+              { value: "ALL", label: "Todos os tipos" },
+              { value: "MARITIME", label: "Marítimo" },
+              { value: "AIRPORT", label: "Aeroporto" },
+              { value: "BORDER", label: "Fronteira" },
+            ]}
+          />
+          <Select
             value={countryFilter}
-            onChange={(e) => setCountryFilter(e.target.value)}
-            className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-          >
-            <option value="">Todos os países</option>
-            {countries.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+            onChange={setCountryFilter}
+            placeholder="Todos os países"
+            options={countries.map(c => ({ value: c, label: c }))}
+          />
         </div>
       </div>
 
@@ -256,15 +253,15 @@ export default function PortsPage() {
                 />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
-                  <select
+                  <Select
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as PortType })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  >
-                    <option value="MARITIME">Marítimo</option>
-                    <option value="AIRPORT">Aeroporto</option>
-                    <option value="BORDER">Fronteira</option>
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, type: value as PortType })}
+                    options={[
+                      { value: "MARITIME", label: "Marítimo" },
+                      { value: "AIRPORT", label: "Aeroporto" },
+                      { value: "BORDER", label: "Fronteira" },
+                    ]}
+                  />
                 </div>
               </div>
             </div>
