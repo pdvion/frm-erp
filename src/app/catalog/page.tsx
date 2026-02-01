@@ -27,7 +27,7 @@ type ViewMode = "grid" | "list";
 type ProductStatus = "draft" | "active" | "inactive" | "discontinued";
 
 const STATUS_LABELS: Record<ProductStatus, { label: string; color: string }> = {
-  draft: { label: "Rascunho", color: "bg-gray-100 text-gray-700" },
+  draft: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary" },
   active: { label: "Ativo", color: "bg-green-100 text-green-700" },
   inactive: { label: "Inativo", color: "bg-yellow-100 text-yellow-700" },
   discontinued: { label: "Descontinuado", color: "bg-red-100 text-red-700" },
@@ -84,29 +84,29 @@ export default function CatalogPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
+          <div className="text-2xl font-bold text-theme">
             {stats?.totalProducts ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Total de Produtos</div>
+          <div className="text-sm text-theme-muted">Total de Produtos</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-green-600">
             {stats?.publishedProducts ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Publicados</div>
+          <div className="text-sm text-theme-muted">Publicados</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-yellow-600">
             {stats?.draftProducts ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Rascunhos</div>
+          <div className="text-sm text-theme-muted">Rascunhos</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-blue-600">
             {stats?.totalCategories ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Categorias</div>
+          <div className="text-sm text-theme-muted">Categorias</div>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function CatalogPage() {
           <div className="relative flex-1 sm:max-w-md">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10"
             />
             <Input
               placeholder="Buscar produtos..."
@@ -164,9 +164,9 @@ export default function CatalogPage() {
 
       {/* Filters */}
       {showFilters && (
-        <div className="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap gap-4 p-4 bg-theme-tertiary rounded-lg border border-theme">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
+            <label className="block text-xs font-medium text-theme-muted mb-1">
               Status
             </label>
             <Select
@@ -186,7 +186,7 @@ export default function CatalogPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
+            <label className="block text-xs font-medium text-theme-muted mb-1">
               Categoria
             </label>
             <Select
@@ -227,12 +227,12 @@ export default function CatalogPage() {
           <Loader2 size={32} className="animate-spin text-blue-600" />
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <Package size={48} className="mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+        <div className="text-center py-12 bg-theme-card rounded-lg border border-theme">
+          <Package size={48} className="mx-auto mb-4 text-theme-muted" />
+          <h3 className="text-lg font-medium text-theme mb-2">
             Nenhum produto encontrado
           </h3>
-          <p className="text-gray-500 mb-4">
+          <p className="text-theme-muted mb-4">
             {search || statusFilter || categoryFilter
               ? "Tente ajustar os filtros de busca"
               : "Comece criando seu primeiro produto"}
@@ -251,10 +251,10 @@ export default function CatalogPage() {
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-theme-card rounded-lg border border-theme overflow-hidden hover:shadow-lg transition-shadow"
             >
               {/* Image */}
-              <div className="aspect-square bg-gray-100 dark:bg-gray-700 relative">
+              <div className="aspect-square bg-theme-tertiary relative">
                 {product.images?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -264,7 +264,7 @@ export default function CatalogPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package size={48} className="text-gray-400" />
+                    <Package size={48} className="text-theme-muted" />
                   </div>
                 )}
                 {/* Status Badge */}
@@ -282,19 +282,19 @@ export default function CatalogPage() {
                   {product.isPublished ? (
                     <Globe size={18} className="text-green-600" />
                   ) : (
-                    <GlobeLock size={18} className="text-gray-400" />
+                    <GlobeLock size={18} className="text-theme-muted" />
                   )}
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-4">
-                <div className="text-xs text-gray-500 mb-1">{product.code}</div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                <div className="text-xs text-theme-muted mb-1">{product.code}</div>
+                <h3 className="font-medium text-theme truncate">
                   {product.name}
                 </h3>
                 {product.shortDescription && (
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                  <p className="text-sm text-theme-muted mt-1 line-clamp-2">
                     {product.shortDescription}
                   </p>
                 )}
@@ -306,17 +306,17 @@ export default function CatalogPage() {
                           R$ {product.salePrice.toFixed(2)}
                         </span>
                         {product.listPrice && (
-                          <span className="text-sm text-gray-400 line-through ml-2">
+                          <span className="text-sm text-theme-muted line-through ml-2">
                             R$ {product.listPrice.toFixed(2)}
                           </span>
                         )}
                       </div>
                     ) : product.listPrice ? (
-                      <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-lg font-bold text-theme">
                         R$ {product.listPrice.toFixed(2)}
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-400">Sem preço</span>
+                      <span className="text-sm text-theme-muted">Sem preço</span>
                     )}
                   </div>
                   <div className="flex gap-1">
@@ -343,36 +343,36 @@ export default function CatalogPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-theme-tertiary">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Produto
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Código
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Preço
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Publicado
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                   Ações
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-theme-table">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                <tr key={product.id} className="hover:bg-theme-hover">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                      <div className="w-10 h-10 bg-theme-tertiary rounded overflow-hidden flex-shrink-0">
                         {product.images?.[0] ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -382,23 +382,23 @@ export default function CatalogPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package size={16} className="text-gray-400" />
+                            <Package size={16} className="text-theme-muted" />
                           </div>
                         )}
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                        <div className="font-medium text-theme">
                           {product.name}
                         </div>
                         {product.category && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-theme-muted">
                             {product.category.name}
                           </div>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{product.code}</td>
+                  <td className="px-4 py-3 text-sm text-theme-muted">{product.code}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded ${
@@ -412,14 +412,14 @@ export default function CatalogPage() {
                     {product.listPrice ? (
                       <span className="font-medium">R$ {product.listPrice.toFixed(2)}</span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-theme-muted">-</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     {product.isPublished ? (
                       <span className="text-green-600 text-sm">Sim</span>
                     ) : (
-                      <span className="text-gray-400 text-sm">Não</span>
+                      <span className="text-theme-muted text-sm">Não</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -473,7 +473,7 @@ export default function CatalogPage() {
           >
             Anterior
           </Button>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-theme-muted">
             Página {page} de {totalPages}
           </span>
           <Button

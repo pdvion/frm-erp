@@ -131,22 +131,22 @@ export default function CategoriesPage() {
     return (
       <div key={category.id}>
         <div
-          className={`flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-750 border-b border-gray-100 dark:border-gray-700 ${
-            level > 0 ? "bg-gray-50/50 dark:bg-gray-800/50" : ""
+          className={`flex items-center justify-between p-3 hover:bg-theme-hover border-b border-theme ${
+            level > 0 ? "bg-theme-tertiary/50" : ""
           }`}
           style={{ paddingLeft: `${12 + level * 24}px` }}
         >
           <div className="flex items-center gap-3">
-            <FolderTree size={18} className="text-gray-400" />
+            <FolderTree size={18} className="text-theme-muted" />
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="font-medium text-theme">
                 {category.name}
               </div>
-              <div className="text-xs text-gray-500">/{category.slug}</div>
+              <div className="text-xs text-theme-muted">/{category.slug}</div>
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-400 mr-2">
+            <span className="text-xs text-theme-muted mr-2">
               {category._count?.products ?? 0} produtos
             </span>
             <Button
@@ -203,8 +203,8 @@ export default function CategoriesPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h3 className="font-medium text-theme mb-4">
             {editingId ? "Editar Categoria" : "Nova Categoria"}
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -216,7 +216,7 @@ export default function CategoriesPage() {
                 required
               />
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Slug
                 </label>
                 <div className="flex gap-2">
@@ -240,7 +240,7 @@ export default function CategoriesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Categoria Pai
               </label>
               <Select
@@ -260,7 +260,7 @@ export default function CategoriesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Descrição
               </label>
               <Textarea
@@ -299,18 +299,18 @@ export default function CategoriesPage() {
       )}
 
       {/* Categories List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 size={32} className="animate-spin text-blue-600" />
           </div>
         ) : categories?.length === 0 ? (
           <div className="text-center py-12">
-            <FolderTree size={48} className="mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+            <FolderTree size={48} className="mx-auto mb-4 text-theme-muted" />
+            <h3 className="text-lg font-medium text-theme mb-2">
               Nenhuma categoria
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-theme-muted mb-4">
               Crie categorias para organizar seus produtos
             </p>
             {!showForm && (
