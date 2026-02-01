@@ -3,6 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { LinkButton } from "@/components/ui/LinkButton";
 import {
   Plus,
   Search,
@@ -78,13 +82,12 @@ export default function SupplierReturnsPage() {
           icon={<RotateCcw className="h-6 w-6" />}
           module="inventory"
           actions={
-            <Link
+            <LinkButton
               href="/supplier-returns/new"
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              leftIcon={<Plus className="h-4 w-4" />}
             >
-              <Plus className="h-4 w-4" />
               Nova Devolução
-            </Link>
+            </LinkButton>
           }
         />
 
@@ -92,46 +95,46 @@ export default function SupplierReturnsPage() {
         <div className="bg-theme-card border-theme rounded-xl border p-4">
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-              <input
-                type="text"
+              <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 z-10" />
+              <Input
                 placeholder="Buscar por fornecedor..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="border-theme bg-theme-card text-theme w-full rounded-lg border py-2 pr-4 pl-10 focus:ring-2 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="text-theme-muted h-4 w-4" />
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value as SupplierReturnStatus | "");
+                onChange={(value) => {
+                  setStatusFilter(value as SupplierReturnStatus | "");
                   setPage(1);
                 }}
-                className="border-theme bg-theme-card text-theme rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos os status</option>
-                {Object.entries(statusConfig).map(([value, { label }]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+                placeholder="Todos os status"
+                options={[
+                  { value: "", label: "Todos os status" },
+                  ...Object.entries(statusConfig).map(([value, { label }]) => ({
+                    value,
+                    label,
+                  })),
+                ]}
+              />
             </div>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => {
                 setSearch("");
                 setStatusFilter("");
                 setPage(1);
               }}
-              className="text-theme-muted hover:text-theme border-theme rounded-lg border px-3 py-2"
             >
               <RotateCcw className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -226,22 +229,26 @@ export default function SupplierReturnsPage() {
                           </Link>
                           {item.status === "DRAFT" && (
                             <>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleSubmit(item.id)}
-                                className="text-theme-muted rounded p-1.5 hover:text-green-600"
                                 title="Enviar para aprovação"
                                 disabled={submitMutation.isPending}
+                                className="text-theme-muted hover:text-green-600"
                               >
                                 <Send className="h-4 w-4" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleDelete(item.id)}
-                                className="text-theme-muted rounded p-1.5 hover:text-red-600"
                                 title="Excluir"
                                 disabled={deleteMutation.isPending}
+                                className="text-theme-muted hover:text-red-600"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </button>
+                              </Button>
                             </>
                           )}
                           {item.returnInvoiceNumber && (
@@ -270,23 +277,25 @@ export default function SupplierReturnsPage() {
                 registros
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="border-theme rounded-lg border p-2 disabled:opacity-50"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                </button>
+                </Button>
                 <span className="text-theme text-sm">
                   Página {page} de {data.pagination.totalPages}
                 </span>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
                   disabled={page === data.pagination.totalPages}
-                  className="border-theme rounded-lg border p-2 disabled:opacity-50"
                 >
                   <ChevronRight className="h-4 w-4" />
-                </button>
+                </Button>
               </div>
             </div>
           )}

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   ClipboardList,
   Save,
@@ -156,13 +157,12 @@ export default function NewTaskPage() {
                 >
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Detalhes adicionais..."
                   rows={4}
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div>
@@ -172,20 +172,16 @@ export default function NewTaskPage() {
                 >
                   Prioridade
                 </label>
-                <select
-                  id="priority"
+                <Select
                   value={priority}
-                  onChange={(e) =>
-                    setPriority(e.target.value as "URGENT" | "HIGH" | "NORMAL" | "LOW")
+                  onChange={(value) =>
+                    setPriority(value as "URGENT" | "HIGH" | "NORMAL" | "LOW")
                   }
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                >
-                  {priorityOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                  options={priorityOptions.map((opt) => ({
+                    value: opt.value,
+                    label: opt.label,
+                  }))}
+                />
               </div>
             </div>
           </div>
@@ -282,18 +278,14 @@ export default function NewTaskPage() {
                 >
                   Tipo de Entidade
                 </label>
-                <select
-                  id="entityType"
+                <Select
                   value={entityType}
-                  onChange={(e) => setEntityType(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-purple-500"
-                >
-                  {entityTypeOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setEntityType(value)}
+                  options={entityTypeOptions.map((opt) => ({
+                    value: opt.value,
+                    label: opt.label,
+                  }))}
+                />
               </div>
               {entityType && (
                 <Input
@@ -309,12 +301,12 @@ export default function NewTaskPage() {
 
           {/* Ações */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/tasks"
-              className="border-theme-input text-theme-secondary hover:bg-theme-hover rounded-lg border px-6 py-2"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/tasks")}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               type="submit"
               isLoading={createMutation.isPending}
