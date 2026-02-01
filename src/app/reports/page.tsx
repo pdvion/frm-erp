@@ -16,6 +16,8 @@ import {
   Loader2,
   BarChart3,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const iconMap: Record<string, React.ReactNode> = {
   Package: <Package className="w-6 h-6" />,
@@ -61,38 +63,29 @@ export default function ReportsPage() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar relatórios..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
+              className="pl-10"
             />
           </div>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant={!selectedCategory ? "primary" : "outline"}
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                !selectedCategory
-                  ? "bg-blue-600 text-white"
-                  : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
-              }`}
             >
               Todos
-            </button>
+            </Button>
             {categories.map((category) => (
-              <button
+              <Button
                 key={category}
+                variant={selectedCategory === category ? "primary" : "outline"}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedCategory === category
-                    ? "bg-blue-600 text-white"
-                    : "bg-theme-card text-theme-secondary border border-theme-input hover:bg-theme-hover"
-                }`}
               >
                 {category}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

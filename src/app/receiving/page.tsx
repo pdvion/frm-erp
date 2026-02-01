@@ -22,6 +22,9 @@ import {
   AlertTriangle,
   TrendingUp,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -51,13 +54,12 @@ export default function ReceivingPage() {
         icon={<Package className="w-6 h-6 text-blue-600" />}
         module="RECEIVING"
       >
-        <Link
+        <LinkButton
           href="/receiving/new"
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          leftIcon={<Plus className="w-4 h-4" />}
         >
-          <Plus className="w-4 h-4" />
           Nova Entrada
-        </Link>
+        </LinkButton>
       </PageHeader>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -99,18 +101,18 @@ export default function ReceivingPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-4">
             <Filter className="w-4 h-4 text-theme-muted" />
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="border border-theme-input rounded-lg px-3 py-2"
-            >
-              <option value="ALL">Todos os status</option>
-              <option value="PENDING">Pendentes</option>
-              <option value="IN_PROGRESS">Em Conferência</option>
-              <option value="COMPLETED">Concluídos</option>
-              <option value="PARTIAL">Parciais</option>
-              <option value="REJECTED">Rejeitados</option>
-            </select>
+              onChange={(value) => { setStatusFilter(value); setPage(1); }}
+              options={[
+                { value: "ALL", label: "Todos os status" },
+                { value: "PENDING", label: "Pendentes" },
+                { value: "IN_PROGRESS", label: "Em Conferência" },
+                { value: "COMPLETED", label: "Concluídos" },
+                { value: "PARTIAL", label: "Parciais" },
+                { value: "REJECTED", label: "Rejeitados" },
+              ]}
+            />
           </div>
         </div>
 
@@ -196,12 +198,22 @@ export default function ReceivingPage() {
                 <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
                   <div className="text-sm text-theme-muted">Página {page} de {data.pages}</div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page - 1)}
+                      disabled={page === 1}
+                    >
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(page + 1)}
+                      disabled={page === data.pages}
+                    >
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
