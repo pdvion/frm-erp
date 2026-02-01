@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -13,6 +12,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 export default function NewReceivablePage() {
   const router = useRouter();
@@ -166,16 +167,16 @@ export default function NewReceivablePage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo de Documento
                 </label>
-                <select
+                <Select
                   value={documentType}
-                  onChange={(e) => setDocumentType(e.target.value as typeof documentType)}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                >
-                  <option value="INVOICE">Nota Fiscal</option>
-                  <option value="SERVICE">Serviço</option>
-                  <option value="CONTRACT">Contrato</option>
-                  <option value="OTHER">Outros</option>
-                </select>
+                  onChange={(value) => setDocumentType(value as typeof documentType)}
+                  options={[
+                    { value: "INVOICE", label: "Nota Fiscal" },
+                    { value: "SERVICE", label: "Serviço" },
+                    { value: "CONTRACT", label: "Contrato" },
+                    { value: "OTHER", label: "Outros" },
+                  ]}
+                />
               </div>
 
               <Input
@@ -267,23 +268,22 @@ export default function NewReceivablePage() {
           {/* Observações */}
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <h2 className="text-lg font-medium text-theme mb-4">Observações</h2>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Observações adicionais..."
-              className="w-full border border-theme-input rounded-lg px-3 py-2"
             />
           </div>
 
           {/* Actions */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/receivables"
-              className="px-6 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/receivables")}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               type="submit"
               disabled={!customerId || !description || !originalValue || !dueDate}
