@@ -18,7 +18,7 @@ export interface ProductAttachmentManagerProps {
   productId: string;
   attachments: ProductAttachment[];
   onUpload: (file: File, type: string) => Promise<void>;
-  onDelete: (attachmentId: string) => Promise<void>;
+  onDelete: (attachmentId: string) => Promise<unknown>;
   isUploading?: boolean;
 }
 

@@ -18,9 +18,9 @@ export interface ProductImageUploadProps {
   productId: string;
   images: ProductImage[];
   onUpload: (file: File) => Promise<void>;
-  onDelete: (imageId: string) => Promise<void>;
-  onReorder: (imageIds: string[]) => Promise<void>;
-  onSetPrimary: (imageId: string) => Promise<void>;
+  onDelete: (imageId: string) => Promise<unknown>;
+  onReorder: (imageIds: string[]) => Promise<unknown>;
+  onSetPrimary: (imageId: string) => Promise<unknown>;
   isUploading?: boolean;
   maxImages?: number;
   acceptedFormats?: string[];

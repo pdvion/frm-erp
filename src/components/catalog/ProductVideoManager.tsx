@@ -17,8 +17,8 @@ export interface ProductVideo {
 export interface ProductVideoManagerProps {
   productId: string;
   videos: ProductVideo[];
-  onAdd: (video: { url: string; title: string; type?: string; description?: string }) => Promise<void>;
-  onDelete: (videoId: string) => Promise<void>;
+  onAdd: (video: { url: string; title: string; type?: string; description?: string }) => Promise<unknown>;
+  onDelete: (videoId: string) => Promise<unknown>;
   isAdding?: boolean;
 }
 
