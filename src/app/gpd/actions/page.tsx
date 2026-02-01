@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -201,15 +202,11 @@ export default function GPDActionsPage() {
           <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-theme mb-4">Nova Ação</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Título</label>
-                <input
-                  type="text"
-                  value={newAction.title}
-                  onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Título"
+                value={newAction.title}
+                onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
+              />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
@@ -237,15 +234,12 @@ export default function GPDActionsPage() {
                   </select>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Prazo</label>
-                <input
-                  type="date"
-                  value={newAction.dueDate}
-                  onChange={(e) => setNewAction({ ...newAction, dueDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Prazo"
+                type="date"
+                value={newAction.dueDate}
+                onChange={(e) => setNewAction({ ...newAction, dueDate: e.target.value })}
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
                 <textarea

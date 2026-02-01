@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Package, Plus, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface CargoTypeFormData {
@@ -174,26 +175,18 @@ export default function CargoTypesPage() {
               {editingId ? "Editar Tipo de Carga" : "Novo Tipo de Carga"}
             </h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Código *</label>
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                  placeholder="Ex: FCL"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ex: Full Container Load"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Código *"
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                placeholder="Ex: FCL"
+              />
+              <Input
+                label="Nome *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Ex: Full Container Load"
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
                 <textarea

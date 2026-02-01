@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { BarChart2, Plus, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -155,25 +156,19 @@ export default function GPDIndicatorsPage() {
           <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-theme mb-4">Registrar Valor</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Período</label>
-                <input
-                  type="date"
-                  value={newValue.period}
-                  onChange={(e) => setNewValue({ ...newValue, period: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Valor</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newValue.value}
-                  onChange={(e) => setNewValue({ ...newValue, value: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Período"
+                type="date"
+                value={newValue.period}
+                onChange={(e) => setNewValue({ ...newValue, period: e.target.value })}
+              />
+              <Input
+                label="Valor"
+                type="number"
+                step="0.01"
+                value={newValue.value}
+                onChange={(e) => setNewValue({ ...newValue, value: Number(e.target.value) })}
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Observações</label>
                 <textarea
