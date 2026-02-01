@@ -22,6 +22,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 
 function MaterialsContent() {
@@ -70,35 +72,35 @@ function MaterialsContent() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por descrição ou código..."
               value={search}
               onChange={(e) => {
                 setFilter("search", e.target.value);
                 setFilter("page", 1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={statusFilter ?? ""}
-              onChange={(e) => {
-                setFilter("status", (e.target.value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined);
+              onChange={(value) => {
+                setFilter("status", (value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined);
                 setFilter("page", 1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todos os status</option>
-              <option value="ACTIVE">Ativos</option>
-              <option value="INACTIVE">Inativos</option>
-              <option value="BLOCKED">Bloqueados</option>
-            </select>
+              placeholder="Todos os status"
+              options={[
+                { value: "", label: "Todos os status" },
+                { value: "ACTIVE", label: "Ativos" },
+                { value: "INACTIVE", label: "Inativos" },
+                { value: "BLOCKED", label: "Bloqueados" },
+              ]}
+            />
             {hasActiveFilters && (
               <button
                 onClick={resetFilters}
