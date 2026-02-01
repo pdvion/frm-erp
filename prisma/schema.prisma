@@ -198,6 +198,7 @@ model Company {
   timeClockAdjustments TimeClockAdjustment[]
   productCategories   ProductCategory[]
   products            Product[]
+  aiUsageLogs         AiUsageLog[]
 
   @@map("companies")
 }
@@ -6401,4 +6402,40 @@ model ProductAttachment {
   @@index([productId])
   @@index([type])
   @@map("product_attachments")
+}
+
+// =============================================================================
+// AI USAGE LOGS
+// =============================================================================
+
+model AiUsageLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  provider      String
+  model         String
+  taskType      String   @map("task_type")
+  
+  inputTokens   Int      @default(0) @map("input_tokens")
+  outputTokens  Int      @default(0) @map("output_tokens")
+  totalTokens   Int      @default(0) @map("total_tokens")
+  latencyMs     Int      @default(0) @map("latency_ms")
+  
+  estimatedCost Float    @default(0) @map("estimated_cost")
+  
+  success       Boolean  @default(true)
+  errorMessage  String?  @map("error_message")
+  wasFallback   Boolean  @default(false) @map("was_fallback")
+  fallbackFrom  String?  @map("fallback_from")
+  
+  userId        String?  @map("user_id") @db.Uuid
+  requestId     String?  @map("request_id")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  @@index([companyId, createdAt])
+  @@index([provider, model])
+  @@index([taskType])
+  @@map("ai_usage_logs")
 }
