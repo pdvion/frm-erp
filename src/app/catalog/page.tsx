@@ -20,6 +20,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 type ViewMode = "grid" | "list";
 type ProductStatus = "draft" | "active" | "inactive" | "discontinued";
@@ -114,17 +116,16 @@ export default function CatalogPage() {
           <div className="relative flex-1 sm:max-w-md">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
             />
-            <input
-              type="text"
+            <Input
               placeholder="Buscar produtos..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
+              className="pl-10"
             />
           </div>
           <Button
@@ -168,40 +169,41 @@ export default function CatalogPage() {
             <label className="block text-xs font-medium text-gray-500 mb-1">
               Status
             </label>
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value as ProductStatus | "");
+              onChange={(value) => {
+                setStatusFilter(value as ProductStatus | "");
                 setPage(1);
               }}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700"
-            >
-              <option value="">Todos</option>
-              <option value="draft">Rascunho</option>
-              <option value="active">Ativo</option>
-              <option value="inactive">Inativo</option>
-              <option value="discontinued">Descontinuado</option>
-            </select>
+              placeholder="Todos"
+              options={[
+                { value: "", label: "Todos" },
+                { value: "draft", label: "Rascunho" },
+                { value: "active", label: "Ativo" },
+                { value: "inactive", label: "Inativo" },
+                { value: "discontinued", label: "Descontinuado" },
+              ]}
+            />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
               Categoria
             </label>
-            <select
+            <Select
               value={categoryFilter}
-              onChange={(e) => {
-                setCategoryFilter(e.target.value);
+              onChange={(value) => {
+                setCategoryFilter(value);
                 setPage(1);
               }}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700"
-            >
-              <option value="">Todas</option>
-              {categories?.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              placeholder="Todas"
+              options={[
+                { value: "", label: "Todas" },
+                ...(categories?.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                })) || []),
+              ]}
+            />
           </div>
           <Button
             variant="ghost"
