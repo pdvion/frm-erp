@@ -249,7 +249,9 @@ export default function RequisitionDetailPage() {
                                       max={Math.min(remaining, available)}
                                       min={0}
                                     />
-                                    <button
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
                                       onClick={() => {
                                         const qty = parseFloat(separateQty) || Math.min(remaining, available);
                                         if (qty > 0) {
@@ -260,32 +262,31 @@ export default function RequisitionDetailPage() {
                                         }
                                       }}
                                       disabled={separateItemMutation.isPending}
-                                      className="p-1 text-green-600 hover:text-green-800"
+                                      isLoading={separateItemMutation.isPending}
+                                      className="text-green-600"
                                     >
-                                      {separateItemMutation.isPending ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                      ) : (
-                                        <Check className="w-4 h-4" />
-                                      )}
-                                    </button>
-                                    <button
+                                      <Check className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
                                       onClick={() => {
                                         setSeparatingItem(null);
                                         setSeparateQty("");
                                       }}
-                                      className="p-1 text-theme-muted hover:text-theme-secondary"
                                     >
                                       <XCircle className="w-4 h-4" />
-                                    </button>
+                                    </Button>
                                   </div>
                                 ) : (
-                                  <button
+                                  <Button
+                                    variant="secondary"
+                                    size="sm"
                                     onClick={() => setSeparatingItem(item.id)}
                                     disabled={available <= 0}
-                                    className="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     Separar
-                                  </button>
+                                  </Button>
                                 )
                               )}
                               {isComplete && (
