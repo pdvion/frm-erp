@@ -34,7 +34,7 @@ export function PageTimeline({ events }: PageTimelineProps) {
             {event.icon}
           </div>
           <div className="min-w-0 flex-1">
-            <div className={`font-medium ${event.titleColor || "text-white"}`}>
+            <div className={`font-medium ${event.titleColor || "text-theme"}`}>
               {event.title}
             </div>
             {event.timestamp && (

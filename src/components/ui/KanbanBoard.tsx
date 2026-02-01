@@ -2,6 +2,7 @@
 
 import { useState, DragEvent } from "react";
 import { LayoutGrid, List, GripVertical } from "lucide-react";
+import { getContrastTextClass } from "@/lib/color-utils";
 
 export interface KanbanColumn<T> {
   id: string;
@@ -97,7 +98,7 @@ export function KanbanBoard<T extends { id: string }>({
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-theme">{column.title}</h3>
               <span
-                className="px-2 py-0.5 text-xs font-medium rounded-full text-white"
+                className={`px-2 py-0.5 text-xs font-medium rounded-full ${getContrastTextClass(column.color)}`}
                 style={{ backgroundColor: column.color }}
               >
                 {column.items.length}
@@ -206,7 +207,7 @@ export function KanbanCard({
         </div>
         {badge && (
           <span
-            className="px-2 py-0.5 text-xs font-medium rounded-full text-white flex-shrink-0"
+            className={`px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0 ${getContrastTextClass(badge.color)}`}
             style={{ backgroundColor: badge.color }}
           >
             {badge.text}

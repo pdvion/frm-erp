@@ -45,7 +45,7 @@ export function PageHeader({
           {backHref && (
             <Link
               href={backHref}
-              className="flex items-center gap-1 text-theme-muted hover:text-white dark:text-theme-muted dark:hover:text-white light:text-theme-muted light:hover:text-theme-secondary transition-colors flex-shrink-0"
+              className="flex items-center gap-1 text-theme-muted hover:text-theme dark:hover:text-white transition-colors flex-shrink-0"
               title={backLabel}
             >
               <ChevronLeft className="w-5 h-5" />
@@ -61,7 +61,7 @@ export function PageHeader({
         
           <div className="min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-bold text-white dark:text-white light:text-theme truncate">
+              <h1 className="text-xl sm:text-2xl font-bold text-theme dark:text-white truncate">
                 {title}
               </h1>
               {badge && (
@@ -81,7 +81,7 @@ export function PageHeader({
             <>
               <Link
                 href="/docs"
-                className="p-2 text-theme-muted hover:text-white hover:bg-theme-card dark:text-theme-muted dark:hover:text-white dark:hover:bg-theme-card light:text-theme-muted light:hover:text-theme-secondary light:hover:bg-theme-tertiary rounded-full transition-colors"
+                className="p-2 text-theme-muted hover:text-theme hover:bg-theme-card dark:hover:text-white rounded-full transition-colors"
                 title="Documentação"
               >
                 <BookOpen className="w-5 h-5" />
