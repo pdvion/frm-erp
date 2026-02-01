@@ -15,6 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 interface OrderItem {
   materialId: string;
@@ -413,53 +414,24 @@ export default function NewPurchaseOrderPage() {
                 Condições
               </h2>
               <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="delivery-date"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Previsão de Entrega
-                  </label>
-                  <input
-                    id="delivery-date"
-                    type="date"
-                    value={expectedDeliveryDate}
-                    onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="payment-terms"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Condição de Pagamento
-                  </label>
-                  <input
-                    id="payment-terms"
-                    type="text"
-                    value={paymentTerms}
-                    onChange={(e) => setPaymentTerms(e.target.value)}
-                    placeholder="Ex: 30/60/90 dias"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="delivery-terms"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Condição de Entrega
-                  </label>
-                  <input
-                    id="delivery-terms"
-                    type="text"
-                    value={deliveryTerms}
-                    onChange={(e) => setDeliveryTerms(e.target.value)}
-                    placeholder="Ex: CIF, FOB"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
+                <Input
+                  label="Previsão de Entrega"
+                  type="date"
+                  value={expectedDeliveryDate}
+                  onChange={(e) => setExpectedDeliveryDate(e.target.value)}
+                />
+                <Input
+                  label="Condição de Pagamento"
+                  value={paymentTerms}
+                  onChange={(e) => setPaymentTerms(e.target.value)}
+                  placeholder="Ex: 30/60/90 dias"
+                />
+                <Input
+                  label="Condição de Entrega"
+                  value={deliveryTerms}
+                  onChange={(e) => setDeliveryTerms(e.target.value)}
+                  placeholder="Ex: CIF, FOB"
+                />
                 <div>
                   <label
                     htmlFor="notes"
@@ -504,108 +476,51 @@ export default function NewPurchaseOrderPage() {
                   </select>
                 </div>
                 {freightType === "FOB" && (
-                  <div>
-                    <label
-                      htmlFor="fob-freight-value"
-                      className="block text-sm font-medium text-theme-secondary mb-1"
-                    >
-                      Valor do Frete FOB
-                    </label>
-                    <input
-                      id="fob-freight-value"
-                      type="number"
-                      value={fobFreightValue || ""}
-                      onChange={(e) => setFobFreightValue(parseFloat(e.target.value) || 0)}
-                      step="0.01"
-                      min="0"
-                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
+                  <Input
+                    label="Valor do Frete FOB"
+                    type="number"
+                    value={fobFreightValue || ""}
+                    onChange={(e) => setFobFreightValue(parseFloat(e.target.value) || 0)}
+                    step="0.01"
+                    min="0"
+                  />
                 )}
-                <div>
-                  <label
-                    htmlFor="carrier"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Transportadora
-                  </label>
-                  <input
-                    id="carrier"
-                    type="text"
-                    value={carrier}
-                    onChange={(e) => setCarrier(e.target.value)}
-                    placeholder="Nome da transportadora"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="delivery-address"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Endereço de Entrega
-                  </label>
-                  <input
-                    id="delivery-address"
-                    type="text"
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    placeholder="Endereço completo"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="delivery-phone"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Telefone de Entrega
-                  </label>
-                  <input
-                    id="delivery-phone"
-                    type="text"
-                    value={deliveryPhone}
-                    onChange={(e) => setDeliveryPhone(e.target.value)}
-                    placeholder="(00) 00000-0000"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
+                <Input
+                  label="Transportadora"
+                  value={carrier}
+                  onChange={(e) => setCarrier(e.target.value)}
+                  placeholder="Nome da transportadora"
+                />
+                <Input
+                  label="Endereço de Entrega"
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  placeholder="Endereço completo"
+                />
+                <Input
+                  label="Telefone de Entrega"
+                  value={deliveryPhone}
+                  onChange={(e) => setDeliveryPhone(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                />
                 {freightType === "PICKUP" && (
                   <>
-                    <div>
-                      <label
-                        htmlFor="pickup-km"
-                        className="block text-sm font-medium text-theme-secondary mb-1"
-                      >
-                        Km para Retirada
-                      </label>
-                      <input
-                        id="pickup-km"
-                        type="number"
-                        value={pickupKm ?? ""}
-                        onChange={(e) => setPickupKm(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        step="0.1"
-                        min="0"
-                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="pickup-value"
-                        className="block text-sm font-medium text-theme-secondary mb-1"
-                      >
-                        Valor da Retirada
-                      </label>
-                      <input
-                        id="pickup-value"
-                        type="number"
-                        value={pickupValue ?? ""}
-                        onChange={(e) => setPickupValue(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                      />
-                    </div>
+                    <Input
+                      label="Km para Retirada"
+                      type="number"
+                      value={pickupKm ?? ""}
+                      onChange={(e) => setPickupKm(e.target.value ? parseFloat(e.target.value) : undefined)}
+                      step="0.1"
+                      min="0"
+                    />
+                    <Input
+                      label="Valor da Retirada"
+                      type="number"
+                      value={pickupValue ?? ""}
+                      onChange={(e) => setPickupValue(e.target.value ? parseFloat(e.target.value) : undefined)}
+                      step="0.01"
+                      min="0"
+                    />
                   </>
                 )}
                 <div>
@@ -632,22 +547,12 @@ export default function NewPurchaseOrderPage() {
                     <option value="FIXED_ASSET">Ativo Imobilizado</option>
                   </select>
                 </div>
-                <div>
-                  <label
-                    htmlFor="application"
-                    className="block text-sm font-medium text-theme-secondary mb-1"
-                  >
-                    Aplicação
-                  </label>
-                  <input
-                    id="application"
-                    type="text"
-                    value={application}
-                    onChange={(e) => setApplication(e.target.value)}
-                    placeholder="Aplicação do material"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
+                <Input
+                  label="Aplicação"
+                  value={application}
+                  onChange={(e) => setApplication(e.target.value)}
+                  placeholder="Aplicação do material"
+                />
               </div>
             </div>
 
