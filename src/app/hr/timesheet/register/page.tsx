@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Clock,
@@ -25,19 +26,57 @@ const punchTypes = [
 
 type PunchType = typeof punchTypes[number]["value"];
 
-// Registros mockados do dia
-const todayPunches = [
-  { time: "08:02", type: "ENTRY" as PunchType, location: "Escritório Principal" },
-  { time: "12:05", type: "BREAK_START" as PunchType, location: "Escritório Principal" },
-  { time: "13:00", type: "BREAK_END" as PunchType, location: "Escritório Principal" },
-];
+// Mapeamento de tipos do frontend para backend
+const typeMapping: Record<PunchType, "CLOCK_IN" | "CLOCK_OUT" | "BREAK_START" | "BREAK_END"> = {
+  ENTRY: "CLOCK_IN",
+  EXIT: "CLOCK_OUT",
+  BREAK_START: "BREAK_START",
+  BREAK_END: "BREAK_END",
+};
+
+const reverseTypeMapping: Record<string, PunchType> = {
+  CLOCK_IN: "ENTRY",
+  CLOCK_OUT: "EXIT",
+  BREAK_START: "BREAK_START",
+  BREAK_END: "BREAK_END",
+};
 
 export default function TimesheetRegisterPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedType, setSelectedType] = useState<PunchType | null>(null);
-  const [isRegistering, setIsRegistering] = useState(false);
   const [registered, setRegistered] = useState(false);
-  const [punches, setPunches] = useState(todayPunches);
+  
+  // Buscar funcionário atual (simplificado - em produção viria do contexto de auth)
+  const { data: employeesData } = trpc.hr.listEmployees.useQuery({ limit: 1 });
+  const currentEmployee = employeesData?.employees?.[0];
+  
+  // Buscar marcações do dia
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { data: entriesData, refetch } = trpc.timeclock.listEntries.useQuery({
+    employeeId: currentEmployee?.id,
+    startDate: today,
+    endDate: new Date(),
+    limit: 10,
+  }, { enabled: !!currentEmployee?.id });
+  
+  // Mutation para registrar ponto
+  const clockInMutation = trpc.timeclock.clockIn.useMutation({
+    onSuccess: () => {
+      setRegistered(true);
+      refetch();
+      setTimeout(() => setRegistered(false), 3000);
+    },
+  });
+  
+  // Mapear entradas do backend para o formato esperado
+  const punches = React.useMemo(() => 
+    entriesData?.entries?.map((e) => ({
+      time: new Date(e.timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+      type: reverseTypeMapping[e.type] || "ENTRY" as PunchType,
+      location: e.location || "Escritório Principal",
+    })) || []
+  , [entriesData?.entries]);
 
   // Atualizar relógio a cada segundo
   useEffect(() => {
@@ -71,25 +110,16 @@ export default function TimesheetRegisterPage() {
   }, [punches]);
 
   const handleRegister = () => {
-    if (!selectedType) return;
+    if (!selectedType || !currentEmployee?.id) return;
     
-    setIsRegistering(true);
-    
-    // Simular registro
-    setTimeout(() => {
-      const newPunch = {
-        time: currentTime.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-        type: selectedType,
-        location: "Escritório Principal",
-      };
-      setPunches([...punches, newPunch]);
-      setIsRegistering(false);
-      setRegistered(true);
-      
-      // Reset após 3 segundos
-      setTimeout(() => setRegistered(false), 3000);
-    }, 1500);
+    clockInMutation.mutate({
+      employeeId: currentEmployee.id,
+      type: typeMapping[selectedType],
+      location: "Escritório Principal",
+    });
   };
+  
+  const isRegistering = clockInMutation.isPending;
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
