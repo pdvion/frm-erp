@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Shield,
@@ -218,12 +219,14 @@ export default function SefazConfigPage() {
             {notification.type === "error" && <XCircle className="w-5 h-5 flex-shrink-0" />}
             {notification.type === "info" && <AlertTriangle className="w-5 h-5 flex-shrink-0" />}
             <span className="text-sm flex-1">{notification.message}</span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => removeNotification(notification.id)}
-              className="text-theme-muted hover:text-theme-secondary"
+              className="p-1"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         ))}
       </div>
@@ -389,19 +392,14 @@ export default function SefazConfigPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Senha do Certificado *
-              </label>
-              <input
-                type="password"
-                value={certificatePassword}
-                onChange={(e) => setCertificatePassword(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="new-password"
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
-              />
-            </div>
+            <Input
+              label="Senha do Certificado *"
+              type="password"
+              value={certificatePassword}
+              onChange={(e) => setCertificatePassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="new-password"
+            />
           </div>
 
           <div className="flex justify-end">
@@ -513,16 +511,13 @@ export default function SefazConfigPage() {
                   </label>
 
                   {notifyOnNewNfe && (
-                    <div className="ml-8">
-                      <label className="block text-sm font-medium text-theme-secondary mb-1">
-                        E-mail para notificações (opcional)
-                      </label>
-                      <input
+                    <div className="ml-8 max-w-md">
+                      <Input
+                        label="E-mail para notificações (opcional)"
                         type="email"
                         value={notifyEmail}
                         onChange={(e) => setNotifyEmail(e.target.value)}
                         placeholder="email@empresa.com.br"
-                        className="w-full max-w-md px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   )}
@@ -581,14 +576,14 @@ export default function SefazConfigPage() {
               <h3 className="text-sm font-medium text-theme mb-3">
                 Consultar por Chave
               </h3>
-              <input
-                type="text"
-                value={chaveConsulta}
-                onChange={(e) => setChaveConsulta(e.target.value.replace(/\D/g, ""))}
-                placeholder="Chave de acesso (44 dígitos)"
-                maxLength={44}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 mb-3"
-              />
+              <div className="mb-3">
+                <Input
+                  value={chaveConsulta}
+                  onChange={(e) => setChaveConsulta(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Chave de acesso (44 dígitos)"
+                  maxLength={44}
+                />
+              </div>
               <Button
                 onClick={() => consultarChaveMutation.mutate({ chaveAcesso: chaveConsulta })}
                 disabled={chaveConsulta.length !== 44}
