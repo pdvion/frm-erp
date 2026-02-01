@@ -20,6 +20,10 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 type PixStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
 
@@ -73,20 +77,19 @@ export default function PixPage() {
         icon={<QrCode className="w-6 h-6 text-purple-600" />}
         actions={
           <div className="flex items-center gap-2">
-            <Link
+            <LinkButton
               href="/payables/pix/schedules"
-              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+              variant="outline"
+              leftIcon={<Clock className="w-5 h-5" />}
             >
-              <Clock className="w-5 h-5" />
-              <span>Agendamentos</span>
-            </Link>
-            <Link
+              Agendamentos
+            </LinkButton>
+            <LinkButton
               href="/payables/pix/new"
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+              leftIcon={<Send className="w-5 h-5" />}
             >
-              <Send className="w-5 h-5" />
-              <span>Novo PIX</span>
-            </Link>
+              Novo PIX
+            </LinkButton>
           </div>
         }
       />
@@ -134,49 +137,48 @@ export default function PixPage() {
         <div className="bg-theme-card rounded-xl border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+              <Input
                 placeholder="Buscar por chave PIX, nome ou E2E ID..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-primary)] focus:border-transparent"
+                className="pl-10"
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-theme-muted" />
-              <select
+              <Select
                 value={status}
-                onChange={(e) => {
-                  setStatus(e.target.value);
+                onChange={(value) => {
+                  setStatus(value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-primary)] focus:border-transparent"
-                aria-label="Filtrar por status"
-              >
-                <option value="">Todos os status</option>
-                <option value="PENDING">Pendentes</option>
-                <option value="PROCESSING">Processando</option>
-                <option value="COMPLETED">Concluídos</option>
-                <option value="FAILED">Falhou</option>
-                <option value="CANCELLED">Cancelados</option>
-              </select>
-              <select
+                placeholder="Todos os status"
+                options={[
+                  { value: "", label: "Todos os status" },
+                  { value: "PENDING", label: "Pendentes" },
+                  { value: "PROCESSING", label: "Processando" },
+                  { value: "COMPLETED", label: "Concluídos" },
+                  { value: "FAILED", label: "Falhou" },
+                  { value: "CANCELLED", label: "Cancelados" },
+                ]}
+              />
+              <Select
                 value={type}
-                onChange={(e) => {
-                  setType(e.target.value);
+                onChange={(value) => {
+                  setType(value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-primary)] focus:border-transparent"
-                aria-label="Filtrar por tipo"
-              >
-                <option value="">Todos os tipos</option>
-                <option value="PAYMENT">Pagamento</option>
-                <option value="TRANSFER">Transferência</option>
-              </select>
+                placeholder="Todos os tipos"
+                options={[
+                  { value: "", label: "Todos os tipos" },
+                  { value: "PAYMENT", label: "Pagamento" },
+                  { value: "TRANSFER", label: "Transferência" },
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -271,9 +273,10 @@ export default function PixPage() {
                                   {formatPixKey(tx.pixKey, tx.pixKeyType)}
                                 </div>
                               </div>
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => copyToClipboard(tx.pixKey)}
-                                className="p-1 text-theme-muted hover:text-theme-secondary"
                                 title="Copiar chave"
                               >
                                 {copiedKey === tx.pixKey ? (
@@ -281,7 +284,7 @@ export default function PixPage() {
                                 ) : (
                                   <Copy className="w-4 h-4" />
                                 )}
-                              </button>
+                              </Button>
                             </div>
                           </td>
                           <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-right">
@@ -321,25 +324,25 @@ export default function PixPage() {
                   {pagination.total} registros
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-5 h-5" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Próxima página"
                   >
                     <ChevronRight className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
