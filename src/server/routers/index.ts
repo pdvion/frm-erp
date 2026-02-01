@@ -73,6 +73,7 @@ import { impexRouter } from "./impex";
 import { delphiImportRouter } from "./delphiImport";
 import { nfeQueueRouter } from "./nfeQueue";
 import { nfeBatchImportRouter } from "./nfeBatchImport";
+import { productCatalogRouter } from "./productCatalog";
 
 export const appRouter = createTRPCRouter({
   nfeBatchImport: nfeBatchImportRouter,
@@ -149,6 +150,7 @@ export const appRouter = createTRPCRouter({
   impex: impexRouter,
   delphiImport: delphiImportRouter,
   nfeQueue: nfeQueueRouter,
+  productCatalog: productCatalogRouter,
 });
 
 export type AppRouter = typeof appRouter;

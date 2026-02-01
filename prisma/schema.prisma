@@ -196,6 +196,8 @@ model Company {
   supplierReturns     SupplierReturn[]
   hoursBank           HoursBank[]
   timeClockAdjustments TimeClockAdjustment[]
+  productCategories   ProductCategory[]
+  products            Product[]
 
   @@map("companies")
 }
@@ -518,6 +520,7 @@ model Material {
   productionCostMaterials ProductionCostMaterial[]
   standardCosts           MaterialStandardCost[]
   importProcessItems      ImportProcessItem[]
+  catalogProducts         Product[]              // Produtos do catálogo vinculados
 
   @@map("materials")
 }
@@ -6212,4 +6215,190 @@ model ExchangeLiquidation {
   @@index([contractId])
   @@index([liquidationDate])
   @@map("exchange_liquidations")
+}
+
+// =============================================================================
+// MÓDULO CATÁLOGO DE PRODUTOS - CRM/Vendas/E-commerce B2B
+// =============================================================================
+
+enum ProductStatus {
+  DRAFT        @map("draft")        // Rascunho
+  ACTIVE       @map("active")       // Ativo
+  INACTIVE     @map("inactive")     // Inativo
+  DISCONTINUED @map("discontinued") // Descontinuado
+
+  @@map("product_status")
+}
+
+enum ProductVideoType {
+  TRAINING     @map("training")     // Treinamento
+  DEMO         @map("demo")         // Demonstração
+  TESTIMONIAL  @map("testimonial")  // Depoimento
+  UNBOXING     @map("unboxing")     // Unboxing
+  INSTALLATION @map("installation") // Instalação
+
+  @@map("product_video_type")
+}
+
+enum ProductAttachmentType {
+  DATASHEET   @map("datasheet")   // Ficha técnica
+  MANUAL      @map("manual")      // Manual de uso
+  CERTIFICATE @map("certificate") // Certificado
+  BROCHURE    @map("brochure")    // Catálogo/Folder
+  WARRANTY    @map("warranty")    // Garantia
+
+  @@map("product_attachment_type")
+}
+
+model ProductCategory {
+  id          String            @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String            @unique
+  description String?
+  imageUrl    String?           @map("image_url")
+  
+  // Hierarquia
+  parentId    String?           @map("parent_id") @db.Uuid
+  parent      ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    ProductCategory[] @relation("CategoryHierarchy")
+  
+  // Ordenação e controle
+  order       Int               @default(0)
+  isActive    Boolean           @default(true) @map("is_active")
+  
+  // Multi-tenant
+  companyId   String?           @map("company_id") @db.Uuid
+  company     Company?          @relation(fields: [companyId], references: [id])
+  isShared    Boolean           @default(false) @map("is_shared")
+  
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  
+  products    Product[]
+  
+  @@index([companyId])
+  @@index([parentId])
+  @@index([slug])
+  @@map("product_categories")
+}
+
+model Product {
+  id                String          @id @default(uuid()) @db.Uuid
+  code              String          @unique // SKU
+  
+  // Vínculo com Material (estoque)
+  materialId        String?         @map("material_id") @db.Uuid
+  material          Material?       @relation(fields: [materialId], references: [id])
+  
+  // Dados comerciais
+  name              String          // Nome comercial
+  shortDescription  String?         @map("short_description") // Resumo (255 chars)
+  description       String?         @db.Text // Rich text (HTML)
+  specifications    Json?           // Especificações técnicas
+  
+  // SEO
+  slug              String          @unique
+  metaTitle         String?         @map("meta_title")
+  metaDescription   String?         @map("meta_description")
+  
+  // Preços
+  listPrice         Decimal?        @map("list_price") @db.Decimal(15,2) // Preço de tabela
+  salePrice         Decimal?        @map("sale_price") @db.Decimal(15,2) // Preço promocional
+  
+  // Categorização
+  categoryId        String?         @map("category_id") @db.Uuid
+  category          ProductCategory? @relation(fields: [categoryId], references: [id])
+  tags              String[]        // Tags para busca
+  
+  // Controle
+  status            ProductStatus   @default(DRAFT)
+  isPublished       Boolean         @default(false) @map("is_published")
+  publishedAt       DateTime?       @map("published_at")
+  featuredOrder     Int?            @map("featured_order") // Ordem em destaques
+  
+  // Multi-tenant
+  companyId         String?         @map("company_id") @db.Uuid
+  company           Company?        @relation(fields: [companyId], references: [id])
+  isShared          Boolean         @default(false) @map("is_shared")
+  
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  
+  // Relacionamentos
+  images            ProductImage[]
+  videos            ProductVideo[]
+  attachments       ProductAttachment[]
+  
+  @@index([companyId])
+  @@index([categoryId])
+  @@index([materialId])
+  @@index([slug])
+  @@index([status])
+  @@index([isPublished])
+  @@map("products")
+}
+
+model ProductImage {
+  id           String    @id @default(uuid()) @db.Uuid
+  productId    String    @map("product_id") @db.Uuid
+  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  url          String    // URL no Supabase Storage
+  thumbnailUrl String?   @map("thumbnail_url") // Thumbnail gerado
+  alt          String?   // Texto alternativo
+  caption      String?   // Legenda
+  
+  order        Int       @default(0)
+  isPrimary    Boolean   @default(false) @map("is_primary")
+  
+  width        Int?
+  height       Int?
+  sizeBytes    Int?      @map("size_bytes")
+  
+  createdAt    DateTime  @default(now()) @map("created_at")
+  
+  @@index([productId])
+  @@index([isPrimary])
+  @@map("product_images")
+}
+
+model ProductVideo {
+  id           String           @id @default(uuid()) @db.Uuid
+  productId    String           @map("product_id") @db.Uuid
+  product      Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  url          String           // YouTube, Vimeo ou Supabase
+  thumbnailUrl String?          @map("thumbnail_url")
+  title        String
+  description  String?
+  
+  type         ProductVideoType @default(DEMO)
+  duration     Int?             // Duração em segundos
+  order        Int              @default(0)
+  
+  createdAt    DateTime         @default(now()) @map("created_at")
+  
+  @@index([productId])
+  @@index([type])
+  @@map("product_videos")
+}
+
+model ProductAttachment {
+  id           String                @id @default(uuid()) @db.Uuid
+  productId    String                @map("product_id") @db.Uuid
+  product      Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  url          String
+  fileName     String                @map("file_name")
+  fileType     String                @map("file_type") // PDF, XLSX, etc
+  sizeBytes    Int?                  @map("size_bytes")
+  
+  type         ProductAttachmentType @default(DATASHEET)
+  order        Int                   @default(0)
+  
+  createdAt    DateTime              @default(now()) @map("created_at")
+  
+  @@index([productId])
+  @@index([type])
+  @@map("product_attachments")
 }
