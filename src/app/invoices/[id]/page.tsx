@@ -170,26 +170,25 @@ export default function InvoiceDetailPage() {
                 </Link>
               ) : canApprove && (
                 <div className="flex gap-2 pt-2">
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => findSupplierMutation.mutate({ invoiceId: id, createIfNotFound: false })}
                     disabled={findSupplierMutation.isPending}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50"
+                    isLoading={findSupplierMutation.isPending}
+                    leftIcon={<RefreshCw className="w-3 h-3" />}
                   >
-                    {findSupplierMutation.isPending ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <RefreshCw className="w-3 h-3" />
-                    )}
                     Buscar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="sm"
                     onClick={() => findSupplierMutation.mutate({ invoiceId: id, createIfNotFound: true })}
                     disabled={findSupplierMutation.isPending}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-50"
+                    leftIcon={<UserPlus className="w-3 h-3" />}
+                    className="bg-green-600 hover:bg-green-700"
                   >
-                    <UserPlus className="w-3 h-3" />
                     Criar
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -402,16 +401,18 @@ export default function InvoiceDetailPage() {
                             </span>
                           )}
                           {canApprove && !item.materialId && (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => setLinkingItem({
                                 id: item.id,
                                 name: item.productName,
                                 code: item.productCode,
                               })}
-                              className="mt-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                              className="mt-1 text-xs"
                             >
                               Vincular
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </td>
@@ -436,25 +437,23 @@ export default function InvoiceDetailPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => setShowRejectModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50"
+                  leftIcon={<Ban className="w-4 h-4" />}
+                  className="border-red-300 text-red-700 hover:bg-red-50"
                 >
-                  <Ban className="w-4 h-4" />
                   Rejeitar
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => approveMutation.mutate({ id })}
                   disabled={!allItemsLinked || approveMutation.isPending}
-                  className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  isLoading={approveMutation.isPending}
+                  leftIcon={<FileCheck className="w-4 h-4" />}
+                  className="bg-green-600 hover:bg-green-700"
                 >
-                  {approveMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileCheck className="w-4 h-4" />
-                  )}
                   Aprovar e Dar Entrada
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -477,18 +476,14 @@ export default function InvoiceDetailPage() {
                 <CheckCircle className="w-6 h-6 text-green-600" />
                 <h3 className="font-medium text-green-900">NFe Aprovada</h3>
               </div>
-              <button
+              <Button
                 onClick={() => generatePayablesMutation.mutate({ invoiceId: id })}
                 disabled={generatePayablesMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={generatePayablesMutation.isPending}
+                leftIcon={<DollarSign className="w-4 h-4" />}
               >
-                {generatePayablesMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <DollarSign className="w-4 h-4" />
-                )}
                 Gerar Títulos a Pagar
-              </button>
+              </Button>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -621,22 +616,25 @@ export default function InvoiceDetailPage() {
             )}
 
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowRejectModal(false);
                   setRejectReason("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => rejectMutation.mutate({ id, reason: rejectReason })}
                 disabled={!rejectReason.trim() || rejectMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={rejectMutation.isPending}
+                className="flex-1"
               >
-                {rejectMutation.isPending ? "Rejeitando..." : "Confirmar Rejeição"}
-              </button>
+                Confirmar Rejeição
+              </Button>
             </div>
           </div>
         </div>
