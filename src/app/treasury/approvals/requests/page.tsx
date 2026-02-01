@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { FileText, Clock, CheckCircle, XCircle, Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -196,12 +197,12 @@ export default function ApprovalsRequestsPage() {
                       </Link>
                       {request.status === "PENDING" && (
                         <>
-                          <button className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded" title="Aprovar">
+                          <Button variant="ghost" size="sm" className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30" title="Aprovar">
                             <CheckCircle className="w-4 h-4" />
-                          </button>
-                          <button className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded" title="Rejeitar">
+                          </Button>
+                          <Button variant="ghost" size="sm" className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30" title="Rejeitar">
                             <XCircle className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </>
                       )}
                     </div>
