@@ -92,6 +92,100 @@ export default function DesignSystemPage() {
           </p>
         </section>
 
+        {/* Tipografia */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Tipografia</h2>
+          <p className="text-theme-muted">Classes de tipografia padronizadas para consistência visual.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-4">Headings</h3>
+              <div className="space-y-4">
+                <div className="flex items-baseline gap-4">
+                  <span className="text-heading-1">Heading 1</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-heading-1</code>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <span className="text-heading-2">Heading 2</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-heading-2</code>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <span className="text-heading-3">Heading 3</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-heading-3</code>
+                </div>
+                <div className="flex items-baseline gap-4">
+                  <span className="text-heading-4">Heading 4</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-heading-4</code>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-4">Body Text</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-body-lg">Body Large - Texto maior para destaques e introduções.</p>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-body-lg</code>
+                </div>
+                <div>
+                  <p className="text-body">Body - Texto padrão para parágrafos e conteúdo geral.</p>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-body</code>
+                </div>
+                <div>
+                  <p className="text-body-sm">Body Small - Texto menor para informações secundárias.</p>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-body-sm</code>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-4">Utilitários</h3>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-label">Label Text</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-label</code>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-caption">Caption text para notas e metadados</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-caption</code>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-overline">Overline</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-overline</code>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-code">code snippet</span>
+                  <code className="text-xs bg-theme-tertiary px-2 py-1 rounded text-theme-muted">.text-code</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="typography"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`/* Classes de Tipografia Disponíveis */
+
+/* Headings */
+.text-heading-1  /* 30px, bold, tight */
+.text-heading-2  /* 24px, bold, tight */
+.text-heading-3  /* 20px, semibold */
+.text-heading-4  /* 18px, semibold */
+
+/* Body */
+.text-body-lg    /* 18px, normal */
+.text-body       /* 16px, normal */
+.text-body-sm    /* 14px, normal */
+
+/* Utilitários */
+.text-label      /* 14px, medium */
+.text-caption    /* 12px, muted */
+.text-overline   /* 12px, uppercase */
+.text-code       /* monospace, bg */`}
+          />
+        </section>
+
         {/* Cores */}
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-theme">Cores</h2>
