@@ -15,6 +15,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
@@ -376,17 +378,15 @@ export default function EditSupplierPage() {
 
           <div>
             <label htmlFor="status" className={labelClass}>Status</label>
-            <select
-              id="status"
-              name="status"
+            <Select
               value={formData.status}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="ACTIVE">Ativo</option>
-              <option value="INACTIVE">Inativo</option>
-              <option value="BLOCKED">Bloqueado</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, status: value as typeof formData.status }))}
+              options={[
+                { value: "ACTIVE", label: "Ativo" },
+                { value: "INACTIVE", label: "Inativo" },
+                { value: "BLOCKED", label: "Bloqueado" },
+              ]}
+            />
           </div>
 
           <Input
@@ -474,18 +474,15 @@ export default function EditSupplierPage() {
 
           <div>
             <label htmlFor="state" className={labelClass}>UF</label>
-            <select
-              id="state"
-              name="state"
+            <Select
               value={formData.state}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              {STATES.map(uf => (
-                <option key={uf} value={uf}>{uf}</option>
-              ))}
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, state: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                ...STATES.map(uf => ({ value: uf, label: uf })),
+              ]}
+            />
           </div>
         </div>
 
@@ -631,19 +628,18 @@ export default function EditSupplierPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div>
             <label htmlFor="certificationType" className={labelClass}>Tipo de Certificação</label>
-            <select
-              id="certificationType"
-              name="certificationType"
+            <Select
               value={formData.certificationType}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              <option value="UNDEFINED">Indefinido</option>
-              <option value="ISO_RBS">ISO/RBS</option>
-              <option value="INITIAL_EVAL">Avaliação Inicial</option>
-              <option value="STRATEGIC">Estratégico</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, certificationType: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                { value: "UNDEFINED", label: "Indefinido" },
+                { value: "ISO_RBS", label: "ISO/RBS" },
+                { value: "INITIAL_EVAL", label: "Avaliação Inicial" },
+                { value: "STRATEGIC", label: "Estratégico" },
+              ]}
+            />
           </div>
           <div>
             <label htmlFor="iqfPercent" className={labelClass}>IQF (%)</label>
@@ -661,31 +657,28 @@ export default function EditSupplierPage() {
           </div>
           <div>
             <label htmlFor="iqfStatus" className={labelClass}>Status IQF</label>
-            <select
-              id="iqfStatus"
-              name="iqfStatus"
+            <Select
               value={formData.iqfStatus}
-              onChange={handleChange}
-              className={inputClass}
-            >
-              <option value="">Selecione</option>
-              <option value="NEW">Novo</option>
-              <option value="APPROVED">Aprovado</option>
-              <option value="REJECTED">Reprovado</option>
-            </select>
+              onChange={(value) => setFormData(prev => ({ ...prev, iqfStatus: value }))}
+              placeholder="Selecione"
+              options={[
+                { value: "", label: "Selecione" },
+                { value: "NEW", label: "Novo" },
+                { value: "APPROVED", label: "Aprovado" },
+                { value: "REJECTED", label: "Reprovado" },
+              ]}
+            />
           </div>
         </div>
 
         {/* Observações */}
         <div className="mb-6">
           <label htmlFor="notes" className={labelClass}>Observações</label>
-          <textarea
+          <Textarea
             id="notes"
-            name="notes"
-            rows={3}
             value={formData.notes}
-            onChange={handleChange}
-            className={inputClass}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            rows={3}
           />
         </div>
 
