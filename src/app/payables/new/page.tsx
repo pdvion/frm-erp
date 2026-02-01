@@ -6,6 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Receipt,
   Save,
@@ -16,7 +18,6 @@ import {
   Building2,
   Calculator,
 } from "lucide-react";
-import Link from "next/link";
 
 type DocumentType = "INVOICE" | "SERVICE" | "TAX" | "OTHER";
 
@@ -251,19 +252,11 @@ export default function NewPayablePage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Tipo de Documento
               </label>
-              <select
+              <Select
                 value={form.documentType}
-                onChange={(e) =>
-                  setForm({ ...form, documentType: e.target.value as DocumentType })
-                }
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              >
-                {documentTypes.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm({ ...form, documentType: value as DocumentType })}
+                options={documentTypes}
+              />
             </div>
 
             <Input
@@ -294,18 +287,15 @@ export default function NewPayablePage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Centro de Custo
               </label>
-              <select
+              <Select
                 value={form.costCenterCode}
-                onChange={(e) => setForm({ ...form, costCenterCode: e.target.value })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              >
-                <option value="">Selecione...</option>
-                {costCenters?.map((cc) => (
-                  <option key={cc.id} value={cc.code}>
-                    {cc.code} - {cc.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm({ ...form, costCenterCode: value })}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...(costCenters?.map((cc) => ({ value: cc.code, label: `${cc.code} - ${cc.name}` })) || []),
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -444,26 +434,24 @@ export default function NewPayablePage() {
           <label className="block text-sm font-medium text-theme mb-1">
             Observações
           </label>
-          <textarea
+          <Textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
             placeholder="Observações adicionais..."
-            className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
           />
         </div>
 
         {/* Actions */}
         <div className="flex gap-4">
-          <Link href="/payables">
-            <Button
-              type="button"
-              variant="secondary"
-              leftIcon={<ArrowLeft className="w-4 h-4" />}
-            >
-              Cancelar
-            </Button>
-          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/payables")}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Cancelar
+          </Button>
           <Button
             type="submit"
             isLoading={createMutation.isPending}
