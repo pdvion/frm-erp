@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   Layers,
@@ -57,34 +58,33 @@ export default function BomDetailPage() {
         breadcrumbs={breadcrumbs}
         actions={
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="outline"
               onClick={() => setShowCostModal(true)}
-              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+              leftIcon={<Calculator className="w-4 h-4" />}
             >
-              <Calculator className="w-4 h-4" />
               Custo
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setShowExplodeModal(true)}
-              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+              leftIcon={<ChevronDown className="w-4 h-4" />}
             >
-              <ChevronDown className="w-4 h-4" />
               Explodir
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setShowCopyModal(true)}
-              className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg hover:bg-theme-hover"
+              leftIcon={<Copy className="w-4 h-4" />}
             >
-              <Copy className="w-4 h-4" />
               Copiar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Adicionar
-            </button>
+            </Button>
           </div>
         }
       />
@@ -125,13 +125,12 @@ export default function BomDetailPage() {
               <p className="text-theme-muted mb-4">
                 Adicione componentes para criar a estrutura do produto.
               </p>
-              <button
+              <Button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                <Plus className="w-4 h-4" />
                 Adicionar Componente
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -194,25 +193,28 @@ export default function BomDetailPage() {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => setEditingItem(item.id)}
-                            className="p-1.5 text-theme-secondary hover:bg-theme-hover rounded"
                             title="Editar"
                           >
                             <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               if (confirm("Remover este componente?")) {
                                 removeMutation.mutate({ id: item.id });
                               }
                             }}
                             disabled={removeMutation.isPending}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                            className="text-red-600 hover:bg-red-50"
                             title="Remover"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
