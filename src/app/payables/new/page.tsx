@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Receipt,
   Save,
@@ -266,45 +267,29 @@ export default function NewPayablePage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Número do Documento
-              </label>
-              <input
-                type="text"
-                value={form.documentNumber}
-                onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
-                placeholder="Ex: 12345"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              />
-            </div>
+            <Input
+              label="Número do Documento"
+              value={form.documentNumber}
+              onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
+              placeholder="Ex: 12345"
+            />
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-theme mb-1">
-                Descrição *
-              </label>
-              <input
-                type="text"
+              <Input
+                label="Descrição *"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder="Descrição da conta a pagar"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Código de Barras
-              </label>
-              <input
-                type="text"
-                value={form.barcode}
-                onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                placeholder="Linha digitável do boleto"
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              />
-            </div>
+            <Input
+              label="Código de Barras"
+              value={form.barcode}
+              onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+              placeholder="Linha digitável do boleto"
+            />
 
             <div>
               <label className="block text-sm font-medium text-theme mb-1">
@@ -422,66 +407,42 @@ export default function NewPayablePage() {
 
           {form.hasWithholding && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">IR</label>
-                <input
-                  type="text"
-                  value={form.withholdingIr}
-                  onChange={(e) => setForm({ ...form, withholdingIr: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">ISS</label>
-                <input
-                  type="text"
-                  value={form.withholdingIss}
-                  onChange={(e) => setForm({ ...form, withholdingIss: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">INSS</label>
-                <input
-                  type="text"
-                  value={form.withholdingInss}
-                  onChange={(e) => setForm({ ...form, withholdingInss: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">PIS</label>
-                <input
-                  type="text"
-                  value={form.withholdingPis}
-                  onChange={(e) => setForm({ ...form, withholdingPis: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">COFINS</label>
-                <input
-                  type="text"
-                  value={form.withholdingCofins}
-                  onChange={(e) => setForm({ ...form, withholdingCofins: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">CSLL</label>
-                <input
-                  type="text"
-                  value={form.withholdingCsll}
-                  onChange={(e) => setForm({ ...form, withholdingCsll: e.target.value })}
-                  placeholder="0,00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="IR"
+                value={form.withholdingIr}
+                onChange={(e) => setForm({ ...form, withholdingIr: e.target.value })}
+                placeholder="0,00"
+              />
+              <Input
+                label="ISS"
+                value={form.withholdingIss}
+                onChange={(e) => setForm({ ...form, withholdingIss: e.target.value })}
+                placeholder="0,00"
+              />
+              <Input
+                label="INSS"
+                value={form.withholdingInss}
+                onChange={(e) => setForm({ ...form, withholdingInss: e.target.value })}
+                placeholder="0,00"
+              />
+              <Input
+                label="PIS"
+                value={form.withholdingPis}
+                onChange={(e) => setForm({ ...form, withholdingPis: e.target.value })}
+                placeholder="0,00"
+              />
+              <Input
+                label="COFINS"
+                value={form.withholdingCofins}
+                onChange={(e) => setForm({ ...form, withholdingCofins: e.target.value })}
+                placeholder="0,00"
+              />
+              <Input
+                label="CSLL"
+                value={form.withholdingCsll}
+                onChange={(e) => setForm({ ...form, withholdingCsll: e.target.value })}
+                placeholder="0,00"
+              />
             </div>
           )}
 
