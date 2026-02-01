@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Save, X } from "lucide-react";
+import { Save, X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 interface CategoryQuickFormProps {
   onSuccess: (category: { id: string; name: string }) => void;
@@ -34,34 +37,23 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-theme-secondary mb-1">
-          Nome da Categoria *
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Ex: Matéria Prima"
-          className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          autoFocus
-          required
-        />
-      </div>
+      <Input
+        label="Nome da Categoria *"
+        type="text"
+        id="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Ex: Matéria Prima"
+        autoFocus
+        required
+      />
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="isActive"
-          checked={isActive}
-          onChange={(e) => setIsActive(e.target.checked)}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-theme rounded"
-        />
-        <label htmlFor="isActive" className="text-sm text-theme-secondary">
-          Categoria ativa
-        </label>
-      </div>
+      <Checkbox
+        id="isActive"
+        label="Categoria ativa"
+        checked={isActive}
+        onChange={setIsActive}
+      />
 
       {createMutation.error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -70,26 +62,24 @@ export function CategoryQuickForm({ onSuccess, onCancel }: CategoryQuickFormProp
       )}
 
       <div className="flex gap-3 pt-4 border-t border-theme">
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={onCancel}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-secondary transition-colors"
+          leftIcon={<X className="w-4 h-4" />}
+          className="flex-1"
         >
-          <X className="w-4 h-4" />
           Cancelar
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={createMutation.isPending || !name.trim()}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          isLoading={createMutation.isPending}
+          leftIcon={!createMutation.isPending ? <Save className="w-4 h-4" /> : undefined}
+          className="flex-1"
         >
-          {createMutation.isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
           Salvar
-        </button>
+        </Button>
       </div>
     </form>
   );
