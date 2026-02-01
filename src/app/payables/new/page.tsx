@@ -346,34 +346,24 @@ export default function NewPayablePage() {
             />
 
             <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Parcela
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={form.installmentNumber}
-                  onChange={(e) =>
-                    setForm({ ...form, installmentNumber: parseInt(e.target.value) || 1 })
-                  }
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  de
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={form.totalInstallments}
-                  onChange={(e) =>
-                    setForm({ ...form, totalInstallments: parseInt(e.target.value) || 1 })
-                  }
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Parcela"
+                type="number"
+                min={1}
+                value={form.installmentNumber}
+                onChange={(e) =>
+                  setForm({ ...form, installmentNumber: parseInt(e.target.value) || 1 })
+                }
+              />
+              <Input
+                label="de"
+                type="number"
+                min={1}
+                value={form.totalInstallments}
+                onChange={(e) =>
+                  setForm({ ...form, totalInstallments: parseInt(e.target.value) || 1 })
+                }
+              />
             </div>
           </div>
         </div>
