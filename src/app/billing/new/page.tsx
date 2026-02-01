@@ -83,9 +83,9 @@ export default function NewBillingPage() {
                   <p className="font-medium text-theme">{selectedCustomer.companyName}</p>
                   <p className="text-sm text-theme-muted">Código: {selectedCustomer.code}</p>
                 </div>
-                <button onClick={() => setSelectedCustomer(null)} className="text-red-600 hover:text-red-700">
+                <Button variant="ghost" size="sm" onClick={() => setSelectedCustomer(null)} className="text-red-600 hover:text-red-700 p-1">
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="relative">
@@ -156,9 +156,9 @@ export default function NewBillingPage() {
                     className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-right"
                   />
                   <span className="w-24 text-right text-sm font-medium text-theme">{formatCurrency(item.total)}</span>
-                  <button onClick={() => removeItem(index)} className="p-1 text-red-600 hover:text-red-700">
+                  <Button variant="ghost" size="sm" onClick={() => removeItem(index)} className="p-1 text-red-600 hover:text-red-700">
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               ))}
               {items.length === 0 && <p className="text-center text-theme-muted py-4">Nenhum item adicionado</p>}
