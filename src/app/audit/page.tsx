@@ -22,6 +22,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 const actionConfig = {
   CREATE: { label: "Criação", color: "bg-green-100 text-green-800", icon: Plus },
@@ -90,69 +92,61 @@ export default function AuditPage() {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <label htmlFor="audit-search" className="sr-only">Buscar logs</label>
-            <input
-              id="audit-search"
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por descrição, código ou usuário..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              aria-label="Buscar logs"
-              className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
+              className="pl-10"
             />
           </div>
 
           {/* Action Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <label htmlFor="action-filter" className="sr-only">Filtrar por ação</label>
-            <select
-              id="action-filter"
+            <Select
               value={actionFilter ?? ""}
-              onChange={(e) => {
-                setActionFilter(e.target.value || undefined);
+              onChange={(value) => {
+                setActionFilter(value || undefined);
                 setPage(1);
               }}
-              aria-label="Filtrar por ação"
-              className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
-            >
-              <option value="">Todas as ações</option>
-              <option value="CREATE">Criação</option>
-              <option value="UPDATE">Atualização</option>
-              <option value="DELETE">Exclusão</option>
-              <option value="VIEW">Visualização</option>
-              <option value="LOGIN">Login</option>
-              <option value="LOGOUT">Logout</option>
-              <option value="EXPORT">Exportação</option>
-              <option value="IMPORT">Importação</option>
-            </select>
+              placeholder="Todas as ações"
+              options={[
+                { value: "", label: "Todas as ações" },
+                { value: "CREATE", label: "Criação" },
+                { value: "UPDATE", label: "Atualização" },
+                { value: "DELETE", label: "Exclusão" },
+                { value: "VIEW", label: "Visualização" },
+                { value: "LOGIN", label: "Login" },
+                { value: "LOGOUT", label: "Logout" },
+                { value: "EXPORT", label: "Exportação" },
+                { value: "IMPORT", label: "Importação" },
+              ]}
+            />
           </div>
 
           {/* Entity Type Filter */}
-          <label htmlFor="entity-filter" className="sr-only">Filtrar por entidade</label>
-          <select
-            id="entity-filter"
+          <Select
             value={entityTypeFilter ?? ""}
-            onChange={(e) => {
-              setEntityTypeFilter(e.target.value || undefined);
+            onChange={(value) => {
+              setEntityTypeFilter(value || undefined);
               setPage(1);
             }}
-            aria-label="Filtrar por entidade"
-            className="px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
-          >
-            <option value="">Todas as entidades</option>
-            <option value="Material">Material</option>
-            <option value="Supplier">Fornecedor</option>
-            <option value="Inventory">Estoque</option>
-            <option value="InventoryMovement">Movimentação</option>
-            <option value="Category">Categoria</option>
-            <option value="Quote">Orçamento</option>
-            <option value="User">Usuário</option>
-          </select>
+            placeholder="Todas as entidades"
+            options={[
+              { value: "", label: "Todas as entidades" },
+              { value: "Material", label: "Material" },
+              { value: "Supplier", label: "Fornecedor" },
+              { value: "Inventory", label: "Estoque" },
+              { value: "InventoryMovement", label: "Movimentação" },
+              { value: "Category", label: "Categoria" },
+              { value: "Quote", label: "Orçamento" },
+              { value: "User", label: "Usuário" },
+            ]}
+          />
         </div>
 
         {/* Error State */}
