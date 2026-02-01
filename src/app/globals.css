@@ -23,9 +23,9 @@
   --background: #f9fafb;
   --background-secondary: #ffffff;
   --background-tertiary: #f3f4f6;
-  --foreground: #111827;
-  --foreground-secondary: #374151;
-  --foreground-muted: #6b7280;
+  --foreground: #0f172a;
+  --foreground-secondary: #1e293b;
+  --foreground-muted: #475569;
   --card-bg: #ffffff;
   --card-border: #e5e7eb;
   --card-hover: #f9fafb;
@@ -39,8 +39,8 @@
   --sidebar-border: #e5e7eb;
   --header-bg: #ffffff;
   --header-border: #e5e7eb;
-  --muted: #6b7280;
-  --muted-foreground: #9ca3af;
+  --muted: #475569;
+  --muted-foreground: #64748b;
   --accent: #3b82f6;
   --accent-hover: #2563eb;
   --accent-foreground: #ffffff;

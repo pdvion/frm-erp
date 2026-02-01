@@ -348,12 +348,12 @@ export function Sidebar({ onClose }: SidebarProps) {
                     )}
                   </button>
                   {expandedItems.includes(item.label) && item.children && (
-                    <ul className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-theme/30 pl-3">
+                    <ul className="ml-6 mt-1 flex flex-col gap-0.5 border-l-2 border-theme/30 pl-2">
                       {item.children.map((child) => (
                         <li key={child.href}>
                           <Link
                             href={child.href}
-                            className={`block rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                            className={`block rounded-lg px-2 py-1.5 text-sm transition-colors ${
                               isActive(child.href)
                                 ? "bg-blue-600 text-white font-medium"
                                 : "text-theme-muted hover:bg-theme-hover hover:text-theme"
