@@ -138,10 +138,9 @@ export default function AccountDetailPage() {
         <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           <div className="px-4 py-3 border-b border-theme flex items-center justify-between">
             <h2 className="font-medium text-theme">Extrato</h2>
-            <button className="text-sm text-theme-secondary hover:text-theme flex items-center gap-1">
-              <Download className="w-4 h-4" />
+            <Button variant="ghost" size="sm" leftIcon={<Download className="w-4 h-4" />}>
               Exportar
-            </button>
+            </Button>
           </div>
 
           {!transactions?.transactions.length ? (
@@ -309,13 +308,14 @@ function TransferModal({
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               transferMutation.mutate({
                 fromAccountId,
@@ -326,10 +326,11 @@ function TransferModal({
               })
             }
             disabled={!toAccountId || !value || parseFloat(value) > currentBalance || transferMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={transferMutation.isPending}
+            className="flex-1"
           >
-            {transferMutation.isPending ? "Transferindo..." : "Transferir"}
-          </button>
+            Transferir
+          </Button>
         </div>
       </div>
     </div>
@@ -373,28 +374,30 @@ function TransactionModal({
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant={type === "CREDIT" ? "primary" : "outline"}
                 onClick={() => setType("CREDIT")}
-                className={`flex-1 py-2 rounded-lg border-2 ${
+                leftIcon={<TrendingUp className="w-4 h-4" />}
+                className={`flex-1 ${
                   type === "CREDIT"
-                    ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-theme text-theme-secondary"
+                    ? "bg-green-600 hover:bg-green-700 border-green-500"
+                    : ""
                 }`}
               >
-                <TrendingUp className="w-4 h-4 inline mr-1" />
                 Crédito
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={type === "DEBIT" ? "primary" : "outline"}
                 onClick={() => setType("DEBIT")}
-                className={`flex-1 py-2 rounded-lg border-2 ${
+                leftIcon={<TrendingDown className="w-4 h-4" />}
+                className={`flex-1 ${
                   type === "DEBIT"
-                    ? "border-red-500 bg-red-50 text-red-700"
-                    : "border-theme text-theme-secondary"
+                    ? "bg-red-600 hover:bg-red-700 border-red-500"
+                    : ""
                 }`}
               >
-                <TrendingDown className="w-4 h-4 inline mr-1" />
                 Débito
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -450,13 +453,14 @@ function TransactionModal({
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               transactionMutation.mutate({
                 bankAccountId: accountId,
@@ -468,10 +472,11 @@ function TransactionModal({
               })
             }
             disabled={!value || !description || transactionMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={transactionMutation.isPending}
+            className="flex-1"
           >
-            {transactionMutation.isPending ? "Salvando..." : "Salvar"}
-          </button>
+            Salvar
+          </Button>
         </div>
       </div>
     </div>
