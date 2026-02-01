@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Wallet, Plus, ChevronRight, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 import Link from "next/link";
 
@@ -147,26 +148,18 @@ export default function BudgetAccountsPage() {
           <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-theme mb-4">Nova Conta Orçamentária</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Código</label>
-                <input
-                  type="text"
-                  value={newAccount.code}
-                  onChange={(e) => setNewAccount({ ...newAccount, code: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  placeholder="Ex: 1.1.01"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome</label>
-                <input
-                  type="text"
-                  value={newAccount.name}
-                  onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  placeholder="Nome da conta"
-                />
-              </div>
+              <Input
+                label="Código"
+                value={newAccount.code}
+                onChange={(e) => setNewAccount({ ...newAccount, code: e.target.value })}
+                placeholder="Ex: 1.1.01"
+              />
+              <Input
+                label="Nome"
+                value={newAccount.name}
+                onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
+                placeholder="Nome da conta"
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
                 <select

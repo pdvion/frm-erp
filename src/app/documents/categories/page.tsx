@@ -15,6 +15,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 interface CategoryChild {
   id: string;
@@ -270,19 +271,13 @@ function CategoryModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">
-              Nome *
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-              placeholder="Ex: Contratos"
-            />
-          </div>
+          <Input
+            label="Nome *"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+            placeholder="Ex: Contratos"
+          />
 
           <div>
             <label className="block text-sm font-medium text-theme mb-1">
@@ -309,11 +304,10 @@ function CategoryModal({
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                   className="w-10 h-10 rounded border border-theme cursor-pointer"
                 />
-                <input
-                  type="text"
+                <Input
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="flex-1 px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme text-sm"
+                  className="flex-1 text-sm"
                 />
               </div>
             </div>
