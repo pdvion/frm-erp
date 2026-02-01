@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Button } from "@/components/ui/Button";
 import {
   ArrowRightLeft,
   ChevronLeft,
@@ -153,12 +154,12 @@ export default function TransfersPage() {
                 <div className="flex items-center justify-between px-4 py-3 border-t border-theme">
                   <div className="text-sm text-theme-muted">Página {page} de {data.pages}</div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                    <Button variant="ghost" size="sm" onClick={() => setPage(page - 1)} disabled={page === 1}>
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button onClick={() => setPage(page + 1)} disabled={page === data.pages} className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50">
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setPage(page + 1)} disabled={page === data.pages}>
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
