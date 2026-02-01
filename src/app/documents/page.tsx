@@ -259,12 +259,13 @@ function DocumentsContent() {
             <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum documento encontrado</p>
             {hasActiveFilters && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={resetFilters}
-                className="mt-2 text-blue-500 hover:underline"
+                className="mt-2"
               >
                 Limpar filtros
-              </button>
+              </Button>
             )}
           </div>
         ) : (

@@ -105,22 +105,23 @@ export default function InvoicesPage() {
           {Object.entries(statusConfig).map(([status, config]) => {
             const stat = stats?.find((s) => s.status === status);
             return (
-              <button
+              <Button
                 key={status}
+                variant={statusFilter === status ? "primary" : "outline"}
                 onClick={() => setStatusFilter(statusFilter === status ? "" : status)}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-4 h-auto flex-col items-start text-left ${
                   statusFilter === status
                     ? "border-indigo-500 bg-indigo-50"
-                    : "border-theme bg-theme-card hover:border-theme"
+                    : ""
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                  <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
+                  <span className="text-sm font-medium">{config.label}</span>
                 </div>
-                <div className="text-2xl font-bold text-theme">{stat?.count ?? 0}</div>
-                <div className="text-sm text-theme-muted">{formatCurrency(stat?.total ?? 0)}</div>
-              </button>
+                <div className="text-2xl font-bold">{stat?.count ?? 0}</div>
+                <div className="text-sm opacity-70">{formatCurrency(stat?.total ?? 0)}</div>
+              </Button>
             );
           })}
         </div>
@@ -141,12 +142,12 @@ export default function InvoicesPage() {
               />
             </div>
             {statusFilter && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setStatusFilter("")}
-                className="px-4 py-2 text-sm text-theme-secondary hover:text-theme"
               >
                 Limpar filtro
-              </button>
+              </Button>
             )}
           </div>
         </div>
