@@ -101,7 +101,7 @@ export default function NewProductPage() {
       />
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-theme">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
             <Button
@@ -111,7 +111,7 @@ export default function NewProductPage() {
               className={`py-3 px-1 rounded-none border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
               }`}
             >
               {tab.label}
@@ -125,8 +125,8 @@ export default function NewProductPage() {
         {activeTab === "general" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">
                   Informações Básicas
                 </h3>
 
@@ -144,7 +144,7 @@ export default function NewProductPage() {
                     onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Categoria
                     </label>
                     <Select
@@ -163,7 +163,7 @@ export default function NewProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Descrição Curta
                   </label>
                   <Textarea
@@ -172,14 +172,14 @@ export default function NewProductPage() {
                     rows={2}
                     maxLength={255}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-theme-muted mt-1">
                     {formData.shortDescription.length}/255 caracteres
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">
                   Descrição Completa
                 </h3>
                 <RichTextEditor
@@ -192,8 +192,8 @@ export default function NewProductPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">Tags</h3>
+              <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+                <h3 className="font-medium text-theme">Tags</h3>
                 <Input
                   value={formData.tags}
                   onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
@@ -214,65 +214,65 @@ export default function NewProductPage() {
         {/* Pricing Tab */}
         {activeTab === "pricing" && (
           <div className="max-w-2xl">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <h3 className="font-medium text-gray-900 dark:text-gray-100">Preços</h3>
+            <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+              <h3 className="font-medium text-theme">Preços</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço de Custo
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
                     <input
                       type="number"
                       step="0.01"
                       min="0"
                       value={formData.costPrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, costPrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="w-full pl-10 pr-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço de Tabela
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
                     <input
                       type="number"
                       step="0.01"
                       min="0"
                       value={formData.listPrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, listPrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="w-full pl-10 pr-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Preço Promocional
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
                     <input
                       type="number"
                       step="0.01"
                       min="0"
                       value={formData.salePrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, salePrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="w-full pl-10 pr-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
                     />
                   </div>
                 </div>
               </div>
 
               {formData.listPrice && formData.costPrice && (
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-500">
+                <div className="pt-4 border-t border-theme">
+                  <div className="text-sm text-theme-muted">
                     Margem:{" "}
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-theme">
                       {(
                         ((parseFloat(formData.listPrice) - parseFloat(formData.costPrice)) /
                           parseFloat(formData.costPrice)) *
@@ -290,13 +290,13 @@ export default function NewProductPage() {
         {/* SEO Tab */}
         {activeTab === "seo" && (
           <div className="max-w-2xl">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <h3 className="font-medium text-gray-900 dark:text-gray-100">
+            <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+              <h3 className="font-medium text-theme">
                 Otimização para Buscadores (SEO)
               </h3>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   URL Amigável (Slug)
                 </label>
                 <div className="flex gap-2">
@@ -316,13 +316,13 @@ export default function NewProductPage() {
                     Gerar
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-theme-muted mt-1">
                   URL: /catalog/{formData.slug || "slug-do-produto"}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Título SEO
                 </label>
                 <Input
@@ -330,13 +330,13 @@ export default function NewProductPage() {
                   onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
                   maxLength={60}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-theme-muted mt-1">
                   {formData.metaTitle.length}/60 caracteres
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Descrição SEO
                 </label>
                 <Textarea
@@ -345,22 +345,22 @@ export default function NewProductPage() {
                   rows={3}
                   maxLength={160}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-theme-muted mt-1">
                   {formData.metaDescription.length}/160 caracteres
                 </p>
               </div>
 
               {/* Preview */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-xs font-medium text-gray-500 mb-2">Preview no Google:</p>
-                <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+              <div className="pt-4 border-t border-theme">
+                <p className="text-xs font-medium text-theme-muted mb-2">Preview no Google:</p>
+                <div className="p-3 bg-theme-tertiary rounded-lg">
                   <div className="text-blue-600 text-lg truncate">
                     {formData.metaTitle || formData.name || "Título do Produto"}
                   </div>
                   <div className="text-green-700 text-sm">
                     seusite.com.br/catalog/{formData.slug || "produto"}
                   </div>
-                  <div className="text-gray-600 text-sm line-clamp-2">
+                  <div className="text-theme-muted text-sm line-clamp-2">
                     {formData.metaDescription || formData.shortDescription || "Descrição do produto..."}
                   </div>
                 </div>
