@@ -15,6 +15,10 @@ import {
   Eye,
   AlertTriangle,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   SCHEDULED: { label: "Programada", color: "bg-theme-tertiary text-theme" },
@@ -51,13 +55,12 @@ export default function VacationsPage() {
         icon={<Calendar className="w-6 h-6" />}
         module="hr"
         actions={
-          <Link
+          <LinkButton
             href="/hr/vacations/new"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Programar Férias
-          </Link>
+          </LinkButton>
         }
       />
 
@@ -78,36 +81,34 @@ export default function VacationsPage() {
           <div className="p-4 border-b border-theme">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4" />
-                <input
-                  type="text"
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4 z-10" />
+                <Input
                   placeholder="Buscar por funcionário..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="pl-10"
                 />
               </div>
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="ALL">Todos os Status</option>
-                <option value="SCHEDULED">Programada</option>
-                <option value="APPROVED">Aprovada</option>
-                <option value="IN_PROGRESS">Em Andamento</option>
-                <option value="COMPLETED">Concluída</option>
-                <option value="CANCELLED">Cancelada</option>
-              </select>
-              <select
-                value={year}
-                onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                {[2024, 2025, 2026, 2027].map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+                onChange={(value) => { setStatusFilter(value); setPage(1); }}
+                options={[
+                  { value: "ALL", label: "Todos os Status" },
+                  { value: "SCHEDULED", label: "Programada" },
+                  { value: "APPROVED", label: "Aprovada" },
+                  { value: "IN_PROGRESS", label: "Em Andamento" },
+                  { value: "COMPLETED", label: "Concluída" },
+                  { value: "CANCELLED", label: "Cancelada" },
+                ]}
+              />
+              <Select
+                value={String(year)}
+                onChange={(value) => { setYear(Number(value)); setPage(1); }}
+                options={[2024, 2025, 2026, 2027].map((y) => ({
+                  value: String(y),
+                  label: String(y),
+                }))}
+              />
             </div>
           </div>
 
@@ -176,23 +177,25 @@ export default function VacationsPage() {
 
           {data && data.pages > 1 && (
             <div className="flex items-center justify-center gap-2 p-4 border-t border-theme">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
               >
                 <ChevronLeft className="w-5 h-5" />
-              </button>
+              </Button>
               <span className="text-sm text-theme-secondary">
               Página {page} de {data.pages}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                 disabled={page === data.pages}
-                className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
               >
                 <ChevronRight className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
           )}
         </div>

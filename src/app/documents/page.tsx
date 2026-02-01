@@ -24,6 +24,9 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -100,13 +103,13 @@ function DocumentsContent() {
         ]}
         actions={
           <div className="flex items-center gap-2">
-            <Link
+            <LinkButton
               href="/documents/categories"
-              className="flex items-center gap-2 px-4 py-2 border border-theme text-theme rounded-lg hover:bg-theme-secondary transition-colors"
+              variant="outline"
+              leftIcon={<FolderOpen className="w-5 h-5" />}
             >
-              <FolderOpen className="w-5 h-5" />
               <span className="hidden sm:inline">Categorias</span>
-            </Link>
+            </LinkButton>
             <Button
               onClick={() => setShowUploadModal(true)}
               leftIcon={<Upload className="w-5 h-5" />}
@@ -172,70 +175,70 @@ function DocumentsContent() {
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por título, nome do arquivo ou tags..."
               value={search}
               onChange={(e) => {
                 setFilter("search", e.target.value);
                 setFilter("page", 1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10"
             />
           </div>
 
           {/* Category Filter */}
           <div className="flex items-center gap-2">
             <FolderOpen className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={categoryId ?? ""}
-              onChange={(e) => {
-                setFilter("categoryId", e.target.value || undefined);
+              onChange={(value) => {
+                setFilter("categoryId", value || undefined);
                 setFilter("page", 1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todas categorias</option>
-              {categories?.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              placeholder="Todas categorias"
+              options={[
+                { value: "", label: "Todas categorias" },
+                ...(categories?.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                })) || []),
+              ]}
+            />
           </div>
 
           {/* Entity Type Filter */}
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={entityType ?? ""}
-              onChange={(e) => {
-                setFilter("entityType", e.target.value || undefined);
+              onChange={(value) => {
+                setFilter("entityType", value || undefined);
                 setFilter("page", 1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todos os tipos</option>
-              <option value="SUPPLIER">Fornecedor</option>
-              <option value="CUSTOMER">Cliente</option>
-              <option value="EMPLOYEE">Funcionário</option>
-              <option value="CONTRACT">Contrato</option>
-              <option value="INVOICE">Nota Fiscal</option>
-              <option value="MATERIAL">Material</option>
-              <option value="GENERAL">Geral</option>
-            </select>
+              placeholder="Todos os tipos"
+              options={[
+                { value: "", label: "Todos os tipos" },
+                { value: "SUPPLIER", label: "Fornecedor" },
+                { value: "CUSTOMER", label: "Cliente" },
+                { value: "EMPLOYEE", label: "Funcionário" },
+                { value: "CONTRACT", label: "Contrato" },
+                { value: "INVOICE", label: "Nota Fiscal" },
+                { value: "MATERIAL", label: "Material" },
+                { value: "GENERAL", label: "Geral" },
+              ]}
+            />
           </div>
 
           {/* Clear Filters */}
           {hasActiveFilters && (
-            <button
+            <Button
+              variant="ghost"
               onClick={resetFilters}
-              className="flex items-center gap-2 px-3 py-2 text-theme-muted hover:text-theme transition-colors"
+              leftIcon={<X className="w-4 h-4" />}
             >
-              <X className="w-4 h-4" />
               Limpar
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -355,20 +358,24 @@ function DocumentsContent() {
                     >
                       <Eye className="w-4 h-4" />
                     </Link>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDownload(doc)}
-                      className="p-2 text-theme-muted hover:text-green-500 transition-colors"
                       title="Download"
+                      className="text-theme-muted hover:text-green-500"
                     >
                       <Download className="w-4 h-4" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDelete(doc.id)}
-                      className="p-2 text-theme-muted hover:text-red-500 transition-colors"
                       title="Excluir"
+                      className="text-theme-muted hover:text-red-500"
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -383,23 +390,25 @@ function DocumentsContent() {
                   {pagination.total} documentos
                 </p>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setFilter("page", pagination.page - 1)}
                     disabled={pagination.page <= 1}
-                    className="p-2 rounded-lg border border-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
+                  </Button>
                   <span className="px-3 py-1 text-sm text-theme">
                     {pagination.page} / {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setFilter("page", pagination.page + 1)}
                     disabled={pagination.page >= pagination.totalPages}
-                    className="p-2 rounded-lg border border-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
