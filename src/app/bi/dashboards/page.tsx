@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   LayoutDashboard,
   Plus,
@@ -166,18 +167,12 @@ export default function BIDashboardsPage() {
             <h3 className="text-lg font-semibold text-theme mb-4">Novo Dashboard</h3>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nome *
-                </label>
-                <input
-                  type="text"
-                  value={newDashboard.name}
-                  onChange={(e) => setNewDashboard({ ...newDashboard, name: e.target.value })}
-                  placeholder="Ex: Dashboard de Vendas"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Nome *"
+                value={newDashboard.name}
+                onChange={(e) => setNewDashboard({ ...newDashboard, name: e.target.value })}
+                placeholder="Ex: Dashboard de Vendas"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">
