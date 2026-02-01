@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { Loader2, Plus, Trash2, Search, Package, AlertCircle, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
@@ -156,39 +157,32 @@ export default function NewSupplierReturnPage() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label className="text-theme mb-1 block text-sm font-medium">Fornecedor *</label>
-                <select
+                <Select
                   value={supplierId}
-                  onChange={(e) => {
-                    setSupplierId(e.target.value);
+                  onChange={(value) => {
+                    setSupplierId(value);
                     setReceivedInvoiceId("");
                   }}
-                  required
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
-                >
-                  <option value="">Selecione...</option>
-                  {suppliersData?.suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.code} - {s.companyName}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Selecione..."
+                  options={[
+                    { value: "", label: "Selecione..." },
+                    ...(suppliersData?.suppliers.map((s) => ({ value: s.id, label: `${s.code} - ${s.companyName}` })) || []),
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="text-theme mb-1 block text-sm font-medium">NFe de Origem</label>
-                <select
+                <Select
                   value={receivedInvoiceId}
-                  onChange={(e) => setReceivedInvoiceId(e.target.value)}
+                  onChange={(value) => setReceivedInvoiceId(value)}
                   disabled={!supplierId}
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2 disabled:opacity-50"
-                >
-                  <option value="">Nenhuma (manual)</option>
-                  {invoicesData?.invoices.map((inv) => (
-                    <option key={inv.id} value={inv.id}>
-                      NF {inv.invoiceNumber}/{inv.series} - {formatCurrency(inv.totalInvoice)}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Nenhuma (manual)"
+                  options={[
+                    { value: "", label: "Nenhuma (manual)" },
+                    ...(invoicesData?.invoices.map((inv) => ({ value: inv.id, label: `NF ${inv.invoiceNumber}/${inv.series} - ${formatCurrency(inv.totalInvoice)}` })) || []),
+                  ]}
+                />
               </div>
 
               <Input
@@ -201,11 +195,10 @@ export default function NewSupplierReturnPage() {
 
               <div className="md:col-span-2 lg:col-span-3">
                 <label className="text-theme mb-1 block text-sm font-medium">Observações</label>
-                <textarea
+                <Textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
                   placeholder="Observações gerais sobre a devolução..."
                 />
               </div>
@@ -421,9 +414,12 @@ export default function NewSupplierReturnPage() {
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-4">
-            <Link href="/supplier-returns" className="text-theme-muted hover:text-theme px-4 py-2">
+            <Button
+              variant="outline"
+              onClick={() => router.push("/supplier-returns")}
+            >
               Cancelar
-            </Link>
+            </Button>
             <Button
               type="submit"
               isLoading={createMutation.isPending}
