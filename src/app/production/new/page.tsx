@@ -156,12 +156,11 @@ export default function NewProductionOrderPage() {
                   Produto *
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     value={productName}
                     readOnly
                     placeholder="Selecione um produto..."
-                    className="flex-1 px-3 py-2 border border-theme-input rounded-lg bg-theme-tertiary"
+                    className="flex-1 bg-theme-tertiary"
                   />
                   <Button
                     onClick={() => setShowProductSearch(true)}
@@ -369,12 +368,14 @@ export default function NewProductionOrderPage() {
                           />
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => removeMaterial(mat.materialId)}
-                            className="p-1 text-red-500 hover:text-red-700"
+                            className="text-red-500 hover:text-red-700"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -422,26 +423,26 @@ export default function NewProductionOrderPage() {
           <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <div className="p-4 border-b border-theme flex items-center justify-between">
               <h3 id="product-search-title" className="font-medium text-theme">Selecionar Produto</h3>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setShowProductSearch(false);
                   setProductSearch("");
                 }}
-                className="text-theme-muted hover:text-theme-secondary"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-4 border-b border-theme">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-                <input
-                  type="text"
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+                <Input
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="pl-10"
                   autoFocus
                 />
               </div>
@@ -491,26 +492,26 @@ export default function NewProductionOrderPage() {
           <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <div className="p-4 border-b border-theme flex items-center justify-between">
               <h3 id="material-search-title" className="font-medium text-theme">Adicionar Material</h3>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setShowMaterialSearch(false);
                   setMaterialSearch("");
                 }}
-                className="text-theme-muted hover:text-theme-secondary"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-4 border-b border-theme">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-                <input
-                  type="text"
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+                <Input
                   value={materialSearch}
                   onChange={(e) => setMaterialSearch(e.target.value)}
                   placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="pl-10"
                   autoFocus
                 />
               </div>

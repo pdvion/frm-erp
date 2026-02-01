@@ -20,6 +20,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 type PixKeyType = "CPF" | "CNPJ" | "EMAIL" | "PHONE" | "EVP";
 
@@ -234,13 +236,13 @@ export default function NewPixPage() {
                 Chave PIX
               </label>
               <div className="relative">
-                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                <input
+                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+                <Input
                   type={keyType === "EMAIL" ? "email" : "text"}
                   value={pixKey}
                   onChange={(e) => setPixKey(e.target.value)}
                   placeholder={keyTypeConfig[keyType].placeholder}
-                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10"
                 />
               </div>
             </div>
@@ -251,13 +253,12 @@ export default function NewPixPage() {
                 Valor
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                <input
-                  type="text"
+                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+                <Input
                   value={value}
                   onChange={handleValueChange}
                   placeholder="0,00"
-                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-right text-lg font-medium"
+                  className="pl-10 text-right text-lg font-medium"
                 />
               </div>
             </div>
@@ -268,13 +269,13 @@ export default function NewPixPage() {
                 Descrição (opcional)
               </label>
               <div className="relative">
-                <FileText className="absolute left-3 top-3 w-5 h-5 text-theme-muted" />
-                <textarea
+                <FileText className="absolute left-3 top-3 w-5 h-5 text-theme-muted z-10" />
+                <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Ex: Pagamento fornecedor, Transferência..."
                   rows={2}
-                  className="w-full pl-10 pr-4 py-3 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="pl-10"
                 />
               </div>
             </div>
@@ -343,12 +344,13 @@ export default function NewPixPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setStep("key")}
-                className="flex-1 px-6 py-3 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+                className="flex-1"
               >
                 Voltar
-              </button>
+              </Button>
               <Button
                 onClick={handleSendPix}
                 isLoading={isSending}
@@ -390,12 +392,13 @@ export default function NewPixPage() {
             </div>
 
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => router.push("/payables/pix")}
-                className="flex-1 px-6 py-3 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+                className="flex-1"
               >
                 Ver Transações
-              </button>
+              </Button>
               <Button
                 onClick={() => {
                   setStep("key");
