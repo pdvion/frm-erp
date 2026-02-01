@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Calendar,
   Plus,
@@ -297,30 +298,19 @@ export default function HolidaysPage() {
             )}
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Data *
-                </label>
-                <input
-                  type="date"
-                  value={newHoliday.date}
-                  onChange={(e) => setNewHoliday({ ...newHoliday, date: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Data *"
+                type="date"
+                value={newHoliday.date}
+                onChange={(e) => setNewHoliday({ ...newHoliday, date: e.target.value })}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Nome *
-                </label>
-                <input
-                  type="text"
-                  value={newHoliday.name}
-                  onChange={(e) => setNewHoliday({ ...newHoliday, name: e.target.value })}
-                  placeholder="Ex: Aniversário da Empresa"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Nome *"
+                value={newHoliday.name}
+                onChange={(e) => setNewHoliday({ ...newHoliday, name: e.target.value })}
+                placeholder="Ex: Aniversário da Empresa"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">

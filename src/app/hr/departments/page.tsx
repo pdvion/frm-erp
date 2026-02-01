@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 
 export default function DepartmentsPage() {
   const [search, setSearch] = useState("");
@@ -243,31 +244,19 @@ export default function DepartmentsPage() {
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Código *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Código *"
+                  value={formData.code}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  required
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Nome *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Nome *"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
 
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
