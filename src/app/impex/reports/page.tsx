@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   FileText,
   Loader2,
@@ -174,24 +175,18 @@ export default function ImpExReportsPage() {
           <span className="font-medium text-theme">Filtros</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">Data Inicial</label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-theme mb-1">Data Final</label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-            />
-          </div>
+          <Input
+            label="Data Inicial"
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+          <Input
+            label="Data Final"
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
           {reportType !== "costs" && (
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Status</label>

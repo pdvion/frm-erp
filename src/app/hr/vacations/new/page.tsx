@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Palmtree,
   Save,
@@ -142,31 +143,21 @@ export default function NewVacationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Início do Período Aquisitivo *
-              </label>
-              <input
-                type="date"
-                value={form.acquisitionStart}
-                onChange={(e) => setForm({ ...form, acquisitionStart: e.target.value })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Início do Período Aquisitivo *"
+              type="date"
+              value={form.acquisitionStart}
+              onChange={(e) => setForm({ ...form, acquisitionStart: e.target.value })}
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Fim do Período Aquisitivo *
-              </label>
-              <input
-                type="date"
-                value={form.acquisitionEnd}
-                onChange={(e) => setForm({ ...form, acquisitionEnd: e.target.value })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Fim do Período Aquisitivo *"
+              type="date"
+              value={form.acquisitionEnd}
+              onChange={(e) => setForm({ ...form, acquisitionEnd: e.target.value })}
+              required
+            />
           </div>
 
           <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -187,31 +178,21 @@ export default function NewVacationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Data de Início *
-              </label>
-              <input
-                type="date"
-                value={form.startDate}
-                onChange={(e) => handleStartDateChange(e.target.value)}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Data de Início *"
+              type="date"
+              value={form.startDate}
+              onChange={(e) => handleStartDateChange(e.target.value)}
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Data de Término *
-              </label>
-              <input
-                type="date"
-                value={form.endDate}
-                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
+            <Input
+              label="Data de Término *"
+              type="date"
+              value={form.endDate}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+              required
+            />
 
             <div>
               <label className="block text-sm font-medium text-theme mb-1">

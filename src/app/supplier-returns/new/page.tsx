@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { Loader2, Plus, Trash2, Search, Package, AlertCircle, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
@@ -190,18 +191,13 @@ export default function NewSupplierReturnPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="text-theme mb-1 block text-sm font-medium">
-                  Data da Devolução *
-                </label>
-                <input
-                  type="date"
-                  value={returnDate}
-                  onChange={(e) => setReturnDate(e.target.value)}
-                  required
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Data da Devolução *"
+                type="date"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                required
+              />
 
               <div className="md:col-span-2 lg:col-span-3">
                 <label className="text-theme mb-1 block text-sm font-medium">Observações</label>

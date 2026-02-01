@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { FileText, AlertCircle, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 
@@ -103,30 +104,24 @@ export default function RegisterReturnInvoicePage({ params }: { params: Promise<
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="text-theme mb-1 block text-sm font-medium">Número da NFe *</label>
-                <input
-                  type="number"
-                  value={invoiceNumber}
-                  onChange={(e) => setInvoiceNumber(e.target.value)}
-                  required
-                  min="1"
-                  placeholder="Ex: 12345"
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Número da NFe *"
+                type="number"
+                value={invoiceNumber}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                required
+                min={1}
+                placeholder="Ex: 12345"
+              />
 
               <div>
-                <label className="text-theme mb-1 block text-sm font-medium">
-                  Chave de Acesso (44 dígitos)
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Chave de Acesso (44 dígitos)"
                   value={invoiceKey}
                   onChange={(e) => setInvoiceKey(e.target.value.replace(/\D/g, "").slice(0, 44))}
                   maxLength={44}
                   placeholder="Opcional - Chave de acesso da NFe"
-                  className="border-theme bg-theme-card text-theme w-full rounded-lg border px-3 py-2 font-mono text-sm"
+                  className="font-mono text-sm"
                 />
                 {invoiceKey && invoiceKey.length !== 44 && (
                   <p className="mt-1 text-xs text-yellow-600">
