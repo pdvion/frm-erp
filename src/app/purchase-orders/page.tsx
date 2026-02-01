@@ -7,6 +7,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { KanbanBoard, KanbanCard, ViewToggle } from "@/components/ui";
 import type { KanbanColumn } from "@/components/ui";
@@ -186,35 +188,34 @@ export default function PurchaseOrdersPage() {
       <div className="bg-theme-card rounded-lg border border-theme p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
-              type="text"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+            <Input
               placeholder="Buscar por fornecedor..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              className="pl-10"
             />
           </div>
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <Select
               value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
+              onChange={(value) => {
+                setStatusFilter(value);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            >
-              <option value="">Todos os status</option>
-              {Object.entries(statusConfig).map(([key, config]) => (
-                <option key={key} value={key}>
-                  {config.label}
-                </option>
-              ))}
-            </select>
+              placeholder="Todos os status"
+              options={[
+                { value: "", label: "Todos os status" },
+                ...Object.entries(statusConfig).map(([key, config]) => ({
+                  value: key,
+                  label: config.label,
+                })),
+              ]}
+            />
           </div>
           <ViewToggle view={view} onViewChange={setView} />
         </div>
@@ -365,23 +366,25 @@ export default function PurchaseOrdersPage() {
                 {data.pagination.total} pedidos
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="p-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-5 h-5" />
-                </button>
+                </Button>
                 <span className="px-4 py-2 text-sm text-theme-secondary">
                   {page} / {data.pagination.totalPages}
                 </span>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(page + 1)}
                   disabled={page === data.pagination.totalPages}
-                  className="p-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
             </div>
           )}
