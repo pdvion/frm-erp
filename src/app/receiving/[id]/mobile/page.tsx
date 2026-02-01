@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
+import { Button } from "@/components/ui/Button";
 import {
   ChevronLeft,
   Package,
@@ -258,9 +259,10 @@ export default function MobileReceivingPage() {
               } ${hasIssue ? "border-l-4 border-orange-500" : ""}`}
             >
               {/* Header do Item */}
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                className="w-full p-4 text-left"
+                className="w-full p-4 text-left justify-start h-auto"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -295,31 +297,33 @@ export default function MobileReceivingPage() {
                     )}
                   </div>
                 </div>
-              </button>
+              </Button>
 
               {/* Área Expandida - Conferência */}
               {isExpanded && isConferencing && (
                 <div className="px-4 pb-4 border-t border-theme">
                   {/* Controle de Quantidade */}
                   <div className="flex items-center justify-center gap-4 py-4">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => handleQuantityChange(item.id, -1)}
-                      className="w-14 h-14 flex items-center justify-center bg-red-100 text-red-600 rounded-full active:bg-red-200"
+                      className="w-14 h-14 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
                     >
                       <Minus className="w-6 h-6" />
-                    </button>
+                    </Button>
                     <input
                       type="number"
                       value={conf?.receivedQuantity ?? item.nfeQuantity}
                       onChange={(e) => handleSetQuantity(item.id, parseInt(e.target.value) || 0)}
                       className="w-24 h-14 text-center text-2xl font-bold border-2 border-theme rounded-xl focus:ring-2 focus:ring-blue-500"
                     />
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => handleQuantityChange(item.id, 1)}
-                      className="w-14 h-14 flex items-center justify-center bg-green-100 text-green-600 rounded-full active:bg-green-200"
+                      className="w-14 h-14 rounded-full bg-green-100 text-green-600 hover:bg-green-200"
                     >
                       <Plus className="w-6 h-6" />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* Valor unitário e total */}
@@ -346,25 +350,23 @@ export default function MobileReceivingPage() {
 
                   {/* Botões de ação */}
                   <div className="flex gap-3 mt-4">
-                    <button
+                    <Button
+                      variant="secondary"
                       onClick={() => handleTakePhoto()}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-theme-tertiary text-theme-secondary rounded-xl active:bg-theme-tertiary"
+                      leftIcon={<Camera className="w-5 h-5" />}
+                      className="flex-1 py-3"
                     >
-                      <Camera className="w-5 h-5" />
                       Foto
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => handleConfirmItem(item.id)}
                       disabled={conferItemMutation.isPending}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-xl active:bg-blue-700 disabled:opacity-50"
+                      isLoading={conferItemMutation.isPending}
+                      leftIcon={<Check className="w-5 h-5" />}
+                      className="flex-1 py-3"
                     >
-                      {conferItemMutation.isPending ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Check className="w-5 h-5" />
-                      )}
                       Confirmar
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -376,18 +378,15 @@ export default function MobileReceivingPage() {
       {/* Footer Fixo - Ações */}
       <footer className="fixed bottom-0 left-0 right-0 bg-theme-card border-t border-theme p-4 safe-area-inset-bottom">
         {receiving.status === "PENDING" && (
-          <button
+          <Button
             onClick={handleStartConference}
             disabled={startConferenceMutation.isPending}
-            className="w-full py-4 bg-blue-600 text-white text-lg font-semibold rounded-xl active:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            isLoading={startConferenceMutation.isPending}
+            leftIcon={<Package className="w-6 h-6" />}
+            className="w-full py-4 text-lg"
           >
-            {startConferenceMutation.isPending ? (
-              <Loader2 className="w-6 h-6 animate-spin" />
-            ) : (
-              <Package className="w-6 h-6" />
-            )}
             Iniciar Conferência
-          </button>
+          </Button>
         )}
 
         {isConferencing && (
@@ -398,18 +397,15 @@ export default function MobileReceivingPage() {
             >
               Versão Desktop
             </Link>
-            <button
+            <Button
               onClick={handleCompleteConference}
               disabled={!allItemsConferred || completeReceivingMutation.isPending}
-              className="flex-1 py-4 bg-green-600 text-white text-lg font-semibold rounded-xl active:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              isLoading={completeReceivingMutation.isPending}
+              leftIcon={<Save className="w-6 h-6" />}
+              className="flex-1 py-4 text-lg bg-green-600 hover:bg-green-700"
             >
-              {completeReceivingMutation.isPending ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                <Save className="w-6 h-6" />
-              )}
               Finalizar
-            </button>
+            </Button>
           </div>
         )}
 
@@ -427,12 +423,13 @@ export default function MobileReceivingPage() {
           <div className="bg-theme-card rounded-2xl p-6 w-full max-w-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Tirar Foto</h3>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowCamera(false)}
-                className="p-2 text-theme-muted"
               >
                 <X className="w-6 h-6" />
-              </button>
+              </Button>
             </div>
             <div className="aspect-square bg-theme-tertiary rounded-xl flex items-center justify-center mb-4">
               <Camera className="w-16 h-16 text-theme-muted" />
@@ -440,12 +437,12 @@ export default function MobileReceivingPage() {
             <p className="text-sm text-theme-muted text-center mb-4">
               Funcionalidade de câmera será implementada com integração nativa.
             </p>
-            <button
+            <Button
               onClick={() => setShowCamera(false)}
-              className="w-full py-3 bg-blue-600 text-white rounded-xl"
+              className="w-full py-3"
             >
               Fechar
-            </button>
+            </Button>
           </div>
         </div>
       )}
