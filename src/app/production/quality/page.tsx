@@ -5,6 +5,9 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 import {
   ClipboardCheck,
@@ -90,13 +93,12 @@ export default function QualityPage() {
         backHref="/production"
         module="production"
         actions={
-          <Link
-            href="/production/quality/new"
-            className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+          <Button
+            onClick={() => window.location.href = "/production/quality/new"}
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Nova Inspeção
-          </Link>
+          </Button>
         }
       />
 
@@ -170,53 +172,51 @@ export default function QualityPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 placeholder={activeTab === "inspections" ? "Buscar por lote, material..." : "Buscar por descrição..."}
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg"
+                className="pl-10"
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="border border-theme-input rounded-lg px-3 py-2"
-              >
-                <option value="ALL">Todos Status</option>
-                {activeTab === "inspections" ? (
-                  <>
-                    <option value="PENDING">Pendente</option>
-                    <option value="IN_PROGRESS">Em Andamento</option>
-                    <option value="APPROVED">Aprovado</option>
-                    <option value="REJECTED">Rejeitado</option>
-                    <option value="PARTIAL">Parcial</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="OPEN">Aberta</option>
-                    <option value="ANALYZING">Em Análise</option>
-                    <option value="ACTION">Ação em Andamento</option>
-                    <option value="VERIFICATION">Verificação</option>
-                    <option value="CLOSED">Fechada</option>
-                  </>
-                )}
-              </select>
+                onChange={(value) => { setStatusFilter(value); setPage(1); }}
+                options={
+                  activeTab === "inspections"
+                    ? [
+                      { value: "ALL", label: "Todos Status" },
+                      { value: "PENDING", label: "Pendente" },
+                      { value: "IN_PROGRESS", label: "Em Andamento" },
+                      { value: "APPROVED", label: "Aprovado" },
+                      { value: "REJECTED", label: "Rejeitado" },
+                      { value: "PARTIAL", label: "Parcial" },
+                    ]
+                    : [
+                      { value: "ALL", label: "Todos Status" },
+                      { value: "OPEN", label: "Aberta" },
+                      { value: "ANALYZING", label: "Em Análise" },
+                      { value: "ACTION", label: "Ação em Andamento" },
+                      { value: "VERIFICATION", label: "Verificação" },
+                      { value: "CLOSED", label: "Fechada" },
+                    ]
+                }
+              />
               {activeTab === "inspections" && (
-                <select
+                <Select
                   value={typeFilter}
-                  onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-                  className="border border-theme-input rounded-lg px-3 py-2"
-                >
-                  <option value="ALL">Todos Tipos</option>
-                  <option value="RECEIVING">Recebimento</option>
-                  <option value="IN_PROCESS">Em Processo</option>
-                  <option value="FINAL">Final</option>
-                  <option value="AUDIT">Auditoria</option>
-                </select>
+                  onChange={(value) => { setTypeFilter(value); setPage(1); }}
+                  options={[
+                    { value: "ALL", label: "Todos Tipos" },
+                    { value: "RECEIVING", label: "Recebimento" },
+                    { value: "IN_PROCESS", label: "Em Processo" },
+                    { value: "FINAL", label: "Final" },
+                    { value: "AUDIT", label: "Auditoria" },
+                  ]}
+                />
               )}
             </div>
           </div>
