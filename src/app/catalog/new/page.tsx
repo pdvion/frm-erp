@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { RichTextEditor } from "@/components/editor";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -78,25 +81,21 @@ export default function NewProductPage() {
         subtitle="Crie um novo produto para o catálogo"
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.back()}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              leftIcon={<ArrowLeft size={20} />}
             >
-              <ArrowLeft size={20} />
               Voltar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSubmit}
-              disabled={createMutation.isPending || !formData.name}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              disabled={!formData.name}
+              isLoading={createMutation.isPending}
+              leftIcon={<Save size={20} />}
             >
-              {createMutation.isPending ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <Save size={20} />
-              )}
               Salvar
-            </button>
+            </Button>
           </div>
         }
       />
@@ -105,17 +104,18 @@ export default function NewProductPage() {
       <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               onClick={() => setActiveTab(tab.id)}
-              className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-3 px-1 rounded-none border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </nav>
       </div>
@@ -147,18 +147,18 @@ export default function NewProductPage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Categoria
                     </label>
-                    <select
+                    <Select
                       value={formData.categoryId}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, categoryId: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    >
-                      <option value="">Selecione...</option>
-                      {categories?.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => setFormData((prev) => ({ ...prev, categoryId: value }))}
+                      placeholder="Selecione..."
+                      options={[
+                        { value: "", label: "Selecione..." },
+                        ...(categories?.map((cat) => ({
+                          value: cat.id,
+                          label: cat.name,
+                        })) || []),
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -166,12 +166,11 @@ export default function NewProductPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Descrição Curta
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.shortDescription}
                     onChange={(e) => setFormData((prev) => ({ ...prev, shortDescription: e.target.value }))}
                     rows={2}
                     maxLength={255}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.shortDescription.length}/255 caracteres
@@ -301,21 +300,21 @@ export default function NewProductPage() {
                   URL Amigável (Slug)
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     value={formData.slug}
                     onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                     placeholder="meu-produto"
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                    className="flex-1"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={generateSlug}
                     disabled={!formData.name}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm disabled:opacity-50"
                   >
                     Gerar
-                  </button>
+                  </Button>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   URL: /catalog/{formData.slug || "slug-do-produto"}
@@ -326,12 +325,10 @@ export default function NewProductPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Título SEO
                 </label>
-                <input
-                  type="text"
+                <Input
                   value={formData.metaTitle}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
                   maxLength={60}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {formData.metaTitle.length}/60 caracteres
@@ -342,12 +339,11 @@ export default function NewProductPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Descrição SEO
                 </label>
-                <textarea
+                <Textarea
                   value={formData.metaDescription}
                   onChange={(e) => setFormData((prev) => ({ ...prev, metaDescription: e.target.value }))}
                   rows={3}
                   maxLength={160}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {formData.metaDescription.length}/160 caracteres

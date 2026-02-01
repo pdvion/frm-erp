@@ -6,6 +6,8 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { PageHeader } from "@/components/PageHeader";
 import { Users, Save } from "lucide-react";
 
@@ -108,14 +110,14 @@ export default function NewCustomerPage() {
 
               <div>
                 <label className="text-theme-secondary mb-1 block text-sm font-medium">Tipo</label>
-                <select
+                <Select
                   value={type}
-                  onChange={(e) => setType(e.target.value as typeof type)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                >
-                  <option value="COMPANY">Pessoa Jurídica</option>
-                  <option value="PERSON">Pessoa Física</option>
-                </select>
+                  onChange={(value) => setType(value as typeof type)}
+                  options={[
+                    { value: "COMPANY", label: "Pessoa Jurídica" },
+                    { value: "PERSON", label: "Pessoa Física" },
+                  ]}
+                />
               </div>
 
               {type === "COMPANY" ? (
@@ -328,11 +330,10 @@ export default function NewCustomerPage() {
           {/* Observações */}
           <div className="bg-theme-card border-theme rounded-lg border p-6">
             <h2 className="text-theme mb-4 text-lg font-medium">Observações</h2>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="border-theme-input w-full rounded-lg border px-3 py-2"
             />
           </div>
 
