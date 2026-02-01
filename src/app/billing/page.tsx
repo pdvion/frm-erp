@@ -126,21 +126,22 @@ export default function BillingPage() {
           {Object.entries(statusConfig).map(([status, config]) => {
             const count = dashboard?.byStatus?.find((s) => s.status === status)?.count || 0;
             return (
-              <button
+              <Button
                 key={status}
+                variant={statusFilter === status ? "primary" : "outline"}
                 onClick={() => setStatusFilter(statusFilter === status ? "" : status)}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-4 h-auto flex-col items-start ${
                   statusFilter === status
                     ? "border-indigo-500 bg-indigo-50"
-                    : "border-theme bg-theme-card hover:border-theme"
+                    : ""
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                  <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
+                  <span className="text-sm font-medium">{config.label}</span>
                 </div>
-                <div className="text-2xl font-bold text-theme">{count}</div>
-              </button>
+                <div className="text-2xl font-bold">{count}</div>
+              </Button>
             );
           })}
         </div>
@@ -162,12 +163,13 @@ export default function BillingPage() {
               />
             </div>
             {statusFilter && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setStatusFilter("")}
-                className="px-4 py-2 text-sm text-theme-secondary hover:text-theme"
               >
                 Limpar filtro
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -276,14 +278,16 @@ export default function BillingPage() {
                                 Ver
                               </Link>
                               {invoice.status === "DRAFT" && (
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => authorizeMutation.mutate({ id: invoice.id })}
                                   disabled={authorizeMutation.isPending}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg"
+                                  leftIcon={<Send className="w-4 h-4" />}
+                                  className="text-green-600 hover:bg-green-50"
                                 >
-                                  <Send className="w-4 h-4" />
                                   Autorizar
-                                </button>
+                                </Button>
                               )}
                             </div>
                           </td>
@@ -302,23 +306,25 @@ export default function BillingPage() {
                     {Math.min(page * 20, data.total)} de {data.total}
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
+                    </Button>
                     <span className="px-4 py-2 text-sm text-theme-secondary">
                       {page} / {Math.ceil(data.total / 20)}
                     </span>
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setPage(page + 1)}
                       disabled={page >= Math.ceil(data.total / 20)}
-                      className="p-2 rounded-lg border border-theme-input hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -404,12 +410,13 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
+          </Button>
           <Button
             onClick={handleCreate}
             disabled={!selectedOrderId}
