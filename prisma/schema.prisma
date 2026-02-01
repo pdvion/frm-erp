@@ -668,6 +668,9 @@ model Inventory {
   // Referência
   legacyProductCode       Int?          @map("legacy_product_code")
   
+  // Optimistic Locking
+  version         Int           @default(1)
+  
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 

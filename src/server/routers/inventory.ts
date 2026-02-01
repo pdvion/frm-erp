@@ -84,7 +84,7 @@ export const inventoryRouter = createTRPCRouter({
       });
     }),
 
-  // Registrar movimento de estoque
+  // Registrar movimento de estoque (com locking otimista)
   createMovement: tenantProcedure
     .input(
       z.object({
@@ -103,76 +103,104 @@ export const inventoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { materialId, inventoryType, movementType, quantity, unitCost, ...movementData } = input;
       const companyId = ctx.companyId;
+      const isEntry = ["ENTRY", "RETURN", "PRODUCTION"].includes(movementType);
 
-      // Buscar ou criar registro de estoque
-      let inventory = await ctx.prisma.inventory.findFirst({
-        where: {
-          materialId,
-          inventoryType,
-          companyId: companyId ?? null,
-        },
-      });
-
-      if (!inventory) {
-        inventory = await ctx.prisma.inventory.create({
-          data: {
+      // Usar transação interativa para garantir atomicidade
+      const result = await ctx.prisma.$transaction(async (tx) => {
+        // Buscar ou criar registro de estoque
+        let inventory = await tx.inventory.findFirst({
+          where: {
             materialId,
             inventoryType,
-            companyId,
-            quantity: 0,
-            availableQty: 0,
-            unitCost: 0,
-            totalCost: 0,
+            companyId: companyId ?? null,
           },
         });
-      }
 
-      // Calcular novo saldo
-      const isEntry = ["ENTRY", "RETURN", "PRODUCTION"].includes(movementType);
-      const quantityChange = isEntry ? quantity : -quantity;
-      const newQuantity = inventory.quantity + quantityChange;
-      const totalCost = quantity * unitCost;
+        if (!inventory) {
+          inventory = await tx.inventory.create({
+            data: {
+              materialId,
+              inventoryType,
+              companyId,
+              quantity: 0,
+              availableQty: 0,
+              unitCost: 0,
+              totalCost: 0,
+              version: 1,
+            },
+          });
+        }
 
-      // Criar movimento
-      const movement = await ctx.prisma.inventoryMovement.create({
-        data: {
-          inventoryId: inventory.id,
-          movementType,
-          quantity,
-          unitCost,
-          totalCost,
-          balanceAfter: newQuantity,
-          ...movementData,
-        },
-        include: {
-          inventory: {
-            include: { material: true },
+        // Calcular novo saldo
+        const quantityChange = isEntry ? quantity : -quantity;
+        const newQuantity = inventory.quantity + quantityChange;
+        const totalCost = quantity * unitCost;
+
+        // Verificar saldo disponível para saídas
+        if (!isEntry && newQuantity < 0) {
+          throw new Error(
+            `Saldo insuficiente. Disponível: ${inventory.quantity}, Solicitado: ${quantity}`
+          );
+        }
+
+        // Criar movimento
+        const movement = await tx.inventoryMovement.create({
+          data: {
+            inventoryId: inventory.id,
+            movementType,
+            quantity,
+            unitCost,
+            totalCost,
+            balanceAfter: newQuantity,
+            ...movementData,
           },
-        },
+          include: {
+            inventory: {
+              include: { material: true },
+            },
+          },
+        });
+
+        // Atualizar estoque com optimistic locking
+        const currentVersion = inventory.version;
+        const updated = await tx.inventory.updateMany({
+          where: {
+            id: inventory.id,
+            version: currentVersion, // Optimistic lock check
+          },
+          data: {
+            quantity: newQuantity,
+            availableQty: newQuantity - inventory.reservedQty,
+            lastMovementAt: new Date(),
+            version: currentVersion + 1, // Increment version
+            // Recalcular custo médio para entradas
+            ...(isEntry && unitCost > 0 && {
+              unitCost: (inventory.totalCost + totalCost) / (inventory.quantity + quantity),
+              totalCost: inventory.totalCost + totalCost,
+            }),
+          },
+        });
+
+        // Se nenhum registro foi atualizado, houve conflito de concorrência
+        if (updated.count === 0) {
+          throw new Error(
+            "Conflito de concorrência detectado. O estoque foi modificado por outro usuário. Por favor, tente novamente."
+          );
+        }
+
+        return movement;
+      }, {
+        maxWait: 5000, // 5 segundos de espera máxima
+        timeout: 10000, // 10 segundos de timeout
       });
 
-      // Auditar movimento
-      await auditCreate("InventoryMovement", movement, `${movementType} - ${movement.inventory.material.code}`, {
+      // Auditar movimento (fora da transação para não bloquear)
+      await auditCreate("InventoryMovement", result, `${movementType} - ${result.inventory.material.code}`, {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
 
-      // Atualizar estoque
-      await ctx.prisma.inventory.update({
-        where: { id: inventory.id },
-        data: {
-          quantity: newQuantity,
-          availableQty: newQuantity - inventory.reservedQty,
-          lastMovementAt: new Date(),
-          // Recalcular custo médio para entradas
-          ...(isEntry && unitCost > 0 && {
-            unitCost: (inventory.totalCost + totalCost) / (inventory.quantity + quantity),
-            totalCost: inventory.totalCost + totalCost,
-          }),
-        },
-      });
-
-      return movement;
+      return result;
     }),
 
   // Listar movimentos
