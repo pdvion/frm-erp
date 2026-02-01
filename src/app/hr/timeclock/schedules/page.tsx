@@ -198,12 +198,12 @@ export default function TimeclockSchedulesPage() {
                 <p className="text-sm text-theme-muted">{schedule.code}</p>
               </div>
               <div className="flex gap-1">
-                <button className="p-2 text-theme-muted hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                <Button variant="ghost" size="sm" className="p-2 text-theme-muted hover:text-blue-600">
                   <Edit2 className="w-4 h-4" />
-                </button>
-                <button className="p-2 text-theme-muted hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                </Button>
+                <Button variant="ghost" size="sm" className="p-2 text-theme-muted hover:text-red-600">
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
 
