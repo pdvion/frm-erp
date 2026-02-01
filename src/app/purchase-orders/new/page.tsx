@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface OrderItem {
   materialId: string;
@@ -439,12 +441,11 @@ export default function NewPurchaseOrderPage() {
                   >
                     Observações
                   </label>
-                  <textarea
+                  <Textarea
                     id="notes"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
@@ -463,17 +464,17 @@ export default function NewPurchaseOrderPage() {
                   >
                     Tipo de Frete
                   </label>
-                  <select
-                    id="freight-type"
+                  <Select
                     value={freightType}
-                    onChange={(e) => setFreightType(e.target.value)}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                  >
-                    <option value="">Selecione</option>
-                    <option value="CIF">CIF - Fornecedor</option>
-                    <option value="FOB">FOB - Comprador</option>
-                    <option value="PICKUP">FRM Retira</option>
-                  </select>
+                    onChange={(value) => setFreightType(value)}
+                    placeholder="Selecione"
+                    options={[
+                      { value: "", label: "Selecione" },
+                      { value: "CIF", label: "CIF - Fornecedor" },
+                      { value: "FOB", label: "FOB - Comprador" },
+                      { value: "PICKUP", label: "FRM Retira" },
+                    ]}
+                  />
                 </div>
                 {freightType === "FOB" && (
                   <Input
@@ -530,22 +531,22 @@ export default function NewPurchaseOrderPage() {
                   >
                     Natureza da Operação
                   </label>
-                  <select
-                    id="operation-nature"
+                  <Select
                     value={operationNature}
-                    onChange={(e) => setOperationNature(e.target.value)}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-                  >
-                    <option value="">Selecione</option>
-                    <option value="INDUSTRIALIZATION">Industrialização</option>
-                    <option value="RESALE">Revenda</option>
-                    <option value="CONSUMPTION">Consumo</option>
-                    <option value="SERVICES">Serviços</option>
-                    <option value="RAW_MATERIAL">Matéria Prima</option>
-                    <option value="SECONDARY">Secundário</option>
-                    <option value="PACKAGING">Embalagem</option>
-                    <option value="FIXED_ASSET">Ativo Imobilizado</option>
-                  </select>
+                    onChange={(value) => setOperationNature(value)}
+                    placeholder="Selecione"
+                    options={[
+                      { value: "", label: "Selecione" },
+                      { value: "INDUSTRIALIZATION", label: "Industrialização" },
+                      { value: "RESALE", label: "Revenda" },
+                      { value: "CONSUMPTION", label: "Consumo" },
+                      { value: "SERVICES", label: "Serviços" },
+                      { value: "RAW_MATERIAL", label: "Matéria Prima" },
+                      { value: "SECONDARY", label: "Secundário" },
+                      { value: "PACKAGING", label: "Embalagem" },
+                      { value: "FIXED_ASSET", label: "Ativo Imobilizado" },
+                    ]}
+                  />
                 </div>
                 <Input
                   label="Aplicação"
