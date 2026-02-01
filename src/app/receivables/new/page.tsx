@@ -12,6 +12,7 @@ import {
   Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function NewReceivablePage() {
   const router = useRouter();
@@ -177,30 +178,20 @@ export default function NewReceivablePage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Número do Documento
-                </label>
-                <input
-                  type="text"
-                  value={documentNumber}
-                  onChange={(e) => setDocumentNumber(e.target.value)}
-                  placeholder="Ex: NF-001234"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Número do Documento"
+                value={documentNumber}
+                onChange={(e) => setDocumentNumber(e.target.value)}
+                placeholder="Ex: NF-001234"
+              />
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Descrição *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Descrição *"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
                   placeholder="Descrição do título"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
                 />
               </div>
             </div>
@@ -211,75 +202,50 @@ export default function NewReceivablePage() {
             <h2 className="text-lg font-medium text-theme mb-4">Valores e Vencimento</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Valor Total *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={originalValue}
-                  onChange={(e) => setOriginalValue(e.target.value)}
-                  required
-                  placeholder="0,00"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Valor Total *"
+                type="number"
+                step="0.01"
+                value={originalValue}
+                onChange={(e) => setOriginalValue(e.target.value)}
+                required
+                placeholder="0,00"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Desconto
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={discountValue}
-                  onChange={(e) => setDiscountValue(e.target.value)}
-                  placeholder="0,00"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Desconto"
+                type="number"
+                step="0.01"
+                value={discountValue}
+                onChange={(e) => setDiscountValue(e.target.value)}
+                placeholder="0,00"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Data de Vencimento *
-                </label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  required
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Data de Vencimento *"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Número de Parcelas
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="60"
-                  value={installments}
-                  onChange={(e) => setInstallments(e.target.value)}
-                  className="w-full border border-theme-input rounded-lg px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Número de Parcelas"
+                type="number"
+                min="1"
+                max="60"
+                value={installments}
+                onChange={(e) => setInstallments(e.target.value)}
+              />
 
               {parseInt(installments) > 1 && (
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Intervalo (dias)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={intervalDays}
-                    onChange={(e) => setIntervalDays(e.target.value)}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <Input
+                  label="Intervalo (dias)"
+                  type="number"
+                  min="1"
+                  value={intervalDays}
+                  onChange={(e) => setIntervalDays(e.target.value)}
+                />
               )}
             </div>
 

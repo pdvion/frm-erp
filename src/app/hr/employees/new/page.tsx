@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 import {
   Users,
@@ -133,56 +134,35 @@ export default function NewEmployeePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Nome Completo *
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Nome Completo *"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  CPF *
-                </label>
-                <input
-                  type="text"
-                  name="cpf"
-                  value={formData.cpf}
-                  onChange={handleChange}
-                  required
-                  placeholder="000.000.000-00"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  RG
-                </label>
-                <input
-                  type="text"
-                  name="rg"
-                  value={formData.rg}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Data de Nascimento
-                </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="CPF *"
+                name="cpf"
+                value={formData.cpf}
+                onChange={handleChange}
+                required
+                placeholder="000.000.000-00"
+              />
+              <Input
+                label="RG"
+                name="rg"
+                value={formData.rg}
+                onChange={handleChange}
+              />
+              <Input
+                label="Data de Nascimento"
+                type="date"
+                name="birthDate"
+                value={formData.birthDate}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
@@ -193,45 +173,28 @@ export default function NewEmployeePage() {
               <h2 className="text-lg font-semibold text-theme">Contato</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  <Mail className="w-4 h-4 inline mr-1" />
-                  E-mail
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Telefone
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="(00) 0000-0000"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Celular
-                </label>
-                <input
-                  type="text"
-                  name="mobile"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  placeholder="(00) 00000-0000"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="E-mail"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                leftIcon={<Mail className="w-4 h-4" />}
+              />
+              <Input
+                label="Telefone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="(00) 0000-0000"
+              />
+              <Input
+                label="Celular"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder="(00) 00000-0000"
+              />
             </div>
           </div>
 
@@ -242,79 +205,45 @@ export default function NewEmployeePage() {
               <h2 className="text-lg font-semibold text-theme">Endereço</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  CEP
-                </label>
-                <input
-                  type="text"
-                  name="zipCode"
-                  value={formData.zipCode}
-                  onChange={handleChange}
-                  placeholder="00000-000"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="CEP"
+                name="zipCode"
+                value={formData.zipCode}
+                onChange={handleChange}
+                placeholder="00000-000"
+              />
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Endereço
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Endereço"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Número
-                </label>
-                <input
-                  type="text"
-                  name="addressNumber"
-                  value={formData.addressNumber}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Complemento
-                </label>
-                <input
-                  type="text"
-                  name="addressComplement"
-                  value={formData.addressComplement}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Bairro
-                </label>
-                <input
-                  type="text"
-                  name="neighborhood"
-                  value={formData.neighborhood}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Cidade
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                />
-              </div>
+              <Input
+                label="Número"
+                name="addressNumber"
+                value={formData.addressNumber}
+                onChange={handleChange}
+              />
+              <Input
+                label="Complemento"
+                name="addressComplement"
+                value={formData.addressComplement}
+                onChange={handleChange}
+              />
+              <Input
+                label="Bairro"
+                name="neighborhood"
+                value={formData.neighborhood}
+                onChange={handleChange}
+              />
+              <Input
+                label="Cidade"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+              />
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Estado

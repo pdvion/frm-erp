@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
 import {
@@ -366,43 +367,26 @@ export default function NewQuotePage() {
               </h2>
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Válida até
-                  </label>
-                  <input
-                    type="date"
-                    value={validUntil}
-                    onChange={(e) => setValidUntil(e.target.value)}
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Válida até"
+                  type="date"
+                  value={validUntil}
+                  onChange={(e) => setValidUntil(e.target.value)}
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Condições de Pagamento
-                  </label>
-                  <input
-                    type="text"
-                    value={paymentTerms}
-                    onChange={(e) => setPaymentTerms(e.target.value)}
-                    placeholder="Ex: 30/60/90 dias"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Condições de Pagamento"
+                  value={paymentTerms}
+                  onChange={(e) => setPaymentTerms(e.target.value)}
+                  placeholder="Ex: 30/60/90 dias"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Condições de Entrega
-                  </label>
-                  <input
-                    type="text"
-                    value={deliveryTerms}
-                    onChange={(e) => setDeliveryTerms(e.target.value)}
-                    placeholder="Ex: CIF, FOB"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Condições de Entrega"
+                  value={deliveryTerms}
+                  onChange={(e) => setDeliveryTerms(e.target.value)}
+                  placeholder="Ex: CIF, FOB"
+                />
 
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
@@ -417,60 +401,39 @@ export default function NewQuotePage() {
                 </div>
 
                 {/* Novos campos VIO-650 */}
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Solicitante
-                  </label>
-                  <input
-                    type="text"
-                    value={requesterName}
-                    onChange={(e) => setRequesterName(e.target.value)}
-                    placeholder="Nome do solicitante"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Solicitante"
+                  value={requesterName}
+                  onChange={(e) => setRequesterName(e.target.value)}
+                  placeholder="Nome do solicitante"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Grupo Centro de Custo
-                  </label>
-                  <input
-                    type="number"
-                    value={costCenterGroup ?? ""}
-                    onChange={(e) => setCostCenterGroup(e.target.value ? parseInt(e.target.value) : undefined)}
-                    placeholder="Código do grupo"
-                    className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Grupo Centro de Custo"
+                  type="number"
+                  value={costCenterGroup ?? ""}
+                  onChange={(e) => setCostCenterGroup(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="Código do grupo"
+                />
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      Valor Frete
-                    </label>
-                    <input
-                      type="number"
-                      value={freightValue || ""}
-                      onChange={(e) => setFreightValue(parseFloat(e.target.value) || 0)}
-                      step="0.01"
-                      min="0"
-                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      Desconto %
-                    </label>
-                    <input
-                      type="number"
-                      value={discountPercent || ""}
-                      onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
+                  <Input
+                    label="Valor Frete"
+                    type="number"
+                    value={freightValue || ""}
+                    onChange={(e) => setFreightValue(parseFloat(e.target.value) || 0)}
+                    step="0.01"
+                    min="0"
+                  />
+                  <Input
+                    label="Desconto %"
+                    type="number"
+                    value={discountPercent || ""}
+                    onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                    step="0.01"
+                    min="0"
+                    max="100"
+                  />
                 </div>
               </div>
             </div>

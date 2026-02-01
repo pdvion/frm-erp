@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { PageHeader } from "@/components/PageHeader";
 import { Users, Save } from "lucide-react";
 
@@ -98,18 +99,12 @@ export default function NewCustomerPage() {
             <h2 className="text-theme mb-4 text-lg font-medium">Identificação</h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Código *
-                </label>
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Código *"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+              />
 
               <div>
                 <label className="text-theme-secondary mb-1 block text-sm font-medium">Tipo</label>
@@ -205,64 +200,38 @@ export default function NewCustomerPage() {
             <h2 className="text-theme mb-4 text-lg font-medium">Contato</h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Contato
-                </label>
-                <input
-                  type="text"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Contato"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Telefone
-                </label>
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Telefone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Celular
-                </label>
-                <input
-                  type="text"
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Celular"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="https://"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Website"
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://"
+              />
             </div>
           </div>
 
@@ -271,88 +240,50 @@ export default function NewCustomerPage() {
             <h2 className="text-theme mb-4 text-lg font-medium">Endereço</h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">CEP</label>
-                <input
-                  type="text"
-                  value={addressZipCode}
-                  onChange={(e) => setAddressZipCode(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="CEP"
+                value={addressZipCode}
+                onChange={(e) => setAddressZipCode(e.target.value)}
+              />
 
               <div className="md:col-span-2">
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Logradouro
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Logradouro"
                   value={addressStreet}
                   onChange={(e) => setAddressStreet(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
                 />
               </div>
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Número
-                </label>
-                <input
-                  type="text"
-                  value={addressNumber}
-                  onChange={(e) => setAddressNumber(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Número"
+                value={addressNumber}
+                onChange={(e) => setAddressNumber(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Complemento
-                </label>
-                <input
-                  type="text"
-                  value={addressComplement}
-                  onChange={(e) => setAddressComplement(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Complemento"
+                value={addressComplement}
+                onChange={(e) => setAddressComplement(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Bairro
-                </label>
-                <input
-                  type="text"
-                  value={addressNeighborhood}
-                  onChange={(e) => setAddressNeighborhood(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Bairro"
+                value={addressNeighborhood}
+                onChange={(e) => setAddressNeighborhood(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Cidade
-                </label>
-                <input
-                  type="text"
-                  value={addressCity}
-                  onChange={(e) => setAddressCity(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Cidade"
+                value={addressCity}
+                onChange={(e) => setAddressCity(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Estado
-                </label>
-                <input
-                  type="text"
-                  value={addressState}
-                  onChange={(e) => setAddressState(e.target.value)}
-                  maxLength={2}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Estado"
+                value={addressState}
+                onChange={(e) => setAddressState(e.target.value)}
+                maxLength={2}
+              />
             </div>
           </div>
 
@@ -361,58 +292,37 @@ export default function NewCustomerPage() {
             <h2 className="text-theme mb-4 text-lg font-medium">Dados Comerciais</h2>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Limite de Crédito
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={creditLimit}
-                  onChange={(e) => setCreditLimit(e.target.value)}
-                  placeholder="0,00"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Limite de Crédito"
+                type="number"
+                step="0.01"
+                value={creditLimit}
+                onChange={(e) => setCreditLimit(e.target.value)}
+                placeholder="0,00"
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Prazo de Pagamento (dias)
-                </label>
-                <input
-                  type="number"
-                  value={paymentTermDays}
-                  onChange={(e) => setPaymentTermDays(e.target.value)}
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Prazo de Pagamento (dias)"
+                type="number"
+                value={paymentTermDays}
+                onChange={(e) => setPaymentTermDays(e.target.value)}
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Valor Mínimo Fatura
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={minInvoiceValue}
-                  onChange={(e) => setMinInvoiceValue(e.target.value)}
-                  placeholder="0,00"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Valor Mínimo Fatura"
+                type="number"
+                step="0.01"
+                value={minInvoiceValue}
+                onChange={(e) => setMinInvoiceValue(e.target.value)}
+                placeholder="0,00"
+              />
 
-              <div>
-                <label className="text-theme-secondary mb-1 block text-sm font-medium">
-                  Condição de Pagamento Padrão
-                </label>
-                <input
-                  type="text"
-                  value={defaultPaymentCondition}
-                  onChange={(e) => setDefaultPaymentCondition(e.target.value)}
-                  placeholder="Ex: 30/60/90"
-                  className="border-theme-input w-full rounded-lg border px-3 py-2"
-                />
-              </div>
+              <Input
+                label="Condição de Pagamento Padrão"
+                value={defaultPaymentCondition}
+                onChange={(e) => setDefaultPaymentCondition(e.target.value)}
+                placeholder="Ex: 30/60/90"
+              />
             </div>
 
             <div className="mt-4 flex flex-wrap gap-6">

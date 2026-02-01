@@ -12,6 +12,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
@@ -250,157 +251,104 @@ export default function NewSupplierPage() {
         {/* Dados Básicos */}
         <h2 className="text-lg font-semibold text-theme mb-4">Dados Básicos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="code" className={labelClass}>Código *</label>
-            <input
-              type="number"
-              id="code"
-              name="code"
-              required
-              value={formData.code || ""}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Código *"
+            type="number"
+            name="code"
+            required
+            value={formData.code || ""}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
-            <input
-              type="text"
-              id="cnpj"
-              name="cnpj"
-              value={formatCNPJ(formData.cnpj)}
-              onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
-              placeholder="00.000.000/0000-00"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CNPJ"
+            name="cnpj"
+            value={formatCNPJ(formData.cnpj)}
+            onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value.replace(/\D/g, "") }))}
+            placeholder="00.000.000/0000-00"
+          />
 
           <div className="md:col-span-2">
-            <label htmlFor="companyName" className={labelClass}>Razão Social *</label>
-            <input
-              type="text"
-              id="companyName"
+            <Input
+              label="Razão Social *"
               name="companyName"
               required
               value={formData.companyName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="tradeName" className={labelClass}>Nome Fantasia</label>
-            <input
-              type="text"
-              id="tradeName"
+            <Input
+              label="Nome Fantasia"
               name="tradeName"
               value={formData.tradeName}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
-          <div>
-            <label htmlFor="ie" className={labelClass}>Inscrição Estadual</label>
-            <input
-              type="text"
-              id="ie"
-              name="ie"
-              value={formData.ie}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Estadual"
+            name="ie"
+            value={formData.ie}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="im" className={labelClass}>Inscrição Municipal</label>
-            <input
-              type="text"
-              id="im"
-              name="im"
-              value={formData.im}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Inscrição Municipal"
+            name="im"
+            value={formData.im}
+            onChange={handleChange}
+          />
         </div>
 
         {/* Endereço */}
         <h2 className="text-lg font-semibold text-theme mb-4">Endereço</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div>
-            <label htmlFor="zipCode" className={labelClass}>CEP</label>
-            <input
-              type="text"
-              id="zipCode"
-              name="zipCode"
-              value={formatCEP(formData.zipCode)}
-              onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
-              placeholder="00000-000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CEP"
+            name="zipCode"
+            value={formatCEP(formData.zipCode)}
+            onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value.replace(/\D/g, "") }))}
+            placeholder="00000-000"
+          />
 
           <div className="md:col-span-2">
-            <label htmlFor="address" className={labelClass}>Endereço</label>
-            <input
-              type="text"
-              id="address"
+            <Input
+              label="Endereço"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className={inputClass}
             />
           </div>
 
-          <div>
-            <label htmlFor="number" className={labelClass}>Número</label>
-            <input
-              type="text"
-              id="number"
-              name="number"
-              value={formData.number}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Número"
+            name="number"
+            value={formData.number}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="complement" className={labelClass}>Complemento</label>
-            <input
-              type="text"
-              id="complement"
-              name="complement"
-              value={formData.complement}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Complemento"
+            name="complement"
+            value={formData.complement}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="neighborhood" className={labelClass}>Bairro</label>
-            <input
-              type="text"
-              id="neighborhood"
-              name="neighborhood"
-              value={formData.neighborhood}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Bairro"
+            name="neighborhood"
+            value={formData.neighborhood}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="city" className={labelClass}>Cidade</label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Cidade"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+          />
 
           <div>
             <label htmlFor="state" className={labelClass}>UF</label>

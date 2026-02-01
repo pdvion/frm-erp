@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 import {
   Factory,
@@ -172,32 +173,22 @@ export default function NewProductionOrderPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Quantidade *
-                  </label>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="0"
-                    min={0.01}
-                    step={0.01}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Quantidade *"
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="0"
+                  min={0.01}
+                  step={0.01}
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Data de Entrega
-                  </label>
-                  <input
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <Input
+                  label="Data de Entrega"
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -223,29 +214,19 @@ export default function NewProductionOrderPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Pedido de Venda
-                </label>
-                <input
-                  type="text"
-                  value={salesOrderNumber}
-                  onChange={(e) => setSalesOrderNumber(e.target.value)}
-                  placeholder="Ex: PV-12345"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Pedido de Venda"
+                value={salesOrderNumber}
+                onChange={(e) => setSalesOrderNumber(e.target.value)}
+                placeholder="Ex: PV-12345"
+              />
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Cliente
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="Cliente"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Nome do cliente"
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -316,29 +297,19 @@ export default function NewProductionOrderPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Início Planejado
-                </label>
-                <input
-                  type="date"
-                  value={plannedStart}
-                  onChange={(e) => setPlannedStart(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Início Planejado"
+                type="date"
+                value={plannedStart}
+                onChange={(e) => setPlannedStart(e.target.value)}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Término Planejado
-                </label>
-                <input
-                  type="date"
-                  value={plannedEnd}
-                  onChange={(e) => setPlannedEnd(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              <Input
+                label="Término Planejado"
+                type="date"
+                value={plannedEnd}
+                onChange={(e) => setPlannedEnd(e.target.value)}
+              />
             </div>
           </div>
 
