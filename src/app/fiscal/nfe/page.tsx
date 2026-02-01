@@ -18,6 +18,9 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
 
@@ -50,13 +53,12 @@ export default function NFePage() {
         title="Notas Fiscais Eletrônicas"
         icon={<FileText className="w-6 h-6 text-blue-600" />}
         actions={
-          <Link
-            href="/fiscal/nfe/import"
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+          <Button
+            onClick={() => window.location.href = "/fiscal/nfe/import"}
+            leftIcon={<Upload className="w-5 h-5" />}
           >
-            <Upload className="w-5 h-5" />
-            <span>Importar XML</span>
-          </Link>
+            Importar XML
+          </Button>
         }
       />
 
@@ -99,35 +101,34 @@ export default function NFePage() {
         <div className="bg-theme-card rounded-xl border border-theme p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
+              <Input
                 placeholder="Buscar por número, chave de acesso ou fornecedor..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-primary)] focus:border-transparent"
+                className="pl-10"
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-theme-muted" />
-              <select
+              <Select
                 value={status}
-                onChange={(e) => {
-                  setStatus(e.target.value);
+                onChange={(value) => {
+                  setStatus(value);
                   setPage(1);
                 }}
-                className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-primary)] focus:border-transparent"
-                aria-label="Filtrar por status"
-              >
-                <option value="">Todos os status</option>
-                <option value="PENDING">Pendentes</option>
-                <option value="APPROVED">Aprovadas</option>
-                <option value="REJECTED">Rejeitadas</option>
-                <option value="PROCESSING">Processando</option>
-              </select>
+                placeholder="Todos os status"
+                options={[
+                  { value: "", label: "Todos os status" },
+                  { value: "PENDING", label: "Pendentes" },
+                  { value: "APPROVED", label: "Aprovadas" },
+                  { value: "REJECTED", label: "Rejeitadas" },
+                  { value: "PROCESSING", label: "Processando" },
+                ]}
+              />
             </div>
           </div>
         </div>
