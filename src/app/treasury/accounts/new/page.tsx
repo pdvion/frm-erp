@@ -204,21 +204,19 @@ export default function NewBankAccountPage() {
                   Agência
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     value={form.agency}
                     onChange={(e) => setForm({ ...form, agency: e.target.value.replace(/\D/g, "") })}
                     placeholder="0000"
                     maxLength={4}
-                    className="flex-1 px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1"
                   />
-                  <input
-                    type="text"
+                  <Input
                     value={form.agencyDigit}
                     onChange={(e) => setForm({ ...form, agencyDigit: e.target.value })}
                     placeholder="DV"
                     maxLength={1}
-                    className="w-16 px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                    className="w-16 text-center"
                   />
                 </div>
               </div>
@@ -228,20 +226,18 @@ export default function NewBankAccountPage() {
                   Conta
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     value={form.accountNumber}
                     onChange={(e) => setForm({ ...form, accountNumber: e.target.value.replace(/\D/g, "") })}
                     placeholder="00000000"
-                    className="flex-1 px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1"
                   />
-                  <input
-                    type="text"
+                  <Input
                     value={form.accountDigit}
                     onChange={(e) => setForm({ ...form, accountDigit: e.target.value })}
                     placeholder="DV"
                     maxLength={1}
-                    className="w-16 px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                    className="w-16 text-center"
                   />
                 </div>
               </div>
@@ -259,15 +255,14 @@ export default function NewBankAccountPage() {
                 Saldo Inicial
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10">
                   R$
                 </span>
-                <input
-                  type="text"
+                <Input
                   value={form.initialBalance}
                   onChange={(e) => setForm({ ...form, initialBalance: formatMoney(e.target.value) })}
                   placeholder="0,00"
-                  className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="pl-10"
                 />
               </div>
               <p className="text-xs text-theme-muted mt-1">
@@ -281,15 +276,14 @@ export default function NewBankAccountPage() {
                   Limite de Crédito
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted z-10">
                     R$
                   </span>
-                  <input
-                    type="text"
+                  <Input
                     value={form.creditLimit}
                     onChange={(e) => setForm({ ...form, creditLimit: formatMoney(e.target.value) })}
                     placeholder="0,00"
-                    className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="pl-10"
                   />
                 </div>
                 <p className="text-xs text-theme-muted mt-1">

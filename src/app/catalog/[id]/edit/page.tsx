@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2, Trash2, Globe, GlobeLock } from "lucide-react
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { RichTextEditor } from "@/components/editor";
 import { ProductImageUpload } from "@/components/catalog/ProductImageUpload";
 import { ProductVideoManager } from "@/components/catalog/ProductVideoManager";
@@ -295,31 +296,19 @@ export default function EditProductPage() {
                   Informações Básicas
                 </h3>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nome do Produto *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Nome do Produto *"
+                  value={formData.name}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  required
+                />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Código/SKU
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.code}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                    />
-                  </div>
+                  <Input
+                    label="Código/SKU"
+                    value={formData.code}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
+                  />
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Categoria
@@ -385,12 +374,10 @@ export default function EditProductPage() {
             <div className="space-y-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100">Tags</h3>
-                <input
-                  type="text"
+                <Input
                   value={formData.tags}
                   onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
                   placeholder="tag1, tag2, tag3"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                 />
               </div>
 
@@ -498,14 +485,14 @@ export default function EditProductPage() {
                     Preço de Custo
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
-                    <input
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <Input
                       type="number"
-                      step="0.01"
-                      min="0"
+                      step={0.01}
+                      min={0}
                       value={formData.costPrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, costPrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="pl-10"
                     />
                   </div>
                 </div>
@@ -514,14 +501,14 @@ export default function EditProductPage() {
                     Preço de Tabela
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
-                    <input
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <Input
                       type="number"
-                      step="0.01"
-                      min="0"
+                      step={0.01}
+                      min={0}
                       value={formData.listPrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, listPrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="pl-10"
                     />
                   </div>
                 </div>
@@ -530,14 +517,14 @@ export default function EditProductPage() {
                     Preço Promocional
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
-                    <input
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">R$</span>
+                    <Input
                       type="number"
-                      step="0.01"
-                      min="0"
+                      step={0.01}
+                      min={0}
                       value={formData.salePrice}
                       onChange={(e) => setFormData((prev) => ({ ...prev, salePrice: e.target.value }))}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                      className="pl-10"
                     />
                   </div>
                 </div>
@@ -557,11 +544,10 @@ export default function EditProductPage() {
                   URL Amigável (Slug)
                 </label>
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     value={formData.slug}
                     onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                    className="flex-1"
                   />
                   <Button
                     type="button"
@@ -574,18 +560,12 @@ export default function EditProductPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Título SEO
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
-                  maxLength={60}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                />
-              </div>
+              <Input
+                label="Título SEO"
+                value={formData.metaTitle}
+                onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
+                maxLength={60}
+              />
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

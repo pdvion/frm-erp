@@ -370,81 +370,52 @@ export default function NewSupplierPage() {
         {/* Contato */}
         <h2 className="text-lg font-semibold text-theme mb-4">Contato</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="phone" className={labelClass}>Telefone</label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              value={formatPhone(formData.phone)}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 0000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Telefone"
+            name="phone"
+            value={formatPhone(formData.phone)}
+            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 0000-0000"
+          />
 
-          <div>
-            <label htmlFor="mobile" className={labelClass}>Celular</label>
-            <input
-              type="text"
-              id="mobile"
-              name="mobile"
-              value={formatPhone(formData.mobile)}
-              onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
-              placeholder="(00) 00000-0000"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Celular"
+            name="mobile"
+            value={formatPhone(formData.mobile)}
+            onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value.replace(/\D/g, "") }))}
+            placeholder="(00) 00000-0000"
+          />
 
-          <div>
-            <label htmlFor="email" className={labelClass}>E-mail</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="E-mail"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="website" className={labelClass}>Website</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Website"
+            name="website"
+            value={formData.website}
+            onChange={handleChange}
+            placeholder="https://"
+          />
 
-          <div>
-            <label htmlFor="contactName" className={labelClass}>Nome do Contato</label>
-            <input
-              type="text"
-              id="contactName"
-              name="contactName"
-              value={formData.contactName}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Nome do Contato"
+            name="contactName"
+            value={formData.contactName}
+            onChange={handleChange}
+          />
 
-          <div>
-            <label htmlFor="paymentTerms" className={labelClass}>Condições de Pagamento</label>
-            <input
-              type="text"
-              id="paymentTerms"
-              name="paymentTerms"
-              value={formData.paymentTerms}
-              onChange={handleChange}
-              placeholder="Ex: 30/60/90 dias"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Condições de Pagamento"
+            name="paymentTerms"
+            value={formData.paymentTerms}
+            onChange={handleChange}
+            placeholder="Ex: 30/60/90 dias"
+          />
         </div>
 
         {/* Categorias */}
@@ -497,30 +468,20 @@ export default function NewSupplierPage() {
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="cnae" className={labelClass}>CNAE</label>
-            <input
-              type="text"
-              id="cnae"
-              name="cnae"
-              value={formData.cnae}
-              onChange={handleChange}
-              placeholder="0000-0/00"
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="taxRegime" className={labelClass}>Regime Tributário</label>
-            <input
-              type="text"
-              id="taxRegime"
-              name="taxRegime"
-              value={formData.taxRegime}
-              onChange={handleChange}
-              placeholder="Ex: Simples Nacional"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CNAE"
+            name="cnae"
+            value={formData.cnae}
+            onChange={handleChange}
+            placeholder="0000-0/00"
+          />
+          <Input
+            label="Regime Tributário"
+            name="taxRegime"
+            value={formData.taxRegime}
+            onChange={handleChange}
+            placeholder="Ex: Simples Nacional"
+          />
         </div>
 
         {/* IQF - Índice de Qualidade */}
@@ -542,59 +503,42 @@ export default function NewSupplierPage() {
               <option value="STRATEGIC">Estratégico</option>
             </select>
           </div>
-          <div>
-            <label htmlFor="certificationExpiryDate" className={labelClass}>Validade Certificação</label>
-            <input
-              type="date"
-              id="certificationExpiryDate"
-              name="certificationExpiryDate"
-              value={formData.certificationExpiryDate}
-              onChange={handleChange}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="certificationFileName" className={labelClass}>Arquivo Certificação</label>
-            <input
-              type="text"
-              id="certificationFileName"
-              name="certificationFileName"
-              value={formData.certificationFileName}
-              onChange={handleChange}
-              placeholder="Nome do arquivo"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Validade Certificação"
+            type="date"
+            name="certificationExpiryDate"
+            value={formData.certificationExpiryDate}
+            onChange={handleChange}
+          />
+          <Input
+            label="Arquivo Certificação"
+            name="certificationFileName"
+            value={formData.certificationFileName}
+            onChange={handleChange}
+            placeholder="Nome do arquivo"
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div>
-            <label htmlFor="overallQualityPercent" className={labelClass}>Qualidade Geral (%)</label>
-            <input
-              type="number"
-              id="overallQualityPercent"
-              name="overallQualityPercent"
-              value={formData.overallQualityPercent || ""}
-              onChange={handleChange}
-              min="0"
-              max="100"
-              step="0.1"
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="iqfPercent" className={labelClass}>IQF (%)</label>
-            <input
-              type="number"
-              id="iqfPercent"
-              name="iqfPercent"
-              value={formData.iqfPercent || ""}
-              onChange={handleChange}
-              min="0"
-              max="100"
-              step="0.1"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Qualidade Geral (%)"
+            type="number"
+            name="overallQualityPercent"
+            value={formData.overallQualityPercent || ""}
+            onChange={handleChange}
+            min={0}
+            max={100}
+            step={0.1}
+          />
+          <Input
+            label="IQF (%)"
+            type="number"
+            name="iqfPercent"
+            value={formData.iqfPercent || ""}
+            onChange={handleChange}
+            min={0}
+            max={100}
+            step={0.1}
+          />
           <div>
             <label htmlFor="iqfStatus" className={labelClass}>Status IQF</label>
             <select
