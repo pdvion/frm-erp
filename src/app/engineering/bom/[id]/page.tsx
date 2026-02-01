@@ -339,17 +339,18 @@ function AddComponentModal({
                 {materials.materials
                   .filter((m) => m.id !== parentMaterialId)
                   .map((mat) => (
-                    <button
+                    <Button
                       key={mat.id}
+                      variant="ghost"
                       onClick={() => {
                         setChildMaterialId(mat.id);
                         setSearch(mat.description);
                         setUnit(mat.unit);
                       }}
-                      className="w-full px-3 py-2 text-left hover:bg-theme-hover text-sm"
+                      className="w-full justify-start text-left text-sm"
                     >
                       <span className="font-medium">{mat.code}</span> - {mat.description}
-                    </button>
+                    </Button>
                   ))}
               </div>
             )}
@@ -430,13 +431,14 @@ function AddComponentModal({
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               addMutation.mutate({
                 parentMaterialId,
@@ -450,10 +452,11 @@ function AddComponentModal({
               })
             }
             disabled={!childMaterialId || addMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={addMutation.isPending}
+            className="flex-1"
           >
-            {addMutation.isPending ? "Adicionando..." : "Adicionar"}
-          </button>
+            Adicionar
+          </Button>
         </div>
       </div>
     </div>
@@ -568,13 +571,14 @@ function EditItemModal({
         </div>
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               updateMutation.mutate({
                 id: itemId,
@@ -586,10 +590,11 @@ function EditItemModal({
               })
             }
             disabled={updateMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={updateMutation.isPending}
+            className="flex-1"
           >
-            {updateMutation.isPending ? "Salvando..." : "Salvar"}
-          </button>
+            Salvar
+          </Button>
         </div>
       </div>
     </div>
@@ -692,12 +697,12 @@ function CostModal({
         ) : null}
 
         <div className="mt-4 flex justify-end">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Fechar
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -838,12 +843,12 @@ function ExplodeModal({
         ) : null}
 
         <div className="mt-4 flex justify-end">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
           >
             Fechar
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -909,16 +914,17 @@ function CopyBomModal({
                 {materials.materials
                   .filter((m) => m.id !== sourceMaterialId)
                   .map((mat) => (
-                    <button
+                    <Button
                       key={mat.id}
+                      variant="ghost"
                       onClick={() => {
                         setTargetMaterialId(mat.id);
                         setSearch(mat.description);
                       }}
-                      className="w-full px-3 py-2 text-left hover:bg-theme-hover text-sm"
+                      className="w-full justify-start text-left text-sm"
                     >
                       <span className="font-medium">{mat.code}</span> - {mat.description}
-                    </button>
+                    </Button>
                   ))}
               </div>
             )}
@@ -944,13 +950,14 @@ function CopyBomModal({
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover"
+            className="flex-1"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               copyMutation.mutate({
                 sourceMaterialId,
@@ -959,10 +966,11 @@ function CopyBomModal({
               })
             }
             disabled={!targetMaterialId || copyMutation.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            isLoading={copyMutation.isPending}
+            className="flex-1"
           >
-            {copyMutation.isPending ? "Copiando..." : "Copiar"}
-          </button>
+            Copiar
+          </Button>
         </div>
       </div>
     </div>
