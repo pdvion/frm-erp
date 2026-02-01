@@ -8,6 +8,8 @@ import { formatChaveAcesso } from "@/lib/nfe-parser";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   FileText,
   RefreshCw,
@@ -277,22 +279,22 @@ export default function PendingInvoicesPage() {
             <span className="text-sm font-medium text-theme-secondary">Filtrar por:</span>
           </div>
 
-          <select
+          <Select
             value={situacaoFilter}
-            onChange={(e) => {
-              setSituacaoFilter(e.target.value as SituacaoNfe | "");
+            onChange={(value) => {
+              setSituacaoFilter(value as SituacaoNfe | "");
               setPage(1);
             }}
-            className="border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
-            aria-label="Filtrar por situação"
-          >
-            <option value="">Todas as situações</option>
-            <option value="PENDENTE">Pendente</option>
-            <option value="PROCESSANDO">Processando</option>
-            <option value="IMPORTADA">Importada</option>
-            <option value="IGNORADA">Ignorada</option>
-            <option value="ERRO">Erro</option>
-          </select>
+            placeholder="Todas as situações"
+            options={[
+              { value: "", label: "Todas as situações" },
+              { value: "PENDENTE", label: "Pendente" },
+              { value: "PROCESSANDO", label: "Processando" },
+              { value: "IMPORTADA", label: "Importada" },
+              { value: "IGNORADA", label: "Ignorada" },
+              { value: "ERRO", label: "Erro" },
+            ]}
+          />
 
           {situacaoFilter && (
             <Button
@@ -543,12 +545,11 @@ export default function PendingInvoicesPage() {
               <label htmlFor="ignore-motivo" className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo (opcional)
               </label>
-              <textarea
+              <Textarea
                 id="ignore-motivo"
                 value={ignoreMotivo}
                 onChange={(e) => setIgnoreMotivo(e.target.value)}
                 placeholder="Ex: NFe de devolução, já lançada manualmente..."
-                className="w-full border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-indigo-500"
                 rows={3}
               />
             </div>
@@ -627,12 +628,11 @@ export default function PendingInvoicesPage() {
                 <label htmlFor="manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
                   Justificativa <span className="text-red-500">*</span>
                 </label>
-                <textarea
+                <Textarea
                   id="manifest-justificativa"
                   value={manifestJustificativa}
                   onChange={(e) => setManifestJustificativa(e.target.value)}
                   placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   rows={3}
                 />
                 {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
@@ -723,12 +723,11 @@ export default function PendingInvoicesPage() {
                 <label htmlFor="batch-manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
                   Justificativa <span className="text-red-500">*</span>
                 </label>
-                <textarea
+                <Textarea
                   id="batch-manifest-justificativa"
                   value={manifestJustificativa}
                   onChange={(e) => setManifestJustificativa(e.target.value)}
                   placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
-                  className="w-full border border-theme-input rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   rows={3}
                 />
                 {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
