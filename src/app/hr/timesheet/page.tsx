@@ -13,6 +13,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export default function TimesheetPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
@@ -80,10 +81,9 @@ export default function TimesheetPage() {
               </select>
             </div>
             <div className="flex items-end">
-              <button className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover">
-                <Filter className="w-5 h-5" />
-                <span>Mais Filtros</span>
-              </button>
+              <Button variant="outline" leftIcon={<Filter className="w-5 h-5" />}>
+                Mais Filtros
+              </Button>
             </div>
           </div>
         </div>
