@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Ship, Save, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -183,19 +184,13 @@ export default function EditImportProcessPage({
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Informações Básicas</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Número do Processo *
-              </label>
-              <input
-                type="text"
-                name="processNumber"
-                value={formData.processNumber}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Número do Processo *"
+              name="processNumber"
+              value={formData.processNumber}
+              onChange={handleChange}
+              required
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Status</label>
               <select
@@ -211,16 +206,12 @@ export default function EditImportProcessPage({
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Referência</label>
-              <input
-                type="text"
-                name="reference"
-                value={formData.reference}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Referência"
+              name="reference"
+              value={formData.reference}
+              onChange={handleChange}
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Fornecedor *</label>
               <select
@@ -334,19 +325,16 @@ export default function EditImportProcessPage({
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Valores</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Valor da Invoice *</label>
-              <input
-                type="number"
-                name="invoiceValue"
-                value={formData.invoiceValue}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Valor da Invoice *"
+              type="number"
+              name="invoiceValue"
+              value={formData.invoiceValue}
+              onChange={handleChange}
+              required
+              min="0"
+              step="0.01"
+            />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Moeda</label>
               <select
@@ -361,128 +349,92 @@ export default function EditImportProcessPage({
                 <option value="CNY">CNY - Yuan</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Taxa de Câmbio</label>
-              <input
-                type="number"
-                name="exchangeRate"
-                value={formData.exchangeRate}
-                onChange={handleChange}
-                min="0"
-                step="0.0001"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Número da Invoice</label>
-              <input
-                type="text"
-                name="invoiceNumber"
-                value={formData.invoiceNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Frete</label>
-              <input
-                type="number"
-                name="freightValue"
-                value={formData.freightValue}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Seguro</label>
-              <input
-                type="number"
-                name="insuranceValue"
-                value={formData.insuranceValue}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Taxa de Câmbio"
+              type="number"
+              name="exchangeRate"
+              value={formData.exchangeRate}
+              onChange={handleChange}
+              min="0"
+              step="0.0001"
+            />
+            <Input
+              label="Número da Invoice"
+              name="invoiceNumber"
+              value={formData.invoiceNumber}
+              onChange={handleChange}
+            />
+            <Input
+              label="Frete"
+              type="number"
+              name="freightValue"
+              value={formData.freightValue}
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+            />
+            <Input
+              label="Seguro"
+              type="number"
+              name="insuranceValue"
+              value={formData.insuranceValue}
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+            />
           </div>
         </div>
 
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Datas e Documentos</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Data da Invoice</label>
-              <input
-                type="date"
-                name="invoiceDate"
-                value={formData.invoiceDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">ETD</label>
-              <input
-                type="date"
-                name="etd"
-                value={formData.etd}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">ETA</label>
-              <input
-                type="date"
-                name="eta"
-                value={formData.eta}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Chegada Real</label>
-              <input
-                type="date"
-                name="arrivalDate"
-                value={formData.arrivalDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Desembaraço</label>
-              <input
-                type="date"
-                name="clearanceDate"
-                value={formData.clearanceDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Número do BL</label>
-              <input
-                type="text"
-                name="blNumber"
-                value={formData.blNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">Número da DI</label>
-              <input
-                type="text"
-                name="diNumber"
-                value={formData.diNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-              />
-            </div>
+            <Input
+              label="Data da Invoice"
+              type="date"
+              name="invoiceDate"
+              value={formData.invoiceDate}
+              onChange={handleChange}
+            />
+            <Input
+              label="ETD"
+              type="date"
+              name="etd"
+              value={formData.etd}
+              onChange={handleChange}
+            />
+            <Input
+              label="ETA"
+              type="date"
+              name="eta"
+              value={formData.eta}
+              onChange={handleChange}
+            />
+            <Input
+              label="Chegada Real"
+              type="date"
+              name="arrivalDate"
+              value={formData.arrivalDate}
+              onChange={handleChange}
+            />
+            <Input
+              label="Desembaraço"
+              type="date"
+              name="clearanceDate"
+              value={formData.clearanceDate}
+              onChange={handleChange}
+            />
+            <Input
+              label="Número do BL"
+              name="blNumber"
+              value={formData.blNumber}
+              onChange={handleChange}
+            />
+            <Input
+              label="Número da DI"
+              name="diNumber"
+              value={formData.diNumber}
+              onChange={handleChange}
+            />
           </div>
         </div>
 
