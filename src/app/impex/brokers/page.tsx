@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Users, Plus, Search, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface BrokerFormData {
@@ -224,74 +225,47 @@ export default function BrokersPage() {
               {editingId ? "Editar Despachante" : "Novo Despachante"}
             </h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">CNPJ *</label>
-                <input
-                  type="text"
-                  value={formatCnpj(formData.cnpj)}
-                  onChange={(e) => setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, "") })}
-                  placeholder="00.000.000/0000-00"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Nome *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+              <Input
+                label="CNPJ *"
+                value={formatCnpj(formData.cnpj)}
+                onChange={(e) => setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, "") })}
+                placeholder="00.000.000/0000-00"
+              />
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Telefone</label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Endereço</label>
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+                <Input
+                  label="Email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+                <Input
+                  label="Telefone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
+              <Input
+                label="Endereço"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              />
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Cidade</label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Estado</label>
-                  <input
-                    type="text"
-                    value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-                    maxLength={2}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
+                <Input
+                  label="Cidade"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                />
+                <Input
+                  label="Estado"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+                  maxLength={2}
+                />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

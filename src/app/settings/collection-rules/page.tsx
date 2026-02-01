@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Loader2,
   Plus,
@@ -193,35 +194,23 @@ export default function CollectionRulesPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Nome *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Ex: Régua Padrão"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Descrição
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Descrição opcional"
-                  />
-                </div>
+                <Input
+                  label="Nome *"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="Ex: Régua Padrão"
+                  required
+                />
+                <Input
+                  label="Descrição"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder="Descrição opcional"
+                />
               </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2">
@@ -388,29 +377,21 @@ export default function CollectionRulesPage() {
                         className="bg-theme-card rounded-lg border p-4 mb-4 space-y-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Input
+                            label="Nome da Etapa *"
+                            value={stepFormData.name}
+                            onChange={(e) =>
+                              setStepFormData({
+                                ...stepFormData,
+                                name: e.target.value,
+                              })
+                            }
+                            placeholder="Ex: Lembrete de vencimento"
+                            required
+                          />
                           <div>
-                            <label className="block text-sm font-medium text-theme-secondary mb-1">
-                              Nome da Etapa *
-                            </label>
-                            <input
-                              type="text"
-                              value={stepFormData.name}
-                              onChange={(e) =>
-                                setStepFormData({
-                                  ...stepFormData,
-                                  name: e.target.value,
-                                })
-                              }
-                              className="w-full px-3 py-2 border rounded-lg text-sm"
-                              placeholder="Ex: Lembrete de vencimento"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-theme-secondary mb-1">
-                              Dias (relativo ao vencimento) *
-                            </label>
-                            <input
+                            <Input
+                              label="Dias (relativo ao vencimento) *"
                               type="number"
                               value={stepFormData.daysOffset}
                               onChange={(e) =>
@@ -419,7 +400,6 @@ export default function CollectionRulesPage() {
                                   daysOffset: parseInt(e.target.value) || 0,
                                 })
                               }
-                              className="w-full px-3 py-2 border rounded-lg text-sm"
                               placeholder="-5 = 5 dias antes"
                             />
                             <p className="text-xs text-theme-muted mt-1">
@@ -450,23 +430,17 @@ export default function CollectionRulesPage() {
                             </select>
                           </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-theme-secondary mb-1">
-                            Assunto do Template
-                          </label>
-                          <input
-                            type="text"
-                            value={stepFormData.templateSubject}
-                            onChange={(e) =>
-                              setStepFormData({
-                                ...stepFormData,
-                                templateSubject: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
-                            placeholder="Ex: Lembrete: Título vence em {dias} dias"
-                          />
-                        </div>
+                        <Input
+                          label="Assunto do Template"
+                          value={stepFormData.templateSubject}
+                          onChange={(e) =>
+                            setStepFormData({
+                              ...stepFormData,
+                              templateSubject: e.target.value,
+                            })
+                          }
+                          placeholder="Ex: Lembrete: Título vence em {dias} dias"
+                        />
                         <div>
                           <label className="block text-sm font-medium text-theme-secondary mb-1">
                             Corpo do Template

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Anchor, Plus, Search, Edit2, Trash2, Ship, Plane, Truck } from "lucide-react";
 
 type PortType = "MARITIME" | "AIRPORT" | "BORDER";
@@ -234,38 +235,26 @@ export default function PortsPage() {
               {editingId ? "Editar Porto" : "Novo Porto"}
             </h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Código *</label>
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                  placeholder="Ex: BRSSZ"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ex: Porto de Santos"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                />
-              </div>
+              <Input
+                label="Código *"
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                placeholder="Ex: BRSSZ"
+              />
+              <Input
+                label="Nome *"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Ex: Porto de Santos"
+              />
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">País *</label>
-                  <input
-                    type="text"
-                    value={formData.country}
-                    onChange={(e) => setFormData({ ...formData, country: e.target.value.toUpperCase() })}
-                    placeholder="BR"
-                    maxLength={2}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
+                <Input
+                  label="País *"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value.toUpperCase() })}
+                  placeholder="BR"
+                  maxLength={2}
+                />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
                   <select
