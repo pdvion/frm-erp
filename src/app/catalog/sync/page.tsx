@@ -98,29 +98,29 @@ export default function CatalogSyncPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
+          <div className="text-2xl font-bold text-theme">
             {syncStats?.totalMaterials ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Materiais Ativos</div>
+          <div className="text-sm text-theme-muted">Materiais Ativos</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-green-600">
             {syncStats?.materialsWithProduct ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Com Produto</div>
+          <div className="text-sm text-theme-muted">Com Produto</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-yellow-600">
             {syncStats?.materialsWithoutProduct ?? 0}
           </div>
-          <div className="text-sm text-gray-500">Sem Produto</div>
+          <div className="text-sm text-theme-muted">Sem Produto</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-theme-card rounded-lg p-4 border border-theme">
           <div className="text-2xl font-bold text-blue-600">
             {syncStats?.syncPercentage ?? 0}%
           </div>
-          <div className="text-sm text-gray-500">Sincronizado</div>
+          <div className="text-sm text-theme-muted">Sincronizado</div>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export default function CatalogSyncPage() {
           <div className="relative flex-1 sm:max-w-md">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted"
             />
             <input
               type="text"
@@ -140,7 +140,7 @@ export default function CatalogSyncPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
+              className="w-full pl-10 pr-4 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
             />
           </div>
           <Button variant="outline" size="icon" onClick={() => refetch()}>
@@ -192,23 +192,23 @@ export default function CatalogSyncPage() {
           <Loader2 size={32} className="animate-spin text-blue-600" />
         </div>
       ) : materials.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <Package size={48} className="mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+        <div className="text-center py-12 bg-theme-card rounded-lg border border-theme">
+          <Package size={48} className="mx-auto mb-4 text-theme-muted" />
+          <h3 className="text-lg font-medium text-theme mb-2">
             {search
               ? "Nenhum material encontrado"
               : "Todos os materiais já possuem produto"}
           </h3>
-          <p className="text-gray-500">
+          <p className="text-theme-muted">
             {search
               ? "Tente ajustar a busca"
               : "Não há materiais pendentes de sincronização"}
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-theme-tertiary">
               <tr>
                 <th className="px-4 py-3 text-left">
                   <input
@@ -221,31 +221,31 @@ export default function CatalogSyncPage() {
                     className="rounded"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Código
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Descrição
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Unidade
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   NCM
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Último Preço
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Categoria
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-theme-table">
               {materials.map((material) => (
                 <tr
                   key={material.id}
-                  className={`hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer ${
+                  className={`hover:bg-theme-hover cursor-pointer ${
                     selectedMaterials.includes(material.id)
                       ? "bg-blue-50 dark:bg-blue-950"
                       : ""
@@ -263,14 +263,14 @@ export default function CatalogSyncPage() {
                   </td>
                   <td className="px-4 py-3 text-sm font-mono">{material.code}</td>
                   <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                    <div className="font-medium text-theme">
                       {material.description}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-theme-muted">
                     {material.unit}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500 font-mono">
+                  <td className="px-4 py-3 text-sm text-theme-muted font-mono">
                     {material.ncm || "-"}
                   </td>
                   <td className="px-4 py-3 text-sm">
@@ -279,10 +279,10 @@ export default function CatalogSyncPage() {
                         R$ {material.lastPurchasePrice.toFixed(2)}
                       </span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-theme-muted">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-theme-muted">
                     {material.category?.name || "-"}
                   </td>
                 </tr>
@@ -302,7 +302,7 @@ export default function CatalogSyncPage() {
           >
             Anterior
           </Button>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-theme-muted">
             Página {page} de {totalPages}
           </span>
           <Button
