@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Building2,
   Settings,
@@ -206,101 +207,67 @@ export default function CnabConfigPage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Carteira</label>
-              <input
-                type="text"
-                value={config.carteira}
-                onChange={(e) => setConfig({ ...config, carteira: e.target.value })}
-                placeholder="Ex: 17"
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Carteira"
+              value={config.carteira}
+              onChange={(e) => setConfig({ ...config, carteira: e.target.value })}
+              placeholder="Ex: 17"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Agência *</label>
-              <input
-                type="text"
-                value={config.agencia}
-                onChange={(e) => setConfig({ ...config, agencia: e.target.value.replace(/\D/g, "") })}
-                placeholder="0000"
-                maxLength={5}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito Ag.</label>
-              <input
-                type="text"
-                value={config.agenciaDigito}
-                onChange={(e) => setConfig({ ...config, agenciaDigito: e.target.value })}
-                placeholder="X"
-                maxLength={1}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Conta *</label>
-              <input
-                type="text"
-                value={config.conta}
-                onChange={(e) => setConfig({ ...config, conta: e.target.value.replace(/\D/g, "") })}
-                placeholder="000000"
-                maxLength={12}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Dígito CC *</label>
-              <input
-                type="text"
-                value={config.contaDigito}
-                onChange={(e) => setConfig({ ...config, contaDigito: e.target.value })}
-                placeholder="X"
-                maxLength={1}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Agência *"
+              value={config.agencia}
+              onChange={(e) => setConfig({ ...config, agencia: e.target.value.replace(/\D/g, "") })}
+              placeholder="0000"
+              maxLength={5}
+            />
+            <Input
+              label="Dígito Ag."
+              value={config.agenciaDigito}
+              onChange={(e) => setConfig({ ...config, agenciaDigito: e.target.value })}
+              placeholder="X"
+              maxLength={1}
+            />
+            <Input
+              label="Conta *"
+              value={config.conta}
+              onChange={(e) => setConfig({ ...config, conta: e.target.value.replace(/\D/g, "") })}
+              placeholder="000000"
+              maxLength={12}
+            />
+            <Input
+              label="Dígito CC *"
+              value={config.contaDigito}
+              onChange={(e) => setConfig({ ...config, contaDigito: e.target.value })}
+              placeholder="X"
+              maxLength={1}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Convênio</label>
-              <input
-                type="text"
-                value={config.convenio}
-                onChange={(e) => setConfig({ ...config, convenio: e.target.value })}
-                placeholder="Código do convênio"
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">CNPJ/CPF Cedente *</label>
-              <input
-                type="text"
-                value={config.cedenteDocumento}
-                onChange={(e) => setConfig({ ...config, cedenteDocumento: e.target.value.replace(/\D/g, "") })}
-                placeholder="00000000000000"
-                maxLength={14}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Input
+              label="Convênio"
+              value={config.convenio}
+              onChange={(e) => setConfig({ ...config, convenio: e.target.value })}
+              placeholder="Código do convênio"
+            />
+            <Input
+              label="CNPJ/CPF Cedente *"
+              value={config.cedenteDocumento}
+              onChange={(e) => setConfig({ ...config, cedenteDocumento: e.target.value.replace(/\D/g, "") })}
+              placeholder="00000000000000"
+              maxLength={14}
+            />
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Nome do Cedente *</label>
-            <input
-              type="text"
+            <Input
+              label="Nome do Cedente *"
               value={config.cedente}
               onChange={(e) => setConfig({ ...config, cedente: e.target.value })}
               placeholder="Razão Social da Empresa"
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 

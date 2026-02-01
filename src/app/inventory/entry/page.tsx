@@ -11,6 +11,7 @@ import {
   Search
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { trpc } from "@/lib/trpc";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
@@ -213,39 +214,29 @@ export default function InventoryEntryPage() {
             />
 
             {/* Quantidade */}
-            <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-theme-secondary mb-1">
-                Quantidade *
-              </label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                required
-                min="0.01"
-                step="0.01"
-                value={formData.quantity || ""}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+            <Input
+              label="Quantidade *"
+              type="number"
+              id="quantity"
+              name="quantity"
+              required
+              min={0.01}
+              step={0.01}
+              value={formData.quantity || ""}
+              onChange={handleChange}
+            />
 
             {/* Custo Unitário */}
-            <div>
-              <label htmlFor="unitCost" className="block text-sm font-medium text-theme-secondary mb-1">
-                Custo Unitário (R$)
-              </label>
-              <input
-                type="number"
-                id="unitCost"
-                name="unitCost"
-                min="0"
-                step="0.01"
-                value={formData.unitCost || ""}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+            <Input
+              label="Custo Unitário (R$)"
+              type="number"
+              id="unitCost"
+              name="unitCost"
+              min={0}
+              step={0.01}
+              value={formData.unitCost || ""}
+              onChange={handleChange}
+            />
 
             {/* Custo Total (calculado) */}
             <div>
@@ -278,19 +269,13 @@ export default function InventoryEntryPage() {
             </div>
 
             {/* Número do Documento */}
-            <div>
-              <label htmlFor="documentNumber" className="block text-sm font-medium text-theme-secondary mb-1">
-                Número do Documento
-              </label>
-              <input
-                type="text"
-                id="documentNumber"
-                name="documentNumber"
-                value={formData.documentNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+            <Input
+              label="Número do Documento"
+              id="documentNumber"
+              name="documentNumber"
+              value={formData.documentNumber}
+              onChange={handleChange}
+            />
 
             {/* Observações */}
             <div className="md:col-span-2">
