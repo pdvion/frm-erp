@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
   Layout,
@@ -303,25 +304,21 @@ export default function LandingSettingsPage() {
           module="settings"
           actions={
             <div className="flex items-center gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleReset}
-                className="flex items-center gap-2 px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
+                leftIcon={<RotateCcw className="w-4 h-4" />}
               >
-                <RotateCcw className="w-4 h-4" />
                 Restaurar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50"
+                isLoading={isSaving}
+                leftIcon={!isSaving ? <Save className="w-4 h-4" /> : undefined}
               >
-                {isSaving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
                 Salvar
-              </button>
+              </Button>
             </div>
           }
         />
