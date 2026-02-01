@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Clock,
   Search,
@@ -118,12 +119,11 @@ export default function TimeclockPage() {
             )}
           </div>
           <div className="bg-theme-card p-4 rounded-lg shadow">
-            <div className="text-theme-muted text-sm mb-1">Data Selecionada</div>
-            <input
+            <Input
+              label="Data Selecionada"
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="text-lg font-bold border-none p-0 focus:ring-0"
             />
           </div>
         </div>

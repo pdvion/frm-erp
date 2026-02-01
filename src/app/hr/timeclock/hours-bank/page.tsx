@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   Clock,
   Plus,
@@ -340,45 +341,29 @@ export default function HoursBankPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">
-                    Data *
-                  </label>
-                  <input
-                    type="date"
-                    value={newEntry.date}
-                    onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">
-                    Horas *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    value={newEntry.hours}
-                    onChange={(e) => setNewEntry({ ...newEntry, hours: parseFloat(e.target.value) || 0 })}
-                    placeholder="Ex: 2.5"
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Descrição
-                </label>
-                <input
-                  type="text"
-                  value={newEntry.description}
-                  onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
-                  placeholder="Ex: Hora extra projeto X"
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+                <Input
+                  label="Data *"
+                  type="date"
+                  value={newEntry.date}
+                  onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
+                />
+                <Input
+                  label="Horas *"
+                  type="number"
+                  step={0.5}
+                  min={0}
+                  value={newEntry.hours}
+                  onChange={(e) => setNewEntry({ ...newEntry, hours: parseFloat(e.target.value) || 0 })}
+                  placeholder="Ex: 2.5"
                 />
               </div>
+
+              <Input
+                label="Descrição"
+                value={newEntry.description}
+                onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
+                placeholder="Ex: Hora extra projeto X"
+              />
             </div>
 
             <div className="flex gap-3 mt-6">
