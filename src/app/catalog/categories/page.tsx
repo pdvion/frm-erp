@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 interface CategoryFormData {
   name: string;
@@ -145,25 +146,25 @@ export default function CategoriesPage() {
             <span className="text-xs text-gray-400 mr-2">
               {category._count?.products ?? 0} produtos
             </span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => handleEdit(category)}
-              className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded"
               title="Editar"
             >
               <Pencil size={16} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => handleDelete(category.id)}
               disabled={isDeleting}
-              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded disabled:opacity-50"
+              isLoading={isDeleting}
               title="Excluir"
+              className="text-red-600 hover:bg-red-50"
             >
-              {isDeleting ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <Trash2 size={16} />
-              )}
-            </button>
+              <Trash2 size={16} />
+            </Button>
           </div>
         </div>
         {children.map((child) => renderCategory(child, level + 1))}
@@ -178,21 +179,20 @@ export default function CategoriesPage() {
         subtitle="Organize seus produtos em categorias hierárquicas"
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.push("/catalog")}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              leftIcon={<ArrowLeft size={20} />}
             >
-              <ArrowLeft size={20} />
               Voltar
-            </button>
+            </Button>
             {!showForm && (
-              <button
+              <Button
                 onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Plus size={20} />}
               >
-                <Plus size={20} />
                 Nova Categoria
-              </button>
+              </Button>
             )}
           </div>
         }
@@ -230,14 +230,15 @@ export default function CategoriesPage() {
                     placeholder="categoria-slug"
                     className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={generateSlug}
                     disabled={!formData.name}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm disabled:opacity-50"
                   >
                     Gerar
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -275,26 +276,22 @@ export default function CategoriesPage() {
             </div>
 
             <div className="flex gap-2">
-              <button
+              <Button
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending || !formData.name}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={createMutation.isPending || updateMutation.isPending}
+                leftIcon={<Save size={18} />}
               >
-                {(createMutation.isPending || updateMutation.isPending) ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <Save size={18} />
-                )}
                 {editingId ? "Salvar" : "Criar"}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleCancel}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                leftIcon={<X size={18} />}
               >
-                <X size={18} />
                 Cancelar
-              </button>
+              </Button>
             </div>
 
             {(createMutation.isError || updateMutation.isError) && (
@@ -322,13 +319,12 @@ export default function CategoriesPage() {
               Crie categorias para organizar seus produtos
             </p>
             {!showForm && (
-              <button
+              <Button
                 onClick={() => setShowForm(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                leftIcon={<Plus size={20} />}
               >
-                <Plus size={20} />
                 Criar Categoria
-              </button>
+              </Button>
             )}
           </div>
         ) : (
