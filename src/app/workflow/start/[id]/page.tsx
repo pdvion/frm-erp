@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   GitBranch,
   ArrowLeft,
@@ -119,18 +120,12 @@ export default function StartWorkflowPage({
                   <option value="REQUISITION">Requisição</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  ID da Entidade (opcional)
-                </label>
-                <input
-                  type="text"
-                  value={entityId}
-                  onChange={(e) => setEntityId(e.target.value)}
-                  className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  placeholder="UUID da entidade"
-                />
-              </div>
+              <Input
+                label="ID da Entidade (opcional)"
+                value={entityId}
+                onChange={(e) => setEntityId(e.target.value)}
+                placeholder="UUID da entidade"
+              />
             </div>
 
             <div className="flex justify-end gap-4 pt-4 border-t border-theme">

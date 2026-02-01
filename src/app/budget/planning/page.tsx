@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Calendar, Calculator } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -155,15 +156,12 @@ export default function BudgetPlanningPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Valor Anual</label>
-                <input
-                  type="number"
-                  value={distributeForm.annualAmount}
-                  onChange={(e) => setDistributeForm({ ...distributeForm, annualAmount: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                />
-              </div>
+              <Input
+                label="Valor Anual"
+                type="number"
+                value={distributeForm.annualAmount}
+                onChange={(e) => setDistributeForm({ ...distributeForm, annualAmount: Number(e.target.value) })}
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Distribuição</label>
                 <select
