@@ -11,6 +11,7 @@ import {
   Search
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { trpc } from "@/lib/trpc";
 
 interface MovementFormData {
@@ -193,22 +194,17 @@ export default function InventoryExitPage() {
             </div>
 
             {/* Quantidade */}
-            <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-theme-secondary mb-1">
-                Quantidade *
-              </label>
-              <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                required
-                min="0.01"
-                step="0.01"
-                value={formData.quantity || ""}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-              />
-            </div>
+            <Input
+              label="Quantidade *"
+              type="number"
+              id="quantity"
+              name="quantity"
+              required
+              min={0.01}
+              step={0.01}
+              value={formData.quantity || ""}
+              onChange={handleChange}
+            />
 
             {/* Tipo de Documento */}
             <div>
@@ -231,19 +227,13 @@ export default function InventoryExitPage() {
             </div>
 
             {/* Número do Documento */}
-            <div>
-              <label htmlFor="documentNumber" className="block text-sm font-medium text-theme-secondary mb-1">
-                Número do Documento
-              </label>
-              <input
-                type="text"
-                id="documentNumber"
-                name="documentNumber"
-                value={formData.documentNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-              />
-            </div>
+            <Input
+              label="Número do Documento"
+              id="documentNumber"
+              name="documentNumber"
+              value={formData.documentNumber}
+              onChange={handleChange}
+            />
 
             {/* Observações */}
             <div className="md:col-span-2">

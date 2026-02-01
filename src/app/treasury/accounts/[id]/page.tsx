@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import {
   Landmark,
@@ -277,28 +278,21 @@ function TransferModal({
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Valor</label>
-            <input
-              type="number"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-              step="0.01"
-            />
-          </div>
+          <Input
+            label="Valor"
+            type="number"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="0.00"
+            step={0.01}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Descrição</label>
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Transferência entre contas"
-            />
-          </div>
+          <Input
+            label="Descrição"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Transferência entre contas"
+          />
         </div>
 
         {transferMutation.error && (
@@ -401,49 +395,35 @@ function TransactionModal({
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Valor</label>
-            <input
-              type="number"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-              step="0.01"
-            />
-          </div>
+          <Input
+            label="Valor"
+            type="number"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="0.00"
+            step={0.01}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Descrição</label>
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Descrição do lançamento"
-            />
-          </div>
+          <Input
+            label="Descrição"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Descrição do lançamento"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Data</label>
-            <input
-              type="date"
-              value={transactionDate}
-              onChange={(e) => setTransactionDate(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            label="Data"
+            type="date"
+            value={transactionDate}
+            onChange={(e) => setTransactionDate(e.target.value)}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Documento (opcional)</label>
-            <input
-              type="text"
-              value={documentNumber}
-              onChange={(e) => setDocumentNumber(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Número do documento"
-            />
-          </div>
+          <Input
+            label="Documento (opcional)"
+            value={documentNumber}
+            onChange={(e) => setDocumentNumber(e.target.value)}
+            placeholder="Número do documento"
+          />
         </div>
 
         {transactionMutation.error && (
