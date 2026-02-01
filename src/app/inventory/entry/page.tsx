@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { 
   ArrowDownCircle, 
   Save,
   X,
-  Loader2,
   Search
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { trpc } from "@/lib/trpc";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
 import { SupplierQuickForm } from "@/components/forms/SupplierQuickForm";
@@ -181,18 +182,16 @@ export default function InventoryEntryPage() {
               <label htmlFor="inventoryType" className="block text-sm font-medium text-theme-secondary mb-1">
                 Tipo de Estoque
               </label>
-              <select
-                id="inventoryType"
-                name="inventoryType"
+              <Select
                 value={formData.inventoryType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="RAW_MATERIAL">Matéria Prima</option>
-                <option value="SEMI_FINISHED">Semi-Acabado</option>
-                <option value="FINISHED">Acabado</option>
-                <option value="CRITICAL">Crítico</option>
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, inventoryType: value as MovementFormData["inventoryType"] }))}
+                options={[
+                  { value: "RAW_MATERIAL", label: "Matéria Prima" },
+                  { value: "SEMI_FINISHED", label: "Semi-Acabado" },
+                  { value: "FINISHED", label: "Acabado" },
+                  { value: "CRITICAL", label: "Crítico" },
+                ]}
+              />
             </div>
 
             {/* Fornecedor */}
@@ -253,19 +252,17 @@ export default function InventoryEntryPage() {
               <label htmlFor="documentType" className="block text-sm font-medium text-theme-secondary mb-1">
                 Tipo de Documento
               </label>
-              <select
-                id="documentType"
-                name="documentType"
+              <Select
                 value={formData.documentType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="NF">Nota Fiscal</option>
-                <option value="NF-E">NF-e</option>
-                <option value="DANFE">DANFE</option>
-                <option value="RECIBO">Recibo</option>
-                <option value="OUTROS">Outros</option>
-              </select>
+                onChange={(value) => setFormData(prev => ({ ...prev, documentType: value }))}
+                options={[
+                  { value: "NF", label: "Nota Fiscal" },
+                  { value: "NF-E", label: "NF-e" },
+                  { value: "DANFE", label: "DANFE" },
+                  { value: "RECIBO", label: "Recibo" },
+                  { value: "OUTROS", label: "Outros" },
+                ]}
+              />
             </div>
 
             {/* Número do Documento */}
@@ -282,38 +279,33 @@ export default function InventoryEntryPage() {
               <label htmlFor="notes" className="block text-sm font-medium text-theme-secondary mb-1">
                 Observações
               </label>
-              <textarea
+              <Textarea
                 id="notes"
                 name="notes"
                 rows={3}
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
           </div>
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-theme">
-            <Link
-              href="/inventory"
-              className="flex items-center gap-2 px-4 py-2 border border-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/inventory")}
+              leftIcon={<X className="w-4 h-4" />}
             >
-              <X className="w-4 h-4" />
               Cancelar
-            </Link>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={isSubmitting || !selectedMaterial}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!selectedMaterial}
+              isLoading={isSubmitting}
+              leftIcon={<Save className="w-4 h-4" />}
             >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
               Registrar Entrada
-            </button>
+            </Button>
           </div>
         </form>
       </div>
