@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 type ViewMode = "grid" | "list";
 type ProductStatus = "draft" | "active" | "inactive" | "discontinued";
@@ -69,13 +71,12 @@ export default function CatalogPage() {
         title="Catálogo de Produtos"
         subtitle="Gerencie os produtos do seu catálogo para vendas e e-commerce"
         actions={
-          <button
-            onClick={() => router.push("/catalog/new")}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          <LinkButton
+            href="/catalog/new"
+            leftIcon={<Plus size={20} />}
           >
-            <Plus size={20} />
             Novo Produto
-          </button>
+          </LinkButton>
         }
       />
 
@@ -126,45 +127,37 @@ export default function CatalogPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
             />
           </div>
-          <button
+          <Button
+            variant={showFilters ? "primary" : "outline"}
+            size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-2 border rounded-lg transition-colors ${
-              showFilters
-                ? "bg-blue-50 border-blue-300 text-blue-600"
-                : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
           >
             <Filter size={20} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex gap-2">
-          <button
+          <Button
+            variant={viewMode === "grid" ? "primary" : "outline"}
+            size="sm"
             onClick={() => setViewMode("grid")}
-            className={`p-2 border rounded-lg transition-colors ${
-              viewMode === "grid"
-                ? "bg-blue-50 border-blue-300 text-blue-600"
-                : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
           >
             <Grid3X3 size={20} />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={viewMode === "list" ? "primary" : "outline"}
+            size="sm"
             onClick={() => setViewMode("list")}
-            className={`p-2 border rounded-lg transition-colors ${
-              viewMode === "list"
-                ? "bg-blue-50 border-blue-300 text-blue-600"
-                : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
           >
             <List size={20} />
-          </button>
-          <button
-            onClick={() => router.push("/catalog/categories")}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
+          </Button>
+          <LinkButton
+            href="/catalog/categories"
+            variant="outline"
+            size="sm"
           >
             Categorias
-          </button>
+          </LinkButton>
         </div>
       </div>
 
@@ -210,17 +203,19 @@ export default function CatalogPage() {
               ))}
             </select>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => {
               setStatusFilter("");
               setCategoryFilter("");
               setSearch("");
               setPage(1);
             }}
-            className="self-end px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
+            className="self-end"
           >
             Limpar filtros
-          </button>
+          </Button>
         </div>
       )}
 
@@ -241,13 +236,12 @@ export default function CatalogPage() {
               : "Comece criando seu primeiro produto"}
           </p>
           {!search && !statusFilter && !categoryFilter && (
-            <button
-              onClick={() => router.push("/catalog/new")}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            <LinkButton
+              href="/catalog/new"
+              leftIcon={<Plus size={20} />}
             >
-              <Plus size={20} />
               Criar Produto
-            </button>
+            </LinkButton>
           )}
         </div>
       ) : viewMode === "grid" ? (
@@ -324,20 +318,22 @@ export default function CatalogPage() {
                     )}
                   </div>
                   <div className="flex gap-1">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => router.push(`/catalog/${product.id}`)}
-                      className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
                       title="Visualizar"
                     >
                       <Eye size={16} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => router.push(`/catalog/${product.id}/edit`)}
-                      className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
                       title="Editar"
                     >
                       <Pencil size={16} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -426,31 +422,35 @@ export default function CatalogPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => router.push(`/catalog/${product.id}`)}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
                         title="Visualizar"
                       >
                         <Eye size={16} />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => router.push(`/catalog/${product.id}/edit`)}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
                         title="Editar"
                       >
                         <Pencil size={16} />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => {
                           if (confirm("Tem certeza que deseja excluir este produto?")) {
                             deleteMutation.mutate({ id: product.id });
                           }
                         }}
-                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
                         title="Excluir"
+                        className="text-red-600 hover:bg-red-50"
                       >
                         <Trash2 size={16} />
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -463,23 +463,25 @@ export default function CatalogPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             Anterior
-          </button>
+          </Button>
           <span className="text-sm text-gray-500">
             Página {page} de {totalPages}
           </span>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             Próxima
-          </button>
+          </Button>
         </div>
       )}
     </div>
