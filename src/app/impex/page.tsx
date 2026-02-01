@@ -122,22 +122,23 @@ export default function ImpExPage() {
         </div>
       )}
 
+      {/* Dicas de Uso */}
       <div className="bg-theme-card border border-theme rounded-lg p-6">
-        <h3 className="font-semibold text-theme mb-4">Próximas Funcionalidades</h3>
+        <h3 className="font-semibold text-theme mb-4">Dicas de Uso</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 bg-theme-secondary rounded-lg">
             <h4 className="font-medium text-theme mb-2">Controle Cambial</h4>
             <p className="text-sm text-theme-muted">
-              Contratos de câmbio, variação cambial e integração com bancos.
+              Gerencie contratos de câmbio, acompanhe variações cambiais e registre liquidações em{" "}
+              <Link href="/impex/exchange" className="text-blue-600 hover:underline">Contratos de Câmbio</Link>.
             </p>
-            <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Em breve</span>
           </div>
           <div className="p-4 bg-theme-secondary rounded-lg">
-            <h4 className="font-medium text-theme mb-2">Exportação</h4>
+            <h4 className="font-medium text-theme mb-2">Processos de Importação</h4>
             <p className="text-sm text-theme-muted">
-              Gestão de processos de exportação e documentação.
+              Acompanhe todo o ciclo de importação, desde a abertura até o desembaraço em{" "}
+              <Link href="/impex/processes" className="text-blue-600 hover:underline">Processos</Link>.
             </p>
-            <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">Em breve</span>
           </div>
         </div>
       </div>
