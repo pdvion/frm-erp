@@ -86,20 +86,23 @@ function ChildCategoryItem({
       </div>
 
       <div className="flex items-center gap-1">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onEdit(child)}
-          className="p-2 text-theme-muted hover:text-blue-500 transition-colors"
           title="Editar"
         >
           <Edit2 className="w-4 h-4" />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onDelete(child.id)}
-          className="p-2 text-theme-muted hover:text-red-500 transition-colors"
           title="Excluir"
+          className="text-red-500 hover:bg-red-50"
         >
           <Trash2 className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -127,16 +130,17 @@ function CategoryItem({
     <>
       <div className="flex items-center gap-3 p-3 hover:bg-theme-secondary transition-colors">
         {hasChildren ? (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => toggleExpand(category.id)}
-            className="p-1 hover:bg-theme-secondary rounded"
           >
             {isExpanded ? (
               <ChevronDown className="w-4 h-4 text-theme-muted" />
             ) : (
               <ChevronRight className="w-4 h-4 text-theme-muted" />
             )}
-          </button>
+          </Button>
         ) : (
           <div className="w-6" />
         )}
@@ -174,17 +178,19 @@ function CategoryItem({
         </div>
 
         <div className="flex items-center gap-1">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onEdit(category)}
-            className="p-2 text-theme-muted hover:text-blue-500 transition-colors"
             title="Editar"
           >
             <Edit2 className="w-4 h-4" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onDelete(category.id)}
             disabled={category._count.documents > 0 || category._count.children > 0}
-            className="p-2 text-theme-muted hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title={
               category._count.documents > 0
                 ? "Categoria possui documentos"
@@ -192,9 +198,10 @@ function CategoryItem({
                   ? "Categoria possui subcategorias"
                   : "Excluir"
             }
+            className="text-red-500 hover:bg-red-50"
           >
             <Trash2 className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -253,12 +260,13 @@ function CategoryModal({
           <h2 className="text-lg font-semibold text-theme">
             {category ? "Editar Categoria" : "Nova Categoria"}
           </h2>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="p-2 text-theme-muted hover:text-theme rounded-lg hover:bg-theme-secondary"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
@@ -334,13 +342,13 @@ function CategoryModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
-              className="px-4 py-2 text-theme-muted hover:text-theme transition-colors"
             >
               Cancelar
-            </button>
+            </Button>
             <Button
               type="submit"
               disabled={!formData.name.trim()}
