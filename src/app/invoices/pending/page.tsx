@@ -295,15 +295,16 @@ export default function PendingInvoicesPage() {
           </select>
 
           {situacaoFilter && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => {
                 setSituacaoFilter("");
                 setPage(1);
               }}
-              className="text-sm text-blue-600 hover:text-indigo-800"
             >
               Limpar filtros
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -418,15 +419,17 @@ export default function PendingInvoicesPage() {
                               {manConfig.label}
                             </span>
                           ) : (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => openManifestModal(nfe.id, nfe.chaveAcesso)}
                               disabled={nfe.situacao !== "PENDENTE"}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-theme-tertiary text-theme-secondary hover:bg-purple-100 hover:text-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Registrar manifestação"
+                              className="text-xs"
                             >
-                              <Send className="w-3 h-3" />
+                              <Send className="w-3 h-3 mr-1" />
                               Manifestar
-                            </button>
+                            </Button>
                           )}
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -446,32 +449,37 @@ export default function PendingInvoicesPage() {
                           <div className="flex items-center justify-center gap-2">
                             {nfe.situacao === "PENDENTE" && (
                               <>
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => handleImport(nfe.id)}
                                   disabled={importMutation.isPending}
-                                  className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                   title="Importar NFe"
+                                  className="text-green-600 hover:bg-green-50"
                                 >
                                   <Download className="w-4 h-4" />
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => openIgnoreModal(nfe.id)}
-                                  className="p-1.5 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
                                   title="Ignorar NFe"
                                 >
                                   <XCircle className="w-4 h-4" />
-                                </button>
+                                </Button>
                               </>
                             )}
                             {nfe.situacao === "ERRO" && (
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleImport(nfe.id)}
                                 disabled={importMutation.isPending}
-                                className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                                 title="Tentar novamente"
+                                className="text-amber-600 hover:bg-amber-50"
                               >
                                 <RefreshCw className="w-4 h-4" />
-                              </button>
+                              </Button>
                             )}
                             {nfe.situacao === "IMPORTADA" && nfe.receivedInvoiceId && (
                               <Link
@@ -498,22 +506,24 @@ export default function PendingInvoicesPage() {
                   Página {page} de {data.pages} ({data.total} registros)
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                     disabled={page === data.pages}
-                    className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -543,24 +553,24 @@ export default function PendingInvoicesPage() {
               />
             </div>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowIgnoreModal(false);
                   setSelectedNfe(null);
                   setIgnoreMotivo("");
                 }}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={handleIgnore}
                 disabled={ignoreMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                isLoading={ignoreMutation.isPending}
               >
-                {ignoreMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Ignorar NFe
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -634,7 +644,8 @@ export default function PendingInvoicesPage() {
             )}
 
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowManifestModal(false);
                   setSelectedNfe(null);
@@ -642,21 +653,19 @@ export default function PendingInvoicesPage() {
                   setManifestTipo("CIENCIA");
                   setManifestJustificativa("");
                 }}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleManifest}
                 disabled={
                   manifestMutation.isPending ||
                   (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
                 }
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                isLoading={manifestMutation.isPending}
               >
-                {manifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Registrar Manifestação
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -737,27 +746,26 @@ export default function PendingInvoicesPage() {
             )}
 
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowBatchManifestModal(false);
                   setManifestTipo("CIENCIA");
                   setManifestJustificativa("");
                 }}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-hover rounded-lg transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleBatchManifest}
                 disabled={
                   batchManifestMutation.isPending ||
                   (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
                 }
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                isLoading={batchManifestMutation.isPending}
               >
-                {batchManifestMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Manifestar {selectedNfes.length} NFe(s)
-              </button>
+              </Button>
             </div>
           </div>
         </div>
