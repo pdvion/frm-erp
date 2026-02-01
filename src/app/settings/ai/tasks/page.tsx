@@ -103,7 +103,7 @@ export default function AITasksConfigPage() {
           <div className="flex gap-2">
             <button
               onClick={() => router.push("/settings/ai")}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
             >
               <ArrowLeft size={20} />
               Voltar
@@ -115,7 +115,7 @@ export default function AITasksConfigPage() {
                 }
               }}
               disabled={resetAllMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
             >
               {resetAllMutation.isPending ? (
                 <Loader2 size={18} className="animate-spin" />
@@ -174,13 +174,13 @@ export default function AITasksConfigPage() {
             return (
               <div
                 key={task.taskId}
-                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+                className="bg-theme-card rounded-lg border border-theme p-4"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Bot size={18} className="text-blue-600" />
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                      <h3 className="font-medium text-theme">
                         {task.label}
                       </h3>
                       {isCustom && (
@@ -189,7 +189,7 @@ export default function AITasksConfigPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                    <p className="text-sm text-theme-muted mt-1">{task.description}</p>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function AITasksConfigPage() {
                       value={currentProvider}
                       onChange={(e) => handleProviderChange(task.taskId, e.target.value)}
                       disabled={isSaving}
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 min-w-[180px]"
+                      className="px-3 py-2 border border-theme rounded-lg text-sm bg-theme-card text-theme min-w-[180px]"
                     >
                       <option value="auto">
                         🤖 Automático ({PROVIDER_LABELS[task.defaultConfig.preferredProvider]})
@@ -220,7 +220,7 @@ export default function AITasksConfigPage() {
                           handleModelChange(task.taskId, currentProvider, e.target.value)
                         }
                         disabled={isSaving}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 min-w-[200px]"
+                        className="px-3 py-2 border border-theme rounded-lg text-sm bg-theme-card text-theme min-w-[200px]"
                       >
                         {AI_MODELS[currentProvider as AIProvider]?.map((m) => (
                           <option key={m.id} value={m.id}>
@@ -233,11 +233,11 @@ export default function AITasksConfigPage() {
                 </div>
 
                 {/* Suggestion */}
-                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex items-start gap-2">
+                <div className="mt-3 pt-3 border-t border-theme flex items-start gap-2">
                   <Sparkles size={14} className="text-blue-500 mt-0.5" />
                   <p className="text-xs text-blue-600 dark:text-blue-400">
                     <strong>Sugestão:</strong> {task.defaultConfig.reason}
-                    <span className="text-gray-400 ml-2">
+                    <span className="text-theme-muted ml-2">
                       ({PROVIDER_LABELS[task.defaultConfig.preferredProvider]} /{" "}
                       {task.defaultConfig.preferredModel})
                     </span>
