@@ -33,10 +33,16 @@ function useContainerReady(ref: React.RefObject<HTMLDivElement | null>) {
     const checkDimensions = () => {
       if (ref.current) {
         const { width, height } = ref.current.getBoundingClientRect();
-        // VIO-761: Aumentado threshold para 100px e verificação mais rigorosa
-        if (width >= 100 && height >= 100) {
+        // VIO-905: Aumentado threshold para 150px e fallback para dimensões mínimas
+        const minWidth = 150;
+        const minHeight = 150;
+        if (width >= minWidth && height >= minHeight) {
           setIsReady(true);
-          setDimensions({ width, height });
+          setDimensions({ width: Math.max(width, minWidth), height: Math.max(height, minHeight) });
+        } else if (width > 0 && height > 0) {
+          // Fallback: se tiver alguma dimensão positiva, usar dimensões mínimas
+          setIsReady(true);
+          setDimensions({ width: Math.max(width, minWidth), height: Math.max(height, minHeight) });
         } else {
           setIsReady(false);
         }

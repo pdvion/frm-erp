@@ -9,9 +9,9 @@ export const productionRouter = createTRPCRouter({
   list: tenantProcedure
     .input(z.object({
       status: z.enum(["PLANNED", "RELEASED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "ALL"]).optional(),
-      search: z.string().optional(),
-      dateFrom: z.date().optional(),
-      dateTo: z.date().optional(),
+      search: z.string().nullish(),
+      dateFrom: z.date().nullish(),
+      dateTo: z.date().nullish(),
       page: z.number().default(1),
       limit: z.number().default(20),
     }).optional())
