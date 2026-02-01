@@ -1,7 +1,6 @@
 "use client";
 
 import { use } from "react";
-import { useRouter } from "next/navigation";
 import {
   FileText,
   User,
@@ -26,7 +25,6 @@ interface PayslipPageProps {
 
 export default function PayslipPage({ params }: PayslipPageProps) {
   const { id, itemId } = use(params);
-  const router = useRouter();
 
   const { data: payslip, isLoading } = trpc.payroll.getPayslip.useQuery({
     payrollItemId: itemId,
