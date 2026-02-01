@@ -214,10 +214,9 @@ export default function QuoteDetailPage() {
                 Itens ({quote.items.length})
               </h2>
               {canEdit && (
-                <button className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
-                  <Plus className="w-4 h-4" />
+                <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300" leftIcon={<Plus className="w-4 h-4" />}>
                   Adicionar Item
-                </button>
+                </Button>
               )}
             </div>
 
@@ -268,9 +267,9 @@ export default function QuoteDetailPage() {
                       </td>
                       {canEdit && (
                         <td className="px-4 py-4">
-                          <button className="p-1 text-red-400 hover:bg-red-900/20 rounded">
+                          <Button variant="ghost" size="sm" className="p-1 text-red-400 hover:bg-red-900/20">
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </td>
                       )}
                     </tr>
