@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -283,15 +282,14 @@ export default function NewVacationPage() {
 
         {/* Ações */}
         <div className="flex gap-4">
-          <Link href="/hr/vacations">
-            <Button
-              type="button"
-              variant="secondary"
-              leftIcon={<ArrowLeft className="w-4 h-4" />}
-            >
-              Cancelar
-            </Button>
-          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/hr/vacations")}
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Cancelar
+          </Button>
           <Button
             type="submit"
             disabled={!form.employeeId || !form.startDate || !form.endDate}
