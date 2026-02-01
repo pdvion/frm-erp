@@ -102,14 +102,14 @@ function MaterialsContent() {
               ]}
             />
             {hasActiveFilters && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={resetFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-theme-muted hover:text-theme border border-theme rounded-lg hover:bg-theme-hover transition-colors"
+                leftIcon={<X className="w-4 h-4" />}
                 title="Limpar filtros"
               >
-                <X className="w-4 h-4" />
                 <span className="hidden sm:inline">Limpar</span>
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -257,12 +257,14 @@ function MaterialsContent() {
                             >
                               <Edit className="w-4 h-4" />
                             </Link>
-                            <button
-                              className="p-1 text-theme-muted hover:text-red-400 transition-colors"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="p-1 text-theme-muted hover:text-red-400"
                               title="Excluir"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -281,25 +283,25 @@ function MaterialsContent() {
                   {pagination.total} materiais
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setFilter("page", page - 1)}
                     disabled={page === 1}
-                    aria-label="Página anterior"
-                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setFilter("page", page + 1)}
                     disabled={page === pagination.totalPages}
-                    aria-label="Próxima página"
-                    className="p-2 border border-theme rounded-lg text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover hover:text-theme transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
