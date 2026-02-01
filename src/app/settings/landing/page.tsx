@@ -6,6 +6,7 @@ import Image from "next/image";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
   Layout,
@@ -457,39 +458,27 @@ export default function LandingSettingsPage() {
                 </h2>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      Título Principal
-                    </label>
-                    <input
-                      type="text"
-                      value={config.hero.title}
-                      onChange={(e) =>
-                        setConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, title: e.target.value },
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
-                    />
-                  </div>
+                  <Input
+                    label="Título Principal"
+                    value={config.hero.title}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        hero: { ...prev.hero, title: e.target.value },
+                      }))
+                    }
+                  />
                   
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      Subtítulo
-                    </label>
-                    <input
-                      type="text"
-                      value={config.hero.subtitle}
-                      onChange={(e) =>
-                        setConfig((prev) => ({
-                          ...prev,
-                          hero: { ...prev.hero, subtitle: e.target.value },
-                        }))
-                      }
-                      className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
-                    />
-                  </div>
+                  <Input
+                    label="Subtítulo"
+                    value={config.hero.subtitle}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        hero: { ...prev.hero, subtitle: e.target.value },
+                      }))
+                    }
+                  />
                   
                   <div>
                     <label className="block text-sm font-medium text-theme-secondary mb-1">

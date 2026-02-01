@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMFA } from "@/hooks/useMFA";
 import { Shield, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function MFAVerifyPage() {
   const router = useRouter();
@@ -115,16 +116,13 @@ export default function MFAVerifyPage() {
             )}
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-theme-secondary mb-2 text-center">
-                Código de verificação
-              </label>
-              <input
-                type="text"
+              <Input
+                label="Código de verificação"
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="000000"
                 maxLength={6}
-                className="w-full text-center text-3xl font-mono tracking-[0.5em] py-4 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
+                className="text-center text-3xl font-mono tracking-[0.5em] py-4"
                 autoFocus
               />
             </div>

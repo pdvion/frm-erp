@@ -326,13 +326,12 @@ function AddComponentModal({
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Componente</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
-                type="text"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar material..."
-                className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
             {materials?.materials && materials.materials.length > 0 && search && (
