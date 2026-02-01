@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2, Trash2, Globe, GlobeLock } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { RichTextEditor } from "@/components/editor";
 import { ProductImageUpload } from "@/components/catalog/ProductImageUpload";
 import { ProductVideoManager } from "@/components/catalog/ProductVideoManager";
@@ -199,9 +200,9 @@ export default function EditProductPage() {
     return (
       <div className="p-6 text-center py-12">
         <h2 className="text-xl font-medium mb-2">Produto não encontrado</h2>
-        <button onClick={() => router.push("/catalog")} className="text-blue-600">
+        <Button variant="ghost" onClick={() => router.push("/catalog")}>
           Voltar ao catálogo
-        </button>
+        </Button>
       </div>
     );
   }
@@ -224,44 +225,42 @@ export default function EditProductPage() {
         subtitle={`Código: ${product.code}`}
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.push(`/catalog/${productId}`)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              leftIcon={<ArrowLeft size={20} />}
             >
-              <ArrowLeft size={20} />
               Voltar
-            </button>
+            </Button>
             {product.isPublished ? (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => publishMutation.mutate({ id: productId, publish: false })}
                 disabled={publishMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 border border-yellow-300 text-yellow-700 rounded-lg hover:bg-yellow-50"
+                leftIcon={<GlobeLock size={20} />}
+                className="border-yellow-300 text-yellow-700 hover:bg-yellow-50"
               >
-                <GlobeLock size={20} />
                 Despublicar
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="outline"
                 onClick={() => publishMutation.mutate({ id: productId, publish: true })}
                 disabled={publishMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 border border-green-300 text-green-700 rounded-lg hover:bg-green-50"
+                leftIcon={<Globe size={20} />}
+                className="border-green-300 text-green-700 hover:bg-green-50"
               >
-                <Globe size={20} />
                 Publicar
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               onClick={handleSubmit}
               disabled={updateMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              isLoading={updateMutation.isPending}
+              leftIcon={<Save size={20} />}
             >
-              {updateMutation.isPending ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <Save size={20} />
-              )}
               Salvar
-            </button>
+            </Button>
           </div>
         }
       />
@@ -270,17 +269,18 @@ export default function EditProductPage() {
       <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="flex gap-4">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               onClick={() => setActiveTab(tab.id)}
-              className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-3 px-1 rounded-none border-b-2 font-medium text-sm ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </nav>
       </div>
@@ -396,7 +396,9 @@ export default function EditProductPage() {
 
               <div className="bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-800 p-4">
                 <h4 className="font-medium text-red-700 dark:text-red-300 mb-2">Zona de Perigo</h4>
-                <button
+                <Button
+                  variant="danger"
+                  size="sm"
                   type="button"
                   onClick={() => {
                     if (confirm("Tem certeza que deseja excluir este produto?")) {
@@ -404,11 +406,11 @@ export default function EditProductPage() {
                     }
                   }}
                   disabled={deleteMutation.isPending}
-                  className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                  isLoading={deleteMutation.isPending}
+                  leftIcon={<Trash2 size={16} />}
                 >
-                  <Trash2 size={16} />
                   Excluir Produto
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -561,13 +563,14 @@ export default function EditProductPage() {
                     onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                     className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={generateSlug}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
                   >
                     Gerar
-                  </button>
+                  </Button>
                 </div>
               </div>
 
