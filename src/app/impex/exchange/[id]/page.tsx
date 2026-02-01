@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -127,21 +128,20 @@ export default function ExchangeContractDetailPage({
         actions={
           <div className="flex gap-2">
             {canLiquidate && (
-              <button
+              <Button
+                variant="success"
                 onClick={() => setShowLiquidateForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                leftIcon={<CheckCircle className="w-4 h-4" />}
               >
-                <CheckCircle className="w-4 h-4" />
                 Liquidar
-              </button>
+              </Button>
             )}
-            <Link
-              href={`/impex/exchange/${id}/edit`}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            <Button
+              onClick={() => window.location.href = `/impex/exchange/${id}/edit`}
+              leftIcon={<Edit className="w-4 h-4" />}
             >
-              <Edit className="w-4 h-4" />
               Editar
-            </Link>
+            </Button>
           </div>
         }
       />
@@ -377,13 +377,12 @@ export default function ExchangeContractDetailPage({
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Observações</label>
-                <textarea
+                <Textarea
                   value={liquidationData.notes}
                   onChange={(e) =>
                     setLiquidationData((prev) => ({ ...prev, notes: e.target.value }))
                   }
                   rows={2}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
                 />
               </div>
 
@@ -418,13 +417,13 @@ export default function ExchangeContractDetailPage({
               )}
 
               <div className="flex justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => setShowLiquidateForm(false)}
-                  className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
                 >
                   Cancelar
-                </button>
+                </Button>
                 <Button
                   type="submit"
                   variant="success"
