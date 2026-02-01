@@ -32,8 +32,14 @@ export default function VisualWorkflowEditorPage({
   const [selectedNode, setSelectedNode] = useState<WorkflowStep | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: definition, isLoading } = trpc.workflow.getDefinition.useQuery({ id });
+  const addStepMutation = trpc.workflow.addStep.useMutation();
+  const updateStepMutation = trpc.workflow.updateStep.useMutation();
+  const deleteStepMutation = trpc.workflow.deleteStep.useMutation();
+  const addTransitionMutation = trpc.workflow.addTransition.useMutation();
+  const deleteTransitionMutation = trpc.workflow.deleteTransition.useMutation();
 
   useEffect(() => {
     if (definition?.steps && !initialized) {
@@ -95,10 +101,95 @@ export default function VisualWorkflowEditorPage({
   }, [steps.length]);
 
   const handleSave = async () => {
-    // TODO: Implementar salvamento via tRPC
-    console.log("Saving workflow:", { steps, transitions });
-    setHasChanges(false);
-    router.push("/workflow/definitions");
+    if (!definition) return;
+    
+    setIsSaving(true);
+    try {
+      // Identificar steps existentes vs novos
+      const existingStepIds = new Set(definition.steps?.map((s) => s.id) || []);
+      const currentStepIds = new Set(steps.map((s) => s.id));
+      
+      // Steps para deletar (existiam mas não estão mais)
+      const stepsToDelete = [...existingStepIds].filter((id) => !currentStepIds.has(id));
+      
+      // Steps para criar (novos, começam com "node-")
+      const stepsToCreate = steps.filter((s) => s.id.startsWith("node-"));
+      
+      // Steps para atualizar (existentes que ainda estão)
+      const stepsToUpdate = steps.filter((s) => existingStepIds.has(s.id));
+      
+      // Deletar steps removidos
+      for (const stepId of stepsToDelete) {
+        await deleteStepMutation.mutateAsync({ id: stepId });
+      }
+      
+      // Mapear tipos do editor visual para tipos do banco
+      const mapStepType = (type: WorkflowStep["type"]): "START" | "APPROVAL" | "TASK" | "DECISION" | "NOTIFICATION" | "END" => {
+        const typeMap: Record<WorkflowStep["type"], "START" | "APPROVAL" | "TASK" | "DECISION" | "NOTIFICATION" | "END"> = {
+          START: "START",
+          END: "END",
+          ACTION: "TASK",
+          CONDITION: "DECISION",
+          APPROVAL: "APPROVAL",
+          NOTIFICATION: "NOTIFICATION",
+        };
+        return typeMap[type];
+      };
+
+      // Criar novos steps
+      const stepIdMap = new Map<string, string>(); // oldId -> newId
+      for (const step of stepsToCreate) {
+        const created = await addStepMutation.mutateAsync({
+          definitionId: id,
+          code: step.code,
+          name: step.name,
+          type: mapStepType(step.type),
+          config: step.config,
+        });
+        stepIdMap.set(step.id, created.id);
+      }
+      
+      // Atualizar steps existentes
+      for (const step of stepsToUpdate) {
+        await updateStepMutation.mutateAsync({
+          id: step.id,
+          name: step.name,
+          config: step.config,
+        });
+      }
+      
+      // Gerenciar transições
+      const existingTransitionIds = new Set(definition.transitions?.map((t) => t.id) || []);
+      const currentTransitionIds = new Set(transitions.map((t) => t.id));
+      
+      // Deletar transições removidas
+      const transitionsToDelete = [...existingTransitionIds].filter((id) => !currentTransitionIds.has(id));
+      for (const transitionId of transitionsToDelete) {
+        await deleteTransitionMutation.mutateAsync({ id: transitionId });
+      }
+      
+      // Criar novas transições
+      const transitionsToCreate = transitions.filter((t) => !existingTransitionIds.has(t.id));
+      for (const transition of transitionsToCreate) {
+        const fromStepId = stepIdMap.get(transition.fromStepId) || transition.fromStepId;
+        const toStepId = stepIdMap.get(transition.toStepId) || transition.toStepId;
+        
+        await addTransitionMutation.mutateAsync({
+          definitionId: id,
+          fromStepId,
+          toStepId,
+          condition: transition.condition,
+          label: transition.label,
+        });
+      }
+      
+      setHasChanges(false);
+      router.push("/workflow/definitions");
+    } catch (error) {
+      console.error("Erro ao salvar workflow:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
@@ -131,11 +222,15 @@ export default function VisualWorkflowEditorPage({
             </Link>
             <button
               onClick={handleSave}
-              disabled={!hasChanges}
+              disabled={!hasChanges || isSaving}
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
-              Salvar
+              {isSaving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {isSaving ? "Salvando..." : "Salvar"}
             </button>
           </div>
         }
