@@ -6,6 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   BookOpen,
   Plus,
@@ -220,43 +222,31 @@ export default function TutorialsAdminPage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Módulo
                   </label>
-                  <select
+                  <Select
                     value={formData.module}
-                    onChange={(e) => setFormData({ ...formData, module: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  >
-                    {moduleOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, module: value })}
+                    options={moduleOptions.map((opt) => ({ value: opt.value, label: opt.label }))}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Categoria
                   </label>
-                  <select
+                  <Select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  >
-                    {categoryOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, category: value })}
+                    options={categoryOptions.map((opt) => ({ value: opt.value, label: opt.label }))}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Ícone
                   </label>
-                  <select
+                  <Select
                     value={formData.icon}
-                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  >
-                    {iconOptions.map((icon) => (
-                      <option key={icon} value={icon}>{icon}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, icon: value })}
+                    options={iconOptions.map((icon) => ({ value: icon, label: icon }))}
+                  />
                 </div>
                 <Input
                   label="Ordem"
@@ -268,10 +258,10 @@ export default function TutorialsAdminPage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Conteúdo (Markdown) *
                   </label>
-                  <textarea
+                  <Textarea
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2 font-mono text-sm"
+                    className="font-mono text-sm"
                     rows={15}
                     required
                     placeholder="# Título&#10;&#10;## Seção 1&#10;&#10;Conteúdo em Markdown..."

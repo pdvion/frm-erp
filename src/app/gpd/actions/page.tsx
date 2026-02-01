@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -210,28 +212,28 @@ export default function GPDActionsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                  <select
+                  <Select
                     value={newAction.type}
-                    onChange={(e) => setNewAction({ ...newAction, type: e.target.value as typeof newAction.type })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  >
-                    <option value="CORRECTIVE">Corretiva</option>
-                    <option value="PREVENTIVE">Preventiva</option>
-                    <option value="IMPROVEMENT">Melhoria</option>
-                  </select>
+                    onChange={(value) => setNewAction({ ...newAction, type: value as typeof newAction.type })}
+                    options={[
+                      { value: "CORRECTIVE", label: "Corretiva" },
+                      { value: "PREVENTIVE", label: "Preventiva" },
+                      { value: "IMPROVEMENT", label: "Melhoria" },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Prioridade</label>
-                  <select
-                    value={newAction.priority}
-                    onChange={(e) => setNewAction({ ...newAction, priority: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  >
-                    <option value={1}>1 - Urgente</option>
-                    <option value={2}>2 - Alta</option>
-                    <option value={3}>3 - Normal</option>
-                    <option value={4}>4 - Baixa</option>
-                  </select>
+                  <Select
+                    value={String(newAction.priority)}
+                    onChange={(value) => setNewAction({ ...newAction, priority: Number(value) })}
+                    options={[
+                      { value: "1", label: "1 - Urgente" },
+                      { value: "2", label: "2 - Alta" },
+                      { value: "3", label: "3 - Normal" },
+                      { value: "4", label: "4 - Baixa" },
+                    ]}
+                  />
                 </div>
               </div>
               <Input
@@ -242,10 +244,9 @@ export default function GPDActionsPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={newAction.description}
                   onChange={(e) => setNewAction({ ...newAction, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
                   rows={3}
                 />
               </div>

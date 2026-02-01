@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,15 +67,11 @@ export default function NewGPDGoalPage() {
             />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
-              <select
+              <Select
                 value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value as typeof form.category })}
-                className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-              >
-                {Object.entries(categoryLabels).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ))}
-              </select>
+                onChange={(value) => setForm({ ...form, category: value as typeof form.category })}
+                options={Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))}
+              />
             </div>
           </div>
 
@@ -86,10 +84,9 @@ export default function NewGPDGoalPage() {
 
           <div>
             <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-            <textarea
+            <Textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
               rows={3}
             />
           </div>
@@ -121,16 +118,12 @@ export default function NewGPDGoalPage() {
 
           <div>
             <label className="block text-sm font-medium text-theme mb-1">Meta Pai (desdobramento)</label>
-            <select
+            <Select
               value={form.parentId ?? ""}
-              onChange={(e) => setForm({ ...form, parentId: e.target.value || undefined })}
-              className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-            >
-              <option value="">Nenhuma (meta principal)</option>
-              {parentGoals?.map((goal) => (
-                <option key={goal.id} value={goal.id}>{goal.title}</option>
-              ))}
-            </select>
+              onChange={(value) => setForm({ ...form, parentId: value || undefined })}
+              placeholder="Nenhuma (meta principal)"
+              options={parentGoals?.map((goal) => ({ value: goal.id, label: goal.title })) || []}
+            />
           </div>
         </div>
 

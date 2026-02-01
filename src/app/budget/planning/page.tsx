@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Calendar, Calculator } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -61,13 +62,12 @@ export default function BudgetPlanningPage() {
         ]}
         actions={
           selectedVersion && (
-            <button
+            <Button
               onClick={() => setShowDistributeModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Calculator className="w-4 h-4" />}
             >
-              <Calculator className="w-4 h-4" />
               Distribuir Valor
-            </button>
+            </Button>
           )
         }
       />
@@ -75,18 +75,14 @@ export default function BudgetPlanningPage() {
       {/* Seleção de versão */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <label className="block text-sm font-medium text-theme mb-2">Versão do Orçamento</label>
-        <select
-          value={selectedVersion || ""}
-          onChange={(e) => setSelectedVersion(e.target.value || null)}
-          className="w-full max-w-md px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-        >
-          <option value="">Selecione uma versão...</option>
-          {versions?.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.name} ({v.year}) - {v.type}
-            </option>
-          ))}
-        </select>
+        <div className="max-w-md">
+          <Select
+            value={selectedVersion || ""}
+            onChange={(value) => setSelectedVersion(value || null)}
+            placeholder="Selecione uma versão..."
+            options={versions?.map((v) => ({ value: v.id, label: `${v.name} (${v.year}) - ${v.type}` })) || []}
+          />
+        </div>
       </div>
 
       {selectedVersion && entriesByAccount && (
@@ -145,16 +141,12 @@ export default function BudgetPlanningPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Conta</label>
-                <select
+                <Select
                   value={distributeForm.accountId}
-                  onChange={(e) => setDistributeForm({ ...distributeForm, accountId: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="">Selecione...</option>
-                  {accounts?.map((a) => (
-                    <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
-                  ))}
-                </select>
+                  onChange={(value) => setDistributeForm({ ...distributeForm, accountId: value })}
+                  placeholder="Selecione..."
+                  options={accounts?.map((a) => ({ value: a.id, label: `${a.code} - ${a.name}` })) || []}
+                />
               </div>
               <Input
                 label="Valor Anual"
@@ -164,14 +156,14 @@ export default function BudgetPlanningPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Distribuição</label>
-                <select
+                <Select
                   value={distributeForm.distribution}
-                  onChange={(e) => setDistributeForm({ ...distributeForm, distribution: e.target.value as "LINEAR" | "SEASONAL" })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="LINEAR">Linear (igual por mês)</option>
-                  <option value="SEASONAL">Sazonal</option>
-                </select>
+                  onChange={(value) => setDistributeForm({ ...distributeForm, distribution: value as "LINEAR" | "SEASONAL" })}
+                  options={[
+                    { value: "LINEAR", label: "Linear (igual por mês)" },
+                    { value: "SEASONAL", label: "Sazonal" },
+                  ]}
+                />
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">

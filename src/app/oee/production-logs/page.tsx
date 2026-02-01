@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { FileText, Plus } from "lucide-react";
 
 export default function ProductionLogsPage() {
@@ -72,18 +73,14 @@ export default function ProductionLogsPage() {
       {/* Filtros */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex flex-wrap items-end gap-4">
-          <div>
+          <div className="min-w-[200px]">
             <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-            <select
+            <Select
               value={workCenterId}
-              onChange={(e) => setWorkCenterId(e.target.value)}
-              className="px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme min-w-[200px]"
-            >
-              <option value="">Todos</option>
-              {workCenters?.map((wc) => (
-                <option key={wc.id} value={wc.id}>{wc.code} - {wc.name}</option>
-              ))}
-            </select>
+              onChange={setWorkCenterId}
+              placeholder="Todos"
+              options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+            />
           </div>
           <Input
             label="Data Início"
@@ -179,17 +176,13 @@ export default function ProductionLogsPage() {
             <form onSubmit={handleLogSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-                <select
+                <Select
                   value={logForm.workCenterId}
-                  onChange={(e) => setLogForm({ ...logForm, workCenterId: e.target.value })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+                  onChange={(value) => setLogForm({ ...logForm, workCenterId: value })}
+                  placeholder="Selecione..."
                   required
-                >
-                  <option value="">Selecione...</option>
-                  {workCenters?.map((wc) => (
-                    <option key={wc.id} value={wc.id}>{wc.code} - {wc.name}</option>
-                  ))}
-                </select>
+                  options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -230,13 +223,13 @@ export default function ProductionLogsPage() {
                 />
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary text-theme"
                 >
                   Cancelar
-                </button>
+                </Button>
                 <Button
                   type="submit"
                   disabled={!logForm.workCenterId}

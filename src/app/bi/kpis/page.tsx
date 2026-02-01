@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Target,
   Plus,
@@ -249,15 +251,11 @@ export default function BIKPIsPage() {
                 />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Categoria *</label>
-                  <select
+                  <Select
                     value={newKpi.category}
-                    onChange={(e) => setNewKpi({ ...newKpi, category: e.target.value as KpiCategory })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  >
-                    {categoryOptions.filter((c) => c.value !== "ALL").map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setNewKpi({ ...newKpi, category: value as KpiCategory })}
+                    options={categoryOptions.filter((c) => c.value !== "ALL").map((opt) => ({ value: opt.value, label: opt.label }))}
+                  />
                 </div>
               </div>
 
@@ -270,12 +268,11 @@ export default function BIKPIsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={newKpi.description}
                   onChange={(e) => setNewKpi({ ...newKpi, description: e.target.value })}
                   rows={2}
                   placeholder="Descrição do KPI..."
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
                 />
               </div>
 
@@ -294,25 +291,26 @@ export default function BIKPIsPage() {
                 />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Polaridade</label>
-                  <select
+                  <Select
                     value={newKpi.polarity}
-                    onChange={(e) => setNewKpi({ ...newKpi, polarity: e.target.value as "HIGHER" | "LOWER" })}
-                    className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  >
-                    <option value="HIGHER">Maior é melhor</option>
-                    <option value="LOWER">Menor é melhor</option>
-                  </select>
+                    onChange={(value) => setNewKpi({ ...newKpi, polarity: value as "HIGHER" | "LOWER" })}
+                    options={[
+                      { value: "HIGHER", label: "Maior é melhor" },
+                      { value: "LOWER", label: "Menor é melhor" },
+                    ]}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 onClick={handleCreate}
                 disabled={!newKpi.code.trim() || !newKpi.name.trim()}

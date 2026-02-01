@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { GitBranch, Plus, Lock, CheckCircle2, FileEdit } from "lucide-react";
 import Link from "next/link";
 import { formatDateTime } from "@/lib/formatters";
@@ -69,13 +71,12 @@ export default function BudgetVersionsPage() {
           { label: "Versões" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Nova Versão
-          </button>
+          </Button>
         }
       />
 
@@ -183,15 +184,15 @@ export default function BudgetVersionsPage() {
                 />
                 <div>
                   <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                  <select
+                  <Select
                     value={newVersion.type}
-                    onChange={(e) => setNewVersion({ ...newVersion, type: e.target.value as "ORIGINAL" | "REVISED" | "FORECAST" })}
-                    className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                  >
-                    <option value="ORIGINAL">Original</option>
-                    <option value="REVISED">Revisado</option>
-                    <option value="FORECAST">Forecast</option>
-                  </select>
+                    onChange={(value) => setNewVersion({ ...newVersion, type: value as "ORIGINAL" | "REVISED" | "FORECAST" })}
+                    options={[
+                      { value: "ORIGINAL", label: "Original" },
+                      { value: "REVISED", label: "Revisado" },
+                      { value: "FORECAST", label: "Forecast" },
+                    ]}
+                  />
                 </div>
               </div>
               <Input
@@ -202,16 +203,12 @@ export default function BudgetVersionsPage() {
               />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Copiar de (opcional)</label>
-                <select
+                <Select
                   value={newVersion.copyFromVersionId || ""}
-                  onChange={(e) => setNewVersion({ ...newVersion, copyFromVersionId: e.target.value || undefined })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="">Não copiar</option>
-                  {versions?.map((v) => (
-                    <option key={v.id} value={v.id}>{v.name} ({v.year})</option>
-                  ))}
-                </select>
+                  onChange={(value) => setNewVersion({ ...newVersion, copyFromVersionId: value || undefined })}
+                  placeholder="Não copiar"
+                  options={versions?.map((v) => ({ value: v.id, label: `${v.name} (${v.year})` })) || []}
+                />
               </div>
               {newVersion.copyFromVersionId && (
                 <Input
@@ -224,10 +221,9 @@ export default function BudgetVersionsPage() {
               )}
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={newVersion.description}
                   onChange={(e) => setNewVersion({ ...newVersion, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
                   rows={2}
                 />
               </div>

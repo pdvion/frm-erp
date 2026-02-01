@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { ArrowLeftRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -43,34 +45,28 @@ export default function NewTransferPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Conta de Origem</label>
-                <select
+                <Select
                   value={sourceAccountId}
-                  onChange={(e) => setSourceAccountId(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="">Selecione...</option>
-                  {accounts.filter((a) => a.id !== destinationAccountId).map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} - {account.bankName} ({formatCurrency(account.currentBalance)})
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSourceAccountId}
+                  placeholder="Selecione..."
+                  options={accounts.filter((a) => a.id !== destinationAccountId).map((account) => ({
+                    value: account.id,
+                    label: `${account.name} - ${account.bankName} (${formatCurrency(account.currentBalance)})`
+                  }))}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Conta de Destino</label>
-                <select
+                <Select
                   value={destinationAccountId}
-                  onChange={(e) => setDestinationAccountId(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
-                >
-                  <option value="">Selecione...</option>
-                  {accounts.filter((a) => a.id !== sourceAccountId).map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} - {account.bankName} ({formatCurrency(account.currentBalance)})
-                    </option>
-                  ))}
-                </select>
+                  onChange={setDestinationAccountId}
+                  placeholder="Selecione..."
+                  options={accounts.filter((a) => a.id !== sourceAccountId).map((account) => ({
+                    value: account.id,
+                    label: `${account.name} - ${account.bankName} (${formatCurrency(account.currentBalance)})`
+                  }))}
+                />
               </div>
 
               <Input
@@ -91,10 +87,9 @@ export default function NewTransferPage() {
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <textarea
+                <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
                   rows={2}
                 />
               </div>

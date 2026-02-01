@@ -6,7 +6,9 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import {
   Building2,
   Loader2,
@@ -246,26 +248,22 @@ export default function CnabPage() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-theme-secondary mb-1">Banco</label>
-                      <select
+                      <Select
                         value={configForm.bankCode}
-                        onChange={(e) => setConfigForm({ ...configForm, bankCode: e.target.value as typeof configForm.bankCode })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                      >
-                        {banks?.map((bank) => (
-                          <option key={bank.code} value={bank.code}>{bank.name}</option>
-                        ))}
-                      </select>
+                        onChange={(value) => setConfigForm({ ...configForm, bankCode: value as typeof configForm.bankCode })}
+                        options={banks?.map((bank) => ({ value: bank.code, label: bank.name })) || []}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-theme-secondary mb-1">Layout</label>
-                      <select
+                      <Select
                         value={configForm.layout}
-                        onChange={(e) => setConfigForm({ ...configForm, layout: e.target.value as typeof configForm.layout })}
-                        className="w-full px-3 py-2 border border-theme-input rounded-lg"
-                      >
-                        <option value="240">CNAB 240</option>
-                        <option value="400">CNAB 400</option>
-                      </select>
+                        onChange={(value) => setConfigForm({ ...configForm, layout: value as typeof configForm.layout })}
+                        options={[
+                          { value: "240", label: "CNAB 240" },
+                          { value: "400", label: "CNAB 400" },
+                        ]}
+                      />
                     </div>
                     <Input
                       label="Agência"
@@ -325,13 +323,12 @@ export default function CnabPage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <button
+                    <Button
                       type="submit"
-                      disabled={saveConfigMutation.isPending}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      isLoading={saveConfigMutation.isPending}
                     >
-                      {saveConfigMutation.isPending ? "Salvando..." : "Salvar Configuração"}
-                    </button>
+                      Salvar Configuração
+                    </Button>
                   </div>
                 </form>
               ) : (
