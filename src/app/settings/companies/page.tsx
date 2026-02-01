@@ -5,6 +5,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   Building2,
   Plus,
@@ -127,74 +128,40 @@ export default function CompaniesPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Razão Social *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Nome Fantasia
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.tradeName}
-                    onChange={(e) => setFormData({ ...formData, tradeName: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    CNPJ
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.cnpj}
-                    onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                    placeholder="00.000.000/0000-00"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Inscrição Estadual
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.ie}
-                    onChange={(e) => setFormData({ ...formData, ie: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <Input
+                  label="Razão Social *"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Nome Fantasia"
+                  value={formData.tradeName}
+                  onChange={(e) => setFormData({ ...formData, tradeName: e.target.value })}
+                />
+                <Input
+                  label="CNPJ"
+                  value={formData.cnpj}
+                  onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                  placeholder="00.000.000/0000-00"
+                />
+                <Input
+                  label="Inscrição Estadual"
+                  value={formData.ie}
+                  onChange={(e) => setFormData({ ...formData, ie: e.target.value })}
+                />
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Endereço
-                  </label>
-                  <input
-                    type="text"
+                  <Input
+                    label="Endereço"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Cidade
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <Input
+                  label="Cidade"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-theme-secondary mb-1">
@@ -235,49 +202,32 @@ export default function CompaniesPage() {
                       <option value="TO">TO - Tocantins</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      CEP
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.zipCode}
-                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                      className="w-full border border-theme-input rounded-lg px-3 py-2"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Telefone
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
+                  <Input
+                    label="CEP"
+                    value={formData.zipCode}
+                    onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    E-mail
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full border border-theme-input rounded-lg px-3 py-2"
-                  />
-                </div>
+                <Input
+                  label="Telefone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+                <Input
+                  label="E-mail"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
               </div>
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-theme">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={() => { setShowForm(false); setEditingId(null); resetForm(); }}
-                  className="px-4 py-2 text-theme-secondary hover:text-theme"
                 >
                   Cancelar
-                </button>
+                </Button>
                 <Button
                   type="submit"
                   isLoading={createMutation.isPending || updateMutation.isPending}
