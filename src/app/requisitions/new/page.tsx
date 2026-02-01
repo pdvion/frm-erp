@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Package,
   Loader2,
@@ -129,33 +130,33 @@ export default function NewRequisitionPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tipo *
                 </label>
-                <select
+                <Select
                   value={type}
-                  onChange={(e) => setType(e.target.value as typeof type)}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="PRODUCTION">Produção</option>
-                  <option value="MAINTENANCE">Manutenção</option>
-                  <option value="ADMINISTRATIVE">Administrativo</option>
-                  <option value="PROJECT">Projeto</option>
-                  <option value="OTHER">Outros</option>
-                </select>
+                  onChange={(value) => setType(value as typeof type)}
+                  options={[
+                    { value: "PRODUCTION", label: "Produção" },
+                    { value: "MAINTENANCE", label: "Manutenção" },
+                    { value: "ADMINISTRATIVE", label: "Administrativo" },
+                    { value: "PROJECT", label: "Projeto" },
+                    { value: "OTHER", label: "Outros" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Prioridade
                 </label>
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value={1}>Urgente</option>
-                  <option value={2}>Alta</option>
-                  <option value={3}>Normal</option>
-                  <option value={4}>Baixa</option>
-                </select>
+                <Select
+                  value={String(priority)}
+                  onChange={(value) => setPriority(Number(value))}
+                  options={[
+                    { value: "1", label: "Urgente" },
+                    { value: "2", label: "Alta" },
+                    { value: "3", label: "Normal" },
+                    { value: "4", label: "Baixa" },
+                  ]}
+                />
               </div>
 
               <Input
@@ -191,12 +192,11 @@ export default function NewRequisitionPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Observações
               </label>
-              <textarea
+              <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="Observações adicionais..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -277,12 +277,12 @@ export default function NewRequisitionPage() {
 
           {/* Actions */}
           <div className="flex justify-end gap-4">
-            <Link
-              href="/requisitions"
-              className="px-6 py-2 border border-theme-input rounded-lg text-theme-secondary hover:bg-theme-hover"
+            <Button
+              variant="outline"
+              onClick={() => router.push("/requisitions")}
             >
               Cancelar
-            </Link>
+            </Button>
             <Button
               onClick={handleSubmit}
               disabled={items.length === 0}
