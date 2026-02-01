@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   ChevronLeft,
   Package,
@@ -225,12 +227,11 @@ export default function MobileReceivingPage() {
         {isConferencing && (
           <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
             <div className="flex items-center gap-2">
-              <Barcode className="w-5 h-5 text-blue-600" />
-              <input
+              <Barcode className="w-5 h-5 text-blue-600 z-10" />
+              <Input
                 ref={barcodeInputRef}
-                type="text"
                 placeholder="Escanear código de barras..."
-                className="flex-1 px-3 py-2 bg-theme-card border border-blue-200 rounded-lg text-lg focus:ring-2 focus:ring-blue-500"
+                className="flex-1 text-lg"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleBarcodeScanned((e.target as HTMLInputElement).value);
@@ -335,7 +336,7 @@ export default function MobileReceivingPage() {
                   </div>
 
                   {/* Observações */}
-                  <textarea
+                  <Textarea
                     placeholder="Observações (divergências, avarias...)"
                     value={conf?.notes || ""}
                     onChange={(e) =>
@@ -344,7 +345,6 @@ export default function MobileReceivingPage() {
                         [item.id]: { ...prev[item.id], notes: e.target.value },
                       }))
                     }
-                    className="w-full px-4 py-3 border border-theme-input rounded-xl text-base resize-none"
                     rows={2}
                   />
 
