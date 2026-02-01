@@ -215,18 +215,15 @@ export default function BIReportsPage() {
           {reportCategories.map((cat) => {
             const Icon = cat.icon;
             return (
-              <button
+              <Button
                 key={cat.id}
+                variant={selectedCategory === cat.id ? "primary" : "secondary"}
+                size="sm"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === cat.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-                }`}
+                leftIcon={<Icon className="w-4 h-4" />}
               >
-                <Icon className="w-4 h-4" />
                 {cat.label}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -272,16 +269,17 @@ export default function BIReportsPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => toggleFavorite(report.id)}
-                        className="p-2 hover:bg-theme-secondary rounded-lg"
                       >
                         {isFavorite ? (
                           <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                         ) : (
                           <StarOff className="w-5 h-5 text-theme-muted" />
                         )}
-                      </button>
+                      </Button>
                       <Button size="sm" className="p-2">
                         <Play className="w-5 h-5" />
                       </Button>
@@ -290,22 +288,18 @@ export default function BIReportsPage() {
 
                   {/* Ações */}
                   <div className="flex gap-2 mt-4 pt-3 border-t border-theme">
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-theme-secondary text-theme rounded hover:bg-theme-tertiary">
-                      <Download className="w-4 h-4" />
+                    <Button variant="secondary" size="sm" leftIcon={<Download className="w-4 h-4" />}>
                       PDF
-                    </button>
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-theme-secondary text-theme rounded hover:bg-theme-tertiary">
-                      <FileSpreadsheet className="w-4 h-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm" leftIcon={<FileSpreadsheet className="w-4 h-4" />}>
                       Excel
-                    </button>
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-theme-secondary text-theme rounded hover:bg-theme-tertiary">
-                      <Mail className="w-4 h-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm" leftIcon={<Mail className="w-4 h-4" />}>
                       E-mail
-                    </button>
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-theme-secondary text-theme rounded hover:bg-theme-tertiary">
-                      <Printer className="w-4 h-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm" leftIcon={<Printer className="w-4 h-4" />}>
                       Imprimir
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -332,13 +326,15 @@ export default function BIReportsPage() {
                 .filter((r) => favorites.includes(r.id))
                 .slice(0, 5)
                 .map((report) => (
-                  <button
+                  <Button
                     key={report.id}
-                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-theme-secondary text-left"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    leftIcon={<Play className="w-4 h-4 text-blue-600" />}
                   >
-                    <Play className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm text-theme truncate">{report.name}</span>
-                  </button>
+                    <span className="truncate">{report.name}</span>
+                  </Button>
                 ))}
               {favorites.length === 0 && (
                 <p className="text-sm text-theme-muted">Nenhum favorito ainda</p>
@@ -363,9 +359,9 @@ export default function BIReportsPage() {
                 </div>
               ))}
             </div>
-            <button className="w-full mt-4 px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
+            <Button variant="outline" size="sm" className="w-full mt-4">
               Gerenciar Agendamentos
-            </button>
+            </Button>
           </div>
         </div>
       </div>
