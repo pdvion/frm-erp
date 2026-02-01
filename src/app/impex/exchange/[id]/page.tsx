@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -324,10 +325,8 @@ export default function ExchangeContractDetailPage({
             <h3 className="text-lg font-semibold text-theme mb-4">Liquidar Contrato</h3>
             <form onSubmit={handleLiquidate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Valor a Liquidar ({contract.foreignCurrency}) *
-                </label>
-                <input
+                <Input
+                  label={`Valor a Liquidar (${contract.foreignCurrency}) *`}
                   type="number"
                   value={liquidationData.foreignValue}
                   onChange={(e) =>
@@ -337,20 +336,17 @@ export default function ExchangeContractDetailPage({
                     }))
                   }
                   required
-                  min="0"
+                  min={0}
                   max={remainingValue}
-                  step="0.01"
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
+                  step={0.01}
                 />
                 <p className="text-xs text-theme-muted mt-1">
                   Saldo disponível: {formatCurrency(remainingValue, contract.foreignCurrency)}
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Taxa de Liquidação *
-                </label>
-                <input
+                <Input
+                  label="Taxa de Liquidação *"
                   type="number"
                   value={liquidationData.liquidationRate}
                   onChange={(e) =>
@@ -360,31 +356,25 @@ export default function ExchangeContractDetailPage({
                     }))
                   }
                   required
-                  min="0"
-                  step="0.0001"
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
+                  min={0}
+                  step={0.0001}
                 />
                 <p className="text-xs text-theme-muted mt-1">
                   Taxa contratada: {formatRate(Number(contract.contractRate))}
                 </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Data da Liquidação *
-                </label>
-                <input
-                  type="date"
-                  value={liquidationData.liquidationDate}
-                  onChange={(e) =>
-                    setLiquidationData((prev) => ({
-                      ...prev,
-                      liquidationDate: e.target.value,
-                    }))
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-secondary text-theme"
-                />
-              </div>
+              <Input
+                label="Data da Liquidação *"
+                type="date"
+                value={liquidationData.liquidationDate}
+                onChange={(e) =>
+                  setLiquidationData((prev) => ({
+                    ...prev,
+                    liquidationDate: e.target.value,
+                  }))
+                }
+                required
+              />
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">Observações</label>
                 <textarea

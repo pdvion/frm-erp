@@ -11,7 +11,6 @@ import {
   FileBarChart,
   ArrowLeft,
   Building2,
-  Calendar,
   DollarSign,
   Copy,
   CheckCircle,
@@ -196,22 +195,14 @@ export default function NewBoletoPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Data de Vencimento *
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                  <input
-                    type="date"
-                    value={form.dataVencimento}
-                    onChange={(e) => setForm({ ...form, dataVencimento: e.target.value })}
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-              </div>
+              <Input
+                label="Data de Vencimento *"
+                type="date"
+                value={form.dataVencimento}
+                onChange={(e) => setForm({ ...form, dataVencimento: e.target.value })}
+                min={new Date().toISOString().split("T")[0]}
+                required
+              />
 
               <div className="md:col-span-2">
                 <Input

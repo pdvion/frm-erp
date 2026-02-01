@@ -11,7 +11,6 @@ import {
   Save,
   ArrowLeft,
   Search,
-  Calendar,
   DollarSign,
   FileText,
   Building2,
@@ -338,21 +337,13 @@ export default function NewPayablePage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Data de Vencimento *
-              </label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
-                  type="date"
-                  value={form.dueDate}
-                  onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  required
-                />
-              </div>
-            </div>
+            <Input
+              label="Data de Vencimento *"
+              type="date"
+              value={form.dueDate}
+              onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+              required
+            />
 
             <div className="grid grid-cols-2 gap-2">
               <div>
