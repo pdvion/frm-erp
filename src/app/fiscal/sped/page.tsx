@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import {
   FileText,
   Download,
@@ -91,33 +92,21 @@ export default function SpedPage() {
                     <Calendar className="inline h-4 w-4 mr-1" />
                     Mês de Referência
                   </label>
-                  <select
-                    value={mes}
-                    onChange={(e) => setMes(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
-                  >
-                    {meses.map((m) => (
-                      <option key={m.value} value={m.value}>
-                        {m.label}
-                      </option>
-                    ))}
-                  </select>
+                  <Select
+                    value={String(mes)}
+                    onChange={(value) => setMes(Number(value))}
+                    options={meses.map((m) => ({ value: String(m.value), label: m.label }))}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Ano
                   </label>
-                  <select
-                    value={ano}
-                    onChange={(e) => setAno(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme dark:border-theme rounded-lg bg-theme-card text-theme dark:text-theme-muted focus:ring-2 focus:ring-blue-500"
-                  >
-                    {anos.map((a) => (
-                      <option key={a} value={a}>
-                        {a}
-                      </option>
-                    ))}
-                  </select>
+                  <Select
+                    value={String(ano)}
+                    onChange={(value) => setAno(Number(value))}
+                    options={anos.map((a) => ({ value: String(a), label: String(a) }))}
+                  />
                 </div>
               </div>
 
