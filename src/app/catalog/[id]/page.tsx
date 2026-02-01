@@ -16,6 +16,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { RichTextViewer } from "@/components/editor";
+import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -46,12 +48,9 @@ export default function ProductDetailPage() {
           <h2 className="text-xl font-medium text-theme mb-2">
             Produto não encontrado
           </h2>
-          <button
-            onClick={() => router.push("/catalog")}
-            className="text-blue-600 hover:text-blue-700"
-          >
+          <LinkButton href="/catalog" variant="ghost">
             Voltar ao catálogo
-          </button>
+          </LinkButton>
         </div>
       </div>
     );
@@ -69,20 +68,19 @@ export default function ProductDetailPage() {
         subtitle={product.shortDescription || undefined}
         actions={
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.push("/catalog")}
-              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-hover"
+              leftIcon={<ArrowLeft size={20} />}
             >
-              <ArrowLeft size={20} />
               Voltar
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => router.push(`/catalog/${productId}/edit`)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Pencil size={20} />}
             >
-              <Pencil size={20} />
               Editar
-            </button>
+            </Button>
           </div>
         }
       />
