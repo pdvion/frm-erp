@@ -14,6 +14,19 @@ import {
   getCstIcmsDescription,
   suggestCfopForOperation,
 } from "@/lib/deploy-agent/fiscal-rules-engine";
+import {
+  generateTaxConfiguration,
+  detectTaxRegime,
+  getCstDescription,
+  getDefaultInterstateAliquota,
+  generateTaxConfigReport,
+} from "@/lib/deploy-agent/tax-config";
+import {
+  generateFinancialConfiguration,
+  generateFinancialReport,
+  getPaymentMethodDescription,
+  getNaturezaSugerida,
+} from "@/lib/deploy-agent/financial-mapping";
 
 export const deployAgentRouter = createTRPCRouter({
   /**
@@ -384,6 +397,248 @@ export const deployAgentRouter = createTRPCRouter({
       return {
         cfop,
         description: getCfopDescription(cfop),
+      };
+    }),
+
+  /**
+   * Gera configuração completa de impostos
+   * VIO-877: Tax Auto-Config
+   */
+  generateTaxConfig: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      return generateTaxConfiguration(parsedNfes);
+    }),
+
+  /**
+   * Detecta regime tributário
+   */
+  detectTaxRegime: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      return detectTaxRegime(parsedNfes);
+    }),
+
+  /**
+   * Gera relatório de configuração tributária em texto
+   */
+  getTaxConfigReport: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      const config = generateTaxConfiguration(parsedNfes);
+      return {
+        report: generateTaxConfigReport(config),
+        config,
+      };
+    }),
+
+  /**
+   * Obtém descrição de CST/CSOSN (Tax Config)
+   */
+  getCstCsosnDescription: tenantProcedure
+    .input(z.object({ cst: z.string() }))
+    .query(({ input }) => {
+      return {
+        cst: input.cst,
+        description: getCstDescription(input.cst),
+      };
+    }),
+
+  /**
+   * Obtém alíquota interestadual padrão
+   */
+  getInterstateAliquota: tenantProcedure
+    .input(
+      z.object({
+        ufOrigem: z.string().length(2),
+        ufDestino: z.string().length(2),
+      })
+    )
+    .query(({ input }) => {
+      return {
+        ufOrigem: input.ufOrigem,
+        ufDestino: input.ufDestino,
+        aliquota: getDefaultInterstateAliquota(input.ufOrigem, input.ufDestino),
+      };
+    }),
+
+  /**
+   * Gera configuração financeira completa
+   * VIO-880: Financial Flow Mapping
+   */
+  generateFinancialConfig: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      return generateFinancialConfiguration(parsedNfes);
+    }),
+
+  /**
+   * Gera relatório de configuração financeira em texto
+   */
+  getFinancialConfigReport: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      const config = generateFinancialConfiguration(parsedNfes);
+      return {
+        report: generateFinancialReport(config),
+        config,
+      };
+    }),
+
+  /**
+   * Obtém descrição de forma de pagamento
+   */
+  getPaymentMethodDescription: tenantProcedure
+    .input(z.object({ code: z.string() }))
+    .query(({ input }) => {
+      return {
+        code: input.code,
+        description: getPaymentMethodDescription(input.code),
+      };
+    }),
+
+  /**
+   * Obtém natureza sugerida para CFOP
+   */
+  getNaturezaSugerida: tenantProcedure
+    .input(z.object({ cfop: z.number() }))
+    .query(({ input }) => {
+      const natureza = getNaturezaSugerida(input.cfop);
+      return {
+        cfop: input.cfop,
+        natureza: natureza?.natureza || "Não mapeado",
+        categoria: natureza?.categoria || "Outros",
+        tipo: natureza?.tipo || (input.cfop >= 5000 ? "receita" : "despesa"),
       };
     }),
 });
