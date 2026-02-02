@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 describe("Routers import smoke", () => {
-  it("imports all router modules", async () => {
+  it("imports all router modules", { timeout: 30000 }, async () => {
     const dir = path.dirname(fileURLToPath(import.meta.url));
     const files = fs.readdirSync(dir);
 

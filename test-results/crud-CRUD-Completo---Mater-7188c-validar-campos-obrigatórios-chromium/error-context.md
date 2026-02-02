@@ -18,13 +18,12 @@
           - listitem [ref=e17]:
             - link "Dashboard" [ref=e18] [cursor=pointer]:
               - /url: /dashboard
-              - img [ref=e19]
-              - generic [ref=e22]: Dashboard
-          - listitem [ref=e23]:
-            - button "Compras" [ref=e25]:
-              - generic [ref=e26]:
-                - img [ref=e27]
-                - generic [ref=e31]: Compras
+              - img [ref=e20]
+              - generic [ref=e23]: Dashboard
+          - listitem [ref=e24]:
+            - button "Compras" [ref=e26]:
+              - img [ref=e27]
+              - generic [ref=e31]: Compras
               - img [ref=e32]
             - list [ref=e34]:
               - listitem [ref=e35]:
@@ -48,183 +47,175 @@
               - listitem [ref=e47]:
                 - link "Devoluções" [ref=e48] [cursor=pointer]:
                   - /url: /supplier-returns
-              - listitem [ref=e49]:
-                - link "ImpEx" [ref=e50] [cursor=pointer]:
-                  - /url: /impex
-          - listitem [ref=e51]:
-            - button "Estoque" [ref=e52]:
-              - generic [ref=e53]:
-                - img [ref=e54]
-                - generic [ref=e57]: Estoque
-              - img [ref=e58]
-          - listitem [ref=e60]:
-            - button "Vendas" [ref=e61]:
-              - generic [ref=e62]:
-                - img [ref=e63]
-                - generic [ref=e66]: Vendas
+          - listitem [ref=e49]:
+            - button "ImpEx" [ref=e50]:
+              - img [ref=e51]
+              - generic [ref=e54]: ImpEx
+              - img [ref=e55]
+          - listitem [ref=e57]:
+            - button "Estoque" [ref=e58]:
+              - img [ref=e59]
+              - generic [ref=e62]: Estoque
+              - img [ref=e63]
+          - listitem [ref=e65]:
+            - button "Vendas" [ref=e66]:
               - img [ref=e67]
-          - listitem [ref=e69]:
-            - button "Financeiro" [ref=e70]:
-              - generic [ref=e71]:
-                - img [ref=e72]
-                - generic [ref=e74]: Financeiro
+              - generic [ref=e70]: Vendas
+              - img [ref=e71]
+          - listitem [ref=e73]:
+            - button "Financeiro" [ref=e74]:
               - img [ref=e75]
-          - listitem [ref=e77]:
-            - button "Fiscal" [ref=e78]:
-              - generic [ref=e79]:
-                - img [ref=e80]
-                - generic [ref=e83]: Fiscal
-              - img [ref=e84]
-          - listitem [ref=e86]:
-            - button "Produção" [ref=e87]:
-              - generic [ref=e88]:
-                - img [ref=e89]
-                - generic [ref=e91]: Produção
-              - img [ref=e92]
-          - listitem [ref=e94]:
-            - button "RH" [ref=e95]:
-              - generic [ref=e96]:
-                - img [ref=e97]
-                - generic [ref=e102]: RH
+              - generic [ref=e77]: Financeiro
+              - img [ref=e78]
+          - listitem [ref=e80]:
+            - button "Fiscal" [ref=e81]:
+              - img [ref=e82]
+              - generic [ref=e85]: Fiscal
+              - img [ref=e86]
+          - listitem [ref=e88]:
+            - button "Produção" [ref=e89]:
+              - img [ref=e90]
+              - generic [ref=e92]: Produção
+              - img [ref=e93]
+          - listitem [ref=e95]:
+            - button "RH" [ref=e96]:
+              - img [ref=e97]
+              - generic [ref=e102]: RH
               - img [ref=e103]
           - listitem [ref=e105]:
             - button "Relatórios" [ref=e106]:
-              - generic [ref=e107]:
-                - img [ref=e108]
-                - generic [ref=e110]: Relatórios
-              - img [ref=e111]
-          - listitem [ref=e113]:
-            - button "BI & Gestão" [ref=e114]:
-              - generic [ref=e115]:
-                - img [ref=e116]
-                - generic [ref=e119]: BI & Gestão
-              - img [ref=e120]
-          - listitem [ref=e122]:
-            - link "Tarefas" [ref=e124] [cursor=pointer]:
+              - img [ref=e107]
+              - generic [ref=e109]: Relatórios
+              - img [ref=e110]
+          - listitem [ref=e112]:
+            - button "BI & Gestão" [ref=e113]:
+              - img [ref=e114]
+              - generic [ref=e117]: BI & Gestão
+              - img [ref=e118]
+          - listitem [ref=e120]:
+            - link "Tarefas" [ref=e122] [cursor=pointer]:
               - /url: /tasks
-              - img [ref=e125]
-              - generic [ref=e128]: Tarefas
-          - listitem [ref=e129]:
-            - link "Workflow" [ref=e130] [cursor=pointer]:
-              - /url: /workflow
-              - img [ref=e131]
-              - generic [ref=e135]: Workflow
-          - listitem [ref=e136]:
-            - link "Documentos" [ref=e137] [cursor=pointer]:
-              - /url: /documents
-              - img [ref=e138]
-              - generic [ref=e140]: Documentos
-          - listitem [ref=e141]:
-            - link "Notificações" [ref=e142] [cursor=pointer]:
+              - img [ref=e124]
+              - generic [ref=e127]: Tarefas
+          - listitem [ref=e128]:
+            - button "Workflow" [ref=e129]:
+              - img [ref=e130]
+              - generic [ref=e134]: Workflow
+              - img [ref=e135]
+          - listitem [ref=e137]:
+            - button "Documentos" [ref=e138]:
+              - img [ref=e139]
+              - generic [ref=e141]: Documentos
+              - img [ref=e142]
+          - listitem [ref=e144]:
+            - link "Notificações" [ref=e145] [cursor=pointer]:
               - /url: /notifications
-              - img [ref=e143]
-              - generic [ref=e146]: Notificações
-          - listitem [ref=e147]:
-            - button "Administração" [ref=e148]:
-              - generic [ref=e149]:
-                - img [ref=e150]
-                - generic [ref=e152]: Administração
+              - img [ref=e147]
+              - generic [ref=e150]: Notificações
+          - listitem [ref=e151]:
+            - button "Administração" [ref=e152]:
               - img [ref=e153]
-          - listitem [ref=e155]:
-            - button "Configurações" [ref=e156]:
-              - generic [ref=e157]:
-                - img [ref=e158]
-                - generic [ref=e161]: Configurações
-              - img [ref=e162]
-      - generic [ref=e165]:
-        - generic [ref=e166]: Tema
-        - generic [ref=e167]:
-          - button "Tema Claro" [ref=e168]:
-            - img [ref=e169]
-          - button "Tema Escuro" [ref=e175]:
-            - img [ref=e176]
-          - button "Tema Sistema" [ref=e178]:
-            - img [ref=e179]
-    - generic [ref=e181]:
-      - banner [ref=e182]:
-        - generic [ref=e185]:
-          - generic [ref=e186]:
-            - img [ref=e187]
-            - generic [ref=e191]: Materiais
-          - navigation [ref=e192]:
-            - link "Materiais" [ref=e193] [cursor=pointer]:
+              - generic [ref=e155]: Administração
+              - img [ref=e156]
+          - listitem [ref=e158]:
+            - button "Configurações" [ref=e159]:
+              - img [ref=e160]
+              - generic [ref=e163]: Configurações
+              - img [ref=e164]
+      - generic [ref=e167]:
+        - generic [ref=e168]: Tema
+        - generic [ref=e169]:
+          - button "Tema Claro" [ref=e170]:
+            - img [ref=e171]
+          - button "Tema Escuro" [ref=e177]:
+            - img [ref=e178]
+          - button "Tema Sistema" [ref=e180]:
+            - img [ref=e181]
+    - generic [ref=e183]:
+      - banner [ref=e184]:
+        - generic [ref=e187]:
+          - generic [ref=e188]:
+            - img [ref=e189]
+            - generic [ref=e193]: Materiais
+          - navigation [ref=e194]:
+            - link "Materiais" [ref=e195] [cursor=pointer]:
               - /url: /materials
-            - generic [ref=e194]:
-              - img [ref=e195]
-              - generic [ref=e197]: Novo
-        - generic [ref=e198]:
-          - button "FRM Indústria e Comércio Ltda" [ref=e200]:
-            - img [ref=e201]
-            - generic [ref=e205]: FRM Indústria e Comércio Ltda
-            - img [ref=e206]
-          - button [ref=e209]:
-            - img [ref=e210]
-          - button "Menu do usuário" [ref=e214]:
-            - img [ref=e216]
-            - generic [ref=e219]:
-              - generic [ref=e220]: paulo.vion
-              - generic [ref=e221]: paulo.vion@me.com
-            - img [ref=e222]
-      - main [ref=e224]:
-        - generic [ref=e225]:
-          - generic [ref=e226]:
-            - navigation "Breadcrumb" [ref=e227]:
-              - list [ref=e228]:
-                - listitem [ref=e229]:
-                  - link "Compras" [ref=e230] [cursor=pointer]:
+            - generic [ref=e196]:
+              - img [ref=e197]
+              - generic [ref=e199]: Novo
+        - generic [ref=e200]:
+          - button "FRM Indústria e Comércio Ltda" [ref=e202]:
+            - img [ref=e203]
+            - generic [ref=e207]: FRM Indústria e Comércio Ltda
+            - img [ref=e208]
+          - button [ref=e211]:
+            - img [ref=e212]
+          - button "Menu do usuário" [ref=e216]:
+            - img [ref=e218]
+            - generic [ref=e221]:
+              - generic [ref=e222]: paulo.vion
+              - generic [ref=e223]: paulo.vion@me.com
+            - img [ref=e224]
+      - main [ref=e226]:
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - navigation "Breadcrumb" [ref=e229]:
+              - list [ref=e230]:
+                - listitem [ref=e231]:
+                  - link "Compras" [ref=e232] [cursor=pointer]:
                     - /url: /purchase-orders
-                    - generic [ref=e231]: Compras
-                - listitem [ref=e232]:
-                  - img [ref=e233]
-                  - link "Materiais" [ref=e235] [cursor=pointer]:
+                    - generic [ref=e233]: Compras
+                - listitem [ref=e234]:
+                  - img [ref=e235]
+                  - link "Materiais" [ref=e237] [cursor=pointer]:
                     - /url: /materials
-                    - generic [ref=e236]: Materiais
-                - listitem [ref=e237]:
-                  - img [ref=e238]
-                  - generic [ref=e240]: Novo
-            - generic [ref=e242]:
-              - link "Voltar" [ref=e243] [cursor=pointer]:
+                    - generic [ref=e238]: Materiais
+                - listitem [ref=e239]:
+                  - img [ref=e240]
+                  - generic [ref=e242]: Novo
+            - generic [ref=e244]:
+              - link "Voltar" [ref=e245] [cursor=pointer]:
                 - /url: /materials
-                - img [ref=e244]
-                - generic [ref=e246]: Voltar
-              - img [ref=e248]
-              - generic [ref=e252]:
-                - heading "Novo Material" [level=1] [ref=e254]
-                - paragraph [ref=e255]: CP10 - Cadastro de Materiais
-          - generic [ref=e256]:
-            - navigation "Tabs" [ref=e258]:
-              - button "Dados Básicos" [ref=e259]:
-                - img [ref=e260]
-                - text: Dados Básicos
-              - button "Estoque" [ref=e262]:
+                - img [ref=e246]
+                - generic [ref=e248]: Voltar
+              - img [ref=e250]
+              - generic [ref=e254]:
+                - heading "Novo Material" [level=1] [ref=e256]
+                - paragraph [ref=e257]: CP10 - Cadastro de Materiais
+          - generic [ref=e258]:
+            - navigation "Tabs" [ref=e260]:
+              - button "Dados Básicos" [ref=e261]:
                 - img [ref=e263]
+                - text: Dados Básicos
+              - button "Estoque" [ref=e265]:
+                - img [ref=e267]
                 - text: Estoque
-              - button "Fiscal" [ref=e273]:
-                - img [ref=e274]
+              - button "Fiscal" [ref=e277]:
+                - img [ref=e279]
                 - text: Fiscal
-              - button "Qualidade" [ref=e276]:
-                - img [ref=e277]
+              - button "Qualidade" [ref=e281]:
+                - img [ref=e283]
                 - text: Qualidade
-              - button "Extras" [ref=e280]:
-                - img [ref=e281]
+              - button "Extras" [ref=e286]:
+                - img [ref=e288]
                 - text: Extras
-            - generic [ref=e285]:
-              - generic [ref=e286]:
-                - generic [ref=e287]: Código *
-                - spinbutton "Código *" [ref=e288]
-              - generic [ref=e289]:
-                - generic [ref=e290]: Código Interno
-                - textbox "Código Interno" [ref=e291]
-              - generic [ref=e292]:
-                - generic [ref=e293]: Código de Barras
-                - textbox "Código de Barras" [ref=e294]
-              - generic [ref=e295]:
-                - generic [ref=e296]: Descrição *
-                - textbox "Descrição *" [ref=e297]
-              - generic [ref=e298]:
-                - generic [ref=e299]: Categoria
-                - generic [ref=e300]:
-                  - combobox "Categoria" [ref=e301]:
+            - generic [ref=e292]:
+              - generic [ref=e293]:
+                - generic [ref=e294]: Código *
+                - spinbutton "Código *" [ref=e296]
+              - generic [ref=e297]:
+                - generic [ref=e298]: Código Interno
+                - textbox "Código Interno" [ref=e300]
+              - generic [ref=e301]:
+                - generic [ref=e302]: Código de Barras
+                - textbox "Código de Barras" [ref=e304]
+              - generic [ref=e306]:
+                - generic [ref=e307]: Descrição *
+                - textbox "Descrição *" [ref=e309]
+              - generic [ref=e310]:
+                - generic [ref=e311]: Categoria
+                - generic [ref=e312]:
+                  - combobox "Categoria" [ref=e313]:
                     - option "Selecione uma categoria" [selected]
                     - option "Componentes Eletrônicos"
                     - option "Embalagens"
@@ -232,48 +223,53 @@
                     - option "Matéria Prima"
                     - option "Peças Usinadas"
                     - option "Produtos Químicos"
-                  - button "Adicionar categoria" [ref=e302]:
-                    - img [ref=e303]
-              - generic [ref=e304]:
-                - generic [ref=e305]: Unidade Estoque *
-                - combobox "Unidade Estoque *" [ref=e306]:
-                  - option "UN - Unidade" [selected]
-                  - option "KG - Quilograma"
-                  - option "M - Metro"
-                  - option "M² - Metro Quadrado"
-                  - option "M³ - Metro Cúbico"
-                  - option "L - Litro"
-                  - option "PC - Peça"
-                  - option "CX - Caixa"
-                  - option "PCT - Pacote"
-                  - option "ROL - Rolo"
-              - generic [ref=e307]:
-                - generic [ref=e308]: Unidade Compra
-                - combobox "Unidade Compra" [ref=e309]:
-                  - option "Mesma do estoque" [selected]
-                  - option "UN - Unidade"
-                  - option "KG - Quilograma"
-                  - option "M - Metro"
-                  - option "CX - Caixa"
-                  - option "PCT - Pacote"
-                  - option "ROL - Rolo"
-              - generic [ref=e310]:
-                - generic [ref=e311]: Localização
-                - textbox "Localização" [ref=e312]:
+                  - button "Adicionar categoria" [ref=e314]:
+                    - img [ref=e315]
+              - generic [ref=e316]:
+                - generic [ref=e317]: Unidade Estoque *
+                - generic [ref=e318]:
+                  - combobox [ref=e319]:
+                    - option "Selecione..." [disabled]
+                    - option "UN - Unidade" [selected]
+                    - option "KG - Quilograma"
+                    - option "M - Metro"
+                    - option "M² - Metro Quadrado"
+                    - option "M³ - Metro Cúbico"
+                    - option "L - Litro"
+                    - option "PC - Peça"
+                    - option "CX - Caixa"
+                    - option "PCT - Pacote"
+                    - option "ROL - Rolo"
+                  - img
+              - generic [ref=e320]:
+                - generic [ref=e321]: Unidade Compra
+                - generic [ref=e322]:
+                  - combobox [ref=e323]:
+                    - option "Mesma do estoque" [disabled] [selected]
+                    - option "Mesma do estoque"
+                    - option "UN - Unidade"
+                    - option "KG - Quilograma"
+                    - option "M - Metro"
+                    - option "CX - Caixa"
+                    - option "PCT - Pacote"
+                    - option "ROL - Rolo"
+                  - img
+              - generic [ref=e324]:
+                - generic [ref=e325]: Localização
+                - textbox "Localização" [ref=e327]:
                   - /placeholder: "Ex: Prateleira A-01"
-              - generic [ref=e313]:
-                - generic [ref=e314]: Observações
-                - textbox "Observações" [ref=e315]
-            - generic [ref=e316]:
-              - link "Cancelar" [ref=e317] [cursor=pointer]:
-                - /url: /materials
-                - img [ref=e318]
+              - generic [ref=e328]:
+                - generic [ref=e329]: Observações
+                - textbox "Observações" [ref=e331]
+            - generic [ref=e332]:
+              - button "Cancelar" [ref=e333]:
+                - img [ref=e335]
                 - text: Cancelar
-              - button "Salvar" [ref=e321]:
-                - img [ref=e323]
+              - button "Salvar" [ref=e338]:
+                - img [ref=e340]
                 - text: Salvar
   - region "Notifications alt+T"
-  - button "Open Next.js Dev Tools" [ref=e332] [cursor=pointer]:
-    - img [ref=e333]
-  - alert [ref=e336]
+  - button "Open Next.js Dev Tools" [ref=e349] [cursor=pointer]:
+    - img [ref=e350]
+  - alert [ref=e353]
 ```
