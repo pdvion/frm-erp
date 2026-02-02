@@ -836,4 +836,62 @@ export const productCatalogRouter = createTRPCRouter({
       syncPercentage: totalMaterials > 0 ? Math.round((materialsWithProduct / totalMaterials) * 100) : 0,
     };
   }),
+
+  // Análise avançada de materiais para sincronização com sugestão de categoria
+  analyzeMaterialsForSync: tenantProcedure
+    .input(
+      z.object({
+        markup: z.number().min(0).max(500).default(30),
+        limit: z.number().min(1).max(100).default(50),
+      }).optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const { markup = 30, limit = 50 } = input || {};
+      const filter = tenantFilter(ctx.companyId);
+
+      const materials = await ctx.prisma.material.findMany({
+        where: {
+          ...filter,
+          status: "ACTIVE",
+          catalogProducts: { none: {} },
+        },
+        take: limit,
+        orderBy: { description: "asc" },
+      });
+
+      const suggestions = materials.map((material) => {
+        const ncmChapter = material.ncm?.substring(0, 2) || "";
+        const categoryMap: Record<string, string> = {
+          "84": "Máquinas e Equipamentos",
+          "85": "Equipamentos Elétricos",
+          "39": "Plásticos",
+          "72": "Ferro e Aço",
+          "73": "Obras de Ferro",
+          "76": "Alumínio",
+          "40": "Borracha",
+          "90": "Instrumentos de Precisão",
+        };
+
+        const suggestedCategory = categoryMap[ncmChapter] || "Geral";
+        const suggestedPrice = (material.lastPurchasePrice || 0) * (1 + markup / 100);
+
+        return {
+          id: material.id,
+          code: material.code,
+          description: material.description,
+          ncm: material.ncm,
+          unit: material.unit,
+          lastPurchasePrice: material.lastPurchasePrice || 0,
+          suggestedPrice: Math.round(suggestedPrice * 100) / 100,
+          suggestedCategory,
+          markup,
+        };
+      });
+
+      return {
+        suggestions,
+        total: suggestions.length,
+        config: { markup },
+      };
+    }),
 });

@@ -28,6 +28,7 @@ import {
   Shield,
   Sun,
   Moon,
+  Globe,
   Monitor,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -56,7 +57,19 @@ const menuItems: MenuItem[] = [
       { label: "Recebimento", href: "/receiving" },
       { label: "Requisições", href: "/requisitions" },
       { label: "Devoluções", href: "/supplier-returns" },
-      { label: "ImpEx", href: "/impex" },
+    ],
+  },
+  {
+    label: "ImpEx",
+    icon: <Globe className="h-5 w-5" />,
+    children: [
+      { label: "Dashboard", href: "/impex/dashboard" },
+      { label: "Processos", href: "/impex/processes" },
+      { label: "Câmbio", href: "/impex/exchange" },
+      { label: "Relatórios", href: "/impex/reports" },
+      { label: "Portos", href: "/impex/ports" },
+      { label: "Incoterms", href: "/impex/incoterms" },
+      { label: "Despachantes", href: "/impex/brokers" },
     ],
   },
   {
@@ -78,6 +91,7 @@ const menuItems: MenuItem[] = [
       { label: "Pedidos", href: "/sales" },
       { label: "Faturamento", href: "/billing" },
       { label: "Catálogo", href: "/catalog" },
+      { label: "Sync Materiais", href: "/catalog/sync" },
     ],
   },
   {
