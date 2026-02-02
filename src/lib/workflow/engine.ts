@@ -410,6 +410,9 @@ export function generateZodSchema(fields: FormField[]): z.ZodObject<Record<strin
       
       default:
         fieldSchema = z.string();
+        if (field.required) {
+          fieldSchema = (fieldSchema as z.ZodString).min(1, "Campo obrigatório");
+        }
         if (field.validation?.minLength !== undefined) {
           fieldSchema = (fieldSchema as z.ZodString).min(field.validation.minLength);
         }
