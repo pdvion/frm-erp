@@ -23,6 +23,8 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { ExportButtons } from "@/components/ui/export-buttons";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { useMultiTenant } from "@/hooks/useMultiTenant";
 
 interface Supplier {
   id: string;
@@ -43,6 +45,7 @@ export default function SuppliersPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<"ACTIVE" | "INACTIVE" | "BLOCKED" | undefined>();
+  const { showCompanyColumn } = useMultiTenant();
 
   const { data, isLoading, error } = trpc.suppliers.list.useQuery({
     search: search || undefined,
@@ -160,6 +163,11 @@ export default function SuppliersPage() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Código
                     </th>
+                    {showCompanyColumn && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                        Empresa
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Razão Social / Fantasia
                     </th>
@@ -198,6 +206,11 @@ export default function SuppliersPage() {
                             {supplier.code}
                           </div>
                         </td>
+                        {showCompanyColumn && (
+                          <td className="px-4 py-3">
+                            <CompanyBadge companyName={(supplier as unknown as { company?: { name: string } }).company?.name} />
+                          </td>
+                        )}
                         <td className="px-4 py-3">
                           <div className="text-sm font-medium text-theme max-w-xs truncate">
                             {supplier.companyName}

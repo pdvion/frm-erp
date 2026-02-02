@@ -33,6 +33,7 @@ export const customersRouter = createTRPCRouter({
         ctx.prisma.customer.findMany({
           where,
           include: {
+            company: { select: { id: true, name: true } },
             _count: { select: { receivables: true } },
           },
           orderBy: { companyName: "asc" },

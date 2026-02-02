@@ -31,6 +31,9 @@ export const suppliersRouter = createTRPCRouter({
       const [suppliers, total] = await Promise.all([
         ctx.prisma.supplier.findMany({
           where,
+          include: {
+            company: { select: { id: true, name: true } },
+          },
           orderBy: { companyName: "asc" },
           skip: (page - 1) * limit,
           take: limit,
