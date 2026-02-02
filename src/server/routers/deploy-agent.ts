@@ -8,6 +8,12 @@ import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { parseNFeXml } from "@/lib/nfe-parser";
 import { processNFeEntities } from "@/lib/deploy-agent/entity-importer";
+import {
+  analyzeFiscalPatterns,
+  getCfopDescription,
+  getCstIcmsDescription,
+  suggestCfopForOperation,
+} from "@/lib/deploy-agent/fiscal-rules-engine";
 
 export const deployAgentRouter = createTRPCRouter({
   /**
@@ -297,4 +303,87 @@ export const deployAgentRouter = createTRPCRouter({
       totalMaterials,
     };
   }),
+
+  /**
+   * Analisa padrões fiscais de múltiplas NFes
+   * VIO-876: Fiscal Rules Engine
+   */
+  analyzeFiscalPatterns: tenantProcedure
+    .input(
+      z.object({
+        invoiceIds: z.array(z.string()).optional(),
+        limit: z.number().min(1).max(500).default(100),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const invoices = await prisma.receivedInvoice.findMany({
+        where: {
+          ...tenantFilter(ctx.companyId),
+          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
+          xmlContent: { not: null },
+        },
+        take: input.limit,
+        select: { xmlContent: true },
+      });
+
+      const parsedNfes = invoices
+        .filter((inv) => inv.xmlContent)
+        .map((inv) => {
+          try {
+            return parseNFeXml(inv.xmlContent!);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      return analyzeFiscalPatterns(parsedNfes);
+    }),
+
+  /**
+   * Obtém descrição de um CFOP
+   */
+  getCfopDescription: tenantProcedure
+    .input(z.object({ cfop: z.number() }))
+    .query(({ input }) => {
+      return {
+        cfop: input.cfop,
+        description: getCfopDescription(input.cfop),
+      };
+    }),
+
+  /**
+   * Obtém descrição de um CST ICMS
+   */
+  getCstDescription: tenantProcedure
+    .input(z.object({ cst: z.string() }))
+    .query(({ input }) => {
+      return {
+        cst: input.cst,
+        description: getCstIcmsDescription(input.cst),
+      };
+    }),
+
+  /**
+   * Sugere CFOP para uma operação
+   */
+  suggestCfop: tenantProcedure
+    .input(
+      z.object({
+        tipoOperacao: z.enum(["entrada", "saida"]),
+        finalidade: z.enum(["industrializacao", "comercializacao", "consumo", "ativo"]),
+        dentroEstado: z.boolean(),
+      })
+    )
+    .query(({ input }) => {
+      const cfop = suggestCfopForOperation(
+        input.tipoOperacao,
+        input.finalidade,
+        input.dentroEstado
+      );
+      return {
+        cfop,
+        description: getCfopDescription(cfop),
+      };
+    }),
 });
