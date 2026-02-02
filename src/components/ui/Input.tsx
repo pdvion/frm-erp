@@ -20,11 +20,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       rightIcon,
       className = "",
       id,
+      name,
       ...props
     },
     ref
   ) => {
-    const inputId = id || label?.toLowerCase().replace(/\s/g, "-");
+    const inputId = id || name || label?.toLowerCase().replace(/\s/g, "-");
 
     return (
       <div className="w-full">
@@ -45,6 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
+            name={name}
             className={`
               w-full rounded-lg border transition-colors
               bg-theme-input text-theme
