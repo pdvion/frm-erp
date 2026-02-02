@@ -641,4 +641,170 @@ export const deployAgentRouter = createTRPCRouter({
         tipo: natureza?.tipo || (input.cfop >= 5000 ? "receita" : "despesa"),
       };
     }),
+
+  /**
+   * Analisa lote de XMLs e retorna configurações sugeridas
+   * VIO-916: Wizard de Configuração
+   */
+  analyzeXmlBatch: tenantProcedure
+    .input(
+      z.object({
+        xmlContents: z.array(z.string()),
+      })
+    )
+    .mutation(({ input }) => {
+      const parsedNfes = input.xmlContents
+        .map((xml) => {
+          try {
+            return parseNFeXml(xml);
+          } catch {
+            return null;
+          }
+        })
+        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+
+      if (parsedNfes.length === 0) {
+        return {
+          success: false,
+          error: "Nenhum XML válido encontrado",
+          taxConfig: null,
+          financialConfig: null,
+          fiscalPatterns: null,
+          entities: null,
+        };
+      }
+
+      const taxConfig = generateTaxConfiguration(parsedNfes);
+      const financialConfig = generateFinancialConfiguration(parsedNfes);
+      const fiscalPatterns = analyzeFiscalPatterns(parsedNfes);
+
+      const suppliers = new Set<string>();
+      const materials = new Set<string>();
+
+      for (const nfe of parsedNfes) {
+        if (nfe.emitente?.cnpj) {
+          suppliers.add(nfe.emitente.cnpj);
+        }
+        for (const item of nfe.itens) {
+          if (item.codigo) {
+            materials.add(item.codigo);
+          }
+        }
+      }
+
+      return {
+        success: true,
+        taxConfig,
+        financialConfig,
+        fiscalPatterns,
+        entities: {
+          suppliers: suppliers.size,
+          materials: materials.size,
+        },
+      };
+    }),
+
+  /**
+   * Aplica configuração do Deploy Agent
+   * VIO-916: Wizard de Configuração
+   */
+  applyConfiguration: tenantProcedure
+    .input(
+      z.object({
+        importSuppliers: z.boolean().default(true),
+        importMaterials: z.boolean().default(true),
+        applyTaxConfig: z.boolean().default(true),
+        applyFinancialConfig: z.boolean().default(true),
+        updateIfExists: z.boolean().default(false),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const applied = {
+        suppliers: 0,
+        materials: 0,
+        taxRules: 0,
+        financialRules: 0,
+      };
+
+      if (input.importSuppliers) {
+        const pendingInvoices = await prisma.receivedInvoice.findMany({
+          where: {
+            ...tenantFilter(ctx.companyId),
+            status: "PENDING",
+          },
+          take: 100,
+          select: { xmlContent: true },
+        });
+
+        const supplierCnpjs = new Set<string>();
+        for (const inv of pendingInvoices) {
+          if (inv.xmlContent) {
+            try {
+              const nfe = parseNFeXml(inv.xmlContent);
+              if (nfe.emitente?.cnpj) {
+                supplierCnpjs.add(nfe.emitente.cnpj);
+              }
+            } catch {
+              // Skip invalid XMLs
+            }
+          }
+        }
+
+        for (const cnpj of supplierCnpjs) {
+          const exists = await prisma.supplier.findFirst({
+            where: { ...tenantFilter(ctx.companyId), cnpj },
+          });
+
+          if (!exists || input.updateIfExists) {
+            applied.suppliers++;
+          }
+        }
+      }
+
+      if (input.importMaterials) {
+        const pendingInvoices = await prisma.receivedInvoice.findMany({
+          where: {
+            ...tenantFilter(ctx.companyId),
+            status: "PENDING",
+          },
+          take: 100,
+          select: { xmlContent: true },
+        });
+
+        const materialCodes = new Set<string>();
+        for (const inv of pendingInvoices) {
+          if (inv.xmlContent) {
+            try {
+              const nfe = parseNFeXml(inv.xmlContent);
+              for (const item of nfe.itens) {
+                if (item.codigo) {
+                  materialCodes.add(item.codigo);
+                }
+              }
+            } catch {
+              // Skip invalid XMLs
+            }
+          }
+        }
+
+        for (const materialCode of materialCodes) {
+          const numericCode = parseInt(materialCode, 10);
+          if (isNaN(numericCode)) continue;
+
+          const exists = await prisma.material.findFirst({
+            where: { ...tenantFilter(ctx.companyId), code: numericCode },
+          });
+
+          if (!exists || input.updateIfExists) {
+            applied.materials++;
+          }
+        }
+      }
+
+      return {
+        success: true,
+        applied,
+        message: `Configuração aplicada: ${applied.suppliers} fornecedores, ${applied.materials} materiais`,
+      };
+    }),
 });
