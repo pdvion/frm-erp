@@ -7,6 +7,8 @@ import { formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { useMultiTenant } from "@/hooks/useMultiTenant";
 import {
   Users,
   Search,
@@ -40,6 +42,7 @@ export default function EmployeesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
+  const { showCompanyColumn } = useMultiTenant();
 
   const { data, isLoading } = trpc.hr.listEmployees.useQuery({
     search: search || undefined,
@@ -109,6 +112,9 @@ export default function EmployeesPage() {
                   <thead className="bg-theme-tertiary">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Funcionário</th>
+                      {showCompanyColumn && (
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Empresa</th>
+                      )}
                       <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Departamento</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Cargo</th>
                       <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">Contrato</th>
@@ -126,6 +132,11 @@ export default function EmployeesPage() {
                             <div className="font-medium text-theme">{emp.name}</div>
                             <div className="text-xs text-theme-muted">#{emp.code}</div>
                           </td>
+                          {showCompanyColumn && (
+                            <td className="px-4 py-3">
+                              <CompanyBadge companyName={emp.company?.name} />
+                            </td>
+                          )}
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2 text-sm text-theme-secondary">
                               <Building2 className="w-4 h-4 text-theme-muted" />

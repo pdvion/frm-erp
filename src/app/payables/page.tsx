@@ -6,6 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { useMultiTenant } from "@/hooks/useMultiTenant";
 import {
   DollarSign,
   Search,
@@ -39,6 +41,7 @@ export default function PayablesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const { showCompanyColumn } = useMultiTenant();
 
   const { data, isLoading } = trpc.payables.list.useQuery({
     search: search || undefined,
@@ -245,6 +248,11 @@ export default function PayablesPage() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Código
                       </th>
+                      {showCompanyColumn && (
+                        <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
+                          Empresa
+                        </th>
+                      )}
                       <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                         Fornecedor
                       </th>
@@ -285,6 +293,11 @@ export default function PayablesPage() {
                               <div className="text-xs text-theme-muted">NF {payable.documentNumber}</div>
                             )}
                           </td>
+                          {showCompanyColumn && (
+                            <td className="px-4 py-3">
+                              <CompanyBadge companyName={payable.company?.name} />
+                            </td>
+                          )}
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
                               <Building2 className="w-4 h-4 text-theme-muted" />

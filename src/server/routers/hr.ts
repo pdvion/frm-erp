@@ -127,6 +127,7 @@ export const hrRouter = createTRPCRouter({
           include: {
             department: { select: { id: true, name: true } },
             position: { select: { id: true, name: true } },
+            company: { select: { id: true, name: true } },
           },
           orderBy: { name: "asc" },
           skip: (page - 1) * limit,

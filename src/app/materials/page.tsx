@@ -24,12 +24,15 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { CompanyBadge } from "@/components/ui/CompanyBadge";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { useMultiTenant } from "@/hooks/useMultiTenant";
 
 function MaterialsContent() {
   const { filters, setFilter, resetFilters } = useUrlFilters({
     defaults: { page: 1, search: "", status: undefined },
   });
+  const { showCompanyColumn } = useMultiTenant();
 
   const search = (filters.search as string) || "";
   const page = (filters.page as number) || 1;
@@ -141,6 +144,11 @@ function MaterialsContent() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Código
                     </th>
+                    {showCompanyColumn && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
+                        Empresa
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase tracking-wider">
                       Descrição
                     </th>
@@ -181,6 +189,11 @@ function MaterialsContent() {
                             </div>
                           )}
                         </td>
+                        {showCompanyColumn && (
+                          <td className="px-4 py-3">
+                            <CompanyBadge companyName={material.company?.name} />
+                          </td>
+                        )}
                         <td className="px-4 py-3">
                           <div className="text-sm text-theme max-w-xs truncate">
                             {material.description}

@@ -90,6 +90,9 @@ export const payablesRouter = createTRPCRouter({
             invoice: {
               select: { id: true, invoiceNumber: true, accessKey: true },
             },
+            company: {
+              select: { id: true, name: true },
+            },
             _count: { select: { payments: true } },
           },
           orderBy: { [orderBy]: orderDir },

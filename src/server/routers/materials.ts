@@ -35,6 +35,7 @@ export const materialsRouter = createTRPCRouter({
           where,
           include: {
             category: true,
+            company: { select: { id: true, name: true } },
           },
           orderBy: { code: "asc" },
           skip: (page - 1) * limit,
