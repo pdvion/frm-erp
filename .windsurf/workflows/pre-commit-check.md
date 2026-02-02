@@ -20,6 +20,25 @@ Se você alterou testes/configuração de testes/áreas críticas (ex.: `src/lib
 pnpm test:coverage
 ```
 
+## ⚠️ APÓS MUDANÇAS NO SCHEMA PRISMA
+
+Se você alterou `prisma/schema.prisma`, execute OBRIGATORIAMENTE:
+
+```bash
+# 1. Regenerar cliente Prisma
+pnpm prisma generate
+
+# 2. Verificar tipos em TODO o projeto (não apenas arquivos alterados)
+pnpm type-check
+
+# 3. Se houver erros, corrigir ANTES de commitar
+```
+
+**Por que isso é crítico?**
+- Mudanças no schema podem quebrar código em arquivos NÃO modificados
+- Testes unitários usam mocks e NÃO detectam erros de tipo do Prisma
+- O CI pode passar mas o código em produção pode ter comportamento inesperado
+
 ## Passos Obrigatórios
 
 ### 1. Verificar Tipos TypeScript
@@ -133,6 +152,33 @@ oldValues: oldValues as Prisma.InputJsonValue ?? undefined,
 
 // CORRETO
 { contains: search, mode: "insensitive" as const }
+```
+
+### Erro: "Argument of type 'Decimal' is not assignable to parameter of type 'number'"
+```typescript
+// ERRADO - Prisma retorna Decimal, não number
+formatCurrency(invoice.totalValue)
+
+// CORRETO - Converter para Number
+formatCurrency(Number(invoice.totalValue))
+```
+
+### Erro: "Type 'X | null' cannot be used as an index type"
+```typescript
+// ERRADO
+const config = statusConfig[item.status];
+
+// CORRETO - Type assertion
+const config = statusConfig[item.status as keyof typeof statusConfig];
+```
+
+### Erro: "Type 'boolean | null' is not assignable to type 'boolean'"
+```typescript
+// ERRADO
+checked={pref.isActive}
+
+// CORRETO - Null coalescing
+checked={pref.isActive ?? false}
 ```
 
 ## Commit com Conventional Commits
