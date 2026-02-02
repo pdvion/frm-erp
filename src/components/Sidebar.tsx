@@ -331,21 +331,19 @@ export function Sidebar({ onClose }: SidebarProps) {
                 <>
                   <button
                     onClick={() => toggleExpand(item.label)}
-                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left ${
+                    className={`group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                       item.children?.some((c) => isActive(c.href))
                         ? "bg-theme-hover text-theme"
                         : "text-theme-secondary hover:bg-theme-hover hover:text-theme"
                     }`}
                   >
-                    <span className="flex-shrink-0">{item.icon}</span>
-                    <span className="flex-1 truncate text-left">{item.label}</span>
-                    <span className="flex-shrink-0">
-                      {expandedItems.includes(item.label) ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </span>
+                    {item.icon}
+                    <span className="ml-3 mr-auto">{item.label}</span>
+                    {expandedItems.includes(item.label) ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
                   </button>
                   {expandedItems.includes(item.label) && item.children && (
                     <ul className="ml-7 mt-1 flex flex-col gap-0.5 border-l-2 border-theme/30 pl-3">
