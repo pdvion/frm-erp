@@ -193,7 +193,80 @@ function getDate(element: Element | null, tagName: string): Date {
 }
 
 /**
+ * Detecta a versão do XML da NFe
+ * Suporta versões: 1.10, 2.00, 3.10, 4.00
+ */
+export function detectNFeVersion(xmlContent: string): string {
+  // Tentar extrair versão do atributo versao
+  const versionMatch = xmlContent.match(/versao="(\d+\.\d+)"/);
+  if (versionMatch) {
+    return versionMatch[1];
+  }
+  
+  // Fallback: verificar estrutura do XML
+  if (xmlContent.includes("infRespTec")) {
+    return "4.00";
+  }
+  if (xmlContent.includes("rastro") || xmlContent.includes("cBenef")) {
+    return "4.00";
+  }
+  if (xmlContent.includes("GTIN") || xmlContent.includes("cEANTrib")) {
+    return "3.10";
+  }
+  if (xmlContent.includes("infEvento")) {
+    return "2.00";
+  }
+  
+  return "4.00"; // Default para versão mais recente
+}
+
+/**
+ * Informações sobre a versão da NFe
+ */
+export interface NFeVersionInfo {
+  version: string;
+  vigencia: string;
+  caracteristicas: string[];
+  isLegacy: boolean;
+}
+
+/**
+ * Retorna informações sobre uma versão de NFe
+ */
+export function getNFeVersionInfo(version: string): NFeVersionInfo {
+  const versions: Record<string, NFeVersionInfo> = {
+    "1.10": {
+      version: "1.10",
+      vigencia: "2006-2010",
+      caracteristicas: ["Estrutura inicial", "Sem eventos"],
+      isLegacy: true,
+    },
+    "2.00": {
+      version: "2.00",
+      vigencia: "2010-2014",
+      caracteristicas: ["Eventos", "Cancelamento", "Carta de correção"],
+      isLegacy: true,
+    },
+    "3.10": {
+      version: "3.10",
+      vigencia: "2014-2019",
+      caracteristicas: ["GTIN", "FCP", "Partilha ICMS", "Difal"],
+      isLegacy: true,
+    },
+    "4.00": {
+      version: "4.00",
+      vigencia: "2019-atual",
+      caracteristicas: ["Responsável técnico", "Rastreabilidade", "Grupo de medicamentos"],
+      isLegacy: false,
+    },
+  };
+  
+  return versions[version] || versions["4.00"];
+}
+
+/**
  * Parseia XML de NFe e retorna dados estruturados
+ * Suporta versões: 1.10, 2.00, 3.10, 4.00
  */
 export function parseNFeXml(xmlContent: string): NFeParsed {
   // Criar parser DOM
