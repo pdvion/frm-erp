@@ -77,6 +77,7 @@ const menuItems: MenuItem[] = [
       { label: "Clientes", href: "/customers" },
       { label: "Pedidos", href: "/sales" },
       { label: "Faturamento", href: "/billing" },
+      { label: "Catálogo", href: "/catalog" },
     ],
   },
   {
@@ -98,6 +99,9 @@ const menuItems: MenuItem[] = [
       { label: "Notas Fiscais", href: "/invoices" },
       { label: "NFe Pendentes", href: "/invoices/pending" },
       { label: "Importar XML", href: "/invoices/import" },
+      { label: "Deploy Agent", href: "/fiscal/deploy-agent" },
+      { label: "Análise Fiscal", href: "/fiscal/deploy-agent/analysis" },
+      { label: "Wizard Config", href: "/fiscal/deploy-agent/wizard" },
       { label: "SPED", href: "/fiscal/sped" },
     ],
   },
@@ -133,13 +137,19 @@ const menuItems: MenuItem[] = [
       { label: "Posição Estoque", href: "/reports/inventory-position" },
       { label: "Aging Pagar", href: "/reports/payables-aging" },
       { label: "Fluxo de Caixa", href: "/reports/cash-flow" },
+      { label: "Editor de Gráficos", href: "/reports/chart-builder" },
     ],
   },
   {
     label: "BI & Gestão",
     icon: <TrendingUp className="h-5 w-5" />,
     children: [
-      { label: "Business Intelligence", href: "/bi" },
+      { label: "Dashboard BI", href: "/bi" },
+      { label: "Financeiro", href: "/bi/financial" },
+      { label: "Vendas", href: "/bi/sales" },
+      { label: "Estoque", href: "/bi/inventory" },
+      { label: "Produção", href: "/bi/production" },
+      { label: "KPIs", href: "/bi/kpis" },
       { label: "GPD", href: "/gpd" },
       { label: "Orçamento", href: "/budget" },
     ],
@@ -151,13 +161,20 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Workflow",
-    href: "/workflow",
     icon: <GitBranch className="h-5 w-5" />,
+    children: [
+      { label: "Dashboard", href: "/workflow" },
+      { label: "Definições", href: "/workflow/definitions" },
+      { label: "Instâncias", href: "/workflow/instances" },
+    ],
   },
   {
     label: "Documentos",
-    href: "/documents",
     icon: <FolderOpen className="h-5 w-5" />,
+    children: [
+      { label: "Todos", href: "/documents" },
+      { label: "Categorias", href: "/documents/categories" },
+    ],
   },
   {
     label: "Notificações",
