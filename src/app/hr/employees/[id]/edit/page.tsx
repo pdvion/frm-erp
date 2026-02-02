@@ -151,7 +151,7 @@ export default function EditEmployeePage({ params }: PageProps) {
     <div className="space-y-6">
       <PageHeader
         title={`Editar: ${employee.name}`}
-        subtitle={`#${employee.code}`}
+        subtitle={`#${employee.code}${employee.company ? ` • ${employee.company.tradeName || employee.company.name}` : ""}`}
         icon={<Users className="w-6 h-6" />}
         module="hr"
         actions={

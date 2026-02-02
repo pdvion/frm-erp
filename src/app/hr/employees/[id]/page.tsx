@@ -108,14 +108,20 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
         }
       />
 
-      {/* Status Badge */}
-      <div className="flex items-center gap-4">
+      {/* Status Badge and Company */}
+      <div className="flex items-center gap-4 flex-wrap">
         <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
           {config.label}
         </span>
         <span className="text-theme-muted">
           {contractLabels[employee.contractType] || employee.contractType}
         </span>
+        {employee.company && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+            <Building2 className="w-3.5 h-3.5" />
+            {employee.company.tradeName || employee.company.name}
+          </span>
+        )}
       </div>
 
       {/* Info Cards */}

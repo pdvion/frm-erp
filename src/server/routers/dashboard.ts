@@ -1057,94 +1057,168 @@ export const dashboardRouter = createTRPCRouter({
     today.setHours(0, 0, 0, 0);
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const companyId = ctx.companyId;
 
-    // Funcionários ativos
-    const employeesStats = await prisma.$queryRaw<[{
-      total: bigint;
-      active: bigint;
-      on_vacation: bigint;
-      on_leave: bigint;
-    }]>`
-      SELECT 
-        COUNT(*) as total,
-        COUNT(*) FILTER (WHERE status = 'ACTIVE') as active,
-        COUNT(*) FILTER (WHERE status = 'ON_VACATION') as on_vacation,
-        COUNT(*) FILTER (WHERE status = 'ON_LEAVE') as on_leave
-      FROM employees
-      WHERE "companyId" = ${ctx.companyId}::uuid
-    `;
+    // Funcionários ativos - suporta "Todas as Empresas"
+    const employeesStats = companyId
+      ? await prisma.$queryRaw<[{
+          total: bigint;
+          active: bigint;
+          on_vacation: bigint;
+          on_leave: bigint;
+        }]>`
+          SELECT 
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE status = 'ACTIVE') as active,
+            COUNT(*) FILTER (WHERE status = 'ON_VACATION') as on_vacation,
+            COUNT(*) FILTER (WHERE status = 'ON_LEAVE') as on_leave
+          FROM employees
+          WHERE "companyId" = ${companyId}::uuid
+        `
+      : await prisma.$queryRaw<[{
+          total: bigint;
+          active: bigint;
+          on_vacation: bigint;
+          on_leave: bigint;
+        }]>`
+          SELECT 
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE status = 'ACTIVE') as active,
+            COUNT(*) FILTER (WHERE status = 'ON_VACATION') as on_vacation,
+            COUNT(*) FILTER (WHERE status = 'ON_LEAVE') as on_leave
+          FROM employees
+        `;
 
     // Férias programadas no mês
-    const vacationsMonth = await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
-      SELECT 
-        COUNT(*) as count,
-        COUNT(*) FILTER (WHERE status = 'PENDING') as pending
-      FROM vacations
-      WHERE "companyId" = ${ctx.companyId}::uuid
-      AND "startDate" <= ${endOfMonth}
-      AND "endDate" >= ${startOfMonth}
-    `;
+    const vacationsMonth = companyId
+      ? await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
+          SELECT 
+            COUNT(*) as count,
+            COUNT(*) FILTER (WHERE status = 'PENDING') as pending
+          FROM vacations
+          WHERE "companyId" = ${companyId}::uuid
+          AND "startDate" <= ${endOfMonth}
+          AND "endDate" >= ${startOfMonth}
+        `
+      : await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
+          SELECT 
+            COUNT(*) as count,
+            COUNT(*) FILTER (WHERE status = 'PENDING') as pending
+          FROM vacations
+          WHERE "startDate" <= ${endOfMonth}
+          AND "endDate" >= ${startOfMonth}
+        `;
 
     // Aniversariantes do mês
-    const birthdaysMonth = await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
-      SELECT name, "birthDate" as birth_date
-      FROM employees
-      WHERE "companyId" = ${ctx.companyId}::uuid
-      AND status = 'ACTIVE'
-      AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
-      ORDER BY EXTRACT(DAY FROM "birthDate")
-      LIMIT 10
-    `;
+    const birthdaysMonth = companyId
+      ? await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
+          SELECT name, "birthDate" as birth_date
+          FROM employees
+          WHERE "companyId" = ${companyId}::uuid
+          AND status = 'ACTIVE'
+          AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
+          ORDER BY EXTRACT(DAY FROM "birthDate")
+          LIMIT 10
+        `
+      : await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
+          SELECT name, "birthDate" as birth_date
+          FROM employees
+          WHERE status = 'ACTIVE'
+          AND EXTRACT(MONTH FROM "birthDate") = EXTRACT(MONTH FROM CURRENT_DATE)
+          ORDER BY EXTRACT(DAY FROM "birthDate")
+          LIMIT 10
+        `;
 
     // Folha de pagamento do mês
-    const payrollMonth = await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
-      SELECT 
-        COALESCE(SUM("grossSalary"), 0)::float as total_gross,
-        COALESCE(SUM("netSalary"), 0)::float as total_net,
-        COUNT(*) as count
-      FROM payroll_entries
-      WHERE "companyId" = ${ctx.companyId}::uuid
-      AND "referenceMonth" = ${startOfMonth}
-    `;
+    const payrollMonth = companyId
+      ? await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
+          SELECT 
+            COALESCE(SUM("grossSalary"), 0)::float as total_gross,
+            COALESCE(SUM("netSalary"), 0)::float as total_net,
+            COUNT(*) as count
+          FROM payroll_entries
+          WHERE "companyId" = ${companyId}::uuid
+          AND "referenceMonth" = ${startOfMonth}
+        `
+      : await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
+          SELECT 
+            COALESCE(SUM("grossSalary"), 0)::float as total_gross,
+            COALESCE(SUM("netSalary"), 0)::float as total_net,
+            COUNT(*) as count
+          FROM payroll_entries
+          WHERE "referenceMonth" = ${startOfMonth}
+        `;
 
     // Funcionários por departamento
-    const employeesByDepartment = await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
-      SELECT 
-        COALESCE(d.name, 'Sem Departamento') as name,
-        COUNT(*) as count
-      FROM employees e
-      LEFT JOIN departments d ON d.id = e."departmentId"
-      WHERE e."companyId" = ${ctx.companyId}::uuid
-      AND e.status = 'ACTIVE'
-      GROUP BY d.name
-      ORDER BY count DESC
-      LIMIT 6
-    `;
+    const employeesByDepartment = companyId
+      ? await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+          SELECT 
+            COALESCE(d.name, 'Sem Departamento') as name,
+            COUNT(*) as count
+          FROM employees e
+          LEFT JOIN departments d ON d.id = e."departmentId"
+          WHERE e."companyId" = ${companyId}::uuid
+          AND e.status = 'ACTIVE'
+          GROUP BY d.name
+          ORDER BY count DESC
+          LIMIT 6
+        `
+      : await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+          SELECT 
+            COALESCE(d.name, 'Sem Departamento') as name,
+            COUNT(*) as count
+          FROM employees e
+          LEFT JOIN departments d ON d.id = e."departmentId"
+          WHERE e.status = 'ACTIVE'
+          GROUP BY d.name
+          ORDER BY count DESC
+          LIMIT 6
+        `;
 
     // Admissões e demissões (últimos 6 meses)
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-    const hiringTrend = await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
-      SELECT 
-        TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
-        COUNT(*) as admissions,
-        0::bigint as terminations
-      FROM employees
-      WHERE "companyId" = ${ctx.companyId}::uuid
-      AND "admissionDate" >= ${sixMonthsAgo}
-      GROUP BY DATE_TRUNC('month', "admissionDate")
-      ORDER BY DATE_TRUNC('month', "admissionDate")
-    `;
+    const hiringTrend = companyId
+      ? await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
+          SELECT 
+            TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
+            COUNT(*) as admissions,
+            0::bigint as terminations
+          FROM employees
+          WHERE "companyId" = ${companyId}::uuid
+          AND "admissionDate" >= ${sixMonthsAgo}
+          GROUP BY DATE_TRUNC('month', "admissionDate")
+          ORDER BY DATE_TRUNC('month', "admissionDate")
+        `
+      : await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
+          SELECT 
+            TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
+            COUNT(*) as admissions,
+            0::bigint as terminations
+          FROM employees
+          WHERE "admissionDate" >= ${sixMonthsAgo}
+          GROUP BY DATE_TRUNC('month', "admissionDate")
+          ORDER BY DATE_TRUNC('month', "admissionDate")
+        `;
 
     // Ponto do dia (se houver timeclock)
-    const timeclockToday = await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
-      SELECT 
-        COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
-        0::bigint as absent,
-        COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" > t."expectedClockIn") as late
-      FROM timeclock_entries t
-      WHERE t."companyId" = ${ctx.companyId}::uuid
-      AND DATE(t."clockIn") = CURRENT_DATE
-    `;
+    const timeclockToday = companyId
+      ? await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
+          SELECT 
+            COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
+            0::bigint as absent,
+            COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" > t."expectedClockIn") as late
+          FROM timeclock_entries t
+          WHERE t."companyId" = ${companyId}::uuid
+          AND DATE(t."clockIn") = CURRENT_DATE
+        `
+      : await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
+          SELECT 
+            COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
+            0::bigint as absent,
+            COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" > t."expectedClockIn") as late
+          FROM timeclock_entries t
+          WHERE DATE(t."clockIn") = CURRENT_DATE
+        `;
 
     return {
       employees: {

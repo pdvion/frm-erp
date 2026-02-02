@@ -144,7 +144,12 @@ export const hrRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return ctx.prisma.employee.findUnique({
         where: { id: input.id },
-        include: { department: true, position: true, manager: { select: { id: true, name: true } } },
+        include: {
+          department: true,
+          position: true,
+          manager: { select: { id: true, name: true } },
+          company: { select: { id: true, name: true, tradeName: true } },
+        },
       });
     }),
 
