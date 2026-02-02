@@ -24,12 +24,18 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Estoque abaixo do mínimo
-    const lowStockCount = await prisma.$queryRaw<[{ count: bigint }]>`
-      SELECT COUNT(*) as count FROM inventory i
-      JOIN materials m ON i."materialId" = m.id
-      WHERE i."companyId" = ${ctx.companyId}
-      AND i.quantity < COALESCE(m."minQuantity", 0)
-    `;
+    const lowStockCount = ctx.companyId
+      ? await prisma.$queryRaw<[{ count: bigint }]>`
+          SELECT COUNT(*) as count FROM inventory i
+          JOIN materials m ON i."materialId" = m.id
+          WHERE i."companyId" = ${ctx.companyId}::uuid
+          AND i.quantity < COALESCE(m."minQuantity", 0)
+        `
+      : await prisma.$queryRaw<[{ count: bigint }]>`
+          SELECT COUNT(*) as count FROM inventory i
+          JOIN materials m ON i."materialId" = m.id
+          WHERE i.quantity < COALESCE(m."minQuantity", 0)
+        `;
 
     // Cotações pendentes
     const pendingQuotes = await prisma.quote.count({
@@ -48,11 +54,16 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // NFes pendentes de aprovação - usando raw query para evitar erro de enum
-    const pendingInvoicesResult = await prisma.$queryRaw<[{ count: bigint }]>`
-      SELECT COUNT(*) as count FROM received_invoices
-      WHERE "companyId" = ${ctx.companyId}::uuid
-      AND status IN ('PENDING', 'VALIDATED')
-    `;
+    const pendingInvoicesResult = ctx.companyId
+      ? await prisma.$queryRaw<[{ count: bigint }]>`
+          SELECT COUNT(*) as count FROM received_invoices
+          WHERE "companyId" = ${ctx.companyId}::uuid
+          AND status IN ('PENDING', 'VALIDATED')
+        `
+      : await prisma.$queryRaw<[{ count: bigint }]>`
+          SELECT COUNT(*) as count FROM received_invoices
+          WHERE status IN ('PENDING', 'VALIDATED')
+        `;
     const pendingInvoices = Number(pendingInvoicesResult[0]?.count || 0);
 
     // Contas a pagar vencidas
@@ -111,22 +122,36 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Tarefas - usando raw query para evitar problemas de tipo
-    const taskStats = await prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
-      SELECT 
-        COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
-        COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
-        COUNT(*) FILTER (WHERE status IN ('PENDING', 'ACCEPTED', 'IN_PROGRESS') AND deadline < NOW()) as overdue,
-        COUNT(*) FILTER (WHERE owner_id = ${ctx.tenant.userId}::uuid AND status NOT IN ('COMPLETED', 'CANCELLED')) as my_tasks
-      FROM tasks
-      WHERE company_id = ${ctx.companyId}::uuid
-    `;
+    const taskStats = ctx.companyId
+      ? await prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
+          SELECT 
+            COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
+            COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
+            COUNT(*) FILTER (WHERE status IN ('PENDING', 'ACCEPTED', 'IN_PROGRESS') AND deadline < NOW()) as overdue,
+            COUNT(*) FILTER (WHERE owner_id = ${ctx.tenant.userId}::uuid AND status NOT IN ('COMPLETED', 'CANCELLED')) as my_tasks
+          FROM tasks
+          WHERE company_id = ${ctx.companyId}::uuid
+        `
+      : await prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
+          SELECT 
+            COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
+            COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
+            COUNT(*) FILTER (WHERE status IN ('PENDING', 'ACCEPTED', 'IN_PROGRESS') AND deadline < NOW()) as overdue,
+            COUNT(*) FILTER (WHERE owner_id = ${ctx.tenant.userId}::uuid AND status NOT IN ('COMPLETED', 'CANCELLED')) as my_tasks
+          FROM tasks
+        `;
 
     // Calcular valor total do estoque
-    const inventoryValue = await prisma.$queryRaw<[{ total: number }]>`
-      SELECT COALESCE(SUM(i.quantity * i."unitCost"), 0) as total
-      FROM inventory i
-      WHERE i."companyId" = ${ctx.companyId}
-    `;
+    const inventoryValue = ctx.companyId
+      ? await prisma.$queryRaw<[{ total: number }]>`
+          SELECT COALESCE(SUM(i.quantity * i."unitCost"), 0) as total
+          FROM inventory i
+          WHERE i."companyId" = ${ctx.companyId}::uuid
+        `
+      : await prisma.$queryRaw<[{ total: number }]>`
+          SELECT COALESCE(SUM(i.quantity * i."unitCost"), 0) as total
+          FROM inventory i
+        `;
 
     return {
       inventory: {
@@ -202,20 +227,34 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Últimas tarefas - usando raw query
-    const recentTasks = await prisma.$queryRaw<Array<{
-      id: string;
-      code: number;
-      title: string;
-      status: string;
-      priority: string;
-      created_at: Date;
-    }>>`
-      SELECT id, code, title, status, priority, created_at
-      FROM tasks
-      WHERE company_id = ${ctx.companyId}::uuid
-      ORDER BY created_at DESC
-      LIMIT 5
-    `;
+    const recentTasks = ctx.companyId
+      ? await prisma.$queryRaw<Array<{
+          id: string;
+          code: number;
+          title: string;
+          status: string;
+          priority: string;
+          created_at: Date;
+        }>>`
+          SELECT id, code, title, status, priority, created_at
+          FROM tasks
+          WHERE company_id = ${ctx.companyId}::uuid
+          ORDER BY created_at DESC
+          LIMIT 5
+        `
+      : await prisma.$queryRaw<Array<{
+          id: string;
+          code: number;
+          title: string;
+          status: string;
+          priority: string;
+          created_at: Date;
+        }>>`
+          SELECT id, code, title, status, priority, created_at
+          FROM tasks
+          ORDER BY created_at DESC
+          LIMIT 5
+        `;
 
     return {
       invoices: recentInvoices.map(inv => ({
