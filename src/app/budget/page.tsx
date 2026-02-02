@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Wallet,
@@ -231,8 +232,8 @@ export default function BudgetDashboardPage() {
                           <p className="font-medium text-theme">{account.name}</p>
                         </div>
                         <div className="mt-2 flex items-center gap-4 text-xs text-theme-muted">
-                          <span>Orçado: {formatCurrency(account.budgeted)}</span>
-                          <span>Realizado: {formatCurrency(account.actual)}</span>
+                          <span>Orçado: {formatCurrency(toNumber(account.budgeted))}</span>
+                          <span>Realizado: {formatCurrency(toNumber(account.actual))}</span>
                         </div>
                       </div>
                       <StatusBadge status={account.status} />
@@ -248,12 +249,12 @@ export default function BudgetDashboardPage() {
                                 : "bg-green-500"
                           }`}
                           style={{
-                            width: `${Math.min(100, (account.actual / account.budgeted) * 100)}%`,
+                            width: `${Math.min(100, (toNumber(account.actual) / toNumber(account.budgeted)) * 100)}%`,
                           }}
                         />
                       </div>
                       <div className="mt-1 flex justify-between text-xs text-theme-muted">
-                        <span>{formatPercent(account.actual / account.budgeted)} utilizado</span>
+                        <span>{formatPercent(toNumber(account.actual) / toNumber(account.budgeted))} utilizado</span>
                         <span className={account.variance >= 0 ? "text-green-600" : "text-red-600"}>
                           {account.variance >= 0 ? "+" : ""}{formatCurrency(account.variance)}
                         </span>
@@ -340,10 +341,10 @@ export default function BudgetDashboardPage() {
                             {alert.account.code} - {alert.account.name}
                           </p>
                           <p className="mt-1 text-xs text-orange-700">
-                            Mês {alert.month} • Orçado: {formatCurrency(alert.budgetAmount)} • Realizado: {formatCurrency(alert.actualAmount)}
+                            Mês {alert.month} • Orçado: {formatCurrency(toNumber(alert.budgetAmount))} • Realizado: {formatCurrency(toNumber(alert.actualAmount))}
                           </p>
                           <p className="mt-1 text-xs font-medium text-red-600">
-                            Variação: {formatCurrency(alert.variance)} ({formatPercent(Math.abs(alert.variancePercent) / 100)})
+                            Variação: {formatCurrency(toNumber(alert.variance))} ({formatPercent(Math.abs(toNumber(alert.variancePercent)) / 100)})
                           </p>
                         </div>
                       </div>

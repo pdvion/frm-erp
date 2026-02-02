@@ -18,7 +18,7 @@ export default function GPDGoalsPage() {
     category: categoryFilter,
   });
 
-  const categoryColors = {
+  const categoryColors: Record<string, string> = {
     FINANCIAL: "text-green-600 bg-green-100 dark:bg-green-900/30",
     OPERATIONAL: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
     CUSTOMER: "text-purple-600 bg-purple-100 dark:bg-purple-900/30",
@@ -26,7 +26,7 @@ export default function GPDGoalsPage() {
     PEOPLE: "text-pink-600 bg-pink-100 dark:bg-pink-900/30",
   };
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     FINANCIAL: "Financeiro",
     OPERATIONAL: "Operacional",
     CUSTOMER: "Cliente",
@@ -34,7 +34,7 @@ export default function GPDGoalsPage() {
     PEOPLE: "Pessoas",
   };
 
-  const categoryIcons = {
+  const categoryIcons: Record<string, React.ReactNode> = {
     FINANCIAL: <DollarSign className="w-4 h-4" />,
     OPERATIONAL: <Briefcase className="w-4 h-4" />,
     CUSTOMER: <Users className="w-4 h-4" />,
@@ -42,14 +42,14 @@ export default function GPDGoalsPage() {
     PEOPLE: <Users className="w-4 h-4" />,
   };
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     ACTIVE: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
     ACHIEVED: "text-green-600 bg-green-100 dark:bg-green-900/30",
     NOT_ACHIEVED: "text-red-600 bg-red-100 dark:bg-red-900/30",
     CANCELLED: "text-theme-secondary bg-theme-tertiary dark:bg-theme/30",
   };
 
-  const statusLabels = {
+  const statusLabels: Record<string, string> = {
     ACTIVE: "Ativa",
     ACHIEVED: "Atingida",
     NOT_ACHIEVED: "Não Atingida",
@@ -133,7 +133,7 @@ export default function GPDGoalsPage() {
               </div>
               {goal.targetValue && (
                 <div className="text-sm text-theme mb-3">
-                  Meta: <span className="font-semibold">{goal.targetValue} {goal.unit}</span>
+                  Meta: <span className="font-semibold">{String(goal.targetValue)} {goal.unit}</span>
                 </div>
               )}
               <div className="flex items-center justify-between text-xs text-theme-muted">

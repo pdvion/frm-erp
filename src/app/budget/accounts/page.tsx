@@ -36,19 +36,19 @@ export default function BudgetAccountsPage() {
     },
   });
 
-  const typeColors = {
+  const typeColors: Record<string, string> = {
     REVENUE: "text-green-600 bg-green-100 dark:bg-green-900/30",
     EXPENSE: "text-red-600 bg-red-100 dark:bg-red-900/30",
     INVESTMENT: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
   };
 
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     REVENUE: "Receita",
     EXPENSE: "Despesa",
     INVESTMENT: "Investimento",
   };
 
-  const typeIcons = {
+  const typeIcons: Record<string, React.ReactNode> = {
     REVENUE: <TrendingUp className="w-4 h-4" />,
     EXPENSE: <TrendingDown className="w-4 h-4" />,
     INVESTMENT: <PiggyBank className="w-4 h-4" />,

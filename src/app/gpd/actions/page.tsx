@@ -43,28 +43,28 @@ export default function GPDActionsPage() {
     onSuccess: () => refetch(),
   });
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     PENDING: "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30",
     IN_PROGRESS: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
     COMPLETED: "text-green-600 bg-green-100 dark:bg-green-900/30",
     CANCELLED: "text-theme-secondary bg-theme-tertiary dark:bg-theme/30",
   };
 
-  const statusLabels = {
+  const statusLabels: Record<string, string> = {
     PENDING: "Pendente",
     IN_PROGRESS: "Em Andamento",
     COMPLETED: "Concluída",
     CANCELLED: "Cancelada",
   };
 
-  const statusIcons = {
+  const statusIcons: Record<string, React.ReactNode> = {
     PENDING: <Clock className="w-4 h-4" />,
     IN_PROGRESS: <AlertTriangle className="w-4 h-4" />,
     COMPLETED: <CheckCircle2 className="w-4 h-4" />,
     CANCELLED: <XCircle className="w-4 h-4" />,
   };
 
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     CORRECTIVE: "Corretiva",
     PREVENTIVE: "Preventiva",
     IMPROVEMENT: "Melhoria",
@@ -154,7 +154,7 @@ export default function GPDActionsPage() {
                     {action.dueDate && <span>Prazo: {formatDate(action.dueDate)}</span>}
                     <span>{action._count.tasks} tarefas</span>
                   </div>
-                  {action.progress > 0 && (
+                  {(action.progress ?? 0) > 0 && (
                     <div className="mt-2">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-2 bg-theme-hover rounded-full overflow-hidden">

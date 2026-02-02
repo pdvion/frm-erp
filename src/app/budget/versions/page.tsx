@@ -42,19 +42,19 @@ export default function BudgetVersionsPage() {
     onSuccess: () => refetch(),
   });
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     DRAFT: "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30",
     APPROVED: "text-green-600 bg-green-100 dark:bg-green-900/30",
     LOCKED: "text-purple-600 bg-purple-100 dark:bg-purple-900/30",
   };
 
-  const statusLabels = {
+  const statusLabels: Record<string, string> = {
     DRAFT: "Rascunho",
     APPROVED: "Aprovado",
     LOCKED: "Bloqueado",
   };
 
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     ORIGINAL: "Original",
     REVISED: "Revisado",
     FORECAST: "Forecast",

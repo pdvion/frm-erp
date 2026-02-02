@@ -49,6 +49,27 @@ export function toPercent(value: number | string | Decimal): number {
 }
 
 /**
+ * Converte Decimal/Prisma Decimal para number
+ * Útil para renderização em React e operações que exigem number
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toNumber(value: any): number {
+  if (value === null || value === undefined) {
+    return 0;
+  }
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return parseFloat(value) || 0;
+  }
+  if (typeof value === 'object' && 'toNumber' in value && typeof value.toNumber === 'function') {
+    return value.toNumber();
+  }
+  return new Decimal(value).toNumber();
+}
+
+/**
  * Soma valores com precisão
  */
 export function sum(...values: (number | string | Decimal | null | undefined)[]): Decimal {

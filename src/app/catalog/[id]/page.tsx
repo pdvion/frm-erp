@@ -264,7 +264,7 @@ export default function ProductDetailPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-theme-muted">Criado em</span>
               <span className="text-sm">
-                {new Date(product.createdAt).toLocaleDateString("pt-BR")}
+                {product.createdAt ? new Date(product.createdAt).toLocaleDateString("pt-BR") : "-"}
               </span>
             </div>
           </div>

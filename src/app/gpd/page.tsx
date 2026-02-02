@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatPercent } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Target,
@@ -216,11 +217,11 @@ export default function GpdDashboardPage() {
                   <div className="mt-4">
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-theme">
-                        {indicator.currentValue !== null ? indicator.currentValue.toLocaleString("pt-BR") : "-"}
+                        {indicator.currentValue !== null ? toNumber(indicator.currentValue).toLocaleString("pt-BR") : "-"}
                       </span>
                       {indicator.targetExpected !== null && (
                         <span className="text-sm text-theme-muted">
-                          / {indicator.targetExpected.toLocaleString("pt-BR")}
+                          / {toNumber(indicator.targetExpected).toLocaleString("pt-BR")}
                         </span>
                       )}
                     </div>
@@ -236,12 +237,12 @@ export default function GpdDashboardPage() {
                                   : "bg-green-500"
                             }`}
                             style={{
-                              width: `${Math.min(100, (indicator.currentValue / indicator.targetExpected) * 100)}%`,
+                              width: `${Math.min(100, (toNumber(indicator.currentValue) / toNumber(indicator.targetExpected)) * 100)}%`,
                             }}
                           />
                         </div>
                         <p className="mt-1 text-xs text-theme-muted">
-                          {formatPercent(indicator.currentValue / indicator.targetExpected)} da meta
+                          {formatPercent(toNumber(indicator.currentValue) / toNumber(indicator.targetExpected))} da meta
                         </p>
                       </div>
                     )}

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 
 export default function BudgetTrackingPage() {
   const currentYear = new Date().getFullYear();
@@ -111,8 +112,8 @@ export default function BudgetTrackingPage() {
                       <span className="font-mono text-xs text-theme-muted mr-2">{account.code}</span>
                       {account.name}
                     </td>
-                    <td className="p-3 text-right text-sm text-theme">{formatCurrency(account.budgeted)}</td>
-                    <td className="p-3 text-right text-sm text-theme">{formatCurrency(account.actual)}</td>
+                    <td className="p-3 text-right text-sm text-theme">{formatCurrency(toNumber(account.budgeted))}</td>
+                    <td className="p-3 text-right text-sm text-theme">{formatCurrency(toNumber(account.actual))}</td>
                     <td className={`p-3 text-right text-sm ${account.variance >= 0 ? "text-green-600" : "text-red-600"}`}>
                       {formatCurrency(account.variance)}
                     </td>

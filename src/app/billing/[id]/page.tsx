@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
@@ -273,13 +274,13 @@ export default function BillingDetailPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right text-theme">
-                          {item.quantity} {item.unit}
+                          {toNumber(item.quantity)} {item.unit}
                         </td>
                         <td className="px-6 py-4 text-right text-theme">
-                          {formatCurrency(item.unitPrice)}
+                          {formatCurrency(toNumber(item.unitPrice))}
                         </td>
                         <td className="px-6 py-4 text-right font-medium text-theme">
-                          {formatCurrency(item.totalPrice)}
+                          {formatCurrency(toNumber(item.totalPrice))}
                         </td>
                       </tr>
                     ))}
@@ -300,24 +301,24 @@ export default function BillingDetailPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Subtotal</span>
-                  <span className="font-medium text-theme">{formatCurrency(invoice.subtotal)}</span>
+                  <span className="font-medium text-theme">{formatCurrency(toNumber(invoice.subtotal))}</span>
                 </div>
-                {invoice.discountValue > 0 && (
+                {toNumber(invoice.discountValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Desconto</span>
-                    <span>-{formatCurrency(invoice.discountValue)}</span>
+                    <span>-{formatCurrency(toNumber(invoice.discountValue))}</span>
                   </div>
                 )}
-                {invoice.shippingValue > 0 && (
+                {toNumber(invoice.shippingValue) > 0 && (
                   <div className="flex justify-between">
                     <span className="text-theme-muted">Frete</span>
-                    <span className="font-medium text-theme">{formatCurrency(invoice.shippingValue)}</span>
+                    <span className="font-medium text-theme">{formatCurrency(toNumber(invoice.shippingValue))}</span>
                   </div>
                 )}
                 <div className="border-t border-theme pt-3">
                   <div className="flex justify-between text-lg">
                     <span className="font-medium text-theme">Total</span>
-                    <span className="font-bold text-theme">{formatCurrency(invoice.totalValue)}</span>
+                    <span className="font-bold text-theme">{formatCurrency(toNumber(invoice.totalValue))}</span>
                   </div>
                 </div>
               </div>
@@ -329,23 +330,23 @@ export default function BillingDetailPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Base ICMS</span>
-                  <span className="text-theme">{formatCurrency(invoice.icmsBase || 0)}</span>
+                  <span className="text-theme">{formatCurrency(toNumber(invoice.icmsBase))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Valor ICMS</span>
-                  <span className="text-theme">{formatCurrency(invoice.icmsValue || 0)}</span>
+                  <span className="text-theme">{formatCurrency(toNumber(invoice.icmsValue))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Valor IPI</span>
-                  <span className="text-theme">{formatCurrency(invoice.ipiValue || 0)}</span>
+                  <span className="text-theme">{formatCurrency(toNumber(invoice.ipiValue))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Valor PIS</span>
-                  <span className="text-theme">{formatCurrency(invoice.pisValue || 0)}</span>
+                  <span className="text-theme">{formatCurrency(toNumber(invoice.pisValue))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Valor COFINS</span>
-                  <span className="text-theme">{formatCurrency(invoice.cofinsValue || 0)}</span>
+                  <span className="text-theme">{formatCurrency(toNumber(invoice.cofinsValue))}</span>
                 </div>
               </div>
             </div>
@@ -422,7 +423,7 @@ export default function BillingDetailPage() {
       {showReceivablesModal && (
         <ReceivablesModal
           invoiceId={id}
-          totalValue={invoice.totalValue}
+          totalValue={toNumber(invoice.totalValue)}
           onClose={() => setShowReceivablesModal(false)}
           onSuccess={() => {
             setShowReceivablesModal(false);

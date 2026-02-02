@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { BarChart2, Plus, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 
 export default function GPDIndicatorsPage() {
   const [showModal, setShowModal] = useState(false);
@@ -55,7 +56,7 @@ export default function GPDIndicatorsPage() {
     }
   };
 
-  const frequencyLabels = {
+  const frequencyLabels: Record<string, string> = {
     DAILY: "Diário",
     WEEKLY: "Semanal",
     MONTHLY: "Mensal",
@@ -103,13 +104,13 @@ export default function GPDIndicatorsPage() {
                   <div>
                     <p className="text-xs text-theme-muted">Atual</p>
                     <p className="text-2xl font-bold text-theme">
-                      {indicator.currentValue ?? "-"} {indicator.unit}
+                      {indicator.currentValue != null ? String(indicator.currentValue) : "-"} {indicator.unit}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-theme-muted">Meta</p>
                     <p className="text-lg font-semibold text-theme-muted">
-                      {indicator.targetExpected ?? "-"} {indicator.unit}
+                      {indicator.targetExpected != null ? String(indicator.targetExpected) : "-"} {indicator.unit}
                     </p>
                   </div>
                 </div>
@@ -118,7 +119,7 @@ export default function GPDIndicatorsPage() {
                     <div className="h-2 bg-theme-hover rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${status === "BELOW" ? "bg-red-500" : status === "ABOVE" ? "bg-green-500" : "bg-blue-500"}`}
-                        style={{ width: `${Math.min(100, (indicator.currentValue / indicator.targetExpected) * 100)}%` }}
+                        style={{ width: `${Math.min(100, (toNumber(indicator.currentValue) / toNumber(indicator.targetExpected)) * 100)}%` }}
                       />
                     </div>
                   </div>

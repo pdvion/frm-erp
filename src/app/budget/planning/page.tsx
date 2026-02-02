@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { Calendar, Calculator } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 
 export default function BudgetPlanningPage() {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
@@ -45,8 +46,8 @@ export default function BudgetPlanningPage() {
         total: 0,
       };
     }
-    acc[entry.accountId].months[entry.month] = entry.amount;
-    acc[entry.accountId].total += entry.amount;
+    acc[entry.accountId].months[entry.month] = toNumber(entry.amount);
+    acc[entry.accountId].total += toNumber(entry.amount);
     return acc;
   }, {} as Record<string, { account: typeof entries[0]["account"]; months: Record<number, number>; total: number }>);
 

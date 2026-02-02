@@ -196,7 +196,7 @@ export default function BIKPIsPage() {
                     <TrendingDown className="w-4 h-4 text-red-500" />
                   )}
                   <span className="text-theme-muted">
-                    Meta: {kpi.targetExpected ?? "—"}{kpi.unit}
+                    Meta: {kpi.targetExpected != null ? String(kpi.targetExpected) : "—"}{kpi.unit}
                   </span>
                 </div>
                 <span className={`px-2 py-0.5 text-xs rounded ${getCategoryColor(kpi.category)}`}>

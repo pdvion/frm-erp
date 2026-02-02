@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -80,7 +81,7 @@ export default function BillingPage() {
               <span className="text-sm font-medium text-theme-secondary">Faturamento do Mês</span>
             </div>
             <div className="text-2xl font-bold text-theme">
-              {formatCurrency(dashboard?.monthInvoices?.value || 0)}
+              {formatCurrency(toNumber(dashboard?.monthInvoices?.value))}
             </div>
             <div className="text-sm text-theme-muted">
               {dashboard?.monthInvoices?.count || 0} notas
@@ -117,7 +118,7 @@ export default function BillingPage() {
             </div>
             <div className="text-sm text-theme-muted">
               {dashboard?.topCustomers?.[0]?.value
-                ? formatCurrency(dashboard.topCustomers[0].value)
+                ? formatCurrency(toNumber(dashboard.topCustomers[0].value))
                 : "-"}
             </div>
           </div>
@@ -255,7 +256,7 @@ export default function BillingPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-right font-medium text-theme">
-                            {formatCurrency(invoice.totalValue)}
+                            {formatCurrency(toNumber(invoice.totalValue))}
                           </td>
                           <td className="px-6 py-4 text-center">
                             <div className="flex items-center justify-center gap-1 text-theme-secondary">

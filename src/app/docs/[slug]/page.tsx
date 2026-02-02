@@ -73,7 +73,7 @@ export default function TutorialPage() {
           <div className="mt-8 pt-6 border-t border-theme flex items-center justify-between text-sm text-theme-muted">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              Atualizado em {new Date(tutorial.updatedAt).toLocaleDateString("pt-BR")}
+              Atualizado em {tutorial.updatedAt ? new Date(tutorial.updatedAt).toLocaleDateString("pt-BR") : "-"}
             </div>
           </div>
         </article>

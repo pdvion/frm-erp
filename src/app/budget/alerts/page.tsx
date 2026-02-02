@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Bell, AlertTriangle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
+import { toNumber } from "@/lib/precision";
 
 type AlertType = "WARNING" | "EXCEEDED" | "BLOCKED" | undefined;
 
@@ -22,13 +23,13 @@ export default function BudgetAlertsPage() {
     onSuccess: () => refetch(),
   });
 
-  const typeColors = {
+  const typeColors: Record<string, string> = {
     WARNING: "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30",
     EXCEEDED: "text-red-600 bg-red-100 dark:bg-red-900/30",
     BLOCKED: "text-purple-600 bg-purple-100 dark:bg-purple-900/30",
   };
 
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     WARNING: "Aviso",
     EXCEEDED: "Excedido",
     BLOCKED: "Bloqueado",
@@ -107,8 +108,8 @@ export default function BudgetAlertsPage() {
                       {alert.account?.name} - {alert.version?.name}
                     </h4>
                     <p className="text-sm text-theme-muted mt-1">
-                      Orçado: {formatCurrency(alert.budgetAmount)} | 
-                      Realizado: {formatCurrency(alert.actualAmount)} | 
+                      Orçado: {formatCurrency(toNumber(alert.budgetAmount))} | 
+                      Realizado: {formatCurrency(toNumber(alert.actualAmount))} | 
                       Variação: {alert.variancePercent.toFixed(1)}%
                     </p>
                     <p className="text-xs text-theme-muted mt-1">

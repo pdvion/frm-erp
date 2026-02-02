@@ -63,7 +63,7 @@ export default function EditProductPage() {
         metaTitle: product.metaTitle || "",
         metaDescription: product.metaDescription || "",
         tags: product.tags?.join(", ") || "",
-        status: product.status,
+        status: product.status ?? "DRAFT",
       });
     }
   }, [product]);
@@ -413,11 +413,11 @@ export default function EditProductPage() {
                 images={images.map((img) => ({
                   id: img.id,
                   url: img.url,
-                  thumbnailUrl: img.thumbnailUrl,
-                  alt: img.alt,
-                  caption: img.caption,
-                  order: img.order,
-                  isPrimary: img.isPrimary,
+                  thumbnailUrl: img.thumbnailUrl ?? undefined,
+                  alt: img.alt ?? undefined,
+                  caption: img.caption ?? undefined,
+                  order: img.order ?? 0,
+                  isPrimary: img.isPrimary ?? false,
                 }))}
                 onUpload={handleImageUpload}
                 onDelete={(imageId) => deleteImageMutation.mutateAsync({ imageId })}
@@ -433,12 +433,12 @@ export default function EditProductPage() {
                 videos={videos.map((v) => ({
                   id: v.id,
                   url: v.url,
-                  thumbnailUrl: v.thumbnailUrl,
+                  thumbnailUrl: v.thumbnailUrl ?? undefined,
                   title: v.title,
-                  description: v.description,
-                  type: v.type,
-                  duration: v.duration,
-                  order: v.order,
+                  description: v.description ?? undefined,
+                  type: v.type ?? "demo",
+                  duration: v.duration ?? undefined,
+                  order: v.order ?? 0,
                 }))}
                 onAdd={(video) =>
                   confirmVideoMutation.mutateAsync({
@@ -462,9 +462,9 @@ export default function EditProductPage() {
                   url: a.url,
                   fileName: a.fileName,
                   fileType: a.fileType,
-                  sizeBytes: a.sizeBytes,
-                  type: a.type,
-                  order: a.order,
+                  sizeBytes: a.sizeBytes ?? undefined,
+                  type: a.type ?? "other",
+                  order: a.order ?? 0,
                 }))}
                 onUpload={handleAttachmentUpload}
                 onDelete={(attachmentId) => deleteAttachmentMutation.mutateAsync({ attachmentId })}
