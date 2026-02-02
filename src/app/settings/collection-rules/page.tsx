@@ -135,8 +135,8 @@ export default function CollectionRulesPage() {
     setFormData({
       name: rule.name,
       description: rule.description || "",
-      isActive: rule.isActive,
-      isDefault: rule.isDefault,
+      isActive: rule.isActive ?? false,
+      isDefault: rule.isDefault ?? false,
     });
     setShowForm(true);
   };

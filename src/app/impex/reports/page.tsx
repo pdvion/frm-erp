@@ -77,7 +77,7 @@ export default function ImpExReportsPage() {
       filename = `processos_importacao_${new Date().toISOString().split("T")[0]}.csv`;
       csvContent = "Processo,Fornecedor,Despachante,Incoterm,Rota,Valor,Moeda,Status,ETA,Itens,Custos,Criado Em\n";
       processReport.data.processes.forEach((p) => {
-        csvContent += `${p.processNumber},${p.supplier || ""},${p.broker || ""},${p.incoterm || ""},${p.route},${p.invoiceValue},${p.currency},${STATUS_LABELS[p.status] || p.status},${formatDate(p.eta)},${p.itemsCount},${p.costsCount},${formatDate(p.createdAt)}\n`;
+        csvContent += `${p.processNumber},${p.supplier || ""},${p.customsBroker || ""},${p.incoterm || ""},${p.route},${p.fobValue},${p.currency},${STATUS_LABELS[p.status] || p.status},${formatDate(p.eta)},${p.itemsCount},${p.costsCount},${formatDate(p.createdAt)}\n`;
       });
     } else if (reportType === "costs" && costReport.data) {
       filename = `custos_importacao_${new Date().toISOString().split("T")[0]}.csv`;
@@ -326,7 +326,7 @@ export default function ImpExReportsPage() {
                         <td className="py-3 px-4 text-theme">{p.supplier || "-"}</td>
                         <td className="py-3 px-4 text-theme">{p.route}</td>
                         <td className="py-3 px-4 text-right text-theme">
-                          {formatCurrency(p.invoiceValue, p.currency)}
+                          {formatCurrency(p.fobValue, p.currency ?? undefined)}
                         </td>
                         <td className="py-3 px-4 text-center">
                           <span className="text-xs">{STATUS_LABELS[p.status] || p.status}</span>

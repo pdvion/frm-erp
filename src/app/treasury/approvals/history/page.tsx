@@ -256,7 +256,7 @@ export default function ApprovalsHistoryPage() {
                       {getUrgencyBadge(request.urgency)}
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-theme">
-                      {formatCurrency(request.amount)}
+                      {formatCurrency(Number(request.amount))}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {getStatusBadge(request.status)}

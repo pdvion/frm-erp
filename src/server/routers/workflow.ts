@@ -594,7 +594,7 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      const nextTransition = instance.currentStep.transitionsFrom.find((t: { conditionType: string; condition: string | null }) => 
+      const nextTransition = instance.currentStep.transitionsFrom.find((t) => 
         t.conditionType === "ALWAYS" || !t.condition
       ) || instance.currentStep.transitionsFrom[0];
 
@@ -665,7 +665,7 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      const approveTransition = instance.currentStep.transitionsFrom.find((t: { label: string | null; conditionType: string }) => 
+      const approveTransition = instance.currentStep.transitionsFrom.find((t) => 
         t.label?.toLowerCase().includes("aprov") || t.conditionType === "ALWAYS"
       ) || instance.currentStep.transitionsFrom[0];
 

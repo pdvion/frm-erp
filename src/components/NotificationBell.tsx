@@ -187,7 +187,7 @@ export function NotificationBell() {
                                 {notification.title}
                               </p>
                               <span className="text-xs text-theme-muted whitespace-nowrap">
-                                {formatTime(notification.createdAt)}
+                                {formatTime(notification.createdAt || new Date())}
                               </span>
                             </div>
                             {notification.message && (

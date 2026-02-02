@@ -171,16 +171,16 @@ export default function ExchangeContractDetailPage({
                 <span className="text-sm text-theme-muted">Conta</span>
                 <p className="text-theme">{contract.bankAccount?.accountNumber || "-"}</p>
               </div>
-              {contract.process && (
+              {contract.importProcess && (
                 <div>
                   <span className="text-sm text-theme-muted">Processo de Importação</span>
                   <Link
-                    href={`/impex/processes/${contract.process.id}`}
+                    href={`/impex/processes/${contract.importProcess.id}`}
                     className="text-blue-600 hover:underline block"
                   >
-                    {contract.process.processNumber}
+                    {contract.importProcess.processNumber}
                   </Link>
-                  <p className="text-xs text-theme-muted">{contract.process.supplier?.companyName}</p>
+                  <p className="text-xs text-theme-muted">{contract.importProcess.supplier?.companyName}</p>
                 </div>
               )}
             </div>
@@ -245,11 +245,11 @@ export default function ExchangeContractDetailPage({
           <div className="bg-theme-card border border-theme rounded-lg p-6">
             <h3 className="font-semibold text-theme mb-4 flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Histórico de Liquidações ({contract.liquidations?.length || 0})
+              Histórico de Liquidações ({contract.exchangeLiquidations?.length || 0})
             </h3>
-            {contract.liquidations?.length ? (
+            {contract.exchangeLiquidations?.length ? (
               <div className="space-y-3">
-                {contract.liquidations.map((liq) => (
+                {contract.exchangeLiquidations.map((liq) => (
                   <div
                     key={liq.id}
                     className="flex items-center justify-between p-4 bg-theme-secondary rounded-lg"

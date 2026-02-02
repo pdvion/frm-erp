@@ -82,9 +82,7 @@ export const admissionRouter = createTRPCRouter({
         prisma.admissionProcess.findMany({
           where,
           include: {
-            position: { select: { id: true, name: true } },
-            department: { select: { id: true, name: true } },
-            _count: { select: { documents: true, steps: true } },
+            _count: { select: { admission_documents: true, admission_steps: true } },
           },
           orderBy: { createdAt: "desc" },
           skip,
@@ -103,11 +101,9 @@ export const admissionRouter = createTRPCRouter({
       const admission = await prisma.admissionProcess.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
-          position: true,
-          department: true,
-          steps: { orderBy: { stepNumber: "asc" } },
-          documents: { orderBy: { documentType: "asc" } },
-          exams: { orderBy: { createdAt: "desc" } },
+          admission_steps: { orderBy: { stepNumber: "asc" } },
+          admission_documents: { orderBy: { documentType: "asc" } },
+          admission_exams: { orderBy: { createdAt: "desc" } },
         },
       });
 
@@ -148,19 +144,19 @@ export const admissionRouter = createTRPCRouter({
           notes: input.notes,
           recruiterId: ctx.tenant.userId,
           totalSteps: DEFAULT_STEPS.length,
-          steps: {
+          admission_steps: {
             create: DEFAULT_STEPS.map((step) => ({
               ...step,
               status: step.stepNumber === 1 ? "IN_PROGRESS" : "PENDING",
             })),
           },
-          documents: {
+          admission_documents: {
             create: REQUIRED_DOCUMENTS,
           },
         },
         include: {
-          steps: true,
-          documents: true,
+          admission_steps: true,
+          admission_documents: true,
         },
       });
 
@@ -304,7 +300,7 @@ export const admissionRouter = createTRPCRouter({
           completedBy: ctx.tenant.userId,
           notes: input.notes,
         },
-        include: { admission: true },
+        include: { admissionProcess: true },
       });
 
       // Avançar para próxima etapa

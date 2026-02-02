@@ -232,7 +232,7 @@ export default function MyPendingApprovalsPage() {
 
                   <div className="text-right space-y-2">
                     <p className="text-xl font-bold text-theme">
-                      {formatCurrency(request.amount)}
+                      {formatCurrency(Number(request.amount))}
                     </p>
                     <div className="flex gap-2">
                       <button

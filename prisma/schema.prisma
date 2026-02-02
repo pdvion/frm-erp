@@ -389,6 +389,8 @@ model Material {
   stockTransferItems          StockTransferItem[]
   supplierMaterials           SupplierMaterial[]
   supplierReturnItems         SupplierReturnItem[]
+  qualityInspections          QualityInspection[]
+  nonConformities             NonConformity[]
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
@@ -880,33 +882,33 @@ model AccountsPayable {
   bankAccountId           String?                 @db.Uuid
   approvalStatus          ApprovalStatus?         @default(PENDING)
   scheduledPaymentDate    DateTime?
-  additional_info         String?
-  has_withholding         Boolean?                @default(false)
-  withholding_ir          Float?                  @default(0)
-  withholding_iss         Float?                  @default(0)
-  withholding_inss        Float?                  @default(0)
-  withholding_pis         Float?                  @default(0)
-  withholding_cofins      Float?                  @default(0)
-  withholding_csll        Float?                  @default(0)
-  supplier_alpha_code     String?
-  supplier_cnpj           String?
-  supplier_ie             String?
-  supplier_state_code     Int?
-  cost_center_group       Int?
-  cost_center_code        String?
-  cost_center_notes       String?
-  sector_confirmed_at     DateTime?               @db.Timestamptz(6)
-  sector_confirmed_by_id  String?
-  physical_delivery_at    DateTime?               @db.Timestamptz(6)
-  physical_delivery_by_id String?
-  payment_released_at     DateTime?               @db.Timestamptz(6)
-  payment_released_by_id  String?
-  payment_bank_id         String?
-  pdf_file_name           String?
-  contract_type           payable_contract_type?
-  bank_accounts           BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
+  additionalInfo          String?                 @map("additional_info")
+  hasWithholding          Boolean?                @default(false) @map("has_withholding")
+  withholdingIr           Float?                  @default(0) @map("withholding_ir")
+  withholdingIss          Float?                  @default(0) @map("withholding_iss")
+  withholdingInss         Float?                  @default(0) @map("withholding_inss")
+  withholdingPis          Float?                  @default(0) @map("withholding_pis")
+  withholdingCofins       Float?                  @default(0) @map("withholding_cofins")
+  withholdingCsll         Float?                  @default(0) @map("withholding_csll")
+  supplierAlphaCode       String?                 @map("supplier_alpha_code")
+  supplierCnpj            String?                 @map("supplier_cnpj")
+  supplierIe              String?                 @map("supplier_ie")
+  supplierStateCode       Int?                    @map("supplier_state_code")
+  costCenterGroup         Int?                    @map("cost_center_group")
+  costCenterCode          String?                 @map("cost_center_code")
+  costCenterNotes         String?                 @map("cost_center_notes")
+  sectorConfirmedAt       DateTime?               @map("sector_confirmed_at") @db.Timestamptz(6)
+  sectorConfirmedById     String?                 @map("sector_confirmed_by_id")
+  physicalDeliveryAt      DateTime?               @map("physical_delivery_at") @db.Timestamptz(6)
+  physicalDeliveryById    String?                 @map("physical_delivery_by_id")
+  paymentReleasedAt       DateTime?               @map("payment_released_at") @db.Timestamptz(6)
+  paymentReleasedById     String?                 @map("payment_released_by_id")
+  paymentBankId           String?                 @map("payment_bank_id")
+  pdfFileName             String?                 @map("pdf_file_name")
+  contractType            payable_contract_type?  @map("contract_type")
+  bankAccount             BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
   company                 Company?                @relation(fields: [companyId], references: [id])
-  cost_centers            CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
+  costCenter              CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
   invoice                 ReceivedInvoice?        @relation(fields: [invoiceId], references: [id])
   supplier                Supplier                @relation(fields: [supplierId], references: [id])
   bankTransactions        BankTransaction[]
@@ -1043,6 +1045,8 @@ model ProductionOrder {
   company                 Company?                   @relation(fields: [companyId], references: [id])
   product                 Material                   @relation("ProductionProduct", fields: [productId], references: [id])
   salesOrderItems         SalesOrderItem[]
+  qualityInspections      QualityInspection[]
+  nonConformities         NonConformity[]
 
   @@unique([companyId, code])
   @@index([dueDate])
@@ -3694,100 +3698,100 @@ model SefazManifestacaoLog {
 }
 
 model DdaBoleto {
-  id                                    String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  company_id                            String           @db.Uuid
-  codigo_barras                         String?          @db.VarChar(48)
-  linha_digitavel                       String?          @db.VarChar(54)
-  nosso_numero                          String?          @db.VarChar(20)
-  seu_numero                            String?          @db.VarChar(20)
-  valor_original                        Decimal          @db.Decimal(15, 2)
-  valor_desconto                        Decimal?         @default(0) @db.Decimal(15, 2)
-  valor_juros                           Decimal?         @default(0) @db.Decimal(15, 2)
-  valor_multa                           Decimal?         @default(0) @db.Decimal(15, 2)
-  valor_final                           Decimal          @db.Decimal(15, 2)
-  data_emissao                          DateTime?        @db.Date
-  data_vencimento                       DateTime         @db.Date
-  data_limite_pagamento                 DateTime?        @db.Date
-  cedente_cnpj                          String?          @db.VarChar(18)
-  cedente_nome                          String?          @db.VarChar(200)
-  cedente_banco                         String?          @db.VarChar(3)
-  cedente_agencia                       String?          @db.VarChar(10)
-  cedente_conta                         String?          @db.VarChar(20)
-  sacado_cnpj                           String?          @db.VarChar(18)
-  sacado_nome                           String?          @db.VarChar(200)
-  status                                String?          @default("PENDENTE") @db.VarChar(20)
-  origem                                String?          @default("DDA") @db.VarChar(20)
-  accounts_payable_id                   String?          @db.Uuid
-  supplier_id                           String?          @db.Uuid
-  aprovado_por                          String?          @db.Uuid
-  aprovado_em                           DateTime?        @db.Timestamp(6)
-  motivo_rejeicao                       String?
-  pago_em                               DateTime?        @db.Timestamp(6)
-  comprovante_url                       String?
-  created_at                            DateTime?        @default(now()) @db.Timestamp(6)
-  updated_at                            DateTime?        @default(now()) @db.Timestamp(6)
-  created_by                            String?          @db.Uuid
-  accounts_payable                      AccountsPayable? @relation(fields: [accounts_payable_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users_dda_boletos_aprovado_porTousers User?            @relation("dda_boletos_aprovado_porTousers", fields: [aprovado_por], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  companies                             Company          @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users_dda_boletos_created_byTousers   User?            @relation("dda_boletos_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  suppliers                             Supplier?        @relation(fields: [supplier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId           String           @map("company_id") @db.Uuid
+  codigoBarras        String?          @map("codigo_barras") @db.VarChar(48)
+  linhaDigitavel      String?          @map("linha_digitavel") @db.VarChar(54)
+  nossoNumero         String?          @map("nosso_numero") @db.VarChar(20)
+  seuNumero           String?          @map("seu_numero") @db.VarChar(20)
+  valorOriginal       Decimal          @map("valor_original") @db.Decimal(15, 2)
+  valorDesconto       Decimal?         @default(0) @map("valor_desconto") @db.Decimal(15, 2)
+  valorJuros          Decimal?         @default(0) @map("valor_juros") @db.Decimal(15, 2)
+  valorMulta          Decimal?         @default(0) @map("valor_multa") @db.Decimal(15, 2)
+  valorFinal          Decimal          @map("valor_final") @db.Decimal(15, 2)
+  dataEmissao         DateTime?        @map("data_emissao") @db.Date
+  dataVencimento      DateTime         @map("data_vencimento") @db.Date
+  dataLimitePagamento DateTime?        @map("data_limite_pagamento") @db.Date
+  cedenteCnpj         String?          @map("cedente_cnpj") @db.VarChar(18)
+  cedenteNome         String?          @map("cedente_nome") @db.VarChar(200)
+  cedenteBanco        String?          @map("cedente_banco") @db.VarChar(3)
+  cedenteAgencia      String?          @map("cedente_agencia") @db.VarChar(10)
+  cedenteConta        String?          @map("cedente_conta") @db.VarChar(20)
+  sacadoCnpj          String?          @map("sacado_cnpj") @db.VarChar(18)
+  sacadoNome          String?          @map("sacado_nome") @db.VarChar(200)
+  status              String?          @default("PENDENTE") @db.VarChar(20)
+  origem              String?          @default("DDA") @db.VarChar(20)
+  accountsPayableId   String?          @map("accounts_payable_id") @db.Uuid
+  supplierId          String?          @map("supplier_id") @db.Uuid
+  aprovadoPor         String?          @map("aprovado_por") @db.Uuid
+  aprovadoEm          DateTime?        @map("aprovado_em") @db.Timestamp(6)
+  motivoRejeicao      String?          @map("motivo_rejeicao")
+  pagoEm              DateTime?        @map("pago_em") @db.Timestamp(6)
+  comprovanteUrl      String?          @map("comprovante_url")
+  createdAt           DateTime?        @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime?        @default(now()) @map("updated_at") @db.Timestamp(6)
+  createdBy           String?          @map("created_by") @db.Uuid
+  accountsPayable     AccountsPayable? @relation(fields: [accountsPayableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedByUser      User?            @relation("dda_boletos_aprovado_porTousers", fields: [aprovadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company             Company          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdByUser       User?            @relation("dda_boletos_created_byTousers", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier            Supplier?        @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([accounts_payable_id], map: "idx_dda_boletos_accounts_payable_id")
-  @@index([aprovado_por], map: "idx_dda_boletos_aprovado_por")
-  @@index([cedente_cnpj], map: "idx_dda_boletos_cedente")
-  @@index([codigo_barras], map: "idx_dda_boletos_codigo_barras")
-  @@index([company_id], map: "idx_dda_boletos_company")
-  @@index([created_by], map: "idx_dda_boletos_created_by")
+  @@index([accountsPayableId], map: "idx_dda_boletos_accounts_payable_id")
+  @@index([aprovadoPor], map: "idx_dda_boletos_aprovado_por")
+  @@index([cedenteCnpj], map: "idx_dda_boletos_cedente")
+  @@index([codigoBarras], map: "idx_dda_boletos_codigo_barras")
+  @@index([companyId], map: "idx_dda_boletos_company")
+  @@index([createdBy], map: "idx_dda_boletos_created_by")
   @@index([status], map: "idx_dda_boletos_status")
-  @@index([supplier_id], map: "idx_dda_boletos_supplier_id")
-  @@index([data_vencimento], map: "idx_dda_boletos_vencimento")
+  @@index([supplierId], map: "idx_dda_boletos_supplier_id")
+  @@index([dataVencimento], map: "idx_dda_boletos_vencimento")
   @@map("dda_boletos")
 }
 
 model DdaConfig {
-  id                   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  company_id           String       @db.Uuid
-  banco_codigo         String       @db.VarChar(3)
-  banco_nome           String?      @db.VarChar(100)
-  agencia              String?      @db.VarChar(10)
-  conta                String?      @db.VarChar(20)
-  convenio             String?      @db.VarChar(20)
-  ambiente             String?      @default("HOMOLOGACAO") @db.VarChar(10)
-  client_id            String?
-  client_secret        String?
-  certificado_id       String?
-  ativo                Boolean?     @default(true)
-  auto_aprovar_ate     Decimal?     @default(0) @db.Decimal(15, 2)
-  notificar_novos      Boolean?     @default(true)
-  email_notificacao    String?      @db.VarChar(200)
-  ultima_sincronizacao DateTime?    @db.Timestamp(6)
-  created_at           DateTime?    @default(now()) @db.Timestamp(6)
-  updated_at           DateTime?    @default(now()) @db.Timestamp(6)
-  companies            Company      @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  dda_sync_log         DdaSyncLog[]
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId          String       @map("company_id") @db.Uuid
+  bancoCodigo        String       @map("banco_codigo") @db.VarChar(3)
+  bancoNome          String?      @map("banco_nome") @db.VarChar(100)
+  agencia            String?      @db.VarChar(10)
+  conta              String?      @db.VarChar(20)
+  convenio           String?      @db.VarChar(20)
+  ambiente           String?      @default("HOMOLOGACAO") @db.VarChar(10)
+  clientId           String?      @map("client_id")
+  clientSecret       String?      @map("client_secret")
+  certificadoId      String?      @map("certificado_id")
+  ativo              Boolean?     @default(true)
+  autoAprovarAte     Decimal?     @default(0) @map("auto_aprovar_ate") @db.Decimal(15, 2)
+  notificarNovos     Boolean?     @default(true) @map("notificar_novos")
+  emailNotificacao   String?      @map("email_notificacao") @db.VarChar(200)
+  ultimaSincronizacao DateTime?   @map("ultima_sincronizacao") @db.Timestamp(6)
+  createdAt          DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime?    @default(now()) @map("updated_at") @db.Timestamp(6)
+  company            Company      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ddaSyncLogs        DdaSyncLog[]
 
-  @@unique([company_id, banco_codigo])
+  @@unique([companyId, bancoCodigo])
   @@map("dda_config")
 }
 
 model DdaSyncLog {
-  id                  String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  company_id          String     @db.Uuid
-  config_id           String?    @db.Uuid
-  tipo                String     @db.VarChar(20)
-  status              String     @db.VarChar(20)
-  boletos_encontrados Int?       @default(0)
-  boletos_novos       Int?       @default(0)
-  boletos_atualizados Int?       @default(0)
-  erro_mensagem       String?
-  iniciado_em         DateTime?  @default(now()) @db.Timestamp(6)
-  finalizado_em       DateTime?  @db.Timestamp(6)
-  companies           Company    @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  dda_config          DdaConfig? @relation(fields: [config_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId          String     @map("company_id") @db.Uuid
+  configId           String?    @map("config_id") @db.Uuid
+  tipo               String     @db.VarChar(20)
+  status             String     @db.VarChar(20)
+  boletosEncontrados Int?       @default(0) @map("boletos_encontrados")
+  boletosNovos       Int?       @default(0) @map("boletos_novos")
+  boletosAtualizados Int?       @default(0) @map("boletos_atualizados")
+  erroMensagem       String?    @map("erro_mensagem")
+  iniciadoEm         DateTime?  @default(now()) @map("iniciado_em") @db.Timestamp(6)
+  finalizadoEm       DateTime?  @map("finalizado_em") @db.Timestamp(6)
+  company            Company    @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ddaConfig          DdaConfig? @relation(fields: [configId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([company_id], map: "idx_dda_sync_log_company_id")
-  @@index([config_id], map: "idx_dda_sync_log_config_id")
+  @@index([companyId], map: "idx_dda_sync_log_company_id")
+  @@index([configId], map: "idx_dda_sync_log_config_id")
   @@map("dda_sync_log")
 }
 
@@ -3942,382 +3946,388 @@ model SupplierReturnItem {
 }
 
 model QualityInspection {
-  id                       String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                     Int
-  company_id               String?                 @db.Uuid
-  type                     String                  @default("RECEIVING")
-  status                   String                  @default("PENDING")
-  material_id              String?                 @db.Uuid
-  production_order_id      String?                 @db.Uuid
-  received_invoice_id      String?                 @db.Uuid
-  lot_number               String?
-  quantity                 Float                   @default(0)
-  sample_size              Int?
-  approved_qty             Float?                  @default(0)
-  rejected_qty             Float?                  @default(0)
-  inspection_date          DateTime                @default(now())
-  completed_at             DateTime?
-  inspector_id             String?                 @db.Uuid
-  notes                    String?
-  created_at               DateTime                @default(now())
-  updated_at               DateTime                @default(now())
-  quality_inspection_items QualityInspectionItem[]
+  id                String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int
+  companyId         String?                 @map("company_id") @db.Uuid
+  type              String                  @default("RECEIVING")
+  status            String                  @default("PENDING")
+  materialId        String?                 @map("material_id") @db.Uuid
+  productionOrderId String?                 @map("production_order_id") @db.Uuid
+  receivedInvoiceId String?                 @map("received_invoice_id") @db.Uuid
+  lotNumber         String?                 @map("lot_number")
+  quantity          Float                   @default(0)
+  sampleSize        Int?                    @map("sample_size")
+  approvedQty       Float?                  @default(0) @map("approved_qty")
+  rejectedQty       Float?                  @default(0) @map("rejected_qty")
+  inspectionDate    DateTime                @default(now()) @map("inspection_date")
+  completedAt       DateTime?               @map("completed_at")
+  inspectorId       String?                 @map("inspector_id") @db.Uuid
+  notes             String?
+  createdAt         DateTime                @default(now()) @map("created_at")
+  updatedAt         DateTime                @default(now()) @map("updated_at")
+  items             QualityInspectionItem[]
+  material          Material?               @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productionOrder   ProductionOrder?        @relation(fields: [productionOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nonConformities   NonConformity[]
 
-  @@index([company_id], map: "idx_quality_inspections_company_id")
-  @@index([material_id], map: "idx_quality_inspections_material_id")
+  @@index([companyId], map: "idx_quality_inspections_company_id")
+  @@index([materialId], map: "idx_quality_inspections_material_id")
   @@index([status], map: "idx_quality_inspections_status")
   @@map("quality_inspections")
 }
 
 model QualityInspectionItem {
-  id                  String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inspection_id       String            @db.Uuid
-  characteristic      String
-  specification       String?
-  tolerance_min       Float?
-  tolerance_max       Float?
-  measured_value      Float?
-  result              String?           @default("PENDING")
-  notes               String?
-  created_at          DateTime          @default(now())
-  quality_inspections QualityInspection @relation(fields: [inspection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inspectionId  String            @map("inspection_id") @db.Uuid
+  characteristic String
+  specification String?
+  toleranceMin  Float?            @map("tolerance_min")
+  toleranceMax  Float?            @map("tolerance_max")
+  measuredValue Float?            @map("measured_value")
+  result        String?           @default("PENDING")
+  notes         String?
+  createdAt     DateTime          @default(now()) @map("created_at")
+  inspection    QualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([inspection_id], map: "idx_quality_inspection_items_inspection_id")
+  @@index([inspectionId], map: "idx_quality_inspection_items_inspection_id")
   @@map("quality_inspection_items")
 }
 
 model NonConformity {
-  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                Int
-  company_id          String?   @db.Uuid
-  type                String    @default("INTERNAL")
-  status              String    @default("OPEN")
-  severity            String    @default("MINOR")
-  inspection_id       String?   @db.Uuid
-  production_order_id String?   @db.Uuid
-  material_id         String?   @db.Uuid
-  lot_number          String?
-  quantity            Float?    @default(0)
-  description         String
-  root_cause          String?
-  immediate_action    String?
-  corrective_action   String?
-  preventive_action   String?
-  responsible_id      String?   @db.Uuid
-  due_date            DateTime?
-  closed_at           DateTime?
-  closed_by           String?   @db.Uuid
-  created_by          String?   @db.Uuid
-  created_at          DateTime  @default(now())
-  updated_at          DateTime  @default(now())
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int
+  companyId         String?            @map("company_id") @db.Uuid
+  type              String             @default("INTERNAL")
+  status            String             @default("OPEN")
+  severity          String             @default("MINOR")
+  inspectionId      String?            @map("inspection_id") @db.Uuid
+  productionOrderId String?            @map("production_order_id") @db.Uuid
+  materialId        String?            @map("material_id") @db.Uuid
+  lotNumber         String?            @map("lot_number")
+  quantity          Float?             @default(0)
+  description       String
+  rootCause         String?            @map("root_cause")
+  immediateAction   String?            @map("immediate_action")
+  correctiveAction  String?            @map("corrective_action")
+  preventiveAction  String?            @map("preventive_action")
+  responsibleId     String?            @map("responsible_id") @db.Uuid
+  dueDate           DateTime?          @map("due_date")
+  closedAt          DateTime?          @map("closed_at")
+  closedBy          String?            @map("closed_by") @db.Uuid
+  createdBy         String?            @map("created_by") @db.Uuid
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @map("updated_at")
+  inspection        QualityInspection? @relation(fields: [inspectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  material          Material?          @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([company_id], map: "idx_non_conformities_company_id")
+  @@index([companyId], map: "idx_non_conformities_company_id")
   @@index([status], map: "idx_non_conformities_status")
   @@map("non_conformities")
 }
 
 model ProductionCost {
-  id                        String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  production_order_id       String                   @db.Uuid
-  company_id                String?                  @db.Uuid
-  status                    String                   @default("DRAFT")
-  material_cost             Float                    @default(0)
-  material_cost_std         Float?                   @default(0)
-  material_variance         Float?                   @default(0)
-  labor_cost                Float                    @default(0)
-  labor_cost_std            Float?                   @default(0)
-  labor_variance            Float?                   @default(0)
-  labor_hours               Float?                   @default(0)
-  labor_hours_std           Float?                   @default(0)
-  overhead_cost             Float                    @default(0)
-  overhead_cost_std         Float?                   @default(0)
-  overhead_variance         Float?                   @default(0)
-  total_cost                Float                    @default(0)
-  total_cost_std            Float?                   @default(0)
-  total_variance            Float?                   @default(0)
-  unit_cost                 Float?                   @default(0)
-  unit_cost_std             Float?                   @default(0)
-  quantity_produced         Float?                   @default(0)
-  calculated_at             DateTime?
-  closed_at                 DateTime?
-  created_at                DateTime                 @default(now())
-  updated_at                DateTime                 @default(now())
-  production_cost_labor     ProductionCostLabor[]
-  production_cost_materials ProductionCostMaterial[]
-  production_orders         ProductionOrder          @relation(fields: [production_order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionOrderId String                   @map("production_order_id") @db.Uuid
+  companyId         String?                  @map("company_id") @db.Uuid
+  status            String                   @default("DRAFT")
+  materialCost      Float                    @default(0) @map("material_cost")
+  materialCostStd   Float?                   @default(0) @map("material_cost_std")
+  materialVariance  Float?                   @default(0) @map("material_variance")
+  laborCost         Float                    @default(0) @map("labor_cost")
+  laborCostStd      Float?                   @default(0) @map("labor_cost_std")
+  laborVariance     Float?                   @default(0) @map("labor_variance")
+  laborHours        Float?                   @default(0) @map("labor_hours")
+  laborHoursStd     Float?                   @default(0) @map("labor_hours_std")
+  overheadCost      Float                    @default(0) @map("overhead_cost")
+  overheadCostStd   Float?                   @default(0) @map("overhead_cost_std")
+  overheadVariance  Float?                   @default(0) @map("overhead_variance")
+  totalCost         Float                    @default(0) @map("total_cost")
+  totalCostStd      Float?                   @default(0) @map("total_cost_std")
+  totalVariance     Float?                   @default(0) @map("total_variance")
+  unitCost          Float?                   @default(0) @map("unit_cost")
+  unitCostStd       Float?                   @default(0) @map("unit_cost_std")
+  quantityProduced  Float?                   @default(0) @map("quantity_produced")
+  calculatedAt      DateTime?                @map("calculated_at")
+  closedAt          DateTime?                @map("closed_at")
+  createdAt         DateTime                 @default(now()) @map("created_at")
+  updatedAt         DateTime                 @default(now()) @map("updated_at")
+  laborItems        ProductionCostLabor[]
+  materialItems     ProductionCostMaterial[]
+  productionOrder   ProductionOrder          @relation(fields: [productionOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([company_id], map: "idx_production_costs_company_id")
-  @@index([production_order_id], map: "idx_production_costs_production_order_id")
+  @@index([companyId], map: "idx_production_costs_company_id")
+  @@index([productionOrderId], map: "idx_production_costs_production_order_id")
   @@index([status], map: "idx_production_costs_status")
   @@map("production_costs")
 }
 
 model ProductionCostMaterial {
-  id                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  production_cost_id String         @db.Uuid
-  material_id        String         @db.Uuid
-  quantity_std       Float?         @default(0)
-  quantity_actual    Float?         @default(0)
-  unit_cost          Float?         @default(0)
-  total_cost_std     Float?         @default(0)
-  total_cost_actual  Float?         @default(0)
-  variance           Float?         @default(0)
-  created_at         DateTime       @default(now())
-  production_costs   ProductionCost @relation(fields: [production_cost_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionCostId String         @map("production_cost_id") @db.Uuid
+  materialId       String         @map("material_id") @db.Uuid
+  quantityStd      Float?         @default(0) @map("quantity_std")
+  quantityActual   Float?         @default(0) @map("quantity_actual")
+  unitCost         Float?         @default(0) @map("unit_cost")
+  totalCostStd     Float?         @default(0) @map("total_cost_std")
+  totalCostActual  Float?         @default(0) @map("total_cost_actual")
+  variance         Float?         @default(0)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([production_cost_id], map: "idx_production_cost_materials_production_cost_id")
+  @@index([productionCostId], map: "idx_production_cost_materials_production_cost_id")
   @@map("production_cost_materials")
 }
 
 model ProductionCostLabor {
-  id                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  production_cost_id String         @db.Uuid
-  work_center_id     String?        @db.Uuid
-  operation_id       String?        @db.Uuid
-  hours_std          Float?         @default(0)
-  hours_actual       Float?         @default(0)
-  hourly_rate        Float?         @default(0)
-  total_cost_std     Float?         @default(0)
-  total_cost_actual  Float?         @default(0)
-  variance           Float?         @default(0)
-  created_at         DateTime       @default(now())
-  production_costs   ProductionCost @relation(fields: [production_cost_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionCostId String         @map("production_cost_id") @db.Uuid
+  workCenterId     String?        @map("work_center_id") @db.Uuid
+  operationId      String?        @map("operation_id") @db.Uuid
+  hoursStd         Float?         @default(0) @map("hours_std")
+  hoursActual      Float?         @default(0) @map("hours_actual")
+  hourlyRate       Float?         @default(0) @map("hourly_rate")
+  totalCostStd     Float?         @default(0) @map("total_cost_std")
+  totalCostActual  Float?         @default(0) @map("total_cost_actual")
+  variance         Float?         @default(0)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([production_cost_id], map: "idx_production_cost_labor_production_cost_id")
+  @@index([productionCostId], map: "idx_production_cost_labor_production_cost_id")
   @@map("production_cost_labor")
 }
 
 model MaterialStandardCost {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  material_id    String   @db.Uuid
-  company_id     String?  @db.Uuid
-  effective_date DateTime @default(now())
-  material_cost  Float    @default(0)
-  labor_cost     Float?   @default(0)
-  overhead_cost  Float?   @default(0)
-  total_cost     Float    @default(0)
-  notes          String?
-  created_by     String?  @db.Uuid
-  created_at     DateTime @default(now())
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  materialId    String   @map("material_id") @db.Uuid
+  companyId     String?  @map("company_id") @db.Uuid
+  effectiveDate DateTime @default(now()) @map("effective_date")
+  materialCost  Float    @default(0) @map("material_cost")
+  laborCost     Float?   @default(0) @map("labor_cost")
+  overheadCost  Float?   @default(0) @map("overhead_cost")
+  totalCost     Float    @default(0) @map("total_cost")
+  notes         String?
+  createdBy     String?  @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  @@index([company_id], map: "idx_material_standard_costs_company_id")
-  @@index([material_id], map: "idx_material_standard_costs_material_id")
+  @@index([companyId], map: "idx_material_standard_costs_company_id")
+  @@index([materialId], map: "idx_material_standard_costs_material_id")
   @@map("material_standard_costs")
 }
 
 model BenefitType {
-  id                        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                      String
-  name                      String
-  description               String?
-  company_id                String?           @db.Uuid
-  category                  String            @default("OTHER")
-  calculation_type          String            @default("FIXED")
-  default_value             Float?            @default(0)
-  default_percentage        Float?            @default(0)
-  employee_discount_percent Float?            @default(0)
-  is_taxable                Boolean?          @default(false)
-  affects_inss              Boolean?          @default(false)
-  affects_irrf              Boolean?          @default(false)
-  affects_fgts              Boolean?          @default(false)
-  is_active                 Boolean?          @default(true)
-  created_at                DateTime          @default(now())
-  updated_at                DateTime          @default(now())
-  employee_benefits         EmployeeBenefit[]
+  id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                    String
+  name                    String
+  description             String?
+  companyId               String?           @map("company_id") @db.Uuid
+  category                String            @default("OTHER")
+  calculationType         String            @default("FIXED") @map("calculation_type")
+  defaultValue            Float?            @default(0) @map("default_value")
+  defaultPercentage       Float?            @default(0) @map("default_percentage")
+  employeeDiscountPercent Float?            @default(0) @map("employee_discount_percent")
+  isTaxable               Boolean?          @default(false) @map("is_taxable")
+  affectsInss             Boolean?          @default(false) @map("affects_inss")
+  affectsIrrf             Boolean?          @default(false) @map("affects_irrf")
+  affectsFgts             Boolean?          @default(false) @map("affects_fgts")
+  isActive                Boolean?          @default(true) @map("is_active")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @default(now()) @map("updated_at")
+  employeeBenefits        EmployeeBenefit[]
 
-  @@index([company_id], map: "idx_benefit_types_company_id")
+  @@index([companyId], map: "idx_benefit_types_company_id")
   @@map("benefit_types")
 }
 
 model EmployeeBenefit {
-  id                   String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employee_id          String      @db.Uuid
-  benefit_type_id      String      @db.Uuid
-  company_id           String?     @db.Uuid
-  status               String      @default("ACTIVE")
-  start_date           DateTime    @default(now())
-  end_date             DateTime?
-  value                Float?      @default(0)
-  employee_discount    Float?      @default(0)
-  company_contribution Float?      @default(0)
-  quantity             Float?      @default(1)
-  notes                String?
-  created_at           DateTime    @default(now())
-  updated_at           DateTime    @default(now())
-  benefit_types        BenefitType @relation(fields: [benefit_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employees            Employee    @relation(fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId          String      @map("employee_id") @db.Uuid
+  benefitTypeId       String      @map("benefit_type_id") @db.Uuid
+  companyId           String?     @map("company_id") @db.Uuid
+  status              String      @default("ACTIVE")
+  startDate           DateTime    @default(now()) @map("start_date")
+  endDate             DateTime?   @map("end_date")
+  value               Float?      @default(0)
+  employeeDiscount    Float?      @default(0) @map("employee_discount")
+  companyContribution Float?      @default(0) @map("company_contribution")
+  quantity            Float?      @default(1)
+  notes               String?
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @default(now()) @map("updated_at")
+  benefitType         BenefitType @relation(fields: [benefitTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee            Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([benefit_type_id], map: "idx_employee_benefits_benefit_type_id")
-  @@index([employee_id], map: "idx_employee_benefits_employee_id")
+  @@index([benefitTypeId], map: "idx_employee_benefits_benefit_type_id")
+  @@index([employeeId], map: "idx_employee_benefits_employee_id")
   @@map("employee_benefits")
 }
 
 model TransportVoucher {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employee_id      String   @db.Uuid
-  company_id       String?  @db.Uuid
-  line_type        String   @default("BUS")
-  line_name        String
-  fare_value       Float    @default(0)
-  quantity_per_day Int?     @default(2)
-  working_days     Int?     @default(22)
-  is_active        Boolean? @default(true)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now())
-  employees        Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String   @map("employee_id") @db.Uuid
+  companyId      String?  @map("company_id") @db.Uuid
+  lineType       String   @default("BUS") @map("line_type")
+  lineName       String   @map("line_name")
+  fareValue      Float    @default(0) @map("fare_value")
+  quantityPerDay Int?     @default(2) @map("quantity_per_day")
+  workingDays    Int?     @default(22) @map("working_days")
+  isActive       Boolean? @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([employee_id], map: "idx_transport_vouchers_employee_id")
+  @@index([employeeId], map: "idx_transport_vouchers_employee_id")
   @@map("transport_vouchers")
 }
 
 model Training {
-  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code               String
-  name               String
-  description        String?
-  company_id         String?            @db.Uuid
-  category           String?
-  duration_hours     Int?               @default(0)
-  instructor         String?
-  provider           String?
-  cost               Float?             @default(0)
-  is_mandatory       Boolean?           @default(false)
-  validity_months    Int?
-  is_active          Boolean?           @default(true)
-  created_at         DateTime           @default(now())
-  updated_at         DateTime           @default(now())
-  employee_trainings EmployeeTraining[]
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              String
+  name              String
+  description       String?
+  companyId         String?            @map("company_id") @db.Uuid
+  category          String?
+  durationHours     Int?               @default(0) @map("duration_hours")
+  instructor        String?
+  provider          String?
+  cost              Float?             @default(0)
+  isMandatory       Boolean?           @default(false) @map("is_mandatory")
+  validityMonths    Int?               @map("validity_months")
+  isActive          Boolean?           @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @map("updated_at")
+  employeeTrainings EmployeeTraining[]
 
-  @@index([company_id], map: "idx_trainings_company_id")
+  @@index([companyId], map: "idx_trainings_company_id")
   @@map("trainings")
 }
 
 model EmployeeTraining {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employee_id     String    @db.Uuid
-  training_id     String    @db.Uuid
-  company_id      String?   @db.Uuid
-  status          String    @default("SCHEDULED")
-  scheduled_date  DateTime?
-  completion_date DateTime?
-  expiration_date DateTime?
-  score           Float?
-  certificate_url String?
-  notes           String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @default(now())
-  employees       Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  trainings       Training  @relation(fields: [training_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  trainingId     String    @map("training_id") @db.Uuid
+  companyId      String?   @map("company_id") @db.Uuid
+  status         String    @default("SCHEDULED")
+  scheduledDate  DateTime? @map("scheduled_date")
+  completionDate DateTime? @map("completion_date")
+  expirationDate DateTime? @map("expiration_date")
+  score          Float?
+  certificateUrl String?   @map("certificate_url")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  training       Training  @relation(fields: [trainingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([employee_id], map: "idx_employee_trainings_employee_id")
-  @@index([training_id], map: "idx_employee_trainings_training_id")
+  @@index([employeeId], map: "idx_employee_trainings_employee_id")
+  @@index([trainingId], map: "idx_employee_trainings_training_id")
   @@map("employee_trainings")
 }
 
 model SkillMatrix {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employee_id     String    @db.Uuid
-  skill_name      String
-  company_id      String?   @db.Uuid
-  category        String?
-  level           Int       @default(0)
-  max_level       Int?      @default(4)
-  certified_at    DateTime?
-  certified_by    String?   @db.Uuid
-  expiration_date DateTime?
-  notes           String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @default(now())
-  employees       Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  skillName      String    @map("skill_name")
+  companyId      String?   @map("company_id") @db.Uuid
+  category       String?
+  level          Int       @default(0)
+  maxLevel       Int?      @default(4) @map("max_level")
+  certifiedAt    DateTime? @map("certified_at")
+  certifiedBy    String?   @map("certified_by") @db.Uuid
+  expirationDate DateTime? @map("expiration_date")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([employee_id], map: "idx_skill_matrix_employee_id")
+  @@index([employeeId], map: "idx_skill_matrix_employee_id")
   @@map("skill_matrix")
 }
 
 model AdmissionProcess {
-  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                Int                 @default(autoincrement())
-  company_id          String?             @db.Uuid
-  candidate_name      String
-  candidate_email     String?
-  candidate_phone     String?
-  candidate_cpf       String?
-  position_id         String?             @db.Uuid
-  department_id       String?             @db.Uuid
-  proposed_salary     Float?
-  proposed_start_date DateTime?
-  status              String              @default("DRAFT")
-  current_step        Int?                @default(1)
-  total_steps         Int?                @default(5)
-  recruiter_id        String?             @db.Uuid
-  manager_id          String?             @db.Uuid
-  notes               String?
-  created_at          DateTime            @default(now())
-  updated_at          DateTime            @default(now())
-  completed_at        DateTime?
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int                 @default(autoincrement())
+  companyId         String?             @map("company_id") @db.Uuid
+  candidateName     String              @map("candidate_name")
+  candidateEmail    String?             @map("candidate_email")
+  candidatePhone    String?             @map("candidate_phone")
+  candidateCpf      String?             @map("candidate_cpf")
+  positionId        String?             @map("position_id") @db.Uuid
+  departmentId      String?             @map("department_id") @db.Uuid
+  proposedSalary    Float?              @map("proposed_salary")
+  proposedStartDate DateTime?           @map("proposed_start_date")
+  status            String              @default("DRAFT")
+  currentStep       Int?                @default(1) @map("current_step")
+  totalSteps        Int?                @default(5) @map("total_steps")
+  recruiterId       String?             @map("recruiter_id") @db.Uuid
+  managerId         String?             @map("manager_id") @db.Uuid
+  notes             String?
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @map("updated_at")
+  completedAt       DateTime?           @map("completed_at")
   admission_documents AdmissionDocument[]
   admission_exams     AdmissionExam[]
   admission_steps     AdmissionStep[]
 
-  @@index([company_id], map: "idx_admission_processes_company_id")
+  @@index([companyId], map: "idx_admission_processes_company_id")
   @@index([status], map: "idx_admission_processes_status")
   @@map("admission_processes")
 }
 
 model AdmissionStep {
-  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  admission_id        String           @db.Uuid
-  step_number         Int
-  step_name           String
-  step_type           String           @default("DOCUMENT")
-  status              String           @default("PENDING")
-  assigned_to         String?          @db.Uuid
-  due_date            DateTime?
-  completed_at        DateTime?
-  completed_by        String?          @db.Uuid
-  notes               String?
-  created_at          DateTime         @default(now())
-  admission_processes AdmissionProcess @relation(fields: [admission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId       String           @map("admission_id") @db.Uuid
+  stepNumber        Int              @map("step_number")
+  stepName          String           @map("step_name")
+  stepType          String           @default("DOCUMENT") @map("step_type")
+  status            String           @default("PENDING")
+  assignedTo        String?          @map("assigned_to") @db.Uuid
+  dueDate           DateTime?        @map("due_date")
+  completedAt       DateTime?        @map("completed_at")
+  completedBy       String?          @map("completed_by") @db.Uuid
+  notes             String?
+  createdAt         DateTime         @default(now()) @map("created_at")
+  admissionProcess  AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([admission_id], map: "idx_admission_steps_admission_id")
+  @@index([admissionId], map: "idx_admission_steps_admission_id")
   @@map("admission_steps")
 }
 
 model AdmissionDocument {
-  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  admission_id        String           @db.Uuid
-  document_type       String
-  document_name       String
-  file_url            String?
-  status              String           @default("PENDING")
-  is_required         Boolean?         @default(true)
-  uploaded_at         DateTime?
-  verified_at         DateTime?
-  verified_by         String?          @db.Uuid
-  rejection_reason    String?
-  created_at          DateTime         @default(now())
-  admission_processes AdmissionProcess @relation(fields: [admission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  documentType     String           @map("document_type")
+  documentName     String           @map("document_name")
+  fileUrl          String?          @map("file_url")
+  status           String           @default("PENDING")
+  isRequired       Boolean?         @default(true) @map("is_required")
+  uploadedAt       DateTime?        @map("uploaded_at")
+  verifiedAt       DateTime?        @map("verified_at")
+  verifiedBy       String?          @map("verified_by") @db.Uuid
+  rejectionReason  String?          @map("rejection_reason")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([admission_id], map: "idx_admission_documents_admission_id")
+  @@index([admissionId], map: "idx_admission_documents_admission_id")
   @@map("admission_documents")
 }
 
 model AdmissionExam {
-  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  admission_id        String           @db.Uuid
-  exam_type           String           @default("ADMISSIONAL")
-  clinic_name         String?
-  scheduled_date      DateTime?
-  completed_date      DateTime?
-  result              String?
-  aso_number          String?
-  aso_url             String?
-  valid_until         DateTime?
-  notes               String?
-  created_at          DateTime         @default(now())
-  admission_processes AdmissionProcess @relation(fields: [admission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  examType         String           @default("ADMISSIONAL") @map("exam_type")
+  clinicName       String?          @map("clinic_name")
+  scheduledDate    DateTime?        @map("scheduled_date")
+  completedDate    DateTime?        @map("completed_date")
+  result           String?
+  asoNumber        String?          @map("aso_number")
+  asoUrl           String?          @map("aso_url")
+  validUntil       DateTime?        @map("valid_until")
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([admission_id], map: "idx_admission_exams_admission_id")
+  @@index([admissionId], map: "idx_admission_exams_admission_id")
   @@map("admission_exams")
 }
 
@@ -4472,147 +4482,180 @@ model Incoterm {
 }
 
 model ImportProcess {
-  id                                                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  process_number                                    String              @db.VarChar(50)
-  reference                                         String?             @db.VarChar(100)
-  supplier_id                                       String?             @db.Uuid
-  broker_id                                         String?             @db.Uuid
-  incoterm_id                                       String?             @db.Uuid
-  cargo_type_id                                     String?             @db.Uuid
-  origin_port_id                                    String?             @db.Uuid
-  destination_port_id                               String?             @db.Uuid
-  status                                            ImportStatus        @default(DRAFT)
-  order_date                                        DateTime?           @db.Date
-  etd                                               DateTime?           @db.Date
-  eta                                               DateTime?           @db.Date
-  actual_departure                                  DateTime?           @db.Date
-  actual_arrival                                    DateTime?           @db.Date
-  clearance_date                                    DateTime?           @db.Date
-  delivery_date                                     DateTime?           @db.Date
-  vessel_name                                       String?             @db.VarChar(200)
-  voyage_number                                     String?             @db.VarChar(50)
-  bl_number                                         String?             @db.VarChar(100)
-  container_numbers                                 String?
-  currency                                          String?             @default("USD") @db.VarChar(3)
-  fob_value                                         Decimal?            @default(0) @db.Decimal(18, 2)
-  freight_value                                     Decimal?            @default(0) @db.Decimal(18, 2)
-  insurance_value                                   Decimal?            @default(0) @db.Decimal(18, 2)
-  cif_value                                         Decimal?            @default(0) @db.Decimal(18, 2)
-  customs_fees                                      Decimal?            @default(0) @db.Decimal(18, 2)
-  storage_fees                                      Decimal?            @default(0) @db.Decimal(18, 2)
-  other_costs                                       Decimal?            @default(0) @db.Decimal(18, 2)
-  total_cost_brl                                    Decimal?            @default(0) @db.Decimal(18, 2)
-  di_number                                         String?             @db.VarChar(50)
-  di_date                                           DateTime?           @db.Date
-  notes                                             String?
-  company_id                                        String?             @db.Uuid
-  created_at                                        DateTime            @default(now()) @db.Timestamptz(6)
-  updated_at                                        DateTime            @default(now()) @db.Timestamptz(6)
-  exchange_contracts                                ExchangeContract[]
-  import_documents                                  import_documents[]
-  import_process_items                              ImportProcessItem[]
-  customs_brokers                                   CustomsBroker?      @relation(fields: [broker_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  cargo_types                                       CargoType?          @relation(fields: [cargo_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ports_import_processes_destination_port_idToports Port?               @relation("import_processes_destination_port_idToports", fields: [destination_port_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  incoterms                                         Incoterm?           @relation(fields: [incoterm_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ports_import_processes_origin_port_idToports      Port?               @relation("import_processes_origin_port_idToports", fields: [origin_port_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  suppliers                                         Supplier?           @relation(fields: [supplier_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  processNumber      String              @map("process_number") @db.VarChar(50)
+  reference          String?             @db.VarChar(100)
+  supplierId         String?             @map("supplier_id") @db.Uuid
+  brokerId           String?             @map("broker_id") @db.Uuid
+  incotermId         String?             @map("incoterm_id") @db.Uuid
+  cargoTypeId        String?             @map("cargo_type_id") @db.Uuid
+  originPortId       String?             @map("origin_port_id") @db.Uuid
+  destinationPortId  String?             @map("destination_port_id") @db.Uuid
+  status             ImportStatus        @default(DRAFT)
+  orderDate          DateTime?           @map("order_date") @db.Date
+  etd                DateTime?           @db.Date
+  eta                DateTime?           @db.Date
+  actualDeparture    DateTime?           @map("actual_departure") @db.Date
+  actualArrival      DateTime?           @map("actual_arrival") @db.Date
+  clearanceDate      DateTime?           @map("clearance_date") @db.Date
+  deliveryDate       DateTime?           @map("delivery_date") @db.Date
+  vesselName         String?             @map("vessel_name") @db.VarChar(200)
+  voyageNumber       String?             @map("voyage_number") @db.VarChar(50)
+  blNumber           String?             @map("bl_number") @db.VarChar(100)
+  containerNumbers   String?             @map("container_numbers")
+  currency           String?             @default("USD") @db.VarChar(3)
+  fobValue           Decimal?            @default(0) @map("fob_value") @db.Decimal(18, 2)
+  freightValue       Decimal?            @default(0) @map("freight_value") @db.Decimal(18, 2)
+  insuranceValue     Decimal?            @default(0) @map("insurance_value") @db.Decimal(18, 2)
+  cifValue           Decimal?            @default(0) @map("cif_value") @db.Decimal(18, 2)
+  customsFees        Decimal?            @default(0) @map("customs_fees") @db.Decimal(18, 2)
+  storageFees        Decimal?            @default(0) @map("storage_fees") @db.Decimal(18, 2)
+  otherCosts         Decimal?            @default(0) @map("other_costs") @db.Decimal(18, 2)
+  totalCostBrl       Decimal?            @default(0) @map("total_cost_brl") @db.Decimal(18, 2)
+  diNumber           String?             @map("di_number") @db.VarChar(50)
+  diDate             DateTime?           @map("di_date") @db.Date
+  notes              String?
+  companyId          String?             @map("company_id") @db.Uuid
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  exchangeContracts   ExchangeContract[]
+  importDocuments     import_documents[]
+  importProcessItems  ImportProcessItem[]
+  importProcessEvents ImportProcessEvent[]
+  importProcessCosts  ImportProcessCost[]
+  customsBroker       CustomsBroker?      @relation(fields: [brokerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cargoType          CargoType?          @relation(fields: [cargoTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  destinationPort    Port?               @relation("import_processes_destination_port_idToports", fields: [destinationPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  incoterm           Incoterm?           @relation(fields: [incotermId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  originPort         Port?               @relation("import_processes_origin_port_idToports", fields: [originPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier           Supplier?           @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([process_number, company_id], map: "unique_process_number")
-  @@index([broker_id], map: "idx_import_processes_broker")
-  @@index([cargo_type_id], map: "idx_import_processes_cargo_type")
-  @@index([company_id], map: "idx_import_processes_company")
+  @@unique([processNumber, companyId], map: "unique_process_number")
+  @@index([brokerId], map: "idx_import_processes_broker")
+  @@index([cargoTypeId], map: "idx_import_processes_cargo_type")
+  @@index([companyId], map: "idx_import_processes_company")
   @@index([eta, etd], map: "idx_import_processes_dates")
-  @@index([destination_port_id], map: "idx_import_processes_dest_port")
-  @@index([incoterm_id], map: "idx_import_processes_incoterm")
-  @@index([origin_port_id], map: "idx_import_processes_origin_port")
+  @@index([destinationPortId], map: "idx_import_processes_dest_port")
+  @@index([incotermId], map: "idx_import_processes_incoterm")
+  @@index([originPortId], map: "idx_import_processes_origin_port")
   @@index([status], map: "idx_import_processes_status")
-  @@index([supplier_id], map: "idx_import_processes_supplier")
+  @@index([supplierId], map: "idx_import_processes_supplier")
   @@map("import_processes")
 }
 
 model ImportProcessItem {
-  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  import_process_id String         @db.Uuid
-  material_id       String?        @db.Uuid
-  purchase_order_id String?        @db.Uuid
-  description       String?        @db.VarChar(500)
-  ncm_code          String?        @db.VarChar(10)
-  quantity          Decimal        @default(0) @db.Decimal(18, 4)
-  unit              String?        @db.VarChar(10)
-  unit_price        Decimal?       @default(0) @db.Decimal(18, 6)
-  total_price       Decimal?       @default(0) @db.Decimal(18, 2)
-  ii_percent        Decimal?       @default(0) @db.Decimal(5, 2)
-  ii_value          Decimal?       @default(0) @db.Decimal(18, 2)
-  ipi_percent       Decimal?       @default(0) @db.Decimal(5, 2)
-  ipi_value         Decimal?       @default(0) @db.Decimal(18, 2)
-  pis_percent       Decimal?       @default(0) @db.Decimal(5, 2)
-  pis_value         Decimal?       @default(0) @db.Decimal(18, 2)
-  cofins_percent    Decimal?       @default(0) @db.Decimal(5, 2)
-  cofins_value      Decimal?       @default(0) @db.Decimal(18, 2)
-  icms_percent      Decimal?       @default(0) @db.Decimal(5, 2)
-  icms_value        Decimal?       @default(0) @db.Decimal(18, 2)
-  total_taxes       Decimal?       @default(0) @db.Decimal(18, 2)
-  landed_cost       Decimal?       @default(0) @db.Decimal(18, 2)
-  created_at        DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime       @default(now()) @db.Timestamptz(6)
-  import_processes  ImportProcess  @relation(fields: [import_process_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  materials         Material?      @relation(fields: [material_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  purchase_orders   PurchaseOrder? @relation(fields: [purchase_order_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String         @map("import_process_id") @db.Uuid
+  materialId      String?        @map("material_id") @db.Uuid
+  purchaseOrderId String?        @map("purchase_order_id") @db.Uuid
+  description     String?        @db.VarChar(500)
+  ncmCode         String?        @map("ncm_code") @db.VarChar(10)
+  quantity        Decimal        @default(0) @db.Decimal(18, 4)
+  unit            String?        @db.VarChar(10)
+  unitPrice       Decimal?       @default(0) @map("unit_price") @db.Decimal(18, 6)
+  totalPrice      Decimal?       @default(0) @map("total_price") @db.Decimal(18, 2)
+  iiPercent       Decimal?       @default(0) @map("ii_percent") @db.Decimal(5, 2)
+  iiValue         Decimal?       @default(0) @map("ii_value") @db.Decimal(18, 2)
+  ipiPercent      Decimal?       @default(0) @map("ipi_percent") @db.Decimal(5, 2)
+  ipiValue        Decimal?       @default(0) @map("ipi_value") @db.Decimal(18, 2)
+  pisPercent      Decimal?       @default(0) @map("pis_percent") @db.Decimal(5, 2)
+  pisValue        Decimal?       @default(0) @map("pis_value") @db.Decimal(18, 2)
+  cofinsPercent   Decimal?       @default(0) @map("cofins_percent") @db.Decimal(5, 2)
+  cofinsValue     Decimal?       @default(0) @map("cofins_value") @db.Decimal(18, 2)
+  icmsPercent     Decimal?       @default(0) @map("icms_percent") @db.Decimal(5, 2)
+  icmsValue       Decimal?       @default(0) @map("icms_value") @db.Decimal(18, 2)
+  totalTaxes      Decimal?       @default(0) @map("total_taxes") @db.Decimal(18, 2)
+  landedCost      Decimal?       @default(0) @map("landed_cost") @db.Decimal(18, 2)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
+  importProcess   ImportProcess  @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  material        Material?      @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([material_id], map: "idx_import_process_items_material")
-  @@index([import_process_id], map: "idx_import_process_items_process")
-  @@index([purchase_order_id], map: "idx_import_process_items_purchase_order")
+  @@index([materialId], map: "idx_import_process_items_material")
+  @@index([importProcessId], map: "idx_import_process_items_process")
+  @@index([purchaseOrderId], map: "idx_import_process_items_purchase_order")
   @@map("import_process_items")
 }
 
-model ExchangeContract {
-  id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  contract_number       String                @db.VarChar(100)
-  bank_account_id       String                @db.Uuid
-  process_id            String?               @db.Uuid
-  foreign_value         Decimal               @db.Decimal(15, 2)
-  foreign_currency      String                @default("USD") @db.VarChar(3)
-  contract_rate         Decimal               @db.Decimal(10, 6)
-  brl_value             Decimal               @db.Decimal(15, 2)
-  contract_date         DateTime              @db.Date
-  maturity_date         DateTime              @db.Date
-  liquidation_date      DateTime?             @db.Date
-  liquidated_value      Decimal?              @db.Decimal(15, 2)
-  liquidation_rate      Decimal?              @db.Decimal(10, 6)
-  exchange_variation    Decimal?              @db.Decimal(15, 2)
-  status                ExchangeStatus        @default(OPEN)
-  notes                 String?
-  company_id            String                @db.Uuid
-  created_at            DateTime              @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime              @default(now()) @db.Timestamptz(6)
-  bank_accounts         BankAccount           @relation(fields: [bank_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  import_processes      ImportProcess?        @relation(fields: [process_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  exchange_liquidations ExchangeLiquidation[]
+model ImportProcessEvent {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String        @map("import_process_id") @db.Uuid
+  eventType       String        @map("event_type") @db.VarChar(50)
+  eventDate       DateTime      @map("event_date") @db.Timestamptz(6)
+  description     String?
+  userId          String?       @map("user_id") @db.Uuid
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  importProcess   ImportProcess @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([contract_number, company_id], map: "unique_contract_number_company")
-  @@index([bank_account_id], map: "idx_exchange_contracts_bank")
-  @@index([company_id], map: "idx_exchange_contracts_company")
-  @@index([maturity_date], map: "idx_exchange_contracts_maturity")
-  @@index([process_id], map: "idx_exchange_contracts_process")
+  @@index([importProcessId], map: "idx_import_process_events_process")
+  @@index([eventDate], map: "idx_import_process_events_date")
+  @@map("import_process_events")
+}
+
+model ImportProcessCost {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String        @map("import_process_id") @db.Uuid
+  costType        String        @map("cost_type") @db.VarChar(50)
+  description     String
+  value           Decimal       @db.Decimal(15, 2)
+  currency        String        @default("BRL") @db.VarChar(3)
+  isEstimated     Boolean       @default(true) @map("is_estimated")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+  importProcess   ImportProcess @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([importProcessId], map: "idx_import_process_costs_process")
+  @@map("import_process_costs")
+}
+
+model ExchangeContract {
+  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractNumber       String                @map("contract_number") @db.VarChar(100)
+  bankAccountId        String                @map("bank_account_id") @db.Uuid
+  processId            String?               @map("process_id") @db.Uuid
+  foreignValue         Decimal               @map("foreign_value") @db.Decimal(15, 2)
+  foreignCurrency      String                @default("USD") @map("foreign_currency") @db.VarChar(3)
+  contractRate         Decimal               @map("contract_rate") @db.Decimal(10, 6)
+  brlValue             Decimal               @map("brl_value") @db.Decimal(15, 2)
+  contractDate         DateTime              @map("contract_date") @db.Date
+  maturityDate         DateTime              @map("maturity_date") @db.Date
+  liquidationDate      DateTime?             @map("liquidation_date") @db.Date
+  liquidatedValue      Decimal?              @map("liquidated_value") @db.Decimal(15, 2)
+  liquidationRate      Decimal?              @map("liquidation_rate") @db.Decimal(10, 6)
+  exchangeVariation    Decimal?              @map("exchange_variation") @db.Decimal(15, 2)
+  status               ExchangeStatus        @default(OPEN)
+  notes                String?
+  companyId            String                @map("company_id") @db.Uuid
+  createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  bankAccount          BankAccount           @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  importProcess        ImportProcess?        @relation(fields: [processId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  exchangeLiquidations ExchangeLiquidation[]
+
+  @@unique([contractNumber, companyId], map: "unique_contract_number_company")
+  @@index([bankAccountId], map: "idx_exchange_contracts_bank")
+  @@index([companyId], map: "idx_exchange_contracts_company")
+  @@index([maturityDate], map: "idx_exchange_contracts_maturity")
+  @@index([processId], map: "idx_exchange_contracts_process")
   @@index([status], map: "idx_exchange_contracts_status")
   @@map("exchange_contracts")
 }
 
 model ExchangeLiquidation {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  contract_id        String           @db.Uuid
-  foreign_value      Decimal          @db.Decimal(15, 2)
-  liquidation_rate   Decimal          @db.Decimal(10, 6)
-  brl_value          Decimal          @db.Decimal(15, 2)
-  variation          Decimal          @db.Decimal(15, 2)
-  liquidation_date   DateTime         @db.Date
-  notes              String?
-  created_at         DateTime         @default(now()) @db.Timestamptz(6)
-  exchange_contracts ExchangeContract @relation(fields: [contract_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractId       String           @map("contract_id") @db.Uuid
+  foreignValue     Decimal          @map("foreign_value") @db.Decimal(15, 2)
+  liquidationRate  Decimal          @map("liquidation_rate") @db.Decimal(10, 6)
+  brlValue         Decimal          @map("brl_value") @db.Decimal(15, 2)
+  variation        Decimal          @db.Decimal(15, 2)
+  liquidationDate  DateTime         @map("liquidation_date") @db.Date
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  exchangeContract ExchangeContract @relation(fields: [contractId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([contract_id], map: "idx_exchange_liquidations_contract")
-  @@index([liquidation_date], map: "idx_exchange_liquidations_date")
+  @@index([contractId], map: "idx_exchange_liquidations_contract")
+  @@index([liquidationDate], map: "idx_exchange_liquidations_date")
   @@map("exchange_liquidations")
 }
 

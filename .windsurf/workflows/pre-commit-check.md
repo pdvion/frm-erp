@@ -56,6 +56,16 @@ Se QUALQUER comando falhar, **NÃO FAÇA COMMIT**. Corrija os erros primeiro.
 - [ ] Usar `hireDate` em vez de `admissionDate` para Employee
 - [ ] Converter `code` (number) para String quando necessário
 - [ ] Após mudanças no schema: `pnpm prisma generate`
+- [ ] **NUNCA usar snake_case direto** - sempre camelCase + `@map("snake_case")`
+- [ ] Verificar convenções: `/prisma-conventions`
+
+### Prisma Schema - Validação Obrigatória
+Antes de commitar mudanças no schema, verificar campos snake_case sem @map:
+// turbo
+```bash
+grep -E "^\s+[a-z]+_[a-z]+\s+\w+" prisma/schema.prisma | grep -v "@map" | head -10
+```
+Se retornar resultados, corrigir para camelCase + @map antes de commitar.
 
 ### TypeScript - tRPC Routers
 - [ ] Verificar se métodos chamados existem no router

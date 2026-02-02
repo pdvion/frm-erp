@@ -143,14 +143,14 @@ export default function VacationsPage() {
                         {vacation.enjoyedDays} dias
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-theme-secondary">
-                        {vacation.soldDays > 0 ? `${vacation.soldDays} dias` : "-"}
+                        {Number(vacation.soldDays || 0) > 0 ? `${vacation.soldDays} dias` : "-"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-theme">
-                        {formatCurrency(vacation.totalNet)}
+                        {formatCurrency(Number(vacation.totalNet || 0))}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[vacation.status]?.color || "bg-theme-tertiary"}`}>
-                          {statusConfig[vacation.status]?.label || vacation.status}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[vacation.status as keyof typeof statusConfig]?.color || "bg-theme-tertiary"}`}>
+                          {statusConfig[vacation.status as keyof typeof statusConfig]?.label || vacation.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">

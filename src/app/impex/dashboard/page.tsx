@@ -214,7 +214,7 @@ export default function ImpExDashboardPage() {
                   <p className="text-sm text-theme-muted">{arrival.supplier}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-theme">{arrival.destPort}</p>
+                  <p className="text-sm text-theme">{arrival.destinationPort}</p>
                   <p className="text-xs text-theme-muted">ETA: {formatDate(arrival.eta)}</p>
                 </div>
               </Link>
@@ -251,7 +251,7 @@ export default function ImpExDashboardPage() {
                     {STATUS_LABELS[process.status]?.label || process.status}
                   </span>
                   <p className="text-sm text-theme mt-1">
-                    {formatCurrency(process.invoiceValue, process.currency)}
+                    {formatCurrency(process.fobValue, process.currency ?? undefined)}
                   </p>
                 </div>
               </Link>

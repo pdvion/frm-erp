@@ -170,7 +170,7 @@ export const budgetRouter = createTRPCRouter({
             accountId: entry.accountId,
             costCenterId: entry.costCenterId,
             month: entry.month,
-            amount: entry.amount * multiplier,
+            amount: Number(entry.amount) * multiplier,
             notes: entry.notes,
           })),
         });
@@ -450,8 +450,8 @@ export const budgetRouter = createTRPCRouter({
       const actualMap = new Map(actuals.map((a) => [a.accountId, a._sum.amount || 0]));
 
       const byAccount = accounts.map((account) => {
-        const budgeted = budgetMap.get(account.id) || 0;
-        const actual = actualMap.get(account.id) || 0;
+        const budgeted = Number(budgetMap.get(account.id) || 0);
+        const actual = Number(actualMap.get(account.id) || 0);
         const variance = budgeted - actual;
         const variancePercent = budgeted !== 0 ? (variance / budgeted) * 100 : 0;
 
@@ -465,8 +465,8 @@ export const budgetRouter = createTRPCRouter({
         };
       });
 
-      const totalBudgeted = byAccount.reduce((sum, a) => sum + a.budgeted, 0);
-      const totalActual = byAccount.reduce((sum, a) => sum + a.actual, 0);
+      const totalBudgeted = byAccount.reduce((sum, a) => sum + Number(a.budgeted), 0);
+      const totalActual = byAccount.reduce((sum, a) => sum + Number(a.actual), 0);
 
       return {
         year,
@@ -524,10 +524,10 @@ export const budgetRouter = createTRPCRouter({
         const month = i + 1;
         const budgeted = entries
           .filter((e) => e.month === month)
-          .reduce((sum, e) => sum + e.amount, 0);
+          .reduce((sum, e) => sum + Number(e.amount), 0);
         const actual = actuals
           .filter((a) => new Date(a.date).getMonth() + 1 === month)
-          .reduce((sum, a) => sum + a.amount, 0);
+          .reduce((sum, a) => sum + Number(a.amount), 0);
 
         return {
           month,

@@ -249,8 +249,8 @@ export default function ExchangeContractsPage() {
                   <tr key={contract.id} className="border-t border-theme hover:bg-theme-secondary/50">
                     <td className="py-3 px-4">
                       <p className="font-medium text-theme">{contract.contractNumber}</p>
-                      {contract.process && (
-                        <p className="text-xs text-theme-muted">PI: {contract.process.processNumber}</p>
+                      {contract.importProcess && (
+                        <p className="text-xs text-theme-muted">PI: {contract.importProcess.processNumber}</p>
                       )}
                     </td>
                     <td className="py-3 px-4 text-theme">

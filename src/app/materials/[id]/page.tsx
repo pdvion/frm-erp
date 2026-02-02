@@ -140,7 +140,7 @@ export default function MaterialDetailPage() {
                   {material.location || "-"}
                 </dd>
               </div>
-              {material.weight > 0 && (
+              {Number(material.weight || 0) > 0 && (
                 <div>
                   <dt className="text-sm text-theme-muted flex items-center gap-1">
                     <Scale className="w-3 h-3" /> Peso

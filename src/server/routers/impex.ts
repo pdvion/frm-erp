@@ -340,12 +340,12 @@ export const impexRouter = createTRPCRouter({
           where,
           include: {
             supplier: { select: { id: true, companyName: true } },
-            broker: { select: { id: true, name: true } },
+            customsBroker: { select: { id: true, name: true } },
             incoterm: { select: { id: true, code: true } },
             cargoType: { select: { id: true, code: true, name: true } },
             originPort: { select: { id: true, code: true, name: true } },
-            destPort: { select: { id: true, code: true, name: true } },
-            _count: { select: { items: true } },
+            destinationPort: { select: { id: true, code: true, name: true } },
+            _count: { select: { importProcessItems: true } },
           },
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
@@ -372,19 +372,20 @@ export const impexRouter = createTRPCRouter({
         where: { id: input.id },
         include: {
           supplier: true,
-          broker: true,
+          customsBroker: true,
           incoterm: true,
           cargoType: true,
           originPort: true,
-          destPort: true,
-          items: {
+          destinationPort: true,
+          importProcessItems: {
             include: {
               material: { select: { id: true, code: true, description: true } },
               purchaseOrder: { select: { id: true, code: true } },
             },
           },
-          events: { orderBy: { eventDate: "desc" } },
-          costs: true,
+          importProcessEvents: { orderBy: { eventDate: "desc" } },
+          importProcessCosts: true,
+          exchangeContracts: true,
         },
       });
     }),
@@ -399,14 +400,11 @@ export const impexRouter = createTRPCRouter({
         incotermId: z.string().uuid(),
         cargoTypeId: z.string().uuid(),
         originPortId: z.string().uuid(),
-        destPortId: z.string().uuid(),
-        invoiceValue: z.number().min(0),
+        destinationPortId: z.string().uuid(),
+        fobValue: z.number().min(0),
         currency: z.string().default("USD"),
-        exchangeRate: z.number().optional(),
         freightValue: z.number().optional(),
         insuranceValue: z.number().optional(),
-        invoiceDate: z.string().optional(),
-        invoiceNumber: z.string().optional(),
         etd: z.string().optional(),
         eta: z.string().optional(),
         blNumber: z.string().optional(),
@@ -423,14 +421,11 @@ export const impexRouter = createTRPCRouter({
           incotermId: input.incotermId,
           cargoTypeId: input.cargoTypeId,
           originPortId: input.originPortId,
-          destPortId: input.destPortId,
-          invoiceValue: input.invoiceValue,
+          destinationPortId: input.destinationPortId,
+          fobValue: input.fobValue,
           currency: input.currency,
-          exchangeRate: input.exchangeRate,
           freightValue: input.freightValue,
           insuranceValue: input.insuranceValue,
-          invoiceDate: input.invoiceDate ? new Date(input.invoiceDate) : null,
-          invoiceNumber: input.invoiceNumber,
           etd: input.etd ? new Date(input.etd) : null,
           eta: input.eta ? new Date(input.eta) : null,
           blNumber: input.blNumber,
@@ -451,21 +446,18 @@ export const impexRouter = createTRPCRouter({
         incotermId: z.string().uuid().optional(),
         cargoTypeId: z.string().uuid().optional(),
         originPortId: z.string().uuid().optional(),
-        destPortId: z.string().uuid().optional(),
+        destinationPortId: z.string().uuid().optional(),
         status: z.enum([
           "DRAFT", "PENDING_SHIPMENT", "IN_TRANSIT", "ARRIVED",
           "IN_CLEARANCE", "CLEARED", "DELIVERED", "CANCELLED"
         ]).optional(),
-        invoiceValue: z.number().min(0).optional(),
+        fobValue: z.number().min(0).optional(),
         currency: z.string().optional(),
-        exchangeRate: z.number().optional().nullable(),
         freightValue: z.number().optional().nullable(),
         insuranceValue: z.number().optional().nullable(),
-        invoiceDate: z.string().optional().nullable(),
-        invoiceNumber: z.string().optional().nullable(),
         etd: z.string().optional().nullable(),
         eta: z.string().optional().nullable(),
-        arrivalDate: z.string().optional().nullable(),
+        actualArrival: z.string().optional().nullable(),
         clearanceDate: z.string().optional().nullable(),
         blNumber: z.string().optional().nullable(),
         diNumber: z.string().optional().nullable(),
@@ -473,16 +465,15 @@ export const impexRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { id, invoiceDate, etd, eta, arrivalDate, clearanceDate, ...rest } = input;
+      const { id, etd, eta, actualArrival, clearanceDate, ...rest } = input;
       
       return ctx.prisma.importProcess.update({
         where: { id },
         data: {
           ...rest,
-          ...(invoiceDate !== undefined && { invoiceDate: invoiceDate ? new Date(invoiceDate) : null }),
           ...(etd !== undefined && { etd: etd ? new Date(etd) : null }),
           ...(eta !== undefined && { eta: eta ? new Date(eta) : null }),
-          ...(arrivalDate !== undefined && { arrivalDate: arrivalDate ? new Date(arrivalDate) : null }),
+          ...(actualArrival !== undefined && { actualArrival: actualArrival ? new Date(actualArrival) : null }),
           ...(clearanceDate !== undefined && { clearanceDate: clearanceDate ? new Date(clearanceDate) : null }),
         },
       });
@@ -517,13 +508,13 @@ export const impexRouter = createTRPCRouter({
       
       return ctx.prisma.importProcessItem.create({
         data: {
-          processId: input.processId,
+          importProcessId: input.processId,
           materialId: input.materialId,
           purchaseOrderId: input.purchaseOrderId,
           quantity: input.quantity,
           unitPrice: input.unitPrice,
           totalPrice,
-          ncm: input.ncm,
+          ncmCode: input.ncm,
           description: input.description,
         },
       });
@@ -555,7 +546,12 @@ export const impexRouter = createTRPCRouter({
       return ctx.prisma.importProcessItem.update({
         where: { id },
         data: {
-          ...data,
+          materialId: data.materialId,
+          purchaseOrderId: data.purchaseOrderId,
+          ncmCode: data.ncm,
+          description: data.description,
+          quantity,
+          unitPrice,
           totalPrice,
         },
       });
@@ -585,7 +581,7 @@ export const impexRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.importProcessEvent.create({
         data: {
-          processId: input.processId,
+          importProcessId: input.processId,
           eventType: input.eventType,
           eventDate: new Date(input.eventDate),
           description: input.description,
@@ -618,7 +614,14 @@ export const impexRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.importProcessCost.create({
-        data: input,
+        data: {
+          importProcessId: input.processId,
+          costType: input.costType,
+          description: input.description,
+          value: input.value,
+          currency: input.currency,
+          isEstimated: input.isEstimated,
+        },
       });
     }),
 
@@ -688,8 +691,8 @@ export const impexRouter = createTRPCRouter({
           where,
           include: {
             bankAccount: { select: { id: true, name: true, bankName: true } },
-            process: { select: { id: true, processNumber: true } },
-            _count: { select: { liquidations: true } },
+            importProcess: { select: { id: true, processNumber: true } },
+            _count: { select: { exchangeLiquidations: true } },
           },
           orderBy: { maturityDate: "asc" },
           skip: (page - 1) * limit,
@@ -716,8 +719,8 @@ export const impexRouter = createTRPCRouter({
         where: { id: input.id },
         include: {
           bankAccount: true,
-          process: { select: { id: true, processNumber: true, supplier: { select: { companyName: true } } } },
-          liquidations: { orderBy: { liquidationDate: "desc" } },
+          importProcess: { select: { id: true, processNumber: true, supplier: { select: { companyName: true } } } },
+          exchangeLiquidations: { orderBy: { liquidationDate: "desc" } },
         },
       });
     }),
@@ -998,7 +1001,7 @@ export const impexRouter = createTRPCRouter({
         select: {
           id: true,
           status: true,
-          invoiceValue: true,
+          fobValue: true,
           currency: true,
           eta: true,
           createdAt: true,
@@ -1037,7 +1040,7 @@ export const impexRouter = createTRPCRouter({
         },
         include: {
           supplier: { select: { companyName: true } },
-          destPort: { select: { code: true, name: true } },
+          destinationPort: { select: { code: true, name: true } },
         },
         orderBy: { eta: "asc" },
         take: 10,
@@ -1050,7 +1053,7 @@ export const impexRouter = createTRPCRouter({
     
     const totalValueInTransit = processes
       .filter(p => p.status === "IN_TRANSIT")
-      .reduce((sum, p) => sum + Number(p.invoiceValue), 0);
+      .reduce((sum, p) => sum + Number(p.fobValue || 0), 0);
 
     const statusBreakdown = processes.reduce((acc: Record<string, number>, p) => {
       acc[p.status] = (acc[p.status] || 0) + 1;
@@ -1082,7 +1085,7 @@ export const impexRouter = createTRPCRouter({
         processNumber: p.processNumber,
         supplier: p.supplier?.companyName,
         status: p.status,
-        invoiceValue: Number(p.invoiceValue),
+        fobValue: Number(p.fobValue || 0),
         currency: p.currency,
         createdAt: p.createdAt,
       })),
@@ -1090,9 +1093,9 @@ export const impexRouter = createTRPCRouter({
         id: p.id,
         processNumber: p.processNumber,
         supplier: p.supplier?.companyName,
-        destPort: p.destPort?.code,
+        destinationPort: p.destinationPort?.code,
         eta: p.eta,
-        invoiceValue: Number(p.invoiceValue),
+        fobValue: Number(p.fobValue || 0),
         currency: p.currency,
       })),
     };
@@ -1124,18 +1127,18 @@ export const impexRouter = createTRPCRouter({
         },
         include: {
           supplier: { select: { companyName: true } },
-          broker: { select: { name: true } },
+          customsBroker: { select: { name: true } },
           incoterm: { select: { code: true } },
           originPort: { select: { code: true } },
-          destPort: { select: { code: true } },
-          _count: { select: { items: true, costs: true } },
+          destinationPort: { select: { code: true } },
+          _count: { select: { importProcessItems: true, importProcessCosts: true } },
         },
         orderBy: { createdAt: "desc" },
       });
 
       const summary = {
         totalProcesses: processes.length,
-        totalValue: processes.reduce((sum, p) => sum + Number(p.invoiceValue), 0),
+        totalValue: processes.reduce((sum, p) => sum + Number(p.fobValue || 0), 0),
         byStatus: processes.reduce((acc: Record<string, number>, p) => {
           acc[p.status] = (acc[p.status] || 0) + 1;
           return acc;
@@ -1144,7 +1147,7 @@ export const impexRouter = createTRPCRouter({
           const name = p.supplier?.companyName || "Sem fornecedor";
           if (!acc[name]) acc[name] = { count: 0, value: 0 };
           acc[name].count++;
-          acc[name].value += Number(p.invoiceValue);
+          acc[name].value += Number(p.fobValue || 0);
           return acc;
         }, {}),
       };
@@ -1154,15 +1157,15 @@ export const impexRouter = createTRPCRouter({
           id: p.id,
           processNumber: p.processNumber,
           supplier: p.supplier?.companyName,
-          broker: p.broker?.name,
+          customsBroker: p.customsBroker?.name,
           incoterm: p.incoterm?.code,
-          route: `${p.originPort?.code} → ${p.destPort?.code}`,
-          invoiceValue: Number(p.invoiceValue),
+          route: `${p.originPort?.code} → ${p.destinationPort?.code}`,
+          fobValue: Number(p.fobValue || 0),
           currency: p.currency,
           status: p.status,
           eta: p.eta,
-          itemsCount: p._count.items,
-          costsCount: p._count.costs,
+          itemsCount: p._count.importProcessItems,
+          costsCount: p._count.importProcessCosts,
           createdAt: p.createdAt,
         })),
         summary,
@@ -1182,13 +1185,13 @@ export const impexRouter = createTRPCRouter({
 
       const costs = await ctx.prisma.importProcessCost.findMany({
         where: {
-          process: { companyId: ctx.companyId },
-          ...(processId && { processId }),
+          importProcess: { companyId: ctx.companyId },
+          ...(processId && { importProcessId: processId }),
           ...(dateFrom && { createdAt: { gte: new Date(dateFrom) } }),
           ...(dateTo && { createdAt: { lte: new Date(dateTo) } }),
         },
         include: {
-          process: { select: { processNumber: true, invoiceValue: true, currency: true } },
+          importProcess: { select: { processNumber: true, fobValue: true, currency: true } },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -1203,7 +1206,7 @@ export const impexRouter = createTRPCRouter({
       return {
         costs: costs.map(c => ({
           id: c.id,
-          processNumber: c.process.processNumber,
+          processNumber: c.importProcess.processNumber,
           costType: c.costType,
           description: c.description,
           value: Number(c.value),
@@ -1239,8 +1242,8 @@ export const impexRouter = createTRPCRouter({
         },
         include: {
           bankAccount: { select: { name: true, bankName: true } },
-          process: { select: { processNumber: true } },
-          _count: { select: { liquidations: true } },
+          importProcess: { select: { processNumber: true } },
+          _count: { select: { exchangeLiquidations: true } },
         },
         orderBy: { contractDate: "desc" },
       });
@@ -1264,14 +1267,14 @@ export const impexRouter = createTRPCRouter({
           id: c.id,
           contractNumber: c.contractNumber,
           bank: c.bankAccount?.bankName || c.bankAccount?.name,
-          processNumber: c.process?.processNumber,
+          processNumber: c.importProcess?.processNumber,
           foreignValue: Number(c.foreignValue),
           foreignCurrency: c.foreignCurrency,
           contractRate: Number(c.contractRate),
           brlValue: Number(c.brlValue),
           status: c.status,
           variation: Number(c.exchangeVariation || 0),
-          liquidationsCount: c._count.liquidations,
+          liquidationsCount: c._count.exchangeLiquidations,
           contractDate: c.contractDate,
           maturityDate: c.maturityDate,
         })),

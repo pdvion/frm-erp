@@ -470,7 +470,7 @@ class TaskService {
     const acceptedAt = task.acceptedAt;
     const completedAt = task.completedAt;
 
-    const timeToAccept = acceptedAt
+    const timeToAccept = acceptedAt && createdAt
       ? (acceptedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60)
       : null;
 
@@ -478,8 +478,8 @@ class TaskService {
       ? (completedAt.getTime() - acceptedAt.getTime()) / (1000 * 60 * 60)
       : null;
 
-    const slaAcceptMet = timeToAccept !== null && timeToAccept <= task.slaAcceptHours;
-    const slaResolveMet = timeToComplete !== null && timeToComplete <= task.slaResolveHours;
+    const slaAcceptMet = timeToAccept !== null && task.slaAcceptHours !== null && timeToAccept <= task.slaAcceptHours;
+    const slaResolveMet = timeToComplete !== null && task.slaResolveHours !== null && timeToComplete <= task.slaResolveHours;
 
     return {
       timeToAcceptHours: timeToAccept,

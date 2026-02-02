@@ -305,12 +305,12 @@ export const benefitsRouter = createTRPCRouter({
         select: { salary: true },
       });
 
-      const totalMonthly = vouchers.reduce((sum: number, v: { fareValue: number; quantityPerDay: number; workingDays: number }) => {
-        return sum + (v.fareValue * v.quantityPerDay * v.workingDays);
+      const totalMonthly = vouchers.reduce((sum, v) => {
+        return sum + (v.fareValue * (v.quantityPerDay || 0) * (v.workingDays || 0));
       }, 0);
 
       // Desconto máximo de 6% do salário (CLT)
-      const maxDiscount = (employee?.salary || 0) * VT_DISCOUNT_PERCENTAGE;
+      const maxDiscount = Number(employee?.salary || 0) * VT_DISCOUNT_PERCENTAGE;
       const employeeDiscount = Math.min(totalMonthly, maxDiscount);
       const companyContribution = totalMonthly - employeeDiscount;
 

@@ -50,7 +50,7 @@ export const qualityRouter = createTRPCRouter({
           include: {
             material: { select: { id: true, code: true, description: true } },
             productionOrder: { select: { id: true, code: true } },
-            _count: { select: { items: true, nonConformities: true } },
+            _count: { select: { items: true } },
           },
           orderBy: { inspectionDate: "desc" },
           skip,
@@ -76,7 +76,6 @@ export const qualityRouter = createTRPCRouter({
           material: true,
           productionOrder: { select: { id: true, code: true, status: true } },
           items: { orderBy: { createdAt: "asc" } },
-          nonConformities: { orderBy: { createdAt: "desc" } },
         },
       });
 
@@ -186,7 +185,7 @@ export const qualityRouter = createTRPCRouter({
         where: { inspectionId: item.inspectionId },
       });
 
-      const pendingItems = allItems.filter((i: { result: string }) => i.result === "PENDING");
+      const pendingItems = allItems.filter((i) => i.result === "PENDING");
       if (pendingItems.length === 0 && item.inspection.status === "PENDING") {
         await prisma.qualityInspection.update({
           where: { id: item.inspectionId },

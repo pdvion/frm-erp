@@ -226,18 +226,18 @@ export const approvalsRouter = createTRPCRouter({
 
       const where: Prisma.PaymentRequestWhereInput = {
         companyId: ctx.companyId,
-        ...(status && { status }),
-        ...(urgency && { urgency }),
-        ...(search && {
-          OR: [
-            { code: { contains: search, mode: "insensitive" as const } },
-            { justification: { contains: search, mode: "insensitive" as const } },
-            { payable: { supplier: { companyName: { contains: search, mode: "insensitive" as const } } } },
-          ],
-        }),
-        ...(dateFrom && { requestedAt: { gte: dateFrom } }),
-        ...(dateTo && { requestedAt: { lte: dateTo } }),
       };
+      if (status) where.status = status as Prisma.EnumPaymentRequestStatusFilter;
+      if (urgency) where.urgency = urgency;
+      if (search) {
+        where.OR = [
+          { code: { contains: search, mode: "insensitive" } },
+          { justification: { contains: search, mode: "insensitive" } },
+          { payable: { supplier: { companyName: { contains: search, mode: "insensitive" } } } },
+        ];
+      }
+      if (dateFrom) where.requestedAt = { gte: dateFrom };
+      if (dateTo) where.requestedAt = { ...where.requestedAt as object, lte: dateTo };
 
       const [requests, total] = await Promise.all([
         ctx.prisma.paymentRequest.findMany({

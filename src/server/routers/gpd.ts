@@ -236,12 +236,15 @@ export const gpdRouter = createTRPCRouter({
       let status: "BELOW" | "ON_TARGET" | "ABOVE" = "ON_TARGET";
 
       if (target) {
+        const targetNum = Number(target);
+        const targetMin = Number(indicator.targetMin || targetNum * 0.9);
+        const targetMax = Number(indicator.targetMax || targetNum * 1.1);
         if (indicator.polarity === "HIGHER") {
-          if (input.value < (indicator.targetMin || target * 0.9)) status = "BELOW";
-          else if (input.value >= (indicator.targetMax || target * 1.1)) status = "ABOVE";
+          if (input.value < targetMin) status = "BELOW";
+          else if (input.value >= targetMax) status = "ABOVE";
         } else {
-          if (input.value > (indicator.targetMax || target * 1.1)) status = "BELOW";
-          else if (input.value <= (indicator.targetMin || target * 0.9)) status = "ABOVE";
+          if (input.value > targetMax) status = "BELOW";
+          else if (input.value <= targetMin) status = "ABOVE";
         }
       }
 
@@ -548,12 +551,16 @@ export const gpdRouter = createTRPCRouter({
       const indicatorStatus = indicators.map((ind) => {
         let status: "BELOW" | "ON_TARGET" | "ABOVE" = "ON_TARGET";
         if (ind.currentValue !== null && ind.targetExpected !== null) {
+          const currentVal = Number(ind.currentValue);
+          const targetExp = Number(ind.targetExpected);
+          const targetMin = Number(ind.targetMin || targetExp * 0.9);
+          const targetMax = Number(ind.targetMax || targetExp * 1.1);
           if (ind.polarity === "HIGHER") {
-            if (ind.currentValue < (ind.targetMin || ind.targetExpected * 0.9)) status = "BELOW";
-            else if (ind.currentValue >= (ind.targetMax || ind.targetExpected * 1.1)) status = "ABOVE";
+            if (currentVal < targetMin) status = "BELOW";
+            else if (currentVal >= targetMax) status = "ABOVE";
           } else {
-            if (ind.currentValue > (ind.targetMax || ind.targetExpected * 1.1)) status = "BELOW";
-            else if (ind.currentValue <= (ind.targetMin || ind.targetExpected * 0.9)) status = "ABOVE";
+            if (currentVal > targetMax) status = "BELOW";
+            else if (currentVal <= targetMin) status = "ABOVE";
           }
         }
         return { ...ind, status };

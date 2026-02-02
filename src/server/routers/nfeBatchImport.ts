@@ -462,7 +462,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
         try {
           const parsed = parseNFeXml(file.xmlContent);
 
-          const existing = await prisma.issuedInvoice.findUnique({
+          const existing = await prisma.issuedInvoice.findFirst({
             where: { accessKey: parsed.chaveAcesso },
           });
 

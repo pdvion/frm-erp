@@ -255,14 +255,14 @@ export const thirteenthRouter = createTRPCRouter({
         year: input.year,
         firstInstallment: {
           count: firstInstallment.length,
-          totalGross: firstInstallment.reduce((sum, i) => sum + i.grossValue, 0),
-          totalNet: firstInstallment.reduce((sum, i) => sum + i.netValue, 0),
+          totalGross: firstInstallment.reduce((sum, i) => sum + Number(i.grossValue || 0), 0),
+          totalNet: firstInstallment.reduce((sum, i) => sum + Number(i.netValue || 0), 0),
           paid: firstInstallment.filter(i => i.status === "PAID").length,
         },
         secondInstallment: {
           count: secondInstallment.length,
-          totalGross: secondInstallment.reduce((sum, i) => sum + i.grossValue, 0),
-          totalNet: secondInstallment.reduce((sum, i) => sum + i.netValue, 0),
+          totalGross: secondInstallment.reduce((sum, i) => sum + Number(i.grossValue || 0), 0),
+          totalNet: secondInstallment.reduce((sum, i) => sum + Number(i.netValue || 0), 0),
           paid: secondInstallment.filter(i => i.status === "PAID").length,
         },
       };

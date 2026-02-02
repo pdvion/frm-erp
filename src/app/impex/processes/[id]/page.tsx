@@ -130,7 +130,7 @@ export default function ImportProcessDetailPage({
               </div>
               <div>
                 <span className="text-sm text-theme-muted">Despachante</span>
-                <p className="text-theme font-medium">{process.broker?.name || "-"}</p>
+                <p className="text-theme font-medium">{process.customsBroker?.name || "-"}</p>
               </div>
               <div>
                 <span className="text-sm text-theme-muted">Incoterm</span>
@@ -162,9 +162,9 @@ export default function ImportProcessDetailPage({
               </div>
               <div className="text-2xl text-theme-muted">→</div>
               <div className="flex-1 p-4 bg-theme-secondary rounded-lg text-center">
-                <p className="text-lg font-bold text-theme">{process.destPort?.code}</p>
-                <p className="text-sm text-theme-muted">{process.destPort?.name}</p>
-                <p className="text-xs text-theme-muted">{process.destPort?.country}</p>
+                <p className="text-lg font-bold text-theme">{process.destinationPort?.code}</p>
+                <p className="text-sm text-theme-muted">{process.destinationPort?.name}</p>
+                <p className="text-xs text-theme-muted">{process.destinationPort?.country}</p>
               </div>
             </div>
           </div>
@@ -173,10 +173,10 @@ export default function ImportProcessDetailPage({
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-theme flex items-center gap-2">
                 <Package className="w-4 h-4" />
-                Itens ({process.items?.length || 0})
+                Itens ({process.importProcessItems?.length || 0})
               </h3>
             </div>
-            {process.items?.length ? (
+            {process.importProcessItems?.length ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -190,18 +190,18 @@ export default function ImportProcessDetailPage({
                     </tr>
                   </thead>
                   <tbody>
-                    {process.items.map((item) => (
+                    {process.importProcessItems.map((item) => (
                       <tr key={item.id} className="border-b border-theme">
                         <td className="py-2 text-theme">
                           {item.material?.code} - {item.material?.description || item.description}
                         </td>
-                        <td className="py-2 text-theme">{item.ncm || "-"}</td>
+                        <td className="py-2 text-theme">{item.ncmCode || "-"}</td>
                         <td className="py-2 text-right text-theme">{Number(item.quantity)}</td>
                         <td className="py-2 text-right text-theme">
-                          {formatCurrency(Number(item.unitPrice), process.currency)}
+                          {formatCurrency(Number(item.unitPrice), process.currency ?? undefined)}
                         </td>
                         <td className="py-2 text-right text-theme font-medium">
-                          {formatCurrency(Number(item.totalPrice), process.currency)}
+                          {formatCurrency(Number(item.totalPrice), process.currency ?? undefined)}
                         </td>
                         <td className="py-2">
                           <Button
@@ -226,12 +226,12 @@ export default function ImportProcessDetailPage({
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-theme flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
-                Custos ({process.costs?.length || 0})
+                Custos ({process.importProcessCosts?.length || 0})
               </h3>
             </div>
-            {process.costs?.length ? (
+            {process.importProcessCosts?.length ? (
               <div className="space-y-2">
-                {process.costs.map((cost) => (
+                {process.importProcessCosts.map((cost) => (
                   <div
                     key={cost.id}
                     className="flex items-center justify-between p-3 bg-theme-secondary rounded-lg"
@@ -273,27 +273,21 @@ export default function ImportProcessDetailPage({
               <div className="flex justify-between">
                 <span className="text-theme-muted">Invoice</span>
                 <span className="text-theme font-medium">
-                  {formatCurrency(Number(process.invoiceValue), process.currency)}
+                  {formatCurrency(Number(process.fobValue || 0), process.currency ?? undefined)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-muted">Frete</span>
                 <span className="text-theme">
-                  {formatCurrency(process.freightValue ? Number(process.freightValue) : null, process.currency)}
+                  {formatCurrency(process.freightValue ? Number(process.freightValue) : null, process.currency ?? undefined)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-muted">Seguro</span>
                 <span className="text-theme">
-                  {formatCurrency(process.insuranceValue ? Number(process.insuranceValue) : null, process.currency)}
+                  {formatCurrency(process.insuranceValue ? Number(process.insuranceValue) : null, process.currency ?? undefined)}
                 </span>
               </div>
-              {process.exchangeRate && (
-                <div className="flex justify-between pt-2 border-t border-theme">
-                  <span className="text-theme-muted">Taxa de Câmbio</span>
-                  <span className="text-theme">{Number(process.exchangeRate).toFixed(4)}</span>
-                </div>
-              )}
             </div>
           </div>
 
@@ -305,7 +299,7 @@ export default function ImportProcessDetailPage({
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-theme-muted">Invoice</span>
-                <span className="text-theme">{formatDate(process.invoiceDate)}</span>
+                <span className="text-theme">{formatDate(process.orderDate)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-muted">ETD</span>
@@ -317,7 +311,7 @@ export default function ImportProcessDetailPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-muted">Chegada Real</span>
-                <span className="text-theme">{formatDate(process.arrivalDate)}</span>
+                <span className="text-theme">{formatDate(process.actualArrival)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-theme-muted">Desembaraço</span>
@@ -329,11 +323,11 @@ export default function ImportProcessDetailPage({
           <div className="bg-theme-card border border-theme rounded-lg p-6">
             <h3 className="font-semibold text-theme mb-4 flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Timeline ({process.events?.length || 0})
+              Timeline ({process.importProcessEvents?.length || 0})
             </h3>
-            {process.events?.length ? (
+            {process.importProcessEvents?.length ? (
               <div className="space-y-3">
-                {process.events.map((event) => (
+                {process.importProcessEvents.map((event: { id: string; eventType: string; eventDate: Date; description?: string | null }) => (
                   <div key={event.id} className="flex gap-3">
                     <div className="w-2 h-2 mt-2 rounded-full bg-blue-500" />
                     <div className="flex-1">

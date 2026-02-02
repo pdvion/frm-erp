@@ -197,17 +197,17 @@ export default function ThirteenthPage() {
                       {formatCurrency(item.grossValue)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                      {item.inssDeduction > 0 ? `-${formatCurrency(item.inssDeduction)}` : "-"}
+                      {Number(item.inssDeduction || 0) > 0 ? `-${formatCurrency(Number(item.inssDeduction))}` : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                      {item.irrfDeduction > 0 ? `-${formatCurrency(item.irrfDeduction)}` : "-"}
+                      {Number(item.irrfDeduction || 0) > 0 ? `-${formatCurrency(Number(item.irrfDeduction))}` : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-theme">
-                      {formatCurrency(item.netValue)}
+                      {formatCurrency(Number(item.netValue || 0))}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[item.status]?.color}`}>
-                        {statusConfig[item.status]?.label || item.status}
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[item.status as keyof typeof statusConfig]?.color}`}>
+                        {statusConfig[item.status as keyof typeof statusConfig]?.label || item.status}
                       </span>
                     </td>
                   </tr>

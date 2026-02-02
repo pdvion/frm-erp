@@ -210,7 +210,7 @@ export default function ApprovalsPage() {
                         <div className="mt-2 flex items-center gap-4 text-sm text-theme-muted">
                           <span className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4" />
-                            {formatCurrency(request.amount)}
+                            {formatCurrency(Number(request.amount))}
                           </span>
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />

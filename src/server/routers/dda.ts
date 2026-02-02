@@ -60,7 +60,9 @@ export const ddaRouter = createTRPCRouter({
       ]);
 
       const statsMap = stats.reduce((acc, s) => {
-        acc[s.status] = { count: s._count, total: Number(s._sum?.valorFinal || 0) };
+        if (s.status) {
+          acc[s.status] = { count: s._count, total: Number(s._sum?.valorFinal || 0) };
+        }
         return acc;
       }, {} as Record<string, { count: number; total: number }>);
 

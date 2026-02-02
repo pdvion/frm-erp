@@ -299,12 +299,15 @@ export const biRouter = createTRPCRouter({
       let status: "BELOW" | "ON_TARGET" | "ABOVE" = "ON_TARGET";
 
       if (target) {
+        const targetNum = Number(target);
+        const targetMin = Number(kpi.targetMin || targetNum * 0.9);
+        const targetMax = Number(kpi.targetMax || targetNum * 1.1);
         if (kpi.polarity === "HIGHER") {
-          if (input.value < (kpi.targetMin || target * 0.9)) status = "BELOW";
-          else if (input.value >= (kpi.targetMax || target * 1.1)) status = "ABOVE";
+          if (input.value < targetMin) status = "BELOW";
+          else if (input.value >= targetMax) status = "ABOVE";
         } else {
-          if (input.value > (kpi.targetMax || target * 1.1)) status = "BELOW";
-          else if (input.value <= (kpi.targetMin || target * 0.9)) status = "ABOVE";
+          if (input.value > targetMax) status = "BELOW";
+          else if (input.value <= targetMin) status = "ABOVE";
         }
       }
 

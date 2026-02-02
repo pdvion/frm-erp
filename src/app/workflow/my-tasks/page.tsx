@@ -131,7 +131,7 @@ function MyTasksContent() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-medium text-theme">{task.title}</h3>
-                      <PriorityBadge priority={task.priority} />
+                      <PriorityBadge priority={task.priority || "MEDIUM"} />
                     </div>
                     {task.description && (
                       <p className="text-sm text-theme-muted line-clamp-2">{task.description}</p>
@@ -144,7 +144,7 @@ function MyTasksContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <StatusBadge status={task.status} />
+                    <StatusBadge status={task.status || "PENDING"} />
                     <Link
                       href={`/workflow/tasks/${task.id}`}
                       className="p-2 text-violet-600 hover:bg-violet-100 rounded-lg"

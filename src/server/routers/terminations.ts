@@ -120,9 +120,11 @@ export const terminationsRouter = createTRPCRouter({
 
       if (!termination) throw new Error("Rescisão não encontrada ou sem permissão");
 
-      const { employee, type, terminationDate, baseSalary, noticePeriodDays, noticePeriodIndemnity } = termination;
+      const { employee, type, terminationDate, noticePeriodIndemnity } = termination;
+      const baseSalaryNum = Number(termination.baseSalary || 0);
+      const noticePeriodDaysNum = Number(termination.noticePeriodDays || 30);
       const hireDate = new Date(employee.hireDate);
-      const dailySalary = baseSalary / 30;
+      const dailySalary = baseSalaryNum / 30;
 
       // Saldo de salário (dias trabalhados no mês)
       const dayOfMonth = terminationDate.getDate();
@@ -131,30 +133,30 @@ export const terminationsRouter = createTRPCRouter({
       // Aviso prévio indenizado
       let noticePeriodValue = 0;
       if (noticePeriodIndemnity && type !== "RESIGNATION" && type !== "DISMISSAL_WITH_CAUSE") {
-        noticePeriodValue = dailySalary * noticePeriodDays;
+        noticePeriodValue = dailySalary * noticePeriodDaysNum;
       }
 
       // Férias vencidas (período aquisitivo completo)
       const monthsSinceHire = Math.floor((terminationDate.getTime() - hireDate.getTime()) / (30 * 24 * 60 * 60 * 1000));
       const completedPeriods = Math.floor(monthsSinceHire / 12);
-      const vacationBalance = completedPeriods > 0 ? baseSalary : 0;
+      const vacationBalanceCalc = completedPeriods > 0 ? baseSalaryNum : 0;
 
       // Férias proporcionais (meses do período aquisitivo atual)
       const monthsInCurrentPeriod = monthsSinceHire % 12;
-      const vacationProportional = (baseSalary / 12) * monthsInCurrentPeriod;
+      const vacationProportional = (baseSalaryNum / 12) * monthsInCurrentPeriod;
 
       // 1/3 de férias
-      const vacationOneThird = (vacationBalance + vacationProportional) / 3;
+      const vacationOneThird = (vacationBalanceCalc + vacationProportional) / 3;
 
       // 13º proporcional
       const monthsInYear = terminationDate.getMonth() + 1;
       let thirteenthProportional = 0;
       if (type !== "DISMISSAL_WITH_CAUSE") {
-        thirteenthProportional = (baseSalary / 12) * monthsInYear;
+        thirteenthProportional = (baseSalaryNum / 12) * monthsInYear;
       }
 
       // FGTS (8% do salário por mês)
-      const fgtsBalance = baseSalary * 0.08 * monthsSinceHire;
+      const fgtsBalance = baseSalaryNum * 0.08 * monthsSinceHire;
 
       // Multa FGTS
       let fgtsFine = 0;
@@ -165,7 +167,7 @@ export const terminationsRouter = createTRPCRouter({
       }
 
       // Total bruto
-      const totalGross = salaryBalance + noticePeriodValue + vacationBalance + 
+      const totalGross = salaryBalance + noticePeriodValue + vacationBalanceCalc + 
         vacationProportional + vacationOneThird + thirteenthProportional + fgtsFine;
 
       // Calcular INSS
@@ -198,7 +200,7 @@ export const terminationsRouter = createTRPCRouter({
           status: "CALCULATED",
           salaryBalance,
           noticePeriodValue,
-          vacationBalance,
+          vacationBalance: vacationBalanceCalc,
           vacationProportional,
           vacationOneThird,
           thirteenthProportional,

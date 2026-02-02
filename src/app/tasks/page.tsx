@@ -126,7 +126,7 @@ export default function TasksPage() {
   };
 
   const renderTaskCard = ({ item: task }: { item: NonNullable<typeof data>["tasks"][number]; onClick?: (item: NonNullable<typeof data>["tasks"][number]) => void }) => {
-    const priority = priorityConfig[task.priority];
+    const priority = priorityConfig[task.priority as keyof typeof priorityConfig];
     const overdue = isOverdue(task.deadline);
 
     const footer = (
@@ -327,9 +327,9 @@ export default function TasksPage() {
               </thead>
               <tbody className="divide-y divide-theme-table">
                 {data.tasks.map((task) => {
-                  const status = statusConfig[task.status];
-                  const priority = priorityConfig[task.priority];
-                  const targetType = targetTypeConfig[task.targetType];
+                  const status = statusConfig[task.status as keyof typeof statusConfig];
+                  const priority = priorityConfig[task.priority as keyof typeof priorityConfig];
+                  const targetType = targetTypeConfig[task.targetType as keyof typeof targetTypeConfig];
 
                   return (
                     <tr key={task.id} className="hover:bg-theme-hover">

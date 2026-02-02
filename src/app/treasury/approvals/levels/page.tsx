@@ -97,8 +97,8 @@ export default function ApprovalLevelsPage() {
       code: level.code,
       name: level.name,
       description: level.description || "",
-      minValue: level.minValue,
-      maxValue: level.maxValue,
+      minValue: Number(level.minValue),
+      maxValue: level.maxValue ? Number(level.maxValue) : null,
       requiresAllApprovers: level.requiresAllApprovers,
       approvers: level.approvers.map((a) => ({
         userId: a.userId,
@@ -424,8 +424,8 @@ export default function ApprovalLevelsPage() {
                       <div className="text-theme-secondary flex items-center gap-4 text-sm">
                         <span className="flex items-center gap-1">
                           <DollarSign className="h-3 w-3" />
-                          {formatCurrency(level.minValue)}
-                          {level.maxValue ? ` - ${formatCurrency(level.maxValue)}` : "+"}
+                          {formatCurrency(Number(level.minValue))}
+                          {level.maxValue ? ` - ${formatCurrency(Number(level.maxValue))}` : "+"}
                         </span>
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />

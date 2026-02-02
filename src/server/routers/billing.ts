@@ -405,7 +405,7 @@ export const billingRouter = createTRPCRouter({
 
       // Validar soma das parcelas
       const totalInstallments = input.installments.reduce((sum, i) => sum + i.value, 0);
-      if (Math.abs(totalInstallments - invoice.totalValue) > 0.01) {
+      if (Math.abs(totalInstallments - Number(invoice.totalValue)) > 0.01) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Soma das parcelas (${totalInstallments}) difere do valor da nota (${invoice.totalValue})`,

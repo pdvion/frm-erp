@@ -161,9 +161,9 @@ export const productionRouter = createTRPCRouter({
           salesOrderNumber: input.salesOrderNumber,
           customerName: input.customerName,
           notes: input.notes,
-          requestType: input.requestType,
-          executionType: input.executionType,
-          deliveryType: input.deliveryType,
+          request_type: input.requestType,
+          execution_type: input.executionType,
+          delivery_type: input.deliveryType,
           createdBy: ctx.tenant.userId,
           materials: input.materials ? {
             create: input.materials.map((m) => ({

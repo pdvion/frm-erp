@@ -409,7 +409,7 @@ export default function PendingInvoicesPage() {
                           {nfe.dataEmissao ? formatDateTime(nfe.dataEmissao) : "-"}
                         </td>
                         <td className="px-4 py-3 text-sm text-right font-medium text-theme">
-                          {nfe.valorTotal ? formatCurrency(nfe.valorTotal) : "-"}
+                          {nfe.valorTotal ? formatCurrency(Number(nfe.valorTotal)) : "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {manConfig ? (

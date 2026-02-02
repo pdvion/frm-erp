@@ -159,8 +159,8 @@ export default function TerminationsPage() {
                       {formatCurrency(termination.totalNet)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[termination.status]?.color}`}>
-                        {statusConfig[termination.status]?.label || termination.status}
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[termination.status as keyof typeof statusConfig]?.color}`}>
+                        {statusConfig[termination.status as keyof typeof statusConfig]?.label || termination.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">

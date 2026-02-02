@@ -258,40 +258,40 @@ export default function PayableDetailPage() {
                   <h3 className="text-lg font-medium text-theme">Retenções de Impostos</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {payable.withholdingIr > 0 && (
+                  {Number(payable.withholdingIr || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">IR</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingIr)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingIr))}</p>
                     </div>
                   )}
-                  {payable.withholdingIss > 0 && (
+                  {Number(payable.withholdingIss || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">ISS</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingIss)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingIss))}</p>
                     </div>
                   )}
-                  {payable.withholdingInss > 0 && (
+                  {Number(payable.withholdingInss || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">INSS</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingInss)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingInss))}</p>
                     </div>
                   )}
-                  {payable.withholdingPis > 0 && (
+                  {Number(payable.withholdingPis || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">PIS</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingPis)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingPis))}</p>
                     </div>
                   )}
-                  {payable.withholdingCofins > 0 && (
+                  {Number(payable.withholdingCofins || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">COFINS</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingCofins)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingCofins))}</p>
                     </div>
                   )}
-                  {payable.withholdingCsll > 0 && (
+                  {Number(payable.withholdingCsll || 0) > 0 && (
                     <div>
                       <label className="text-sm text-theme-muted">CSLL</label>
-                      <p className="font-medium text-theme">{formatCurrency(payable.withholdingCsll)}</p>
+                      <p className="font-medium text-theme">{formatCurrency(Number(payable.withholdingCsll))}</p>
                     </div>
                   )}
                 </div>

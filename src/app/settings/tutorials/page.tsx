@@ -110,7 +110,7 @@ export default function TutorialsAdminPage() {
         module: tutorial.module || "",
         category: tutorial.category || "how-to",
         icon: tutorial.icon || "FileText",
-        orderIndex: tutorial.orderIndex,
+        orderIndex: tutorial.orderIndex ?? 0,
         isPublished: true,
       });
       setShowForm(true);

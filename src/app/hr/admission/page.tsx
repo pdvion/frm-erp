@@ -186,8 +186,8 @@ export default function AdmissionPage() {
                             </td>
                             <td className="px-4 py-3">
                               <div>
-                                <p className="text-sm">{admission.position?.name || "-"}</p>
-                                <p className="text-xs text-theme-muted">{admission.department?.name || ""}</p>
+                                <p className="text-sm">{admission.positionId || "-"}</p>
+                                <p className="text-xs text-theme-muted">{admission.departmentId || ""}</p>
                               </div>
                             </td>
                             <td className="px-4 py-3 text-right">
@@ -201,7 +201,7 @@ export default function AdmissionPage() {
                               <div className="w-full bg-theme-tertiary rounded-full h-1.5 mt-1">
                                 <div
                                   className="bg-blue-600 h-1.5 rounded-full"
-                                  style={{ width: `${(admission.currentStep / admission.totalSteps) * 100}%` }}
+                                  style={{ width: `${((admission.currentStep || 0) / (admission.totalSteps || 1)) * 100}%` }}
                                 />
                               </div>
                             </td>

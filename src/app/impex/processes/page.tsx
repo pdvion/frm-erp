@@ -190,12 +190,12 @@ export default function ImportProcessesPage() {
                     <div>
                       <span className="text-theme-muted">Origem → Destino:</span>
                       <p className="text-theme">
-                        {process.originPort?.code || "-"} → {process.destPort?.code || "-"}
+                        {process.originPort?.code || "-"} → {process.destinationPort?.code || "-"}
                       </p>
                     </div>
                     <div>
                       <span className="text-theme-muted">Itens:</span>
-                      <p className="text-theme">{process._count?.items || 0}</p>
+                      <p className="text-theme">{process._count?.importProcessItems || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -208,7 +208,7 @@ export default function ImportProcessesPage() {
                     </div>
                     <div className="flex items-center gap-1 text-theme font-medium">
                       <DollarSign className="w-4 h-4" />
-                      {formatCurrency(Number(process.invoiceValue), process.currency)}
+                      {formatCurrency(Number(process.fobValue || 0), process.currency ?? undefined)}
                     </div>
                   </div>
 

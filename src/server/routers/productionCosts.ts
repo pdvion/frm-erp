@@ -79,11 +79,11 @@ export const productionCostsRouter = createTRPCRouter({
               operations: true,
             },
           },
-          materials: {
-            include: { material: { select: { id: true, code: true, description: true, unit: true } } },
+          materialItems: {
+            include: { productionCost: true },
           },
-          labor: {
-            include: { workCenter: { select: { id: true, code: true, name: true } } },
+          laborItems: {
+            include: { productionCost: true },
           },
         },
       });
@@ -105,11 +105,11 @@ export const productionCostsRouter = createTRPCRouter({
           productionOrder: {
             include: { product: true },
           },
-          materials: {
-            include: { material: { select: { id: true, code: true, description: true, unit: true } } },
+          materialItems: {
+            include: { productionCost: true },
           },
-          labor: {
-            include: { workCenter: { select: { id: true, code: true, name: true } } },
+          laborItems: {
+            include: { productionCost: true },
           },
         },
       });
@@ -275,10 +275,10 @@ export const productionCostsRouter = createTRPCRouter({
             unitCostStd,
             quantityProduced,
             calculatedAt: new Date(),
-            materials: { create: materialDetails },
-            labor: { create: laborDetails },
+            materialItems: { create: materialDetails },
+            laborItems: { create: laborDetails },
           },
-          include: { materials: true, labor: true },
+          include: { materialItems: true, laborItems: true },
         });
       } else {
         existingCost = await prisma.productionCost.create({
@@ -304,10 +304,10 @@ export const productionCostsRouter = createTRPCRouter({
             unitCostStd,
             quantityProduced,
             calculatedAt: new Date(),
-            materials: { create: materialDetails },
-            labor: { create: laborDetails },
+            materialItems: { create: materialDetails },
+            laborItems: { create: laborDetails },
           },
-          include: { materials: true, labor: true },
+          include: { materialItems: true, laborItems: true },
         });
       }
 

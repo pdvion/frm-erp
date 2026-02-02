@@ -225,13 +225,13 @@ export default function IssuedInvoiceDetailPage() {
                           {item.cfop || "-"}
                         </td>
                         <td className="px-3 py-2 text-right text-theme">
-                          {item.quantity} {item.unit}
+                          {Number(item.quantity)} {item.unit}
                         </td>
                         <td className="px-3 py-2 text-right text-theme">
-                          {formatCurrency(item.unitPrice)}
+                          {formatCurrency(Number(item.unitPrice))}
                         </td>
                         <td className="px-3 py-2 text-right font-medium text-theme">
-                          {formatCurrency(item.totalPrice)}
+                          {formatCurrency(Number(item.totalPrice))}
                         </td>
                       </tr>
                     ))}
@@ -309,35 +309,35 @@ export default function IssuedInvoiceDetailPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Subtotal</span>
-                  <span className="text-theme">{formatCurrency(invoice.subtotal)}</span>
+                  <span className="text-theme">{formatCurrency(Number(invoice.subtotal))}</span>
                 </div>
-                {invoice.discountValue > 0 && (
+                {Number(invoice.discountValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Desconto</span>
-                    <span>-{formatCurrency(invoice.discountValue)}</span>
+                    <span>-{formatCurrency(Number(invoice.discountValue))}</span>
                   </div>
                 )}
-                {invoice.shippingValue > 0 && (
+                {Number(invoice.shippingValue) > 0 && (
                   <div className="flex justify-between">
                     <span className="text-theme-muted">Frete</span>
-                    <span className="text-theme">{formatCurrency(invoice.shippingValue)}</span>
+                    <span className="text-theme">{formatCurrency(Number(invoice.shippingValue))}</span>
                   </div>
                 )}
-                {(invoice.icmsValue ?? 0) > 0 && (
+                {Number(invoice.icmsValue ?? 0) > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-theme-muted">ICMS</span>
-                    <span className="text-theme">{formatCurrency(invoice.icmsValue ?? 0)}</span>
+                    <span className="text-theme">{formatCurrency(Number(invoice.icmsValue ?? 0))}</span>
                   </div>
                 )}
-                {(invoice.ipiValue ?? 0) > 0 && (
+                {Number(invoice.ipiValue ?? 0) > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-theme-muted">IPI</span>
-                    <span className="text-theme">{formatCurrency(invoice.ipiValue ?? 0)}</span>
+                    <span className="text-theme">{formatCurrency(Number(invoice.ipiValue ?? 0))}</span>
                   </div>
                 )}
                 <div className="flex justify-between pt-3 border-t border-theme font-semibold text-lg">
                   <span className="text-theme">Total</span>
-                  <span className="text-blue-600">{formatCurrency(invoice.totalValue)}</span>
+                  <span className="text-blue-600">{formatCurrency(Number(invoice.totalValue))}</span>
                 </div>
               </div>
             </div>

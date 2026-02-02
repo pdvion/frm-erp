@@ -166,7 +166,7 @@ export default function IssuedInvoicesPage() {
                             {invoice._count.items}
                           </td>
                           <td className="px-4 py-3 text-right text-sm font-medium text-theme">
-                            {formatCurrency(invoice.totalValue)}
+                            {formatCurrency(Number(invoice.totalValue))}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>

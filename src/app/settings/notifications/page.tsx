@@ -131,7 +131,7 @@ export default function NotificationSettingsPage() {
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={pref.inAppEnabled}
+                          checked={pref.inAppEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "inAppEnabled", e.target.checked)}
                           disabled={saving === `${category.id}-inAppEnabled`}
                           className="w-4 h-4 rounded border-theme-input text-blue-600 focus:ring-blue-500"
@@ -147,7 +147,7 @@ export default function NotificationSettingsPage() {
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={pref.emailEnabled}
+                          checked={pref.emailEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "emailEnabled", e.target.checked)}
                           disabled={saving === `${category.id}-emailEnabled`}
                           className="w-4 h-4 rounded border-theme-input text-blue-600 focus:ring-blue-500"
@@ -163,7 +163,7 @@ export default function NotificationSettingsPage() {
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={pref.pushEnabled}
+                          checked={pref.pushEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "pushEnabled", e.target.checked)}
                           disabled={saving === `${category.id}-pushEnabled`}
                           className="w-4 h-4 rounded border-theme-input text-blue-600 focus:ring-blue-500"

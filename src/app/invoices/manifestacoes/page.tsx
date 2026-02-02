@@ -155,7 +155,7 @@ export default function ManifestacaoHistoryPage() {
                         </td>
                         <td className="px-4 py-3 text-sm text-right font-medium text-theme">
                           {manifestacao.pendingNfe?.valorTotal
-                            ? formatCurrency(manifestacao.pendingNfe.valorTotal)
+                            ? formatCurrency(Number(manifestacao.pendingNfe.valorTotal))
                             : "-"}
                         </td>
                         <td className="px-4 py-3 text-center">

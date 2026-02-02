@@ -115,8 +115,8 @@ export default function TaskDetailPage() {
     );
   }
 
-  const status = statusConfig[task.status];
-  const priority = priorityConfig[task.priority];
+  const status = statusConfig[task.status as keyof typeof statusConfig];
+  const priority = priorityConfig[task.priority as keyof typeof priorityConfig];
   const canAccept = task.status === "PENDING";
   const canStart = task.status === "ACCEPTED";
   const canComplete = task.status === "IN_PROGRESS" || task.status === "ACCEPTED";

@@ -223,7 +223,7 @@ async function getDocumentosSaida(companyId: string, params: SpedParams): Promis
       unidade: item.unit || item.material?.unit || "UN",
       valorUnitario: Number(item.unitPrice),
       valorTotal: Number(item.totalPrice),
-      valorDesconto: Number(item.discountPercent ? item.totalPrice * item.discountPercent / 100 : 0),
+      valorDesconto: Number(item.discountPercent ? Number(item.totalPrice) * Number(item.discountPercent) / 100 : 0),
       cfop: item.cfop || "5102",
       cstIcms: "00",
       baseCalculoIcms: Number(item.icmsBase || 0),

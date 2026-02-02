@@ -294,7 +294,7 @@ export const pickingRouter = createTRPCRouter({
       let status: "PENDING" | "PARTIAL" | "PICKED" | "NOT_FOUND" = "PENDING";
       if (input.pickedQty === 0) {
         status = "NOT_FOUND";
-      } else if (input.pickedQty < item.requestedQty) {
+      } else if (input.pickedQty < Number(item.requestedQty)) {
         status = "PARTIAL";
       } else {
         status = "PICKED";
