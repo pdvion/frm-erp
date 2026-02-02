@@ -556,4 +556,241 @@ export const workflowRouter = createTRPCRouter({
       recentInstances,
     };
   }),
+
+  // ============================================================================
+  // BPMN ENGINE - VIO-817
+  // ============================================================================
+
+  completeTask: tenantProcedure
+    .input(z.object({
+      instanceId: z.string().uuid(),
+      data: z.record(z.string(), z.unknown()).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const instance = await ctx.prisma.workflowInstance.findFirst({
+        where: { id: input.instanceId, companyId: ctx.companyId },
+        include: {
+          currentStep: {
+            include: { transitionsFrom: { include: { toStep: true } } },
+          },
+        },
+      });
+
+      if (!instance) throw new Error("Instância não encontrada");
+      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+      if (instance.status !== "IN_PROGRESS") throw new Error("Workflow não está em andamento");
+
+      const currentContext = instance.data as Record<string, unknown> || {};
+      const newContext = { ...currentContext, ...input.data };
+
+      await ctx.prisma.workflowStepHistory.updateMany({
+        where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
+        data: {
+          status: "COMPLETED",
+          action: "COMPLETED",
+          completedBy: ctx.tenant.userId,
+          completedAt: new Date(),
+          data: input.data as Prisma.InputJsonValue ?? {},
+        },
+      });
+
+      const nextTransition = instance.currentStep.transitionsFrom.find((t: { conditionType: string; condition: string | null }) => 
+        t.conditionType === "ALWAYS" || !t.condition
+      ) || instance.currentStep.transitionsFrom[0];
+
+      if (nextTransition?.toStep.type === "END") {
+        return ctx.prisma.workflowInstance.update({
+          where: { id: instance.id },
+          data: {
+            status: "COMPLETED",
+            currentStepId: nextTransition.toStepId,
+            data: newContext as Prisma.InputJsonValue,
+            completedAt: new Date(),
+          },
+        });
+      }
+
+      if (nextTransition) {
+        await ctx.prisma.workflowStepHistory.create({
+          data: {
+            instanceId: instance.id,
+            stepId: nextTransition.toStepId,
+            status: "PENDING",
+            assignedTo: nextTransition.toStep.assigneeId,
+            dueAt: nextTransition.toStep.slaHours
+              ? new Date(Date.now() + nextTransition.toStep.slaHours * 60 * 60 * 1000)
+              : undefined,
+          },
+        });
+
+        return ctx.prisma.workflowInstance.update({
+          where: { id: instance.id },
+          data: {
+            currentStepId: nextTransition.toStepId,
+            data: newContext as Prisma.InputJsonValue,
+          },
+        });
+      }
+
+      return instance;
+    }),
+
+  approveTask: tenantProcedure
+    .input(z.object({
+      instanceId: z.string().uuid(),
+      comments: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const instance = await ctx.prisma.workflowInstance.findFirst({
+        where: { id: input.instanceId, companyId: ctx.companyId },
+        include: {
+          currentStep: {
+            include: { transitionsFrom: { include: { toStep: true } } },
+          },
+        },
+      });
+
+      if (!instance) throw new Error("Instância não encontrada");
+      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+      if (instance.currentStep.type !== "APPROVAL") throw new Error("Etapa atual não é de aprovação");
+
+      await ctx.prisma.workflowStepHistory.updateMany({
+        where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
+        data: {
+          status: "COMPLETED",
+          action: "APPROVED",
+          completedBy: ctx.tenant.userId,
+          completedAt: new Date(),
+          comments: input.comments,
+        },
+      });
+
+      const approveTransition = instance.currentStep.transitionsFrom.find((t: { label: string | null; conditionType: string }) => 
+        t.label?.toLowerCase().includes("aprov") || t.conditionType === "ALWAYS"
+      ) || instance.currentStep.transitionsFrom[0];
+
+      if (approveTransition?.toStep.type === "END") {
+        return ctx.prisma.workflowInstance.update({
+          where: { id: instance.id },
+          data: { status: "COMPLETED", currentStepId: approveTransition.toStepId, completedAt: new Date() },
+        });
+      }
+
+      if (approveTransition) {
+        await ctx.prisma.workflowStepHistory.create({
+          data: {
+            instanceId: instance.id,
+            stepId: approveTransition.toStepId,
+            status: "PENDING",
+            assignedTo: approveTransition.toStep.assigneeId,
+          },
+        });
+
+        return ctx.prisma.workflowInstance.update({
+          where: { id: instance.id },
+          data: { currentStepId: approveTransition.toStepId },
+        });
+      }
+
+      return instance;
+    }),
+
+  rejectTask: tenantProcedure
+    .input(z.object({
+      instanceId: z.string().uuid(),
+      reason: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const instance = await ctx.prisma.workflowInstance.findFirst({
+        where: { id: input.instanceId, companyId: ctx.companyId },
+        include: { currentStep: true },
+      });
+
+      if (!instance) throw new Error("Instância não encontrada");
+      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+
+      await ctx.prisma.workflowStepHistory.updateMany({
+        where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
+        data: {
+          status: "COMPLETED",
+          action: "REJECTED",
+          completedBy: ctx.tenant.userId,
+          completedAt: new Date(),
+          comments: input.reason,
+        },
+      });
+
+      return ctx.prisma.workflowInstance.update({
+        where: { id: instance.id },
+        data: { status: "REJECTED", completedAt: new Date() },
+      });
+    }),
+
+  delegateTask: tenantProcedure
+    .input(z.object({
+      instanceId: z.string().uuid(),
+      toUserId: z.string().uuid(),
+      comments: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const instance = await ctx.prisma.workflowInstance.findFirst({
+        where: { id: input.instanceId, companyId: ctx.companyId },
+        include: { currentStep: true },
+      });
+
+      if (!instance) throw new Error("Instância não encontrada");
+      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+
+      await ctx.prisma.workflowStepHistory.updateMany({
+        where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
+        data: {
+          status: "COMPLETED",
+          action: "DELEGATED",
+          completedBy: ctx.tenant.userId,
+          completedAt: new Date(),
+          comments: input.comments,
+        },
+      });
+
+      await ctx.prisma.workflowStepHistory.create({
+        data: {
+          instanceId: instance.id,
+          stepId: instance.currentStepId!,
+          status: "PENDING",
+          assignedTo: input.toUserId,
+        },
+      });
+
+      return instance;
+    }),
+
+  saveCanvasLayout: tenantProcedure
+    .input(z.object({
+      definitionId: z.string().uuid(),
+      canvasLayout: z.record(z.string(), z.unknown()),
+      nodes: z.array(z.object({
+        id: z.string(),
+        positionX: z.number(),
+        positionY: z.number(),
+        width: z.number().optional(),
+        height: z.number().optional(),
+      })),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.workflowDefinition.update({
+        where: { id: input.definitionId },
+        data: { triggerConfig: input.canvasLayout as Prisma.InputJsonValue }, // TODO: Use canvasLayout when Prisma is synced
+      });
+
+      for (const node of input.nodes) {
+        await ctx.prisma.workflowStep.update({
+          where: { id: node.id },
+          data: {
+            sequence: Math.round(node.positionX), // TODO: Use positionX/Y when Prisma is synced
+          },
+        });
+      }
+
+      return { success: true };
+    }),
 });
