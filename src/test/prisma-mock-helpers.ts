@@ -39,6 +39,54 @@ export class MockDecimal {
     return this.value;
   }
 
+  // Métodos aritméticos do Prisma.Decimal
+  add(other: MockDecimal | number): MockDecimal {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return new MockDecimal(this.value + otherValue);
+  }
+
+  sub(other: MockDecimal | number): MockDecimal {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return new MockDecimal(this.value - otherValue);
+  }
+
+  mul(other: MockDecimal | number): MockDecimal {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return new MockDecimal(this.value * otherValue);
+  }
+
+  div(other: MockDecimal | number): MockDecimal {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return new MockDecimal(this.value / otherValue);
+  }
+
+  equals(other: MockDecimal | number): boolean {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return this.value === otherValue;
+  }
+
+  greaterThan(other: MockDecimal | number): boolean {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return this.value > otherValue;
+  }
+
+  lessThan(other: MockDecimal | number): boolean {
+    const otherValue = other instanceof MockDecimal ? other.value : other;
+    return this.value < otherValue;
+  }
+
+  isZero(): boolean {
+    return this.value === 0;
+  }
+
+  isNegative(): boolean {
+    return this.value < 0;
+  }
+
+  isPositive(): boolean {
+    return this.value > 0;
+  }
+
   // Permite que Number(decimal) funcione
   [Symbol.toPrimitive](hint: string): number | string {
     if (hint === "string") return this.toString();

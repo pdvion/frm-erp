@@ -9,16 +9,16 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Smoke Tests @smoke', () => {
   test('página inicial carrega sem erros', async ({ page }) => {
-    const response = await page.goto('/');
-    expect(response?.status()).toBeLessThan(400);
-    
-    // Verifica se não há erros de JavaScript no console
+    // Registra listener ANTES de navegar para capturar todos os erros
     const errors: string[] = [];
     page.on('console', msg => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
       }
     });
+    
+    const response = await page.goto('/');
+    expect(response?.status()).toBeLessThan(400);
     
     await page.waitForLoadState('networkidle');
     

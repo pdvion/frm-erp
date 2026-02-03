@@ -22,4 +22,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# 4. Testes unitários (rápidos)
+echo "🧪 Executando testes unitários..."
+pnpm test:run
+if [ $? -ne 0 ]; then
+  echo "❌ Testes falharam. Corrija antes de fazer push."
+  exit 1
+fi
+
 echo "✅ Todas as validações passaram!"
