@@ -56,6 +56,7 @@ model Company {
   materialRequisitions MaterialRequisition[]
   materials            Material[]
   mrpRuns              MrpRun[]
+  non_conformities     NonConformity[]
   notificationGroups   NotificationGroup[]
   notifications        Notification[]
   oeeTargets           OeeTarget[]
@@ -68,6 +69,7 @@ model Company {
   productionOrders     ProductionOrder[]
   products             Product[]
   purchaseOrders       PurchaseOrder[]
+  quality_inspections  QualityInspection[]
   receivedInvoices     ReceivedInvoice[]
   salesOrders          SalesOrder[]
   salesQuotes          SalesQuote[]
@@ -137,6 +139,7 @@ model User {
   pickingListsAssigned                          PickingList[]               @relation("PickingAssignee")
   pickingListsCreated                           PickingList[]               @relation("PickingCreator")
   pickingVerifications                          PickingVerification[]
+  quality_inspections                           QualityInspection[]
   requisitionApprovals                          RequisitionApproval[]
   savedReports                                  SavedReport[]
   transfersApproved                             StockTransfer[]             @relation("TransferApproved")
@@ -376,11 +379,13 @@ model Material {
   company                     Company?                  @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   mrpParameter                MrpParameter?
   mrpSuggestions              MrpSuggestion[]
+  non_conformities            NonConformity[]
   pickingListItems            PickingListItem[]
   productionOrderMaterials    ProductionOrderMaterial[] @relation("ProductionMaterial")
   productionOrdersAsProduct   ProductionOrder[]         @relation("ProductionProduct")
   catalogProducts             Product[]
   purchaseOrderItems          PurchaseOrderItem[]
+  quality_inspections         QualityInspection[]
   quoteItems                  QuoteItem[]
   receivedInvoiceItems        ReceivedInvoiceItem[]
   salesOrderItems             SalesOrderItem[]
@@ -389,8 +394,6 @@ model Material {
   stockTransferItems          StockTransferItem[]
   supplierMaterials           SupplierMaterial[]
   supplierReturnItems         SupplierReturnItem[]
-  qualityInspections          QualityInspection[]
-  nonConformities             NonConformity[]
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
@@ -851,73 +854,73 @@ model ReceivedInvoiceItem {
 }
 
 model AccountsPayable {
-  id                      String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                    Int
-  companyId               String?                 @db.Uuid
-  supplierId              String                  @db.Uuid
-  documentType            PayableType             @default(INVOICE)
-  documentNumber          String?                 @db.VarChar(50)
-  documentId              String?                 @db.Uuid
-  invoiceId               String?                 @db.Uuid
-  description             String
-  dueDate                 DateTime
-  issueDate               DateTime                @default(now())
-  originalValue           Float
-  discountValue           Float                   @default(0)
-  interestValue           Float                   @default(0)
-  fineValue               Float                   @default(0)
-  paidValue               Float                   @default(0)
-  netValue                Float
-  status                  PayableStatus           @default(PENDING)
-  paidAt                  DateTime?
-  installmentNumber       Int                     @default(1)
-  totalInstallments       Int                     @default(1)
-  categoryId              String?                 @db.Uuid
-  costCenterId            String?                 @db.Uuid
-  notes                   String?
-  barcode                 String?                 @db.VarChar(100)
-  createdBy               String?                 @db.Uuid
-  createdAt               DateTime                @default(now())
-  updatedAt               DateTime                @default(now()) @updatedAt
-  bankAccountId           String?                 @db.Uuid
-  approvalStatus          ApprovalStatus?         @default(PENDING)
-  scheduledPaymentDate    DateTime?
-  additionalInfo          String?                 @map("additional_info")
-  hasWithholding          Boolean?                @default(false) @map("has_withholding")
-  withholdingIr           Float?                  @default(0) @map("withholding_ir")
-  withholdingIss          Float?                  @default(0) @map("withholding_iss")
-  withholdingInss         Float?                  @default(0) @map("withholding_inss")
-  withholdingPis          Float?                  @default(0) @map("withholding_pis")
-  withholdingCofins       Float?                  @default(0) @map("withholding_cofins")
-  withholdingCsll         Float?                  @default(0) @map("withholding_csll")
-  supplierAlphaCode       String?                 @map("supplier_alpha_code")
-  supplierCnpj            String?                 @map("supplier_cnpj")
-  supplierIe              String?                 @map("supplier_ie")
-  supplierStateCode       Int?                    @map("supplier_state_code")
-  costCenterGroup         Int?                    @map("cost_center_group")
-  costCenterCode          String?                 @map("cost_center_code")
-  costCenterNotes         String?                 @map("cost_center_notes")
-  sectorConfirmedAt       DateTime?               @map("sector_confirmed_at") @db.Timestamptz(6)
-  sectorConfirmedById     String?                 @map("sector_confirmed_by_id")
-  physicalDeliveryAt      DateTime?               @map("physical_delivery_at") @db.Timestamptz(6)
-  physicalDeliveryById    String?                 @map("physical_delivery_by_id")
-  paymentReleasedAt       DateTime?               @map("payment_released_at") @db.Timestamptz(6)
-  paymentReleasedById     String?                 @map("payment_released_by_id")
-  paymentBankId           String?                 @map("payment_bank_id")
-  pdfFileName             String?                 @map("pdf_file_name")
-  contractType            payable_contract_type?  @map("contract_type")
-  bankAccount             BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
-  company                 Company?                @relation(fields: [companyId], references: [id])
-  costCenter              CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
-  invoice                 ReceivedInvoice?        @relation(fields: [invoiceId], references: [id])
-  supplier                Supplier                @relation(fields: [supplierId], references: [id])
-  bankTransactions        BankTransaction[]
-  dda_boletos             DdaBoleto[]
-  approvals               PayableApproval[]
-  attachments             PayableAttachment[]
-  costAllocations         PayableCostAllocation[]
-  payments                PayablePayment[]
-  paymentRequests         PaymentRequest[]
+  id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                 Int
+  companyId            String?                 @db.Uuid
+  supplierId           String                  @db.Uuid
+  documentType         PayableType             @default(INVOICE)
+  documentNumber       String?                 @db.VarChar(50)
+  documentId           String?                 @db.Uuid
+  invoiceId            String?                 @db.Uuid
+  description          String
+  dueDate              DateTime
+  issueDate            DateTime                @default(now())
+  originalValue        Float
+  discountValue        Float                   @default(0)
+  interestValue        Float                   @default(0)
+  fineValue            Float                   @default(0)
+  paidValue            Float                   @default(0)
+  netValue             Float
+  status               PayableStatus           @default(PENDING)
+  paidAt               DateTime?
+  installmentNumber    Int                     @default(1)
+  totalInstallments    Int                     @default(1)
+  categoryId           String?                 @db.Uuid
+  costCenterId         String?                 @db.Uuid
+  notes                String?
+  barcode              String?                 @db.VarChar(100)
+  createdBy            String?                 @db.Uuid
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @default(now()) @updatedAt
+  bankAccountId        String?                 @db.Uuid
+  approvalStatus       ApprovalStatus?         @default(PENDING)
+  scheduledPaymentDate DateTime?
+  additionalInfo       String?                 @map("additional_info")
+  hasWithholding       Boolean?                @default(false) @map("has_withholding")
+  withholdingIr        Float?                  @default(0) @map("withholding_ir")
+  withholdingIss       Float?                  @default(0) @map("withholding_iss")
+  withholdingInss      Float?                  @default(0) @map("withholding_inss")
+  withholdingPis       Float?                  @default(0) @map("withholding_pis")
+  withholdingCofins    Float?                  @default(0) @map("withholding_cofins")
+  withholdingCsll      Float?                  @default(0) @map("withholding_csll")
+  supplierAlphaCode    String?                 @map("supplier_alpha_code")
+  supplierCnpj         String?                 @map("supplier_cnpj")
+  supplierIe           String?                 @map("supplier_ie")
+  supplierStateCode    Int?                    @map("supplier_state_code")
+  costCenterGroup      Int?                    @map("cost_center_group")
+  costCenterCode       String?                 @map("cost_center_code")
+  costCenterNotes      String?                 @map("cost_center_notes")
+  sectorConfirmedAt    DateTime?               @map("sector_confirmed_at") @db.Timestamptz(6)
+  sectorConfirmedById  String?                 @map("sector_confirmed_by_id")
+  physicalDeliveryAt   DateTime?               @map("physical_delivery_at") @db.Timestamptz(6)
+  physicalDeliveryById String?                 @map("physical_delivery_by_id")
+  paymentReleasedAt    DateTime?               @map("payment_released_at") @db.Timestamptz(6)
+  paymentReleasedById  String?                 @map("payment_released_by_id")
+  paymentBankId        String?                 @map("payment_bank_id")
+  pdfFileName          String?                 @map("pdf_file_name")
+  contractType         payable_contract_type?  @map("contract_type")
+  bankAccount          BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
+  company              Company?                @relation(fields: [companyId], references: [id])
+  costCenter           CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
+  invoice              ReceivedInvoice?        @relation(fields: [invoiceId], references: [id])
+  supplier             Supplier                @relation(fields: [supplierId], references: [id])
+  bankTransactions     BankTransaction[]
+  dda_boletos          DdaBoleto[]
+  approvals            PayableApproval[]
+  attachments          PayableAttachment[]
+  costAllocations      PayableCostAllocation[]
+  payments             PayablePayment[]
+  paymentRequests      PaymentRequest[]
 
   @@unique([companyId, code])
   @@index([invoiceId])
@@ -1038,15 +1041,15 @@ model ProductionOrder {
   type_before_urgency     Int?
   date_before_urgency     DateTime?                  @db.Timestamptz(6)
   printed                 Boolean?                   @default(false)
+  non_conformities        NonConformity[]
   production_costs        ProductionCost[]
   productionLogs          ProductionLog[]
   materials               ProductionOrderMaterial[]
   operations              ProductionOrderOperation[]
   company                 Company?                   @relation(fields: [companyId], references: [id])
   product                 Material                   @relation("ProductionProduct", fields: [productId], references: [id])
+  quality_inspections     QualityInspection[]
   salesOrderItems         SalesOrderItem[]
-  qualityInspections      QualityInspection[]
-  nonConformities         NonConformity[]
 
   @@unique([companyId, code])
   @@index([dueDate])
@@ -3750,26 +3753,26 @@ model DdaBoleto {
 }
 
 model DdaConfig {
-  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId          String       @map("company_id") @db.Uuid
-  bancoCodigo        String       @map("banco_codigo") @db.VarChar(3)
-  bancoNome          String?      @map("banco_nome") @db.VarChar(100)
-  agencia            String?      @db.VarChar(10)
-  conta              String?      @db.VarChar(20)
-  convenio           String?      @db.VarChar(20)
-  ambiente           String?      @default("HOMOLOGACAO") @db.VarChar(10)
-  clientId           String?      @map("client_id")
-  clientSecret       String?      @map("client_secret")
-  certificadoId      String?      @map("certificado_id")
-  ativo              Boolean?     @default(true)
-  autoAprovarAte     Decimal?     @default(0) @map("auto_aprovar_ate") @db.Decimal(15, 2)
-  notificarNovos     Boolean?     @default(true) @map("notificar_novos")
-  emailNotificacao   String?      @map("email_notificacao") @db.VarChar(200)
-  ultimaSincronizacao DateTime?   @map("ultima_sincronizacao") @db.Timestamp(6)
-  createdAt          DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt          DateTime?    @default(now()) @map("updated_at") @db.Timestamp(6)
-  company            Company      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ddaSyncLogs        DdaSyncLog[]
+  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId           String       @map("company_id") @db.Uuid
+  bancoCodigo         String       @map("banco_codigo") @db.VarChar(3)
+  bancoNome           String?      @map("banco_nome") @db.VarChar(100)
+  agencia             String?      @db.VarChar(10)
+  conta               String?      @db.VarChar(20)
+  convenio            String?      @db.VarChar(20)
+  ambiente            String?      @default("HOMOLOGACAO") @db.VarChar(10)
+  clientId            String?      @map("client_id")
+  clientSecret        String?      @map("client_secret")
+  certificadoId       String?      @map("certificado_id")
+  ativo               Boolean?     @default(true)
+  autoAprovarAte      Decimal?     @default(0) @map("auto_aprovar_ate") @db.Decimal(15, 2)
+  notificarNovos      Boolean?     @default(true) @map("notificar_novos")
+  emailNotificacao    String?      @map("email_notificacao") @db.VarChar(200)
+  ultimaSincronizacao DateTime?    @map("ultima_sincronizacao") @db.Timestamp(6)
+  createdAt           DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime?    @default(now()) @map("updated_at") @db.Timestamp(6)
+  company             Company      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ddaSyncLogs         DdaSyncLog[]
 
   @@unique([companyId, bancoCodigo])
   @@map("dda_config")
@@ -3965,10 +3968,12 @@ model QualityInspection {
   notes             String?
   createdAt         DateTime                @default(now()) @map("created_at")
   updatedAt         DateTime                @default(now()) @map("updated_at")
+  non_conformities  NonConformity[]
   items             QualityInspectionItem[]
-  material          Material?               @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  productionOrder   ProductionOrder?        @relation(fields: [productionOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonConformities   NonConformity[]
+  company           Company?                @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_quality_inspections_company")
+  inspector         User?                   @relation(fields: [inspectorId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_inspector")
+  material          Material?               @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_material")
+  productionOrder   ProductionOrder?        @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_production_order")
 
   @@index([companyId], map: "idx_quality_inspections_company_id")
   @@index([materialId], map: "idx_quality_inspections_material_id")
@@ -3977,17 +3982,17 @@ model QualityInspection {
 }
 
 model QualityInspectionItem {
-  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  inspectionId  String            @map("inspection_id") @db.Uuid
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inspectionId   String            @map("inspection_id") @db.Uuid
   characteristic String
-  specification String?
-  toleranceMin  Float?            @map("tolerance_min")
-  toleranceMax  Float?            @map("tolerance_max")
-  measuredValue Float?            @map("measured_value")
-  result        String?           @default("PENDING")
-  notes         String?
-  createdAt     DateTime          @default(now()) @map("created_at")
-  inspection    QualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  specification  String?
+  toleranceMin   Float?            @map("tolerance_min")
+  toleranceMax   Float?            @map("tolerance_max")
+  measuredValue  Float?            @map("measured_value")
+  result         String?           @default("PENDING")
+  notes          String?
+  createdAt      DateTime          @default(now()) @map("created_at")
+  inspection     QualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([inspectionId], map: "idx_quality_inspection_items_inspection_id")
   @@map("quality_inspection_items")
@@ -4017,9 +4022,10 @@ model NonConformity {
   createdBy         String?            @map("created_by") @db.Uuid
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @default(now()) @map("updated_at")
-  inspection        QualityInspection? @relation(fields: [inspectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  material          Material?          @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company           Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_non_conformities_company")
+  inspection        QualityInspection? @relation(fields: [inspectionId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_inspection")
+  material          Material?          @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_material")
+  productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_production_order")
 
   @@index([companyId], map: "idx_non_conformities_company_id")
   @@index([status], map: "idx_non_conformities_status")
@@ -4245,26 +4251,26 @@ model SkillMatrix {
 }
 
 model AdmissionProcess {
-  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code              Int                 @default(autoincrement())
-  companyId         String?             @map("company_id") @db.Uuid
-  candidateName     String              @map("candidate_name")
-  candidateEmail    String?             @map("candidate_email")
-  candidatePhone    String?             @map("candidate_phone")
-  candidateCpf      String?             @map("candidate_cpf")
-  positionId        String?             @map("position_id") @db.Uuid
-  departmentId      String?             @map("department_id") @db.Uuid
-  proposedSalary    Float?              @map("proposed_salary")
-  proposedStartDate DateTime?           @map("proposed_start_date")
-  status            String              @default("DRAFT")
-  currentStep       Int?                @default(1) @map("current_step")
-  totalSteps        Int?                @default(5) @map("total_steps")
-  recruiterId       String?             @map("recruiter_id") @db.Uuid
-  managerId         String?             @map("manager_id") @db.Uuid
-  notes             String?
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @default(now()) @map("updated_at")
-  completedAt       DateTime?           @map("completed_at")
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                Int                 @default(autoincrement())
+  companyId           String?             @map("company_id") @db.Uuid
+  candidateName       String              @map("candidate_name")
+  candidateEmail      String?             @map("candidate_email")
+  candidatePhone      String?             @map("candidate_phone")
+  candidateCpf        String?             @map("candidate_cpf")
+  positionId          String?             @map("position_id") @db.Uuid
+  departmentId        String?             @map("department_id") @db.Uuid
+  proposedSalary      Float?              @map("proposed_salary")
+  proposedStartDate   DateTime?           @map("proposed_start_date")
+  status              String              @default("DRAFT")
+  currentStep         Int?                @default(1) @map("current_step")
+  totalSteps          Int?                @default(5) @map("total_steps")
+  recruiterId         String?             @map("recruiter_id") @db.Uuid
+  managerId           String?             @map("manager_id") @db.Uuid
+  notes               String?
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @default(now()) @map("updated_at")
+  completedAt         DateTime?           @map("completed_at")
   admission_documents AdmissionDocument[]
   admission_exams     AdmissionExam[]
   admission_steps     AdmissionStep[]
@@ -4275,19 +4281,19 @@ model AdmissionProcess {
 }
 
 model AdmissionStep {
-  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  admissionId       String           @map("admission_id") @db.Uuid
-  stepNumber        Int              @map("step_number")
-  stepName          String           @map("step_name")
-  stepType          String           @default("DOCUMENT") @map("step_type")
-  status            String           @default("PENDING")
-  assignedTo        String?          @map("assigned_to") @db.Uuid
-  dueDate           DateTime?        @map("due_date")
-  completedAt       DateTime?        @map("completed_at")
-  completedBy       String?          @map("completed_by") @db.Uuid
-  notes             String?
-  createdAt         DateTime         @default(now()) @map("created_at")
-  admissionProcess  AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  stepNumber       Int              @map("step_number")
+  stepName         String           @map("step_name")
+  stepType         String           @default("DOCUMENT") @map("step_type")
+  status           String           @default("PENDING")
+  assignedTo       String?          @map("assigned_to") @db.Uuid
+  dueDate          DateTime?        @map("due_date")
+  completedAt      DateTime?        @map("completed_at")
+  completedBy      String?          @map("completed_by") @db.Uuid
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([admissionId], map: "idx_admission_steps_admission_id")
   @@map("admission_steps")
@@ -4482,53 +4488,53 @@ model Incoterm {
 }
 
 model ImportProcess {
-  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  processNumber      String              @map("process_number") @db.VarChar(50)
-  reference          String?             @db.VarChar(100)
-  supplierId         String?             @map("supplier_id") @db.Uuid
-  brokerId           String?             @map("broker_id") @db.Uuid
-  incotermId         String?             @map("incoterm_id") @db.Uuid
-  cargoTypeId        String?             @map("cargo_type_id") @db.Uuid
-  originPortId       String?             @map("origin_port_id") @db.Uuid
-  destinationPortId  String?             @map("destination_port_id") @db.Uuid
-  status             ImportStatus        @default(DRAFT)
-  orderDate          DateTime?           @map("order_date") @db.Date
-  etd                DateTime?           @db.Date
-  eta                DateTime?           @db.Date
-  actualDeparture    DateTime?           @map("actual_departure") @db.Date
-  actualArrival      DateTime?           @map("actual_arrival") @db.Date
-  clearanceDate      DateTime?           @map("clearance_date") @db.Date
-  deliveryDate       DateTime?           @map("delivery_date") @db.Date
-  vesselName         String?             @map("vessel_name") @db.VarChar(200)
-  voyageNumber       String?             @map("voyage_number") @db.VarChar(50)
-  blNumber           String?             @map("bl_number") @db.VarChar(100)
-  containerNumbers   String?             @map("container_numbers")
-  currency           String?             @default("USD") @db.VarChar(3)
-  fobValue           Decimal?            @default(0) @map("fob_value") @db.Decimal(18, 2)
-  freightValue       Decimal?            @default(0) @map("freight_value") @db.Decimal(18, 2)
-  insuranceValue     Decimal?            @default(0) @map("insurance_value") @db.Decimal(18, 2)
-  cifValue           Decimal?            @default(0) @map("cif_value") @db.Decimal(18, 2)
-  customsFees        Decimal?            @default(0) @map("customs_fees") @db.Decimal(18, 2)
-  storageFees        Decimal?            @default(0) @map("storage_fees") @db.Decimal(18, 2)
-  otherCosts         Decimal?            @default(0) @map("other_costs") @db.Decimal(18, 2)
-  totalCostBrl       Decimal?            @default(0) @map("total_cost_brl") @db.Decimal(18, 2)
-  diNumber           String?             @map("di_number") @db.VarChar(50)
-  diDate             DateTime?           @map("di_date") @db.Date
-  notes              String?
-  companyId          String?             @map("company_id") @db.Uuid
-  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  processNumber       String               @map("process_number") @db.VarChar(50)
+  reference           String?              @db.VarChar(100)
+  supplierId          String?              @map("supplier_id") @db.Uuid
+  brokerId            String?              @map("broker_id") @db.Uuid
+  incotermId          String?              @map("incoterm_id") @db.Uuid
+  cargoTypeId         String?              @map("cargo_type_id") @db.Uuid
+  originPortId        String?              @map("origin_port_id") @db.Uuid
+  destinationPortId   String?              @map("destination_port_id") @db.Uuid
+  status              ImportStatus         @default(DRAFT)
+  orderDate           DateTime?            @map("order_date") @db.Date
+  etd                 DateTime?            @db.Date
+  eta                 DateTime?            @db.Date
+  actualDeparture     DateTime?            @map("actual_departure") @db.Date
+  actualArrival       DateTime?            @map("actual_arrival") @db.Date
+  clearanceDate       DateTime?            @map("clearance_date") @db.Date
+  deliveryDate        DateTime?            @map("delivery_date") @db.Date
+  vesselName          String?              @map("vessel_name") @db.VarChar(200)
+  voyageNumber        String?              @map("voyage_number") @db.VarChar(50)
+  blNumber            String?              @map("bl_number") @db.VarChar(100)
+  containerNumbers    String?              @map("container_numbers")
+  currency            String?              @default("USD") @db.VarChar(3)
+  fobValue            Decimal?             @default(0) @map("fob_value") @db.Decimal(18, 2)
+  freightValue        Decimal?             @default(0) @map("freight_value") @db.Decimal(18, 2)
+  insuranceValue      Decimal?             @default(0) @map("insurance_value") @db.Decimal(18, 2)
+  cifValue            Decimal?             @default(0) @map("cif_value") @db.Decimal(18, 2)
+  customsFees         Decimal?             @default(0) @map("customs_fees") @db.Decimal(18, 2)
+  storageFees         Decimal?             @default(0) @map("storage_fees") @db.Decimal(18, 2)
+  otherCosts          Decimal?             @default(0) @map("other_costs") @db.Decimal(18, 2)
+  totalCostBrl        Decimal?             @default(0) @map("total_cost_brl") @db.Decimal(18, 2)
+  diNumber            String?              @map("di_number") @db.VarChar(50)
+  diDate              DateTime?            @map("di_date") @db.Date
+  notes               String?
+  companyId           String?              @map("company_id") @db.Uuid
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
   exchangeContracts   ExchangeContract[]
   importDocuments     import_documents[]
-  importProcessItems  ImportProcessItem[]
-  importProcessEvents ImportProcessEvent[]
   importProcessCosts  ImportProcessCost[]
-  customsBroker       CustomsBroker?      @relation(fields: [brokerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  cargoType          CargoType?          @relation(fields: [cargoTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  destinationPort    Port?               @relation("import_processes_destination_port_idToports", fields: [destinationPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  incoterm           Incoterm?           @relation(fields: [incotermId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  originPort         Port?               @relation("import_processes_origin_port_idToports", fields: [originPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  supplier           Supplier?           @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  importProcessEvents ImportProcessEvent[]
+  importProcessItems  ImportProcessItem[]
+  customsBroker       CustomsBroker?       @relation(fields: [brokerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cargoType           CargoType?           @relation(fields: [cargoTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  destinationPort     Port?                @relation("import_processes_destination_port_idToports", fields: [destinationPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  incoterm            Incoterm?            @relation(fields: [incotermId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  originPort          Port?                @relation("import_processes_origin_port_idToports", fields: [originPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier            Supplier?            @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([processNumber, companyId], map: "unique_process_number")
   @@index([brokerId], map: "idx_import_processes_broker")
