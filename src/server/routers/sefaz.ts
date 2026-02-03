@@ -426,7 +426,21 @@ export const sefazRouter = createTRPCRouter({
           });
         }
 
-        // Salvar certificado PEM
+        // Salvar certificado PEM no Vault (criptografado) e metadados no banco
+        try {
+          // Salvar no Vault via função SQL
+          await ctx.prisma.$executeRaw`
+            SELECT public.save_sefaz_certificate(
+              ${ctx.companyId}::TEXT,
+              ${cert.certificate}::TEXT,
+              ${cert.privateKey}::TEXT
+            )
+          `;
+        } catch (vaultError) {
+          console.warn("[SEFAZ] Vault não disponível, salvando no banco:", vaultError);
+        }
+
+        // Salvar metadados e backup do certificado no banco
         const certData = {
           certificatePem: cert.certificate,
           privateKeyPem: cert.privateKey,
