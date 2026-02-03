@@ -888,7 +888,7 @@ export class NFeEmitter {
    */
   async consultarStatus(): Promise<{ online: boolean; mensagem: string }> {
     // TODO(VIO-566): Implementar consulta real usando this.wsUrls.status
-    console.log(`Consultando status em: ${this.wsUrls.status}`);
+    // TODO(VIO-566): Consulta status real
     return {
       online: true,
       mensagem: `Serviço em operação (simulado) - Ambiente: ${this.config.ambiente === "1" ? "Produção" : "Homologação"}`,
@@ -900,7 +900,7 @@ export class NFeEmitter {
    */
   async consultar(chaveAcesso: string): Promise<NFeResponse> {
     // TODO(VIO-566): Implementar consulta real usando this.wsUrls.consulta
-    console.log(`Consultando NF-e em: ${this.wsUrls.consulta}`);
+    // TODO(VIO-566): Consulta NF-e real
     return {
       sucesso: true,
       chaveAcesso,
@@ -926,7 +926,7 @@ export class NFeEmitter {
     }
 
     // TODO(VIO-566): Implementar cancelamento real usando this.wsUrls.evento
-    console.log(`Cancelando NF-e em: ${this.wsUrls.evento}`);
+    // TODO(VIO-566): Cancelamento real
     return {
       sucesso: true,
       chaveAcesso,
@@ -963,7 +963,7 @@ export class NFeEmitter {
     }
 
     // TODO(VIO-566): Implementar CC-e real usando this.wsUrls.evento
-    console.log(`Emitindo CC-e sequência ${sequencia} em: ${this.wsUrls.evento}`);
+    // TODO(VIO-566): CC-e real
     return {
       sucesso: true,
       chaveAcesso,
@@ -1006,7 +1006,7 @@ export class NFeEmitter {
     }
 
     // TODO(VIO-566): Implementar inutilização real usando this.wsUrls.inutilizacao
-    console.log(`Inutilizando série ${serie}, números ${numeroInicial}-${numeroFinal} em: ${this.wsUrls.inutilizacao}`);
+    // TODO(VIO-566): Inutilização real
     return {
       sucesso: true,
       protocolo: `INUT${Date.now()}`,

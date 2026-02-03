@@ -116,7 +116,7 @@ export class SefazClient {
       // TODO: Processar resposta
 
       // Por enquanto, retorna mock para desenvolvimento
-      console.log("[SEFAZ] Consulta NFe destinadas - NSU:", nsu);
+      // Consulta NFe destinadas
       
       return {
         success: true,
@@ -156,7 +156,7 @@ export class SefazClient {
       // TODO: Enviar requisição SOAP
       // TODO: Processar resposta e extrair XML da NFe
 
-      console.log("[SEFAZ] Consulta por chave:", chaveAcesso);
+      // Consulta por chave
 
       return {
         success: true,
@@ -210,7 +210,7 @@ export class SefazClient {
       // TODO: Enviar requisição SOAP
       // TODO: Processar resposta
 
-      console.log("[SEFAZ] Manifestação:", tipo, "Chave:", chaveAcesso);
+      // Manifestação SEFAZ
 
       return {
         success: true,

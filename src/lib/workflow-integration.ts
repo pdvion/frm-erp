@@ -274,7 +274,7 @@ export async function onWorkflowCompleted(
     case "PAYABLE":
       // Para contas a pagar, aprovado significa liberado para pagamento
       // O campo approvedAt não existe no modelo, então apenas logamos
-      console.log(`Workflow ${action} para conta a pagar ${instance.entityId}`);
+      // Workflow action for payable: action=${action}, entityId=${instance.entityId}
       break;
 
     case "QUOTE":

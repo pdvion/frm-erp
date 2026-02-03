@@ -68,7 +68,7 @@ async function sendNewNfeNotification(
   if (!email || nfesCount === 0) return;
   
   // TODO: Integrar com serviço de email (Resend, SendGrid, etc.)
-  console.log(`[SEFAZ Cron] Notificação: ${nfesCount} novas NFes para ${email} (empresa ${companyId})`);
+  // TODO: Integrar com serviço de email para notificação
   
   // Criar notificação no sistema
   try {
@@ -113,7 +113,7 @@ export async function GET(request: Request) {
       },
     });
 
-    console.log(`[SEFAZ Cron] Iniciando sincronização para ${syncConfigs.length} empresas`);
+    // Sincronização SEFAZ iniciada
 
     for (const syncConfig of syncConfigs) {
       const companyId = syncConfig.companyId;
@@ -124,7 +124,7 @@ export async function GET(request: Request) {
         const sefazConfig = await getSefazConfig(companyId);
 
         if (!sefazConfig) {
-          console.log(`[SEFAZ Cron] ${companyName}: Sem configuração SEFAZ válida`);
+          // Empresa sem configuração SEFAZ válida
           results.push({
             companyId,
             companyName,

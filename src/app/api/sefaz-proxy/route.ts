@@ -137,14 +137,13 @@ async function sendSoapRequest(
       rejectUnauthorized: true,
     };
 
-    console.log(`[SEFAZ] Sending mTLS request to ${url}`);
+    // Debug: mTLS request to SEFAZ
 
     const req = https.request(options, (res) => {
       let data = "";
       res.on("data", (chunk) => { data += chunk; });
       res.on("end", () => {
-        console.log(`[SEFAZ] Response status: ${res.statusCode}`);
-        console.log(`[SEFAZ] Response length: ${data.length}`);
+        // Response received
         if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
           resolve(data);
         } else {
@@ -164,17 +163,16 @@ async function sendSoapRequest(
 }
 
 export async function POST(request: NextRequest) {
-  console.log("[SEFAZ Proxy] Received request");
+  // SEFAZ Proxy request
   
   try {
     const body: SefazRequest = await request.json();
     const { action, ambiente, cnpj, uf, nsu, chave, certPem, keyPem } = body;
 
-    console.log(`[SEFAZ Proxy] Action: ${action}, Ambiente: ${ambiente}, CNPJ: ${cnpj}, UF: ${uf}`);
-    console.log(`[SEFAZ Proxy] certPem length: ${certPem?.length || 0}, keyPem length: ${keyPem?.length || 0}`);
+    // Processing SEFAZ request
 
     if (!certPem || !keyPem) {
-      console.error("[SEFAZ Proxy] Missing certificate");
+      // Missing certificate
       return NextResponse.json(
         { success: false, error: "Certificado digital não fornecido" },
         { status: 400 }
@@ -212,7 +210,7 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    console.log(`[SEFAZ Proxy] ${action} - CNPJ: ${cnpj}, UF: ${uf}, Ambiente: ${ambiente}`);
+    // Executing SEFAZ action
 
     const xmlResponse = await sendSoapRequest(url, soapAction, soapEnvelope, certPem, keyPem);
     const parsedData = parseDistDFeResponse(xmlResponse);

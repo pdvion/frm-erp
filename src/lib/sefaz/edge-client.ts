@@ -91,7 +91,7 @@ export class SefazEdgeClient {
         || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
         || "https://frm-erp.vercel.app";
       
-      console.log(`[SefazEdgeClient] Calling ${baseUrl}/api/sefaz-proxy`);
+      // Calling SEFAZ proxy API
       
       const response = await fetch(`${baseUrl}/api/sefaz-proxy`, {
         method: "POST",

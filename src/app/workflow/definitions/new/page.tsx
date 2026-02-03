@@ -13,6 +13,7 @@ import {
   Plus,
   Trash2,
   GripVertical,
+  Workflow,
 } from "lucide-react";
 
 type StepForm = {
@@ -99,13 +100,22 @@ export default function NewWorkflowDefinitionPage() {
           { label: "Novo" },
         ]}
         actions={
-          <Link
-            href="/workflow/definitions"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Cancelar
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/workflow/definitions/new/visual"
+              className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700"
+            >
+              <Workflow className="w-4 h-4" />
+              Editor Visual
+            </Link>
+            <Link
+              href="/workflow/definitions"
+              className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Cancelar
+            </Link>
+          </div>
         }
       />
 

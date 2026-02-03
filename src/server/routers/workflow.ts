@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { Prisma } from "@prisma/client";
+import {
+  generateWorkflowFromPrompt,
+  refineWorkflow,
+  PROMPT_SUGGESTIONS,
+  type GeneratedWorkflow,
+} from "@/lib/ai/workflowGenerator";
 
 export const workflowRouter = createTRPCRouter({
   // ============================================================================
@@ -793,4 +799,67 @@ export const workflowRouter = createTRPCRouter({
 
       return { success: true };
     }),
+
+  // ============================================================================
+  // GERAÇÃO DE WORKFLOW COM IA
+  // ============================================================================
+
+  generateFromAI: tenantProcedure
+    .input(
+      z.object({
+        prompt: z.string().min(10).max(2000),
+        currentWorkflow: z
+          .object({
+            name: z.string(),
+            description: z.string(),
+            category: z.enum(["PURCHASE", "PAYMENT", "HR", "PRODUCTION", "SALES", "GENERAL"]),
+            steps: z.array(z.any()),
+            transitions: z.array(z.any()),
+          })
+          .optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Get AI token from settings
+      const aiConfig = await ctx.prisma.systemSetting.findFirst({
+        where: {
+          companyId: ctx.companyId,
+          category: "ai",
+          key: "openai_token",
+        },
+      });
+
+      if (!aiConfig?.value || typeof aiConfig.value !== "string") {
+        throw new Error(
+          "Token de IA não configurado. Configure em Configurações > IA."
+        );
+      }
+
+      const apiKey = aiConfig.value;
+
+      try {
+        let workflow: GeneratedWorkflow;
+
+        if (input.currentWorkflow) {
+          // Refine existing workflow
+          workflow = await refineWorkflow(
+            input.currentWorkflow as GeneratedWorkflow,
+            input.prompt,
+            apiKey
+          );
+        } else {
+          // Generate new workflow
+          workflow = await generateWorkflowFromPrompt(input.prompt, apiKey);
+        }
+
+        return workflow;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro desconhecido";
+        throw new Error(`Falha ao gerar workflow: ${message}`);
+      }
+    }),
+
+  getAIPromptSuggestions: tenantProcedure.query(() => {
+    return PROMPT_SUGGESTIONS;
+  }),
 });
