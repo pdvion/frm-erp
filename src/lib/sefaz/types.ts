@@ -66,6 +66,10 @@ export interface ConsultaNFeResult {
   nfes: NFeResumo[];
   totalRegistros: number;
   ultimaNSU?: string;
+  ultimoNSU?: string;
+  maxNSU?: string;
+  documentos?: Array<{ nsu: string; schema: string; conteudo: string }>;
+  xml?: string;
 }
 
 // Resultado do download de NFe

@@ -31,6 +31,14 @@ interface Notification {
   message: string;
 }
 
+interface SefazConsultaResult {
+  totalRegistros: number;
+  ultimoNSU: string;
+  maxNSU: string;
+  message: string;
+  documentos: Array<{ nsu: string; schema: string; conteudo: string }>;
+}
+
 export default function SefazConfigPage() {
   const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [environment, setEnvironment] = useState<"homologacao" | "producao">("homologacao");
@@ -38,9 +46,7 @@ export default function SefazConfigPage() {
   const [certificatePassword, setCertificatePassword] = useState("");
   const [chaveConsulta, setChaveConsulta] = useState("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [consultaResult, setConsultaResult] = useState<{ total: number; nfes: string[] } | null>(null);
-  // Usar consultaResult para exibir resultado da consulta
-  void consultaResult;
+  const [consultaResult, setConsultaResult] = useState<SefazConsultaResult | null>(null);
 
   // Sync config states
   const [syncEnabled, setSyncEnabled] = useState(false);
@@ -95,12 +101,17 @@ export default function SefazConfigPage() {
   const consultarMutation = trpc.sefaz.consultarNFeDestinadas.useMutation({
     onSuccess: (data) => {
       addNotification("success", `Consulta realizada! ${data.totalRegistros} NFe encontradas.`);
-      if (data.totalRegistros > 0) {
-        setConsultaResult({ total: data.totalRegistros, nfes: [] });
-      }
+      setConsultaResult({
+        totalRegistros: data.totalRegistros,
+        ultimoNSU: data.ultimoNSU || "0",
+        maxNSU: data.maxNSU || "0",
+        message: data.message || "Consulta realizada",
+        documentos: data.documentos || [],
+      });
     },
     onError: (error) => {
       addNotification("error", error.message);
+      setConsultaResult(null);
     },
   });
 
@@ -612,6 +623,61 @@ export default function SefazConfigPage() {
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               Configure o certificado digital para habilitar as consultas.
+            </div>
+          )}
+
+          {/* Resultado da Consulta */}
+          {consultaResult && (
+            <div className="mt-6 border border-theme rounded-lg p-4 bg-theme-tertiary">
+              <h3 className="text-sm font-medium text-theme mb-3 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Resultado da Consulta SEFAZ
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="bg-theme-card p-3 rounded-lg border border-theme">
+                  <div className="text-2xl font-bold text-theme">{consultaResult.totalRegistros}</div>
+                  <div className="text-xs text-theme-muted">NFe Encontradas</div>
+                </div>
+                <div className="bg-theme-card p-3 rounded-lg border border-theme">
+                  <div className="text-sm font-mono text-theme">{consultaResult.ultimoNSU}</div>
+                  <div className="text-xs text-theme-muted">Último NSU</div>
+                </div>
+                <div className="bg-theme-card p-3 rounded-lg border border-theme">
+                  <div className="text-sm font-mono text-theme">{consultaResult.maxNSU}</div>
+                  <div className="text-xs text-theme-muted">Max NSU</div>
+                </div>
+                <div className="bg-theme-card p-3 rounded-lg border border-theme">
+                  <div className="text-sm text-theme truncate" title={consultaResult.message}>
+                    {consultaResult.message.length > 30 
+                      ? consultaResult.message.substring(0, 30) + "..." 
+                      : consultaResult.message}
+                  </div>
+                  <div className="text-xs text-theme-muted">Status SEFAZ</div>
+                </div>
+              </div>
+
+              {consultaResult.documentos.length > 0 && (
+                <div className="border-t border-theme pt-4">
+                  <h4 className="text-sm font-medium text-theme mb-2">Documentos ({consultaResult.documentos.length})</h4>
+                  <div className="max-h-48 overflow-y-auto space-y-2">
+                    {consultaResult.documentos.map((doc, idx) => (
+                      <div key={idx} className="bg-theme-card p-2 rounded border border-theme text-xs">
+                        <div className="flex justify-between">
+                          <span className="font-mono text-theme-muted">NSU: {doc.nsu}</span>
+                          <span className="text-theme-muted">{doc.schema}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {consultaResult.totalRegistros === 0 && (
+                <div className="text-sm text-theme-muted text-center py-4">
+                  Nenhuma NFe destinada pendente para este CNPJ.
+                </div>
+              )}
             </div>
           )}
         </div>

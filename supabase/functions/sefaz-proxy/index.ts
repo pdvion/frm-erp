@@ -90,12 +90,13 @@ function buildSoapEnvelope(action: string, body: string): string {
 </soap12:Envelope>`;
 }
 
-function buildDistDFeBody(cnpj: string, uf: string, nsu: string): string {
+function buildDistDFeBody(cnpj: string, uf: string, nsu: string, ambiente: "homologacao" | "producao"): string {
   const cUFAutor = getCodigoUF(uf);
+  const tpAmb = ambiente === "producao" ? "1" : "2";
   return `<nfeDistDFeInteresse xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe">
     <nfeDadosMsg>
       <distDFeInt xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.01">
-        <tpAmb>2</tpAmb>
+        <tpAmb>${tpAmb}</tpAmb>
         <cUFAutor>${cUFAutor}</cUFAutor>
         <CNPJ>${cnpj}</CNPJ>
         <distNSU>
@@ -106,12 +107,13 @@ function buildDistDFeBody(cnpj: string, uf: string, nsu: string): string {
   </nfeDistDFeInteresse>`;
 }
 
-function buildConsChNFeBody(cnpj: string, uf: string, chave: string): string {
+function buildConsChNFeBody(cnpj: string, uf: string, chave: string, ambiente: "homologacao" | "producao"): string {
   const cUFAutor = getCodigoUF(uf);
+  const tpAmb = ambiente === "producao" ? "1" : "2";
   return `<nfeDistDFeInteresse xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe">
     <nfeDadosMsg>
       <distDFeInt xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.01">
-        <tpAmb>2</tpAmb>
+        <tpAmb>${tpAmb}</tpAmb>
         <cUFAutor>${cUFAutor}</cUFAutor>
         <CNPJ>${cnpj}</CNPJ>
         <consChNFe>
@@ -229,7 +231,7 @@ Deno.serve(async (req) => {
       case "consultarNFeDestinadas":
         url = urls.nfeDistribuicaoDFe;
         soapAction = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe/nfeDistDFeInteresse";
-        soapEnvelope = buildSoapEnvelope(action, buildDistDFeBody(cnpj, uf, nsu || "0"));
+        soapEnvelope = buildSoapEnvelope(action, buildDistDFeBody(cnpj, uf, nsu || "0", ambiente));
         break;
 
       case "consultarPorChave":
@@ -241,7 +243,7 @@ Deno.serve(async (req) => {
         }
         url = urls.nfeDistribuicaoDFe;
         soapAction = "http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe/nfeDistDFeInteresse";
-        soapEnvelope = buildSoapEnvelope(action, buildConsChNFeBody(cnpj, uf, chave));
+        soapEnvelope = buildSoapEnvelope(action, buildConsChNFeBody(cnpj, uf, chave, ambiente));
         break;
 
       case "manifestar":
