@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+echo "🧹 Verificando lint nos arquivos staged..."
+pnpm lint

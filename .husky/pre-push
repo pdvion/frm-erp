@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+echo "🔍 Executando validações pré-push..."
+
+# 1. Verificar se Prisma Client está atualizado
+echo "📦 Verificando Prisma Client..."
+pnpm prisma generate
+
+# 2. Type check obrigatório
+echo "🔎 Verificando tipos TypeScript..."
+pnpm type-check
+if [ $? -ne 0 ]; then
+  echo "❌ Erros de tipo encontrados. Corrija antes de fazer push."
+  exit 1
+fi
+
+# 3. Lint
+echo "🧹 Verificando lint..."
+pnpm lint
+if [ $? -ne 0 ]; then
+  echo "❌ Erros de lint encontrados. Corrija antes de fazer push."
+  exit 1
+fi
+
+echo "✅ Todas as validações passaram!"
