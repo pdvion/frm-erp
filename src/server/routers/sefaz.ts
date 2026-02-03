@@ -27,6 +27,9 @@ export const sefazRouter = createTRPCRouter({
 
       // Se tem certificado e useEdgeFunction, usar Edge Function com mTLS real
       if (certificate && input?.useEdgeFunction !== false) {
+        console.log(`[SEFAZ Router] Calling edge client - CNPJ: ${config.cnpj}, UF: ${config.uf}, Env: ${config.environment}`);
+        console.log(`[SEFAZ Router] Certificate present: certPem=${certificate.certPem?.length || 0} chars, keyPem=${certificate.keyPem?.length || 0} chars`);
+        
         const result = await sefazEdgeClient.consultarNFeDestinadas(
           config.cnpj,
           config.uf,
@@ -34,6 +37,8 @@ export const sefazRouter = createTRPCRouter({
           input?.ultimoNSU,
           certificate
         );
+
+        console.log(`[SEFAZ Router] Edge client result: success=${result.success}, error=${result.error || 'none'}`);
 
         if (!result.success) {
           throw new TRPCError({

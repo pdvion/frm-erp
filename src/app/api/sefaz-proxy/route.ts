@@ -164,11 +164,17 @@ async function sendSoapRequest(
 }
 
 export async function POST(request: NextRequest) {
+  console.log("[SEFAZ Proxy] Received request");
+  
   try {
     const body: SefazRequest = await request.json();
     const { action, ambiente, cnpj, uf, nsu, chave, certPem, keyPem } = body;
 
+    console.log(`[SEFAZ Proxy] Action: ${action}, Ambiente: ${ambiente}, CNPJ: ${cnpj}, UF: ${uf}`);
+    console.log(`[SEFAZ Proxy] certPem length: ${certPem?.length || 0}, keyPem length: ${keyPem?.length || 0}`);
+
     if (!certPem || !keyPem) {
+      console.error("[SEFAZ Proxy] Missing certificate");
       return NextResponse.json(
         { success: false, error: "Certificado digital não fornecido" },
         { status: 400 }
