@@ -47,7 +47,7 @@ function formatFileSize(bytes: number): string {
 }
 
 function DocumentsContent() {
-  const { filters, setFilter, resetFilters } = useUrlFilters({
+  const { filters, setFilter, setFilters, resetFilters } = useUrlFilters({
     defaults: { page: 1, search: "", categoryId: undefined, entityType: undefined },
   });
 
@@ -180,8 +180,7 @@ function DocumentsContent() {
               placeholder="Buscar por título, nome do arquivo ou tags..."
               value={search}
               onChange={(e) => {
-                setFilter("search", e.target.value);
-                setFilter("page", 1);
+                setFilters({ search: e.target.value, page: 1 });
               }}
               className="pl-10"
             />
@@ -193,8 +192,7 @@ function DocumentsContent() {
             <Select
               value={categoryId ?? ""}
               onChange={(value) => {
-                setFilter("categoryId", value || undefined);
-                setFilter("page", 1);
+                setFilters({ categoryId: value || undefined, page: 1 });
               }}
               placeholder="Todas categorias"
               options={[
@@ -213,8 +211,7 @@ function DocumentsContent() {
             <Select
               value={entityType ?? ""}
               onChange={(value) => {
-                setFilter("entityType", value || undefined);
-                setFilter("page", 1);
+                setFilters({ entityType: value || undefined, page: 1 });
               }}
               placeholder="Todos os tipos"
               options={[

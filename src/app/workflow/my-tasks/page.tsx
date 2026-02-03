@@ -53,7 +53,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function MyTasksContent() {
-  const { filters, setFilter } = useUrlFilters({
+  const { filters, setFilters } = useUrlFilters({
     defaults: { page: 1, status: undefined },
   });
 
@@ -97,8 +97,7 @@ function MyTasksContent() {
           <select
             value={status ?? ""}
             onChange={(e) => {
-              setFilter("status", e.target.value || undefined);
-              setFilter("page", 1);
+              setFilters({ status: e.target.value || undefined, page: 1 });
             }}
             className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
           >
