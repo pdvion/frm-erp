@@ -1,9 +1,20 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+let supabaseInstance: SupabaseClient | null = null;
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+function getSupabaseClient(): SupabaseClient {
+  if (!supabaseInstance) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error("Supabase URL and Anon Key are required for Edge Function calls");
+    }
+    
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return supabaseInstance;
+}
 
 export interface SefazProxyRequest {
   action: "consultarNFeDestinadas" | "consultarPorChave" | "manifestar";
@@ -90,6 +101,7 @@ export class SefazEdgeClient {
 
   private async invoke(request: SefazProxyRequest): Promise<SefazProxyResponse> {
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke(this.functionName, {
         body: request,
       });

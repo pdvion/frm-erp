@@ -1,28 +1,64 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { createSefazClient, SefazConfig, ManifestacaoTipo, SefazEnvironment } from "@/lib/sefaz";
+import { createSefazClient, SefazConfig, ManifestacaoTipo } from "@/lib/sefaz";
 import { Prisma } from "@prisma/client";
 import { parsePfxCertificate, validateCertificate } from "@/lib/sefaz/certificate-parser";
+import { sefazEdgeClient, CertificateData } from "@/lib/sefaz/edge-client";
 
 export const sefazRouter = createTRPCRouter({
-  // Consultar NFe destinadas ao CNPJ da empresa
+  // Consultar NFe destinadas ao CNPJ da empresa (via Edge Function com mTLS)
   consultarNFeDestinadas: tenantProcedure
     .input(z.object({
       ultimoNSU: z.string().optional(),
+      useEdgeFunction: z.boolean().default(true),
     }).optional())
     .mutation(async ({ input, ctx }) => {
-      // Buscar configuração SEFAZ da empresa
-      const config = await getSefazConfig(ctx.companyId!, ctx.prisma);
+      const configWithCert = await getSefazConfigWithCert(ctx.companyId!, ctx.prisma);
       
-      if (!config) {
+      if (!configWithCert) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message: "Configuração SEFAZ não encontrada. Configure o certificado digital.",
         });
       }
 
-      const client = createSefazClient(config);
+      const { config, certificate } = configWithCert;
+
+      // Se tem certificado e useEdgeFunction, usar Edge Function com mTLS real
+      if (certificate && input?.useEdgeFunction !== false) {
+        const result = await sefazEdgeClient.consultarNFeDestinadas(
+          config.cnpj,
+          config.uf,
+          config.environment,
+          input?.ultimoNSU,
+          certificate
+        );
+
+        if (!result.success) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: result.error || "Erro ao consultar SEFAZ via Edge Function",
+          });
+        }
+
+        return {
+          success: true,
+          message: "Consulta realizada via Edge Function",
+          totalRegistros: 0,
+          ultimoNSU: input?.ultimoNSU || "0",
+          maxNSU: "0",
+          documentos: [],
+          xml: result.xml,
+        };
+      }
+
+      // Fallback: usar cliente mock (desenvolvimento)
+      const mockConfig = {
+        ...config,
+        certificate: { password: "" },
+      } as SefazConfig;
+      const client = createSefazClient(mockConfig);
       const result = await client.consultarNFeDestinadas(input?.ultimoNSU);
 
       if (!result.success) {
@@ -35,22 +71,55 @@ export const sefazRouter = createTRPCRouter({
       return result;
     }),
 
-  // Consultar NFe por chave de acesso
+  // Consultar NFe por chave de acesso (via Edge Function com mTLS)
   consultarPorChave: tenantProcedure
     .input(z.object({
       chaveAcesso: z.string().length(44, "Chave de acesso deve ter 44 dígitos"),
+      useEdgeFunction: z.boolean().default(true),
     }))
     .mutation(async ({ input, ctx }) => {
-      const config = await getSefazConfig(ctx.companyId!, ctx.prisma);
+      const configWithCert = await getSefazConfigWithCert(ctx.companyId!, ctx.prisma);
       
-      if (!config) {
+      if (!configWithCert) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
           message: "Configuração SEFAZ não encontrada",
         });
       }
 
-      const client = createSefazClient(config);
+      const { config, certificate } = configWithCert;
+
+      // Se tem certificado e useEdgeFunction, usar Edge Function com mTLS real
+      if (certificate && input.useEdgeFunction !== false) {
+        const result = await sefazEdgeClient.consultarPorChave(
+          config.cnpj,
+          config.uf,
+          input.chaveAcesso,
+          config.environment,
+          certificate
+        );
+
+        if (!result.success) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: result.error || "Erro ao consultar NFe via Edge Function",
+          });
+        }
+
+        return {
+          success: true,
+          message: "Consulta realizada via Edge Function",
+          chave: input.chaveAcesso,
+          xml: result.xml,
+        };
+      }
+
+      // Fallback: usar cliente mock (desenvolvimento)
+      const mockConfig = {
+        ...config,
+        certificate: { password: "" },
+      } as SefazConfig;
+      const client = createSefazClient(mockConfig);
       const result = await client.consultarPorChave(input.chaveAcesso);
 
       if (!result.success) {
@@ -834,6 +903,24 @@ interface SefazConfigStored {
   certificateId?: string;
 }
 
+interface SefazCertificateStored {
+  certificatePem: string;
+  privateKeyPem: string;
+  cnpj: string;
+  commonName: string;
+  validFrom: string;
+  validTo: string;
+}
+
+interface SefazConfigWithCert {
+  config: {
+    cnpj: string;
+    uf: string;
+    environment: "homologacao" | "producao";
+  };
+  certificate?: CertificateData;
+}
+
 /**
  * Busca configuração SEFAZ da empresa e monta objeto para o cliente
  */
@@ -849,13 +936,51 @@ async function getSefazConfig(companyId: string, prisma: any): Promise<SefazConf
 
   const stored = setting.value as unknown as SefazConfigStored;
   
-  // TODO: Buscar certificado do storage seguro
-  // Por enquanto, retorna config sem certificado (modo desenvolvimento)
-  
   return {
     cnpj: stored.cnpj,
-    uf: stored.uf as SefazEnvironment extends string ? string : never,
+    uf: stored.uf,
     environment: stored.environment,
-    certificate: stored.certificateId ? { pfxPath: stored.certificateId, password: "" } : undefined,
+    certificate: stored.certificateId ? { pfxPath: stored.certificateId, password: "" } : { password: "" },
   } as SefazConfig;
+}
+
+/**
+ * Busca configuração SEFAZ e certificado da empresa para uso com Edge Function
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getSefazConfigWithCert(companyId: string, prisma: any): Promise<SefazConfigWithCert | null> {
+  const [configSetting, certSetting] = await Promise.all([
+    prisma.systemSetting.findFirst({
+      where: { companyId, key: "sefaz_config" },
+    }),
+    prisma.systemSetting.findFirst({
+      where: { companyId, key: "sefaz_certificate" },
+    }),
+  ]);
+
+  if (!configSetting?.value) {
+    return null;
+  }
+
+  const stored = configSetting.value as unknown as SefazConfigStored;
+  
+  const config = {
+    cnpj: stored.cnpj,
+    uf: stored.uf,
+    environment: stored.environment,
+  };
+
+  let certificate: CertificateData | undefined;
+  
+  if (certSetting?.value) {
+    const certStored = certSetting.value as unknown as SefazCertificateStored;
+    if (certStored.certificatePem && certStored.privateKeyPem) {
+      certificate = {
+        certPem: certStored.certificatePem,
+        keyPem: certStored.privateKeyPem,
+      };
+    }
+  }
+
+  return { config, certificate };
 }
