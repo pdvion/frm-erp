@@ -5,7 +5,7 @@
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import type { Prisma } from "@prisma/client";
+import { type Prisma, ProductStatus } from "@prisma/client";
 
 // Helper para gerar slug
 function generateSlug(name: string): string {
@@ -741,7 +741,7 @@ export const productCatalogRouter = createTRPCRouter({
         } as Prisma.InputJsonValue,
         categoryId: input.categoryId,
         materialId: material.id,
-        status: (input.isPublished ? "active" : "draft") as "active" | "draft",
+        status: input.isPublished ? ("ACTIVE" as ProductStatus) : ("DRAFT" as ProductStatus),
         isPublished: input.isPublished ?? false,
         publishedAt: input.isPublished ? new Date() : null,
         companyId: ctx.companyId,

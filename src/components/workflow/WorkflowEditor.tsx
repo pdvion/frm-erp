@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -95,8 +95,18 @@ export function WorkflowEditor({
   const initialNodes = useMemo(() => steps.map(stepToNode), [steps]);
   const initialEdges = useMemo(() => transitions.map(transitionToEdge), [transitions]);
 
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // Sync nodes when steps change externally (e.g., from palette)
+  useEffect(() => {
+    setNodes(steps.map(stepToNode));
+  }, [steps, setNodes]);
+
+  // Sync edges when transitions change externally
+  useEffect(() => {
+    setEdges(transitions.map(transitionToEdge));
+  }, [transitions, setEdges]);
 
   const onConnect = useCallback(
     (connection: Connection) => {

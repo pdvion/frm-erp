@@ -70,12 +70,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     });
     const userId = localUser?.id ?? null;
     
-    // Debug log para identificar problema
-    console.log("[TRPC Context]", {
-      supabaseEmail: supabaseUser.email,
-      localUserId: userId,
-      localUserFound: !!localUser,
-    });
     
     // Fallback para header (desenvolvimento) ou null
     const finalUserId = userId ?? opts.headers.get("x-user-id");
@@ -83,12 +77,6 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     
     const tenant = await getTenantContext(finalUserId, activeCompanyId);
     
-    // Debug log para tenant
-    console.log("[TRPC Context] Tenant:", {
-      userId: tenant.userId,
-      companyId: tenant.companyId,
-      companiesCount: tenant.companies.length,
-    });
     
     return {
       prisma,

@@ -77,7 +77,7 @@ export const aiConfigRouter = createTRPCRouter({
           where: { id: existing.id },
           data: {
             value: { value: input.token },
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       } else {
@@ -88,7 +88,7 @@ export const aiConfigRouter = createTRPCRouter({
             category: "ai",
             companyId: ctx.companyId,
             description: `Token de API ${input.provider.toUpperCase()}`,
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       }
@@ -139,7 +139,7 @@ export const aiConfigRouter = createTRPCRouter({
           where: { id: existing.id },
           data: {
             value: { value: input.provider },
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       } else {
@@ -150,7 +150,7 @@ export const aiConfigRouter = createTRPCRouter({
             category: "ai",
             companyId: ctx.companyId,
             description: "Provedor de IA padrão",
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       }
@@ -189,7 +189,7 @@ export const aiConfigRouter = createTRPCRouter({
           where: { id: existing.id },
           data: {
             value: { value: input.model },
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       } else {
@@ -200,7 +200,7 @@ export const aiConfigRouter = createTRPCRouter({
             category: "ai",
             companyId: ctx.companyId,
             description: `Modelo padrão ${input.provider.toUpperCase()}`,
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       }
@@ -228,7 +228,7 @@ export const aiConfigRouter = createTRPCRouter({
           where: { id: existingEnable.id },
           data: {
             value: { value: input.enableFallback },
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       } else {
@@ -239,7 +239,7 @@ export const aiConfigRouter = createTRPCRouter({
             category: "ai",
             companyId: ctx.companyId,
             description: "Habilitar fallback automático de IA",
-            updatedBy: ctx.tenant.userId,
+            updatedBy: ctx.tenant?.userId ?? null,
           },
         });
       }
@@ -256,7 +256,7 @@ export const aiConfigRouter = createTRPCRouter({
             where: { id: existingProvider.id },
             data: {
               value: { value: input.fallbackProvider },
-              updatedBy: ctx.tenant.userId,
+              updatedBy: ctx.tenant?.userId ?? null,
             },
           });
         } else {
@@ -267,7 +267,7 @@ export const aiConfigRouter = createTRPCRouter({
               category: "ai",
               companyId: ctx.companyId,
               description: "Provider de fallback preferido",
-              updatedBy: ctx.tenant.userId,
+              updatedBy: ctx.tenant?.userId ?? null,
             },
           });
         }

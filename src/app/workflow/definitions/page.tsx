@@ -58,13 +58,22 @@ export default function WorkflowDefinitionsPage() {
           <div className="p-8 text-center text-theme-muted">
             <GitBranch className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum workflow configurado</p>
-            <Link
-              href="/workflow/definitions/new"
-              className="mt-4 inline-flex items-center gap-2 text-violet-600 hover:text-violet-800"
-            >
-              <Plus className="w-4 h-4" />
-              Criar primeiro workflow
-            </Link>
+            <div className="mt-4 flex items-center justify-center gap-4">
+              <Link
+                href="/workflow/definitions/new/visual"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700"
+              >
+                <Workflow className="w-4 h-4" />
+                Criar com Editor Visual
+              </Link>
+              <Link
+                href="/workflow/definitions/new"
+                className="inline-flex items-center gap-2 text-violet-600 hover:text-violet-800"
+              >
+                <Plus className="w-4 h-4" />
+                Formulário simples
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="divide-y divide-theme">
