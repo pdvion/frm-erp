@@ -6,7 +6,7 @@ description: Processo de Code Review e criação de PRs
 
 ## Quando Usar
 - Antes de fazer merge de branches
-- Para solicitar review do CodeRabbit
+- Para solicitar review automático (Windsurf ou CodeRabbit)
 - Para validar código antes de produção
 
 ## Passo 1: Preparar Branch para PR
@@ -47,28 +47,26 @@ Breve descrição do que foi feito.
 - [VIO-XXX](https://linear.app/vion/issue/VIO-XXX)
 ```
 
-## Passo 3: CodeRabbit Review
+## Passo 3: Solicitar Review
 
-O CodeRabbit faz review automático em PRs para branches:
-- `main`
-- `develop`
-- `develop-base`
+### Opção A: Windsurf PR Reviews (Recomendado)
+O Windsurf faz review automático quando o PR é marcado como "ready for review".
 
-### Configuração (.coderabbit.yaml)
-```yaml
-reviews:
-  auto_review:
-    enabled: true
-    base_branches:
-      - main
-      - develop
-      - develop-base
-```
+**Comandos disponíveis:**
+- `/windsurf-review` - Solicitar review em comentário do PR
+- `/windsurf` no título - Editar título do PR com IA
+
+**Limites:** 50 arquivos/PR, 500 reviews/mês por organização
+
+### Opção B: CodeRabbit (Backup)
+O CodeRabbit faz review automático em PRs para branches `main`, `develop`.
+
+**Configuração:** `.coderabbit.yaml`
 
 ### Aguardar Review
-1. CodeRabbit adiciona comentários em ~2-5 minutos
-2. Verificar "Summary by CodeRabbit" no PR
-3. Responder comentários se necessário
+1. Review automático em ~2-5 minutos
+2. Verificar comentários no PR
+3. Responder se necessário
 
 ## Passo 4: Corrigir Feedback
 
@@ -91,7 +89,7 @@ git push
 
 ### Pré-requisitos
 - [ ] CI passou (type-check, lint, tests)
-- [ ] CodeRabbit review concluído
+- [ ] Review concluído (Windsurf ou CodeRabbit)
 - [ ] Feedback crítico resolvido
 
 ### Merge
@@ -111,7 +109,7 @@ git push origin main
 - [ ] `pnpm test:run` passa
 - [ ] PR criado com título correto
 - [ ] Linear issue referenciada
-- [ ] CodeRabbit review concluído
+- [ ] Review concluído
 - [ ] Feedback crítico resolvido
 
 ## PRs Pendentes
@@ -121,7 +119,7 @@ Para listar PRs abertos:
 gh pr list --state open
 ```
 
-Ou via Linear MCP:
+Ou via GitHub MCP:
 ```
 mcp1_list_pull_requests(owner: "pdvion", repo: "frm-erp", state: "open")
 ```
