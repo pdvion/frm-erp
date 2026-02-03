@@ -20,6 +20,8 @@ interface SefazRequest {
   chave?: string;
   tipoEvento?: string;
   justificativa?: string;
+  certPem?: string;
+  keyPem?: string;
 }
 
 interface SefazResponse {
@@ -152,21 +154,21 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const certPem = Deno.env.get("SEFAZ_CERT_PEM");
-    const keyPem = Deno.env.get("SEFAZ_KEY_PEM");
+    const body: SefazRequest = await req.json();
+    const { action, ambiente, cnpj, uf, nsu, chave } = body;
+
+    const certPem = body.certPem || Deno.env.get("SEFAZ_CERT_PEM");
+    const keyPem = body.keyPem || Deno.env.get("SEFAZ_KEY_PEM");
 
     if (!certPem || !keyPem) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: "Certificado digital não configurado. Configure SEFAZ_CERT_PEM e SEFAZ_KEY_PEM no Supabase Vault." 
+          error: "Certificado digital não fornecido. Envie certPem e keyPem no request ou configure no Supabase Vault." 
         }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
-
-    const body: SefazRequest = await req.json();
-    const { action, ambiente, cnpj, uf, nsu, chave } = body;
 
     const urls = SEFAZ_URLS[ambiente];
     let soapEnvelope: string;

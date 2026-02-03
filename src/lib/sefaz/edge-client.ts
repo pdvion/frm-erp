@@ -14,6 +14,13 @@ export interface SefazProxyRequest {
   chave?: string;
   tipoEvento?: string;
   justificativa?: string;
+  certPem?: string;
+  keyPem?: string;
+}
+
+export interface CertificateData {
+  certPem: string;
+  keyPem: string;
 }
 
 export interface SefazProxyResponse {
@@ -30,7 +37,8 @@ export class SefazEdgeClient {
     cnpj: string,
     uf: string,
     ambiente: "homologacao" | "producao" = "homologacao",
-    nsu?: string
+    nsu?: string,
+    certificate?: CertificateData
   ): Promise<SefazProxyResponse> {
     return this.invoke({
       action: "consultarNFeDestinadas",
@@ -38,6 +46,7 @@ export class SefazEdgeClient {
       cnpj,
       uf,
       nsu,
+      ...certificate,
     });
   }
 
@@ -45,7 +54,8 @@ export class SefazEdgeClient {
     cnpj: string,
     uf: string,
     chave: string,
-    ambiente: "homologacao" | "producao" = "homologacao"
+    ambiente: "homologacao" | "producao" = "homologacao",
+    certificate?: CertificateData
   ): Promise<SefazProxyResponse> {
     return this.invoke({
       action: "consultarPorChave",
@@ -53,6 +63,7 @@ export class SefazEdgeClient {
       cnpj,
       uf,
       chave,
+      ...certificate,
     });
   }
 
@@ -62,7 +73,8 @@ export class SefazEdgeClient {
     chave: string,
     tipoEvento: string,
     ambiente: "homologacao" | "producao" = "homologacao",
-    justificativa?: string
+    justificativa?: string,
+    certificate?: CertificateData
   ): Promise<SefazProxyResponse> {
     return this.invoke({
       action: "manifestar",
@@ -72,6 +84,7 @@ export class SefazEdgeClient {
       chave,
       tipoEvento,
       justificativa,
+      ...certificate,
     });
   }
 
