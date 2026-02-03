@@ -39,7 +39,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function WorkflowInstancesContent() {
-  const { filters, setFilter } = useUrlFilters({
+  const { filters, setFilter, setFilters } = useUrlFilters({
     defaults: { page: 1, search: "", status: undefined },
   });
 
@@ -92,8 +92,7 @@ function WorkflowInstancesContent() {
               placeholder="Buscar por workflow ou código..."
               value={search}
               onChange={(e) => {
-                setFilter("search", e.target.value);
-                setFilter("page", 1);
+                setFilters({ search: e.target.value, page: 1 });
               }}
               className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
             />
@@ -104,8 +103,7 @@ function WorkflowInstancesContent() {
             <select
               value={status ?? ""}
               onChange={(e) => {
-                setFilter("status", e.target.value || undefined);
-                setFilter("page", 1);
+                setFilters({ status: e.target.value || undefined, page: 1 });
               }}
               className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
             >

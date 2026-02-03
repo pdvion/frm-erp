@@ -29,7 +29,7 @@ import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { useMultiTenant } from "@/hooks/useMultiTenant";
 
 function MaterialsContent() {
-  const { filters, setFilter, resetFilters } = useUrlFilters({
+  const { filters, setFilter, setFilters, resetFilters } = useUrlFilters({
     defaults: { page: 1, search: "", status: undefined },
   });
   const { showCompanyColumn } = useMultiTenant();
@@ -80,8 +80,7 @@ function MaterialsContent() {
               placeholder="Buscar por descrição ou código..."
               value={search}
               onChange={(e) => {
-                setFilter("search", e.target.value);
-                setFilter("page", 1);
+                setFilters({ search: e.target.value, page: 1 });
               }}
               className="pl-10"
             />
@@ -93,8 +92,7 @@ function MaterialsContent() {
             <Select
               value={statusFilter ?? ""}
               onChange={(value) => {
-                setFilter("status", (value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined);
-                setFilter("page", 1);
+                setFilters({ status: (value as "ACTIVE" | "INACTIVE" | "BLOCKED") || undefined, page: 1 });
               }}
               placeholder="Todos os status"
               options={[
