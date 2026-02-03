@@ -26,9 +26,59 @@ interface SefazRequest {
 
 interface SefazResponse {
   success: boolean;
-  data?: unknown;
+  data?: {
+    cStat?: string;
+    xMotivo?: string;
+    ultNSU?: string;
+    maxNSU?: string;
+    totalRegistros?: number;
+    documentos?: Array<{
+      nsu: string;
+      schema: string;
+      conteudo: string;
+    }>;
+  };
   error?: string;
   xml?: string;
+}
+
+function parseDistDFeResponse(xml: string): SefazResponse["data"] {
+  // Extrair cStat
+  const cStatMatch = xml.match(/<cStat>(\d+)<\/cStat>/);
+  const cStat = cStatMatch ? cStatMatch[1] : undefined;
+
+  // Extrair xMotivo
+  const xMotivoMatch = xml.match(/<xMotivo>([^<]+)<\/xMotivo>/);
+  const xMotivo = xMotivoMatch ? xMotivoMatch[1] : undefined;
+
+  // Extrair ultNSU
+  const ultNSUMatch = xml.match(/<ultNSU>(\d+)<\/ultNSU>/);
+  const ultNSU = ultNSUMatch ? ultNSUMatch[1] : "0";
+
+  // Extrair maxNSU
+  const maxNSUMatch = xml.match(/<maxNSU>(\d+)<\/maxNSU>/);
+  const maxNSU = maxNSUMatch ? maxNSUMatch[1] : "0";
+
+  // Extrair documentos (docZip)
+  const documentos: Array<{ nsu: string; schema: string; conteudo: string }> = [];
+  const docZipRegex = /<docZip\s+NSU="(\d+)"\s+schema="([^"]+)"[^>]*>([^<]+)<\/docZip>/g;
+  let match;
+  while ((match = docZipRegex.exec(xml)) !== null) {
+    documentos.push({
+      nsu: match[1],
+      schema: match[2],
+      conteudo: match[3],
+    });
+  }
+
+  return {
+    cStat,
+    xMotivo,
+    ultNSU,
+    maxNSU,
+    totalRegistros: documentos.length,
+    documentos,
+  };
 }
 
 function buildSoapEnvelope(action: string, body: string): string {
@@ -211,8 +261,14 @@ Deno.serve(async (req) => {
 
     const xmlResponse = await sendSoapRequest(url, soapAction, soapEnvelope, certPem, keyPem);
 
+    // Parsear resposta XML
+    const parsedData = parseDistDFeResponse(xmlResponse);
+    
+    console.log(`[SEFAZ Proxy] Response - cStat: ${parsedData?.cStat}, xMotivo: ${parsedData?.xMotivo}, totalRegistros: ${parsedData?.totalRegistros}`);
+
     const response: SefazResponse = {
       success: true,
+      data: parsedData,
       xml: xmlResponse,
     };
 

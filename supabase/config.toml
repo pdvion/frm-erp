@@ -42,5 +42,5 @@ enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
 
-[functions]
+[functions.sefaz-proxy]
 verify_jwt = true

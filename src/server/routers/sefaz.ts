@@ -42,13 +42,23 @@ export const sefazRouter = createTRPCRouter({
           });
         }
 
+        // Extrair dados parseados da resposta
+        const data = result.data as {
+          cStat?: string;
+          xMotivo?: string;
+          ultNSU?: string;
+          maxNSU?: string;
+          totalRegistros?: number;
+          documentos?: Array<{ nsu: string; schema: string; conteudo: string }>;
+        } | undefined;
+
         return {
           success: true,
-          message: "Consulta realizada via Edge Function",
-          totalRegistros: 0,
-          ultimoNSU: input?.ultimoNSU || "0",
-          maxNSU: "0",
-          documentos: [],
+          message: data?.xMotivo || "Consulta realizada via Edge Function",
+          totalRegistros: data?.totalRegistros || 0,
+          ultimoNSU: data?.ultNSU || input?.ultimoNSU || "0",
+          maxNSU: data?.maxNSU || "0",
+          documentos: data?.documentos || [],
           xml: result.xml,
         };
       }
