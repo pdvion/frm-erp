@@ -86,7 +86,13 @@ export class SefazEdgeClient {
   private async invoke(request: SefazProxyRequest): Promise<SefazProxyResponse> {
     try {
       // Usar API Route do Vercel (Node.js com mTLS nativo)
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+      // No servidor, usar VERCEL_URL ou fallback para localhost
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
+        || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
+        || "https://frm-erp.vercel.app";
+      
+      console.log(`[SefazEdgeClient] Calling ${baseUrl}/api/sefaz-proxy`);
+      
       const response = await fetch(`${baseUrl}/api/sefaz-proxy`, {
         method: "POST",
         headers: {
