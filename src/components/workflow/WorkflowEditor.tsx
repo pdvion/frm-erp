@@ -55,6 +55,7 @@ const nodeTypes: NodeTypes = {
   start: StartNode,
   end: EndNode,
   action: ActionNode,
+  task: ActionNode, // TASK type from database maps to ActionNode
   condition: ConditionNode,
   approval: ApprovalNode,
   notification: NotificationNode,
