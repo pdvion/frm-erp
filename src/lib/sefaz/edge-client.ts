@@ -1,20 +1,5 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
-
-let supabaseInstance: SupabaseClient | null = null;
-
-function getSupabaseClient(): SupabaseClient {
-  if (!supabaseInstance) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error("Supabase URL and Anon Key are required for Edge Function calls");
-    }
-    
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
-  }
-  return supabaseInstance;
-}
+// Cliente para chamar a API Route de proxy SEFAZ (Vercel Serverless)
+// Usa Node.js https.request com mTLS para comunicação com a SEFAZ
 
 export interface SefazProxyRequest {
   action: "consultarNFeDestinadas" | "consultarPorChave" | "manifestar";
@@ -42,7 +27,6 @@ export interface SefazProxyResponse {
 }
 
 export class SefazEdgeClient {
-  private functionName = "sefaz-proxy";
 
   async consultarNFeDestinadas(
     cnpj: string,
@@ -101,20 +85,26 @@ export class SefazEdgeClient {
 
   private async invoke(request: SefazProxyRequest): Promise<SefazProxyResponse> {
     try {
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase.functions.invoke(this.functionName, {
-        body: request,
+      // Usar API Route do Vercel (Node.js com mTLS nativo)
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+      const response = await fetch(`${baseUrl}/api/sefaz-proxy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
       });
 
-      if (error) {
-        console.error("[SefazEdgeClient] Supabase function error:", error);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("[SefazEdgeClient] API error:", errorData);
         return {
           success: false,
-          error: error.message || "Erro ao chamar Edge Function",
+          error: errorData.error || `HTTP ${response.status}`,
         };
       }
 
-      return data as SefazProxyResponse;
+      return await response.json() as SefazProxyResponse;
     } catch (err) {
       console.error("[SefazEdgeClient] Error:", err);
       return {

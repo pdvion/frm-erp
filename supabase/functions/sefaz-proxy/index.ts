@@ -160,101 +160,58 @@ async function sendSoapRequest(
   certPem: string,
   keyPem: string
 ): Promise<string> {
-  const urlObj = new URL(url);
+  console.log(`[SEFAZ] Sending mTLS request to ${url}`);
+  console.log(`[SEFAZ] Cert length: ${certPem.length}, Key length: ${keyPem.length}`);
+  console.log(`[SEFAZ] Cert preview: ${certPem.substring(0, 60)}...`);
   
-  console.log(`[SEFAZ] Connecting to ${urlObj.hostname}:443`);
-  
-  const conn = await Deno.connectTls({
-    hostname: urlObj.hostname,
-    port: 443,
-    certChain: certPem,
-    privateKey: keyPem,
-  });
-
-  console.log(`[SEFAZ] TLS connection established`);
+  let httpClient: Deno.HttpClient;
+  try {
+    httpClient = Deno.createHttpClient({
+      certChain: certPem,
+      privateKey: keyPem,
+    });
+    console.log(`[SEFAZ] HttpClient created successfully`);
+  } catch (clientError) {
+    const errMsg = clientError instanceof Error ? clientError.message : String(clientError);
+    console.error(`[SEFAZ] Failed to create HttpClient: ${errMsg}`);
+    throw new Error(`Erro ao criar cliente mTLS: ${errMsg}`);
+  }
 
   try {
-    const request = [
-      `POST ${urlObj.pathname} HTTP/1.1`,
-      `Host: ${urlObj.hostname}`,
-      `Content-Type: application/soap+xml; charset=utf-8; action="${soapAction}"`,
-      `Content-Length: ${new TextEncoder().encode(envelope).length}`,
-      `Connection: close`,
-      ``,
-      envelope,
-    ].join("\r\n");
+    console.log(`[SEFAZ] Sending fetch request...`);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/soap+xml; charset=utf-8",
+        "SOAPAction": soapAction,
+      },
+      body: envelope,
+      // @ts-expect-error - Deno specific option
+      client: httpClient,
+    });
 
-    const encoder = new TextEncoder();
-    await conn.write(encoder.encode(request));
-    console.log(`[SEFAZ] Request sent, waiting for response...`);
-
-    const decoder = new TextDecoder();
-    const chunks: Uint8Array[] = [];
-    const buffer = new Uint8Array(131072); // 128KB buffer
+    console.log(`[SEFAZ] Response status: ${response.status} ${response.statusText}`);
     
-    while (true) {
-      const bytesRead = await conn.read(buffer);
-      if (bytesRead === null) break;
-      chunks.push(buffer.slice(0, bytesRead));
-    }
-
-    // Concatenar todos os chunks
-    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-    const fullResponse = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const chunk of chunks) {
-      fullResponse.set(chunk, offset);
-      offset += chunk.length;
-    }
-
-    const response = decoder.decode(fullResponse);
-    console.log(`[SEFAZ] Response received, total bytes: ${totalLength}`);
-
-    const bodyStart = response.indexOf("\r\n\r\n");
-    if (bodyStart === -1) {
-      console.error(`[SEFAZ] Invalid HTTP response - no body separator found`);
-      console.error(`[SEFAZ] Response preview: ${response.substring(0, 200)}`);
-      throw new Error("Invalid HTTP response");
-    }
+    const body = await response.text();
+    console.log(`[SEFAZ] Response body length: ${body.length}`);
+    console.log(`[SEFAZ] Response preview: ${body.substring(0, 300)}`);
     
-    let body = response.substring(bodyStart + 4);
-    
-    // Handle chunked transfer encoding
-    if (response.toLowerCase().includes("transfer-encoding: chunked")) {
-      console.log(`[SEFAZ] Decoding chunked response`);
-      body = decodeChunked(body);
+    if (!response.ok) {
+      console.error(`[SEFAZ] HTTP Error: ${response.status}`);
+      throw new Error(`SEFAZ HTTP Error: ${response.status} - ${body.substring(0, 200)}`);
     }
     
     return body;
+  } catch (fetchError) {
+    const errMsg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+    console.error(`[SEFAZ] Fetch error: ${errMsg}`);
+    throw new Error(`Erro na requisição SEFAZ: ${errMsg}`);
   } finally {
-    conn.close();
+    httpClient.close();
   }
 }
 
-function decodeChunked(body: string): string {
-  let result = "";
-  let remaining = body;
-  
-  while (remaining.length > 0) {
-    const lineEnd = remaining.indexOf("\r\n");
-    if (lineEnd === -1) break;
-    
-    const chunkSizeHex = remaining.substring(0, lineEnd).trim();
-    const chunkSize = parseInt(chunkSizeHex, 16);
-    
-    if (isNaN(chunkSize) || chunkSize === 0) break;
-    
-    const chunkStart = lineEnd + 2;
-    const chunkEnd = chunkStart + chunkSize;
-    
-    if (chunkEnd > remaining.length) break;
-    
-    result += remaining.substring(chunkStart, chunkEnd);
-    remaining = remaining.substring(chunkEnd + 2); // Skip \r\n after chunk
-  }
-  
-  return result || body; // Fallback to original if decoding fails
-}
+// Função removida - não mais necessária com fetch
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -278,8 +235,9 @@ Deno.serve(async (req) => {
     const body: SefazRequest = await req.json();
     const { action, ambiente, cnpj, uf, nsu, chave } = body;
 
-    const certPem = body.certPem || Deno.env.get("SEFAZ_CERT_PEM");
-    const keyPem = body.keyPem || Deno.env.get("SEFAZ_KEY_PEM");
+    // Normalizar line endings do certificado (Windows \r\n -> Unix \n)
+    const certPem = (body.certPem || Deno.env.get("SEFAZ_CERT_PEM"))?.replace(/\r\n/g, "\n");
+    const keyPem = (body.keyPem || Deno.env.get("SEFAZ_KEY_PEM"))?.replace(/\r\n/g, "\n");
 
     if (!certPem || !keyPem) {
       return new Response(
@@ -356,11 +314,15 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("[SEFAZ Proxy] Error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    const errorStack = error instanceof Error ? error.stack : "";
+    
+    console.error("[SEFAZ Proxy] Error:", errorMessage);
+    console.error("[SEFAZ Proxy] Stack:", errorStack);
     
     const response: SefazResponse = {
       success: false,
-      error: error instanceof Error ? error.message : "Erro desconhecido",
+      error: `${errorMessage}. Verifique se o certificado está válido e no formato correto.`,
     };
 
     return new Response(JSON.stringify(response), {
