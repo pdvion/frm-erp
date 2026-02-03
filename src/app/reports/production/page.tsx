@@ -15,7 +15,7 @@ const reports = [
     title: "Ordens de Produção",
     description: "Status e acompanhamento de OPs",
     icon: <ClipboardList className="w-5 h-5" />,
-    href: "/production/orders",
+    href: "/production",
   },
   {
     title: "Custos de Produção",
