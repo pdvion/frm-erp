@@ -6,7 +6,7 @@ description: Cria e aplica migrations no banco Supabase
 
 ## Pré-requisitos
 - Project ID Supabase: `jewutjydoyaimusaxvyg`
-- Usar MCP `mcp9_apply_migration` (NUNCA usar `prisma migrate`)
+- Usar MCP `mcp7_apply_migration` (NUNCA usar `prisma migrate`)
 
 ## Passos
 

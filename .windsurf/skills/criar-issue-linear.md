@@ -81,7 +81,7 @@ Visão geral do épico.
 ## Uso do MCP
 
 ```typescript
-mcp3_create_issue({
+mcp2_create_issue({
   team: "Vion",
   title: "[TIPO] Título",
   description: "Descrição em Markdown",
@@ -94,7 +94,7 @@ mcp3_create_issue({
 ## Atualizar Issue Existente
 
 ```typescript
-mcp3_update_issue({
+mcp2_update_issue({
   id: "VIO-XXX",
   description: "Nova descrição",
   state: "Done",

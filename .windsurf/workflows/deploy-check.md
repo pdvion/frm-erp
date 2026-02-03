@@ -46,7 +46,7 @@ mcp10_get_access_to_vercel_url ou mcp10_web_fetch_vercel_url
 ### 5. Verificar Logs de Erro
 Se houver problemas em produção:
 ```
-mcp9_get_logs com service: "api" ou "postgres"
+mcp7_get_logs com service: "api" ou "postgres"
 ```
 
 ## ⚠️ REGRA CRÍTICA: Analisar Logs Antes de Corrigir

@@ -215,7 +215,7 @@ git push origin main
 ```
 
 ### 7. Atualizar Linear
-Usar `mcp3_update_issue` para atualizar status da issue
+Usar `mcp2_update_issue` para atualizar status da issue
 
 ## Erros Comuns
 

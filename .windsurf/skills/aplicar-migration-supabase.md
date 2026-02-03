@@ -9,7 +9,7 @@ description: Cria e aplica uma migration no banco Supabase via MCP
 - **Região**: sa-east-1 (São Paulo)
 
 ## IMPORTANTE: NUNCA usar `prisma migrate`
-Sempre usar o MCP `mcp9_apply_migration`
+Sempre usar o MCP `mcp7_apply_migration`
 
 ## Padrões de Tipos SQL
 
@@ -109,7 +109,7 @@ ALTER TABLE "nome_tabela" ADD CONSTRAINT "nome_tabela_companyId_fkey"
 ## Uso do MCP
 
 ```typescript
-mcp9_apply_migration({
+mcp7_apply_migration({
   project_id: "jewutjydoyaimusaxvyg",
   name: "nome_descritivo_snake_case",
   query: "SQL da migration"
