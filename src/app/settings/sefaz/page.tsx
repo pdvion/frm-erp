@@ -549,7 +549,19 @@ export default function SefazConfigPage() {
           <h2 className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
             <FileText className="w-5 h-5 text-theme-muted" />
             Consultar NFe
+            {!status?.hasCertificate && (
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+                MODO DEV
+              </span>
+            )}
           </h2>
+
+          {!status?.hasCertificate && (
+            <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm">
+              <strong>Modo Desenvolvimento:</strong> As consultas retornam dados simulados. 
+              Para consultas reais na SEFAZ, é necessário configurar um certificado digital A1 válido (.pfx).
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Consulta por período */}
