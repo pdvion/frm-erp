@@ -43,33 +43,50 @@ interface SefazResponse {
 }
 
 function parseDistDFeResponse(xml: string): SefazResponse["data"] {
-  // Extrair cStat
-  const cStatMatch = xml.match(/<cStat>(\d+)<\/cStat>/);
+  console.log(`[SEFAZ Parser] Parsing XML of length: ${xml.length}`);
+  
+  // Extrair cStat (pode ter namespace)
+  const cStatMatch = xml.match(/<(?:\w+:)?cStat>(\d+)<\/(?:\w+:)?cStat>/);
   const cStat = cStatMatch ? cStatMatch[1] : undefined;
+  console.log(`[SEFAZ Parser] cStat: ${cStat}`);
 
-  // Extrair xMotivo
-  const xMotivoMatch = xml.match(/<xMotivo>([^<]+)<\/xMotivo>/);
+  // Extrair xMotivo (pode ter namespace)
+  const xMotivoMatch = xml.match(/<(?:\w+:)?xMotivo>([^<]+)<\/(?:\w+:)?xMotivo>/);
   const xMotivo = xMotivoMatch ? xMotivoMatch[1] : undefined;
+  console.log(`[SEFAZ Parser] xMotivo: ${xMotivo}`);
 
-  // Extrair ultNSU
-  const ultNSUMatch = xml.match(/<ultNSU>(\d+)<\/ultNSU>/);
+  // Extrair ultNSU (pode ter namespace)
+  const ultNSUMatch = xml.match(/<(?:\w+:)?ultNSU>(\d+)<\/(?:\w+:)?ultNSU>/);
   const ultNSU = ultNSUMatch ? ultNSUMatch[1] : "0";
+  console.log(`[SEFAZ Parser] ultNSU: ${ultNSU}`);
 
-  // Extrair maxNSU
-  const maxNSUMatch = xml.match(/<maxNSU>(\d+)<\/maxNSU>/);
+  // Extrair maxNSU (pode ter namespace)
+  const maxNSUMatch = xml.match(/<(?:\w+:)?maxNSU>(\d+)<\/(?:\w+:)?maxNSU>/);
   const maxNSU = maxNSUMatch ? maxNSUMatch[1] : "0";
+  console.log(`[SEFAZ Parser] maxNSU: ${maxNSU}`);
 
-  // Extrair documentos (docZip)
+  // Extrair documentos (docZip) - formato pode variar
   const documentos: Array<{ nsu: string; schema: string; conteudo: string }> = [];
-  const docZipRegex = /<docZip\s+NSU="(\d+)"\s+schema="([^"]+)"[^>]*>([^<]+)<\/docZip>/g;
-  let match;
-  while ((match = docZipRegex.exec(xml)) !== null) {
-    documentos.push({
-      nsu: match[1],
-      schema: match[2],
-      conteudo: match[3],
-    });
+  
+  // Tentar múltiplos padrões de regex para docZip
+  const patterns = [
+    /<(?:\w+:)?docZip\s+NSU="(\d+)"\s+schema="([^"]+)"[^>]*>([^<]+)<\/(?:\w+:)?docZip>/g,
+    /<docZip\s+NSU="(\d+)"\s+schema="([^"]+)"[^>]*>([^<]+)<\/docZip>/gi,
+    /<loteDistDFeInt>[\s\S]*?<docZip\s+NSU="(\d+)"\s+schema="([^"]+)"[^>]*>([\s\S]*?)<\/docZip>/g,
+  ];
+  
+  for (const regex of patterns) {
+    let match;
+    while ((match = regex.exec(xml)) !== null) {
+      const doc = { nsu: match[1], schema: match[2], conteudo: match[3] };
+      // Evitar duplicatas
+      if (!documentos.find(d => d.nsu === doc.nsu)) {
+        documentos.push(doc);
+      }
+    }
   }
+  
+  console.log(`[SEFAZ Parser] Documentos encontrados: ${documentos.length}`);
 
   return {
     cStat,
@@ -145,12 +162,16 @@ async function sendSoapRequest(
 ): Promise<string> {
   const urlObj = new URL(url);
   
+  console.log(`[SEFAZ] Connecting to ${urlObj.hostname}:443`);
+  
   const conn = await Deno.connectTls({
     hostname: urlObj.hostname,
     port: 443,
     certChain: certPem,
     privateKey: keyPem,
   });
+
+  console.log(`[SEFAZ] TLS connection established`);
 
   try {
     const request = [
@@ -165,26 +186,74 @@ async function sendSoapRequest(
 
     const encoder = new TextEncoder();
     await conn.write(encoder.encode(request));
+    console.log(`[SEFAZ] Request sent, waiting for response...`);
 
     const decoder = new TextDecoder();
-    const buffer = new Uint8Array(65536);
-    let response = "";
+    const chunks: Uint8Array[] = [];
+    const buffer = new Uint8Array(131072); // 128KB buffer
     
     while (true) {
       const bytesRead = await conn.read(buffer);
       if (bytesRead === null) break;
-      response += decoder.decode(buffer.subarray(0, bytesRead));
+      chunks.push(buffer.slice(0, bytesRead));
     }
+
+    // Concatenar todos os chunks
+    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+    const fullResponse = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+      fullResponse.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    const response = decoder.decode(fullResponse);
+    console.log(`[SEFAZ] Response received, total bytes: ${totalLength}`);
 
     const bodyStart = response.indexOf("\r\n\r\n");
     if (bodyStart === -1) {
+      console.error(`[SEFAZ] Invalid HTTP response - no body separator found`);
+      console.error(`[SEFAZ] Response preview: ${response.substring(0, 200)}`);
       throw new Error("Invalid HTTP response");
     }
     
-    return response.substring(bodyStart + 4);
+    let body = response.substring(bodyStart + 4);
+    
+    // Handle chunked transfer encoding
+    if (response.toLowerCase().includes("transfer-encoding: chunked")) {
+      console.log(`[SEFAZ] Decoding chunked response`);
+      body = decodeChunked(body);
+    }
+    
+    return body;
   } finally {
     conn.close();
   }
+}
+
+function decodeChunked(body: string): string {
+  let result = "";
+  let remaining = body;
+  
+  while (remaining.length > 0) {
+    const lineEnd = remaining.indexOf("\r\n");
+    if (lineEnd === -1) break;
+    
+    const chunkSizeHex = remaining.substring(0, lineEnd).trim();
+    const chunkSize = parseInt(chunkSizeHex, 16);
+    
+    if (isNaN(chunkSize) || chunkSize === 0) break;
+    
+    const chunkStart = lineEnd + 2;
+    const chunkEnd = chunkStart + chunkSize;
+    
+    if (chunkEnd > remaining.length) break;
+    
+    result += remaining.substring(chunkStart, chunkEnd);
+    remaining = remaining.substring(chunkEnd + 2); // Skip \r\n after chunk
+  }
+  
+  return result || body; // Fallback to original if decoding fails
 }
 
 Deno.serve(async (req) => {
@@ -259,14 +328,19 @@ Deno.serve(async (req) => {
         );
     }
 
-    console.log(`[SEFAZ Proxy] ${action} - CNPJ: ${cnpj}, UF: ${uf}, Ambiente: ${ambiente}`);
+    console.log(`[SEFAZ Proxy] ${action} - CNPJ: ${cnpj}, UF: ${uf}, Ambiente: ${ambiente}, NSU: ${nsu || "0"}`);
+    console.log(`[SEFAZ Proxy] URL: ${url}`);
+    console.log(`[SEFAZ Proxy] Cert length: ${certPem?.length || 0}, Key length: ${keyPem?.length || 0}`);
 
     const xmlResponse = await sendSoapRequest(url, soapAction, soapEnvelope, certPem, keyPem);
+
+    // Log primeiros 500 chars da resposta para debug
+    console.log(`[SEFAZ Proxy] XML Response (first 500 chars): ${xmlResponse.substring(0, 500)}`);
 
     // Parsear resposta XML
     const parsedData = parseDistDFeResponse(xmlResponse);
     
-    console.log(`[SEFAZ Proxy] Response - cStat: ${parsedData?.cStat}, xMotivo: ${parsedData?.xMotivo}, totalRegistros: ${parsedData?.totalRegistros}`);
+    console.log(`[SEFAZ Proxy] Parsed - cStat: ${parsedData?.cStat}, xMotivo: ${parsedData?.xMotivo}, ultNSU: ${parsedData?.ultNSU}, maxNSU: ${parsedData?.maxNSU}, totalRegistros: ${parsedData?.totalRegistros}`);
 
     const response: SefazResponse = {
       success: true,

@@ -405,8 +405,62 @@ export const sefazRouter = createTRPCRouter({
         });
       }
 
-      // TODO: Salvar certificado em storage seguro (Supabase Storage ou Vault)
-      // Por segurança, o certificado não deve ser salvo em JSON no banco
+      // Se certificado foi fornecido, processar e salvar
+      if (input.certificateBase64 && input.certificatePassword) {
+        const pfxBuffer = Buffer.from(input.certificateBase64, "base64");
+        const certResult = parsePfxCertificate(pfxBuffer, input.certificatePassword);
+        
+        if (!certResult.success || !certResult.certificate) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: certResult.error || "Erro ao processar certificado",
+          });
+        }
+
+        const cert = certResult.certificate;
+
+        if (!cert.isValid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Certificado expirado ou ainda não válido",
+          });
+        }
+
+        // Salvar certificado PEM
+        const certData = {
+          certificatePem: cert.certificate,
+          privateKeyPem: cert.privateKey,
+          cnpj: cert.cnpj,
+          commonName: cert.commonName,
+          thumbprint: cert.thumbprint,
+          validTo: cert.validTo.toISOString(),
+        };
+
+        const existingCert = await ctx.prisma.systemSetting.findFirst({
+          where: { key: "sefaz_certificate", companyId: ctx.companyId },
+        });
+
+        if (existingCert) {
+          await ctx.prisma.systemSetting.update({
+            where: { id: existingCert.id },
+            data: {
+              value: certData as unknown as Prisma.InputJsonValue,
+              updatedBy: ctx.tenant.userId,
+            },
+          });
+        } else {
+          await ctx.prisma.systemSetting.create({
+            data: {
+              key: "sefaz_certificate",
+              category: "integrations",
+              companyId: ctx.companyId,
+              value: certData as unknown as Prisma.InputJsonValue,
+              description: "Certificado digital A1 para SEFAZ",
+              updatedBy: ctx.tenant.userId,
+            },
+          });
+        }
+      }
 
       return { success: true, message: "Configuração salva com sucesso" };
     }),
