@@ -249,7 +249,7 @@ export default function CompaniesPage() {
               placeholder="Buscar por nome, fantasia ou CNPJ..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 outline-none"
+              className="flex-1 outline-none bg-transparent text-theme placeholder:text-theme-muted"
             />
           </div>
         </div>

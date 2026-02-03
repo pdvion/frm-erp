@@ -435,7 +435,7 @@ export default function SefazConfigPage() {
               />
               <div>
                 <span className="text-sm font-medium text-theme">Habilitar sincronização automática</span>
-                <p className="text-xs text-theme-muted">Executa a cada 4 horas via Vercel Cron</p>
+                <p className="text-xs text-theme-muted">Executa a cada 4 horas via Supabase Edge Functions</p>
               </div>
             </label>
 
