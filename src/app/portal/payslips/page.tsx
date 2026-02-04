@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { FileText, Download, Eye, Calendar } from "lucide-react";
 import Link from "next/link";
+import { generatePdfFromHtml, formatCurrency as formatCurrencyPdf } from "@/lib/pdf-generator";
 
 export default function PayslipsPage() {
   const currentYear = new Date().getFullYear();
@@ -27,8 +28,29 @@ export default function PayslipsPage() {
   };
 
   const getMonthName = (month: number) => {
-    return new Date(2024, month - 1).toLocaleDateString("pt-BR", {
+    return new Date(currentYear, month - 1).toLocaleDateString("pt-BR", {
       month: "long",
+    });
+  };
+
+  const handleDownloadPdf = (payslip: NonNullable<typeof payslips>[number]) => {
+    const monthName = getMonthName(payslip.payroll.referenceMonth);
+    const content = `
+      <div class="header">
+        <h1>HOLERITE</h1>
+        <p>${monthName} de ${payslip.payroll.referenceYear}</p>
+      </div>
+      <table>
+        <tr><th>Salário Bruto</th><td style="text-align: right">${formatCurrencyPdf(payslip.grossSalary || 0)}</td></tr>
+        <tr><th>INSS</th><td style="text-align: right">${formatCurrencyPdf(payslip.inss || 0)}</td></tr>
+        <tr><th>IRRF</th><td style="text-align: right">${formatCurrencyPdf(payslip.irrf || 0)}</td></tr>
+        <tr><th>Outros Descontos</th><td style="text-align: right">${formatCurrencyPdf(payslip.totalDeductions || 0)}</td></tr>
+        <tr style="background: #e8f5e9"><th>Salário Líquido</th><td style="text-align: right; font-weight: bold">${formatCurrencyPdf(payslip.netSalary || 0)}</td></tr>
+      </table>
+    `;
+    generatePdfFromHtml(content, {
+      title: `Holerite - ${monthName} ${payslip.payroll.referenceYear}`,
+      filename: `holerite-${payslip.payroll.referenceYear}-${payslip.payroll.referenceMonth}.pdf`,
     });
   };
 
@@ -140,7 +162,11 @@ export default function PayslipsPage() {
                           Ver
                         </Button>
                       </Link>
-                      <Button variant="secondary" size="sm">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleDownloadPdf(payslip)}
+                      >
                         <Download className="w-4 h-4 mr-1" />
                         PDF
                       </Button>

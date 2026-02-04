@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Clock, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { generatePdfFromHtml } from "@/lib/pdf-generator";
 
 export default function TimesheetPage() {
   const now = new Date();
@@ -56,6 +57,64 @@ export default function TimesheetPage() {
     return day === 0 || day === 6;
   };
 
+  const hasRecords = timeRecords?.records && timeRecords.records.length > 0;
+
+  const handleExportPdf = () => {
+    if (!timeRecords?.records || timeRecords.records.length === 0) return;
+
+    const rows = timeRecords.records
+      .map((record) => `
+        <tr>
+          <td>${new Date(record.date).toLocaleDateString("pt-BR")}</td>
+          <td>${getDayOfWeek(record.date)}</td>
+          <td style="text-align: center">${record.entryTime || "-"}</td>
+          <td style="text-align: center">${record.lunchOutTime || "-"}</td>
+          <td style="text-align: center">${record.lunchInTime || "-"}</td>
+          <td style="text-align: center">${record.exitTime || "-"}</td>
+          <td style="text-align: center">${record.workedHours ? `${record.workedHours}h ${record.workedMinutes || 0}m` : "-"}</td>
+          <td style="text-align: center">${record.overtimeHours ? `${record.overtimeHours}h ${record.overtimeMinutes || 0}m` : "-"}</td>
+        </tr>
+      `)
+      .join("");
+
+    const content = `
+      <div class="header">
+        <h1>ESPELHO DE PONTO</h1>
+        <p>${getMonthName()}</p>
+      </div>
+      <table style="margin-bottom: 20px">
+        <tr>
+          <td><strong>Dias Trabalhados:</strong> ${timeRecords.summary?.workDays || 0}</td>
+          <td><strong>Horas Trabalhadas:</strong> ${timeRecords.summary?.totalWorkedHours || 0}h ${timeRecords.summary?.totalWorkedMinutes || 0}m</td>
+          <td><strong>Horas Extras:</strong> ${timeRecords.summary?.totalOvertimeHours || 0}h ${timeRecords.summary?.totalOvertimeMinutes || 0}m</td>
+          <td><strong>Faltas:</strong> ${timeRecords.summary?.absences || 0}</td>
+        </tr>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Dia</th>
+            <th style="text-align: center">Entrada</th>
+            <th style="text-align: center">Saída Almoço</th>
+            <th style="text-align: center">Retorno</th>
+            <th style="text-align: center">Saída</th>
+            <th style="text-align: center">Total</th>
+            <th style="text-align: center">Extra</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+
+    generatePdfFromHtml(content, {
+      title: `Espelho de Ponto - ${getMonthName()}`,
+      filename: `espelho-ponto-${selectedYear}-${selectedMonth}.pdf`,
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       <PageHeader
@@ -64,7 +123,11 @@ export default function TimesheetPage() {
         backHref="/portal"
         backLabel="Voltar ao Portal"
         actions={
-          <Button variant="secondary">
+          <Button
+            variant="secondary"
+            onClick={handleExportPdf}
+            disabled={!hasRecords || isLoading}
+          >
             <Download className="w-4 h-4 mr-2" />
             Exportar PDF
           </Button>
@@ -170,7 +233,7 @@ export default function TimesheetPage() {
                   </td>
                 </tr>
               ) : timeRecords?.records && timeRecords.records.length > 0 ? (
-                timeRecords.records.map((record) => (
+                timeRecords.records.map((record: { id: string; date: string; entryTime?: string | null; lunchOutTime?: string | null; lunchInTime?: string | null; exitTime?: string | null; workedHours?: number | null; workedMinutes?: number | null; overtimeHours?: number | null; overtimeMinutes?: number | null }) => (
                   <tr
                     key={record.id}
                     className={`${

@@ -123,7 +123,7 @@ export default function VacationsPage() {
           </div>
         ) : vacations?.history && vacations.history.length > 0 ? (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {vacations.history.map((vacation) => (
+            {vacations.history.map((vacation: { id: string; startDate: string | Date; endDate: string | Date; totalDays?: number | null; soldDays?: number | null; status?: string | null; notes?: string | null }) => (
               <div key={vacation.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
