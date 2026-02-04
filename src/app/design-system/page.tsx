@@ -14,6 +14,16 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { Progress } from "@/components/ui/Progress";
 import { Avatar, AvatarGroup, AvatarWithStatus } from "@/components/ui/Avatar";
 import { DataTable, TableColumn } from "@/components/ui/DataTable";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Radio } from "@/components/ui/Radio";
+import { Switch } from "@/components/ui/Switch";
+import { Tabs, TabPanel } from "@/components/ui/Tabs";
+import { Drawer, useDrawer } from "@/components/ui/Drawer";
+import { Alert } from "@/components/ui/Alert";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Palette,
@@ -30,6 +40,7 @@ import {
   Edit,
   MoreVertical,
   Settings,
+  Package,
 } from "lucide-react";
 
 interface CodeBlockProps {
@@ -82,12 +93,43 @@ const tableColumns: TableColumn<TableItem>[] = [
   { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "default"}>{row.status}</Badge> },
 ];
 
+const selectOptions = [
+  { value: "opt1", label: "Opção 1" },
+  { value: "opt2", label: "Opção 2" },
+  { value: "opt3", label: "Opção 3" },
+];
+
+const radioOptions = [
+  { value: "radio1", label: "Opção A" },
+  { value: "radio2", label: "Opção B" },
+  { value: "radio3", label: "Opção C" },
+];
+
+const tabItems = [
+  { id: "tab1", label: "Geral" },
+  { id: "tab2", label: "Detalhes" },
+  { id: "tab3", label: "Configurações" },
+];
+
+const breadcrumbItems = [
+  { label: "Home", href: "/" },
+  { label: "Produtos", href: "/products" },
+  { label: "Detalhes" },
+];
+
 export default function DesignSystemPage() {
   const [showModal, setShowModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTableRows, setSelectedTableRows] = useState<TableItem[]>([]);
+  const [selectValue, setSelectValue] = useState("");
+  const [textareaValue, setTextareaValue] = useState("");
+  const [checkboxValue, setCheckboxValue] = useState(false);
+  const [radioValue, setRadioValue] = useState("radio1");
+  const [switchValue, setSwitchValue] = useState(false);
+  const [activeTab, setActiveTab] = useState("tab1");
+  const drawer = useDrawer();
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -469,6 +511,404 @@ export default function DesignSystemPage() {
   error="Mensagem de erro"
   placeholder="Digite..."
   leftIcon={<Search className="w-4 h-4" />}
+/>`}
+          />
+        </section>
+
+        {/* Input */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Input</h2>
+          <p className="text-theme-muted">Campo de entrada de texto com variantes e estados.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4 max-w-md">
+            <Input label="Nome" placeholder="Digite seu nome" />
+            <Input label="E-mail" type="email" placeholder="email@exemplo.com" />
+            <Input label="Senha" type="password" placeholder="********" />
+            <Input label="Desabilitado" disabled value="Valor fixo" />
+          </div>
+
+          <CodeBlock
+            id="input"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Input } from "@/components/ui/Input";
+
+<Input 
+  label="Nome"
+  type="text" // text | email | password | number
+  placeholder="Digite..."
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  disabled={false}
+/>`}
+          />
+        </section>
+
+        {/* Select */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Select</h2>
+          <p className="text-theme-muted">Campo de seleção com opções.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
+              <Select
+                options={selectOptions}
+                value={selectValue}
+                onChange={setSelectValue}
+                placeholder="Selecione uma opção"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Desabilitado</label>
+              <Select
+                options={selectOptions}
+                value="opt1"
+                onChange={() => {}}
+                disabled
+              />
+            </div>
+          </div>
+
+          <CodeBlock
+            id="select"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Select } from "@/components/ui/Select";
+
+const options = [
+  { value: "opt1", label: "Opção 1" },
+  { value: "opt2", label: "Opção 2" },
+];
+
+<Select
+  label="Categoria"
+  options={options}
+  value={value}
+  onChange={setValue}
+  placeholder="Selecione..."
+  disabled={false}
+/>`}
+          />
+        </section>
+
+        {/* Textarea */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Textarea</h2>
+          <p className="text-theme-muted">Campo de texto multilinha.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+              <Textarea
+                placeholder="Digite uma descrição..."
+                value={textareaValue}
+                onChange={(e) => setTextareaValue(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <CodeBlock
+            id="textarea"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Textarea } from "@/components/ui/Textarea";
+
+<Textarea
+  label="Descrição"
+  placeholder="Digite..."
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  rows={4}
+  maxLength={500}
+/>`}
+          />
+        </section>
+
+        {/* Checkbox */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Checkbox</h2>
+          <p className="text-theme-muted">Caixa de seleção para opções binárias.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+            <Checkbox
+              label="Aceito os termos de uso"
+              checked={checkboxValue}
+              onChange={setCheckboxValue}
+            />
+            <Checkbox
+              label="Opção desabilitada"
+              checked={true}
+              disabled
+              onChange={() => {}}
+            />
+            <Checkbox
+              label="Estado indeterminado"
+              indeterminate
+              onChange={() => {}}
+            />
+          </div>
+
+          <CodeBlock
+            id="checkbox"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Checkbox } from "@/components/ui/Checkbox";
+
+<Checkbox
+  label="Aceito os termos"
+  checked={checked}
+  onChange={setChecked}
+  disabled={false}
+  indeterminate={false}
+/>`}
+          />
+        </section>
+
+        {/* Radio */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Radio</h2>
+          <p className="text-theme-muted">Grupo de opções mutuamente exclusivas.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-2">Selecione uma opção</label>
+              <Radio
+                name="demo-radio"
+                options={radioOptions}
+                value={radioValue}
+                onChange={setRadioValue}
+              />
+            </div>
+          </div>
+
+          <CodeBlock
+            id="radio"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Radio } from "@/components/ui/Radio";
+
+const options = [
+  { value: "opt1", label: "Opção A" },
+  { value: "opt2", label: "Opção B" },
+];
+
+<Radio
+  label="Selecione"
+  options={options}
+  value={value}
+  onChange={setValue}
+  direction="vertical" // vertical | horizontal
+/>`}
+          />
+        </section>
+
+        {/* Switch */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Switch</h2>
+          <p className="text-theme-muted">Interruptor para ativar/desativar opções.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+            <Switch
+              label="Notificações por e-mail"
+              checked={switchValue}
+              onChange={setSwitchValue}
+            />
+            <Switch
+              label="Modo escuro (desabilitado)"
+              checked={true}
+              disabled
+              onChange={() => {}}
+            />
+          </div>
+
+          <CodeBlock
+            id="switch"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Switch } from "@/components/ui/Switch";
+
+<Switch
+  label="Ativar notificações"
+  checked={checked}
+  onChange={setChecked}
+  disabled={false}
+/>`}
+          />
+        </section>
+
+        {/* Tabs */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Tabs</h2>
+          <p className="text-theme-muted">Navegação por abas para organizar conteúdo.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <Tabs
+              tabs={tabItems}
+              activeTab={activeTab}
+              onChange={setActiveTab}
+            />
+            <div className="mt-4">
+              <TabPanel id="tab1" activeTab={activeTab}>
+                <p className="text-theme-secondary">Conteúdo da aba Geral</p>
+              </TabPanel>
+              <TabPanel id="tab2" activeTab={activeTab}>
+                <p className="text-theme-secondary">Conteúdo da aba Detalhes</p>
+              </TabPanel>
+              <TabPanel id="tab3" activeTab={activeTab}>
+                <p className="text-theme-secondary">Conteúdo da aba Configurações</p>
+              </TabPanel>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="tabs"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Tabs, TabPanel } from "@/components/ui/Tabs";
+
+const tabs = [
+  { id: "tab1", label: "Geral" },
+  { id: "tab2", label: "Detalhes" },
+];
+
+<Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+<TabPanel id="tab1" activeTab={activeTab}>
+  Conteúdo da aba 1
+</TabPanel>
+<TabPanel id="tab2" activeTab={activeTab}>
+  Conteúdo da aba 2
+</TabPanel>`}
+          />
+        </section>
+
+        {/* Drawer */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Drawer</h2>
+          <p className="text-theme-muted">Painel lateral deslizante.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <Button onClick={drawer.open}>Abrir Drawer</Button>
+          </div>
+
+          <Drawer
+            isOpen={drawer.isOpen}
+            onClose={drawer.close}
+            title="Título do Drawer"
+            size="md"
+          >
+            <div className="p-4">
+              <p className="text-theme-secondary">Conteúdo do drawer aqui.</p>
+            </div>
+          </Drawer>
+
+          <CodeBlock
+            id="drawer"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Drawer, useDrawer } from "@/components/ui/Drawer";
+
+const drawer = useDrawer();
+
+<Button onClick={drawer.open}>Abrir</Button>
+
+<Drawer
+  isOpen={drawer.isOpen}
+  onClose={drawer.close}
+  title="Título"
+  position="right" // left | right
+  size="md" // sm | md | lg
+>
+  Conteúdo
+</Drawer>`}
+          />
+        </section>
+
+        {/* Alert */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Alert</h2>
+          <p className="text-theme-muted">Mensagens de alerta com diferentes variantes.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
+            <Alert variant="info" title="Informação">
+              Esta é uma mensagem informativa.
+            </Alert>
+            <Alert variant="success" title="Sucesso">
+              Operação realizada com sucesso!
+            </Alert>
+            <Alert variant="warning" title="Atenção">
+              Verifique os dados antes de continuar.
+            </Alert>
+            <Alert variant="error" title="Erro">
+              Ocorreu um erro ao processar.
+            </Alert>
+          </div>
+
+          <CodeBlock
+            id="alert"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Alert } from "@/components/ui/Alert";
+
+<Alert variant="info" title="Título">
+  Mensagem do alerta
+</Alert>
+// Variantes: info | success | warning | error`}
+          />
+        </section>
+
+        {/* Breadcrumbs */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Breadcrumbs</h2>
+          <p className="text-theme-muted">Navegação hierárquica de páginas.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <Breadcrumbs items={breadcrumbItems} />
+          </div>
+
+          <CodeBlock
+            id="breadcrumbs"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+
+const items = [
+  { label: "Home", href: "/" },
+  { label: "Produtos", href: "/products" },
+  { label: "Detalhes" }, // Último item sem href
+];
+
+<Breadcrumbs items={items} />`}
+          />
+        </section>
+
+        {/* EmptyState */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">EmptyState</h2>
+          <p className="text-theme-muted">Estado vazio com ação opcional.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <EmptyState
+              icon={<Package className="w-8 h-8" />}
+              title="Nenhum produto encontrado"
+              description="Adicione seu primeiro produto para começar."
+              action={{ label: "Adicionar Produto", href: "/products/new" }}
+            />
+          </div>
+
+          <CodeBlock
+            id="emptystate"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { EmptyState } from "@/components/ui/EmptyState";
+
+<EmptyState
+  icon={<Package className="w-8 h-8" />}
+  title="Nenhum item"
+  description="Descrição opcional"
+  action={{ label: "Adicionar", href: "/new" }}
+  // ou action={{ label: "Adicionar", onClick: handleAdd }}
 />`}
           />
         </section>
