@@ -9,7 +9,7 @@ import Link from "next/link";
 export default function VacationsPage() {
   const { data: vacations, isLoading } = trpc.employeePortal.getMyVacations.useQuery();
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED" | "SCHEDULED" | "IN_PROGRESS" | "CANCELLED" | string) => {
     switch (status) {
       case "PENDING":
         return (

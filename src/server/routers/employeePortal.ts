@@ -151,9 +151,9 @@ export const employeePortalRouter = createTRPCRouter({
     // Calculate vacation balance
     const hireDate = employee.hireDate;
     const now = new Date();
-    const monthsWorked = Math.floor(
-      (now.getTime() - hireDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
-    );
+    const diffTime = now.getTime() - hireDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const monthsWorked = diffDays / 30.44; // Average days in a month
     const totalDaysEarned = Math.min(Math.floor(monthsWorked * 2.5), 30);
     const daysUsed = vacations
       .filter((v) => v.status === "APPROVED" || v.status === "COMPLETED")
