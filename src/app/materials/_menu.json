@@ -1,0 +1,7 @@
+{
+  "label": "Materiais",
+  "icon": "Package",
+  "order": 1,
+  "showInMenu": true,
+  "tags": ["cadastro", "compras"]
+}

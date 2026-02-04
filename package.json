@@ -6,8 +6,9 @@
     "node": ">=20.19.0"
   },
   "scripts": {
+    "routes:generate": "npx tsx scripts/generate-routes.ts",
     "dev": "next dev",
-    "build": "prisma generate && NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "pnpm routes:generate && prisma generate && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint .",

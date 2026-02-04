@@ -13,6 +13,8 @@ import {
   ArrowRight,
   RefreshCw,
   Eye,
+  Upload,
+  Settings,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -230,8 +232,44 @@ export default function DeployAgentPage() {
                 </tr>
               ) : imports?.invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-theme-muted">
-                    Nenhuma NFe encontrada
+                  <td colSpan={6} className="px-4 py-16">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="w-16 h-16 rounded-full bg-theme-tertiary flex items-center justify-center mb-4">
+                        <FileText className="w-8 h-8 text-theme-muted" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-theme mb-2">
+                        {statusFilter === "PENDING"
+                          ? "Nenhuma NFe pendente"
+                          : statusFilter === "APPROVED"
+                            ? "Nenhuma NFe aprovada"
+                            : statusFilter === "REJECTED"
+                              ? "Nenhuma NFe rejeitada"
+                              : "Nenhuma NFe encontrada"}
+                      </h3>
+                      <p className="text-theme-muted max-w-md mb-6">
+                        {statusFilter === "PENDING"
+                          ? "Importe XMLs manualmente ou configure a integração SEFAZ para buscar automaticamente."
+                          : "Altere o filtro para ver outras NFe."}
+                      </p>
+                      {statusFilter === "PENDING" && (
+                        <div className="flex flex-wrap gap-3 justify-center">
+                          <Link
+                            href="/fiscal/nfe/import"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Importar XMLs
+                          </Link>
+                          <Link
+                            href="/settings/sefaz"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors font-medium"
+                          >
+                            <Settings className="w-4 h-4" />
+                            Configurar SEFAZ
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (

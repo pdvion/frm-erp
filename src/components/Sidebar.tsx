@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/useMediaQuery";
@@ -9,224 +9,104 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
-  Home,
-  Users,
-  FileText,
-  ShoppingCart,
-  Warehouse,
-  DollarSign,
-  Factory,
-  BarChart3,
-  Settings,
-  Receipt,
-  TrendingUp,
   Building2,
-  CheckSquare,
-  GitBranch,
-  FolderOpen,
-  Bell,
-  Shield,
   Sun,
   Moon,
-  Globe,
   Monitor,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { getMenuStructure } from "@/lib/routes/registry";
+import type { MenuItem } from "@/lib/routes/types";
 
-interface MenuItem {
-  label: string;
-  href?: string;
-  icon: React.ReactNode;
-  children?: { label: string; href: string }[];
-}
-
-const menuItems: MenuItem[] = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: <Home className="h-5 w-5" />,
-  },
-  {
-    label: "Compras",
-    icon: <ShoppingCart className="h-5 w-5" />,
-    children: [
-      { label: "Materiais", href: "/materials" },
-      { label: "Fornecedores", href: "/suppliers" },
-      { label: "Cotações", href: "/quotes" },
-      { label: "Ordens de Compra", href: "/purchase-orders" },
-      { label: "Recebimento", href: "/receiving" },
-      { label: "Requisições", href: "/requisitions" },
-      { label: "Devoluções", href: "/supplier-returns" },
-    ],
-  },
-  {
-    label: "ImpEx",
-    icon: <Globe className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard", href: "/impex/dashboard" },
-      { label: "Processos", href: "/impex/processes" },
-      { label: "Câmbio", href: "/impex/exchange" },
-      { label: "Relatórios", href: "/impex/reports" },
-      { label: "Portos", href: "/impex/ports" },
-      { label: "Incoterms", href: "/impex/incoterms" },
-      { label: "Despachantes", href: "/impex/brokers" },
-    ],
-  },
-  {
-    label: "Estoque",
-    icon: <Warehouse className="h-5 w-5" />,
-    children: [
-      { label: "Inventário", href: "/inventory" },
-      { label: "Localizações", href: "/locations" },
-      { label: "Transferências", href: "/transfers" },
-      { label: "Picking List", href: "/picking" },
-      { label: "Contagem", href: "/inventory-count" },
-    ],
-  },
-  {
-    label: "Vendas",
-    icon: <Receipt className="h-5 w-5" />,
-    children: [
-      { label: "Clientes", href: "/customers" },
-      { label: "Pedidos", href: "/sales" },
-      { label: "Faturamento", href: "/billing" },
-      { label: "Catálogo", href: "/catalog" },
-      { label: "Sync Materiais", href: "/catalog/sync" },
-    ],
-  },
-  {
-    label: "Financeiro",
-    icon: <DollarSign className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard", href: "/finance/dashboard" },
-      { label: "Contas a Pagar", href: "/payables" },
-      { label: "Contas a Receber", href: "/receivables" },
-      { label: "Tesouraria", href: "/treasury" },
-      { label: "Aprovações", href: "/treasury/approvals" },
-    ],
-  },
-  {
-    label: "Fiscal",
-    icon: <FileText className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard", href: "/fiscal/dashboard" },
-      { label: "Notas Fiscais", href: "/invoices" },
-      { label: "NFe Pendentes", href: "/invoices/pending" },
-      { label: "Importar XML", href: "/invoices/import" },
-      { label: "Deploy Agent", href: "/fiscal/deploy-agent" },
-      { label: "Análise Fiscal", href: "/fiscal/deploy-agent/analysis" },
-      { label: "Wizard Config", href: "/fiscal/deploy-agent/wizard" },
-      { label: "SPED", href: "/fiscal/sped" },
-    ],
-  },
-  {
-    label: "Produção",
-    icon: <Factory className="h-5 w-5" />,
-    children: [
-      { label: "Ordens de Produção", href: "/production" },
-      { label: "BOM/Estrutura", href: "/engineering/bom" },
-      { label: "MRP", href: "/production/mrp" },
-      { label: "MES", href: "/production/mes" },
-      { label: "OEE", href: "/production/oee" },
-    ],
-  },
-  {
-    label: "RH",
-    icon: <Users className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard", href: "/hr/dashboard" },
-      { label: "Funcionários", href: "/hr/employees" },
-      { label: "Departamentos", href: "/hr/departments" },
-      { label: "Admissão", href: "/hr/admission" },
-      { label: "Ponto Eletrônico", href: "/hr/timeclock" },
-      { label: "Folha de Ponto", href: "/hr/timesheet" },
-      { label: "Folha de Pagamento", href: "/hr/payroll" },
-      { label: "13º Salário", href: "/hr/thirteenth" },
-      { label: "Férias", href: "/hr/vacations" },
-      { label: "Benefícios", href: "/hr/benefits" },
-      { label: "Rescisões", href: "/hr/terminations" },
-    ],
-  },
-  {
-    label: "Relatórios",
-    icon: <BarChart3 className="h-5 w-5" />,
-    children: [
-      { label: "Visão Geral", href: "/reports" },
-      { label: "Posição Estoque", href: "/reports/inventory-position" },
-      { label: "Aging Pagar", href: "/reports/payables-aging" },
-      { label: "Fluxo de Caixa", href: "/reports/cash-flow" },
-      { label: "Editor de Gráficos", href: "/reports/chart-builder" },
-    ],
-  },
-  {
-    label: "BI & Gestão",
-    icon: <TrendingUp className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard BI", href: "/bi" },
-      { label: "Financeiro", href: "/bi/financial" },
-      { label: "Vendas", href: "/bi/sales" },
-      { label: "Estoque", href: "/bi/inventory" },
-      { label: "Produção", href: "/bi/production" },
-      { label: "KPIs", href: "/bi/kpis" },
-      { label: "GPD", href: "/gpd" },
-      { label: "Orçamento", href: "/budget" },
-    ],
-  },
-  {
-    label: "Tarefas",
-    href: "/tasks",
-    icon: <CheckSquare className="h-5 w-5" />,
-  },
-  {
-    label: "Workflow",
-    icon: <GitBranch className="h-5 w-5" />,
-    children: [
-      { label: "Dashboard", href: "/workflow" },
-      { label: "Definições", href: "/workflow/definitions" },
-      { label: "Instâncias", href: "/workflow/instances" },
-    ],
-  },
-  {
-    label: "Documentos",
-    icon: <FolderOpen className="h-5 w-5" />,
-    children: [
-      { label: "Todos", href: "/documents" },
-      { label: "Categorias", href: "/documents/categories" },
-    ],
-  },
-  {
-    label: "Notificações",
-    href: "/notifications",
-    icon: <Bell className="h-5 w-5" />,
-  },
-  {
-    label: "Administração",
-    icon: <Shield className="h-5 w-5" />,
-    children: [
-      { label: "Usuários", href: "/settings/users" },
-      { label: "Grupos", href: "/settings/groups" },
-      { label: "Empresas", href: "/settings/companies" },
-      { label: "Auditoria", href: "/audit" },
-      { label: "Logs de Acesso", href: "/admin/auth-logs" },
-    ],
-  },
-  {
-    label: "Configurações",
-    icon: <Settings className="h-5 w-5" />,
-    children: [
-      { label: "Geral", href: "/settings" },
-      { label: "Contas Bancárias", href: "/settings/bank-accounts" },
-      { label: "Integração Email", href: "/settings/email-integration" },
-      { label: "SEFAZ", href: "/settings/sefaz" },
-      { label: "Tokens de IA", href: "/settings/ai" },
-      { label: "Tutoriais", href: "/docs" },
-      { label: "Design System", href: "/design-system" },
-    ],
-  },
-];
 
 interface SidebarProps {
   onClose?: () => void;
+}
+
+interface MenuItemComponentProps {
+  item: MenuItem;
+  isTopLevel?: boolean;
+  isActive: (href?: string) => boolean;
+  hasActiveChild: (item: MenuItem) => boolean;
+  expandedItems: string[];
+  toggleExpand: (label: string) => void;
+}
+
+function MenuItemComponent({
+  item,
+  isTopLevel = false,
+  isActive,
+  hasActiveChild,
+  expandedItems,
+  toggleExpand,
+}: MenuItemComponentProps) {
+  const isExpanded = expandedItems.includes(item.label);
+  const hasChildren = item.children && item.children.length > 0;
+  const isItemActive = isActive(item.href);
+  const hasActiveDescendant = hasActiveChild(item);
+
+  // Estilos baseados no nível
+  const baseStyles = isTopLevel
+    ? "px-3 py-2 text-sm font-medium"
+    : "px-2 py-1.5 text-sm";
+
+  // Link simples (sem filhos)
+  if (item.href && !hasChildren) {
+    return (
+      <Link
+        href={item.href}
+        className={`flex items-center gap-3 rounded-lg ${baseStyles} transition-colors ${
+          isItemActive
+            ? "bg-blue-600 text-white"
+            : isTopLevel
+              ? "text-theme-secondary hover:bg-theme-hover hover:text-theme"
+              : "text-theme-muted hover:bg-theme-hover hover:text-theme"
+        }`}
+      >
+        {isTopLevel && item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+        <span className="truncate">{item.label}</span>
+      </Link>
+    );
+  }
+
+  // Acordeão (com filhos)
+  return (
+    <>
+      <button
+        onClick={() => toggleExpand(item.label)}
+        className={`flex w-full items-center gap-3 rounded-lg ${baseStyles} transition-colors ${
+          hasActiveDescendant
+            ? isTopLevel ? "bg-theme-hover text-theme" : "text-theme font-medium"
+            : isTopLevel
+              ? "text-theme-secondary hover:bg-theme-hover hover:text-theme"
+              : "text-theme-muted hover:bg-theme-hover hover:text-theme"
+        }`}
+      >
+        {isTopLevel && item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+        <span className="flex-1 text-left truncate">{item.label}</span>
+        {isExpanded ? (
+          <ChevronDown className="h-4 w-4 flex-shrink-0" />
+        ) : (
+          <ChevronRight className="h-4 w-4 flex-shrink-0" />
+        )}
+      </button>
+      {isExpanded && hasChildren && (
+        <ul className={`mt-0.5 flex flex-col gap-0.5 ${isTopLevel ? "ml-8 border-l border-theme/20 pl-2" : "ml-3 pl-2"}`}>
+          {item.children!.map((child) => (
+            <li key={child.label}>
+              <MenuItemComponent
+                item={child}
+                isActive={isActive}
+                hasActiveChild={hasActiveChild}
+                expandedItems={expandedItems}
+                toggleExpand={toggleExpand}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
 }
 
 export function Sidebar({ onClose }: SidebarProps) {
@@ -235,6 +115,9 @@ export function Sidebar({ onClose }: SidebarProps) {
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const { theme, setTheme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Obter menu do registry (memoizado)
+  const menuItems = useMemo(() => getMenuStructure(), []);
 
   // Em mobile, sempre mostrar sidebar expandido (não colapsado)
   const effectiveCollapsed = isMobile ? false : isCollapsed;
@@ -252,28 +135,31 @@ export function Sidebar({ onClose }: SidebarProps) {
     }
   }, [pathname, isMobile, onClose]);
 
-  // Auto-expand menu based on current path
-  const getActiveModule = () => {
-    for (const item of menuItems) {
+  // Função recursiva para encontrar módulos ativos
+  const findActiveLabels = (items: MenuItem[], path: string): string[] => {
+    const labels: string[] = [];
+    for (const item of items) {
       if (item.children) {
-        for (const child of item.children) {
-          if (pathname.startsWith(child.href)) {
-            return item.label;
-          }
+        const childLabels = findActiveLabels(item.children, path);
+        if (childLabels.length > 0 || item.children.some((c) => c.href && path.startsWith(c.href))) {
+          labels.push(item.label, ...childLabels);
         }
       }
     }
-    return null;
+    return labels;
   };
 
-  // Mover para useEffect para evitar setState durante render
+  // Auto-expand menus based on current path
   useEffect(() => {
-    const activeModule = getActiveModule();
-    if (activeModule && !expandedItems.includes(activeModule)) {
-      setExpandedItems((prev) => [...prev, activeModule]);
+    const activeLabels = findActiveLabels(menuItems, pathname);
+    if (activeLabels.length > 0) {
+      setExpandedItems((prev) => {
+        const newItems = activeLabels.filter((l) => !prev.includes(l));
+        return newItems.length > 0 ? [...prev, ...newItems] : prev;
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, menuItems]);
 
   const toggleExpand = (label: string) => {
     setExpandedItems((prev) =>
@@ -283,7 +169,22 @@ export function Sidebar({ onClose }: SidebarProps) {
     );
   };
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href?: string) => href ? (pathname === href || pathname.startsWith(href + "/")) : false;
+
+  // Verifica se algum filho está ativo (recursivo)
+  const hasActiveChild = (item: MenuItem): boolean => {
+    if (!item.children) return false;
+    return item.children.some((c) => isActive(c.href) || hasActiveChild(c));
+  };
+
+  // Obtém o primeiro href disponível (para collapsed mode)
+  const getFirstHref = (item: MenuItem): string => {
+    if (item.href) return item.href;
+    if (item.children && item.children.length > 0) {
+      return getFirstHref(item.children[0]);
+    }
+    return "/dashboard";
+  };
 
   if (effectiveCollapsed) {
     return (
@@ -298,25 +199,21 @@ export function Sidebar({ onClose }: SidebarProps) {
           </button>
         </div>
         <nav className="flex flex-col gap-1 p-2" data-testid="sidebar-nav-collapsed">
-          {menuItems.map((item) => {
-            const targetHref = item.href || item.children?.[0]?.href || "/dashboard";
-            return (
-              <Link
-                key={item.label}
-                href={targetHref}
-                className={`flex items-center justify-center rounded-lg p-3 transition-colors ${
-                  (item.href && isActive(item.href)) ||
-                  item.children?.some((c) => isActive(c.href))
-                    ? "bg-blue-600 text-white"
-                    : "text-theme-muted hover:bg-theme-hover hover:text-theme"
-                }`}
-                title={item.label}
-                data-testid={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                {item.icon}
-              </Link>
-            );
-          })}
+          {menuItems.map((item) => (
+            <Link
+              key={item.label}
+              href={getFirstHref(item)}
+              className={`flex items-center justify-center rounded-lg p-3 transition-colors ${
+                isActive(item.href) || hasActiveChild(item)
+                  ? "bg-blue-600 text-white"
+                  : "text-theme-muted hover:bg-theme-hover hover:text-theme"
+              }`}
+              title={item.label}
+              data-testid={`sidebar-item-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+            >
+              {item.icon}
+            </Link>
+          ))}
         </nav>
       </aside>
     );
@@ -350,56 +247,14 @@ export function Sidebar({ onClose }: SidebarProps) {
               {item.label === "Tarefas" && (
                 <div className="my-2 border-t border-theme/50" />
               )}
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? "bg-blue-600 text-white"
-                      : "text-theme-secondary hover:bg-theme-hover hover:text-theme"
-                  }`}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span className="truncate">{item.label}</span>
-                </Link>
-              ) : (
-                <>
-                  <button
-                    onClick={() => toggleExpand(item.label)}
-                    className={`group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                      item.children?.some((c) => isActive(c.href))
-                        ? "bg-theme-hover text-theme"
-                        : "text-theme-secondary hover:bg-theme-hover hover:text-theme"
-                    }`}
-                  >
-                    {item.icon}
-                    <span className="ml-3 mr-auto">{item.label}</span>
-                    {expandedItems.includes(item.label) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                  </button>
-                  {expandedItems.includes(item.label) && item.children && (
-                    <ul className="ml-7 mt-1 flex flex-col gap-0.5 border-l-2 border-theme/30 pl-3">
-                      {item.children.map((child) => (
-                        <li key={child.href}>
-                          <Link
-                            href={child.href}
-                            className={`block rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                              isActive(child.href)
-                                ? "bg-blue-600 text-white font-medium"
-                                : "text-theme-muted hover:bg-theme-hover hover:text-theme"
-                            }`}
-                          >
-                            <span className="truncate">{child.label}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              )}
+              <MenuItemComponent
+                item={item}
+                isTopLevel
+                isActive={isActive}
+                hasActiveChild={hasActiveChild}
+                expandedItems={expandedItems}
+                toggleExpand={toggleExpand}
+              />
             </li>
           ))}
         </ul>

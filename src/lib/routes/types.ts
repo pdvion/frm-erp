@@ -19,6 +19,8 @@ export interface RouteDefinition {
   enabled: boolean;
   /** Tags para busca e categorização */
   tags?: string[];
+  /** Subitens hierárquicos (para menus aninhados) */
+  children?: RouteDefinition[];
 }
 
 export interface ModuleDefinition {
@@ -32,8 +34,16 @@ export interface ModuleDefinition {
 export interface MenuItem {
   label: string;
   href?: string;
-  icon: React.ReactNode;
-  children?: { label: string; href: string }[];
+  icon?: React.ReactNode;
+  children?: MenuItem[];
+}
+
+export interface RouteChild {
+  path: string;
+  label: string;
+  showInMenu: boolean;
+  enabled: boolean;
+  children?: RouteChild[];
 }
 
 export type RouteRegistry = Map<string, RouteDefinition>;

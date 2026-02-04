@@ -102,6 +102,17 @@ export const modules: ModuleDefinition[] = [
       { path: "/invoices", label: "Notas Fiscais", showInMenu: true, enabled: true },
       { path: "/invoices/pending", label: "NFe Pendentes", showInMenu: true, enabled: true },
       { path: "/invoices/import", label: "Importar XML", showInMenu: true, enabled: true },
+      { 
+        path: "/fiscal/deploy-agent", 
+        label: "Deploy Agent", 
+        showInMenu: true, 
+        enabled: true,
+        children: [
+          { path: "/fiscal/deploy-agent/analysis", label: "Análise Fiscal", showInMenu: true, enabled: true },
+          { path: "/fiscal/deploy-agent/wizard", label: "Wizard Config", showInMenu: true, enabled: true },
+        ],
+      },
+      { path: "/fiscal/sped", label: "SPED", showInMenu: true, enabled: true },
     ],
   },
   {
@@ -257,6 +268,24 @@ function createIconElement(Icon: LucideIcon): React.ReactNode {
 }
 
 /**
+ * Converte RouteDefinition para MenuItem recursivamente
+ */
+function routeToMenuItem(route: RouteDefinition): MenuItem {
+  const hasChildren = route.children && route.children.length > 0;
+  const menuChildren = hasChildren
+    ? route.children!
+      .filter((c) => c.showInMenu && c.enabled)
+      .map(routeToMenuItem)
+    : undefined;
+
+  return {
+    label: route.label,
+    href: hasChildren ? undefined : route.path,
+    children: menuChildren,
+  };
+}
+
+/**
  * Retorna estrutura de menu para o Sidebar
  */
 export function getMenuStructure(): MenuItem[] {
@@ -265,14 +294,14 @@ export function getMenuStructure(): MenuItem[] {
     .sort((a, b) => a.order - b.order)
     .map((mod) => {
       const menuRoutes = mod.routes.filter((r) => r.showInMenu && r.enabled);
-      const isSingleRoute = menuRoutes.length === 1;
+      const isSingleRoute = menuRoutes.length === 1 && !menuRoutes[0].children;
 
       return {
         label: mod.label,
         icon: createIconElement(mod.icon),
         href: isSingleRoute ? menuRoutes[0].path : undefined,
         children: !isSingleRoute
-          ? menuRoutes.map((r) => ({ label: r.label, href: r.path }))
+          ? menuRoutes.map(routeToMenuItem)
           : undefined,
       };
     });

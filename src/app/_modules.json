@@ -1,0 +1,124 @@
+{
+  "modules": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "icon": "Home",
+      "order": 0,
+      "includes": ["dashboard"]
+    },
+    {
+      "id": "compras",
+      "label": "Compras",
+      "icon": "ShoppingCart",
+      "order": 1,
+      "includes": ["materials", "suppliers", "quotes", "purchase-orders", "receiving", "requisitions", "supplier-returns"]
+    },
+    {
+      "id": "impex",
+      "label": "ImpEx",
+      "icon": "Globe",
+      "order": 2,
+      "includes": ["impex"]
+    },
+    {
+      "id": "estoque",
+      "label": "Estoque",
+      "icon": "Warehouse",
+      "order": 3,
+      "includes": ["inventory", "locations", "transfers", "picking", "inventory-count"]
+    },
+    {
+      "id": "vendas",
+      "label": "Vendas",
+      "icon": "Receipt",
+      "order": 4,
+      "includes": ["customers", "sales", "billing", "catalog"]
+    },
+    {
+      "id": "financeiro",
+      "label": "Financeiro",
+      "icon": "DollarSign",
+      "order": 5,
+      "includes": ["finance", "payables", "receivables", "treasury"]
+    },
+    {
+      "id": "fiscal",
+      "label": "Fiscal",
+      "icon": "FileText",
+      "order": 6,
+      "includes": ["fiscal", "invoices"]
+    },
+    {
+      "id": "producao",
+      "label": "Produção",
+      "icon": "Factory",
+      "order": 7,
+      "includes": ["production", "engineering", "mrp", "oee"]
+    },
+    {
+      "id": "rh",
+      "label": "RH",
+      "icon": "Users",
+      "order": 8,
+      "includes": ["hr"]
+    },
+    {
+      "id": "relatorios",
+      "label": "Relatórios",
+      "icon": "BarChart3",
+      "order": 9,
+      "includes": ["reports"]
+    },
+    {
+      "id": "bi",
+      "label": "BI & Gestão",
+      "icon": "TrendingUp",
+      "order": 10,
+      "includes": ["bi", "gpd", "budget"]
+    },
+    {
+      "id": "tarefas",
+      "label": "Tarefas",
+      "icon": "CheckSquare",
+      "order": 11,
+      "includes": ["tasks"]
+    },
+    {
+      "id": "workflow",
+      "label": "Workflow",
+      "icon": "GitBranch",
+      "order": 12,
+      "includes": ["workflow"]
+    },
+    {
+      "id": "documentos",
+      "label": "Documentos",
+      "icon": "FolderOpen",
+      "order": 13,
+      "includes": ["documents"]
+    },
+    {
+      "id": "notificacoes",
+      "label": "Notificações",
+      "icon": "Bell",
+      "order": 14,
+      "includes": ["notifications"]
+    },
+    {
+      "id": "administracao",
+      "label": "Administração",
+      "icon": "Shield",
+      "order": 15,
+      "includes": ["admin", "audit"]
+    },
+    {
+      "id": "configuracoes",
+      "label": "Configurações",
+      "icon": "Settings",
+      "order": 99,
+      "includes": ["settings", "docs", "design-system"]
+    }
+  ],
+  "ignore": ["portal", "profile", "set-password"]
+}

@@ -1,0 +1,6 @@
+{
+  "label": "Deploy Agent",
+  "order": 5,
+  "showInMenu": true,
+  "description": "Agente de implantação com IA"
+}

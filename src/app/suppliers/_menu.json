@@ -1,0 +1,7 @@
+{
+  "label": "Fornecedores",
+  "icon": "Truck",
+  "order": 2,
+  "showInMenu": true,
+  "tags": ["cadastro", "compras"]
+}
