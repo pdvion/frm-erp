@@ -67,3 +67,6 @@ export type { ProgressProps, ProgressSize, ProgressVariant, ProgressColor } from
 
 export { Avatar, AvatarGroup, AvatarWithStatus } from "./Avatar";
 export type { AvatarProps, AvatarGroupProps, AvatarWithStatusProps, AvatarSize } from "./Avatar";
+
+export { DataTable } from "./DataTable";
+export type { DataTableProps, TableColumn, SortDirection } from "./DataTable";

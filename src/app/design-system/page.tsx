@@ -13,6 +13,7 @@ import { Dropdown, DropdownItem, DropdownDivider } from "@/components/ui/Dropdow
 import { DatePicker } from "@/components/ui/DatePicker";
 import { Progress } from "@/components/ui/Progress";
 import { Avatar, AvatarGroup, AvatarWithStatus } from "@/components/ui/Avatar";
+import { DataTable, TableColumn } from "@/components/ui/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Palette,
@@ -59,11 +60,34 @@ function CodeBlock({ code, id, copied, onCopy }: CodeBlockProps) {
   );
 }
 
+interface TableItem {
+  id: string;
+  code: string;
+  name: string;
+  price: number;
+  status: string;
+}
+
+const tableData: TableItem[] = [
+  { id: "1", code: "PRD001", name: "Produto A", price: 99.90, status: "Ativo" },
+  { id: "2", code: "PRD002", name: "Produto B", price: 149.90, status: "Ativo" },
+  { id: "3", code: "PRD003", name: "Produto C", price: 79.90, status: "Inativo" },
+  { id: "4", code: "PRD004", name: "Produto D", price: 199.90, status: "Ativo" },
+];
+
+const tableColumns: TableColumn<TableItem>[] = [
+  { key: "code", header: "Código", sortable: true, width: "100px" },
+  { key: "name", header: "Nome", sortable: true },
+  { key: "price", header: "Preço", align: "right", sortable: true, render: (row) => `R$ ${row.price.toFixed(2)}` },
+  { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "default"}>{row.status}</Badge> },
+];
+
 export default function DesignSystemPage() {
   const [showModal, setShowModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTableRows, setSelectedTableRows] = useState<TableItem[]>([]);
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -657,6 +681,58 @@ export default function DesignSystemPage() {
           />
         </section>
 
+        {/* DataTable */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">DataTable</h2>
+          <p className="text-theme-muted">Tabela de dados com sorting, seleção e estados.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <DataTable
+              data={tableData}
+              columns={tableColumns}
+              keyExtractor={(item) => item.id}
+              sortable
+              selectable
+              selectedRows={selectedTableRows}
+              onSelectionChange={setSelectedTableRows}
+              emptyMessage="Nenhum produto encontrado"
+            />
+          </div>
+
+          <CodeBlock
+            id="datatable"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { DataTable, TableColumn } from "@/components/ui/DataTable";
+
+interface Item {
+  id: string;
+  code: string;
+  name: string;
+  status: string;
+}
+
+const columns: TableColumn<Item>[] = [
+  { key: "code", header: "Código", sortable: true, width: "100px" },
+  { key: "name", header: "Nome", sortable: true },
+  { key: "status", header: "Status", render: (row) => <Badge>{row.status}</Badge> },
+];
+
+<DataTable
+  data={items}
+  columns={columns}
+  keyExtractor={(item) => item.id}
+  loading={isLoading}
+  sortable
+  selectable
+  selectedRows={selected}
+  onSelectionChange={setSelected}
+  stickyHeader
+  onRowClick={(row) => router.push(\`/items/\${row.id}\`)}
+/>`}
+          />
+        </section>
+
         {/* Skeleton */}
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-theme">Skeleton</h2>
@@ -734,6 +810,7 @@ export default function DesignSystemPage() {
               "Breadcrumbs",
               "Button",
               "Card",
+              "DataTable",
               "DatePicker",
               "DateRangePicker",
               "Drawer",

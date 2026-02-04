@@ -6,23 +6,27 @@ import { Check } from "lucide-react";
 export interface CheckboxProps {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
+  onClick?: (e: React.MouseEvent) => void;
   label?: string;
   disabled?: boolean;
   id?: string;
   name?: string;
   className?: string;
   indeterminate?: boolean;
+  "aria-label"?: string;
 }
 
 export function Checkbox({
   checked = false,
   onChange,
+  onClick,
   label,
   disabled = false,
   id,
   name,
   className = "",
   indeterminate = false,
+  "aria-label": ariaLabel,
 }: CheckboxProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -52,8 +56,10 @@ export function Checkbox({
           name={name}
           checked={checked}
           onChange={handleChange}
+          onClick={onClick}
           disabled={disabled}
           className="sr-only peer"
+          aria-label={ariaLabel}
         />
         <div
           className={`
