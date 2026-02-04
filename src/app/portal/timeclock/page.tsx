@@ -62,6 +62,8 @@ export default function TimeClockPage() {
           setLocationError("Localização não disponível");
         }
       );
+    } else {
+      setLocationError("Geolocalização não suportada neste navegador");
     }
   }, []);
 

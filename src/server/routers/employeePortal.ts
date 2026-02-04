@@ -99,6 +99,9 @@ export const employeePortalRouter = createTRPCRouter({
         where: {
           id: input.payrollItemId,
           employeeId: employee.id,
+          payroll: {
+            ...tenantFilter(ctx.companyId, false),
+          },
         },
         include: {
           payroll: true,
@@ -140,6 +143,7 @@ export const employeePortalRouter = createTRPCRouter({
     const vacations = await ctx.prisma.vacation.findMany({
       where: {
         employeeId: employee.id,
+        ...tenantFilter(ctx.companyId, false),
       },
       orderBy: { startDate: "desc" },
     });

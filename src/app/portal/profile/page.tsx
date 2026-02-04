@@ -56,8 +56,8 @@ export default function ProfilePage() {
         addressState: profile.addressState || "",
         addressZipCode: profile.addressZipCode || "",
       });
+      setIsEditing(true);
     }
-    setIsEditing(true);
   };
 
   const handleSave = async () => {
@@ -158,7 +158,7 @@ export default function ProfilePage() {
                 Data de Nascimento
               </label>
               <p className="font-medium text-gray-900 dark:text-white">
-                {profile.birthDate
+                {profile.birthDate != null
                   ? new Date(profile.birthDate).toLocaleDateString("pt-BR")
                   : "Não informado"}
               </p>
@@ -210,7 +210,9 @@ export default function ProfilePage() {
                 Data de Admissão
               </label>
               <p className="font-medium text-gray-900 dark:text-white">
-                {new Date(profile.hireDate).toLocaleDateString("pt-BR")}
+                {profile.hireDate != null
+                  ? new Date(profile.hireDate).toLocaleDateString("pt-BR")
+                  : "Não informado"}
               </p>
             </div>
           </div>

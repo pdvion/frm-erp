@@ -45,8 +45,8 @@ export default function RequestVacationPage() {
       return;
     }
 
-    if (formData.sellDays > 10) {
-      setError("Você pode vender no máximo 10 dias");
+    if (formData.sellDays > 10 || formData.sellDays > Math.floor(formData.days / 3)) {
+      setError(`Você pode vender no máximo 10 dias ou 1/3 do período (${Math.floor(formData.days / 3)} dias)`);
       return;
     }
 
@@ -173,10 +173,11 @@ export default function RequestVacationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Observações
               </label>
               <textarea
+                id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
