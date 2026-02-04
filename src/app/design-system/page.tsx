@@ -8,6 +8,11 @@ import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { Dropdown, DropdownItem, DropdownDivider } from "@/components/ui/Dropdown";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { Progress } from "@/components/ui/Progress";
+import { Avatar, AvatarGroup, AvatarWithStatus } from "@/components/ui/Avatar";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Palette,
@@ -21,6 +26,9 @@ import {
   Info,
   Copy,
   ExternalLink,
+  Edit,
+  MoreVertical,
+  Settings,
 } from "lucide-react";
 
 interface CodeBlockProps {
@@ -55,6 +63,7 @@ export default function DesignSystemPage() {
   const [showModal, setShowModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -440,6 +449,214 @@ export default function DesignSystemPage() {
           />
         </section>
 
+        {/* Tooltip */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Tooltip</h2>
+          <p className="text-theme-muted">Dicas de contexto ao passar o mouse.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <div className="flex flex-wrap gap-4">
+              <Tooltip content="Tooltip no topo" position="top">
+                <Button variant="outline">Top</Button>
+              </Tooltip>
+              <Tooltip content="Tooltip na direita" position="right">
+                <Button variant="outline">Right</Button>
+              </Tooltip>
+              <Tooltip content="Tooltip embaixo" position="bottom">
+                <Button variant="outline">Bottom</Button>
+              </Tooltip>
+              <Tooltip content="Tooltip na esquerda" position="left">
+                <Button variant="outline">Left</Button>
+              </Tooltip>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="tooltip"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Tooltip } from "@/components/ui/Tooltip";
+
+<Tooltip 
+  content="Texto de ajuda"
+  position="top" // top | bottom | left | right
+  delay={200}    // delay em ms
+>
+  <Button>Hover me</Button>
+</Tooltip>`}
+          />
+        </section>
+
+        {/* Dropdown */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Dropdown</h2>
+          <p className="text-theme-muted">Menus suspensos com navegação por teclado.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <div className="flex flex-wrap gap-4">
+              <Dropdown trigger={<Button variant="outline" leftIcon={<MoreVertical className="w-4 h-4" />}>Menu</Button>}>
+                <DropdownItem icon={<Edit className="w-4 h-4" />} onClick={() => {}}>Editar</DropdownItem>
+                <DropdownItem icon={<Copy className="w-4 h-4" />} onClick={() => {}}>Duplicar</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem icon={<Settings className="w-4 h-4" />} onClick={() => {}}>Configurações</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem variant="danger" icon={<Trash2 className="w-4 h-4" />} onClick={() => {}}>Excluir</DropdownItem>
+              </Dropdown>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="dropdown"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Dropdown, DropdownItem, DropdownDivider } from "@/components/ui/Dropdown";
+
+<Dropdown trigger={<Button>Menu</Button>}>
+  <DropdownItem icon={<Edit />} onClick={...}>Editar</DropdownItem>
+  <DropdownItem onClick={...}>Opção 2</DropdownItem>
+  <DropdownDivider />
+  <DropdownItem variant="danger">Excluir</DropdownItem>
+</Dropdown>`}
+          />
+        </section>
+
+        {/* DatePicker */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">DatePicker</h2>
+          <p className="text-theme-muted">Seletor de data com calendário visual.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6">
+            <div className="max-w-xs">
+              <DatePicker
+                value={selectedDate}
+                onChange={setSelectedDate}
+                label="Data de nascimento"
+                placeholder="Selecione uma data"
+              />
+            </div>
+          </div>
+
+          <CodeBlock
+            id="datepicker"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { DatePicker, DateRangePicker } from "@/components/ui/DatePicker";
+
+<DatePicker 
+  value={date} 
+  onChange={setDate}
+  label="Data"
+  minDate={new Date()}
+  maxDate={new Date(2030, 11, 31)}
+/>
+
+<DateRangePicker
+  startDate={start}
+  endDate={end}
+  onChange={({ start, end }) => setRange({ start, end })}
+/>`}
+          />
+        </section>
+
+        {/* Progress */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Progress</h2>
+          <p className="text-theme-muted">Indicadores de progresso linear e circular.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-3">Linear</h3>
+              <div className="space-y-4 max-w-md">
+                <Progress value={25} showValue label="Progresso" />
+                <Progress value={50} color="success" showValue />
+                <Progress value={75} color="warning" showValue />
+                <Progress indeterminate label="Carregando..." />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-3">Circular</h3>
+              <div className="flex flex-wrap gap-6">
+                <Progress variant="circular" value={25} size="sm" showValue />
+                <Progress variant="circular" value={50} size="md" showValue />
+                <Progress variant="circular" value={75} size="lg" showValue color="success" />
+                <Progress variant="circular" indeterminate size="md" />
+              </div>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="progress"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Progress } from "@/components/ui/Progress";
+
+<Progress value={75} max={100} showValue />
+<Progress variant="circular" value={50} size="lg" />
+<Progress indeterminate />
+<Progress color="success" value={100} /> // default | success | warning | danger`}
+          />
+        </section>
+
+        {/* Avatar */}
+        <section className="space-y-4">
+          <h2 className="text-2xl font-bold text-theme">Avatar</h2>
+          <p className="text-theme-muted">Avatares de usuário com fallback e grupos.</p>
+
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-3">Tamanhos</h3>
+              <div className="flex items-center gap-4">
+                <Avatar fallback="XS" size="xs" alt="Extra Small" />
+                <Avatar fallback="SM" size="sm" alt="Small" />
+                <Avatar fallback="MD" size="md" alt="Medium" />
+                <Avatar fallback="LG" size="lg" alt="Large" />
+                <Avatar fallback="XL" size="xl" alt="Extra Large" />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-3">Com Status</h3>
+              <div className="flex items-center gap-4">
+                <AvatarWithStatus fallback="ON" status="online" alt="Online" />
+                <AvatarWithStatus fallback="AW" status="away" alt="Away" />
+                <AvatarWithStatus fallback="BS" status="busy" alt="Busy" />
+                <AvatarWithStatus fallback="OF" status="offline" alt="Offline" />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-theme-secondary mb-3">Grupo</h3>
+              <AvatarGroup max={3}>
+                <Avatar fallback="AB" alt="Alice Brown" />
+                <Avatar fallback="CD" alt="Carlos Dias" />
+                <Avatar fallback="EF" alt="Elena Ferreira" />
+                <Avatar fallback="GH" alt="Gabriel Henrique" />
+                <Avatar fallback="IJ" alt="Isabela Jardim" />
+              </AvatarGroup>
+            </div>
+          </div>
+
+          <CodeBlock
+            id="avatar"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { Avatar, AvatarGroup, AvatarWithStatus } from "@/components/ui/Avatar";
+
+<Avatar src="/user.jpg" alt="Nome" size="md" />
+<Avatar fallback="JD" size="lg" />
+
+<AvatarWithStatus fallback="AB" status="online" />
+
+<AvatarGroup max={3}>
+  <Avatar fallback="A" />
+  <Avatar fallback="B" />
+  <Avatar fallback="C" />
+  <Avatar fallback="D" />
+</AvatarGroup>`}
+          />
+        </section>
+
         {/* Skeleton */}
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-theme">Skeleton</h2>
@@ -511,11 +728,16 @@ export default function DesignSystemPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               "AccessibleTable",
+              "Avatar",
+              "AvatarGroup",
               "Badge",
               "Breadcrumbs",
               "Button",
               "Card",
+              "DatePicker",
+              "DateRangePicker",
               "Drawer",
+              "Dropdown",
               "FormField",
               "FormGrid",
               "Input",
@@ -527,9 +749,11 @@ export default function DesignSystemPage() {
               "PageInfoList",
               "PageTable",
               "PageTimeline",
+              "Progress",
               "SelectWithAdd",
               "Skeleton",
               "SkipLink",
+              "Tooltip",
               "VisuallyHidden",
               "Wizard",
               "AdvancedFilters",
