@@ -145,8 +145,23 @@ jobs:
       - name: Start server and run E2E smoke tests
         run: |
           pnpm start &
-          sleep 10
+          SERVER_PID=$!
+          echo "Waiting for server to be ready..."
+          for i in {1..60}; do
+            if curl -s http://localhost:3000 > /dev/null 2>&1; then
+              echo "Server is ready after $i seconds"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "Server failed to start after 60 seconds"
+              exit 1
+            fi
+            sleep 1
+          done
           pnpm test:e2e --project=chromium --grep="@smoke"
+          TEST_EXIT_CODE=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT_CODE
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
