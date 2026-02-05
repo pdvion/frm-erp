@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-04T21:47:26.688Z
+ * Data: 2026-02-05T20:01:50.453Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
