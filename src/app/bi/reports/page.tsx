@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 import {
   FileText,
   Download,
@@ -201,13 +202,12 @@ export default function BIReportsPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
-              type="text"
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar relatórios..."
-              className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10"
             />
           </div>
         </div>

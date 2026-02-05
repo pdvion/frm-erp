@@ -128,35 +128,33 @@ export default function NewBillingPage() {
             <div className="space-y-2">
               {items.map((item, index) => (
                 <div key={item.id} className="flex items-center gap-2 p-2 bg-theme-hover rounded-lg">
-                  <input
-                    type="text"
+                  <Input
                     value={item.code}
                     onChange={(e) => updateItem(index, "code", e.target.value)}
                     placeholder="Código"
-                    className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
+                    className="w-24 text-sm"
                   />
-                  <input
-                    type="text"
+                  <Input
                     value={item.description}
                     onChange={(e) => updateItem(index, "description", e.target.value)}
                     placeholder="Descrição"
-                    className="flex-1 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
+                    className="flex-1 text-sm"
                   />
-                  <input
+                  <Input
                     type="number"
                     min={1}
                     value={item.quantity}
                     onChange={(e) => updateItem(index, "quantity", e.target.value)}
-                    className="w-16 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-center"
+                    className="w-16 text-sm text-center"
                   />
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     step={0.01}
                     value={item.unitPrice}
                     onChange={(e) => updateItem(index, "unitPrice", e.target.value)}
                     placeholder="Preço"
-                    className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-right"
+                    className="w-24 text-sm text-right"
                   />
                   <span className="w-24 text-right text-sm font-medium text-theme">{formatCurrency(item.total)}</span>
                   <Button variant="ghost" size="sm" onClick={() => removeItem(index)} className="p-1 text-red-600 hover:text-red-700">
