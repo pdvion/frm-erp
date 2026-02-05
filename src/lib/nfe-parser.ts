@@ -3,22 +3,28 @@
  * Extrai dados estruturados de arquivos XML de Nota Fiscal Eletrônica
  */
 
-// Cache JSDOM instance for server-side to avoid creating new instance on every call
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let cachedJsdom: any = null;
-
-// Use JSDOM on server-side, native DOMParser on client-side
+// Use native DOMParser - works in browser and modern Node.js (v18+)
+// Note: In older Node.js versions, this would need jsdom polyfill
 function getDOMParser(): typeof DOMParser {
+  // Browser environment - use native DOMParser
   if (typeof window !== "undefined" && typeof window.DOMParser !== "undefined") {
     return window.DOMParser;
   }
-  // Server-side: use jsdom with caching
-  if (!cachedJsdom) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { JSDOM } = require("jsdom");
-    cachedJsdom = new JSDOM();
+  // Server-side (Node.js) - use global DOMParser if available (Node 18+)
+  // or throw error with helpful message
+  if (typeof globalThis.DOMParser !== "undefined") {
+    return globalThis.DOMParser;
   }
-  return cachedJsdom.window.DOMParser;
+  // Fallback: try to use linkedom which is lighter than jsdom
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { DOMParser: LinkedomParser } = require("linkedom");
+    return LinkedomParser;
+  } catch {
+    throw new Error(
+      "DOMParser not available. Install linkedom: pnpm add linkedom"
+    );
+  }
 }
 
 export interface NFeEmitente {
