@@ -143,6 +143,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Start server and run E2E smoke tests
+        shell: bash
         run: |
           pnpm start &
           SERVER_PID=$!
