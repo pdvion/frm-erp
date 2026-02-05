@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -60,17 +61,15 @@ export default function CashflowPage() {
             <span className="text-sm text-theme-secondary">Agrupar por:</span>
             <div className="flex rounded-lg border border-theme-input overflow-hidden">
               {(["day", "week", "month"] as GroupBy[]).map((g) => (
-                <button
+                <Button
                   key={g}
+                  variant={groupBy === g ? "primary" : "ghost"}
+                  size="sm"
                   onClick={() => setGroupBy(g)}
-                  className={`px-3 py-1.5 text-sm ${
-                    groupBy === g
-                      ? "bg-blue-600 text-white"
-                      : "bg-theme-card text-theme-secondary hover:bg-theme-hover"
-                  }`}
+                  className="rounded-none"
                 >
                   {g === "day" ? "Dia" : g === "week" ? "Semana" : "Mês"}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

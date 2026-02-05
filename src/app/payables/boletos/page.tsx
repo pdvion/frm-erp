@@ -18,6 +18,7 @@ import {
   Building2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -271,9 +272,11 @@ export default function BoletosPage() {
                           <td className="px-4 py-3 whitespace-nowrap text-right">
                             <div className="flex items-center justify-end gap-1">
                               {boleto.barcode && (
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => copyToClipboard(boleto.barcode!)}
-                                  className="p-1.5 text-theme-muted hover:text-theme-secondary hover:bg-theme-hover rounded"
+                                  className="p-1.5"
                                   title="Copiar linha digitável"
                                 >
                                   {copiedCode === boleto.barcode ? (
@@ -281,14 +284,16 @@ export default function BoletosPage() {
                                   ) : (
                                     <Copy className="w-4 h-4" />
                                   )}
-                                </button>
+                                </Button>
                               )}
-                              <button
-                                className="p-1.5 text-theme-muted hover:text-theme-secondary hover:bg-theme-hover rounded"
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="p-1.5"
                                 title="Imprimir"
                               >
                                 <Printer className="w-4 h-4" />
-                              </button>
+                              </Button>
                               <Link
                                 href={`/payables/boletos/${boleto.id}`}
                                 className="p-1.5 text-[var(--frm-primary)] hover:bg-[var(--frm-50)] rounded"
@@ -315,25 +320,27 @@ export default function BoletosPage() {
                   {pagination.total} registros
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-5 h-5" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
-                    className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

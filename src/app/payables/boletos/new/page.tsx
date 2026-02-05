@@ -287,10 +287,12 @@ export default function NewBoletoPage() {
                     <code className="flex-1 p-3 bg-theme-secondary rounded-lg text-sm font-mono text-theme break-all">
                       {result.codigoBarras}
                     </code>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleCopy(result.codigoBarras, "barras")}
-                      className="p-2 border border-theme rounded-lg hover:bg-theme-secondary"
+                      className="p-2"
                       title="Copiar"
                     >
                       {copied === "barras" ? (
@@ -298,7 +300,7 @@ export default function NewBoletoPage() {
                       ) : (
                         <Copy className="w-4 h-4 text-theme-muted" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -310,10 +312,12 @@ export default function NewBoletoPage() {
                     <code className="flex-1 p-3 bg-theme-secondary rounded-lg text-sm font-mono text-theme break-all">
                       {result.linhaDigitavel}
                     </code>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleCopy(result.linhaDigitavel, "linha")}
-                      className="p-2 border border-theme rounded-lg hover:bg-theme-secondary"
+                      className="p-2"
                       title="Copiar"
                     >
                       {copied === "linha" ? (
@@ -321,7 +325,7 @@ export default function NewBoletoPage() {
                       ) : (
                         <Copy className="w-4 h-4 text-theme-muted" />
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

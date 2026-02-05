@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -269,25 +270,29 @@ export default function ReconciliationPage() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           {transaction.reconciled ? (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleReconcile(transaction.id, false)}
                               disabled={reconcileMutation.isPending}
-                              className="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                              className="text-xs text-red-600 hover:text-red-800 hover:bg-red-50"
                               title="Desfazer conciliação"
+                              leftIcon={<X className="w-4 h-4" />}
                             >
-                              <X className="w-4 h-4" />
                               Desfazer
-                            </button>
+                            </Button>
                           ) : (
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleReconcile(transaction.id, true)}
                               disabled={reconcileMutation.isPending}
-                              className="inline-flex items-center gap-1 px-2 py-1 text-xs text-green-600 hover:text-green-800 hover:bg-green-50 rounded"
+                              className="text-xs text-green-600 hover:text-green-800 hover:bg-green-50"
                               title="Conciliar"
+                              leftIcon={<Check className="w-4 h-4" />}
                             >
-                              <Check className="w-4 h-4" />
                               Conciliar
-                            </button>
+                            </Button>
                           )}
                         </td>
                       </tr>
@@ -304,20 +309,22 @@ export default function ReconciliationPage() {
                   Página {page} de {transactions.pages}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="px-3 py-1 border border-theme-input rounded text-sm disabled:opacity-50"
                   >
                     Anterior
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPage(page + 1)}
                     disabled={page === transactions.pages}
-                    className="px-3 py-1 border border-theme-input rounded text-sm disabled:opacity-50"
                   >
                     Próxima
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

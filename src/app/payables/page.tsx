@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { TableSkeleton } from "@/components/ui/Skeleton";
@@ -212,15 +213,14 @@ export default function PayablesPage() {
                 <option value="CANCELLED">Cancelados</option>
               </select>
 
-              <button
+              <Button
+                variant={showFilters ? "primary" : "outline"}
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
-                  showFilters ? "bg-indigo-50 border-indigo-300 text-indigo-700" : "border-theme text-theme-secondary"
-                }`}
+                leftIcon={<Filter className="w-4 h-4" />}
+                className={showFilters ? "bg-indigo-600 hover:bg-indigo-700" : ""}
               >
-                <Filter className="w-4 h-4" />
                 Filtros
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -385,25 +385,27 @@ export default function PayablesPage() {
                     Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total} títulos
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
                       aria-label="Página anterior"
-                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronLeft className="w-4 h-4" />
-                    </button>
+                    </Button>
                     <span className="text-sm text-theme-secondary">
                       Página {page} de {data.pages}
                     </span>
-                    <button
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
                       aria-label="Próxima página"
-                      className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                     >
                       <ChevronRight className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

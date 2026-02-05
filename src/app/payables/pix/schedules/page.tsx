@@ -17,6 +17,7 @@ import {
   Eye
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -244,43 +245,48 @@ export default function PixSchedulesPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <div className="relative">
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => setOpenMenu(openMenu === schedule.id ? null : schedule.id)}
-                              className="p-2 hover:bg-theme-hover rounded-lg"
+                              className="p-2"
                             >
                               <MoreVertical className="w-5 h-5 text-theme-muted" />
-                            </button>
+                            </Button>
                             {openMenu === schedule.id && (
                               <div className="absolute right-0 mt-2 w-48 bg-theme-card rounded-lg shadow-lg border border-theme z-10">
-                                <button
+                                <Button
+                                  variant="ghost"
                                   onClick={() => {
                                     // View details
                                     setOpenMenu(null);
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover justify-start h-auto rounded-none"
+                                  leftIcon={<Eye className="w-4 h-4" />}
                                 >
-                                  <Eye className="w-4 h-4" />
                                   Ver Detalhes
-                                </button>
+                                </Button>
                                 {schedule.status === "SCHEDULED" && (
                                   <>
-                                    <button
+                                    <Button
+                                      variant="ghost"
                                       onClick={() => {
                                         // Edit schedule
                                         setOpenMenu(null);
                                       }}
-                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover"
+                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover justify-start h-auto rounded-none"
+                                      leftIcon={<Edit className="w-4 h-4" />}
                                     >
-                                      <Edit className="w-4 h-4" />
                                       Editar
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
                                       onClick={() => handleCancel(schedule.id)}
-                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 justify-start h-auto rounded-none"
+                                      leftIcon={<Trash2 className="w-4 h-4" />}
                                     >
-                                      <Trash2 className="w-4 h-4" />
                                       Cancelar
-                                    </button>
+                                    </Button>
                                   </>
                                 )}
                               </div>

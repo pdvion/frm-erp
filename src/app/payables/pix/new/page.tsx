@@ -210,13 +210,14 @@ export default function NewPixPage() {
                   const config = keyTypeConfig[type];
                   const Icon = config.icon;
                   return (
-                    <button
+                    <Button
                       key={type}
+                      variant="ghost"
                       onClick={() => {
                         setKeyType(type);
                         setPixKey("");
                       }}
-                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
+                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors h-auto ${
                         keyType === type
                           ? "border-purple-500 bg-purple-50 text-purple-700"
                           : "border-theme hover:border-theme text-theme-secondary"
@@ -224,7 +225,7 @@ export default function NewPixPage() {
                     >
                       <Icon className="w-5 h-5" />
                       <span className="text-xs font-medium">{config.label}</span>
-                    </button>
+                    </Button>
                   );
                 })}
               </div>

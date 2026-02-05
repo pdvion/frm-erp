@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
   Layers,
@@ -164,12 +165,14 @@ export default function BatchPaymentPage() {
                 {result.failCount > 0 && ` | ${result.failCount} falha(s)`}
               </p>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setResult(null)}
-              className="ml-auto text-sm text-theme-muted hover:text-theme"
+              className="ml-auto text-sm"
             >
               Fechar
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -177,9 +180,10 @@ export default function BatchPaymentPage() {
       {/* Cards de estatísticas */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setFilterPeriod("overdue")}
-            className={`p-4 rounded-lg border transition-colors text-left ${
+            className={`p-4 rounded-lg border transition-colors text-left h-auto justify-start ${
               filterPeriod === "overdue"
                 ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700"
                 : "bg-theme-card border-theme hover:bg-theme-secondary"
@@ -199,11 +203,12 @@ export default function BatchPaymentPage() {
                 </p>
               </div>
             </div>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setFilterPeriod("week")}
-            className={`p-4 rounded-lg border transition-colors text-left ${
+            className={`p-4 rounded-lg border transition-colors text-left h-auto justify-start ${
               filterPeriod === "week"
                 ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-300 dark:border-yellow-700"
                 : "bg-theme-card border-theme hover:bg-theme-secondary"
@@ -223,11 +228,12 @@ export default function BatchPaymentPage() {
                 </p>
               </div>
             </div>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setFilterPeriod("month")}
-            className={`p-4 rounded-lg border transition-colors text-left ${
+            className={`p-4 rounded-lg border transition-colors text-left h-auto justify-start ${
               filterPeriod === "month"
                 ? "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700"
                 : "bg-theme-card border-theme hover:bg-theme-secondary"
@@ -247,7 +253,7 @@ export default function BatchPaymentPage() {
                 </p>
               </div>
             </div>
-          </button>
+          </Button>
         </div>
       )}
 
@@ -266,17 +272,14 @@ export default function BatchPaymentPage() {
               />
             </div>
 
-            <button
+            <Button
+              variant={filterPeriod === "all" ? "primary" : "outline"}
+              size="sm"
               onClick={() => setFilterPeriod("all")}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
-                filterPeriod === "all"
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-theme text-theme hover:bg-theme-secondary"
-              }`}
+              leftIcon={<Filter className="w-4 h-4" />}
             >
-              <Filter className="w-4 h-4" />
               Todos
-            </button>
+            </Button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -289,14 +292,14 @@ export default function BatchPaymentPage() {
               />
             </div>
 
-            <button
+            <Button
               onClick={() => setShowConfirm(true)}
               disabled={selectedIds.size === 0 || batchPayMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              leftIcon={<CreditCard className="w-4 h-4" />}
+              className="bg-green-600 hover:bg-green-700"
             >
-              <CreditCard className="w-4 h-4" />
               Pagar {selectedIds.size > 0 && `(${selectedIds.size})`}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -455,19 +458,20 @@ export default function BatchPaymentPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handlePay}
-                disabled={batchPayMutation.isPending}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                isLoading={batchPayMutation.isPending}
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                {batchPayMutation.isPending ? "Processando..." : "Confirmar"}
-              </button>
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>

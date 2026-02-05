@@ -99,14 +99,17 @@ export default function NewBillingPage() {
                 {customers && customers.customers.length > 0 && customerSearch.length >= 2 && (
                   <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     {customers.customers.map((customer) => (
-                      <button
+                      <Button
                         key={customer.id}
+                        variant="ghost"
                         onClick={() => { setSelectedCustomer(customer); setCustomerSearch(""); }}
-                        className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme"
+                        className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme justify-start h-auto rounded-none"
                       >
-                        <p className="font-medium">{customer.companyName}</p>
-                        <p className="text-xs text-theme-muted">{customer.code}</p>
-                      </button>
+                        <div>
+                          <p className="font-medium">{customer.companyName}</p>
+                          <p className="text-xs text-theme-muted">{customer.code}</p>
+                        </div>
+                      </Button>
                     ))}
                   </div>
                 )}

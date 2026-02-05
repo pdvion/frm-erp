@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/PageHeader";
 import {
   ClipboardCheck,
@@ -235,30 +236,32 @@ export default function MyPendingApprovalsPage() {
                       {formatCurrency(Number(request.amount))}
                     </p>
                     <div className="flex gap-2">
-                      <button
+                      <Button
+                        size="sm"
                         onClick={() => {
                           setSelectedRequest(request.id);
                           setActionType("approve");
                           setComments("");
                           setError("");
                         }}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-green-600 hover:bg-green-700"
+                        leftIcon={<CheckCircle2 className="w-4 h-4" />}
                       >
-                        <CheckCircle2 className="w-4 h-4" />
                         Aprovar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        size="sm"
                         onClick={() => {
                           setSelectedRequest(request.id);
                           setActionType("reject");
                           setComments("");
                           setError("");
                         }}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                        className="bg-red-600 hover:bg-red-700"
+                        leftIcon={<XCircle className="w-4 h-4" />}
                       >
-                        <XCircle className="w-4 h-4" />
                         Rejeitar
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -318,32 +321,29 @@ export default function MyPendingApprovalsPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSelectedRequest(null);
                   setActionType(null);
                   setComments("");
                   setError("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAction}
-                disabled={approveMutation.isPending || rejectMutation.isPending}
-                className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-50 ${
+                isLoading={approveMutation.isPending || rejectMutation.isPending}
+                className={`flex-1 ${
                   actionType === "approve"
                     ? "bg-green-600 hover:bg-green-700"
                     : "bg-red-600 hover:bg-red-700"
                 }`}
               >
-                {approveMutation.isPending || rejectMutation.isPending
-                  ? "Processando..."
-                  : actionType === "approve"
-                    ? "Confirmar Aprovação"
-                    : "Confirmar Rejeição"}
-              </button>
+                {actionType === "approve" ? "Confirmar Aprovação" : "Confirmar Rejeição"}
+              </Button>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -193,15 +194,17 @@ export default function ImportOFXPage() {
                     <p className="text-green-600 text-sm">
                       {(file.size / 1024).toFixed(1)} KB
                     </p>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => {
                         setFile(null);
                         setFileContent("");
                       }}
-                      className="text-sm text-theme-muted hover:text-theme-secondary underline"
+                      className="text-sm underline"
                     >
                       Remover arquivo
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -248,23 +251,14 @@ export default function ImportOFXPage() {
               >
                 Cancelar
               </Link>
-              <button
+              <Button
                 onClick={handleImport}
-                disabled={!selectedAccountId || !fileContent || importMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                disabled={!selectedAccountId || !fileContent}
+                isLoading={importMutation.isPending}
+                leftIcon={!importMutation.isPending ? <Upload className="w-4 h-4" /> : undefined}
               >
-                {importMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Importando...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4" />
-                    Importar Extrato
-                  </>
-                )}
-              </button>
+                {importMutation.isPending ? "Importando..." : "Importar Extrato"}
+              </Button>
             </div>
           </div>
         )}

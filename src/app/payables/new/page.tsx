@@ -194,13 +194,15 @@ export default function NewPayablePage() {
                 <div className="flex-1 px-4 py-2 bg-theme-secondary border border-theme rounded-lg text-theme">
                   {form.supplierName}
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setForm({ ...form, supplierId: "", supplierName: "" })}
-                  className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                  className="text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                 >
                   Alterar
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="relative">
@@ -219,11 +221,12 @@ export default function NewPayablePage() {
                 {showSupplierDropdown && suppliers?.suppliers && suppliers.suppliers.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-auto">
                     {suppliers.suppliers.map((s) => (
-                      <button
+                      <Button
                         key={s.id}
                         type="button"
+                        variant="ghost"
                         onClick={() => selectSupplier(s)}
-                        className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme"
+                        className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme justify-start h-auto rounded-none"
                       >
                         <span className="font-medium">{s.companyName}</span>
                         {s.tradeName && (
@@ -231,7 +234,7 @@ export default function NewPayablePage() {
                             ({s.tradeName})
                           </span>
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}

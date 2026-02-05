@@ -204,7 +204,9 @@ export default function CnabPage() {
                   <Settings className="w-5 h-5 text-theme-muted" />
                   Configuração CNAB
                 </h2>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     if (cnabConfig) {
                       setConfigForm({
@@ -225,7 +227,7 @@ export default function CnabPage() {
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
                   {showConfigForm ? "Cancelar" : cnabConfig ? "Editar" : "Configurar"}
-                </button>
+                </Button>
               </div>
 
               {!cnabConfig && !showConfigForm ? (
