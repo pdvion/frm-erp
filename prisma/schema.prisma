@@ -97,8 +97,26 @@ model Company {
   workSchedules        WorkSchedule[]
   workflowDefinitions  WorkflowDefinition[]
   workflowInstances    WorkflowInstance[]
+  onboarding           CompanyOnboarding?
 
   @@map("companies")
+}
+
+model CompanyOnboarding {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String    @unique @db.Uuid
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  currentStep    Int       @default(1)
+  stepsCompleted Json      @default("{}")
+  step1Data      Json?
+  step2Data      Json?
+  step3Data      Json?
+  step4Data      Json?
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+
+  @@map("company_onboarding")
 }
 
 model User {

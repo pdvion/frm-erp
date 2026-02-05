@@ -225,6 +225,7 @@ export const modules: ModuleDefinition[] = [
     icon: Rocket,
     order: 16,
     routes: [
+      { path: "/setup/onboarding", label: "Onboarding", showInMenu: true, enabled: true },
       { 
         path: "/setup/deploy-agent", 
         label: "Deploy Agent", 
