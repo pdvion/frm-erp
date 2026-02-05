@@ -3,16 +3,22 @@
  * Extrai dados estruturados de arquivos XML de Nota Fiscal Eletrônica
  */
 
+// Cache JSDOM instance for server-side to avoid creating new instance on every call
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let cachedJsdom: any = null;
+
 // Use JSDOM on server-side, native DOMParser on client-side
 function getDOMParser(): typeof DOMParser {
   if (typeof window !== "undefined" && typeof window.DOMParser !== "undefined") {
     return window.DOMParser;
   }
-  // Server-side: use jsdom
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { JSDOM } = require("jsdom");
-  const dom = new JSDOM();
-  return dom.window.DOMParser;
+  // Server-side: use jsdom with caching
+  if (!cachedJsdom) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { JSDOM } = require("jsdom");
+    cachedJsdom = new JSDOM();
+  }
+  return cachedJsdom.window.DOMParser;
 }
 
 export interface NFeEmitente {

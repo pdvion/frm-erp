@@ -112,6 +112,7 @@ model CompanyOnboarding {
   step2Data      Json?
   step3Data      Json?
   step4Data      Json?
+  step5Data      Json?
   completedAt    DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
