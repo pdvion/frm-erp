@@ -70,3 +70,30 @@ export type { AvatarProps, AvatarGroupProps, AvatarWithStatusProps, AvatarSize }
 
 export { DataTable } from "./DataTable";
 export type { DataTableProps, TableColumn, SortDirection } from "./DataTable";
+
+export { FileUpload } from "./FileUpload";
+export type { FileUploadProps, UploadedFile } from "./FileUpload";
+
+export { ImageUpload } from "./ImageUpload";
+export type { ImageUploadProps } from "./ImageUpload";
+
+export {
+  ChartLine,
+  ChartBar,
+  ChartPie,
+  ChartDonut,
+  ChartArea,
+  ChartCard,
+  KpiCard,
+  CHART_COLORS,
+} from "./Chart";
+export type {
+  ChartData,
+  DataKey,
+  LineChartProps,
+  BarChartProps,
+  PieChartProps,
+  AreaChartProps,
+  ChartCardProps,
+  KpiCardProps,
+} from "./Chart";
