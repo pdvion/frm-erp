@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import {
   TrendingUp,
@@ -125,17 +126,14 @@ export default function BISalesPage() {
           { value: "quarter", label: "Trimestre" },
           { value: "year", label: "Ano" },
         ].map((p) => (
-          <button
+          <Button
             key={p.value}
+            variant={period === p.value ? "primary" : "outline"}
+            size="sm"
             onClick={() => setPeriod(p.value)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              period === p.value
-                ? "bg-blue-600 text-white"
-                : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-            }`}
           >
             {p.label}
-          </button>
+          </Button>
         ))}
       </div>
 

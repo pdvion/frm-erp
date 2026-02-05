@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Checkbox } from "@/components/ui/Checkbox";
 import {
   LayoutDashboard,
   Plus,
@@ -179,35 +181,32 @@ export default function BIDashboardsPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   value={newDashboard.description}
                   onChange={(e) => setNewDashboard({ ...newDashboard, description: e.target.value })}
                   rows={2}
                   placeholder="Descrição opcional..."
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
                 />
               </div>
 
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="isDefault"
                     checked={newDashboard.isDefault}
-                    onChange={(e) => setNewDashboard({ ...newDashboard, isDefault: e.target.checked })}
-                    className="w-4 h-4 rounded border-theme-input"
+                    onChange={(checked) => setNewDashboard({ ...newDashboard, isDefault: checked })}
                   />
-                  <span className="text-sm text-theme">Dashboard padrão</span>
-                </label>
+                  <label htmlFor="isDefault" className="text-sm text-theme cursor-pointer">Dashboard padrão</label>
+                </div>
 
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="isPublic"
                     checked={newDashboard.isPublic}
-                    onChange={(e) => setNewDashboard({ ...newDashboard, isPublic: e.target.checked })}
-                    className="w-4 h-4 rounded border-theme-input"
+                    onChange={(checked) => setNewDashboard({ ...newDashboard, isPublic: checked })}
                   />
-                  <span className="text-sm text-theme">Público</span>
-                </label>
+                  <label htmlFor="isPublic" className="text-sm text-theme cursor-pointer">Público</label>
+                </div>
               </div>
             </div>
 

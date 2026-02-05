@@ -4,6 +4,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   BarChart3,
   TrendingUp,
@@ -117,13 +118,13 @@ export default function BiDashboardPage() {
         icon={<BarChart3 className="h-6 w-6 text-blue-600" />}
         module="REPORTS"
       >
-        <button
+        <Button
+          variant="outline"
           onClick={handleRefresh}
-          className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"
         >
           <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           Atualizar
-        </button>
+        </Button>
         <Link
           href="/bi/dashboards"
           className="flex items-center gap-2 rounded-lg border border-theme-input bg-theme-card px-4 py-2 text-theme-secondary hover:bg-theme-hover"

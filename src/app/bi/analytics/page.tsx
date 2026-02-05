@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   LineChart,
   TrendingUp,
@@ -79,25 +80,23 @@ export default function BIAnalyticsPage() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 bg-theme-secondary rounded-lg p-1">
               {periodOptions.map((opt) => (
-                <button
+                <Button
                   key={opt.value}
+                  variant={period === opt.value ? "primary" : "ghost"}
+                  size="sm"
                   onClick={() => setPeriod(opt.value)}
-                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                    period === opt.value
-                      ? "bg-theme-card shadow text-theme"
-                      : "text-theme-muted hover:text-theme"
-                  }`}
                 >
                   {opt.label}
-                </button>
+                </Button>
               ))}
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => refetch()}
-              className="p-2 text-theme-muted hover:text-theme hover:bg-theme-secondary rounded-lg transition-colors"
             >
               <RefreshCw className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         }
       />
