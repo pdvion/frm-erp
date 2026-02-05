@@ -14,6 +14,7 @@ import {
   FileUp
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -128,28 +129,30 @@ export default function NFeImportPage() {
         <div className="bg-theme-card rounded-xl border border-theme mb-6">
           <div className="border-b border-theme">
             <nav className="flex -mb-px">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setActiveTab("upload")}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 rounded-none h-auto ${
                   activeTab === "upload"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
                     : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-theme"
                 }`}
+                leftIcon={<FileUp className="w-5 h-5" />}
               >
-                <FileUp className="w-5 h-5" />
                 Upload de Arquivo
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => setActiveTab("email")}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 rounded-none h-auto ${
                   activeTab === "email"
                     ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
                     : "border-transparent text-theme-muted hover:text-theme-secondary hover:border-theme"
                 }`}
+                leftIcon={<Mail className="w-5 h-5" />}
               >
-                <Mail className="w-5 h-5" />
                 Importar do Email
-              </button>
+              </Button>
             </nav>
           </div>
 
@@ -173,7 +176,9 @@ export default function NFeImportPage() {
                         <p className="text-lg font-medium text-theme">{fileName}</p>
                         <p className="text-sm text-theme-muted">Arquivo carregado com sucesso</p>
                       </div>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => {
                           setXmlContent("");
                           setFileName("");
@@ -181,7 +186,7 @@ export default function NFeImportPage() {
                         className="text-sm text-red-600 hover:underline"
                       >
                         Remover arquivo
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-3">
@@ -214,10 +219,11 @@ export default function NFeImportPage() {
 
                 {/* Import Button */}
                 <div className="flex justify-end">
-                  <button
+                  <Button
                     onClick={handleImport}
                     disabled={!xmlContent || isProcessing}
-                    className="flex items-center gap-2 px-6 py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    isLoading={isProcessing}
+                    leftIcon={!isProcessing ? <Upload className="w-5 h-5" /> : undefined}
                   >
                     {isProcessing ? (
                       <>
@@ -230,7 +236,7 @@ export default function NFeImportPage() {
                         Importar NFe
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -305,18 +311,17 @@ export default function NFeImportPage() {
 
             {results.some((r) => r.success) && (
               <div className="mt-4 pt-4 border-t border-theme flex justify-end gap-3">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setResults([])}
-                  className="px-4 py-2 text-theme-secondary hover:text-theme"
                 >
                   Limpar resultados
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => router.push("/fiscal/nfe")}
-                  className="px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
                 >
                   Ver todas as NFes
-                </button>
+                </Button>
               </div>
             )}
           </div>

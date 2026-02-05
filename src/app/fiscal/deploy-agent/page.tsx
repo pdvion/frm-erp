@@ -17,6 +17,7 @@ import {
   Settings,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -145,55 +146,48 @@ export default function DeployAgentPage() {
       <div className="bg-theme-card rounded-lg p-4 border border-theme mb-6">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex gap-2">
-            <button
+            <Button
+              variant={statusFilter === "PENDING" ? "primary" : "secondary"}
+              size="sm"
               onClick={() => setStatusFilter("PENDING")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === "PENDING"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-theme-input text-theme-secondary hover:bg-theme-hover"
-              }`}
+              className={statusFilter === "PENDING" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
             >
               Pendentes
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={statusFilter === "APPROVED" ? "primary" : "secondary"}
+              size="sm"
               onClick={() => setStatusFilter("APPROVED")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === "APPROVED"
-                  ? "bg-green-500 text-white"
-                  : "bg-theme-input text-theme-secondary hover:bg-theme-hover"
-              }`}
+              className={statusFilter === "APPROVED" ? "bg-green-500 hover:bg-green-600" : ""}
             >
               Aprovadas
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={statusFilter === "REJECTED" ? "primary" : "secondary"}
+              size="sm"
               onClick={() => setStatusFilter("REJECTED")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === "REJECTED"
-                  ? "bg-red-500 text-white"
-                  : "bg-theme-input text-theme-secondary hover:bg-theme-hover"
-              }`}
+              className={statusFilter === "REJECTED" ? "bg-red-500 hover:bg-red-600" : ""}
             >
               Rejeitadas
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={statusFilter === undefined ? "primary" : "secondary"}
+              size="sm"
               onClick={() => setStatusFilter(undefined)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === undefined
-                  ? "bg-blue-500 text-white"
-                  : "bg-theme-input text-theme-secondary hover:bg-theme-hover"
-              }`}
             >
               Todas
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => refetch()}
-            className="ml-auto flex items-center gap-2 px-4 py-2 bg-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors"
+            leftIcon={<RefreshCw className="w-4 h-4" />}
+            className="ml-auto"
           >
-            <RefreshCw className="w-4 h-4" />
             Atualizar
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -331,22 +325,26 @@ export default function DeployAgentPage() {
                         </Link>
                         {invoice.status === "PENDING" && (
                           <>
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleApprove(invoice.id)}
                               disabled={executeMutation.isPending}
-                              className="p-2 text-green-500 hover:bg-green-500/10 rounded-lg transition-colors disabled:opacity-50"
+                              className="p-2 text-green-500 hover:bg-green-500/10"
                               title="Aprovar e importar"
                             >
                               <CheckCircle className="w-4 h-4" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleReject(invoice.id)}
                               disabled={rejectMutation.isPending}
-                              className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                              className="p-2 text-red-500 hover:bg-red-500/10"
                               title="Rejeitar"
                             >
                               <XCircle className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </>
                         )}
                       </div>

@@ -234,13 +234,14 @@ export default function SpedPage() {
             ) : periodos && periodos.length > 0 ? (
               <div className="space-y-2">
                 {periodos.slice(0, 12).map((p) => (
-                  <button
+                  <Button
                     key={`${p.ano}-${p.mes}`}
+                    variant="ghost"
                     onClick={() => {
                       setMes(p.mes);
                       setAno(p.ano);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                    className={`w-full text-left px-3 py-2 justify-start h-auto ${
                       mes === p.mes && ano === p.ano
                         ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
                         : "hover:bg-theme-tertiary dark:hover:bg-theme-card text-theme-secondary"
@@ -254,7 +255,7 @@ export default function SpedPage() {
                         ● Dados disponíveis
                       </span>
                     )}
-                  </button>
+                  </Button>
                 ))}
               </div>
             ) : (

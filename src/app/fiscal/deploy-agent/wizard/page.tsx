@@ -230,12 +230,14 @@ export default function DeployAgentWizardPage() {
                   <h3 className="font-medium text-theme">
                     Arquivos ({validFilesCount} válidos de {files.length})
                   </h3>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setFiles([])}
                     className="text-sm text-red-500 hover:text-red-600"
                   >
                     Limpar todos
-                  </button>
+                  </Button>
                 </div>
                 <div className="max-h-64 overflow-y-auto space-y-2">
                   {files.map((file, index) => (
@@ -261,12 +263,14 @@ export default function DeployAgentWizardPage() {
                           </p>
                         </div>
                       </div>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => removeFile(index)}
-                        className="p-1 hover:bg-theme-tertiary rounded"
+                        className="p-1"
                       >
                         <X className="w-4 h-4 text-theme-secondary" />
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>

@@ -76,18 +76,14 @@ export default function DeployAgentAnalysisPage() {
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.id}
+            variant={activeTab === tab.id ? "primary" : "outline"}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-              activeTab === tab.id
-                ? "bg-blue-600 text-white"
-                : "bg-theme-card text-theme-secondary hover:bg-theme-tertiary border border-theme"
-            }`}
+            leftIcon={tab.icon}
           >
-            {tab.icon}
             {tab.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -646,9 +642,10 @@ function CollapsibleSection({
 }) {
   return (
     <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
-      <button
+      <Button
+        variant="ghost"
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-theme-tertiary transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-theme-tertiary h-auto rounded-none"
       >
         <div className="flex items-center gap-3">
           {icon}
@@ -659,7 +656,7 @@ function CollapsibleSection({
         ) : (
           <ChevronDown className="w-5 h-5 text-theme-secondary" />
         )}
-      </button>
+      </Button>
       {expanded && <div className="p-4 pt-0 border-t border-theme">{children}</div>}
     </div>
   );
