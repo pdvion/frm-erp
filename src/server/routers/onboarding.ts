@@ -64,9 +64,9 @@ export const onboardingRouter = createTRPCRouter({
       });
     }),
 
-  list: tenantProcedure.query(async () => {
+  list: tenantProcedure.query(async ({ ctx }) => {
     return prisma.companyOnboarding.findMany({
-      where: { completedAt: null },
+      where: { completedAt: null, companyId: ctx.companyId },
       include: { company: true },
       orderBy: { createdAt: "desc" },
     });
