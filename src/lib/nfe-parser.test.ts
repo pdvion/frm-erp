@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { JSDOM } from "jsdom";
+import { DOMParser } from "linkedom";
 import { formatCnpj, formatChaveAcesso } from "./nfe-parser";
 
 // Mock DOMParser para ambiente Node
-const dom = new JSDOM();
-global.DOMParser = dom.window.DOMParser;
+global.DOMParser = DOMParser as unknown as typeof globalThis.DOMParser;
 
 // Importar após configurar DOMParser usando beforeAll
 let parseNFeXml: typeof import("./nfe-parser").parseNFeXml;
