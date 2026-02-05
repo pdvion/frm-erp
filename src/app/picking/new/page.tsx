@@ -192,18 +192,19 @@ export default function NewPickingPage() {
         {materials?.materials && materials.materials.length > 0 && materialSearch && (
           <div className="mt-2 max-h-48 overflow-auto border border-theme rounded-lg bg-theme-card">
             {materials.materials.map((mat) => (
-              <button
+              <Button
                 key={mat.id}
                 type="button"
+                variant="ghost"
                 onClick={() => handleAddItem({ id: mat.id, code: String(mat.code), description: mat.description })}
-                className="w-full px-4 py-3 text-left hover:bg-theme-secondary flex items-center justify-between border-b border-theme last:border-b-0"
+                className="w-full px-4 py-3 text-left hover:bg-theme-secondary flex items-center justify-between border-b border-theme last:border-b-0 h-auto rounded-none"
               >
                 <div>
                   <p className="font-medium text-theme">{mat.code}</p>
                   <p className="text-sm text-theme-muted">{mat.description}</p>
                 </div>
                 <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -269,12 +270,14 @@ export default function NewPickingPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleRemoveItem(item.materialId)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}

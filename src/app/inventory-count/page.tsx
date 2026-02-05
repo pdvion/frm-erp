@@ -246,13 +246,15 @@ export default function InventoryCountPage() {
                           <Check className="w-4 h-4" /> Ajustado
                         </span>
                       ) : item.difference !== 0 && item.countedQty !== null ? (
-                        <button
+                        <Button
+                          size="sm"
                           onClick={() => applyAdjustment(item)}
-                          disabled={adjustmentMutation.isPending}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50"
+                          isLoading={adjustmentMutation.isPending}
+                          leftIcon={<Save className="w-3 h-3" />}
+                          className="bg-orange-600 hover:bg-orange-700"
                         >
-                          <Save className="w-3 h-3" /> Ajustar
-                        </button>
+                          Ajustar
+                        </Button>
                       ) : item.countedQty !== null ? (
                         <span className="text-green-600"><Check className="w-4 h-4 inline" /></span>
                       ) : (
@@ -267,12 +269,12 @@ export default function InventoryCountPage() {
 
           {/* Ações */}
           <div className="flex justify-between">
-            <button
+            <Button
+              variant="outline"
               onClick={() => setCountItems([])}
-              className="px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary text-theme"
             >
               Cancelar Contagem
-            </button>
+            </Button>
             <Link href="/inventory">
               <Button>Finalizar e Voltar</Button>
             </Link>

@@ -138,13 +138,15 @@ export default function InventoryEntryPage() {
                     <span className="text-green-800">{selectedMaterial.description}</span>
                     <span className="ml-2 text-sm text-green-600">({selectedMaterial.unit})</span>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setSelectedMaterial(null)}
-                    className="text-green-600 hover:text-green-800"
+                    className="text-green-600 hover:text-green-800 p-1"
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="relative">
@@ -159,17 +161,18 @@ export default function InventoryEntryPage() {
                   {materialsData && materialsData.materials.length > 0 && materialSearch.length >= 2 && (
                     <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-60 overflow-auto">
                       {materialsData.materials.map((material) => (
-                        <button
+                        <Button
                           key={material.id}
                           type="button"
+                          variant="ghost"
                           onClick={() => selectMaterial(material)}
-                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center gap-2"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center gap-2 justify-start h-auto rounded-none"
                         >
                           <span className="font-medium">{material.code}</span>
                           <span className="text-theme-secondary">-</span>
                           <span className="truncate">{material.description}</span>
                           <span className="text-sm text-theme-muted ml-auto">{material.unit}</span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}

@@ -122,11 +122,12 @@ export default function NewLocationPage() {
               const Icon = type.icon;
               const isSelected = form.type === type.value;
               return (
-                <button
+                <Button
                   key={type.value}
                   type="button"
+                  variant="ghost"
                   onClick={() => setForm({ ...form, type: type.value })}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  className={`p-4 rounded-lg border-2 text-left transition-all h-auto flex-col items-start justify-start ${
                     isSelected
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                       : "border-theme hover:border-blue-300 hover:bg-theme-secondary"
@@ -137,7 +138,7 @@ export default function NewLocationPage() {
                     {type.label}
                   </div>
                   <div className="text-xs text-theme-muted">{type.description}</div>
-                </button>
+                </Button>
               );
             })}
           </div>
