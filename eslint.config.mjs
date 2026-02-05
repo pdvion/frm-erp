@@ -26,6 +26,21 @@ const eslintConfig = defineConfig([
       "no-mixed-spaces-and-tabs": "error",
     },
   },
+  // VIO-984: Design System - Proibir elementos HTML nativos em favor dos componentes do DS
+  // Aplicado apenas em src/app (páginas), não em componentes do DS
+  {
+    files: ["src/app/**/*.tsx", "src/app/**/*.jsx"],
+    rules: {
+      "react/forbid-elements": ["warn", {
+        "forbid": [
+          { "element": "button", "message": "Use <Button> from @/components/ui/Button" },
+          { "element": "input", "message": "Use <Input> from @/components/ui/Input" },
+          { "element": "select", "message": "Use <Select> from @/components/ui/Select" },
+          { "element": "textarea", "message": "Use <Textarea> from @/components/ui/Textarea" },
+        ]
+      }],
+    },
+  },
 ]);
 
 export default eslintConfig;
