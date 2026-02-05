@@ -30,7 +30,6 @@ export const onboardingRouter = createTRPCRouter({
       data: z.record(z.string(), z.unknown()),
     }))
     .mutation(async ({ input }) => {
-      const stepField = `step${input.step}Data` as const;
       const onboarding = await prisma.companyOnboarding.findUnique({
         where: { companyId: input.companyId },
       });
@@ -38,13 +37,21 @@ export const onboardingRouter = createTRPCRouter({
       const stepsCompleted = (onboarding?.stepsCompleted as Record<string, boolean>) || {};
       stepsCompleted[String(input.step)] = true;
 
+      // Build update data - only include stepXData for steps 1-4
+      const updateData: Record<string, unknown> = {
+        stepsCompleted: stepsCompleted as Prisma.InputJsonValue,
+        currentStep: Math.min(input.step + 1, 5),
+      };
+
+      // Only steps 1-4 have data fields in the schema
+      if (input.step >= 1 && input.step <= 4) {
+        const stepField = `step${input.step}Data`;
+        updateData[stepField] = input.data as Prisma.InputJsonValue;
+      }
+
       return prisma.companyOnboarding.update({
         where: { companyId: input.companyId },
-        data: {
-          [stepField]: input.data as Prisma.InputJsonValue,
-          stepsCompleted: stepsCompleted as Prisma.InputJsonValue,
-          currentStep: input.step + 1,
-        },
+        data: updateData,
       });
     }),
 

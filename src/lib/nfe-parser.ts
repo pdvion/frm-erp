@@ -3,6 +3,18 @@
  * Extrai dados estruturados de arquivos XML de Nota Fiscal Eletrônica
  */
 
+// Use JSDOM on server-side, native DOMParser on client-side
+function getDOMParser(): typeof DOMParser {
+  if (typeof window !== "undefined" && typeof window.DOMParser !== "undefined") {
+    return window.DOMParser;
+  }
+  // Server-side: use jsdom
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { JSDOM } = require("jsdom");
+  const dom = new JSDOM();
+  return dom.window.DOMParser;
+}
+
 export interface NFeEmitente {
   cnpj: string;
   cpf?: string;
@@ -269,8 +281,9 @@ export function getNFeVersionInfo(version: string): NFeVersionInfo {
  * Suporta versões: 1.10, 2.00, 3.10, 4.00
  */
 export function parseNFeXml(xmlContent: string): NFeParsed {
-  // Criar parser DOM
-  const parser = new DOMParser();
+  // Criar parser DOM (funciona no browser e no servidor)
+  const DOMParserClass = getDOMParser();
+  const parser = new DOMParserClass();
   const doc = parser.parseFromString(xmlContent, "text/xml");
 
   // Verificar erros de parsing
