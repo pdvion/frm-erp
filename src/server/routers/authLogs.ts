@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 
 export const authLogsRouter = createTRPCRouter({
   // Listar logs de autenticação do Supabase
-  list: publicProcedure
+  list: tenantProcedure
     .input(
       z.object({
         page: z.number().min(1).default(1),
@@ -61,7 +61,7 @@ export const authLogsRouter = createTRPCRouter({
     }),
 
   // Estatísticas de eventos de auth
-  stats: publicProcedure.query(async () => {
+  stats: tenantProcedure.query(async () => {
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

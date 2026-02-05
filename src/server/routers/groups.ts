@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, authProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
@@ -483,7 +483,7 @@ export const groupsRouter = createTRPCRouter({
     }),
 
   // Listar permissões disponíveis no sistema
-  listPermissions: publicProcedure.query(() => {
+  listPermissions: authProcedure.query(() => {
     return Object.entries(SYSTEM_PERMISSIONS).map(([key, description]) => ({
       key,
       description,

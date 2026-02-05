@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
 export const onboardingRouter = createTRPCRouter({
-  getStatus: publicProcedure
+  getStatus: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
     .query(async ({ input }) => {
       return prisma.companyOnboarding.findUnique({
@@ -13,7 +13,7 @@ export const onboardingRouter = createTRPCRouter({
       });
     }),
 
-  start: publicProcedure
+  start: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       return prisma.companyOnboarding.upsert({
@@ -23,7 +23,7 @@ export const onboardingRouter = createTRPCRouter({
       });
     }),
 
-  updateStep: publicProcedure
+  updateStep: tenantProcedure
     .input(z.object({
       companyId: z.string().uuid(),
       step: z.number().min(1).max(5),
@@ -55,7 +55,7 @@ export const onboardingRouter = createTRPCRouter({
       });
     }),
 
-  complete: publicProcedure
+  complete: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       return prisma.companyOnboarding.update({
@@ -64,7 +64,7 @@ export const onboardingRouter = createTRPCRouter({
       });
     }),
 
-  list: publicProcedure.query(async () => {
+  list: tenantProcedure.query(async () => {
     return prisma.companyOnboarding.findMany({
       where: { completedAt: null },
       include: { company: true },

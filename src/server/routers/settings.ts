@@ -15,8 +15,8 @@ export const SETTING_CATEGORIES = {
 export type SettingCategory = keyof typeof SETTING_CATEGORIES;
 
 export const settingsRouter = createTRPCRouter({
-  // Buscar configuração por chave (público para landing page)
-  getByKey: publicProcedure
+  // Buscar configuração por chave
+  getByKey: tenantProcedure
     .input(z.object({
       key: z.string(),
       companyId: z.string().uuid().optional(),
@@ -45,7 +45,7 @@ export const settingsRouter = createTRPCRouter({
     }),
 
   // Buscar múltiplas configurações por prefixo (ex: "landing.*")
-  getByPrefix: publicProcedure
+  getByPrefix: tenantProcedure
     .input(z.object({
       prefix: z.string(),
       companyId: z.string().uuid().optional(),
@@ -276,7 +276,7 @@ export const settingsRouter = createTRPCRouter({
     }),
 
   // Listar categorias disponíveis
-  listCategories: publicProcedure.query(() => {
+  listCategories: tenantProcedure.query(() => {
     return Object.entries(SETTING_CATEGORIES).map(([key, label]) => ({
       key,
       label,

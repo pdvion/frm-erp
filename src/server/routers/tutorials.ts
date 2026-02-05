@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 export const tutorialsRouter = createTRPCRouter({
   // Listar todos os tutoriais publicados
-  list: publicProcedure
+  list: tenantProcedure
     .input(z.object({
       module: z.string().optional(),
       category: z.string().optional(),
@@ -51,7 +51,7 @@ export const tutorialsRouter = createTRPCRouter({
   }),
 
   // Obter tutorial por slug
-  getBySlug: publicProcedure
+  getBySlug: tenantProcedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ input }) => {
       const tutorial = await prisma.tutorial.findUnique({
@@ -69,7 +69,7 @@ export const tutorialsRouter = createTRPCRouter({
     }),
 
   // Obter tutorial por módulo (para ajuda contextual)
-  getByModule: publicProcedure
+  getByModule: tenantProcedure
     .input(z.object({ module: z.string() }))
     .query(async ({ input }) => {
       return prisma.tutorial.findFirst({
@@ -186,7 +186,7 @@ export const tutorialsRouter = createTRPCRouter({
     }),
 
   // Listar categorias disponíveis
-  categories: publicProcedure.query(async () => {
+  categories: tenantProcedure.query(async () => {
     const tutorials = await prisma.tutorial.findMany({
       where: { isPublished: true },
       select: { category: true },
@@ -199,7 +199,7 @@ export const tutorialsRouter = createTRPCRouter({
   }),
 
   // Listar módulos com tutoriais
-  modules: publicProcedure.query(async () => {
+  modules: tenantProcedure.query(async () => {
     const tutorials = await prisma.tutorial.findMany({
       where: { isPublished: true },
       select: { module: true },
