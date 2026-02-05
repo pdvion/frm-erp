@@ -284,20 +284,21 @@ export default function NewReceivingPage() {
                   {showSupplierSearch && suppliers?.suppliers && suppliers.suppliers.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-theme-card border border-theme rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
                       {suppliers.suppliers.map((supplier) => (
-                        <button
+                        <Button
                           key={supplier.id}
+                          variant="ghost"
                           onClick={() => {
                             setSelectedSupplier(supplier.id);
                             setShowSupplierSearch(false);
                           }}
-                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center justify-between"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover flex items-center justify-between h-auto rounded-none"
                         >
                           <div>
                             <p className="font-medium text-theme">{supplier.companyName}</p>
                             <p className="text-sm text-theme-muted">{supplier.cnpj}</p>
                           </div>
                           <span className="text-xs text-theme-muted">#{supplier.code}</span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -317,12 +318,14 @@ export default function NewReceivingPage() {
                       </p>
                     </div>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setSelectedSupplier(null)}
-                    className="text-theme-muted hover:text-theme-secondary"
+                    className="p-1"
                   >
                     <X className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

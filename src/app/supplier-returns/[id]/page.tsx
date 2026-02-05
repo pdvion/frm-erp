@@ -18,6 +18,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { SupplierReturnStatus, ReturnReason } from "@prisma/client";
@@ -147,34 +148,33 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
                     <Edit className="h-4 w-4" />
                     Editar
                   </Link>
-                  <button
+                  <Button
                     onClick={handleSubmit}
-                    disabled={isPending}
-                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                    isLoading={isPending}
+                    leftIcon={<Send className="h-4 w-4" />}
                   >
-                    <Send className="h-4 w-4" />
                     Enviar para Aprovação
-                  </button>
+                  </Button>
                 </>
               )}
               {supplierReturn.status === "PENDING" && (
                 <>
-                  <button
+                  <Button
+                    variant="danger"
                     onClick={handleCancel}
-                    disabled={isPending}
-                    className="inline-flex items-center gap-2 rounded-lg border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50 disabled:opacity-50"
+                    isLoading={isPending}
+                    leftIcon={<XCircle className="h-4 w-4" />}
                   >
-                    <XCircle className="h-4 w-4" />
                     Cancelar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="success"
                     onClick={handleApprove}
-                    disabled={isPending}
-                    className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
+                    isLoading={isPending}
+                    leftIcon={<CheckCircle className="h-4 w-4" />}
                   >
-                    <CheckCircle className="h-4 w-4" />
                     Aprovar
-                  </button>
+                  </Button>
                 </>
               )}
               {supplierReturn.status === "APPROVED" && (
@@ -187,14 +187,14 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
                 </Link>
               )}
               {supplierReturn.status === "INVOICED" && (
-                <button
+                <Button
+                  variant="success"
                   onClick={handleComplete}
-                  disabled={isPending}
-                  className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
+                  isLoading={isPending}
+                  leftIcon={<CheckCircle className="h-4 w-4" />}
                 >
-                  <CheckCircle className="h-4 w-4" />
                   Concluir
-                </button>
+                </Button>
               )}
             </div>
           }

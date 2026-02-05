@@ -209,14 +209,14 @@ export default function NewSupplierReturnPage() {
           <div className="bg-theme-card border-theme rounded-xl border p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-theme text-lg font-semibold">Itens da Devolução</h2>
-              <button
+              <Button
                 type="button"
+                size="sm"
                 onClick={() => setShowMaterialSearch(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+                leftIcon={<Plus className="h-4 w-4" />}
               >
-                <Plus className="h-4 w-4" />
                 Adicionar Item
-              </button>
+              </Button>
             </div>
 
             {/* Material Search Modal */}
@@ -243,11 +243,12 @@ export default function NewSupplierReturnPage() {
                     ) : materialsData?.materials.length ? (
                       <div className="space-y-2">
                         {materialsData.materials.map((m) => (
-                          <button
+                          <Button
                             key={m.id}
                             type="button"
+                            variant="ghost"
                             onClick={() => addItem(m)}
-                            className="hover:bg-theme-hover flex w-full items-center gap-3 rounded-lg p-3 text-left"
+                            className="hover:bg-theme-hover flex w-full items-center gap-3 rounded-lg p-3 text-left justify-start h-auto"
                           >
                             <Package className="text-theme-muted h-5 w-5" />
                             <div className="flex-1">
@@ -258,7 +259,7 @@ export default function NewSupplierReturnPage() {
                                 {m.unit} | Último preço: {formatCurrency(m.lastPurchasePrice || 0)}
                               </div>
                             </div>
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     ) : searchMaterial.length >= 2 ? (
@@ -272,16 +273,16 @@ export default function NewSupplierReturnPage() {
                     )}
                   </div>
                   <div className="mt-4 flex justify-end">
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
                       onClick={() => {
                         setShowMaterialSearch(false);
                         setSearchMaterial("");
                       }}
-                      className="text-theme-muted hover:text-theme px-4 py-2"
                     >
                       Cancelar
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -385,13 +386,15 @@ export default function NewSupplierReturnPage() {
                           </select>
                         </td>
                         <td className="px-3 py-2">
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => removeItem(index)}
                             className="rounded p-1 text-red-500 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}

@@ -219,9 +219,10 @@ export default function NewPurchaseOrderPage() {
                 {suppliersData?.suppliers && supplierSearch && !selectedSupplier && (
                   <div className="absolute z-10 w-full mt-1 bg-theme-input border border-theme rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {suppliersData.suppliers.map((supplier) => (
-                      <button
+                      <Button
                         key={supplier.id}
                         type="button"
+                        variant="ghost"
                         onClick={() => {
                           setSelectedSupplier({
                             id: supplier.id,
@@ -230,13 +231,15 @@ export default function NewPurchaseOrderPage() {
                           });
                           setSupplierSearch("");
                         }}
-                        className="w-full px-4 py-2 text-left hover:bg-theme-hover"
+                        className="w-full px-4 py-2 text-left hover:bg-theme-hover justify-start h-auto rounded-none"
                       >
-                        <div className="font-medium text-theme">{supplier.companyName}</div>
-                        <div className="text-sm text-theme-muted">
-                          Código: {supplier.code}
+                        <div>
+                          <div className="font-medium text-theme">{supplier.companyName}</div>
+                          <div className="text-sm text-theme-muted">
+                            Código: {supplier.code}
+                          </div>
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -247,14 +250,14 @@ export default function NewPurchaseOrderPage() {
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium text-theme">Itens</h2>
-                <button
+                <Button
                   type="button"
+                  size="sm"
                   onClick={() => setShowMaterialSearch(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                  leftIcon={<Plus className="w-4 h-4" />}
                 >
-                  <Plus className="w-4 h-4" />
                   Adicionar Item
-                </button>
+                </Button>
               </div>
 
               {showMaterialSearch && (
@@ -278,31 +281,36 @@ export default function NewPurchaseOrderPage() {
                   {materialsData?.materials && materialSearch && (
                     <div className="mt-2 border border-theme rounded-lg max-h-40 overflow-y-auto">
                       {materialsData.materials.map((material) => (
-                        <button
+                        <Button
                           key={material.id}
                           type="button"
+                          variant="ghost"
                           onClick={() => handleAddItem(material)}
-                          className="w-full px-4 py-2 text-left hover:bg-theme-hover"
+                          className="w-full px-4 py-2 text-left hover:bg-theme-hover justify-start h-auto rounded-none"
                         >
-                          <div className="font-medium text-theme">{material.description}</div>
-                          <div className="text-sm text-theme-muted">
-                            Código: {material.code} | Último preço:{" "}
-                            {formatCurrency(material.lastPurchasePrice ?? 0)}
+                          <div>
+                            <div className="font-medium text-theme">{material.description}</div>
+                            <div className="text-sm text-theme-muted">
+                              Código: {material.code} | Último preço:{" "}
+                              {formatCurrency(material.lastPurchasePrice ?? 0)}
+                            </div>
                           </div>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       setShowMaterialSearch(false);
                       setMaterialSearch("");
                     }}
-                    className="mt-2 text-sm text-theme-muted hover:text-theme-secondary"
+                    className="mt-2"
                   >
                     Cancelar
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -379,14 +387,16 @@ export default function NewPurchaseOrderPage() {
                             {formatCurrency(item.quantity * item.unitPrice)}
                           </td>
                           <td className="py-3">
-                            <button
+                            <Button
                               type="button"
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleRemoveItem(item.materialId)}
                               className="p-1 text-red-400 hover:text-red-300"
                               aria-label={`Remover ${item.materialDescription}`}
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </td>
                         </tr>
                       ))}

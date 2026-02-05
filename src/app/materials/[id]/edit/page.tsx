@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { SelectWithAdd } from "@/components/ui/SelectWithAdd";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CategoryQuickForm } from "@/components/forms/CategoryQuickForm";
 
 interface MaterialFormData {
@@ -520,9 +521,12 @@ export default function EditMaterialPage() {
                 value={formData.icmsRate || ""}
                 onChange={handleChange}
               />
-              <div className="flex items-center gap-2 pt-6">
-                <input type="checkbox" id="requiresFiscalEntry" name="requiresFiscalEntry" checked={formData.requiresFiscalEntry} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                <label htmlFor="requiresFiscalEntry" className="text-sm font-medium text-theme-secondary">Requer entrada fiscal</label>
+              <div className="pt-6">
+                <Checkbox
+                  label="Requer entrada fiscal"
+                  checked={formData.requiresFiscalEntry}
+                  onChange={(checked) => setFormData(prev => ({ ...prev, requiresFiscalEntry: checked }))}
+                />
               </div>
             </div>
           )}
@@ -536,26 +540,31 @@ export default function EditMaterialPage() {
                     <FileText className="w-4 h-4" /> Requisitos de Qualidade
                   </h3>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="requiresQualityCheck" checked={formData.requiresQualityCheck} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Requer IQF (Índice de Qualidade)</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="requiresQualityInspection" checked={formData.requiresQualityInspection} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Requer inspeção de qualidade</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="requiresMaterialCertificate" checked={formData.requiresMaterialCertificate} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Requer certificado de material</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="requiresControlSheets" checked={formData.requiresControlSheets} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Requer controle de fichas</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="requiresReturn" checked={formData.requiresReturn} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Requer devolução</span>
-                    </label>
+                    <Checkbox
+                      label="Requer IQF (Índice de Qualidade)"
+                      checked={formData.requiresQualityCheck}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, requiresQualityCheck: checked }))}
+                    />
+                    <Checkbox
+                      label="Requer inspeção de qualidade"
+                      checked={formData.requiresQualityInspection}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, requiresQualityInspection: checked }))}
+                    />
+                    <Checkbox
+                      label="Requer certificado de material"
+                      checked={formData.requiresMaterialCertificate}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, requiresMaterialCertificate: checked }))}
+                    />
+                    <Checkbox
+                      label="Requer controle de fichas"
+                      checked={formData.requiresControlSheets}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, requiresControlSheets: checked }))}
+                    />
+                    <Checkbox
+                      label="Requer devolução"
+                      checked={formData.requiresReturn}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, requiresReturn: checked }))}
+                    />
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -563,10 +572,11 @@ export default function EditMaterialPage() {
                     <HardHat className="w-4 h-4" /> Classificação
                   </h3>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="isEpi" checked={formData.isEpi} onChange={handleChange} className="w-4 h-4 text-orange-600 bg-theme-input border-theme rounded focus:ring-orange-500" />
-                      <span className="text-sm text-theme-secondary">Material é EPI</span>
-                    </label>
+                    <Checkbox
+                      label="Material é EPI"
+                      checked={formData.isEpi}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, isEpi: checked }))}
+                    />
                     {formData.isEpi && (
                       <div className="ml-6">
                         <Input
@@ -579,22 +589,26 @@ export default function EditMaterialPage() {
                         />
                       </div>
                     )}
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="isOfficeSupply" checked={formData.isOfficeSupply} onChange={handleChange} className="w-4 h-4 text-blue-600 bg-theme-input border-theme rounded focus:ring-blue-500" />
-                      <span className="text-sm text-theme-secondary">Material de escritório</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="financialValidated" checked={formData.financialValidated} onChange={handleChange} className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500" />
-                      <span className="text-sm text-theme-secondary">Validado pelo Financeiro</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="financialValidatedCc" checked={formData.financialValidatedCc} onChange={handleChange} className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500" />
-                      <span className="text-sm text-theme-secondary">Validado pelo Financeiro (Centro de Custo)</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input type="checkbox" name="isShared" checked={formData.isShared} onChange={handleChange} className="w-4 h-4 text-purple-600 bg-theme-input border-theme rounded focus:ring-purple-500" />
-                      <span className="text-sm text-theme-secondary">Compartilhar com outras empresas</span>
-                    </label>
+                    <Checkbox
+                      label="Material de escritório"
+                      checked={formData.isOfficeSupply}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, isOfficeSupply: checked }))}
+                    />
+                    <Checkbox
+                      label="Validado pelo Financeiro"
+                      checked={formData.financialValidated}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, financialValidated: checked }))}
+                    />
+                    <Checkbox
+                      label="Validado pelo Financeiro (Centro de Custo)"
+                      checked={formData.financialValidatedCc}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, financialValidatedCc: checked }))}
+                    />
+                    <Checkbox
+                      label="Compartilhar com outras empresas"
+                      checked={formData.isShared}
+                      onChange={(checked) => setFormData(prev => ({ ...prev, isShared: checked }))}
+                    />
                   </div>
                 </div>
               </div>

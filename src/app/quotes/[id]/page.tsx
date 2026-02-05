@@ -7,6 +7,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   FileText,
   CheckCircle,
@@ -393,18 +394,19 @@ export default function QuoteDetailPage() {
 
           {/* Delete */}
           {canEdit && (
-            <button
+            <Button
+              variant="danger"
               onClick={() => {
                 if (confirm("Tem certeza que deseja excluir esta cotação?")) {
                   deleteMutation.mutate({ id });
                 }
               }}
-              disabled={deleteMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-800 text-red-400 rounded-lg hover:bg-red-900/20 disabled:opacity-50"
+              isLoading={deleteMutation.isPending}
+              leftIcon={<Trash2 className="w-4 h-4" />}
+              className="w-full"
             >
-              <Trash2 className="w-4 h-4" />
               Excluir Cotação
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -423,31 +425,29 @@ export default function QuoteDetailPage() {
               Rejeitar Cotação
             </h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Motivo da rejeição (opcional)
-              </label>
-              <textarea
+              <Textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-red-500"
                 placeholder="Informe o motivo..."
               />
             </div>
             <div className="flex gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setShowRejectModal(false)}
-                className="flex-1 px-4 py-2 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={() => rejectMutation.mutate({ id, reason: rejectReason || undefined })}
-                disabled={rejectMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                isLoading={rejectMutation.isPending}
+                className="flex-1"
               >
-                {rejectMutation.isPending ? "Rejeitando..." : "Confirmar"}
-              </button>
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>

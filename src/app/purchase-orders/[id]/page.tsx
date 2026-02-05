@@ -272,13 +272,13 @@ export default function PurchaseOrderDetailPage() {
                                 Completo
                               </span>
                             ) : (
-                              <button
+                              <Button
+                                size="sm"
                                 onClick={() => handleReceive(item.id, pendingQty)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 text-white text-sm rounded-lg hover:bg-teal-700"
+                                leftIcon={<PackageCheck className="w-4 h-4" />}
                               >
-                                <PackageCheck className="w-4 h-4" />
                                 Receber
-                              </button>
+                              </Button>
                             )}
                           </td>
                         )}

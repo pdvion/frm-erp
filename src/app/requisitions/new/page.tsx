@@ -260,12 +260,14 @@ export default function NewRequisitionPage() {
                           />
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => removeItem(item.materialId)}
                             className="p-1 text-red-500 hover:text-red-700"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -313,15 +315,17 @@ export default function NewRequisitionPage() {
           <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <div className="p-4 border-b border-theme flex items-center justify-between">
               <h3 id="material-search-req-title" className="font-medium text-theme">Buscar Material</h3>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setShowMaterialSearch(false);
                   setMaterialSearch("");
                 }}
-                className="text-theme-muted hover:text-theme-secondary"
+                className="p-1"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-4 border-b border-theme">
@@ -354,20 +358,23 @@ export default function NewRequisitionPage() {
               ) : (
                 <div className="divide-y divide-theme-table">
                   {materials.materials.map((material) => (
-                    <button
+                    <Button
                       key={material.id}
+                      variant="ghost"
                       onClick={() => addItem(material)}
                       disabled={items.some((i) => i.materialId === material.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed justify-start h-auto rounded-none"
                     >
-                      <div className="font-medium text-theme">{material.description}</div>
-                      <div className="text-sm text-theme-muted">
-                        Cód: {material.code} | {material.unit}
-                        {items.some((i) => i.materialId === material.id) && (
-                          <span className="ml-2 text-blue-600">(já adicionado)</span>
-                        )}
+                      <div>
+                        <div className="font-medium text-theme">{material.description}</div>
+                        <div className="text-sm text-theme-muted">
+                          Cód: {material.code} | {material.unit}
+                          {items.some((i) => i.materialId === material.id) && (
+                            <span className="ml-2 text-blue-600">(já adicionado)</span>
+                          )}
+                        </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}

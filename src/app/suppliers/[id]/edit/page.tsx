@@ -17,8 +17,8 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Checkbox } from "@/components/ui/Checkbox";
 
-const inputClass = "w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-green-500 focus:border-green-500";
 const labelClass = "block text-sm font-medium text-theme-secondary mb-1";
 
 interface SupplierFormData {
@@ -533,18 +533,13 @@ export default function EditSupplierPage() {
             onChange={handleChange}
           />
 
-          <div>
-            <label htmlFor="paymentTerms" className={labelClass}>Condições de Pagamento</label>
-            <input
-              type="text"
-              id="paymentTerms"
-              name="paymentTerms"
-              value={formData.paymentTerms}
-              onChange={handleChange}
-              placeholder="Ex: 30/60/90 dias"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="Condições de Pagamento"
+            name="paymentTerms"
+            value={formData.paymentTerms}
+            onChange={handleChange}
+            placeholder="Ex: 30/60/90 dias"
+          />
         </div>
 
         {/* Categorias */}
@@ -560,17 +555,12 @@ export default function EditSupplierPage() {
             { id: "cat07Servicos", label: "Serviços" },
             { id: "cat08Escritorio", label: "Escritório" },
           ].map(cat => (
-            <div key={cat.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id={cat.id}
-                name={cat.id}
-                checked={formData[cat.id as keyof SupplierFormData] as boolean}
-                onChange={handleChange}
-                className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
-              />
-              <label htmlFor={cat.id} className="text-sm text-theme-secondary">{cat.label}</label>
-            </div>
+            <Checkbox
+              key={cat.id}
+              label={cat.label}
+              checked={formData[cat.id as keyof SupplierFormData] as boolean}
+              onChange={(checked) => setFormData(prev => ({ ...prev, [cat.id]: checked }))}
+            />
           ))}
         </div>
 
@@ -583,44 +573,29 @@ export default function EditSupplierPage() {
             { id: "isIndustry", label: "Indústria" },
             { id: "isService", label: "Serviço" },
           ].map(tipo => (
-            <div key={tipo.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id={tipo.id}
-                name={tipo.id}
-                checked={formData[tipo.id as keyof SupplierFormData] as boolean}
-                onChange={handleChange}
-                className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
-              />
-              <label htmlFor={tipo.id} className="text-sm text-theme-secondary">{tipo.label}</label>
-            </div>
+            <Checkbox
+              key={tipo.id}
+              label={tipo.label}
+              checked={formData[tipo.id as keyof SupplierFormData] as boolean}
+              onChange={(checked) => setFormData(prev => ({ ...prev, [tipo.id]: checked }))}
+            />
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label htmlFor="cnae" className={labelClass}>CNAE</label>
-            <input
-              type="text"
-              id="cnae"
-              name="cnae"
-              value={formData.cnae}
-              onChange={handleChange}
-              placeholder="0000-0/00"
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label htmlFor="taxRegime" className={labelClass}>Regime Tributário</label>
-            <input
-              type="text"
-              id="taxRegime"
-              name="taxRegime"
-              value={formData.taxRegime}
-              onChange={handleChange}
-              placeholder="Ex: Simples Nacional"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="CNAE"
+            name="cnae"
+            value={formData.cnae}
+            onChange={handleChange}
+            placeholder="0000-0/00"
+          />
+          <Input
+            label="Regime Tributário"
+            name="taxRegime"
+            value={formData.taxRegime}
+            onChange={handleChange}
+            placeholder="Ex: Simples Nacional"
+          />
         </div>
 
         {/* IQF - Índice de Qualidade */}
@@ -641,20 +616,16 @@ export default function EditSupplierPage() {
               ]}
             />
           </div>
-          <div>
-            <label htmlFor="iqfPercent" className={labelClass}>IQF (%)</label>
-            <input
-              type="number"
-              id="iqfPercent"
-              name="iqfPercent"
-              value={formData.iqfPercent || ""}
-              onChange={handleChange}
-              min="0"
-              max="100"
-              step="0.1"
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label="IQF (%)"
+            type="number"
+            name="iqfPercent"
+            value={formData.iqfPercent || ""}
+            onChange={handleChange}
+            min={0}
+            max={100}
+            step="0.1"
+          />
           <div>
             <label htmlFor="iqfStatus" className={labelClass}>Status IQF</label>
             <Select
@@ -683,18 +654,12 @@ export default function EditSupplierPage() {
         </div>
 
         {/* Compartilhado */}
-        <div className="flex items-center gap-2 mb-6">
-          <input
-            type="checkbox"
-            id="isShared"
-            name="isShared"
+        <div className="mb-6">
+          <Checkbox
+            label="Compartilhar com outras empresas"
             checked={formData.isShared}
-            onChange={handleChange}
-            className="w-4 h-4 text-green-600 bg-theme-input border-theme rounded focus:ring-green-500"
+            onChange={(checked) => setFormData(prev => ({ ...prev, isShared: checked }))}
           />
-          <label htmlFor="isShared" className="text-sm font-medium text-theme-secondary">
-            Compartilhar com outras empresas
-          </label>
         </div>
 
         {/* Actions */}

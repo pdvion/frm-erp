@@ -128,18 +128,15 @@ export default function ConsumptionReportPage() {
             </label>
             <div className="flex flex-wrap gap-2">
               {groupByOptions.map((option) => (
-                <button
+                <Button
                   key={option.value}
+                  variant={groupBy === option.value ? "primary" : "secondary"}
+                  size="sm"
                   onClick={() => setGroupBy(option.value)}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                    groupBy === option.value
-                      ? "bg-teal-600 text-white"
-                      : "bg-theme-tertiary text-theme-secondary hover:bg-theme-tertiary dark:bg-theme-secondary dark:text-theme-muted dark:hover:bg-theme-secondary"
-                  }`}
+                  leftIcon={option.icon}
                 >
-                  {option.icon}
                   {option.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

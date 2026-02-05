@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Package,
   Building2,
@@ -152,39 +153,30 @@ export default function ReceivingDetailPage() {
             </Link>
             
             {receiving.status === "PENDING" && !isConferencing && (
-              <button
+              <Button
                 onClick={handleStartConference}
-                disabled={startConferenceMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                isLoading={startConferenceMutation.isPending}
+                leftIcon={<Edit className="w-4 h-4" />}
               >
-                {startConferenceMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Edit className="w-4 h-4" />
-                )}
                 Iniciar Conferência
-              </button>
+              </Button>
             )}
             {isConferencing && (
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setIsConferencing(false)}
-                  className="px-4 py-2 text-theme-secondary hover:text-theme"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="success"
                   onClick={handleCompleteConference}
-                  disabled={completeReceivingMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  isLoading={completeReceivingMutation.isPending}
+                  leftIcon={<Save className="w-4 h-4" />}
                 >
-                  {completeReceivingMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
                   Finalizar Conferência
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -282,12 +274,14 @@ export default function ReceivingDetailPage() {
                         {isConferencing && (
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-2">
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleQuantityChange(item.id, -1)}
-                                className="p-1 text-theme-muted hover:text-theme-secondary hover:bg-theme-hover rounded"
+                                className="p-1"
                               >
                                 <Minus className="w-4 h-4" />
-                              </button>
+                              </Button>
                               <input
                                 type="number"
                                 value={itemConferences[item.id]?.receivedQuantity || 0}
@@ -300,12 +294,14 @@ export default function ReceivingDetailPage() {
                                 }))}
                                 className="w-20 text-center border border-theme-input rounded px-2 py-1"
                               />
-                              <button
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => handleQuantityChange(item.id, 1)}
-                                className="p-1 text-theme-muted hover:text-theme-secondary hover:bg-theme-hover rounded"
+                                className="p-1"
                               >
                                 <Plus className="w-4 h-4" />
-                              </button>
+                              </Button>
                             </div>
                           </td>
                         )}

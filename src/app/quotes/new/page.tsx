@@ -229,11 +229,12 @@ export default function NewQuotePage() {
                           </div>
                         ) : (
                           materials?.materials.map((material) => (
-                            <button
+                            <Button
                               key={material.id}
                               type="button"
+                              variant="ghost"
                               onClick={() => handleAddMaterial(material)}
-                              className="w-full px-4 py-3 text-left hover:bg-theme-hover flex items-center gap-3 border-b border-theme last:border-0"
+                              className="w-full justify-start px-4 py-3 text-left hover:bg-theme-hover flex items-center gap-3 border-b border-theme last:border-0 rounded-none h-auto"
                             >
                               <Package className="w-5 h-5 text-theme-muted" />
                               <div>
@@ -244,7 +245,7 @@ export default function NewQuotePage() {
                                   Unidade: {material.unit}
                                 </div>
                               </div>
-                            </button>
+                            </Button>
                           ))
                         )}
                       </div>
@@ -328,13 +329,15 @@ export default function NewQuotePage() {
                             {formatCurrency(item.quantity * item.unitPrice)}
                           </td>
                           <td className="px-4 py-3">
-                            <button
+                            <Button
                               type="button"
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleRemoveItem(index)}
-                              className="p-1 text-red-400 hover:bg-red-900/20 rounded"
+                              className="p-1 text-red-400 hover:bg-red-900/20"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </td>
                         </tr>
                       ))}
