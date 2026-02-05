@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
 
@@ -359,7 +359,7 @@ export const ddaRouter = createTRPCRouter({
   /**
    * Salvar configuração DDA
    */
-  saveConfig: tenantProcedure
+  saveConfig: sensitiveProcedure
     .input(z.object({
       id: z.string().optional(),
       bancoCodigo: z.string(),

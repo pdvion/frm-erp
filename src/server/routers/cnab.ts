@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { 
   generateRemessaCobranca, 
@@ -67,7 +67,7 @@ export const cnabRouter = createTRPCRouter({
     }),
 
   // Salvar configuração CNAB
-  saveConfig: tenantProcedure
+  saveConfig: sensitiveProcedure
     .input(z.object({
       bankAccountId: z.string().uuid(),
       config: cnabConfigSchema,

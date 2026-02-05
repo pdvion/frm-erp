@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, uploadProcedure } from "../trpc";
 import { createClient } from "@supabase/supabase-js";
 
 const BUCKET_NAME = "products";
@@ -32,7 +32,7 @@ function generateFilePath(
 }
 
 export const productMediaRouter = createTRPCRouter({
-  getUploadUrl: tenantProcedure
+  getUploadUrl: uploadProcedure
     .input(
       z.object({
         productId: z.string().uuid(),

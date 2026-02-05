@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, uploadProcedure } from "../trpc";
 import { createClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 
@@ -14,7 +14,7 @@ function getSupabaseAdmin() {
 
 export const storageRouter = createTRPCRouter({
   // Gerar URL assinada para upload direto do cliente
-  getUploadUrl: tenantProcedure
+  getUploadUrl: uploadProcedure
     .input(z.object({
       fileName: z.string(),
       path: z.string(), // ex: "landing/hero"

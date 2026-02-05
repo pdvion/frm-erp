@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { taskService } from "../services/tasks";
 
@@ -452,7 +452,7 @@ export const tasksRouter = createTRPCRouter({
     }),
 
   // Obter URL de upload para Supabase Storage
-  getUploadUrl: tenantProcedure
+  getUploadUrl: uploadProcedure
     .input(
       z.object({
         taskId: z.string(),
