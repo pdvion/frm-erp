@@ -17,6 +17,7 @@ import {
   Shield,
   Settings,
   Package,
+  Rocket,
   type LucideIcon,
 } from "lucide-react";
 import { ModuleDefinition, RouteDefinition, MenuItem } from "./types";
@@ -102,16 +103,6 @@ export const modules: ModuleDefinition[] = [
       { path: "/invoices", label: "Notas Fiscais", showInMenu: true, enabled: true },
       { path: "/invoices/pending", label: "NFe Pendentes", showInMenu: true, enabled: true },
       { path: "/invoices/import", label: "Importar XML", showInMenu: true, enabled: true },
-      { 
-        path: "/fiscal/deploy-agent", 
-        label: "Deploy Agent", 
-        showInMenu: true, 
-        enabled: true,
-        children: [
-          { path: "/fiscal/deploy-agent/analysis", label: "Análise Fiscal", showInMenu: true, enabled: true },
-          { path: "/fiscal/deploy-agent/wizard", label: "Wizard Config", showInMenu: true, enabled: true },
-        ],
-      },
       { path: "/fiscal/sped", label: "SPED", showInMenu: true, enabled: true },
     ],
   },
@@ -226,6 +217,24 @@ export const modules: ModuleDefinition[] = [
       { path: "/settings/companies", label: "Empresas", showInMenu: true, enabled: true },
       { path: "/audit", label: "Auditoria", showInMenu: true, enabled: true },
       { path: "/admin/auth-logs", label: "Logs de Acesso", showInMenu: true, enabled: true },
+    ],
+  },
+  {
+    id: "setup",
+    label: "Setup",
+    icon: Rocket,
+    order: 16,
+    routes: [
+      { 
+        path: "/setup/deploy-agent", 
+        label: "Deploy Agent", 
+        showInMenu: true, 
+        enabled: true,
+        children: [
+          { path: "/setup/deploy-agent/wizard", label: "Wizard Config", showInMenu: true, enabled: true },
+          { path: "/setup/deploy-agent/analysis", label: "Análise Fiscal", showInMenu: true, enabled: true },
+        ],
+      },
     ],
   },
   {

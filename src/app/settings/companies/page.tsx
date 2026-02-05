@@ -16,6 +16,7 @@ import {
   Loader2,
   Check,
   Search,
+  Rocket,
 } from "lucide-react";
 
 export default function CompaniesPage() {
@@ -339,6 +340,13 @@ export default function CompaniesPage() {
                             title="Gerenciar Usuários"
                           >
                             <Users className="w-4 h-4" />
+                          </Link>
+                          <Link
+                            href="/setup/deploy-agent"
+                            className="p-1 text-theme-muted hover:text-purple-600"
+                            title="Configurar via Deploy Agent"
+                          >
+                            <Rocket className="w-4 h-4" />
                           </Link>
                         </div>
                       </td>
