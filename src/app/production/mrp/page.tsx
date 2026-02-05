@@ -242,12 +242,14 @@ export default function MrpPage() {
                       <td className="py-3 px-3 text-sm text-right">{run.purchaseSuggestions || 0}</td>
                       <td className="py-3 px-3 text-sm text-right font-medium">{run.totalSuggestions || 0}</td>
                       <td className="py-3 px-3 text-center">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={(e) => { e.stopPropagation(); setSelectedRunId(run.id); }}
                           className="text-purple-600 hover:text-purple-800 text-sm"
                         >
                           Ver Sugestões
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -344,22 +346,26 @@ export default function MrpPage() {
                           <td className="py-3 px-3 text-center">
                             {suggestion.status === "PENDING" && (
                               <div className="flex items-center justify-center gap-1">
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => handleApprove(suggestion.id)}
                                   disabled={approveMutation.isPending}
-                                  className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                  className="p-1 text-green-600 hover:bg-green-50"
                                   title="Aprovar"
                                 >
                                   <CheckCircle className="w-4 h-4" />
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => handleReject(suggestion.id)}
                                   disabled={rejectMutation.isPending}
-                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  className="p-1 text-red-600 hover:bg-red-50"
                                   title="Rejeitar"
                                 >
                                   <XCircle className="w-4 h-4" />
-                                </button>
+                                </Button>
                               </div>
                             )}
                           </td>

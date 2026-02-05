@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Layers,
@@ -115,20 +115,22 @@ export default function BomListPage() {
               Mostrando {(page - 1) * 20 + 1} a {Math.min(page * 20, data.total)} de {data.total}
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage(page + 1)}
                 disabled={page * 20 >= data.total}
-                className="px-3 py-1 border border-theme-input rounded-lg disabled:opacity-50"
               >
                 Próximo
-              </button>
+              </Button>
             </div>
           </div>
         )}

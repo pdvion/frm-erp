@@ -163,20 +163,24 @@ export default function OEEWorkCentersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleEdit(wc)}
                         className="p-1 text-blue-600 hover:text-blue-700"
                         title="Editar"
                       >
                         <Edit className="w-4 h-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleToggleActive(wc.id, wc.isActive)}
                         className={`p-1 ${wc.isActive ? "text-theme-secondary hover:text-theme-secondary" : "text-green-600 hover:text-green-700"}`}
                         title={wc.isActive ? "Desativar" : "Ativar"}
                       >
                         {wc.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>

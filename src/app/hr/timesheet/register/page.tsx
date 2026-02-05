@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Clock,
@@ -203,11 +204,12 @@ export default function TimesheetRegisterPage() {
               const Icon = type.icon;
               const isSelected = selectedType === type.value;
               return (
-                <button
+                <Button
                   key={type.value}
                   type="button"
+                  variant="ghost"
                   onClick={() => setSelectedType(type.value)}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  className={`p-4 rounded-lg border-2 text-left transition-all h-auto justify-start ${
                     isSelected
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                       : "border-theme hover:border-blue-300 hover:bg-theme-secondary"
@@ -221,7 +223,7 @@ export default function TimesheetRegisterPage() {
                       {type.label}
                     </span>
                   </div>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -239,34 +241,19 @@ export default function TimesheetRegisterPage() {
         </div>
 
         {/* Botão de Registro */}
-        <button
+        <Button
           onClick={handleRegister}
           disabled={!selectedType || isRegistering || registered}
-          className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
+          isLoading={isRegistering}
+          className={`w-full py-4 rounded-xl font-semibold text-lg ${
             registered
-              ? "bg-green-600 text-white"
-              : isRegistering
-                ? "bg-blue-400 text-white cursor-wait"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+          leftIcon={registered ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
         >
-          {registered ? (
-            <span className="flex items-center justify-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
-              Ponto Registrado!
-            </span>
-          ) : isRegistering ? (
-            <span className="flex items-center justify-center gap-2">
-              <Clock className="w-5 h-5 animate-spin" />
-              Registrando...
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <Clock className="w-5 h-5" />
-              Registrar Ponto
-            </span>
-          )}
-        </button>
+          {registered ? "Ponto Registrado!" : "Registrar Ponto"}
+        </Button>
 
         {/* Registros do Dia */}
         <div className="bg-theme-card border border-theme rounded-lg p-6">

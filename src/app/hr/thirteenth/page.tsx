@@ -226,21 +226,23 @@ export default function ThirteenthPage() {
 
         {data && data.pages > 1 && (
           <div className="flex items-center justify-center gap-2 p-4 border-t border-theme">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
             >
               <ChevronLeft className="w-5 h-5" />
-            </button>
+            </Button>
             <span className="text-sm text-theme-secondary">Página {page} de {data.pages}</span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
               disabled={page === data.pages}
-              className="p-2 rounded hover:bg-theme-hover disabled:opacity-50"
             >
               <ChevronRight className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

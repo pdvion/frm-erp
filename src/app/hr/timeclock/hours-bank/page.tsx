@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import {
@@ -143,13 +144,12 @@ export default function HoursBankPage() {
           { label: "Banco de Horas" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Lançamento
-          </button>
+          </Button>
         }
       />
 
@@ -244,22 +244,24 @@ export default function HoursBankPage() {
               Página {page} de {data.pages} ({data.total} registros)
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                leftIcon={<ChevronLeft className="w-4 h-4" />}
               >
-                <ChevronLeft className="w-4 h-4" />
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                 disabled={page === data.pages}
-                className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                rightIcon={<ChevronRight className="w-4 h-4" />}
               >
                 Próxima
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -301,18 +303,19 @@ export default function HoursBankPage() {
                 {employees?.employees && employees.employees.length > 0 && employeeSearch && (
                   <div className="mt-1 max-h-32 overflow-auto border border-theme rounded-lg bg-theme-card">
                     {employees.employees.map((emp) => (
-                      <button
+                      <Button
                         key={emp.id}
                         type="button"
+                        variant="ghost"
                         onClick={() => {
                           setNewEntry({ ...newEntry, employeeId: emp.id });
                           setSelectedEmployee(emp.name);
                           setEmployeeSearch("");
                         }}
-                        className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme text-sm"
+                        className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme text-sm justify-start h-auto rounded-none"
                       >
                         {emp.name} ({emp.code})
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -367,24 +370,26 @@ export default function HoursBankPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowAddModal(false);
                   setNewEntry(initialNewEntry);
                   setSelectedEmployee("");
                   setEmployeeSearch("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAddEntry}
-                disabled={!newEntry.employeeId || newEntry.hours === 0 || addEntryMutation.isPending}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                disabled={!newEntry.employeeId || newEntry.hours === 0}
+                isLoading={addEntryMutation.isPending}
+                className="flex-1"
               >
-                {addEntryMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>

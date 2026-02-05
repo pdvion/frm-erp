@@ -106,46 +106,34 @@ export default function TimeclockSchedulesPage() {
       {/* Ações e Filtros */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div className="flex gap-2">
-          <button
+          <Button
+            variant={filter === "ALL" ? "primary" : "secondary"}
+            size="sm"
             onClick={() => setFilter("ALL")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === "ALL"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-            }`}
           >
             Todas
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={filter === "FIXED" ? "primary" : "secondary"}
+            size="sm"
             onClick={() => setFilter("FIXED")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === "FIXED"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-            }`}
           >
             Fixas
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={filter === "SHIFT" ? "primary" : "secondary"}
+            size="sm"
             onClick={() => setFilter("SHIFT")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === "SHIFT"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-            }`}
           >
             Turnos
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={filter === "ROTATING" ? "primary" : "secondary"}
+            size="sm"
             onClick={() => setFilter("ROTATING")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === "ROTATING"
-                ? "bg-blue-600 text-white"
-                : "bg-theme-secondary text-theme hover:bg-theme-tertiary"
-            }`}
           >
             Rotativas
-          </button>
+          </Button>
         </div>
 
         <Button leftIcon={<Plus className="w-4 h-4" />}>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Edit,
@@ -140,20 +141,17 @@ export default function TimeclockAdjustmentsPage() {
           </div>
           <div className="flex gap-2">
             {statusOptions.map((opt) => (
-              <button
+              <Button
                 key={opt.value}
+                variant={statusFilter === opt.value ? "primary" : "outline"}
+                size="sm"
                 onClick={() => {
                   setStatusFilter(opt.value);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                  statusFilter === opt.value
-                    ? "bg-blue-600 text-white"
-                    : "border border-theme text-theme hover:bg-theme-secondary"
-                }`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -238,12 +236,14 @@ export default function TimeclockAdjustmentsPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {adj.status === "PENDING" && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setSelectedAdjustment(adj.id)}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          className="text-sm text-blue-600 dark:text-blue-400"
                         >
                           Revisar
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>
@@ -260,22 +260,24 @@ export default function TimeclockAdjustmentsPage() {
               Página {page} de {data.pages} ({data.total} registros)
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                leftIcon={<ChevronLeft className="w-4 h-4" />}
               >
-                <ChevronLeft className="w-4 h-4" />
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                 disabled={page === data.pages}
-                className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                rightIcon={<ChevronRight className="w-4 h-4" />}
               >
                 Próxima
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -315,29 +317,30 @@ export default function TimeclockAdjustmentsPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSelectedAdjustment(null);
                   setReviewNotes("");
                 }}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleReview(false)}
                 disabled={reviewMutation.isPending}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-red-600 hover:bg-red-700"
               >
                 Rejeitar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleReview(true)}
                 disabled={reviewMutation.isPending}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
                 Aprovar
-              </button>
+              </Button>
             </div>
           </div>
         </div>

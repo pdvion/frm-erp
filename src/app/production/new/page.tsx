@@ -464,14 +464,15 @@ export default function NewProductionOrderPage() {
               ) : (
                 <div className="divide-y divide-theme-table">
                   {productsData.materials.map((product) => (
-                    <button
+                    <Button
                       key={product.id}
+                      variant="ghost"
                       onClick={() => selectProduct(product)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover"
+                      className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
                     >
                       <div className="font-medium text-theme">{product.description}</div>
                       <div className="text-sm text-theme-muted">Cód: {product.code} | {product.unit}</div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -533,11 +534,12 @@ export default function NewProductionOrderPage() {
               ) : (
                 <div className="divide-y divide-theme-table">
                   {materialsData.materials.map((material) => (
-                    <button
+                    <Button
                       key={material.id}
+                      variant="ghost"
                       onClick={() => addMaterial(material)}
                       disabled={materials.some((m) => m.materialId === material.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50"
+                      className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
                     >
                       <div className="font-medium text-theme">{material.description}</div>
                       <div className="text-sm text-theme-muted">
@@ -546,7 +548,7 @@ export default function NewProductionOrderPage() {
                           <span className="ml-2 text-blue-600">(já adicionado)</span>
                         )}
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}

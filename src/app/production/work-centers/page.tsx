@@ -236,13 +236,12 @@ export default function WorkCentersPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
             <Factory className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <p className="text-theme-muted mb-4">Nenhum centro de trabalho cadastrado</p>
-            <button
+            <Button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Criar Primeiro Centro
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
@@ -294,7 +293,9 @@ export default function WorkCentersPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleToggleActive(wc.id, wc.isActive)}
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
                           wc.isActive
@@ -313,17 +314,19 @@ export default function WorkCentersPage() {
                             Inativo
                           </>
                         )}
-                      </button>
+                      </Button>
                     </td>
                     <td className="py-3 px-4 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleEdit(wc)}
-                          className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                          className="p-1 text-blue-600 hover:bg-blue-50"
                           title="Editar"
                         >
                           <Pencil className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

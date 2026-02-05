@@ -16,6 +16,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -90,13 +91,12 @@ export default function CalculatePayrollPage() {
         backHref="/hr/payroll"
         actions={
           step === "result" && (
-            <button
+            <Button
               onClick={() => router.push(`/hr/payroll/${result?.payrollId}`)}
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)]"
+              leftIcon={<CheckCircle className="w-5 h-5" />}
             >
-              <CheckCircle className="w-5 h-5" />
               Ver Folha
-            </button>
+            </Button>
           )
         }
       />
@@ -253,21 +253,21 @@ export default function CalculatePayrollPage() {
 
             {/* Botão Calcular */}
             <div className="flex justify-end gap-4">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => router.back()}
-                className="px-6 py-3 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
+                leftIcon={<ArrowLeft className="w-5 h-5" />}
               >
-                <ArrowLeft className="w-5 h-5 inline mr-2" />
                 Voltar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCalculate}
                 disabled={!employees?.employees?.length}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                leftIcon={<Calculator className="w-5 h-5" />}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <Calculator className="w-5 h-5" />
                 Calcular Folha
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -367,21 +367,20 @@ export default function CalculatePayrollPage() {
             </div>
 
             <div className="flex justify-end gap-4">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setStep("config");
                   setResult(null);
                 }}
-                className="px-6 py-3 border border-theme text-theme-secondary rounded-lg hover:bg-theme-hover"
               >
                 Calcular Outra
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => router.push(`/hr/payroll/${result.payrollId}`)}
-                className="px-6 py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)]"
               >
                 Ver Detalhes da Folha
-              </button>
+              </Button>
             </div>
           </div>
         )}

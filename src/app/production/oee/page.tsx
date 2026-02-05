@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -98,31 +99,39 @@ export default function OeeDashboardPage() {
         actions={
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 bg-theme-tertiary rounded-lg p-1">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setDateRange("today")}
                 className={`px-3 py-1 rounded text-sm ${dateRange === "today" ? "bg-theme-card shadow" : ""}`}
               >
                 Hoje
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setDateRange("week")}
                 className={`px-3 py-1 rounded text-sm ${dateRange === "week" ? "bg-theme-card shadow" : ""}`}
               >
                 Semana
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setDateRange("month")}
                 className={`px-3 py-1 rounded text-sm ${dateRange === "month" ? "bg-theme-card shadow" : ""}`}
               >
                 Mês
-              </button>
+              </Button>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => refetch()}
-              className="p-2 text-theme-muted hover:text-theme-secondary rounded-lg hover:bg-theme-hover"
+              className="p-2 text-theme-muted hover:text-theme-secondary"
             >
               <RefreshCw className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         }
       />

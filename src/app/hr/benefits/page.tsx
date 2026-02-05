@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -131,10 +132,11 @@ export default function BenefitsPage() {
                 { key: "trainings", label: "Treinamentos", icon: <GraduationCap className="w-4 h-4" /> },
                 { key: "skills", label: "Matriz de Polivalência", icon: <Award className="w-4 h-4" /> },
               ].map((tab) => (
-                <button
+                <Button
                   key={tab.key}
+                  variant="ghost"
                   onClick={() => { setActiveTab(tab.key as typeof activeTab); setPage(1); }}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 ${
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 rounded-none ${
                     activeTab === tab.key
                       ? "border-purple-600 text-purple-600"
                       : "border-transparent text-theme-muted hover:text-theme-secondary"
@@ -142,7 +144,7 @@ export default function BenefitsPage() {
                 >
                   {tab.icon}
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </nav>
           </div>
@@ -295,20 +297,22 @@ export default function BenefitsPage() {
                         Página {page} de {employeeBenefits.pages}
                       </div>
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setPage(page - 1)}
                           disabled={page === 1}
-                          className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                         >
                           <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setPage(page + 1)}
                           disabled={page === employeeBenefits.pages}
-                          className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                         >
                           <ChevronRight className="w-5 h-5" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
