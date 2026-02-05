@@ -132,12 +132,14 @@ export default function IncotermsPage() {
                     <div>
                       <h4 className="font-medium text-theme">{incoterm.name}</h4>
                       {incoterm.description && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setExpandedId(expandedId === incoterm.id ? null : incoterm.id)}
-                          className="text-sm text-blue-600 hover:underline mt-1"
+                          className="text-sm text-blue-600 hover:underline mt-1 p-0 h-auto"
                         >
                           {expandedId === incoterm.id ? "Ocultar detalhes" : "Ver detalhes"}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>

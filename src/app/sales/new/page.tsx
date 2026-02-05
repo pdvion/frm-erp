@@ -142,14 +142,17 @@ export default function NewSalePage() {
                 {customers && customers.customers.length > 0 && customerSearch.length >= 2 && (
                   <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     {customers.customers.map((customer) => (
-                      <button
+                      <Button
                         key={customer.id}
+                        variant="ghost"
                         onClick={() => { setSelectedCustomer(customer); setCustomerSearch(""); }}
-                        className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme"
+                        className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme justify-start h-auto"
                       >
-                        <p className="font-medium">{customer.companyName}</p>
-                        <p className="text-xs text-theme-muted">{customer.code}</p>
-                      </button>
+                        <div>
+                          <p className="font-medium">{customer.companyName}</p>
+                          <p className="text-xs text-theme-muted">{customer.code}</p>
+                        </div>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -174,16 +177,19 @@ export default function NewSalePage() {
               {materialsData && materialsData.materials.length > 0 && materialSearch.length >= 2 && (
                 <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {materialsData.materials.map((material) => (
-                    <button
+                    <Button
                       key={material.id}
+                      variant="ghost"
                       onClick={() => addMaterial(material)}
-                      className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme"
+                      className="w-full text-left px-4 py-2 hover:bg-theme-hover text-theme justify-start h-auto"
                     >
-                      <p className="font-medium">{material.description}</p>
-                      <p className="text-xs text-theme-muted">
-                        Código: {material.code} | Preço: {formatCurrency(material.lastPurchasePrice || 0)}
-                      </p>
-                    </button>
+                      <div>
+                        <p className="font-medium">{material.description}</p>
+                        <p className="text-xs text-theme-muted">
+                          Código: {material.code} | Preço: {formatCurrency(material.lastPurchasePrice || 0)}
+                        </p>
+                      </div>
+                    </Button>
                   ))}
                 </div>
               )}

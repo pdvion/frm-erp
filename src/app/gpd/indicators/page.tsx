@@ -129,16 +129,18 @@ export default function GPDIndicatorsPage() {
                     Atualizado: {formatDate(indicator.lastUpdated)}
                   </p>
                 )}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     setSelectedIndicator(indicator.id);
                     setShowModal(true);
                   }}
-                  className="mt-3 w-full flex items-center justify-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
+                  className="mt-3 w-full flex items-center justify-center gap-1 text-blue-600 border-blue-200 dark:border-blue-800"
+                  leftIcon={<Plus className="w-4 h-4" />}
                 >
-                  <Plus className="w-4 h-4" />
                   Registrar Valor
-                </button>
+                </Button>
               </div>
             );
           })}

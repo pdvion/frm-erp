@@ -346,9 +346,10 @@ export default function LandingSettingsPage() {
         {/* Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
           <div className="flex gap-2 border-b">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setActiveTab("hero")}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 rounded-none ${
                 activeTab === "hero"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
                   : "border-transparent text-theme-muted hover:text-theme-secondary"
@@ -356,10 +357,11 @@ export default function LandingSettingsPage() {
             >
               <ImageIcon className="w-4 h-4" />
               Hero & Textos
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => setActiveTab("features")}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 rounded-none ${
                 activeTab === "features"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
                   : "border-transparent text-theme-muted hover:text-theme-secondary"
@@ -367,10 +369,11 @@ export default function LandingSettingsPage() {
             >
               <Layout className="w-4 h-4" />
               Features
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => setActiveTab("preview")}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 rounded-none ${
                 activeTab === "preview"
                   ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
                   : "border-transparent text-theme-muted hover:text-theme-secondary"
@@ -378,7 +381,7 @@ export default function LandingSettingsPage() {
             >
               <Eye className="w-4 h-4" />
               Preview
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -405,12 +408,13 @@ export default function LandingSettingsPage() {
                         className="w-full h-48 object-cover rounded-lg"
                         unoptimized
                       />
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white hover:bg-red-600"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <div
@@ -506,13 +510,13 @@ export default function LandingSettingsPage() {
                   <Layout className="w-5 h-5" />
                   Features Destacadas
                 </h2>
-                <button
+                <Button
                   onClick={addFeature}
-                  className="flex items-center gap-2 px-3 py-2 text-sm bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
+                  size="sm"
+                  leftIcon={<Plus className="w-4 h-4" />}
                 >
-                  <Plus className="w-4 h-4" />
                   Adicionar
-                </button>
+                </Button>
               </div>
 
               <div className="space-y-4">
@@ -568,12 +572,14 @@ export default function LandingSettingsPage() {
                         />
                       </div>
                       
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => removeFeature(index)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-500 hover:bg-red-50"
                       >
                         <X className="w-5 h-5" />
-                      </button>
+                      </Button>
                     </div>
                   );
                 })}

@@ -71,12 +71,13 @@ export default function BIDashboardsPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-8 text-center">
           <LayoutDashboard className="w-12 h-12 mx-auto text-theme-muted mb-3" />
           <p className="text-theme-muted">Nenhum dashboard criado</p>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-4 text-blue-600 dark:text-blue-400"
           >
             Criar primeiro dashboard
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -211,15 +212,16 @@ export default function BIDashboardsPage() {
             </div>
 
             <div className="flex gap-3 mt-6">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCreateModal(false);
                   setNewDashboard({ name: "", description: "", isDefault: false, isPublic: false });
                 }}
-                className="flex-1 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
+                className="flex-1"
               >
                 Cancelar
-              </button>
+              </Button>
               <Button
                 onClick={handleCreate}
                 disabled={!newDashboard.name.trim()}

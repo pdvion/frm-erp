@@ -92,32 +92,36 @@ export default function GPDActionsPage() {
       {/* Filtros */}
       <div className="flex flex-wrap gap-4">
         <div className="flex gap-2">
-          <button
+          <Button
+            variant={!statusFilter ? "primary" : "outline"}
+            size="sm"
             onClick={() => setStatusFilter(undefined)}
-            className={`px-3 py-1.5 rounded-lg text-sm ${!statusFilter ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
           >
             Todos
-          </button>
+          </Button>
           {(["PENDING", "IN_PROGRESS", "COMPLETED"] as const).map((status) => (
-            <button
+            <Button
               key={status}
+              variant={statusFilter === status ? "primary" : "outline"}
+              size="sm"
               onClick={() => setStatusFilter(status)}
-              className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${statusFilter === status ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
+              className="flex items-center gap-1"
             >
               {statusIcons[status]}
               {statusLabels[status]}
-            </button>
+            </Button>
           ))}
         </div>
         <div className="flex gap-2">
           {(["CORRECTIVE", "PREVENTIVE", "IMPROVEMENT"] as const).map((type) => (
-            <button
+            <Button
               key={type}
+              variant={typeFilter === type ? "primary" : "outline"}
+              size="sm"
               onClick={() => setTypeFilter(typeFilter === type ? undefined : type)}
-              className={`px-3 py-1.5 rounded-lg text-sm ${typeFilter === type ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
             >
               {typeLabels[type]}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -170,20 +174,24 @@ export default function GPDActionsPage() {
                 </div>
                 <div className="flex gap-2 ml-4">
                   {action.status === "PENDING" && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => updateMutation.mutate({ id: action.id, status: "IN_PROGRESS" })}
-                      className="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                      className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                     >
                       Iniciar
-                    </button>
+                    </Button>
                   )}
                   {action.status === "IN_PROGRESS" && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => updateMutation.mutate({ id: action.id, status: "COMPLETED" })}
-                      className="px-2 py-1 text-xs text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+                      className="text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                     >
                       Concluir
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

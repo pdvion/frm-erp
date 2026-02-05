@@ -238,13 +238,15 @@ export default function LeadDetailPage() {
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-theme">Atividades</h2>
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowActivityForm(!showActivityForm)}
-                  className="flex items-center gap-2 px-3 py-1 text-sm bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200"
+                  className="bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200"
+                  leftIcon={<Plus className="w-4 h-4" />}
                 >
-                  <Plus className="w-4 h-4" />
                   Nova Atividade
-                </button>
+                </Button>
               </div>
 
               {showActivityForm && (
@@ -286,19 +288,20 @@ export default function LeadDetailPage() {
                     />
                   </div>
                   <div className="flex justify-end gap-2">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => setShowActivityForm(false)}
-                      className="px-4 py-2 text-theme-muted hover:text-theme-secondary"
                     >
                       Cancelar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={handleAddActivity}
                       disabled={!activitySubject.trim() || addActivityMutation.isPending}
-                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"
+                      isLoading={addActivityMutation.isPending}
+                      className="bg-orange-600 hover:bg-orange-700"
                     >
                       Adicionar
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -332,14 +335,16 @@ export default function LeadDetailPage() {
                           )}
                         </div>
                         {!activity.completedAt && (
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => completeActivityMutation.mutate({ activityId: activity.id })}
                             disabled={completeActivityMutation.isPending}
-                            className="p-1 text-green-600 hover:bg-green-100 rounded"
+                            className="p-1 text-green-600 hover:bg-green-100"
                             title="Marcar como concluída"
                           >
                             <CheckCircle className="w-5 h-5" />
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>

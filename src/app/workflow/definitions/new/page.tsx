@@ -6,6 +6,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import {
   GitBranch,
   ArrowLeft,
@@ -163,14 +164,16 @@ export default function NewWorkflowDefinitionPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-theme">Etapas do Workflow</h2>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={addStep}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200"
+              className="bg-violet-100 text-violet-700 hover:bg-violet-200 border-violet-200"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Adicionar Etapa
-            </button>
+            </Button>
           </div>
 
           <div className="space-y-4">
@@ -209,14 +212,16 @@ export default function NewWorkflowDefinitionPage() {
                       placeholder="UUID ou deixe vazio"
                     />
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => removeStep(index)}
                     disabled={steps.length === 1}
-                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg disabled:opacity-50"
+                    className="p-2 text-red-600 hover:bg-red-100"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -231,14 +236,15 @@ export default function NewWorkflowDefinitionPage() {
           >
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
             disabled={createMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50"
+            isLoading={createMutation.isPending}
+            className="bg-violet-600 hover:bg-violet-700"
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            <Save className="w-4 h-4" />
-            {createMutation.isPending ? "Salvando..." : "Criar Workflow"}
-          </button>
+            Criar Workflow
+          </Button>
         </div>
       </form>
     </div>

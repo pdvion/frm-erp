@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { 
   Shield, 
   ChevronLeft,
@@ -271,27 +272,29 @@ export default function AuditPage() {
                       {pagination.total} registros
                     </div>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setPage(page - 1)}
                         disabled={page === 1}
-                        className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                         aria-label="Página anterior"
                         type="button"
                       >
                         <ChevronLeft className="w-4 h-4" />
-                      </button>
+                      </Button>
                       <span className="text-sm text-theme-secondary">
                         {pagination.page} / {pagination.totalPages}
                       </span>
-                      <button
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setPage(page + 1)}
                         disabled={page === pagination.totalPages}
-                        className="p-2 border border-theme-input rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-theme-hover"
                         aria-label="Próxima página"
                         type="button"
                       >
                         <ChevronRight className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}

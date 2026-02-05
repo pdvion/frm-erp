@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { LinkButton } from "@/components/ui/LinkButton";
+import { Button } from "@/components/ui/Button";
 import { Goal, Plus, Target, Users, TrendingUp, DollarSign, Briefcase } from "lucide-react";
 
 type GoalCategory = "FINANCIAL" | "OPERATIONAL" | "CUSTOMER" | "GROWTH" | "PEOPLE" | undefined;
@@ -77,31 +78,35 @@ export default function GPDGoalsPage() {
       <div className="flex flex-wrap gap-4">
         <div className="flex gap-2">
           {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
-            <button
+            <Button
               key={y}
+              variant={year === y ? "primary" : "outline"}
+              size="sm"
               onClick={() => setYear(y)}
-              className={`px-3 py-1.5 rounded-lg text-sm ${year === y ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
             >
               {y}
-            </button>
+            </Button>
           ))}
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
+            variant={!categoryFilter ? "primary" : "outline"}
+            size="sm"
             onClick={() => setCategoryFilter(undefined)}
-            className={`px-3 py-1.5 rounded-lg text-sm ${!categoryFilter ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
           >
             Todas
-          </button>
+          </Button>
           {(["FINANCIAL", "OPERATIONAL", "CUSTOMER", "GROWTH", "PEOPLE"] as const).map((cat) => (
-            <button
+            <Button
               key={cat}
+              variant={categoryFilter === cat ? "primary" : "outline"}
+              size="sm"
               onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${categoryFilter === cat ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
+              className="flex items-center gap-1"
             >
               {categoryIcons[cat]}
               {categoryLabels[cat]}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

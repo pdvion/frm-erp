@@ -12,6 +12,7 @@ import {
   ChartCard,
 } from "@/components/charts";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import {
   BarChart3,
   Sparkles,
@@ -174,13 +175,12 @@ export default function ChartBuilderPage() {
           { label: "Editor de Gráficos" },
         ]}
         actions={
-          <button
+          <Button
             onClick={() => setShowSaveModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            leftIcon={<Save className="w-4 h-4" />}
           >
-            <Save className="w-4 h-4" />
             Salvar Template
-          </button>
+          </Button>
         }
       />
 
@@ -201,17 +201,14 @@ export default function ChartBuilderPage() {
                 placeholder="Ex: Mostre vendas por mês"
                 className="flex-1 text-sm"
               />
-              <button
+              <Button
                 onClick={handleGenerate}
                 disabled={generateMutation.isPending || !prompt.trim()}
-                className="px-3 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50"
+                isLoading={generateMutation.isPending}
+                className="bg-violet-600 hover:bg-violet-700"
               >
-                {generateMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
-              </button>
+                {!generateMutation.isPending && <Send className="w-4 h-4" />}
+              </Button>
             </div>
             {explanation && (
               <p className="mt-2 text-xs text-theme-muted">{explanation}</p>
@@ -228,13 +225,15 @@ export default function ChartBuilderPage() {
               {(suggestedQueries.length > 0 ? suggestedQueries : suggestions?.map((s) => s.prompt) ?? [])
                 .slice(0, 4)
                 .map((query, index) => (
-                  <button
+                  <Button
                     key={index}
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleSuggestionClick(query)}
-                    className="w-full text-left text-sm p-2 rounded-lg hover:bg-theme-secondary text-theme-muted hover:text-theme transition-colors"
+                    className="w-full text-left text-sm p-2 hover:bg-theme-secondary text-theme-muted hover:text-theme justify-start h-auto"
                   >
                     {query}
-                  </button>
+                  </Button>
                 ))}
             </div>
           </div>
@@ -331,19 +330,21 @@ export default function ChartBuilderPage() {
               className="text-sm mb-4"
             />
             <div className="flex justify-end gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowSaveModal(false)}
-                className="px-4 py-2 text-sm border border-theme rounded-lg hover:bg-theme-secondary"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                size="sm"
                 onClick={handleSaveTemplate}
                 disabled={saveMutation.isPending || !templateName.trim()}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                isLoading={saveMutation.isPending}
               >
-                {saveMutation.isPending ? "Salvando..." : "Salvar"}
-              </button>
+                Salvar
+              </Button>
             </div>
           </div>
         </div>

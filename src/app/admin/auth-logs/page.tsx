@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 import {
   Shield,
   RefreshCw,
@@ -65,14 +66,14 @@ export default function AuthLogsPage() {
           backHref="/"
           module="admin"
           actions={
-            <button
+            <Button
+              variant="outline"
               onClick={() => refetch()}
               disabled={isFetching}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-theme-secondary bg-theme-card border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
+              leftIcon={<RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />}
             >
-              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
               Atualizar
-            </button>
+            </Button>
           }
         />
 
@@ -207,20 +208,22 @@ export default function AuthLogsPage() {
                       Página {data.pagination.page} de {data.pagination.totalPages} ({data.pagination.total} registros)
                     </p>
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronLeft className="w-5 h-5" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
                         disabled={page === data.pagination.totalPages}
-                        className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ChevronRight className="w-5 h-5" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
