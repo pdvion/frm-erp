@@ -107,7 +107,7 @@ async function staleWhileRevalidate(request, cacheName) {
       }
       return response;
     })
-    .catch(() => cached);
+    .catch(() => cached || new Response("Offline", { status: 503 }));
 
   return cached || fetchPromise;
 }
@@ -123,7 +123,15 @@ async function networkFirst(request, cacheName) {
     return response;
   } catch {
     const cached = await caches.match(request);
-    return cached || new Response("Offline", { status: 503 });
+    if (cached) return cached;
+
+    // Return the offline page for navigation requests
+    if (request.mode === "navigate") {
+      const offlineFallback = await caches.match(OFFLINE_PAGE);
+      if (offlineFallback) return offlineFallback;
+    }
+
+    return new Response("Offline", { status: 503 });
   }
 }
 

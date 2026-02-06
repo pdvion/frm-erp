@@ -13,7 +13,7 @@ import { MobileHeader, MobileDrawerMenu } from "@/components/mobile/MobileHeader
 import { BottomNav, BottomNavItem } from "@/components/mobile/BottomNav";
 import Link from "next/link";
 
-const bottomNavItems: BottomNavItem[] = [
+const navigationItems: BottomNavItem[] = [
   {
     href: "/m",
     label: "Início",
@@ -41,14 +41,6 @@ const bottomNavItems: BottomNavItem[] = [
   },
 ];
 
-const menuItems = [
-  { href: "/m", label: "Início", icon: <Home className="w-5 h-5" /> },
-  { href: "/m/requisitions", label: "Requisições", icon: <ClipboardList className="w-5 h-5" /> },
-  { href: "/m/approvals", label: "Aprovações", icon: <CheckSquare className="w-5 h-5" /> },
-  { href: "/m/inventory", label: "Estoque", icon: <Package className="w-5 h-5" /> },
-  { href: "/m/profile", label: "Perfil", icon: <User className="w-5 h-5" /> },
-];
-
 function getPageTitle(pathname: string): string {
   if (pathname === "/m") return "FRM ERP";
   if (pathname.startsWith("/m/requisitions")) return "Requisições";
@@ -69,13 +61,13 @@ export default function MobileLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <MobileHeader
         title={title}
-        backHref={isSubpage ? "/m" : undefined}
+        backHref={isSubpage ? pathname.split("/").slice(0, -1).join("/") || "/m" : undefined}
         onMenuToggle={isSubpage ? undefined : () => setMenuOpen(true)}
         showNotifications
       />
 
       <MobileDrawerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-        {menuItems.map((item) => {
+        {navigationItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -100,7 +92,7 @@ export default function MobileLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      <BottomNav items={bottomNavItems} />
+      <BottomNav items={navigationItems} />
     </div>
   );
 }

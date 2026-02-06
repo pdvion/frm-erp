@@ -32,11 +32,17 @@ export default function DREReportPage() {
   const handleExportCSV = () => {
     if (!data?.lines) return;
 
-    const headers = ["Descrição", "Valor"];
-    const rows = data.lines.map((line) => [
-      line.label,
-      line.value.toFixed(2),
-    ]);
+    const headers = ["Descrição", "Valor", "% Receita"];
+    const rows = data.lines.map((line) => {
+      const pct = data.totals.grossRevenue > 0
+        ? ((Math.abs(line.value) / data.totals.grossRevenue) * 100).toFixed(1)
+        : "0.0";
+      return [
+        line.label,
+        line.value.toFixed(2),
+        pct,
+      ];
+    });
 
     const csvContent = [headers.join(";"), ...rows.map((row) => row.join(";"))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

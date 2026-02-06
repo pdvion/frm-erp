@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import Link from "next/link";
 
 export interface MobileCardProps {
   children: ReactNode;
@@ -9,16 +10,23 @@ export interface MobileCardProps {
   href?: string;
 }
 
-export function MobileCard({ children, onClick, className = "" }: MobileCardProps) {
+export function MobileCard({ children, onClick, className = "", href }: MobileCardProps) {
+  const baseClass = `w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-left transition-colors ${
+    onClick || href ? "active:bg-gray-50 dark:active:bg-gray-750 cursor-pointer" : ""
+  } ${className}`;
+
+  if (href) {
+    return (
+      <Link href={href} className={`block ${baseClass}`}>
+        {children}
+      </Link>
+    );
+  }
+
   const Component = onClick ? "button" : "div";
 
   return (
-    <Component
-      onClick={onClick}
-      className={`w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-left transition-colors ${
-        onClick ? "active:bg-gray-50 dark:active:bg-gray-750 cursor-pointer" : ""
-      } ${className}`}
-    >
+    <Component onClick={onClick} className={baseClass}>
       {children}
     </Component>
   );

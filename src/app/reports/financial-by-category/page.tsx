@@ -16,6 +16,14 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
+interface CategoryItem {
+  category: string;
+  revenue: number;
+  expense: number;
+  net: number;
+}
+
+
 export default function FinancialByCategoryPage() {
   const today = new Date();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -31,13 +39,20 @@ export default function FinancialByCategoryPage() {
   const handleExportCSV = () => {
     if (!data?.items) return;
 
-    const headers = ["Categoria", "Receita", "Despesa", "Saldo"];
-    const rows = data.items.map((item) => [
-      item.category,
-      item.revenue.toFixed(2),
-      item.expense.toFixed(2),
-      item.net.toFixed(2),
-    ]);
+    const headers = ["Categoria", "Receita", "Despesa", "Saldo", "% do Total"];
+    const totalMovement = data.totals.totalRevenue + data.totals.totalExpense;
+    const rows = data.items.map((item: CategoryItem) => {
+      const pct = totalMovement > 0
+        ? (((item.revenue + item.expense) / totalMovement) * 100).toFixed(1)
+        : "0.0";
+      return [
+        item.category,
+        item.revenue.toFixed(2),
+        item.expense.toFixed(2),
+        item.net.toFixed(2),
+        pct,
+      ];
+    });
 
     const csvContent = [headers.join(";"), ...rows.map((row) => row.join(";"))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

@@ -1,6 +1,6 @@
 "use client";
 
-import { MobileCard, MobileCardHeader, MobileCardContent } from "@/components/mobile/MobileCard";
+import { MobileCard, MobileCardHeader } from "@/components/mobile/MobileCard";
 import { Badge } from "@/components/ui/Badge";
 import {
   ClipboardList,

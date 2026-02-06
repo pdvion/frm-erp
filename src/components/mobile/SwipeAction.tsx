@@ -37,14 +37,14 @@ export function SwipeAction({
   const [offset, setOffset] = useState(0);
   const [swiping, setSwiping] = useState(false);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     startX.current = e.touches[0].clientX;
     currentX.current = 0;
     setSwiping(true);
   }, []);
 
   const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
+    (e: React.TouchEvent<HTMLDivElement>) => {
       if (!swiping) return;
       const diff = e.touches[0].clientX - startX.current;
       currentX.current = diff;
@@ -63,7 +63,7 @@ export function SwipeAction({
     setSwiping(false);
     const absOffset = Math.abs(currentX.current);
 
-    if (absOffset < threshold / 2) {
+    if (absOffset < threshold / 2 || absOffset === 0) {
       setOffset(0);
       return;
     }
