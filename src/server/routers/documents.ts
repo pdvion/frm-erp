@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
 
@@ -78,7 +78,7 @@ export const documentsRouter = createTRPCRouter({
   // UPLOAD
   // ---------------------------------------------------------------------------
 
-  getUploadUrl: tenantProcedure
+  getUploadUrl: uploadProcedure
     .input(z.object({
       fileName: z.string().min(1),
       fileType: z.string().min(1),

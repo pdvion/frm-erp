@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure, tenantFilter, reportsProcedure } from "../trpc";
 
 export const impexRouter = createTRPCRouter({
   // ==========================================================================
@@ -984,7 +984,7 @@ export const impexRouter = createTRPCRouter({
   // DASHBOARD AVANÇADO
   // ==========================================================================
 
-  getDashboardData: tenantProcedure.query(async ({ ctx }) => {
+  getDashboardData: reportsProcedure.query(async ({ ctx }) => {
     const today = new Date();
     const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
     const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -1105,7 +1105,7 @@ export const impexRouter = createTRPCRouter({
   // RELATÓRIOS
   // ==========================================================================
 
-  getProcessReport: tenantProcedure
+  getProcessReport: reportsProcedure
     .input(
       z.object({
         dateFrom: z.string().optional(),
@@ -1172,7 +1172,7 @@ export const impexRouter = createTRPCRouter({
       };
     }),
 
-  getCostReport: tenantProcedure
+  getCostReport: reportsProcedure
     .input(
       z.object({
         dateFrom: z.string().optional(),

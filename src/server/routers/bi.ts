@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, reportsProcedure } from "../trpc";
 
 export const biRouter = createTRPCRouter({
   // ============================================================================
@@ -22,7 +22,7 @@ export const biRouter = createTRPCRouter({
     });
   }),
 
-  getDashboard: tenantProcedure
+  getDashboard: reportsProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.dashboard.findFirst({

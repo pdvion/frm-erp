@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { fetchXmlAttachments, testConnection, type EmailConfig } from "@/lib/email/imap-client";
 import { parseNFeXml, validateNFeXml } from "@/lib/nfe-parser";
@@ -190,7 +190,7 @@ export const emailIntegrationRouter = createTRPCRouter({
     }),
 
   // Salvar configuração de email
-  saveConfig: tenantProcedure
+  saveConfig: sensitiveProcedure
     .input(z.object({
       host: z.string(),
       port: z.number(),

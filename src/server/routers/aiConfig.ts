@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import {
   AI_PROVIDERS,
   AI_MODELS,
@@ -54,7 +54,7 @@ export const aiConfigRouter = createTRPCRouter({
   }),
 
   // Salvar token de IA
-  saveToken: tenantProcedure
+  saveToken: sensitiveProcedure
     .input(
       z.object({
         provider: aiProviderSchema,

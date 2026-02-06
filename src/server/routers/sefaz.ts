@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { createSefazClient, SefazConfig, ManifestacaoTipo } from "@/lib/sefaz";
 import { Prisma } from "@prisma/client";
@@ -367,7 +367,7 @@ export const sefazRouter = createTRPCRouter({
   }),
 
   // Salvar configuração SEFAZ
-  saveConfig: tenantProcedure
+  saveConfig: sensitiveProcedure
     .input(z.object({
       cnpj: z.string().length(14, "CNPJ deve ter 14 dígitos"),
       uf: z.string().length(2),
@@ -563,7 +563,7 @@ export const sefazRouter = createTRPCRouter({
     }),
 
   // Salvar certificado processado
-  saveCertificate: tenantProcedure
+  saveCertificate: sensitiveProcedure
     .input(z.object({
       certificateBase64: z.string(),
       password: z.string(),
