@@ -250,7 +250,7 @@ export default function NewRequisitionPage() {
                           {item.unit}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <input
+                          <Input
                             type="number"
                             value={item.requestedQty}
                             onChange={(e) => updateItemQty(item.materialId, Number(e.target.value))}
@@ -331,7 +331,7 @@ export default function NewRequisitionPage() {
             <div className="p-4 border-b border-theme">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-                <input
+                <Input
                   type="text"
                   value={materialSearch}
                   onChange={(e) => setMaterialSearch(e.target.value)}

@@ -35,7 +35,7 @@ const eslintConfig = defineConfig([
         "forbid": [
           { "element": "button", "message": "Use <Button> from @/components/ui/Button" },
           { "element": "input", "message": "Use <Input> from @/components/ui/Input" },
-          { "element": "select", "message": "Use <Select> from @/components/ui/Select" },
+          { "element": "select", "message": "Use <Select> from @/components/ui/Select or <NativeSelect> from @/components/ui/NativeSelect" },
           { "element": "textarea", "message": "Use <Textarea> from @/components/ui/Textarea" },
         ]
       }],

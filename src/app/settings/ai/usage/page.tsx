@@ -15,6 +15,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { formatCostUSD } from "@/lib/ai/costs";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 function formatNumber(num: number): string {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
@@ -193,7 +194,7 @@ export default function AiUsagePage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium">Uso por Dia</h3>
-            <select
+            <NativeSelect
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
               className="px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme"
@@ -201,7 +202,7 @@ export default function AiUsagePage() {
               <option value={7}>7 dias</option>
               <option value={30}>30 dias</option>
               <option value={90}>90 dias</option>
-            </select>
+            </NativeSelect>
           </div>
           <div className="h-48">
             {dailyUsage && dailyUsage.length > 0 ? (
@@ -297,7 +298,7 @@ export default function AiUsagePage() {
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Histórico de Chamadas</h3>
             <div className="flex items-center gap-2">
-              <select
+              <NativeSelect
                 value={filterProvider}
                 onChange={(e) => {
                   setFilterProvider(e.target.value);
@@ -309,8 +310,8 @@ export default function AiUsagePage() {
                 <option value="openai">OpenAI</option>
                 <option value="anthropic">Anthropic</option>
                 <option value="google">Google</option>
-              </select>
-              <select
+              </NativeSelect>
+              <NativeSelect
                 value={filterTaskType}
                 onChange={(e) => {
                   setFilterTaskType(e.target.value);
@@ -324,7 +325,7 @@ export default function AiUsagePage() {
                     {label}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

@@ -20,6 +20,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -253,7 +255,7 @@ export default function TaskDetailPage() {
               {/* Add Comment */}
               <div className="mt-6 pt-4 border-t border-theme">
                 <div className="flex gap-3">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Adicionar comentário..."
                     value={comment}
@@ -402,7 +404,7 @@ export default function TaskDetailPage() {
         >
           <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
             <h3 id="complete-task-title" className="text-lg font-semibold text-theme mb-4">Concluir Tarefa</h3>
-            <textarea
+            <Textarea
               placeholder="Descreva a resolução (opcional)..."
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}

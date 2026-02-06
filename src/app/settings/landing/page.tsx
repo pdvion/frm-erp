@@ -35,6 +35,8 @@ import {
   Factory,
   ClipboardList,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 // Ícones disponíveis para features
 const AVAILABLE_ICONS = {
@@ -437,7 +439,7 @@ export default function LandingSettingsPage() {
                     </div>
                   )}
                   
-                  <input
+                  <Input
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
@@ -485,7 +487,7 @@ export default function LandingSettingsPage() {
                     <label className="block text-sm font-medium text-theme-secondary mb-1">
                       Descrição
                     </label>
-                    <textarea
+                    <Textarea
                       value={config.hero.description}
                       onChange={(e) =>
                         setConfig((prev) => ({
@@ -541,7 +543,7 @@ export default function LandingSettingsPage() {
                             <label className="block text-xs font-medium text-theme-muted mb-1">
                               Ícone
                             </label>
-                            <select
+                            <NativeSelect
                               value={feature.icon}
                               onChange={(e) =>
                                 updateFeature(index, "icon", e.target.value)
@@ -553,7 +555,7 @@ export default function LandingSettingsPage() {
                                   {iconName}
                                 </option>
                               ))}
-                            </select>
+                            </NativeSelect>
                           </div>
                           <Input
                             label="Título"

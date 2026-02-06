@@ -24,6 +24,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { GeneratedWorkflow } from "@/lib/ai/workflowGenerator";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function NewVisualWorkflowPage() {
   const router = useRouter();
@@ -279,7 +281,7 @@ export default function NewVisualWorkflowPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Categoria
                 </label>
-                <select
+                <NativeSelect
                   value={category}
                   onChange={(e) => setCategory(e.target.value as typeof category)}
                   className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -290,14 +292,14 @@ export default function NewVisualWorkflowPage() {
                   <option value="HR">RH</option>
                   <option value="PRODUCTION">Produção</option>
                   <option value="SALES">Vendas</option>
-                </select>
+                </NativeSelect>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-theme mb-1">
                   Descrição
                 </label>
-                <textarea
+                <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva o objetivo deste workflow..."

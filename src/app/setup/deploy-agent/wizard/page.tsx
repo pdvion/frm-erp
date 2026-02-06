@@ -22,6 +22,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Input } from "@/components/ui/Input";
 
 type WizardStepId = "upload" | "analysis" | "review" | "apply";
 
@@ -213,7 +214,7 @@ export default function DeployAgentWizardPage() {
               onDragOver={(e) => e.preventDefault()}
               className="border-2 border-dashed border-theme rounded-lg p-12 text-center hover:border-blue-500 hover:bg-blue-50/5 transition-colors cursor-pointer"
             >
-              <input
+              <Input
                 type="file"
                 multiple
                 accept=".xml"
@@ -421,7 +422,7 @@ export default function DeployAgentWizardPage() {
               <h3 className="font-medium text-theme mb-4">Opções de Aplicação</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={applyOptions.importSuppliers}
                     onChange={(e) =>
@@ -432,7 +433,7 @@ export default function DeployAgentWizardPage() {
                   <span className="text-theme">Importar fornecedores</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={applyOptions.importMaterials}
                     onChange={(e) =>
@@ -443,7 +444,7 @@ export default function DeployAgentWizardPage() {
                   <span className="text-theme">Importar materiais</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={applyOptions.applyTaxConfig}
                     onChange={(e) =>
@@ -454,7 +455,7 @@ export default function DeployAgentWizardPage() {
                   <span className="text-theme">Aplicar configuração tributária</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={applyOptions.applyFinancialConfig}
                     onChange={(e) =>
@@ -468,7 +469,7 @@ export default function DeployAgentWizardPage() {
                   <span className="text-theme">Aplicar configuração financeira</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={applyOptions.updateIfExists}
                     onChange={(e) =>

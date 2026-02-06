@@ -17,6 +17,8 @@ import {
   Settings,
 } from "lucide-react";
 import { useState } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 const iconMap: Record<string, React.ReactNode> = {
   Building2: <Building2 className="w-5 h-5" />,
@@ -71,7 +73,7 @@ export default function DocsPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 flex items-center gap-2 border border-theme-input rounded-lg px-3 py-2">
               <Search className="w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar tutoriais..."
                 value={search}
@@ -80,7 +82,7 @@ export default function DocsPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   !selectedCategory
@@ -89,9 +91,9 @@ export default function DocsPage() {
                 }`}
               >
                 Todos
-              </button>
+              </Button>
               {categories?.map((cat) => (
-                <button
+                <Button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -101,7 +103,7 @@ export default function DocsPage() {
                   }`}
                 >
                   {categoryLabels[cat] || cat}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

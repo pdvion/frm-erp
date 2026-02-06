@@ -18,6 +18,9 @@ import {
   Download,
 } from "lucide-react";
 import Link from "next/link";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type StatusFilter = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED" | "PAID" | undefined;
 
@@ -128,7 +131,7 @@ export default function ApprovalsHistoryPage() {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 value={search}
                 onChange={(e) => {
@@ -142,7 +145,7 @@ export default function ApprovalsHistoryPage() {
 
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter || ""}
                 onChange={(e) => {
                   setStatusFilter(e.target.value as StatusFilter || undefined);
@@ -155,11 +158,11 @@ export default function ApprovalsHistoryPage() {
                     {opt.label}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
           </div>
 
-          <button
+          <Button
             className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
             onClick={() => {
               // TODO: Implementar exportação
@@ -168,7 +171,7 @@ export default function ApprovalsHistoryPage() {
           >
             <Download className="w-4 h-4" />
             Exportar
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -283,22 +286,22 @@ export default function ApprovalsHistoryPage() {
               Mostrando página {page} de {data.pages} ({data.total} registros)
             </p>
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Anterior
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                 disabled={page === data.pages}
                 className="flex items-center gap-1 px-3 py-1.5 border border-theme rounded-lg text-theme hover:bg-theme-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Próxima
                 <ChevronRight className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         )}

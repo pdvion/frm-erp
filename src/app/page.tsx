@@ -25,6 +25,8 @@ import {
   ClipboardList,
   LucideIcon,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 // Mapeamento de ícones disponíveis
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -249,7 +251,7 @@ export default function LandingPage() {
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                  <input
+                  <Input
                     type="email"
                     id="email"
                     value={email}
@@ -267,7 +269,7 @@ export default function LandingPage() {
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                  <input
+                  <Input
                     type="password"
                     id="password"
                     value={password}
@@ -281,7 +283,7 @@ export default function LandingPage() {
 
               <div className="flex items-center justify-between">
                 <label htmlFor="remember-me" className="flex items-center gap-2 cursor-pointer">
-                  <input 
+                  <Input 
                     type="checkbox" 
                     id="remember-me"
                     aria-label="Lembrar-me neste dispositivo"
@@ -297,7 +299,7 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--frm-primary)] text-white rounded-xl hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
@@ -313,7 +315,7 @@ export default function LandingPage() {
                     Entrar
                   </>
                 )}
-              </button>
+              </Button>
             </form>
 
             {/* Divider */}

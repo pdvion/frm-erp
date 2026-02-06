@@ -5,6 +5,7 @@ import { Upload, FileText, Users, FileCheck, AlertTriangle, CheckCircle, Loader2
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
+import { Input } from "@/components/ui/Input";
 
 type ImportType = "customers" | "invoices";
 
@@ -118,7 +119,7 @@ export default function ImportPage() {
       <div className="bg-theme-card rounded-lg border border-theme p-6">
         <h2 className="text-lg font-semibold text-theme mb-4">Tipo de Importação</h2>
         <div className="flex gap-4">
-          <button
+          <Button
             onClick={() => setImportType("customers")}
             className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
               importType === "customers"
@@ -129,9 +130,9 @@ export default function ImportPage() {
             <Users className={`w-8 h-8 mx-auto mb-2 ${importType === "customers" ? "text-blue-600" : "text-theme-muted"}`} />
             <p className={`font-medium ${importType === "customers" ? "text-blue-600" : "text-theme"}`}>Clientes</p>
             <p className="text-sm text-theme-muted">cliente_v1.csv</p>
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setImportType("invoices")}
             className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
               importType === "invoices"
@@ -142,7 +143,7 @@ export default function ImportPage() {
             <FileText className={`w-8 h-8 mx-auto mb-2 ${importType === "invoices" ? "text-green-600" : "text-theme-muted"}`} />
             <p className={`font-medium ${importType === "invoices" ? "text-green-600" : "text-theme"}`}>NFe Emitidas</p>
             <p className="text-sm text-theme-muted">pv15_nf_emitidas_v1.csv</p>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -155,7 +156,7 @@ export default function ImportPage() {
           onDragOver={handleDragOver}
           className="border-2 border-dashed border-theme rounded-lg p-8 text-center hover:border-blue-400 transition-colors"
         >
-          <input
+          <Input
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
@@ -207,7 +208,7 @@ export default function ImportPage() {
           
           <div className="space-y-4">
             <label className="flex items-center gap-3">
-              <input
+              <Input
                 type="checkbox"
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
@@ -220,7 +221,7 @@ export default function ImportPage() {
             </label>
 
             <label className="flex items-center gap-3">
-              <input
+              <Input
                 type="checkbox"
                 checked={updateIfExists}
                 onChange={(e) => setUpdateIfExists(e.target.checked)}

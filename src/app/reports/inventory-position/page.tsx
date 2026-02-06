@@ -142,7 +142,7 @@ export default function InventoryPositionReportPage() {
             />
 
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={belowMinimum}
                 onChange={(e) => setBelowMinimum(e.target.checked)}

@@ -526,7 +526,7 @@ export default function EditCustomerPage() {
         {/* Flags */}
         <div className="flex flex-wrap gap-6 mb-6">
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               id="applySt"
               name="applySt"
@@ -540,7 +540,7 @@ export default function EditCustomerPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               id="isShared"
               name="isShared"

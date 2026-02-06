@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/password";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
@@ -106,13 +108,13 @@ export default function ProfilePage() {
           icon={<User className="w-6 h-6" />}
           module="settings"
           actions={
-            <button
+            <Button
               onClick={signOut}
               className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Sair
-            </button>
+            </Button>
           }
         />
 
@@ -168,12 +170,12 @@ export default function ProfilePage() {
                       <p className="text-sm text-theme-muted">Altere sua senha de acesso</p>
                     </div>
                   </div>
-                  <button
+                  <Button
                     onClick={() => setShowPasswordForm(!showPasswordForm)}
                     className="text-sm text-[var(--frm-primary)] hover:underline font-medium"
                   >
                     {showPasswordForm ? "Cancelar" : "Alterar"}
-                  </button>
+                  </Button>
                 </div>
 
                 {showPasswordForm && (
@@ -199,20 +201,20 @@ export default function ProfilePage() {
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                        <input
+                        <Input
                           type={showPassword ? "text" : "password"}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           required
                           className="w-full pl-10 pr-10 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
                         />
-                        <button
+                        <Button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
+                        </Button>
                       </div>
                       <PasswordStrength password={newPassword} />
                     </div>
@@ -223,7 +225,7 @@ export default function ProfilePage() {
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                        <input
+                        <Input
                           type={showPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -233,7 +235,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    <button
+                    <Button
                       type="submit"
                       disabled={passwordLoading}
                       className="flex items-center justify-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] disabled:opacity-50 font-medium"
@@ -242,7 +244,7 @@ export default function ProfilePage() {
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : null}
                       Salvar nova senha
-                    </button>
+                    </Button>
                   </form>
                 )}
               </div>
@@ -276,13 +278,13 @@ export default function ProfilePage() {
                       Configurar
                     </Link>
                   ) : (
-                    <button
+                    <Button
                       onClick={() => handleRemoveMFA(mfaFactors[0].id)}
                       disabled={mfaLoading}
                       className="text-sm text-red-600 hover:underline font-medium disabled:opacity-50"
                     >
                       {mfaLoading ? "Removendo..." : "Remover"}
-                    </button>
+                    </Button>
                   )}
                 </div>
 

@@ -22,6 +22,7 @@ import {
   Truck,
   Package,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
@@ -59,7 +60,7 @@ export default function TransfersPage() {
       <div>
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-4">
-            <select
+            <NativeSelect
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="border border-theme-input rounded-lg px-3 py-2"
@@ -70,7 +71,7 @@ export default function TransfersPage() {
               <option value="APPROVED">Aprovados</option>
               <option value="IN_TRANSIT">Em Trânsito</option>
               <option value="COMPLETED">Concluídos</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
 

@@ -25,6 +25,8 @@ import {
   Eye,
   CreditCard,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -171,7 +173,7 @@ export default function ReceivablesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por descrição, documento ou cliente..."
                 value={search}
@@ -184,7 +186,7 @@ export default function ReceivablesPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
@@ -198,7 +200,7 @@ export default function ReceivablesPage() {
                 <option value="OVERDUE">Vencidos</option>
                 <option value="PAID">Recebidos</option>
                 <option value="CANCELLED">Cancelados</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

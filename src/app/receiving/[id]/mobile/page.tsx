@@ -312,7 +312,7 @@ export default function MobileReceivingPage() {
                     >
                       <Minus className="w-6 h-6" />
                     </Button>
-                    <input
+                    <Input
                       type="number"
                       value={conf?.receivedQuantity ?? item.nfeQuantity}
                       onChange={(e) => handleSetQuantity(item.id, parseInt(e.target.value) || 0)}

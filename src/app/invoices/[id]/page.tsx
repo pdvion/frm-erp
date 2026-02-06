@@ -29,6 +29,7 @@ import {
   UserPlus,
   Wand2,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -600,7 +601,7 @@ export default function InvoiceDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Motivo da rejeição *
               </label>
-              <textarea
+              <Textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 rows={4}

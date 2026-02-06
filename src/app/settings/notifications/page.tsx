@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/Input";
 
 interface NotificationCategory {
   id: string;
@@ -129,7 +130,7 @@ export default function NotificationSettingsPage() {
                     <div className="flex flex-wrap gap-4 mt-4">
                       {/* In-App */}
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input
+                        <Input
                           type="checkbox"
                           checked={pref.inAppEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "inAppEnabled", e.target.checked)}
@@ -145,7 +146,7 @@ export default function NotificationSettingsPage() {
 
                       {/* Email */}
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input
+                        <Input
                           type="checkbox"
                           checked={pref.emailEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "emailEnabled", e.target.checked)}
@@ -161,7 +162,7 @@ export default function NotificationSettingsPage() {
 
                       {/* Push */}
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input
+                        <Input
                           type="checkbox"
                           checked={pref.pushEnabled ?? false}
                           onChange={(e) => handleToggle(category.id, "pushEnabled", e.target.checked)}

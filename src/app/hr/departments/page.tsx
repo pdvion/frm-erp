@@ -138,7 +138,7 @@ export default function DepartmentsPage() {
               />
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={showInactive}
                 onChange={(e) => setShowInactive(e.target.checked)}

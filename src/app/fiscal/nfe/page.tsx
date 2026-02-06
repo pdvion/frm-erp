@@ -257,25 +257,25 @@ export default function NFePage() {
                   {pagination.total} registros
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
                     className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-5 h-5" />
-                  </button>
+                  </Button>
                   <span className="text-sm text-theme-secondary">
                     Página {pagination.page} de {pagination.totalPages}
                   </span>
-                  <button
+                  <Button
                     onClick={() => setPage(page + 1)}
                     disabled={page === pagination.totalPages}
                     className="p-2 rounded-lg hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-5 h-5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

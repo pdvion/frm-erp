@@ -21,6 +21,8 @@ import {
   FileText,
   Upload,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function ReconciliationPage() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
@@ -85,7 +87,7 @@ export default function ReconciliationPage() {
             {loadingAccounts ? (
               <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
             ) : (
-              <select
+              <NativeSelect
                 value={selectedAccountId}
                 onChange={(e) => {
                   setSelectedAccountId(e.target.value);
@@ -99,12 +101,12 @@ export default function ReconciliationPage() {
                     {account.code} - {account.name} ({formatCurrency(Number(account.currentBalance))})
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             )}
 
             <div className="flex items-center gap-2 ml-auto">
               <label className="flex items-center gap-2 text-sm text-theme-secondary cursor-pointer">
-                <input
+                <Input
                   type="checkbox"
                   checked={showReconciled}
                   onChange={(e) => setShowReconciled(e.target.checked)}

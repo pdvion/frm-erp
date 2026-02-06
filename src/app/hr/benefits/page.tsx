@@ -20,6 +20,8 @@ import {
   Users,
   Award,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const categoryConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   TRANSPORT: { label: "Vale Transporte", icon: <Bus className="w-4 h-4" />, color: "bg-blue-100 text-blue-800" },
@@ -155,7 +157,7 @@ export default function BenefitsPage() {
               {activeTab === "trainings" && (
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                  <input
+                  <Input
                     type="text"
                     placeholder="Buscar treinamentos..."
                     value={search}
@@ -167,7 +169,7 @@ export default function BenefitsPage() {
               {activeTab === "types" && (
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-theme-muted" />
-                  <select
+                  <NativeSelect
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
                     className="border border-theme-input rounded-lg px-3 py-2"
@@ -176,7 +178,7 @@ export default function BenefitsPage() {
                     {Object.entries(categoryConfig).map(([key, cfg]) => (
                       <option key={key} value={key}>{cfg.label}</option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </div>
               )}
             </div>

@@ -28,6 +28,8 @@ import {
   CreditCard,
   BarChart3,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
@@ -184,7 +186,7 @@ export default function PayablesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por descrição, documento ou fornecedor..."
                 value={search}
@@ -197,7 +199,7 @@ export default function PayablesPage() {
             </div>
 
             <div className="flex gap-2">
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
@@ -211,7 +213,7 @@ export default function PayablesPage() {
                 <option value="PARTIAL">Parcialmente Pagos</option>
                 <option value="PAID">Pagos</option>
                 <option value="CANCELLED">Cancelados</option>
-              </select>
+              </NativeSelect>
 
               <Button
                 variant={showFilters ? "primary" : "outline"}

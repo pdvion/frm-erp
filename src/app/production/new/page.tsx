@@ -358,7 +358,7 @@ export default function NewProductionOrderPage() {
                           <div className="text-sm text-theme-muted">Cód: {mat.materialCode}</div>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <input
+                          <Input
                             type="number"
                             value={mat.requiredQty}
                             onChange={(e) => updateMaterialQty(mat.materialId, Number(e.target.value))}

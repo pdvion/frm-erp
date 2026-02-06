@@ -156,7 +156,7 @@ export default function EmailIntegrationPage() {
 
             <div className="md:col-span-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="checkbox"
                   checked={form.tls}
                   onChange={(e) => setForm({ ...form, tls: e.target.checked })}
@@ -233,7 +233,7 @@ export default function EmailIntegrationPage() {
 
           <div className="space-y-4">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={form.autoFetch}
                 onChange={(e) => setForm({ ...form, autoFetch: e.target.checked })}

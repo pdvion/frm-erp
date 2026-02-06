@@ -14,6 +14,8 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function CatalogSyncPage() {
   const router = useRouter();
@@ -132,7 +134,7 @@ export default function CatalogSyncPage() {
               size={18}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted"
             />
-            <input
+            <Input
               type="text"
               placeholder="Buscar materiais..."
               value={search}
@@ -153,7 +155,7 @@ export default function CatalogSyncPage() {
             <span className="text-sm text-blue-700 dark:text-blue-300">
               {selectedMaterials.length} selecionado(s)
             </span>
-            <select
+            <NativeSelect
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="px-2 py-1 text-sm border border-blue-300 dark:border-blue-700 rounded bg-theme-card"
@@ -164,9 +166,9 @@ export default function CatalogSyncPage() {
                   {cat.name}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             <label className="flex items-center gap-1 text-sm">
-              <input
+              <Input
                 type="checkbox"
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
@@ -211,7 +213,7 @@ export default function CatalogSyncPage() {
             <thead className="bg-theme-tertiary">
               <tr>
                 <th className="px-4 py-3 text-left">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={
                       selectedMaterials.length === materials.length &&
@@ -253,7 +255,7 @@ export default function CatalogSyncPage() {
                   onClick={() => handleToggleSelect(material.id)}
                 >
                   <td className="px-4 py-3">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={selectedMaterials.includes(material.id)}
                       onChange={() => handleToggleSelect(material.id)}

@@ -18,6 +18,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
 
 export default function DeployAgentDetailPage() {
   const params = useParams();
@@ -282,7 +283,7 @@ export default function DeployAgentDetailPage() {
             <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-3">
               <h3 className="text-sm font-medium text-theme-muted mb-3">Ações</h3>
 
-              <button
+              <Button
                 onClick={handlePreview}
                 disabled={previewMutation.isPending}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50"
@@ -293,9 +294,9 @@ export default function DeployAgentDetailPage() {
                   <Play className="w-4 h-4" />
                 )}
                 Simular Importação
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleExecute}
                 disabled={executeMutation.isPending}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
@@ -306,9 +307,9 @@ export default function DeployAgentDetailPage() {
                   <CheckCircle className="w-4 h-4" />
                 )}
                 Aprovar e Importar
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleReject}
                 disabled={rejectMutation.isPending}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors disabled:opacity-50"
@@ -319,7 +320,7 @@ export default function DeployAgentDetailPage() {
                   <XCircle className="w-4 h-4" />
                 )}
                 Rejeitar
-              </button>
+              </Button>
             </div>
           )}
 

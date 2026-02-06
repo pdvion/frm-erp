@@ -56,7 +56,7 @@ function CodeBlock({ code, id, copied, onCopy }: CodeBlockProps) {
       <pre className="bg-theme-tertiary rounded-lg p-4 text-sm overflow-x-auto text-theme-secondary">
         <code>{code}</code>
       </pre>
-      <button
+      <Button
         onClick={() => onCopy(code, id)}
         className="absolute top-2 right-2 p-2 rounded-lg bg-theme-card border border-theme opacity-0 group-hover:opacity-100 transition-opacity"
         title="Copiar código"
@@ -66,7 +66,7 @@ function CodeBlock({ code, id, copied, onCopy }: CodeBlockProps) {
         ) : (
           <Copy className="w-4 h-4 text-theme-muted" />
         )}
-      </button>
+      </Button>
     </div>
   );
 }

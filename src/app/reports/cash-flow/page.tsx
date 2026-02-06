@@ -14,6 +14,8 @@ import {
   TrendingDown,
   ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function CashFlowReportPage() {
   const today = new Date();
@@ -56,14 +58,14 @@ export default function CashFlowReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!data?.flowData?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -76,7 +78,7 @@ export default function CashFlowReportPage() {
             <label htmlFor="start-date" className="text-sm font-medium text-theme-secondary">
               Período:
             </label>
-            <input
+            <Input
               id="start-date"
               type="date"
               value={startDate}
@@ -85,7 +87,7 @@ export default function CashFlowReportPage() {
             />
             <ArrowRight className="w-4 h-4 text-theme-muted" />
             <label htmlFor="end-date" className="sr-only">Data final</label>
-            <input
+            <Input
               id="end-date"
               type="date"
               value={endDate}

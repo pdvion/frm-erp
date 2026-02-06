@@ -896,7 +896,7 @@ function CopyBomModal({
           </div>
 
           <label className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               checked={replaceExisting}
               onChange={(e) => setReplaceExisting(e.target.checked)}

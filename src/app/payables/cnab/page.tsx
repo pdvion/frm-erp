@@ -415,7 +415,7 @@ export default function CnabPage() {
                     Processa arquivo de retorno do banco para baixar títulos pagos automaticamente.
                   </p>
 
-                  <input
+                  <Input
                     ref={fileInputRef}
                     type="file"
                     accept=".ret,.txt,.RET,.TXT"

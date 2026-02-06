@@ -273,7 +273,7 @@ export default function TutorialsAdminPage() {
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-theme">
                 <label className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={formData.isPublished}
                     onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
@@ -374,20 +374,20 @@ export default function TutorialsAdminPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          <button
+                          <Button
                             onClick={() => handleEdit(tutorial.id)}
                             className="p-1 text-theme-muted hover:text-blue-600"
                             title="Editar"
                           >
                             <Edit className="w-4 h-4" />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => handleDelete(tutorial.id)}
                             className="p-1 text-theme-muted hover:text-red-600"
                             title="Excluir"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>

@@ -17,6 +17,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
 
 interface ImportResult {
   success: boolean;
@@ -197,7 +198,7 @@ export default function NFeImportPage() {
                         </p>
                         <p className="text-sm text-theme-muted">ou clique para selecionar</p>
                       </div>
-                      <input
+                      <Input
                         type="file"
                         accept=".xml"
                         onChange={handleFileSelect}
@@ -206,7 +207,7 @@ export default function NFeImportPage() {
                       />
                       <label className="px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] cursor-pointer transition-colors">
                         Selecionar Arquivo
-                        <input
+                        <Input
                           type="file"
                           accept=".xml"
                           onChange={handleFileSelect}

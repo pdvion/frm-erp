@@ -13,6 +13,7 @@ import {
   Package,
   Plus,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
 export default function BomListPage() {
   const [search, setSearch] = useState("");
@@ -37,7 +38,7 @@ export default function BomListPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

@@ -3996,6 +3996,8 @@ model QualityInspection {
 
   @@index([companyId], map: "idx_quality_inspections_company_id")
   @@index([materialId], map: "idx_quality_inspections_material_id")
+  @@index([productionOrderId], map: "idx_quality_inspections_production_order_id")
+  @@index([inspectorId], map: "idx_quality_inspections_inspector_id")
   @@index([status], map: "idx_quality_inspections_status")
   @@map("quality_inspections")
 }
@@ -4047,6 +4049,9 @@ model NonConformity {
   productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_production_order")
 
   @@index([companyId], map: "idx_non_conformities_company_id")
+  @@index([inspectionId], map: "idx_non_conformities_inspection_id")
+  @@index([materialId], map: "idx_non_conformities_material_id")
+  @@index([productionOrderId], map: "idx_non_conformities_production_order_id")
   @@index([status], map: "idx_non_conformities_status")
   @@map("non_conformities")
 }

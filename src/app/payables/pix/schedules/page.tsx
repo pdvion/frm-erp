@@ -20,6 +20,8 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type ScheduleStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FAILED";
 
@@ -142,7 +144,7 @@ export default function PixSchedulesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por destinatário ou chave PIX..."
                 value={search}
@@ -150,7 +152,7 @@ export default function PixSchedulesPage() {
                 className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <select
+            <NativeSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ScheduleStatus | "")}
               className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -160,7 +162,7 @@ export default function PixSchedulesPage() {
               <option value="COMPLETED">Executado</option>
               <option value="CANCELLED">Cancelado</option>
               <option value="FAILED">Falhou</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
 

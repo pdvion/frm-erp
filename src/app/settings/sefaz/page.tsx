@@ -24,6 +24,7 @@ import {
   Send,
   Save,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 interface Notification {
   id: number;
@@ -309,7 +310,7 @@ export default function SefazConfigPage() {
             <label className="block text-sm font-medium text-theme-secondary mb-1">
               Selecione a Empresa *
             </label>
-            <select
+            <NativeSelect
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
               className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-card text-theme"
@@ -320,7 +321,7 @@ export default function SefazConfigPage() {
                   {company.tradeName || company.name} {company.cnpj && `- ${company.cnpj}`}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             <p className="text-xs text-theme-muted mt-1">
               Apenas empresas com CNPJ e UF cadastrados podem ser integradas ao SEFAZ.
             </p>
@@ -349,7 +350,7 @@ export default function SefazConfigPage() {
             </label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="radio"
                   name="environment"
                   value="homologacao"
@@ -360,7 +361,7 @@ export default function SefazConfigPage() {
                 <span className="text-sm text-theme-secondary">Homologação (Testes)</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="radio"
                   name="environment"
                   value="producao"
@@ -384,7 +385,7 @@ export default function SefazConfigPage() {
                 Arquivo .pfx / .p12 *
               </label>
               <div className="relative">
-                <input
+                <Input
                   type="file"
                   accept=".pfx,.p12"
                   onChange={handleFileChange}
@@ -438,7 +439,7 @@ export default function SefazConfigPage() {
           <div className="space-y-4">
             {/* Habilitar sincronização */}
             <label className="flex items-center gap-3 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={syncEnabled}
                 onChange={(e) => setSyncEnabled(e.target.checked)}
@@ -455,7 +456,7 @@ export default function SefazConfigPage() {
                 {/* Manifestação automática */}
                 <div className="border-t pt-4">
                   <label className="flex items-center gap-3 cursor-pointer mb-3">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={autoManifest}
                       onChange={(e) => setAutoManifest(e.target.checked)}
@@ -477,7 +478,7 @@ export default function SefazConfigPage() {
                       </label>
                       <div className="flex gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <input
+                          <Input
                             type="radio"
                             name="manifestType"
                             value="CIENCIA"
@@ -488,7 +489,7 @@ export default function SefazConfigPage() {
                           <span className="text-sm text-theme-secondary">Ciência da Operação</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <input
+                          <Input
                             type="radio"
                             name="manifestType"
                             value="CONFIRMACAO"
@@ -506,7 +507,7 @@ export default function SefazConfigPage() {
                 {/* Notificações */}
                 <div className="border-t pt-4">
                   <label className="flex items-center gap-3 cursor-pointer mb-3">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={notifyOnNewNfe}
                       onChange={(e) => setNotifyOnNewNfe(e.target.checked)}

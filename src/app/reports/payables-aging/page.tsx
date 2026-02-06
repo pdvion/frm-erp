@@ -10,6 +10,8 @@ import {
   Loader2,
   Calendar,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function PayablesAgingReportPage() {
   const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split("T")[0]);
@@ -55,14 +57,14 @@ export default function PayablesAgingReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!data?.details?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -75,7 +77,7 @@ export default function PayablesAgingReportPage() {
             <label htmlFor="as-of-date" className="text-sm font-medium text-theme-secondary">
               Data de Referência:
             </label>
-            <input
+            <Input
               id="as-of-date"
               type="date"
               value={asOfDate}

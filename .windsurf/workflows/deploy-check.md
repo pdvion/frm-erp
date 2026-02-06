@@ -25,23 +25,12 @@ git push origin main
 ```
 
 ### 3. Verificar Deploy Vercel
-Usar MCP Vercel para verificar status:
-```
-mcp10_list_deployments com projectId e teamId
-```
+Verificar status do deploy na Vercel Dashboard ou via GitHub Actions.
 
-Se deploy falhou, verificar logs:
-```
-mcp10_get_deployment_build_logs
-```
+Se deploy falhou, verificar logs no painel da Vercel.
 
 ### 4. Testar URLs em Produção
 URLs protegidas por Vercel Auth retornam 401/403 - isso é esperado.
-
-Para acessar URLs protegidas:
-```
-mcp10_get_access_to_vercel_url ou mcp10_web_fetch_vercel_url
-```
 
 ### 5. Verificar Logs de Erro
 Se houver problemas em produção:
@@ -57,7 +46,7 @@ mcp7_get_logs com service: "api" ou "postgres"
 
 1. **Obter os logs de build**:
    - Pedir ao usuário os logs da Vercel
-   - Ou usar `mcp8_get_deployment_build_logs`
+   - Ou verificar no painel da Vercel
 
 2. **Ler a mensagem de erro completa**:
    - Identificar o arquivo/linha específico

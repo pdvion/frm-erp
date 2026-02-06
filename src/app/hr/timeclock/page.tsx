@@ -135,7 +135,7 @@ export default function TimeclockPage() {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4" />
-                <input
+                <Input
                   type="text"
                   placeholder="Buscar por funcionário..."
                   value={search}

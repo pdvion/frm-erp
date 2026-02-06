@@ -20,6 +20,7 @@ import {
   Search,
   Download,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const transactionTypeLabels: Record<string, string> = {
   CREDIT: "Crédito",
@@ -114,7 +115,7 @@ export default function AccountDetailPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por descrição..."
                 value={search}
@@ -122,7 +123,7 @@ export default function AccountDetailPage() {
                 className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <select
+            <NativeSelect
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -131,7 +132,7 @@ export default function AccountDetailPage() {
               {Object.entries(transactionTypeLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
         </div>
 
@@ -264,7 +265,7 @@ function TransferModal({
         <div className="space-y-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Conta Destino</label>
-            <select
+            <NativeSelect
               value={toAccountId}
               onChange={(e) => setToAccountId(e.target.value)}
               className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -275,7 +276,7 @@ function TransferModal({
                   {account.name} - {account.bankName}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
 
           <Input

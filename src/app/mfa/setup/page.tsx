@@ -17,6 +17,7 @@ import {
   Check
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function MFASetupPage() {
   const router = useRouter();
@@ -119,7 +120,7 @@ export default function MFASetupPage() {
                 </div>
               )}
 
-              <button
+              <Button
                 onClick={handleStartEnroll}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors disabled:opacity-50 font-medium"
@@ -132,7 +133,7 @@ export default function MFASetupPage() {
                 ) : (
                   "Começar Configuração"
                 )}
-              </button>
+              </Button>
 
               <div className="mt-4 text-center">
                 <Link
@@ -180,23 +181,23 @@ export default function MFASetupPage() {
                   <code className="flex-1 text-sm font-mono bg-theme-card px-2 py-1 rounded border break-all">
                     {enrollData.secret}
                   </code>
-                  <button
+                  <Button
                     onClick={copySecret}
                     className="p-2 text-theme-muted hover:text-[var(--frm-primary)] transition-colors"
                     title="Copiar"
                     aria-label={copied ? "Copiado" : "Copiar segredo"}
                   >
                     {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <button
+              <Button
                 onClick={() => setStep("verify")}
                 className="w-full py-3 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors font-medium"
               >
                 Continuar
-              </button>
+              </Button>
             </>
           )}
 
@@ -218,7 +219,7 @@ export default function MFASetupPage() {
               )}
 
               <form onSubmit={handleVerify}>
-                <input
+                <Input
                   type="text"
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -239,12 +240,12 @@ export default function MFASetupPage() {
                 </Button>
               </form>
 
-              <button
+              <Button
                 onClick={() => setStep("qrcode")}
                 className="w-full mt-3 py-2 text-theme-muted hover:text-[var(--frm-primary)] text-sm"
               >
                 Voltar ao QR Code
-              </button>
+              </Button>
             </>
           )}
 

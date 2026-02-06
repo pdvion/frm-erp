@@ -20,6 +20,8 @@ import {
   Package,
   Cog,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   PLANNED: { label: "Planejada", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
@@ -187,7 +189,7 @@ export default function ProductionOrderDetailPage() {
                 <div className="mt-6 pt-6 border-t border-theme">
                   <h4 className="font-medium text-theme mb-3">Apontar Produção</h4>
                   <div className="flex items-center gap-3">
-                    <input
+                    <Input
                       type="number"
                       value={reportQty}
                       onChange={(e) => setReportQty(e.target.value)}
@@ -287,7 +289,7 @@ export default function ProductionOrderDetailPage() {
                                 {!isComplete && (
                                   consumingMaterial === mat.id ? (
                                     <div className="flex items-center gap-2 justify-center">
-                                      <input
+                                      <Input
                                         type="number"
                                         value={consumeQty}
                                         onChange={(e) => setConsumeQty(e.target.value)}
@@ -516,7 +518,7 @@ export default function ProductionOrderDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
-              <textarea
+              <Textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}

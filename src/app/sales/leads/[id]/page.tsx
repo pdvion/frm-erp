@@ -24,6 +24,9 @@ import {
   UserPlus,
   Plus,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   NEW: { label: "Novo", color: "bg-blue-100 text-blue-800" },
@@ -254,7 +257,7 @@ export default function LeadDetailPage() {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm text-theme-muted mb-1">Tipo</label>
-                      <select
+                      <NativeSelect
                         value={activityType}
                         onChange={(e) => setActivityType(e.target.value)}
                         className="w-full border border-theme-input rounded-lg px-3 py-2"
@@ -264,11 +267,11 @@ export default function LeadDetailPage() {
                         <option value="MEETING">Reunião</option>
                         <option value="NOTE">Nota</option>
                         <option value="TASK">Tarefa</option>
-                      </select>
+                      </NativeSelect>
                     </div>
                     <div>
                       <label className="block text-sm text-theme-muted mb-1">Assunto</label>
-                      <input
+                      <Input
                         type="text"
                         value={activitySubject}
                         onChange={(e) => setActivitySubject(e.target.value)}
@@ -279,7 +282,7 @@ export default function LeadDetailPage() {
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm text-theme-muted mb-1">Descrição</label>
-                    <textarea
+                    <Textarea
                       value={activityDescription}
                       onChange={(e) => setActivityDescription(e.target.value)}
                       className="w-full border border-theme-input rounded-lg px-3 py-2"

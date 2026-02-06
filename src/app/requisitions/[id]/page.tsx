@@ -19,6 +19,8 @@ import {
   Ban,
   Check,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
@@ -240,7 +242,7 @@ export default function RequisitionDetailPage() {
                               {!isComplete && (
                                 separatingItem === item.id ? (
                                   <div className="flex items-center gap-2 justify-center">
-                                    <input
+                                    <Input
                                       type="number"
                                       value={separateQty}
                                       onChange={(e) => setSeparateQty(e.target.value)}
@@ -458,7 +460,7 @@ export default function RequisitionDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Motivo do Cancelamento *
               </label>
-              <textarea
+              <Textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}

@@ -18,6 +18,8 @@ import {
   Save,
   RefreshCw,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const BANKS = [
   { code: "001", name: "Banco do Brasil" },
@@ -182,7 +184,7 @@ export default function CnabConfigPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-theme-secondary mb-1">Banco *</label>
-              <select
+              <NativeSelect
                 value={config.bankCode}
                 onChange={(e) => setConfig({ ...config, bankCode: e.target.value as typeof config.bankCode })}
                 className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -192,19 +194,19 @@ export default function CnabConfigPage() {
                     {bank.code} - {bank.name}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-theme-secondary mb-1">Layout *</label>
-              <select
+              <NativeSelect
                 value={config.layout}
                 onChange={(e) => setConfig({ ...config, layout: e.target.value as typeof config.layout })}
                 className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="240">CNAB 240</option>
                 <option value="400">CNAB 400</option>
-              </select>
+              </NativeSelect>
             </div>
 
             <Input
@@ -272,7 +274,7 @@ export default function CnabConfigPage() {
           </div>
 
           <div className="flex justify-end">
-            <button
+            <Button
               onClick={handleSave}
               disabled={saveConfigMutation.isPending}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
@@ -283,7 +285,7 @@ export default function CnabConfigPage() {
                 <Save className="w-4 h-4" />
               )}
               Salvar Configuração
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -295,7 +297,7 @@ export default function CnabConfigPage() {
           </h2>
 
           <div className="border-2 border-dashed border-theme rounded-lg p-6 text-center mb-4">
-            <input
+            <Input
               type="file"
               accept=".ret,.txt,.RET,.TXT"
               onChange={handleRetornoFileChange}
@@ -324,7 +326,7 @@ export default function CnabConfigPage() {
                   ({(retornoFile.size / 1024).toFixed(1)} KB)
                 </span>
               </div>
-              <button
+              <Button
                 onClick={handleProcessRetorno}
                 disabled={processRetornoMutation.isPending}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
@@ -335,7 +337,7 @@ export default function CnabConfigPage() {
                   <RefreshCw className="w-4 h-4" />
                 )}
                 Processar Retorno
-              </button>
+              </Button>
             </div>
           )}
 

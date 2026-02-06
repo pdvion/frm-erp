@@ -265,7 +265,7 @@ export default function ApprovalLevelsPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 id="requires-all"
                 type="checkbox"
                 checked={formData.requiresAllApprovers}
@@ -325,7 +325,7 @@ export default function ApprovalLevelsPage() {
 
                       <div className="flex items-center gap-4">
                         <label className="flex items-center gap-1.5 text-sm">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={approver.canApprove}
                             onChange={() => toggleApproverPermission(approver.userId, "canApprove")}
@@ -336,7 +336,7 @@ export default function ApprovalLevelsPage() {
                         </label>
 
                         <label className="flex items-center gap-1.5 text-sm">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={approver.canReject}
                             onChange={() => toggleApproverPermission(approver.userId, "canReject")}

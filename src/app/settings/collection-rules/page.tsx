@@ -216,7 +216,7 @@ export default function CollectionRulesPage() {
               </div>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={formData.isActive}
                     onChange={(e) =>
@@ -227,7 +227,7 @@ export default function CollectionRulesPage() {
                   <span className="text-sm text-theme-secondary">Ativa</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={formData.isDefault}
                     onChange={(e) =>

@@ -10,6 +10,10 @@ import {
   ArrowLeft,
   Save,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type StepForm = {
   id?: string;
@@ -110,7 +114,7 @@ export default function EditWorkflowDefinitionPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Nome *</label>
-              <input
+              <Input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -120,7 +124,7 @@ export default function EditWorkflowDefinitionPage({
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
-              <select
+              <NativeSelect
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -131,11 +135,11 @@ export default function EditWorkflowDefinitionPage({
                 <option value="HR">RH</option>
                 <option value="PRODUCTION">Produção</option>
                 <option value="SALES">Vendas</option>
-              </select>
+              </NativeSelect>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-              <textarea
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -144,7 +148,7 @@ export default function EditWorkflowDefinitionPage({
             </div>
             <div>
               <label className="flex items-center gap-2">
-                <input
+                <Input
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
@@ -188,14 +192,14 @@ export default function EditWorkflowDefinitionPage({
           >
             Cancelar
           </Link>
-          <button
+          <Button
             type="submit"
             disabled={updateMutation.isPending}
             className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {updateMutation.isPending ? "Salvando..." : "Salvar Alterações"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

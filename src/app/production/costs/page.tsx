@@ -21,6 +21,9 @@ import {
   TrendingDown,
   Package,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
@@ -107,7 +110,7 @@ export default function ProductionCostsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por OP ou produto..."
                 value={search}
@@ -117,7 +120,7 @@ export default function ProductionCostsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                 className="border border-theme-input rounded-lg px-3 py-2"
@@ -126,7 +129,7 @@ export default function ProductionCostsPage() {
                 <option value="DRAFT">Rascunho</option>
                 <option value="CALCULATED">Calculado</option>
                 <option value="CLOSED">Fechado</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>
@@ -221,20 +224,20 @@ export default function ProductionCostsPage() {
                     Página {page} de {costsData.pages} ({costsData.total} registros)
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setPage(page + 1)}
                       disabled={page === costsData.pages}
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

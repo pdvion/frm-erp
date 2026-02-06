@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 } from "lucide-re
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
 import { toNumber } from "@/lib/precision";
+import { Button } from "@/components/ui/Button";
 
 export default function BudgetTrackingPage() {
   const currentYear = new Date().getFullYear();
@@ -47,13 +48,13 @@ export default function BudgetTrackingPage() {
       {/* Filtro de ano */}
       <div className="flex gap-2">
         {[currentYear - 1, currentYear, currentYear + 1].map((y) => (
-          <button
+          <Button
             key={y}
             onClick={() => setYear(y)}
             className={`px-4 py-2 rounded-lg text-sm ${year === y ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
           >
             {y}
-          </button>
+          </Button>
         ))}
       </div>
 

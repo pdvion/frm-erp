@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Receipt, Search, Plus, Trash2 } from "lucide-react";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { formatCurrency } from "@/lib/formatters";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface InvoiceItem {
   id: string;
@@ -169,7 +170,7 @@ export default function NewBillingPage() {
           {/* Observações */}
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <h3 className="font-semibold text-theme mb-3">Observações</h3>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"

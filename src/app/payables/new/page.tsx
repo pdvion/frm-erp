@@ -207,7 +207,7 @@ export default function NewPayablePage() {
             ) : (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
+                <Input
                   type="text"
                   value={supplierSearch}
                   onChange={(e) => {
@@ -319,7 +319,7 @@ export default function NewPayablePage() {
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">
                   R$
                 </span>
-                <input
+                <Input
                   type="text"
                   value={form.originalValue}
                   onChange={(e) => setForm({ ...form, originalValue: e.target.value })}
@@ -369,7 +369,7 @@ export default function NewPayablePage() {
               <h2 className="text-lg font-semibold text-theme">Retenções de Impostos</h2>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={form.hasWithholding}
                 onChange={(e) => setForm({ ...form, hasWithholding: e.target.checked })}

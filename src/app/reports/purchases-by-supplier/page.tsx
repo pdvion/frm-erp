@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { ArrowLeftRight, Download, Loader2, Search, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function PurchasesBySupplierReportPage() {
   const [search, setSearch] = useState("");
@@ -50,14 +51,14 @@ export default function PurchasesBySupplierReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!filteredItems?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -83,7 +84,7 @@ export default function PurchasesBySupplierReportPage() {
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar fornecedor ou CNPJ..."
                 value={search}

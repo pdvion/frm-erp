@@ -4,6 +4,8 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Users, Download, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function HeadcountReportPage() {
   const [search, setSearch] = useState("");
@@ -59,14 +61,14 @@ export default function HeadcountReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!filteredItems?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -87,7 +89,7 @@ export default function HeadcountReportPage() {
         <div className="bg-theme-card rounded-lg shadow-sm border p-4 mb-6">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar departamento..."
               value={search}
@@ -133,7 +135,7 @@ export default function HeadcountReportPage() {
               <div className="divide-y divide-theme-table">
                 {filteredItems.map((item) => (
                   <div key={item.department}>
-                    <button
+                    <Button
                       onClick={() => toggleDept(item.department)}
                       className="w-full px-4 py-3 flex items-center justify-between hover:bg-theme-hover"
                     >
@@ -146,7 +148,7 @@ export default function HeadcountReportPage() {
                         <span className="font-medium text-theme">{item.department}</span>
                       </div>
                       <span className="text-sm font-bold text-blue-600">{item.count} funcionários</span>
-                    </button>
+                    </Button>
                     {expandedDepts.has(item.department) && (
                       <div className="bg-theme-tertiary px-8 py-2">
                         {Object.entries(item.positions).map(([position, count]) => (

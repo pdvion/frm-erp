@@ -30,6 +30,7 @@ import {
   XOctagon,
   History,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
 type SituacaoNfe = "PENDENTE" | "PROCESSANDO" | "IMPORTADA" | "IGNORADA" | "ERRO";
 
@@ -340,7 +341,7 @@ export default function PendingInvoicesPage() {
                 <thead className="bg-theme-tertiary border-b">
                   <tr>
                     <th className="px-4 py-3 text-center w-10">
-                      <input
+                      <Input
                         type="checkbox"
                         checked={selectedNfes.length > 0 && selectedNfes.length === (data?.nfes?.filter((n) => n.situacao === "PENDENTE" && !n.manifestacao).length || 0)}
                         onChange={(e) => e.target.checked ? selectAllPending() : setSelectedNfes([])}
@@ -380,7 +381,7 @@ export default function PendingInvoicesPage() {
                       <tr key={nfe.id} className={`hover:bg-theme-hover ${selectedNfes.includes(nfe.id) ? "bg-indigo-50" : ""}`}>
                         <td className="px-4 py-3 text-center">
                           {canSelect && (
-                            <input
+                            <Input
                               type="checkbox"
                               checked={selectedNfes.includes(nfe.id)}
                               onChange={() => toggleNfeSelection(nfe.id)}
@@ -601,7 +602,7 @@ export default function PendingInvoicesPage() {
                         : "border-theme hover:border-theme"
                     }`}
                   >
-                    <input
+                    <Input
                       type="radio"
                       name="manifestTipo"
                       value={tipo}
@@ -696,7 +697,7 @@ export default function PendingInvoicesPage() {
                         : "border-theme hover:border-theme"
                     }`}
                   >
-                    <input
+                    <Input
                       type="radio"
                       name="batchManifestTipo"
                       value={tipo}

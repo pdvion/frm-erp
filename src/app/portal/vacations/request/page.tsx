@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Calendar, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/Textarea";
 
 export default function RequestVacationPage() {
   const router = useRouter();
@@ -160,7 +161,7 @@ export default function RequestVacationPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <input
+              <Input
                 type="checkbox"
                 id="advanceThirteenth"
                 checked={formData.advanceThirteenth}
@@ -176,7 +177,7 @@ export default function RequestVacationPage() {
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Observações
               </label>
-              <textarea
+              <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

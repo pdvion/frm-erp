@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ClipboardCheck, Plus, Trash2, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type InspectionType = "RECEIVING" | "IN_PROCESS" | "FINAL" | "AUDIT";
 
@@ -103,7 +105,7 @@ export default function NewQualityInspectionPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Tipo de Inspeção</label>
-              <select
+              <NativeSelect
                 value={type}
                 onChange={(e) => setType(e.target.value as InspectionType)}
                 className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -111,7 +113,7 @@ export default function NewQualityInspectionPage() {
                 {inspectionTypes.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
             <Input
               label="Número do Lote"
@@ -155,7 +157,7 @@ export default function NewQualityInspectionPage() {
             {items.map((item, index) => (
               <div key={item.id} className="flex items-start gap-3 p-3 bg-theme-hover rounded-lg">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <input
+                  <Input
                     type="text"
                     value={item.characteristic}
                     onChange={(e) => updateItem(index, "characteristic", e.target.value)}
@@ -163,14 +165,14 @@ export default function NewQualityInspectionPage() {
                     className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                     required
                   />
-                  <input
+                  <Input
                     type="text"
                     value={item.specification}
                     onChange={(e) => updateItem(index, "specification", e.target.value)}
                     placeholder="Especificação"
                     className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                   />
-                  <input
+                  <Input
                     type="number"
                     step="0.01"
                     value={item.toleranceMin || ""}
@@ -178,7 +180,7 @@ export default function NewQualityInspectionPage() {
                     placeholder="Tolerância Mín"
                     className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                   />
-                  <input
+                  <Input
                     type="number"
                     step="0.01"
                     value={item.toleranceMax || ""}
@@ -187,13 +189,13 @@ export default function NewQualityInspectionPage() {
                     className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
                   />
                 </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => removeItem(index)}
                   className="p-2 text-red-600 hover:text-red-700"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             ))}
             {items.length === 0 && (
@@ -207,7 +209,7 @@ export default function NewQualityInspectionPage() {
         {/* Observações */}
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="font-semibold text-theme mb-4">Observações</h3>
-          <textarea
+          <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"

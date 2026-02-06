@@ -195,7 +195,7 @@ export default function NewTerminationPage() {
 
           <div className="mt-4 space-y-2">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={form.noticePeriodWorked}
                 onChange={(e) => setForm({ ...form, noticePeriodWorked: e.target.checked })}
@@ -205,7 +205,7 @@ export default function NewTerminationPage() {
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={form.noticePeriodIndemnity}
                 onChange={(e) => setForm({ ...form, noticePeriodIndemnity: e.target.checked })}

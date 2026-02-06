@@ -26,6 +26,7 @@ import {
   DollarSign,
   Hash,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: <Clock className="w-4 h-4" /> },
@@ -282,7 +283,7 @@ export default function ReceivingDetailPage() {
                               >
                                 <Minus className="w-4 h-4" />
                               </Button>
-                              <input
+                              <Input
                                 type="number"
                                 value={itemConferences[item.id]?.receivedQuantity || 0}
                                 onChange={(e) => setItemConferences((prev) => ({

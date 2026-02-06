@@ -18,6 +18,8 @@ import {
   XCircle,
   Filter,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type ManifestacaoTipo = "CIENCIA" | "CONFIRMACAO" | "DESCONHECIMENTO" | "NAO_REALIZADA";
 
@@ -59,7 +61,7 @@ export default function ManifestacaoHistoryPage() {
             <Filter className="w-4 h-4" />
             <span className="text-sm font-medium">Filtrar por tipo:</span>
           </div>
-          <select
+          <NativeSelect
             value={tipoFilter}
             onChange={(e) => {
               setTipoFilter(e.target.value as ManifestacaoTipo | "");
@@ -73,7 +75,7 @@ export default function ManifestacaoHistoryPage() {
                 {manifestacaoConfig[tipo].label}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
       </div>
 
@@ -199,22 +201,22 @@ export default function ManifestacaoHistoryPage() {
                   Página {page} de {data.pages} ({data.total} registros)
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
                     className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Página anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                     disabled={page === data.pages}
                     className="p-2 rounded-lg hover:bg-theme-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Próxima página"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

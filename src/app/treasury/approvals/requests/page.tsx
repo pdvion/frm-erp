@@ -8,6 +8,8 @@ import { TableSkeleton } from "@/components/ui/Skeleton";
 import { FileText, Clock, CheckCircle, XCircle, Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type RequestStatus = "ALL" | "PENDING" | "APPROVED" | "REJECTED";
 
@@ -161,7 +163,7 @@ export default function ApprovalsRequestsPage() {
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -171,7 +173,7 @@ export default function ApprovalsRequestsPage() {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-theme-muted" />
-            <select
+            <NativeSelect
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as RequestStatus)}
               className="px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"
@@ -180,7 +182,7 @@ export default function ApprovalsRequestsPage() {
               <option value="PENDING">Pendentes</option>
               <option value="APPROVED">Aprovados</option>
               <option value="REJECTED">Rejeitados</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
       </div>

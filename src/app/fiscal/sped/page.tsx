@@ -16,6 +16,7 @@ import {
   FileCheck,
   Package,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
 export default function SpedPage() {
   const [mes, setMes] = useState(new Date().getMonth() + 1);
@@ -113,7 +114,7 @@ export default function SpedPage() {
               {/* Opções */}
               <div className="border-t border-theme pt-4">
                 <label className="flex items-center gap-3 cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={incluirInventario}
                     onChange={(e) => setIncluirInventario(e.target.checked)}

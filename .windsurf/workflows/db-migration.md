@@ -6,7 +6,7 @@ description: Cria e aplica migrations no banco Supabase
 
 ## Pré-requisitos
 - Project ID Supabase: `jewutjydoyaimusaxvyg`
-- Usar MCP `mcp7_apply_migration` (NUNCA usar `prisma migrate`)
+- Usar Supabase MCP `mcp7_apply_migration` (NUNCA usar `prisma migrate` diretamente)
 
 ## Passos
 
@@ -17,9 +17,13 @@ Adicionar/modificar modelo no arquivo `prisma/schema.prisma`
 ```prisma
 // SEMPRE usar @db.Uuid para campos que referenciam outras tabelas
 model NovaTabela {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String?  @db.Uuid  // FK para users
-  companyId String?  @db.Uuid  // FK para companies
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid  // FK para users
+  companyId String?  @map("company_id") @db.Uuid  // FK para companies
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  
+  @@map("nova_tabela")
   // ... outros campos
 }
 ```

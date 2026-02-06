@@ -18,6 +18,7 @@ import {
   Banknote,
   RefreshCw,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const accountTypeConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   CHECKING: { label: "Conta Corrente", icon: <CreditCard className="w-4 h-4" />, color: "text-blue-600" },
@@ -97,7 +98,7 @@ export default function TreasuryPage() {
                       const isSelected = selectedAccount === account.id;
 
                       return (
-                        <button
+                        <Button
                           key={account.id}
                           onClick={() => setSelectedAccount(account.id)}
                           className={`w-full px-4 py-3 text-left hover:bg-theme-hover ${
@@ -118,7 +119,7 @@ export default function TreasuryPage() {
                               {formatCurrency(account.currentBalance)}
                             </div>
                           </div>
-                        </button>
+                        </Button>
                       );
                     })}
 
