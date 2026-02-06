@@ -130,6 +130,13 @@ export function Dropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, closeDropdown]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleScroll = () => closeDropdown();
+    window.addEventListener("scroll", handleScroll, true);
+    return () => window.removeEventListener("scroll", handleScroll, true);
+  }, [isOpen, closeDropdown]);
+
   return (
     <DropdownContext.Provider value={{ closeDropdown }}>
       <div className="relative inline-block">

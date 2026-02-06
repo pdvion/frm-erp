@@ -120,6 +120,8 @@ const allComponents: { name: string; status: "demo" | "used" | "available" }[] =
   { name: "AdvancedFilters", status: "available" },
   { name: "Alert", status: "demo" },
   { name: "Avatar", status: "demo" },
+  { name: "AvatarGroup", status: "available" },
+  { name: "AvatarWithStatus", status: "available" },
   { name: "Badge", status: "demo" },
   { name: "Breadcrumbs", status: "demo" },
   { name: "Button", status: "demo" },
