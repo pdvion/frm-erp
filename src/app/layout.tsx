@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { EnsureUserProvider } from "@/components/EnsureUserProvider";
 import { AppLayout } from "@/components/AppLayout";
 import { Toaster } from "@/components/ui/toaster";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,6 +22,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "POC Delphi FRM - Sistema ERP",
   description: "Sistema de gestão industrial - Materiais, Fornecedores e Estoque",
+  manifest: "/manifest.json",
+  themeColor: "#2563eb",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "FRM ERP",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+  },
 };
 
 export default function RootLayout({
@@ -42,6 +57,7 @@ export default function RootLayout({
                 </a>
                 <AppLayout>{children}</AppLayout>
                 <Toaster />
+                <ServiceWorkerRegistration />
               </EnsureUserProvider>
             </TRPCProvider>
           </AuthProvider>
