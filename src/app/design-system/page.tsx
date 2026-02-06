@@ -24,6 +24,7 @@ import { Drawer, useDrawer } from "@/components/ui/Drawer";
 import { Alert } from "@/components/ui/Alert";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Palette,
@@ -32,9 +33,6 @@ import {
   Plus,
   Search,
   Check,
-  X,
-  AlertTriangle,
-  Info,
   Copy,
   ExternalLink,
   Edit,
@@ -1200,40 +1198,39 @@ const columns: TableColumn<Item>[] = [
           />
         </section>
 
-        {/* Alertas */}
+        {/* NativeSelect */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-theme">Alertas</h2>
-          <p className="text-theme-muted">Mensagens de feedback para o usuário.</p>
+          <h2 className="text-2xl font-bold text-theme">NativeSelect</h2>
+          <p className="text-theme-muted">Select nativo com children (drop-in para {'<select>'}).</p>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <Info className="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                Mensagem informativa para o usuário.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-              <p className="text-sm text-green-800 dark:text-green-200">
-                Operação realizada com sucesso!
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                Atenção: verifique os dados antes de continuar.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <X className="w-5 h-5 text-red-600 flex-shrink-0" />
-              <p className="text-sm text-red-800 dark:text-red-200">
-                Erro ao processar a solicitação.
-              </p>
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Estado</label>
+              <NativeSelect defaultValue="">
+                <option value="" disabled>Selecione um estado</option>
+                <option value="SP">São Paulo</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="MG">Minas Gerais</option>
+              </NativeSelect>
             </div>
           </div>
+
+          <CodeBlock
+            id="nativeselect"
+            copied={copied}
+            onCopy={copyToClipboard}
+            code={`import { NativeSelect } from "@/components/ui/NativeSelect";
+
+// Drop-in replacement para <select> com children
+<NativeSelect value={value} onChange={onChange}>
+  <option value="">Selecione...</option>
+  <option value="a">Opção A</option>
+  <option value="b">Opção B</option>
+</NativeSelect>
+
+// Use Select (com prop options) quando não precisa de children
+// Use NativeSelect quando precisa de <option> children`}
+          />
         </section>
 
         {/* Componentes Disponíveis */}
@@ -1244,8 +1241,11 @@ const columns: TableColumn<Item>[] = [
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               "AccessibleTable",
+              "AdvancedFilters",
+              "Alert",
               "Avatar",
               "AvatarGroup",
+              "AvatarWithStatus",
               "Badge",
               "Breadcrumbs",
               "Button",
@@ -1256,11 +1256,15 @@ const columns: TableColumn<Item>[] = [
               "ChartDonut",
               "ChartArea",
               "ChartCard",
+              "Checkbox",
+              "CompanyBadge",
               "DataTable",
               "DatePicker",
               "DateRangePicker",
               "Drawer",
               "Dropdown",
+              "EmptyState",
+              "ExportButtons",
               "FileUpload",
               "FormField",
               "FormGrid",
@@ -1268,7 +1272,10 @@ const columns: TableColumn<Item>[] = [
               "Input",
               "KanbanBoard",
               "KpiCard",
+              "LinkButton",
+              "MaskedInput",
               "Modal",
+              "NativeSelect",
               "PageButton",
               "PageCard",
               "PageHeader",
@@ -1276,16 +1283,18 @@ const columns: TableColumn<Item>[] = [
               "PageTable",
               "PageTimeline",
               "Progress",
+              "Radio",
+              "Select",
               "SelectWithAdd",
               "Skeleton",
               "SkipLink",
+              "Switch",
+              "Tabs",
+              "Textarea",
+              "Toaster",
               "Tooltip",
               "VisuallyHidden",
               "Wizard",
-              "AdvancedFilters",
-              "ExportButtons",
-              "MaskedInput",
-              "Toaster",
             ].map((component) => (
               <div
                 key={component}

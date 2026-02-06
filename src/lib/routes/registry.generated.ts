@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-05T20:01:50.453Z
+ * Data: 2026-02-06T03:11:04.329Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -325,6 +325,8 @@ export const modules: ModuleDefinition[] = [
       { path: "/reports/cash-flow", label: "Cash Flow", showInMenu: true, enabled: true },
       { path: "/reports/chart-builder", label: "Chart Builder", showInMenu: true, enabled: true },
       { path: "/reports/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
+      { path: "/reports/dre", label: "Dre", showInMenu: true, enabled: true },
+      { path: "/reports/financial-by-category", label: "Financial By Category", showInMenu: true, enabled: true },
       { path: "/reports/fiscal", label: "Fiscal", showInMenu: true, enabled: true },
       { path: "/reports/headcount", label: "Headcount", showInMenu: true, enabled: true },
       { path: "/reports/hr", label: "Hr", showInMenu: true, enabled: true },

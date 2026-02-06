@@ -3,6 +3,8 @@ export { LinkButton } from "./LinkButton";
 export { Input } from "./Input";
 export { Select } from "./Select";
 export type { SelectOption, SelectProps } from "./Select";
+export { NativeSelect } from "./NativeSelect";
+export type { NativeSelectProps } from "./NativeSelect";
 export { Textarea } from "./Textarea";
 export type { TextareaProps } from "./Textarea";
 export { Checkbox } from "./Checkbox";

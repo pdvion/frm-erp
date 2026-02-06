@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
 
-interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
 }
 
