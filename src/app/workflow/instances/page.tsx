@@ -18,6 +18,9 @@ import {
   Eye,
   ArrowLeft,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
@@ -87,7 +90,7 @@ function WorkflowInstancesContent() {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar por workflow ou código..."
               value={search}
@@ -100,7 +103,7 @@ function WorkflowInstancesContent() {
 
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
-            <select
+            <NativeSelect
               value={status ?? ""}
               onChange={(e) => {
                 setFilters({ status: e.target.value || undefined, page: 1 });
@@ -113,7 +116,7 @@ function WorkflowInstancesContent() {
               <option value="COMPLETED">Concluído</option>
               <option value="CANCELLED">Cancelado</option>
               <option value="REJECTED">Rejeitado</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
       </div>
@@ -169,20 +172,20 @@ function WorkflowInstancesContent() {
                   Página {page} de {totalPages}
                 </p>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     onClick={() => setFilter("page", page - 1)}
                     disabled={page <= 1}
                     className="p-2 rounded-lg border border-theme hover:bg-theme-secondary disabled:opacity-50"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setFilter("page", page + 1)}
                     disabled={page >= totalPages}
                     className="p-2 rounded-lg border border-theme hover:bg-theme-secondary disabled:opacity-50"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

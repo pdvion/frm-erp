@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function SetPasswordPage() {
   const router = useRouter();
@@ -180,7 +181,7 @@ export default function SetPasswordPage() {
                 Nova Senha
               </label>
               <div className="relative">
-                <input
+                <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -190,7 +191,7 @@ export default function SetPasswordPage() {
                   required
                   minLength={8}
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-secondary"
@@ -200,7 +201,7 @@ export default function SetPasswordPage() {
                   ) : (
                     <Eye className="w-5 h-5" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -213,7 +214,7 @@ export default function SetPasswordPage() {
                 Confirmar Senha
               </label>
               <div className="relative">
-                <input
+                <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
@@ -222,7 +223,7 @@ export default function SetPasswordPage() {
                   placeholder="Repita a senha"
                   required
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-secondary"
@@ -232,7 +233,7 @@ export default function SetPasswordPage() {
                   ) : (
                     <Eye className="w-5 h-5" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 

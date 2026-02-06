@@ -16,6 +16,8 @@ import {
   GripVertical,
   Workflow,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type StepForm = {
   name: string;
@@ -134,7 +136,7 @@ export default function NewWorkflowDefinitionPage() {
             />
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Categoria</label>
-              <select
+              <NativeSelect
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -145,11 +147,11 @@ export default function NewWorkflowDefinitionPage() {
                 <option value="HR">RH</option>
                 <option value="PRODUCTION">Produção</option>
                 <option value="SALES">Vendas</option>
-              </select>
+              </NativeSelect>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-              <textarea
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -194,7 +196,7 @@ export default function NewWorkflowDefinitionPage() {
                     />
                     <div>
                       <label className="block text-sm font-medium text-theme mb-1">Tipo de Responsável</label>
-                      <select
+                      <NativeSelect
                         value={step.assigneeType}
                         onChange={(e) => updateStep(index, "assigneeType", e.target.value)}
                         className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -203,7 +205,7 @@ export default function NewWorkflowDefinitionPage() {
                         <option value="department">Departamento</option>
                         <option value="role">Cargo</option>
                         <option value="requester_manager">Gestor do Solicitante</option>
-                      </select>
+                      </NativeSelect>
                     </div>
                     <Input
                       label="ID do Responsável"

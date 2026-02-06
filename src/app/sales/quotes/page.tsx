@@ -18,6 +18,8 @@ import {
   Eye,
   Building2,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
@@ -60,7 +62,7 @@ export default function SalesQuotesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por cliente..."
                 value={search}
@@ -70,7 +72,7 @@ export default function SalesQuotesPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                 className="border border-theme-input rounded-lg px-3 py-2"
@@ -81,7 +83,7 @@ export default function SalesQuotesPage() {
                 <option value="ACCEPTED">Aceitos</option>
                 <option value="REJECTED">Rejeitados</option>
                 <option value="CONVERTED">Convertidos</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

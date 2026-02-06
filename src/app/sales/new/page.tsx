@@ -8,6 +8,8 @@ import { ShoppingCart, Search, Trash2 } from "lucide-react";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/formatters";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface SaleItem {
   materialId: string;
@@ -132,7 +134,7 @@ export default function NewSalePage() {
             ) : (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
+                <Input
                   type="text"
                   value={customerSearch}
                   onChange={(e) => setCustomerSearch(e.target.value)}
@@ -167,7 +169,7 @@ export default function NewSalePage() {
             {/* Busca de materiais */}
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 value={materialSearch}
                 onChange={(e) => setMaterialSearch(e.target.value)}
@@ -203,7 +205,7 @@ export default function NewSalePage() {
                     <p className="text-sm font-medium text-theme truncate">{item.description}</p>
                     <p className="text-xs text-theme-muted">Código: {item.code}</p>
                   </div>
-                  <input
+                  <Input
                     type="number"
                     min={1}
                     value={item.quantity}
@@ -211,7 +213,7 @@ export default function NewSalePage() {
                     className="w-16 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-center"
                     title="Quantidade"
                   />
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     step={0.01}
@@ -220,7 +222,7 @@ export default function NewSalePage() {
                     className="w-24 px-2 py-1 text-sm border border-theme rounded bg-theme-card text-theme text-right"
                     title="Preço unitário"
                   />
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     max={100}
@@ -243,7 +245,7 @@ export default function NewSalePage() {
           {/* Observações */}
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <h3 className="font-semibold text-theme mb-3">Observações</h3>
-            <textarea
+            <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme"

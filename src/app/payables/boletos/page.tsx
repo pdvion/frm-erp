@@ -21,6 +21,8 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type BoletoStatus = "PENDING" | "REGISTERED" | "PAID" | "CANCELLED" | "OVERDUE";
 
@@ -133,7 +135,7 @@ export default function BoletosPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por número, nosso número ou sacado..."
                 value={search}
@@ -146,7 +148,7 @@ export default function BoletosPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={status}
                 onChange={(e) => {
                   setStatus(e.target.value);
@@ -161,7 +163,7 @@ export default function BoletosPage() {
                 <option value="PAID">Pagos</option>
                 <option value="OVERDUE">Vencidos</option>
                 <option value="CANCELLED">Cancelados</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

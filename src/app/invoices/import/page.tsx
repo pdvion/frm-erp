@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   FileText,
   Upload,
@@ -290,7 +291,7 @@ export default function ImportNFePage() {
                 : "border-theme hover:border-theme"
             }`}
           >
-            <input
+            <Input
               type="file"
               multiple
               accept=".xml"

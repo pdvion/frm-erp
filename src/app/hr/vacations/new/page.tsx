@@ -223,7 +223,7 @@ export default function NewVacationPage() {
 
           <div className="mt-4">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={form.isCollective}
                 onChange={(e) => setForm({ ...form, isCollective: e.target.checked })}

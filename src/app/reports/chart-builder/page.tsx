@@ -23,6 +23,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import type { ChartConfig } from "@/lib/ai/chartGenerator";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type ChartType = "line" | "bar" | "pie" | "area" | "donut";
 
@@ -249,7 +250,7 @@ export default function ChartBuilderPage() {
                 <label className="block text-xs font-medium text-theme-muted mb-1">
                   Tipo de Gráfico
                 </label>
-                <select
+                <NativeSelect
                   value={config.type}
                   onChange={(e) => setConfig({ ...config, type: e.target.value as ChartType })}
                   className="w-full px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -259,14 +260,14 @@ export default function ChartBuilderPage() {
                   <option value="area">Área</option>
                   <option value="pie">Pizza</option>
                   <option value="donut">Rosca</option>
-                </select>
+                </NativeSelect>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-theme-muted mb-1">
                   Fonte de Dados
                 </label>
-                <select
+                <NativeSelect
                   value={selectedDataSource}
                   onChange={(e) => setSelectedDataSource(e.target.value)}
                   className="w-full px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -276,7 +277,7 @@ export default function ChartBuilderPage() {
                       {ds.description}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
 
               <Input
@@ -288,7 +289,7 @@ export default function ChartBuilderPage() {
 
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 text-sm text-theme">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={config.showGrid}
                     onChange={(e) => setConfig({ ...config, showGrid: e.target.checked })}
@@ -297,7 +298,7 @@ export default function ChartBuilderPage() {
                   Grade
                 </label>
                 <label className="flex items-center gap-2 text-sm text-theme">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={config.showLegend}
                     onChange={(e) => setConfig({ ...config, showLegend: e.target.checked })}

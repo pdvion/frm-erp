@@ -333,7 +333,7 @@ export default function HolidaysPage() {
               </div>
 
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="checkbox"
                   checked={newHoliday.isOptional}
                   onChange={(e) => setNewHoliday({ ...newHoliday, isOptional: e.target.checked })}

@@ -17,6 +17,8 @@ import {
   TrendingUp,
   Banknote,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const accountTypes = [
   { value: "CHECKING", label: "Conta Corrente", icon: CreditCard, description: "Conta para movimentações diárias" },
@@ -186,7 +188,7 @@ export default function NewBankAccountPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Banco
                 </label>
-                <select
+                <NativeSelect
                   value={form.bankCode}
                   onChange={(e) => handleBankChange(e.target.value)}
                   className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -197,7 +199,7 @@ export default function NewBankAccountPage() {
                       {bank.code} - {bank.name}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
 
               <div>
@@ -295,7 +297,7 @@ export default function NewBankAccountPage() {
 
             <div className="md:col-span-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="checkbox"
                   checked={form.isDefault}
                   onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
@@ -313,7 +315,7 @@ export default function NewBankAccountPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6">
           <h3 className="text-lg font-semibold text-theme mb-4">Observações</h3>
 
-          <textarea
+          <Textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             placeholder="Observações adicionais sobre a conta..."

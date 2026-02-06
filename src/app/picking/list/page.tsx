@@ -20,6 +20,8 @@ import {
   Play,
   Eye,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type StatusFilter = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "ALL";
 type PriorityFilter = "LOW" | "NORMAL" | "HIGH" | "URGENT" | "ALL";
@@ -148,7 +150,7 @@ export default function PickingListPage() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar por código..."
               value={search}
@@ -161,7 +163,7 @@ export default function PickingListPage() {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-theme-muted" />
-            <select
+            <NativeSelect
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value as StatusFilter);
@@ -174,8 +176,8 @@ export default function PickingListPage() {
                   {opt.label}
                 </option>
               ))}
-            </select>
-            <select
+            </NativeSelect>
+            <NativeSelect
               value={priorityFilter}
               onChange={(e) => {
                 setPriorityFilter(e.target.value as PriorityFilter);
@@ -188,7 +190,7 @@ export default function PickingListPage() {
                   Prioridade: {opt.label}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
         </div>
       </div>

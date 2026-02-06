@@ -17,6 +17,8 @@ import {
   ExternalLink,
   Filter,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const typeIcons = {
   info: Info,
@@ -74,7 +76,7 @@ export default function NotificationsPage() {
         icon={<Bell className="w-6 h-6" />}
         module="settings"
         actions={
-          <button
+          <Button
             onClick={() => markAllAsReadMutation.mutate()}
             disabled={markAllAsReadMutation.isPending}
             className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
@@ -85,7 +87,7 @@ export default function NotificationsPage() {
               <CheckCheck className="w-4 h-4" />
             )}
             Marcar todas como lidas
-          </button>
+          </Button>
         }
       />
 
@@ -98,16 +100,16 @@ export default function NotificationsPage() {
               <span className="text-sm text-theme-secondary">Filtros:</span>
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 onClick={() => setCategory(undefined)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   !category ? "bg-blue-100 text-blue-700" : "text-theme-secondary hover:bg-theme-hover"
                 }`}
               >
                 Todas
-              </button>
+              </Button>
               {Object.entries(categoryLabels).map(([key, label]) => (
-                <button
+                <Button
                   key={key}
                   onClick={() => setCategory(key)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
@@ -115,11 +117,11 @@ export default function NotificationsPage() {
                   }`}
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
             <label className="flex items-center gap-2 ml-auto">
-              <input
+              <Input
                 type="checkbox"
                 checked={unreadOnly}
                 onChange={(e) => setUnreadOnly(e.target.checked)}
@@ -198,13 +200,13 @@ export default function NotificationsPage() {
                               </Link>
                             )}
                             {!notification.isRead && (
-                              <button
+                              <Button
                                 onClick={() => markAsReadMutation.mutate({ id: notification.id })}
                                 className="text-sm text-theme-muted hover:text-theme-secondary flex items-center gap-1"
                               >
                                 <Check className="w-4 h-4" />
                                 Marcar como lida
-                              </button>
+                              </Button>
                             )}
                           </div>
                         </div>
@@ -221,20 +223,20 @@ export default function NotificationsPage() {
                     Página {data.page} de {data.pages} ({data.total} notificações)
                   </p>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
                       className="px-3 py-1.5 text-sm border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
                     >
                       Anterior
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                       disabled={page === data.pages}
                       className="px-3 py-1.5 text-sm border border-theme-input rounded-lg hover:bg-theme-hover disabled:opacity-50"
                     >
                       Próxima
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Eye,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
@@ -94,7 +95,7 @@ function MyTasksContent() {
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="flex items-center gap-4">
           <Filter className="w-5 h-5 text-theme-muted" />
-          <select
+          <NativeSelect
             value={status ?? ""}
             onChange={(e) => {
               setFilters({ status: e.target.value || undefined, page: 1 });
@@ -107,7 +108,7 @@ function MyTasksContent() {
             <option value="IN_PROGRESS">Em Andamento</option>
             <option value="COMPLETED">Concluída</option>
             <option value="CANCELLED">Cancelada</option>
-          </select>
+          </NativeSelect>
         </div>
       </div>
 

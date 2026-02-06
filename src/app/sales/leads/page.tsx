@@ -20,6 +20,9 @@ import {
   DollarSign,
   Calendar,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   NEW: { label: "Novo", color: "bg-blue-100 text-blue-800" },
@@ -77,7 +80,7 @@ export default function LeadsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por empresa, contato ou email..."
                 value={search}
@@ -90,7 +93,7 @@ export default function LeadsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
@@ -106,7 +109,7 @@ export default function LeadsPage() {
                 <option value="NEGOTIATION">Negociação</option>
                 <option value="WON">Ganhos</option>
                 <option value="LOST">Perdidos</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>
@@ -229,20 +232,20 @@ export default function LeadsPage() {
                     Página {page} de {data.pages} ({data.total} leads)
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
+                    <Button
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setPage(page + 1)}
                       disabled={page === data.pages}
                       className="p-2 text-theme-muted hover:text-theme-secondary disabled:opacity-50"
                     >
                       <ChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

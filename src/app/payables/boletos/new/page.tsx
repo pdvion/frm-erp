@@ -16,6 +16,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const banks = [
   { code: "001", name: "Banco do Brasil" },
@@ -121,7 +122,7 @@ export default function NewBoletoPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Banco *
                 </label>
-                <select
+                <NativeSelect
                   value={form.bankCode}
                   onChange={(e) => setForm({ ...form, bankCode: e.target.value as BankCode })}
                   className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -132,7 +133,7 @@ export default function NewBoletoPage() {
                       {bank.code} - {bank.name}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
 
               <Input
@@ -184,7 +185,7 @@ export default function NewBoletoPage() {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">
                     R$
                   </span>
-                  <input
+                  <Input
                     type="text"
                     value={form.valor}
                     onChange={(e) => setForm({ ...form, valor: formatValor(e.target.value) })}

@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { AI_MODELS } from "@/lib/ai/models";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type AIProvider = "openai" | "anthropic" | "google";
 
@@ -197,7 +198,7 @@ export default function AITasksConfigPage() {
                       <Loader2 size={16} className="animate-spin text-blue-600" />
                     )}
 
-                    <select
+                    <NativeSelect
                       value={currentProvider}
                       onChange={(e) => handleProviderChange(task.taskId, e.target.value)}
                       disabled={isSaving}
@@ -211,10 +212,10 @@ export default function AITasksConfigPage() {
                           {PROVIDER_ICONS[p]} {PROVIDER_LABELS[p]}
                         </option>
                       ))}
-                    </select>
+                    </NativeSelect>
 
                     {currentProvider !== "auto" && (
-                      <select
+                      <NativeSelect
                         value={currentModel}
                         onChange={(e) =>
                           handleModelChange(task.taskId, currentProvider, e.target.value)
@@ -227,7 +228,7 @@ export default function AITasksConfigPage() {
                             {m.name}
                           </option>
                         ))}
-                      </select>
+                      </NativeSelect>
                     )}
                   </div>
                 </div>

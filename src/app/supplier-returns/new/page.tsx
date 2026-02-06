@@ -12,6 +12,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import type { ReturnReason } from "@prisma/client";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 interface ReturnItem {
   materialId: string;
@@ -226,7 +227,7 @@ export default function NewSupplierReturnPage() {
                   <h3 className="text-theme mb-4 text-lg font-semibold">Buscar Material</h3>
                   <div className="relative mb-4">
                     <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <input
+                    <Input
                       type="text"
                       value={searchMaterial}
                       onChange={(e) => setSearchMaterial(e.target.value)}
@@ -330,7 +331,7 @@ export default function NewSupplierReturnPage() {
                           <div className="text-theme-muted text-xs">{item.materialUnit}</div>
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <Input
                             type="number"
                             value={item.quantity}
                             onChange={(e) =>
@@ -342,7 +343,7 @@ export default function NewSupplierReturnPage() {
                           />
                         </td>
                         <td className="px-3 py-2">
-                          <input
+                          <Input
                             type="number"
                             value={item.unitPrice}
                             onChange={(e) =>
@@ -357,7 +358,7 @@ export default function NewSupplierReturnPage() {
                           {formatCurrency(item.quantity * item.unitPrice)}
                         </td>
                         <td className="px-3 py-2">
-                          <select
+                          <NativeSelect
                             value={item.reason}
                             onChange={(e) =>
                               updateItem(index, "reason", e.target.value as ReturnReason)
@@ -369,10 +370,10 @@ export default function NewSupplierReturnPage() {
                                 {r.label}
                               </option>
                             ))}
-                          </select>
+                          </NativeSelect>
                         </td>
                         <td className="px-3 py-2">
-                          <select
+                          <NativeSelect
                             value={item.stockLocationId || ""}
                             onChange={(e) => updateItem(index, "stockLocationId", e.target.value)}
                             className="border-theme w-full rounded border px-2 py-1 text-sm"
@@ -383,7 +384,7 @@ export default function NewSupplierReturnPage() {
                                 {loc.code}
                               </option>
                             ))}
-                          </select>
+                          </NativeSelect>
                         </td>
                         <td className="px-3 py-2">
                           <Button

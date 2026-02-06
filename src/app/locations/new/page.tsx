@@ -18,6 +18,8 @@ import {
   Package,
   Building2,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const locationTypes = [
   { value: "WAREHOUSE", label: "Almoxarifado", icon: Warehouse, description: "Armazenamento geral" },
@@ -102,7 +104,7 @@ export default function NewLocationPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Descrição
               </label>
-              <textarea
+              <Textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder="Descrição detalhada da localização..."
@@ -153,7 +155,7 @@ export default function NewLocationPage() {
               <label className="block text-sm font-medium text-theme mb-1">
                 Localização Pai
               </label>
-              <select
+              <NativeSelect
                 value={form.parentId}
                 onChange={(e) => setForm({ ...form, parentId: e.target.value })}
                 className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -164,7 +166,7 @@ export default function NewLocationPage() {
                     {loc.code} - {loc.name}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               <p className="text-xs text-theme-muted mt-1">
                 Selecione uma localização pai para criar hierarquia
               </p>
@@ -179,7 +181,7 @@ export default function NewLocationPage() {
 
             <div className="md:col-span-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <Input
                   type="checkbox"
                   checked={form.isDefault}
                   onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}

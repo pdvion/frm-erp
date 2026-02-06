@@ -319,7 +319,7 @@ export default function InvoicesPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Arquivo XML
               </label>
-              <input
+              <Input
                 type="file"
                 accept=".xml"
                 onChange={handleFileUpload}

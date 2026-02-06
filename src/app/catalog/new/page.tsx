@@ -224,7 +224,7 @@ export default function NewProductPage() {
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
-                    <input
+                    <Input
                       type="number"
                       step="0.01"
                       min="0"
@@ -240,7 +240,7 @@ export default function NewProductPage() {
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
-                    <input
+                    <Input
                       type="number"
                       step="0.01"
                       min="0"
@@ -256,7 +256,7 @@ export default function NewProductPage() {
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted">R$</span>
-                    <input
+                    <Input
                       type="number"
                       step="0.01"
                       min="0"

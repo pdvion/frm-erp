@@ -15,6 +15,8 @@ import {
   Plus,
   Eye,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const typeLabels: Record<string, string> = {
   RESIGNATION: "Pedido de Demissão",
@@ -75,7 +77,7 @@ export default function TerminationsPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-4 h-4" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por funcionário..."
                 value={search}
@@ -83,7 +85,7 @@ export default function TerminationsPage() {
                 className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
               />
             </div>
-            <select
+            <NativeSelect
               value={typeFilter}
               onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
@@ -96,8 +98,8 @@ export default function TerminationsPage() {
               <option value="CONTRACT_END">Fim de Contrato</option>
               <option value="RETIREMENT">Aposentadoria</option>
               <option value="DEATH">Falecimento</option>
-            </select>
-            <select
+            </NativeSelect>
+            <NativeSelect
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
               className="px-4 py-2 border border-theme-input rounded-lg"
@@ -109,7 +111,7 @@ export default function TerminationsPage() {
               <option value="PAID">Pago</option>
               <option value="HOMOLOGATED">Homologado</option>
               <option value="CANCELLED">Cancelado</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
 

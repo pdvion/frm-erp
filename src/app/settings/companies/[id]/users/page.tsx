@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   UserPlus,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function CompanyUsersPage() {
   const params = useParams();
@@ -192,14 +194,14 @@ export default function CompanyUsersPage() {
                     }`}>
                       {userCompany.isDefault ? "Empresa Padrão" : "Vinculado"}
                     </span>
-                    <button
+                    <Button
                       onClick={() => handleRemoveUser(userCompany.userId)}
                       disabled={removeUserMutation.isPending}
                       className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
                       aria-label={`Remover ${userCompany.user?.email}`}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -230,7 +232,7 @@ export default function CompanyUsersPage() {
             <label htmlFor="user-select" className="block text-sm font-medium text-theme-secondary">
               Usuário <span className="text-red-500">*</span>
             </label>
-            <select
+            <NativeSelect
               id="user-select"
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
@@ -242,7 +244,7 @@ export default function CompanyUsersPage() {
                   {user.name || user.email} {user.name && `(${user.email})`}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             {availableUsers.length === 0 && (
               <p className="text-sm text-theme-muted mt-1">
                 Todos os usuários já estão vinculados a esta empresa.
@@ -251,7 +253,7 @@ export default function CompanyUsersPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               id="is-default"
               checked={isDefault}

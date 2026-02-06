@@ -126,7 +126,7 @@ export default function NewUserPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {groups?.map((group) => (
-              <button
+              <Button
                 key={group.id}
                 type="button"
                 onClick={() => toggleGroup(group.id)}
@@ -160,7 +160,7 @@ export default function NewUserPage() {
                     Sistema
                   </span>
                 )}
-              </button>
+              </Button>
             ))}
           </div>
 

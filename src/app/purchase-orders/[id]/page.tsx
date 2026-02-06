@@ -27,6 +27,8 @@ import {
   Send,
   PackageCheck,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
@@ -340,7 +342,7 @@ export default function PurchaseOrderDetailPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <h3 className="font-medium text-theme mb-4">Status</h3>
             {canEdit ? (
-              <select
+              <NativeSelect
                 value={order.status}
                 onChange={(e) => updateStatusMutation.mutate({ 
                   id, 
@@ -352,7 +354,7 @@ export default function PurchaseOrderDetailPage() {
                 <option value="DRAFT">Rascunho</option>
                 <option value="PENDING">Pendente</option>
                 <option value="APPROVED">Aprovado</option>
-              </select>
+              </NativeSelect>
             ) : (
               <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${config.color}`}>
                 {config.icon}
@@ -459,7 +461,7 @@ export default function PurchaseOrderDetailPage() {
               <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Quantidade Recebida
               </label>
-              <input
+              <Input
                 type="number"
                 min="0.01"
                 step="0.01"

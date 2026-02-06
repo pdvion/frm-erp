@@ -18,6 +18,7 @@ import {
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { ValidationTable, type ValidationItem, ConfidenceBadge, EditItemModal } from "@/components/deploy-agent";
+import { Input } from "@/components/ui/Input";
 
 type WizardStep = "upload" | "analyze" | "review" | "apply";
 
@@ -222,7 +223,7 @@ export default function DeployAgentPage() {
               <p className="text-sm text-theme-muted mt-2">
                 Suporta múltiplos arquivos XML de NFe
               </p>
-              <input
+              <Input
                 type="file"
                 accept=".xml"
                 multiple

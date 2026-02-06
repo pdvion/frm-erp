@@ -111,7 +111,7 @@ export default function OEEWorkCentersPage() {
       {/* Filtro */}
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <label className="flex items-center gap-2 text-sm text-theme cursor-pointer">
-          <input
+          <Input
             type="checkbox"
             checked={includeInactive}
             onChange={(e) => setIncludeInactive(e.target.checked)}

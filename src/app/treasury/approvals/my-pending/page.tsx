@@ -17,6 +17,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/Textarea";
 
 type ActionType = "approve" | "reject" | null;
 
@@ -306,7 +307,7 @@ export default function MyPendingApprovalsPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   {actionType === "approve" ? "Comentários (opcional)" : "Motivo da Rejeição *"}
                 </label>
-                <textarea
+                <Textarea
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
                   rows={3}

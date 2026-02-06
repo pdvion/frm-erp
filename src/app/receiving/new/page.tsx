@@ -20,6 +20,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
 
 interface ParsedNFe {
   chaveAcesso: string;
@@ -175,7 +176,7 @@ export default function NewReceivingPage() {
             <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">
               <FileText className="w-4 h-4" />
               Selecionar Arquivo
-              <input
+              <Input
                 type="file"
                 accept=".xml"
                 onChange={handleFileUpload}
@@ -269,7 +270,7 @@ export default function NewReceivingPage() {
                 <div className="relative">
                   <div className="flex items-center gap-2 border border-theme-input rounded-lg px-3 py-2">
                     <Search className="w-4 h-4 text-theme-muted" />
-                    <input
+                    <Input
                       type="text"
                       placeholder="Buscar fornecedor cadastrado..."
                       value={supplierSearch}

@@ -204,7 +204,7 @@ export default function NewPurchaseOrderPage() {
                   Buscar fornecedor
                 </label>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
+                <Input
                   id="supplier-search"
                   type="text"
                   value={selectedSupplier ? selectedSupplier.companyName : supplierSearch}
@@ -267,7 +267,7 @@ export default function NewPurchaseOrderPage() {
                       Buscar material
                     </label>
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                    <input
+                    <Input
                       id="material-search"
                       type="text"
                       value={materialSearch}
@@ -350,7 +350,7 @@ export default function NewPurchaseOrderPage() {
                             </div>
                           </td>
                           <td className="py-3">
-                            <input
+                            <Input
                               type="number"
                               value={item.quantity}
                               onChange={(e) =>
@@ -367,7 +367,7 @@ export default function NewPurchaseOrderPage() {
                             />
                           </td>
                           <td className="py-3">
-                            <input
+                            <Input
                               type="number"
                               value={item.unitPrice}
                               onChange={(e) =>

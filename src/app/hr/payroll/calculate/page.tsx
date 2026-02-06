@@ -19,6 +19,8 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function CalculatePayrollPage() {
   const router = useRouter();
@@ -115,7 +117,7 @@ export default function CalculatePayrollPage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Mês
                   </label>
-                  <select
+                  <NativeSelect
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(Number(e.target.value))}
                     className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -125,13 +127,13 @@ export default function CalculatePayrollPage() {
                         {name}
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Ano
                   </label>
-                  <select
+                  <NativeSelect
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(Number(e.target.value))}
                     className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -141,7 +143,7 @@ export default function CalculatePayrollPage() {
                         {year}
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </div>
               </div>
             </div>
@@ -170,7 +172,7 @@ export default function CalculatePayrollPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="flex items-center gap-3 p-3 border border-theme rounded-lg hover:bg-theme-hover cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={options.includeOvertime}
                     onChange={(e) =>
@@ -186,7 +188,7 @@ export default function CalculatePayrollPage() {
                 </label>
 
                 <label className="flex items-center gap-3 p-3 border border-theme rounded-lg hover:bg-theme-hover cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={options.includeNightShift}
                     onChange={(e) =>
@@ -202,7 +204,7 @@ export default function CalculatePayrollPage() {
                 </label>
 
                 <label className="flex items-center gap-3 p-3 border border-theme rounded-lg hover:bg-theme-hover cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={options.includeInsalubrity}
                     onChange={(e) =>
@@ -218,7 +220,7 @@ export default function CalculatePayrollPage() {
                 </label>
 
                 <label className="flex items-center gap-3 p-3 border border-theme rounded-lg hover:bg-theme-hover cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={options.includeDangerousness}
                     onChange={(e) =>
@@ -234,7 +236,7 @@ export default function CalculatePayrollPage() {
                 </label>
 
                 <label className="flex items-center gap-3 p-3 border border-theme rounded-lg hover:bg-theme-hover cursor-pointer">
-                  <input
+                  <Input
                     type="checkbox"
                     checked={options.includeDSR}
                     onChange={(e) =>

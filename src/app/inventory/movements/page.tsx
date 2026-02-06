@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const movementTypeConfig = {
   ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800", icon: ArrowDownCircle },
@@ -54,7 +55,7 @@ export default function MovementsHistoryPage() {
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-theme-muted" />
             <label htmlFor="movement-type-filter" className="sr-only">Filtrar por tipo de movimento</label>
-            <select
+            <NativeSelect
               id="movement-type-filter"
               value={movementType ?? ""}
               onChange={(e) => {
@@ -71,7 +72,7 @@ export default function MovementsHistoryPage() {
               <option value="ADJUSTMENT">Ajuste</option>
               <option value="RETURN">Devolução</option>
               <option value="PRODUCTION">Produção</option>
-            </select>
+            </NativeSelect>
           </div>
         </div>
 

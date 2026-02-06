@@ -17,6 +17,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type EntryType = "CREDIT" | "DEBIT" | "COMPENSATION" | "EXPIRATION" | "ADJUSTMENT";
 
@@ -292,7 +293,7 @@ export default function HoursBankPage() {
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                  <input
+                  <Input
                     type="text"
                     value={employeeSearch}
                     onChange={(e) => setEmployeeSearch(e.target.value)}
@@ -330,7 +331,7 @@ export default function HoursBankPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Tipo *
                 </label>
-                <select
+                <NativeSelect
                   value={newEntry.type}
                   onChange={(e) => setNewEntry({ ...newEntry, type: e.target.value as EntryType })}
                   className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
@@ -340,7 +341,7 @@ export default function HoursBankPage() {
                       {t.label}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

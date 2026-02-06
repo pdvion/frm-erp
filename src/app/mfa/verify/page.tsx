@@ -7,6 +7,7 @@ import { useMFA } from "@/hooks/useMFA";
 import { Shield, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function MFAVerifyPage() {
   const router = useRouter();
@@ -101,7 +102,7 @@ export default function MFAVerifyPage() {
                 <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Selecione o autenticador
                 </label>
-                <select
+                <NativeSelect
                   value={selectedFactor || ""}
                   onChange={(e) => setSelectedFactor(e.target.value)}
                   className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)]"
@@ -111,7 +112,7 @@ export default function MFAVerifyPage() {
                       {f.friendlyName}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </div>
             )}
 
@@ -138,12 +139,12 @@ export default function MFAVerifyPage() {
           </form>
 
           <div className="mt-6 pt-4 border-t border-theme text-center">
-            <button
+            <Button
               onClick={handleLogout}
               className="text-sm text-theme-muted hover:text-red-600 transition-colors"
             >
               Sair e usar outra conta
-            </button>
+            </Button>
           </div>
         </div>
 

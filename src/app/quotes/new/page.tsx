@@ -19,6 +19,7 @@ import {
   Search,
   Package,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
 
 interface QuoteItem {
   materialId: string;
@@ -210,7 +211,7 @@ export default function NewQuotePage() {
                       <div className="p-3 border-b border-theme">
                         <div className="relative">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                          <input
+                          <Input
                             type="text"
                             placeholder="Buscar material..."
                             value={materialSearch}
@@ -294,7 +295,7 @@ export default function NewQuotePage() {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <input
+                            <Input
                               type="number"
                               min="0.01"
                               step="0.01"
@@ -310,7 +311,7 @@ export default function NewQuotePage() {
                             />
                           </td>
                           <td className="px-4 py-3">
-                            <input
+                            <Input
                               type="number"
                               min="0"
                               step="0.01"
@@ -395,7 +396,7 @@ export default function NewQuotePage() {
                   <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Observações
                   </label>
-                  <textarea
+                  <Textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={4}

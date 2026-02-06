@@ -20,6 +20,8 @@ import {
   Banknote,
   Save,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/Textarea";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const accountTypeConfig = {
   CHECKING: { label: "Conta Corrente", icon: Wallet, color: "text-blue-600" },
@@ -169,7 +171,7 @@ export default function BankAccountsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
-                  <select
+                  <NativeSelect
                     value={formData.accountType}
                     onChange={(e) => setFormData({ ...formData, accountType: e.target.value as typeof formData.accountType })}
                     className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -178,7 +180,7 @@ export default function BankAccountsPage() {
                     <option value="SAVINGS">Poupança</option>
                     <option value="INVESTMENT">Investimento</option>
                     <option value="CASH">Caixa</option>
-                  </select>
+                  </NativeSelect>
                 </div>
               </div>
 
@@ -248,7 +250,7 @@ export default function BankAccountsPage() {
                 />
                 <div className="flex items-end">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
+                    <Input
                       type="checkbox"
                       checked={formData.isDefault}
                       onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
@@ -261,7 +263,7 @@ export default function BankAccountsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-theme-secondary mb-1">Observações</label>
-                <textarea
+                <Textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={2}

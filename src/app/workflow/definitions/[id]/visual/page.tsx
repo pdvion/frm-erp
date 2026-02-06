@@ -18,6 +18,7 @@ import {
   Save,
   Loader2,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function VisualWorkflowEditorPage({
   params,
@@ -220,7 +221,7 @@ export default function VisualWorkflowEditorPage({
               <ArrowLeft className="w-4 h-4" />
               Voltar
             </Link>
-            <button
+            <Button
               onClick={handleSave}
               disabled={!hasChanges || isSaving}
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -231,7 +232,7 @@ export default function VisualWorkflowEditorPage({
                 <Save className="w-4 h-4" />
               )}
               {isSaving ? "Salvando..." : "Salvar"}
-            </button>
+            </Button>
           </div>
         }
       />

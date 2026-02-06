@@ -7,6 +7,8 @@ import { Bell, AlertTriangle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import { toNumber } from "@/lib/precision";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type AlertType = "WARNING" | "EXCEEDED" | "BLOCKED" | undefined;
 
@@ -49,24 +51,24 @@ export default function BudgetAlertsPage() {
 
       {/* Filtros */}
       <div className="flex flex-wrap gap-2 items-center">
-        <button
+        <Button
           onClick={() => setTypeFilter(undefined)}
           className={`px-3 py-1.5 rounded-lg text-sm ${!typeFilter ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
         >
           Todos
-        </button>
+        </Button>
         {(["WARNING", "EXCEEDED", "BLOCKED"] as const).map((type) => (
-          <button
+          <Button
             key={type}
             onClick={() => setTypeFilter(type)}
             className={`px-3 py-1.5 rounded-lg text-sm ${typeFilter === type ? "bg-blue-600 text-white" : "bg-theme-card border border-theme text-theme"}`}
           >
             {typeLabels[type]}
-          </button>
+          </Button>
         ))}
         <div className="ml-auto">
           <label className="flex items-center gap-2 text-sm text-theme">
-            <input
+            <Input
               type="checkbox"
               checked={showResolved}
               onChange={(e) => setShowResolved(e.target.checked)}
@@ -118,14 +120,14 @@ export default function BudgetAlertsPage() {
                   </div>
                 </div>
                 {!alert.isResolved && (
-                  <button
+                  <Button
                     onClick={() => resolveMutation.mutate({ id: alert.id })}
                     disabled={resolveMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Resolver
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

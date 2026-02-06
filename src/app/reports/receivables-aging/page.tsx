@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { TrendingUp, Download, Loader2, Search } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function ReceivablesAgingReportPage() {
   const [search, setSearch] = useState("");
@@ -52,14 +54,14 @@ export default function ReceivablesAgingReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!filteredDetails?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -95,7 +97,7 @@ export default function ReceivablesAgingReportPage() {
         <div className="bg-theme-card rounded-lg shadow-sm border p-4 mb-6">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar cliente..."
               value={search}

@@ -16,6 +16,7 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export default function QuoteComparePage() {
   const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export default function QuoteComparePage() {
             ) : (
               <div className="space-y-2 max-h-[600px] overflow-y-auto">
                 {materialsWithQuotes?.map((material) => (
-                  <button
+                  <Button
                     key={material.id}
                     onClick={() => setSelectedMaterialId(material.id)}
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
@@ -74,7 +75,7 @@ export default function QuoteComparePage() {
                     <div className="text-xs text-theme-muted mt-1">
                       {material._count.quoteItems} cotações
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}

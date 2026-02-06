@@ -21,6 +21,8 @@ import {
   Briefcase,
   Calendar,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800" },
@@ -72,7 +74,7 @@ export default function EmployeesPage() {
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar por nome ou CPF..."
                 value={search}
@@ -82,7 +84,7 @@ export default function EmployeesPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <select
+              <NativeSelect
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                 className="border border-theme-input rounded-lg px-3 py-2"
@@ -92,7 +94,7 @@ export default function EmployeesPage() {
                 <option value="VACATION">Férias</option>
                 <option value="LEAVE">Afastados</option>
                 <option value="TERMINATED">Desligados</option>
-              </select>
+              </NativeSelect>
             </div>
           </div>
         </div>

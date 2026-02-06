@@ -25,6 +25,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { AI_MODELS, type AIModel } from "@/lib/ai/models";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type AIProvider = "openai" | "anthropic" | "google";
 
@@ -261,7 +263,7 @@ export default function AIConfigPage() {
               <div className="flex gap-3 mb-4">
                 <div className="flex-1 relative">
                   <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                  <input
+                  <Input
                     type={showTokens[provider.id] ? "text" : "password"}
                     value={tokens[provider.id]}
                     onChange={(e) =>
@@ -343,7 +345,7 @@ export default function AIConfigPage() {
                         <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                       )}
                       <div className="relative">
-                        <select
+                        <NativeSelect
                           value={selectedModels[provider.id]}
                           onChange={(e) => handleModelChange(provider.id, e.target.value)}
                           disabled={savingModel === provider.id}
@@ -357,7 +359,7 @@ export default function AIConfigPage() {
                               {model.cheapest ? " 💰" : ""}
                             </option>
                           ))}
-                        </select>
+                        </NativeSelect>
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted pointer-events-none" />
                       </div>
                     </div>
@@ -496,7 +498,7 @@ function FallbackConfig({
       <div className="space-y-4">
         {/* Toggle de fallback */}
         <label className="flex items-center gap-3 cursor-pointer">
-          <input
+          <Input
             type="checkbox"
             checked={enabled}
             onChange={(e) => setEnabled(e.target.checked)}
@@ -511,7 +513,7 @@ function FallbackConfig({
             <label className="block text-sm font-medium text-theme-secondary mb-1">
               Provider de fallback preferido
             </label>
-            <select
+            <NativeSelect
               value={provider}
               onChange={(e) => setProvider(e.target.value as AIProvider | "")}
               className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme text-sm focus:ring-2 focus:ring-blue-500 min-w-[200px]"
@@ -522,7 +524,7 @@ function FallbackConfig({
                   {PROVIDERS.find((pr) => pr.id === p)?.name || p}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             <p className="mt-1 text-xs text-theme-muted">
               Ordem padrão: Anthropic → OpenAI → Google
             </p>

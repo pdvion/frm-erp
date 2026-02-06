@@ -300,7 +300,7 @@ export default function NewCustomerPage() {
 
             <div className="mt-4 flex flex-wrap gap-6">
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="checkbox"
                   id="applySt"
                   checked={applySt}
@@ -313,7 +313,7 @@ export default function NewCustomerPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="checkbox"
                   id="isShared"
                   checked={isShared}

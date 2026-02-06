@@ -15,6 +15,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface SessionInfo {
   id: string;
@@ -201,7 +202,7 @@ export default function SessionsPage() {
                         </div>
 
                         {!session.isCurrent && (
-                          <button
+                          <Button
                             onClick={() => revokeSession(session.id)}
                             disabled={revoking === session.id}
                             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
@@ -212,7 +213,7 @@ export default function SessionsPage() {
                               <LogOut className="w-4 h-4" />
                             )}
                             Encerrar
-                          </button>
+                          </Button>
                         )}
                       </div>
                     );
@@ -221,7 +222,7 @@ export default function SessionsPage() {
 
                 {sessions.length > 0 && (
                   <div className="p-6 bg-theme-tertiary border-t border-theme">
-                    <button
+                    <Button
                       onClick={revokeAllSessions}
                       disabled={revoking === "all"}
                       className="w-full flex items-center justify-center gap-2 py-3 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 font-medium"
@@ -232,7 +233,7 @@ export default function SessionsPage() {
                         <LogOut className="w-5 h-5" />
                       )}
                       Encerrar todas as sessões (incluindo esta)
-                    </button>
+                    </Button>
                     <p className="text-sm text-theme-muted text-center mt-2">
                       Você será desconectado de todos os dispositivos
                     </p>

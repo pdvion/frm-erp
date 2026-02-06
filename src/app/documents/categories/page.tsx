@@ -299,7 +299,7 @@ function CategoryModal({
                 Cor
               </label>
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="color"
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}

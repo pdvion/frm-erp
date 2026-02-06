@@ -5,6 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Package, Download, Loader2, Search } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const classColors: Record<string, { bg: string; text: string; label: string }> = {
   A: { bg: "bg-green-100", text: "text-green-800", label: "Classe A (80%)" },
@@ -58,14 +60,14 @@ export default function InventoryAbcReportPage() {
         backHref="/reports"
         module="reports"
         actions={
-          <button
+          <Button
             onClick={handleExportCSV}
             disabled={!filteredItems?.length}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </button>
+          </Button>
         }
       />
 
@@ -95,7 +97,7 @@ export default function InventoryAbcReportPage() {
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-              <input
+              <Input
                 type="text"
                 placeholder="Buscar material..."
                 value={search}
@@ -104,20 +106,20 @@ export default function InventoryAbcReportPage() {
               />
             </div>
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={() => setClassFilter("")}
                 className={`px-3 py-2 rounded-lg text-sm font-medium ${!classFilter ? "bg-blue-600 text-white" : "bg-theme-tertiary text-theme-secondary"}`}
               >
                 Todos
-              </button>
+              </Button>
               {["A", "B", "C"].map((cls) => (
-                <button
+                <Button
                   key={cls}
                   onClick={() => setClassFilter(cls)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium ${classFilter === cls ? classColors[cls].bg + " " + classColors[cls].text : "bg-theme-tertiary text-theme-secondary"}`}
                 >
                   Classe {cls}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

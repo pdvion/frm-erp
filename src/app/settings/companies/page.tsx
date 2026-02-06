@@ -18,6 +18,7 @@ import {
   Search,
   Rocket,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function CompaniesPage() {
   const [showForm, setShowForm] = useState(false);
@@ -168,7 +169,7 @@ export default function CompaniesPage() {
                     <label className="block text-sm font-medium text-theme-secondary mb-1">
                       UF
                     </label>
-                    <select
+                    <NativeSelect
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                       className="w-full border border-theme-input rounded-lg px-3 py-2 bg-theme-card text-theme"
@@ -201,7 +202,7 @@ export default function CompaniesPage() {
                       <option value="SP">SP - São Paulo</option>
                       <option value="SE">SE - Sergipe</option>
                       <option value="TO">TO - Tocantins</option>
-                    </select>
+                    </NativeSelect>
                   </div>
                   <Input
                     label="CEP"
@@ -245,7 +246,7 @@ export default function CompaniesPage() {
         <div className="bg-theme-card rounded-lg border border-theme p-4 mb-6">
           <div className="flex items-center gap-2">
             <Search className="w-4 h-4 text-theme-muted" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar por nome, fantasia ou CNPJ..."
               value={search}
@@ -327,13 +328,13 @@ export default function CompaniesPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button
+                          <Button
                             onClick={() => handleEdit(company)}
                             className="p-1 text-theme-muted hover:text-blue-600"
                             title="Editar"
                           >
                             <Edit className="w-4 h-4" />
-                          </button>
+                          </Button>
                           <Link
                             href={`/settings/companies/${company.id}/users`}
                             className="p-1 text-theme-muted hover:text-blue-600"

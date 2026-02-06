@@ -141,13 +141,13 @@ export default function DocumentDetailPage({
                 <div className="flex flex-col items-center justify-center py-12 text-theme-muted">
                   <FileIcon className="w-16 h-16 mb-4 opacity-50" />
                   <p className="mb-4">Visualização não disponível para este tipo de arquivo</p>
-                  <button
+                  <Button
                     onClick={handleDownload}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Download className="w-5 h-5" />
                     Baixar arquivo
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

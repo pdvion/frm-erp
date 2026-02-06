@@ -8,6 +8,7 @@ import { Lock, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from "lucide-r
 import { Button } from "@/components/ui/Button";
 import { PasswordStrength } from "@/components/PasswordStrength";
 import { validatePassword } from "@/lib/password";
+import { Input } from "@/components/ui/Input";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -121,7 +122,7 @@ export default function ResetPasswordPage() {
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                    <input
+                    <Input
                       type={showPassword ? "text" : "password"}
                       id="password"
                       value={password}
@@ -131,13 +132,13 @@ export default function ResetPasswordPage() {
                       placeholder="Mínimo 8 caracteres"
                       className="w-full pl-10 pr-12 py-2.5 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
-                    <button
+                    <Button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-muted hover:text-theme-secondary"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
+                    </Button>
                   </div>
                   <PasswordStrength password={password} />
                 </div>
@@ -148,7 +149,7 @@ export default function ResetPasswordPage() {
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted" />
-                    <input
+                    <Input
                       type={showPassword ? "text" : "password"}
                       id="confirmPassword"
                       value={confirmPassword}

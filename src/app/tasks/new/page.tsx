@@ -198,7 +198,7 @@ export default function NewTaskPage() {
               ).map(([key, config]) => {
                 const Icon = config.icon;
                 return (
-                  <button
+                  <Button
                     key={key}
                     type="button"
                     onClick={() => setTargetType(key)}
@@ -219,7 +219,7 @@ export default function NewTaskPage() {
                       </span>
                     </div>
                     <p className="text-theme-muted text-sm">{config.description}</p>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

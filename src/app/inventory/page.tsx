@@ -141,7 +141,7 @@ export default function InventoryPage() {
 
           {/* Below Minimum Filter */}
           <label className="flex items-center gap-2 px-3 py-2 border border-theme-input rounded-lg cursor-pointer hover:bg-theme-hover">
-            <input
+            <Input
               type="checkbox"
               checked={belowMinimum}
               onChange={(e) => {

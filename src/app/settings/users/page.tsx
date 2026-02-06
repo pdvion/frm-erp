@@ -16,6 +16,8 @@ import {
   Mail,
 } from "lucide-react";
 import Link from "next/link";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 type StatusFilter = "all" | "active" | "inactive";
 
@@ -133,7 +135,7 @@ export default function UsersPage() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-            <input
+            <Input
               type="text"
               value={search}
               onChange={(e) => {
@@ -144,7 +146,7 @@ export default function UsersPage() {
               className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <select
+          <NativeSelect
             value={status}
             onChange={(e) => {
               setStatus(e.target.value as StatusFilter);
@@ -155,7 +157,7 @@ export default function UsersPage() {
             <option value="all">Todos os status</option>
             <option value="active">Ativos</option>
             <option value="inactive">Inativos</option>
-          </select>
+          </NativeSelect>
         </div>
       </div>
 

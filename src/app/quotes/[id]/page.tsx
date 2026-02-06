@@ -28,6 +28,7 @@ import {
   Trash2,
   Plus,
 } from "lucide-react";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
@@ -330,7 +331,7 @@ export default function QuoteDetailPage() {
           <div className="bg-theme-card rounded-lg border border-theme p-6">
             <h3 className="font-medium text-theme mb-4">Status</h3>
             {canEdit ? (
-              <select
+              <NativeSelect
                 value={quote.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
                 disabled={updateMutation.isPending}
@@ -340,7 +341,7 @@ export default function QuoteDetailPage() {
                 <option value="PENDING">Pendente</option>
                 <option value="SENT">Enviada</option>
                 <option value="RECEIVED">Recebida</option>
-              </select>
+              </NativeSelect>
             ) : (
               <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${config.color}`}>
                 {config.icon}

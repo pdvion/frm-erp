@@ -18,6 +18,8 @@ import {
   Calendar,
   ArrowRight,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 
 export default function ImportOFXPage() {
   const router = useRouter();
@@ -153,7 +155,7 @@ export default function ImportOFXPage() {
               {loadingAccounts ? (
                 <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
               ) : (
-                <select
+                <NativeSelect
                   value={selectedAccountId}
                   onChange={(e) => setSelectedAccountId(e.target.value)}
                   className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -164,7 +166,7 @@ export default function ImportOFXPage() {
                       {account.code} - {account.name} ({formatCurrency(Number(account.currentBalance))})
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               )}
             </div>
 
@@ -213,7 +215,7 @@ export default function ImportOFXPage() {
                       Arraste um arquivo OFX aqui ou{" "}
                       <label className="text-blue-600 hover:text-blue-800 cursor-pointer underline">
                         clique para selecionar
-                        <input
+                        <Input
                           type="file"
                           accept=".ofx"
                           onChange={handleFileInput}

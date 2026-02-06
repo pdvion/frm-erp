@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/Textarea";
 
 type StatusFilter = "PENDING" | "APPROVED" | "REJECTED" | "ALL";
 
@@ -306,7 +307,7 @@ export default function TimeclockAdjustmentsPage() {
                 <label className="block text-sm font-medium text-theme mb-1">
                   Observações (opcional)
                 </label>
-                <textarea
+                <Textarea
                   value={reviewNotes}
                   onChange={(e) => setReviewNotes(e.target.value)}
                   rows={3}

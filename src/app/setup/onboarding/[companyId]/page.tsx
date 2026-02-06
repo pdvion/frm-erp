@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { NativeSelect } from "@/components/ui/NativeSelect";
 import { trpc } from "@/lib/trpc";
 import {
   Building2, FileText, Upload, Users, CheckCircle2, ArrowLeft, ArrowRight,
@@ -168,12 +169,12 @@ function Step2Content({ formData, setFormData }: { formData: Record<string, unkn
       <div className="grid grid-cols-1 gap-4 max-w-md">
         <div>
           <label className="block text-sm font-medium mb-1">Regime Tributário</label>
-          <select className="w-full p-2 border rounded-lg" value={(formData.taxRegime as string) || ""} onChange={(e) => setFormData({ ...formData, taxRegime: e.target.value })}>
+          <NativeSelect className="w-full p-2 border rounded-lg" value={(formData.taxRegime as string) || ""} onChange={(e) => setFormData({ ...formData, taxRegime: e.target.value })}>
             <option value="">Selecione...</option>
             <option value="simples_nacional">Simples Nacional</option>
             <option value="lucro_presumido">Lucro Presumido</option>
             <option value="lucro_real">Lucro Real</option>
-          </select>
+          </NativeSelect>
         </div>
       </div>
     </div>

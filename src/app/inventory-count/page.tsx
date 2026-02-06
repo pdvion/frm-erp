@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { ClipboardList, Search, Check, Save } from "lucide-react";
 import Link from "next/link";
+import { Input } from "@/components/ui/Input";
 
 interface CountItem {
   inventoryId: string;
@@ -110,7 +111,7 @@ export default function InventoryCountPage() {
             <div className="space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                <input
+                <Input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -190,7 +191,7 @@ export default function InventoryCountPage() {
           {/* Filtro */}
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <label className="flex items-center gap-2 text-sm text-theme cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 checked={showOnlyDifferences}
                 onChange={(e) => setShowOnlyDifferences(e.target.checked)}
@@ -220,7 +221,7 @@ export default function InventoryCountPage() {
                     <td className="px-4 py-3 text-sm text-theme">{item.materialDescription}</td>
                     <td className="px-4 py-3 text-sm text-right text-theme">{item.systemQty}</td>
                     <td className="px-4 py-3">
-                      <input
+                      <Input
                         type="number"
                         min={0}
                         value={item.countedQty ?? ""}
