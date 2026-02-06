@@ -307,6 +307,8 @@ export const reportsRouter = createTRPCRouter({
       { id: "receivables-aging", name: "Aging Contas a Receber", description: "Análise de vencimentos por faixa", category: "Financeiro", icon: "TrendingUp" },
       { id: "cash-flow", name: "Fluxo de Caixa", description: "Entradas e saídas por período", category: "Financeiro", icon: "Wallet" },
       { id: "purchases-by-supplier", name: "Compras por Fornecedor", description: "Volume e valor por fornecedor", category: "Compras", icon: "ArrowLeftRight" },
+      { id: "dre", name: "DRE Simplificado", description: "Demonstrativo de resultado por período", category: "Financeiro", icon: "FileText" },
+      { id: "financial-by-category", name: "Análise por Categoria", description: "Receitas e despesas agrupadas por categoria", category: "Financeiro", icon: "PieChart" },
       { id: "headcount", name: "Headcount", description: "Funcionários por departamento", category: "RH", icon: "Users" },
     ];
   }),
@@ -406,6 +408,174 @@ export const reportsRouter = createTRPCRouter({
       const totals = { totalOrders: orders.length, totalValue: items.reduce((acc, i) => acc + i.totalValue, 0) };
 
       return { items, totals };
+    }),
+
+  /**
+   * DRE Simplificado (Demonstrativo de Resultado do Exercício)
+   * Calcula receitas, deduções, custos e despesas no período
+   * @param startDate - Data inicial (obrigatório)
+   * @param endDate - Data final (obrigatório)
+   * @returns Estrutura DRE com receita bruta, deduções, custos, despesas e resultado
+   */
+  dre: tenantProcedure
+    .input(z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const start = new Date(input.startDate);
+      const end = new Date(input.endDate);
+
+      // Receitas: contas a receber pagas no período
+      const receivables = await ctx.prisma.accountsReceivable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: { gte: start, lte: end },
+        },
+        select: { netValue: true, paidValue: true, costCenter: { select: { name: true } }, description: true },
+      });
+
+      // Despesas: contas a pagar pagas no período
+      const payables = await ctx.prisma.accountsPayable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: { gte: start, lte: end },
+        },
+        select: { netValue: true, paidValue: true, costCenter: { select: { name: true } }, description: true },
+      });
+
+      // Classificar despesas por tipo (based on cost center name or description)
+      const costCategories = ["MATERIA_PRIMA", "INSUMOS", "EMBALAGEM", "FRETE_COMPRA", "CMV", "PRODUCAO", "PRODUÇÃO"];
+      const taxCategories = ["IMPOSTO", "TAXA", "ICMS", "PIS", "COFINS", "ISS", "IPI", "TRIBUT"];
+
+      let grossRevenue = 0;
+      let taxDeductions = 0;
+      let costOfGoods = 0;
+      let operatingExpenses = 0;
+      let financialExpenses = 0;
+
+      // Receita bruta
+      for (const r of receivables) {
+        grossRevenue += Number(r.paidValue || r.netValue);
+      }
+
+      // Classificar despesas
+      for (const p of payables) {
+        const value = Number(p.paidValue || p.netValue);
+        const cat = (p.costCenter?.name || p.description || "").toUpperCase();
+
+        if (taxCategories.some(t => cat.includes(t))) {
+          taxDeductions += value;
+        } else if (costCategories.some(c => cat.includes(c))) {
+          costOfGoods += value;
+        } else if (cat.includes("FINANC") || cat.includes("JUROS") || cat.includes("MULTA")) {
+          financialExpenses += value;
+        } else {
+          operatingExpenses += value;
+        }
+      }
+
+      const netRevenue = grossRevenue - taxDeductions;
+      const grossProfit = netRevenue - costOfGoods;
+      const operatingResult = grossProfit - operatingExpenses;
+      const netResult = operatingResult - financialExpenses;
+
+      const grossMargin = grossRevenue > 0 ? (grossProfit / grossRevenue) * 100 : 0;
+      const operatingMargin = grossRevenue > 0 ? (operatingResult / grossRevenue) * 100 : 0;
+      const netMargin = grossRevenue > 0 ? (netResult / grossRevenue) * 100 : 0;
+
+      return {
+        period: { startDate: input.startDate, endDate: input.endDate },
+        lines: [
+          { label: "Receita Bruta", value: grossRevenue, level: 0, isTotal: false },
+          { label: "(-) Deduções e Impostos", value: -taxDeductions, level: 1, isTotal: false },
+          { label: "= Receita Líquida", value: netRevenue, level: 0, isTotal: true },
+          { label: "(-) Custo dos Produtos/Serviços", value: -costOfGoods, level: 1, isTotal: false },
+          { label: "= Lucro Bruto", value: grossProfit, level: 0, isTotal: true },
+          { label: "(-) Despesas Operacionais", value: -operatingExpenses, level: 1, isTotal: false },
+          { label: "= Resultado Operacional", value: operatingResult, level: 0, isTotal: true },
+          { label: "(-) Despesas Financeiras", value: -financialExpenses, level: 1, isTotal: false },
+          { label: "= Resultado Líquido", value: netResult, level: 0, isTotal: true },
+        ],
+        margins: { grossMargin, operatingMargin, netMargin },
+        totals: {
+          grossRevenue,
+          taxDeductions,
+          costOfGoods,
+          operatingExpenses,
+          financialExpenses,
+          netResult,
+        },
+      };
+    }),
+
+  /**
+   * Relatório de Análise Financeira por Categoria
+   * Agrupa receitas e despesas por categoria no período
+   * @param startDate - Data inicial (obrigatório)
+   * @param endDate - Data final (obrigatório)
+   * @returns Categorias com totais de receita e despesa
+   */
+  financialByCategory: tenantProcedure
+    .input(z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const start = new Date(input.startDate);
+      const end = new Date(input.endDate);
+
+      const receivables = await ctx.prisma.accountsReceivable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: { gte: start, lte: end },
+        },
+        select: { paidValue: true, netValue: true, costCenter: { select: { name: true } } },
+      });
+
+      const payables = await ctx.prisma.accountsPayable.findMany({
+        where: {
+          companyId: ctx.companyId,
+          status: "PAID",
+          paidAt: { gte: start, lte: end },
+        },
+        select: { paidValue: true, netValue: true, costCenter: { select: { name: true } } },
+      });
+
+      const categories = new Map<string, { category: string; revenue: number; expense: number }>();
+
+      for (const r of receivables) {
+        const cat = r.costCenter?.name || "Sem Categoria";
+        const entry = categories.get(cat) || { category: cat, revenue: 0, expense: 0 };
+        entry.revenue += Number(r.paidValue || r.netValue);
+        categories.set(cat, entry);
+      }
+
+      for (const p of payables) {
+        const cat = p.costCenter?.name || "Sem Categoria";
+        const entry = categories.get(cat) || { category: cat, revenue: 0, expense: 0 };
+        entry.expense += Number(p.paidValue || p.netValue);
+        categories.set(cat, entry);
+      }
+
+      const items = Array.from(categories.values())
+        .map(c => ({ ...c, net: c.revenue - c.expense }))
+        .sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+
+      const totalRevenue = items.reduce((sum, i) => sum + i.revenue, 0);
+      const totalExpense = items.reduce((sum, i) => sum + i.expense, 0);
+
+      return {
+        items,
+        totals: {
+          totalRevenue,
+          totalExpense,
+          netResult: totalRevenue - totalExpense,
+        },
+      };
     }),
 
   /**
