@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { tenantFilter } from "../trpc";
@@ -323,7 +323,7 @@ export const nfeQueueRouter = createTRPCRouter({
    * Endpoint para worker processar a fila (chamado por cron/edge function)
    * Este endpoint deve ser protegido por API key em produção
    */
-  processQueue: publicProcedure
+  processQueue: tenantProcedure
     .input(z.object({
       apiKey: z.string(),
       batchSize: z.number().int().min(1).max(10).default(5),

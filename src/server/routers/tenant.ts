@@ -1,10 +1,11 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, authProcedure, publicProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import type { SystemModule } from "../context";
 
 export const tenantRouter = createTRPCRouter({
   // Garantir que o usuário existe no banco local (auto-provisioning)
+  // ensureUser precisa ser público pois é chamado antes do usuário existir no banco local
   ensureUser: publicProcedure.mutation(async ({ ctx }) => {
     if (!ctx.supabaseUser?.email) {
       return { created: false, userId: null };
@@ -74,7 +75,7 @@ export const tenantRouter = createTRPCRouter({
   }),
 
   // Retorna informações do tenant atual
-  current: publicProcedure.query(async ({ ctx }) => {
+  current: authProcedure.query(async ({ ctx }) => {
     return {
       userId: ctx.tenant.userId,
       companyId: ctx.tenant.companyId,
@@ -84,7 +85,7 @@ export const tenantRouter = createTRPCRouter({
   }),
 
   // Trocar empresa ativa
-  switchCompany: publicProcedure
+  switchCompany: authProcedure
     .input(z.object({ companyId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // Verificar se o usuário tem acesso à empresa
