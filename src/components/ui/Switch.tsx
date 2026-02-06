@@ -38,7 +38,7 @@ export function Switch({
   return (
     <label
       className={`
-        inline-flex items-center gap-3 cursor-pointer
+        flex items-center gap-3 cursor-pointer
         ${disabled ? "cursor-not-allowed opacity-50" : ""}
         ${className}
       `}

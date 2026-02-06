@@ -33,28 +33,26 @@ export function Tooltip({
 
     const triggerRect = triggerRef.current.getBoundingClientRect();
     const tooltipRect = tooltipRef.current.getBoundingClientRect();
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
 
     let top = 0;
     let left = 0;
 
     switch (position) {
       case "top":
-        top = triggerRect.top + scrollY - tooltipRect.height - 8;
-        left = triggerRect.left + scrollX + (triggerRect.width - tooltipRect.width) / 2;
+        top = triggerRect.top - tooltipRect.height - 8;
+        left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
         break;
       case "bottom":
-        top = triggerRect.bottom + scrollY + 8;
-        left = triggerRect.left + scrollX + (triggerRect.width - tooltipRect.width) / 2;
+        top = triggerRect.bottom + 8;
+        left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
         break;
       case "left":
-        top = triggerRect.top + scrollY + (triggerRect.height - tooltipRect.height) / 2;
-        left = triggerRect.left + scrollX - tooltipRect.width - 8;
+        top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
+        left = triggerRect.left - tooltipRect.width - 8;
         break;
       case "right":
-        top = triggerRect.top + scrollY + (triggerRect.height - tooltipRect.height) / 2;
-        left = triggerRect.right + scrollX + 8;
+        top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
+        left = triggerRect.right + 8;
         break;
     }
 

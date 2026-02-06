@@ -49,14 +49,12 @@ export function Dropdown({
     if (!triggerRef.current) return;
 
     const triggerRect = triggerRef.current.getBoundingClientRect();
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
 
     const left = align === "left" 
-      ? triggerRect.left + scrollX 
-      : triggerRect.right + scrollX;
+      ? triggerRect.left 
+      : triggerRect.right;
 
-    const top = triggerRect.bottom + scrollY + 4;
+    const top = triggerRect.bottom + 4;
 
     setCoords({ top, left });
   }, [align]);

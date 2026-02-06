@@ -88,7 +88,7 @@ const tableColumns: TableColumn<TableItem>[] = [
   { key: "code", header: "Código", sortable: true, width: "100px" },
   { key: "name", header: "Nome", sortable: true },
   { key: "price", header: "Preço", align: "right", sortable: true, render: (row) => `R$ ${row.price.toFixed(2)}` },
-  { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "default"}>{row.status}</Badge> },
+  { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "error"}>{row.status}</Badge> },
 ];
 
 const selectOptions = [

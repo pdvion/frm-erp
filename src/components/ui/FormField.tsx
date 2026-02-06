@@ -22,7 +22,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
 
     return (
       <div className="space-y-1">
-        <label htmlFor={id} className="block text-sm font-medium text-theme-secondary">
+        <label htmlFor={id} className="block text-sm font-semibold text-theme-secondary">
           {label}
           {required && (
             <span className="text-red-500 ml-1" aria-hidden="true">

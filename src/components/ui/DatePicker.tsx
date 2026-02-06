@@ -61,8 +61,8 @@ export function DatePicker({
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     setCoords({
-      top: rect.bottom + window.scrollY + 4,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 4,
+      left: rect.left,
     });
   }, []);
 
@@ -300,8 +300,8 @@ export function DateRangePicker({
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     setCoords({
-      top: rect.bottom + window.scrollY + 4,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 4,
+      left: rect.left,
     });
   }, []);
 

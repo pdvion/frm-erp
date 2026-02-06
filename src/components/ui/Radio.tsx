@@ -34,7 +34,7 @@ export function Radio({
   return (
     <div
       className={`
-        flex ${orientation === "horizontal" ? "flex-row gap-4" : "flex-col gap-2"}
+        flex ${orientation === "horizontal" ? "flex-row gap-4" : "flex-col gap-3"}
         ${className}
       `}
       role="radiogroup"
