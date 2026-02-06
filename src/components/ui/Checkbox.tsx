@@ -43,7 +43,7 @@ export function Checkbox({
   return (
     <label
       className={`
-        inline-flex items-center gap-2 cursor-pointer
+        flex items-center gap-2 cursor-pointer
         ${disabled ? "cursor-not-allowed opacity-50" : ""}
         ${className}
       `}

@@ -189,7 +189,7 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   scope="col"
-                  className={`px-4 py-3 text-xs font-medium text-theme-muted uppercase tracking-wider ${
+                  className={`px-4 py-3 text-xs font-semibold text-theme-secondary uppercase tracking-wider ${
                     alignClasses[col.align || "left"]
                   } ${col.className || ""} ${isSortable ? "cursor-pointer select-none hover:text-theme" : ""}`}
                   style={col.width ? { width: col.width } : undefined}

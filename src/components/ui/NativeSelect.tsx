@@ -15,6 +15,7 @@ export const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProp
           ref={ref}
           id={id}
           disabled={disabled}
+          style={{ WebkitAppearance: "none", MozAppearance: "none" }}
           className={`
             w-full appearance-none rounded-lg border px-3 py-2 pr-10
             text-sm transition-colors

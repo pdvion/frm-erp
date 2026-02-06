@@ -61,8 +61,8 @@ export function DatePicker({
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     setCoords({
-      top: rect.bottom + window.scrollY + 4,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 4,
+      left: rect.left,
     });
   }, []);
 
@@ -110,6 +110,13 @@ export function DatePicker({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleScroll = () => handleClose();
+    window.addEventListener("scroll", handleScroll, true);
+    return () => window.removeEventListener("scroll", handleScroll, true);
   }, [isOpen]);
 
   const getDaysInMonth = (year: number, month: number) => {
@@ -300,8 +307,8 @@ export function DateRangePicker({
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     setCoords({
-      top: rect.bottom + window.scrollY + 4,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 4,
+      left: rect.left,
     });
   }, []);
 
@@ -355,6 +362,13 @@ export function DateRangePicker({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleScroll = () => handleClose();
+    window.addEventListener("scroll", handleScroll, true);
+    return () => window.removeEventListener("scroll", handleScroll, true);
   }, [isOpen]);
 
   const getDaysInMonth = (year: number, month: number) => {

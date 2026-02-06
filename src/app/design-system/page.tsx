@@ -88,7 +88,7 @@ const tableColumns: TableColumn<TableItem>[] = [
   { key: "code", header: "Código", sortable: true, width: "100px" },
   { key: "name", header: "Nome", sortable: true },
   { key: "price", header: "Preço", align: "right", sortable: true, render: (row) => `R$ ${row.price.toFixed(2)}` },
-  { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "default"}>{row.status}</Badge> },
+  { key: "status", header: "Status", render: (row) => <Badge variant={row.status === "Ativo" ? "success" : "error"}>{row.status}</Badge> },
 ];
 
 const selectOptions = [
@@ -113,6 +113,64 @@ const breadcrumbItems = [
   { label: "Home", href: "/" },
   { label: "Produtos", href: "/products" },
   { label: "Detalhes" },
+];
+
+const allComponents: { name: string; status: "demo" | "used" | "available" }[] = [
+  { name: "AccessibleTable", status: "available" },
+  { name: "AdvancedFilters", status: "available" },
+  { name: "Alert", status: "demo" },
+  { name: "Avatar", status: "demo" },
+  { name: "AvatarGroup", status: "available" },
+  { name: "AvatarWithStatus", status: "available" },
+  { name: "Badge", status: "demo" },
+  { name: "Breadcrumbs", status: "demo" },
+  { name: "Button", status: "demo" },
+  { name: "Card", status: "demo" },
+  { name: "ChartCard", status: "used" },
+  { name: "ChartLine", status: "available" },
+  { name: "ChartBar", status: "available" },
+  { name: "ChartPie", status: "used" },
+  { name: "ChartDonut", status: "available" },
+  { name: "ChartArea", status: "available" },
+  { name: "Checkbox", status: "demo" },
+  { name: "CompanyBadge", status: "used" },
+  { name: "DataTable", status: "demo" },
+  { name: "DatePicker", status: "demo" },
+  { name: "DateRangePicker", status: "available" },
+  { name: "Drawer", status: "demo" },
+  { name: "Dropdown", status: "demo" },
+  { name: "EmptyState", status: "demo" },
+  { name: "ExportButtons", status: "used" },
+  { name: "FileUpload", status: "available" },
+  { name: "FormField", status: "demo" },
+  { name: "FormGrid", status: "available" },
+  { name: "ImageUpload", status: "available" },
+  { name: "Input", status: "demo" },
+  { name: "KanbanBoard", status: "used" },
+  { name: "KpiCard", status: "used" },
+  { name: "LinkButton", status: "used" },
+  { name: "MaskedInput", status: "used" },
+  { name: "Modal", status: "demo" },
+  { name: "NativeSelect", status: "demo" },
+  { name: "PageButton", status: "available" },
+  { name: "PageCard", status: "used" },
+  { name: "PageHeader", status: "used" },
+  { name: "PageInfoList", status: "available" },
+  { name: "PageTable", status: "available" },
+  { name: "PageTimeline", status: "available" },
+  { name: "Progress", status: "demo" },
+  { name: "Radio", status: "demo" },
+  { name: "Select", status: "demo" },
+  { name: "SelectWithAdd", status: "used" },
+  { name: "Skeleton", status: "demo" },
+  { name: "SkipLink", status: "available" },
+  { name: "Switch", status: "demo" },
+  { name: "Tabs", status: "demo" },
+  { name: "Textarea", status: "demo" },
+  { name: "Toaster", status: "used" },
+  { name: "Tooltip", status: "demo" },
+  { name: "VisuallyHidden", status: "available" },
+  { name: "Wizard", status: "used" },
 ];
 
 export default function DesignSystemPage() {
@@ -1235,72 +1293,31 @@ const columns: TableColumn<Item>[] = [
 
         {/* Componentes Disponíveis */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-theme">Todos os Componentes</h2>
+          <h2 className="text-2xl font-bold text-theme">Todos os Componentes ({allComponents.length})</h2>
           <p className="text-theme-muted">Lista completa de componentes disponíveis em <code className="text-sm bg-theme-tertiary px-1 rounded">@/components/ui</code></p>
 
+          <div className="flex flex-wrap gap-3 text-xs text-theme-muted mb-2">
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500" /> Demo interativa nesta página</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500" /> Em uso no sistema</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gray-400" /> Disponível (sem uso ativo)</span>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {[
-              "AccessibleTable",
-              "AdvancedFilters",
-              "Alert",
-              "Avatar",
-              "AvatarGroup",
-              "AvatarWithStatus",
-              "Badge",
-              "Breadcrumbs",
-              "Button",
-              "Card",
-              "ChartLine",
-              "ChartBar",
-              "ChartPie",
-              "ChartDonut",
-              "ChartArea",
-              "ChartCard",
-              "Checkbox",
-              "CompanyBadge",
-              "DataTable",
-              "DatePicker",
-              "DateRangePicker",
-              "Drawer",
-              "Dropdown",
-              "EmptyState",
-              "ExportButtons",
-              "FileUpload",
-              "FormField",
-              "FormGrid",
-              "ImageUpload",
-              "Input",
-              "KanbanBoard",
-              "KpiCard",
-              "LinkButton",
-              "MaskedInput",
-              "Modal",
-              "NativeSelect",
-              "PageButton",
-              "PageCard",
-              "PageHeader",
-              "PageInfoList",
-              "PageTable",
-              "PageTimeline",
-              "Progress",
-              "Radio",
-              "Select",
-              "SelectWithAdd",
-              "Skeleton",
-              "SkipLink",
-              "Switch",
-              "Tabs",
-              "Textarea",
-              "Toaster",
-              "Tooltip",
-              "VisuallyHidden",
-              "Wizard",
-            ].map((component) => (
+            {allComponents.map(({ name, status }) => (
               <div
-                key={component}
-                className="px-3 py-2 bg-theme-tertiary rounded-lg text-sm font-mono text-theme-secondary"
+                key={name}
+                className={`px-3 py-2 rounded-lg text-sm font-mono flex items-center gap-2 ${
+                  status === "demo"
+                    ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
+                    : status === "used"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
+                    : "bg-theme-tertiary text-theme-muted border border-transparent"
+                }`}
               >
-                {component}
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                  status === "demo" ? "bg-green-500" : status === "used" ? "bg-blue-500" : "bg-gray-400"
+                }`} />
+                {name}
               </div>
             ))}
           </div>
