@@ -19,11 +19,11 @@ Se a feature precisa de novas tabelas ou campos:
 **Padrões obrigatórios:**
 ```prisma
 model NovaEntidade {
-  id        String   @id @default(uuid()) @db.Uuid
-  companyId String?  @db.Uuid  // Multi-tenant
-  isShared  Boolean  @default(false)  // Compartilhamento
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId String?  @map("company_id") @db.Uuid  // Multi-tenant
+  isShared  Boolean  @default(false) @map("is_shared")  // Compartilhamento
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
   
   @@map("nome_tabela_snake_case")
 }

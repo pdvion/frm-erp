@@ -41,6 +41,8 @@ Ver workflow `/router-integration` para checklist completo de validação.
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { Plus, Search } from "lucide-react";
 import Link from "next/link";
 
@@ -67,12 +69,11 @@ export default function ListPage() {
       <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-          <input
-            type="text"
+          <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar..."
-            className="w-full max-w-md pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
+            className="max-w-md pl-10"
           />
         </div>
       </div>
@@ -113,8 +114,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Save, ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 export default function NewPage() {
   const router = useRouter();
@@ -145,32 +147,23 @@ export default function NewPage() {
         <div className="bg-theme-card border border-theme rounded-lg p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-theme mb-1">Campo</label>
-            <input
-              type="text"
+            <Input
               value={form.campo}
               onChange={(e) => setForm({ ...form, campo: e.target.value })}
-              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
               required
             />
           </div>
         </div>
 
         <div className="flex gap-4">
-          <Link
-            href="/modulo"
-            className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg hover:bg-theme-secondary"
-          >
+          <Button variant="outline" onClick={() => router.push("/modulo")}>
             <ArrowLeft className="w-4 h-4" />
             Cancelar
-          </Link>
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
+          </Button>
+          <Button type="submit" isLoading={mutation.isPending}>
             <Save className="w-4 h-4" />
-            {mutation.isPending ? "Salvando..." : "Salvar"}
-          </button>
+            Salvar
+          </Button>
         </div>
       </form>
     </div>

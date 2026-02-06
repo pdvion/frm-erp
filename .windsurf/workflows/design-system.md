@@ -30,6 +30,9 @@ ls src/components/ui/
 |------------|-----|
 | `Button` | Botão com variantes e loading |
 | `Input` | Campo de texto |
+| `Textarea` | Campo de texto multilinha |
+| `Select` | Select com prop `options` (sem children) |
+| `NativeSelect` | Select com children `<option>` (drop-in para `<select>`) |
 | `FormField` | Campo com label e erro |
 | `FormGrid` | Grid responsivo para formulários |
 | `SelectWithAdd` | Select com opção de adicionar novo |
@@ -173,8 +176,11 @@ export default function MinhaPage() {
 
 // ❌ PROIBIDO: <select> inline
 <select className="w-full px-3 py-2 border...">
-// ✅ CORRETO: Select ou SelectWithAdd
+// ✅ CORRETO: Select (com prop options) ou NativeSelect (com children)
 <Select options={options} value={value} onChange={onChange} />
+<NativeSelect value={value} onChange={onChange}>
+  <option value="a">A</option>
+</NativeSelect>
 
 // ❌ PROIBIDO: <textarea> inline
 <textarea className="w-full px-3 py-2 border..." rows={4} />

@@ -166,13 +166,18 @@ export default function ExamplePage() {
 ## Inputs e Forms
 
 ```tsx
-<input
-  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme placeholder-theme-muted focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-/>
+// Usar componentes do Design System
+import { Input } from "@/components/ui/Input";
+import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 
-<select
-  className="px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-blue-500"
->
+<Input value={value} onChange={onChange} placeholder="Buscar..." />
+
+<NativeSelect value={value} onChange={onChange}>
+  <option value="a">Opção A</option>
+</NativeSelect>
+
+<Select options={options} value={value} onChange={onChange} />
 ```
 
 ## Tabelas
