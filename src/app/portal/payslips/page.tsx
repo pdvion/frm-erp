@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { FileText, Download, Eye, Calendar } from "lucide-react";
 import Link from "next/link";

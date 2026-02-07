@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
 import {
   FileText,
