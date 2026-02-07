@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { auditCreate } from "../services/audit";
@@ -140,7 +141,7 @@ export const bomRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // Validar que não é o mesmo material
       if (input.parentMaterialId === input.childMaterialId) {
-        throw new Error("Um material não pode ser componente de si mesmo");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Um material não pode ser componente de si mesmo" });
       }
 
       // Verificar se já existe
@@ -154,7 +155,7 @@ export const bomRouter = createTRPCRouter({
       });
 
       if (existing) {
-        throw new Error("Este componente já existe na estrutura");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Este componente já existe na estrutura" });
       }
 
       // Verificar circularidade (componente não pode ter o pai como filho)
@@ -164,7 +165,7 @@ export const bomRouter = createTRPCRouter({
       });
 
       if (childBom.some((b) => b.childMaterialId === input.parentMaterialId)) {
-        throw new Error("Referência circular detectada: o componente já contém o produto pai");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Referência circular detectada: o componente já contém o produto pai" });
       }
 
       const item = await ctx.prisma.bomItem.create({
@@ -229,7 +230,7 @@ export const bomRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       if (input.sourceMaterialId === input.targetMaterialId) {
-        throw new Error("Origem e destino não podem ser o mesmo material");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Origem e destino não podem ser o mesmo material" });
       }
 
       // Buscar BOM de origem
@@ -238,7 +239,7 @@ export const bomRouter = createTRPCRouter({
       });
 
       if (sourceItems.length === 0) {
-        throw new Error("Material de origem não possui estrutura");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Material de origem não possui estrutura" });
       }
 
       // Se replaceExisting, remover itens existentes no destino

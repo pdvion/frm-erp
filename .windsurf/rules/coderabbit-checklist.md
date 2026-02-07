@@ -19,6 +19,9 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 - [ ] Nunca logar dados sensíveis (senhas, tokens, PIIs)
 - [ ] Usar variáveis de ambiente para secrets
 - [ ] Marcar documentos internos como "CONFIDENCIAL"
+- [ ] API keys de IA: usar `getOpenAIKey()` de `@/server/services/getAIApiKey`
+- [ ] NUNCA buscar tokens diretamente do `systemSettings` — usar o helper centralizado
+- [ ] Futuro: migrar secrets para Supabase Vault (`src/server/services/secrets.ts`)
 
 ## Tratamento de Erros
 

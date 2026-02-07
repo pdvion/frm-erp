@@ -143,6 +143,45 @@ if (existing) {
 }
 ```
 
+### 8. pgvector — Prisma não suporta tipo `vector`
+```typescript
+// ❌ ERRADO — Prisma não tem tipo vector
+const embedding = await prisma.embedding.findFirst({
+  where: { entityId: id },
+  select: { embedding: true }, // campo não existe no Prisma
+});
+
+// ✅ CORRETO — usar $queryRaw para campos vetoriais
+const results = await prisma.$queryRaw<{ entity_id: string; similarity: number }[]>`
+  SELECT * FROM match_embeddings(
+    ${queryEmbedding}::vector(1536),
+    ${entityType},
+    ${companyId}::uuid,
+    ${threshold},
+    ${limit}
+  )
+`;
+
+// ✅ CORRETO — para CRUD sem campo vector, usar Prisma normalmente
+const embedding = await prisma.embedding.findFirst({
+  where: { entityType: "material", entityId: id },
+  select: { id: true, content: true, metadata: true }, // sem campo embedding
+});
+```
+
+### 9. API keys de IA — usar helper centralizado
+```typescript
+// ❌ ERRADO — buscar diretamente do systemSettings
+const setting = await prisma.systemSetting.findFirst({
+  where: { key: "openai_token", companyId },
+});
+const apiKey = (setting?.value as { value: string }).value;
+
+// ✅ CORRETO — helper centralizado
+import { getOpenAIKey } from "@/server/services/getAIApiKey";
+const apiKey = await getOpenAIKey(prisma, companyId);
+```
+
 ## Checklist Antes de Usar Modelo Prisma
 
 - [ ] Verifiquei a definição do modelo no schema.prisma?

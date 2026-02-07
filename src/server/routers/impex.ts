@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, reportsProcedure } from "../trpc";
 
@@ -537,7 +538,7 @@ export const impexRouter = createTRPCRouter({
       
       // Get current item to recalculate total
       const current = await ctx.prisma.importProcessItem.findUnique({ where: { id } });
-      if (!current) throw new Error("Item not found");
+      if (!current) throw new TRPCError({ code: "NOT_FOUND", message: "Item not found" });
       
       const quantity = data.quantity ?? Number(current.quantity);
       const unitPrice = data.unitPrice ?? Number(current.unitPrice);
@@ -829,7 +830,7 @@ export const impexRouter = createTRPCRouter({
         where: { id: input.contractId },
       });
 
-      if (!contract) throw new Error("Contrato não encontrado");
+      if (!contract) throw new TRPCError({ code: "NOT_FOUND", message: "Contrato não encontrado" });
 
       const brlValue = input.foreignValue * input.liquidationRate;
       const expectedBrl = input.foreignValue * Number(contract.contractRate);

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
@@ -216,7 +217,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!oldQuote) {
-        throw new Error("Cotação não encontrada ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou sem permissão" });
       }
 
       const quote = await ctx.prisma.quote.update({
@@ -280,7 +281,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!item) {
-        throw new Error("Item não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
       }
 
       // Calcular novo total
@@ -336,7 +337,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!quote) {
-        throw new Error("Cotação não encontrada ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou sem permissão" });
       }
 
       const unitPrice = itemData.unitPrice ?? 0;
@@ -375,7 +376,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!item) {
-        throw new Error("Item não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
       }
 
       await ctx.prisma.quoteItem.delete({
@@ -403,7 +404,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!quote) {
-        throw new Error("Cotação não encontrada ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou sem permissão" });
       }
 
       const deleted = await ctx.prisma.quote.delete({
@@ -430,7 +431,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!quote) {
-        throw new Error("Cotação não encontrada ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou sem permissão" });
       }
 
       const updated = await ctx.prisma.quote.update({
@@ -461,7 +462,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       if (!quote) {
-        throw new Error("Cotação não encontrada ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou sem permissão" });
       }
 
       const updated = await ctx.prisma.quote.update({

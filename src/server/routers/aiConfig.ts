@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import {
@@ -173,7 +174,7 @@ export const aiConfigRouter = createTRPCRouter({
       const providerModels = AI_MODELS[input.provider];
       const modelExists = providerModels.some((m) => m.id === input.model);
       if (!modelExists) {
-        throw new Error(`Modelo ${input.model} não é válido para ${input.provider}`);
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Modelo ${input.model} não é válido para ${input.provider}` });
       }
 
       // Usar findFirst + create/update para evitar problemas com índice parcial

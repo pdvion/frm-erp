@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 
@@ -83,7 +84,7 @@ export const vacationsRouter = createTRPCRouter({
       });
 
       if (!employee) {
-        throw new Error("Funcionário não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Funcionário não encontrado" });
       }
 
       // Calcular valores
@@ -156,7 +157,7 @@ export const vacationsRouter = createTRPCRouter({
           approvedAt: new Date(),
         },
       });
-      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Férias não encontradas ou sem permissão" });
       return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 
@@ -172,7 +173,7 @@ export const vacationsRouter = createTRPCRouter({
         include: { employee: true },
       });
 
-      if (!vacation) throw new Error("Férias não encontradas ou sem permissão");
+      if (!vacation) throw new TRPCError({ code: "NOT_FOUND", message: "Férias não encontradas ou sem permissão" });
 
       // Atualizar status do funcionário
       await ctx.prisma.employee.update({
@@ -197,7 +198,7 @@ export const vacationsRouter = createTRPCRouter({
         },
       });
 
-      if (!vacation) throw new Error("Férias não encontradas ou sem permissão");
+      if (!vacation) throw new TRPCError({ code: "NOT_FOUND", message: "Férias não encontradas ou sem permissão" });
 
       // Retornar status do funcionário para ativo
       await ctx.prisma.employee.update({
@@ -225,7 +226,7 @@ export const vacationsRouter = createTRPCRouter({
           notes: input.reason,
         },
       });
-      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Férias não encontradas ou sem permissão" });
       return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 
@@ -243,7 +244,7 @@ export const vacationsRouter = createTRPCRouter({
         },
         data: { paymentDate: input.paymentDate },
       });
-      if (result.count === 0) throw new Error("Férias não encontradas ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Férias não encontradas ou sem permissão" });
       return ctx.prisma.vacation.findUnique({ where: { id: input.id } });
     }),
 

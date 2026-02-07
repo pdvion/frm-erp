@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 
@@ -79,7 +80,7 @@ export const terminationsRouter = createTRPCRouter({
       });
 
       if (!employee) {
-        throw new Error("Funcionário não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Funcionário não encontrado" });
       }
 
       // Calcular dias de aviso prévio (3 dias por ano trabalhado, mín 30, máx 90)
@@ -118,7 +119,7 @@ export const terminationsRouter = createTRPCRouter({
         include: { employee: true },
       });
 
-      if (!termination) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (!termination) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
 
       const { employee, type, terminationDate, noticePeriodIndemnity } = termination;
       const baseSalaryNum = Number(termination.baseSalary || 0);
@@ -232,7 +233,7 @@ export const terminationsRouter = createTRPCRouter({
           approvedAt: new Date(),
         },
       });
-      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
       return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
@@ -250,7 +251,7 @@ export const terminationsRouter = createTRPCRouter({
         },
       });
 
-      if (!termination) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (!termination) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
 
       // Atualizar status do funcionário
       await ctx.prisma.employee.update({
@@ -289,7 +290,7 @@ export const terminationsRouter = createTRPCRouter({
           trctNumber: input.trctNumber,
         },
       });
-      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
       return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
@@ -307,7 +308,7 @@ export const terminationsRouter = createTRPCRouter({
           grffDate: new Date(),
         },
       });
-      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
       return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 
@@ -325,7 +326,7 @@ export const terminationsRouter = createTRPCRouter({
           notes: input.reason,
         },
       });
-      if (result.count === 0) throw new Error("Rescisão não encontrada ou sem permissão");
+      if (result.count === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
       return ctx.prisma.termination.findUnique({ where: { id: input.id } });
     }),
 });

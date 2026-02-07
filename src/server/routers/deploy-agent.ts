@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 /**
  * Deploy Agent Router
  * Endpoints para importação inteligente de XMLs fiscais
@@ -103,7 +104,7 @@ export const deployAgentRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
       }
 
       // Parsear XML para extrair dados completos
@@ -195,7 +196,7 @@ export const deployAgentRouter = createTRPCRouter({
       });
 
       if (!invoice?.xmlContent) {
-        throw new Error("NFe não encontrada ou sem XML");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada ou sem XML" });
       }
 
       const parsed = parseNFeXml(invoice.xmlContent);
@@ -229,7 +230,7 @@ export const deployAgentRouter = createTRPCRouter({
       });
 
       if (!invoice?.xmlContent) {
-        throw new Error("NFe não encontrada ou sem XML");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada ou sem XML" });
       }
 
       const parsed = parseNFeXml(invoice.xmlContent);

@@ -97,22 +97,22 @@ interface ParsedNFe {
 
 function parseNFeXml(xmlContent: string): ParsedNFe {
   if (!xmlContent.includes("<nfeProc") && !xmlContent.includes("<NFe")) {
-    throw new Error("Não é um XML de NFe válido");
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Não é um XML de NFe válido" });
   }
 
   const infNFe = extractTagContent(xmlContent, "infNFe");
   if (!infNFe) {
-    throw new Error("Tag infNFe não encontrada");
+    throw new TRPCError({ code: "NOT_FOUND", message: "Tag infNFe não encontrada" });
   }
 
   const idMatch = xmlContent.match(/Id="NFe(\d{44})"/);
   const chaveAcesso = idMatch ? idMatch[1] : "";
   if (!chaveAcesso || chaveAcesso.length !== 44) {
-    throw new Error("Chave de acesso inválida");
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Chave de acesso inválida" });
   }
 
   const ide = extractTagContent(infNFe, "ide");
-  if (!ide) throw new Error("Tag ide não encontrada");
+  if (!ide) throw new TRPCError({ code: "NOT_FOUND", message: "Tag ide não encontrada" });
 
   const numero = parseInt(extractTag(ide, "nNF") || "0");
   const serie = parseInt(extractTag(ide, "serie") || "1");
@@ -121,7 +121,7 @@ function parseNFeXml(xmlContent: string): ParsedNFe {
   const tipoNF = tpNF === "0" ? "entrada" : "saida";
 
   const emit = extractTagContent(infNFe, "emit");
-  if (!emit) throw new Error("Tag emit não encontrada");
+  if (!emit) throw new TRPCError({ code: "NOT_FOUND", message: "Tag emit não encontrada" });
 
   const emitCnpj = extractTag(emit, "CNPJ") || "";
   const emitRazao = extractTag(emit, "xNome") || "";
@@ -132,7 +132,7 @@ function parseNFeXml(xmlContent: string): ParsedNFe {
   const emitCidade = enderEmit ? extractTag(enderEmit, "xMun") || "" : "";
 
   const dest = extractTagContent(infNFe, "dest");
-  if (!dest) throw new Error("Tag dest não encontrada");
+  if (!dest) throw new TRPCError({ code: "NOT_FOUND", message: "Tag dest não encontrada" });
 
   const destCnpj = extractTag(dest, "CNPJ") || extractTag(dest, "CPF") || "";
   const destRazao = extractTag(dest, "xNome") || "";
@@ -317,7 +317,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
               });
               continue;
             } else {
-              throw new Error("NFe já importada");
+              throw new TRPCError({ code: "BAD_REQUEST", message: "NFe já importada" });
             }
           }
 
@@ -476,7 +476,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
               });
               continue;
             } else {
-              throw new Error("NFe já importada");
+              throw new TRPCError({ code: "BAD_REQUEST", message: "NFe já importada" });
             }
           }
 

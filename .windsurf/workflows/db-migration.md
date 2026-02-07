@@ -130,6 +130,49 @@ userId: ctx.tenant.userId ?? undefined,
 pnpm prisma generate
 ```
 
+## pgvector — Tipos Vetoriais
+
+O Supabase tem a extensão **pgvector 0.8.0** habilitada. Para colunas vetoriais:
+
+### No SQL (migration)
+```sql
+-- Coluna vetorial (Prisma não suporta tipo vector nativamente)
+"embedding" vector(1536) NOT NULL,
+
+-- Índice HNSW para busca por similaridade
+CREATE INDEX idx_nome_hnsw ON tabela
+  USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+
+-- Função de busca por similaridade
+-- Ver match_embeddings() como referência
+```
+
+### No Prisma schema
+```prisma
+/// O campo `embedding` vector(1536) é gerenciado via raw SQL
+model Embedding {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // ... campos normais
+  // NÃO incluir campo embedding — usar $queryRaw para queries vetoriais
+  @@map("embeddings")
+}
+```
+
+### Queries vetoriais (raw SQL)
+```typescript
+// Busca por similaridade — usar $queryRaw
+const results = await prisma.$queryRaw`
+  SELECT * FROM match_embeddings(
+    ${embedding}::vector(1536),
+    ${entityType},
+    ${companyId}::uuid,
+    ${threshold},
+    ${limit}
+  )
+`;
+```
+
 ## Convenções
 
 ### Nomes de Tabelas

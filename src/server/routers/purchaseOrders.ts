@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
@@ -122,7 +123,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!quote) {
-        throw new Error("Cotação não encontrada ou não está aprovada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Cotação não encontrada ou não está aprovada" });
       }
 
       // Gerar próximo código
@@ -278,7 +279,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!oldOrder) {
-        throw new Error("Pedido não encontrado ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Pedido não encontrado ou sem permissão" });
       }
 
       const order = await ctx.prisma.purchaseOrder.update({
@@ -336,7 +337,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!item) {
-        throw new Error("Item não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
       }
 
       const newReceivedQty = item.receivedQty + input.receivedQty;
@@ -463,7 +464,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!order) {
-        throw new Error("Pedido não encontrado ou não pode ser excluído");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Pedido não encontrado ou não pode ser excluído" });
       }
 
       const deleted = await ctx.prisma.purchaseOrder.delete({
@@ -527,11 +528,11 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!order) {
-        throw new Error("Pedido não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Pedido não encontrado" });
       }
 
       if (order.status !== "DRAFT") {
-        throw new Error("Apenas pedidos em rascunho podem ser enviados para aprovação");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Apenas pedidos em rascunho podem ser enviados para aprovação" });
       }
 
       // Verificar se requer aprovação baseado no valor
@@ -571,7 +572,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       });
 
       if (!result.success) {
-        throw new Error(result.error || "Erro ao iniciar workflow");
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: result.error || "Erro ao iniciar workflow" });
       }
 
       // Atualizar status do pedido para PENDING
