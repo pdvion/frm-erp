@@ -330,6 +330,74 @@ export async function deleteEmbedding(
   `;
 }
 
+// ============================================
+// SEMANTIC SEARCH
+// ============================================
+
+export interface SemanticSearchResult {
+  entityId: string;
+  content: string;
+  similarity: number;
+  metadata: Record<string, unknown>;
+}
+
+/**
+ * Busca semântica usando pgvector (cosine similarity)
+ * Usa a função match_embeddings() do Supabase
+ */
+export async function semanticSearch(
+  prisma: PrismaClient,
+  query: string,
+  apiKey: string,
+  options: {
+    entityType?: EmbeddableEntity;
+    entityTypes?: EmbeddableEntity[];
+    companyId: string;
+    threshold?: number;
+    limit?: number;
+  }
+): Promise<SemanticSearchResult[]> {
+  // Gerar embedding da query
+  const { embedding } = await generateEmbedding(query, apiKey);
+  const vectorStr = `[${embedding.join(",")}]`;
+
+  const threshold = options.threshold ?? 0.5;
+  const limit = options.limit ?? 10;
+
+  // Determinar tipos de entidade
+  const types = options.entityTypes ?? (options.entityType ? [options.entityType] : EMBEDDABLE_ENTITIES);
+
+  // Buscar em cada tipo e combinar resultados
+  const allResults: SemanticSearchResult[] = [];
+
+  for (const entityType of types) {
+    const results = await prisma.$queryRawUnsafe<SemanticSearchResult[]>(
+      `SELECT entity_id AS "entityId", content, similarity, metadata
+       FROM match_embeddings($1::vector(1536), $2, $3::uuid, $4, $5)`,
+      vectorStr,
+      entityType,
+      options.companyId,
+      threshold,
+      limit
+    );
+
+    allResults.push(...results.map((r) => ({ ...r, entityType })));
+  }
+
+  // Ordenar por similaridade e limitar
+  return allResults
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, limit);
+}
+
+/**
+ * Busca semântica com enriquecimento de dados da entidade
+ */
+export interface EnrichedSearchResult extends SemanticSearchResult {
+  entityType: string;
+  entity?: Record<string, unknown>;
+}
+
 /**
  * Processa embeddings em batch para qualquer entidade
  */

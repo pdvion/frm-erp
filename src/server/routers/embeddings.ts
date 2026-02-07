@@ -9,6 +9,7 @@ import {
   deleteEmbedding,
   processEmbeddingsBatch,
   getEmbeddingStatus,
+  semanticSearch,
   EMBEDDABLE_ENTITIES,
   type EmbeddableEntity,
   type EntityEmbeddingData,
@@ -79,6 +80,52 @@ async function fetchEntityData(
       });
       if (!e) return null;
       return { type: "employee", data: { id: e.id, code: e.code, name: e.name, cpf: e.cpf, email: e.email, departmentName: e.department?.name, positionName: e.position?.name, contractType: e.contractType, notes: e.notes } };
+    }
+  }
+}
+
+/** Retorna resumo compacto de uma entidade para enriquecer resultados de busca */
+async function fetchEntitySummary(
+  prisma: Parameters<typeof getOpenAIKey>[0],
+  entityType: EmbeddableEntity,
+  entityId: string,
+  companyId: string
+): Promise<Record<string, unknown> | null> {
+  switch (entityType) {
+    case "material": {
+      const m = await prisma.material.findFirst({
+        where: { id: entityId, OR: [{ companyId }, { isShared: true }] },
+        select: { id: true, code: true, description: true, unit: true, status: true, ncm: true, manufacturer: true },
+      });
+      return m as Record<string, unknown> | null;
+    }
+    case "product": {
+      const p = await prisma.product.findFirst({
+        where: { id: entityId, companyId },
+        select: { id: true, code: true, name: true, shortDescription: true, status: true, listPrice: true, salePrice: true },
+      });
+      return p as Record<string, unknown> | null;
+    }
+    case "customer": {
+      const c = await prisma.customer.findFirst({
+        where: { id: entityId, companyId },
+        select: { id: true, code: true, companyName: true, tradeName: true, cnpj: true, status: true, addressCity: true, addressState: true },
+      });
+      return c as Record<string, unknown> | null;
+    }
+    case "supplier": {
+      const s = await prisma.supplier.findFirst({
+        where: { id: entityId, OR: [{ companyId }, { isShared: true }] },
+        select: { id: true, code: true, companyName: true, tradeName: true, cnpj: true, status: true, city: true, state: true },
+      });
+      return s as Record<string, unknown> | null;
+    }
+    case "employee": {
+      const e = await prisma.employee.findFirst({
+        where: { id: entityId, companyId },
+        select: { id: true, code: true, name: true, email: true, status: true, contractType: true },
+      });
+      return e as Record<string, unknown> | null;
     }
   }
 }
@@ -292,6 +339,48 @@ export const embeddingsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await deleteEmbedding(ctx.prisma, input.entityType, input.entityId);
       return { success: true };
+    }),
+
+  /**
+   * Busca semântica multi-entidade
+   */
+  search: tenantProcedure
+    .input(z.object({
+      query: z.string().min(1).max(500),
+      entityType: entityTypeSchema.optional(),
+      entityTypes: z.array(entityTypeSchema).optional(),
+      threshold: z.number().min(0).max(1).default(0.5),
+      limit: z.number().min(1).max(50).default(10),
+      enrichResults: z.boolean().default(true),
+    }))
+    .query(async ({ ctx, input }) => {
+      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      if (!apiKey) {
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
+      }
+
+      const results = await semanticSearch(ctx.prisma, input.query, apiKey, {
+        entityType: input.entityType,
+        entityTypes: input.entityTypes,
+        companyId: ctx.companyId,
+        threshold: input.threshold,
+        limit: input.limit,
+      });
+
+      if (!input.enrichResults) {
+        return { results, total: results.length };
+      }
+
+      // Enriquecer com dados da entidade
+      const enriched = await Promise.all(
+        results.map(async (r) => {
+          const entityType = (r as { entityType?: string }).entityType ?? input.entityType ?? "material";
+          const entity = await fetchEntitySummary(ctx.prisma, entityType as EmbeddableEntity, r.entityId, ctx.companyId);
+          return { ...r, entityType, entity };
+        })
+      );
+
+      return { results: enriched, total: enriched.length };
     }),
 
   /**
