@@ -4872,6 +4872,24 @@ model nfe_queue_jobs {
   @@index([status], map: "idx_nfe_queue_jobs_status")
 }
 
+/// Embeddings vetoriais para busca semântica (pgvector)
+/// O campo `embedding` vector(1536) é gerenciado via raw SQL, não pelo Prisma
+model Embedding {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id") @db.Uuid
+  companyId  String   @map("company_id") @db.Uuid
+  content    String
+  model      String   @default("text-embedding-3-small")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([entityType, entityId])
+  @@index([entityType, companyId])
+  @@map("embeddings")
+}
+
 enum MaterialStatus {
   ACTIVE
   INACTIVE
