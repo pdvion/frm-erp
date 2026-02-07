@@ -7,6 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { UserMenu } from "./UserMenu";
 import { NotificationBell } from "./NotificationBell";
 import { CompanySwitcher } from "./CompanySwitcher";
+import { CommandPalette } from "./CommandPalette";
 import { Breadcrumb } from "./Breadcrumb";
 import { SessionTimeout } from "./SessionTimeout";
 import { useIsMobile } from "@/hooks/useMediaQuery";
@@ -103,6 +104,7 @@ function AppLayoutContent({ children }: AppLayoutProps) {
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            <CommandPalette />
             <CompanySwitcher />
             <NotificationBell />
             <UserMenu />
