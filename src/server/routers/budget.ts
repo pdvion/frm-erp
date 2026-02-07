@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 
@@ -495,7 +496,7 @@ export const budgetRouter = createTRPCRouter({
         where: { id: input.versionId },
       });
 
-      if (!version) throw new Error("Versão não encontrada");
+      if (!version) throw new TRPCError({ code: "NOT_FOUND", message: "Versão não encontrada" });
 
       const entries = await ctx.prisma.budgetEntry.findMany({
         where: {

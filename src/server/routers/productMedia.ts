@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 /**
  * Router tRPC para upload de mídia de produtos
  * VIO-887: Upload de Mídia - Imagens e Vídeos
@@ -14,7 +15,7 @@ function getSupabaseAdmin() {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Supabase credentials not configured");
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Supabase credentials not configured" });
   }
 
   return createClient(supabaseUrl, supabaseServiceKey);
@@ -51,7 +52,7 @@ export const productMediaRouter = createTRPCRouter({
         .createSignedUploadUrl(filePath);
 
       if (error) {
-        throw new Error(`Failed to create upload URL: ${error.message}`);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Failed to create upload URL: ${error.message}` });
       }
 
       return {
@@ -124,7 +125,7 @@ export const productMediaRouter = createTRPCRouter({
       });
 
       if (!image || image.product.companyId !== ctx.companyId) {
-        throw new Error("Image not found");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Image not found" });
       }
 
       const supabase = getSupabaseAdmin();
@@ -227,7 +228,7 @@ export const productMediaRouter = createTRPCRouter({
       });
 
       if (!video || video.product.companyId !== ctx.companyId) {
-        throw new Error("Video not found");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Video not found" });
       }
 
       if (!video.url.includes("youtube") && !video.url.includes("vimeo")) {
@@ -293,7 +294,7 @@ export const productMediaRouter = createTRPCRouter({
       });
 
       if (!attachment || attachment.product.companyId !== ctx.companyId) {
-        throw new Error("Attachment not found");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Attachment not found" });
       }
 
       const supabase = getSupabaseAdmin();

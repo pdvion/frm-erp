@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 /**
  * Router tRPC para importação de dados do Delphi
  * VIO-776: Base de dados para validar
@@ -31,7 +32,7 @@ export const delphiImportRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.companyId) {
-        throw new Error("Empresa não selecionada");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Empresa não selecionada" });
       }
 
       const customers = parseDelphiCSV<DelphiCliente>(input.csvContent);
@@ -76,7 +77,7 @@ export const delphiImportRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.companyId) {
-        throw new Error("Empresa não selecionada");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Empresa não selecionada" });
       }
 
       const invoices = parseDelphiCSV<DelphiNFeEmitida>(input.csvContent);

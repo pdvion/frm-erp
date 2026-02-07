@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
@@ -269,7 +270,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
       }
 
       return invoice;
@@ -283,7 +284,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       const nfeData = parseNFeXml(input.xmlContent);
 
       if (!nfeData.accessKey || nfeData.accessKey.length !== 44) {
-        throw new Error("Chave de acesso inválida");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Chave de acesso inválida" });
       }
 
       // Verificar se já existe
@@ -292,7 +293,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (existing) {
-        throw new Error(`NFe já cadastrada (${nfeData.accessKey})`);
+        throw new TRPCError({ code: "BAD_REQUEST", message: `NFe já cadastrada (${nfeData.accessKey})` });
       }
 
       // Buscar fornecedor pelo CNPJ
@@ -377,7 +378,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
       }
 
       let matchedCount = 0;
@@ -533,17 +534,17 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
       }
 
       if (invoice.status === "APPROVED") {
-        throw new Error("NFe já aprovada");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "NFe já aprovada" });
       }
 
       // Verificar se todos os itens estão vinculados
       const unlinkedItems = invoice.items.filter((i: { materialId: string | null }) => !i.materialId);
       if (unlinkedItems.length > 0) {
-        throw new Error(`${unlinkedItems.length} item(ns) sem material vinculado`);
+        throw new TRPCError({ code: "BAD_REQUEST", message: `${unlinkedItems.length} item(ns) sem material vinculado` });
       }
 
       // Processar cada item: entrada no estoque
@@ -680,7 +681,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
       }
 
       const updatedInvoice = await ctx.prisma.receivedInvoice.update({
@@ -725,7 +726,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
       });
 
       if (!invoice) {
-        throw new Error("NFe não encontrada ou não pode ser excluída");
+        throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada ou não pode ser excluída" });
       }
 
       await ctx.prisma.receivedInvoice.delete({

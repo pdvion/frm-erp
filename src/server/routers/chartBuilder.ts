@@ -8,6 +8,7 @@ import {
   AVAILABLE_DATA_SOURCES,
   type ChartConfig,
 } from "@/lib/ai/chartGenerator";
+import { getOpenAIKey } from "@/server/services/getAIApiKey";
 
 const chartTypeSchema = z.enum(["line", "bar", "pie", "area", "donut"]);
 
@@ -33,17 +34,7 @@ export const chartBuilderRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Buscar token de IA configurado
-      const aiSetting = await ctx.prisma.systemSetting.findFirst({
-        where: {
-          key: "openai_token",
-          companyId: ctx.companyId,
-        },
-      });
-
-      const apiKey = aiSetting?.value
-        ? (aiSetting.value as { value: string }).value
-        : null;
+      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
 
       if (!apiKey) {
         // Retornar sugestão padrão se não tiver IA configurada

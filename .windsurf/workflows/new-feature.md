@@ -152,6 +152,45 @@ export const nomeRouter = createTRPCRouter({
 });
 ```
 
+### 2b. Se a feature usa IA (OpenAI, embeddings, etc.)
+
+**OBRIGATÓRIO**: Usar o helper centralizado para API keys:
+```typescript
+import { getOpenAIKey, getAIApiKey } from "@/server/services/getAIApiKey";
+
+// Buscar API key OpenAI (com fallback para outros providers)
+const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+
+// Ou buscar provider específico
+const result = await getAIApiKey(ctx.prisma, ctx.companyId, {
+  provider: "openai",
+  fallbackProviders: ["anthropic"],
+});
+// result?.apiKey, result?.provider
+```
+
+**NUNCA** buscar tokens diretamente do `systemSettings`:
+```typescript
+// ❌ ERRADO — padrão antigo, inconsistente
+const setting = await ctx.prisma.systemSetting.findFirst({
+  where: { key: "openai_token", companyId: ctx.companyId },
+});
+const apiKey = (setting?.value as { value: string }).value;
+
+// ✅ CORRETO — helper centralizado
+const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+```
+
+**Para embeddings vetoriais**, usar raw SQL (Prisma não suporta `vector`):
+```typescript
+// Busca por similaridade
+const results = await ctx.prisma.$queryRaw`
+  SELECT * FROM match_embeddings(
+    ${embedding}::vector(1536), ${entityType}, ${companyId}::uuid
+  )
+`;
+```
+
 ### 3. Registrar Router
 Editar `src/server/routers/index.ts`:
 

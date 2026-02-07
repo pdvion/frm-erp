@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
@@ -235,7 +236,7 @@ export const suppliersRouter = createTRPCRouter({
       });
       
       if (!existing) {
-        throw new Error("Fornecedor não encontrado ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Fornecedor não encontrado ou sem permissão" });
       }
       
       const supplier = await ctx.prisma.supplier.update({
@@ -261,7 +262,7 @@ export const suppliersRouter = createTRPCRouter({
       });
       
       if (!existing) {
-        throw new Error("Fornecedor não encontrado ou sem permissão");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Fornecedor não encontrado ou sem permissão" });
       }
       
       const deleted = await ctx.prisma.supplier.delete({

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, authProcedure, publicProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
@@ -94,7 +95,7 @@ export const tenantRouter = createTRPCRouter({
       );
 
       if (!hasAccess) {
-        throw new Error("Você não tem acesso a esta empresa.");
+        throw new TRPCError({ code: "FORBIDDEN", message: "Você não tem acesso a esta empresa." });
       }
 
       // Retornar a empresa selecionada (o frontend deve persistir)

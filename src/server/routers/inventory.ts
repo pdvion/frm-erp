@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate } from "../services/audit";
@@ -138,9 +139,7 @@ export const inventoryRouter = createTRPCRouter({
 
         // Verificar saldo disponível para saídas
         if (!isEntry && newQuantity < 0) {
-          throw new Error(
-            `Saldo insuficiente. Disponível: ${inventory.quantity}, Solicitado: ${quantity}`
-          );
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Saldo insuficiente. Disponível: ${inventory.quantity}, Solicitado: ${quantity}` });
         }
 
         // Criar movimento
@@ -183,9 +182,7 @@ export const inventoryRouter = createTRPCRouter({
 
         // Se nenhum registro foi atualizado, houve conflito de concorrência
         if (updated.count === 0) {
-          throw new Error(
-            "Conflito de concorrência detectado. O estoque foi modificado por outro usuário. Por favor, tente novamente."
-          );
+          throw new TRPCError({ code: "CONFLICT", message: "Conflito de concorrência detectado. O estoque foi modificado por outro usuário. Por favor, tente novamente." });
         }
 
         return movement;
@@ -380,11 +377,11 @@ export const inventoryRouter = createTRPCRouter({
       });
 
       if (!inventory) {
-        throw new Error("Material não encontrado no estoque");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado no estoque" });
       }
 
       if (inventory.availableQty < input.quantity) {
-        throw new Error(`Quantidade disponível insuficiente. Disponível: ${inventory.availableQty}`);
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Quantidade disponível insuficiente. Disponível: ${inventory.availableQty}` });
       }
 
       // Gerar código da reserva
@@ -450,7 +447,7 @@ export const inventoryRouter = createTRPCRouter({
       });
 
       if (!reservation) {
-        throw new Error("Reserva não encontrada ou já liberada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já liberada" });
       }
 
       // Atualizar reserva
@@ -493,12 +490,12 @@ export const inventoryRouter = createTRPCRouter({
       });
 
       if (!reservation) {
-        throw new Error("Reserva não encontrada ou já consumida");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já consumida" });
       }
 
       const quantityToConsume = input.quantity || reservation.quantity;
       if (quantityToConsume > reservation.quantity) {
-        throw new Error("Quantidade a consumir maior que a reservada");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quantidade a consumir maior que a reservada" });
       }
 
       // Criar movimento de saída

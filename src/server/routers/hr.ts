@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { Prisma } from "@prisma/client";
@@ -70,7 +71,7 @@ export const hrRouter = createTRPCRouter({
         where: { departmentId: input.id, companyId: ctx.companyId },
       });
       if (hasEmployees > 0) {
-        throw new Error("Não é possível excluir departamento com funcionários vinculados");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Não é possível excluir departamento com funcionários vinculados" });
       }
       return ctx.prisma.department.delete({ where: { id: input.id, companyId: ctx.companyId } });
     }),
@@ -391,7 +392,7 @@ export const hrRouter = createTRPCRouter({
       });
 
       if (!payroll) {
-        throw new Error("Folha não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folha não encontrada" });
       }
 
       let totalGross = 0;
@@ -499,11 +500,11 @@ export const hrRouter = createTRPCRouter({
       });
 
       if (!payroll) {
-        throw new Error("Folha não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folha não encontrada" });
       }
 
       if (payroll.status !== "PROCESSED") {
-        throw new Error("Folha precisa ser processada antes de aprovar");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Folha precisa ser processada antes de aprovar" });
       }
 
       return ctx.prisma.payroll.update({
@@ -533,7 +534,7 @@ export const hrRouter = createTRPCRouter({
       });
 
       if (!payroll) {
-        throw new Error("Folha não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folha não encontrada" });
       }
 
       // Agrupar por departamento

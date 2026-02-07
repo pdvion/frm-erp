@@ -392,7 +392,7 @@ export const nfeQueueRouter = createTRPCRouter({
 
             results.push({ jobId: job_id, success: true });
           } else {
-            throw new Error(sefazResult.error || "Erro desconhecido na SEFAZ");
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: sefazResult.error || "Erro desconhecido na SEFAZ" });
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";

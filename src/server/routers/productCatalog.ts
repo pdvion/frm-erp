@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 /**
  * Router tRPC para Catálogo de Produtos
  * VIO-885: Modelo de Dados do Catálogo
@@ -140,9 +141,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (productsCount > 0) {
-        throw new Error(
-          `Não é possível excluir: ${productsCount} produto(s) vinculado(s)`
-        );
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Não é possível excluir: ${productsCount} produto(s) vinculado(s)` });
       }
 
       const childrenCount = await ctx.prisma.productCategory.count({
@@ -150,9 +149,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (childrenCount > 0) {
-        throw new Error(
-          `Não é possível excluir: ${childrenCount} subcategoria(s) vinculada(s)`
-        );
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Não é possível excluir: ${childrenCount} subcategoria(s) vinculada(s)` });
       }
 
       return ctx.prisma.productCategory.delete({
@@ -668,7 +665,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (!material) {
-        throw new Error("Material não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado" });
       }
 
       // Verificar se já existe produto vinculado
@@ -677,7 +674,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (existingProduct) {
-        throw new Error("Material já possui produto vinculado");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Material já possui produto vinculado" });
       }
 
       const name = input.name || material.description;
@@ -770,7 +767,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (!material) {
-        throw new Error("Material não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado" });
       }
 
       // Verificar se produto existe
@@ -779,7 +776,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (!product) {
-        throw new Error("Produto não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Produto não encontrado" });
       }
 
       // Verificar se material já está vinculado a outro produto
@@ -788,7 +785,7 @@ export const productCatalogRouter = createTRPCRouter({
       });
 
       if (existingLink && existingLink.id !== input.productId) {
-        throw new Error("Material já está vinculado a outro produto");
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Material já está vinculado a outro produto" });
       }
 
       return ctx.prisma.product.update({

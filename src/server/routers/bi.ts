@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, reportsProcedure } from "../trpc";
 
@@ -293,7 +294,7 @@ export const biRouter = createTRPCRouter({
         where: { id: input.kpiId, companyId: ctx.companyId },
       });
 
-      if (!kpi) throw new Error("KPI não encontrado");
+      if (!kpi) throw new TRPCError({ code: "NOT_FOUND", message: "KPI não encontrado" });
 
       const target = input.target || kpi.targetExpected;
       let status: "BELOW" | "ON_TARGET" | "ABOVE" = "ON_TARGET";

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 
@@ -230,7 +231,7 @@ export const gpdRouter = createTRPCRouter({
         where: { id: input.indicatorId, companyId: ctx.companyId },
       });
 
-      if (!indicator) throw new Error("Indicador não encontrado");
+      if (!indicator) throw new TRPCError({ code: "NOT_FOUND", message: "Indicador não encontrado" });
 
       const target = input.target || indicator.targetExpected;
       let status: "BELOW" | "ON_TARGET" | "ABOVE" = "ON_TARGET";

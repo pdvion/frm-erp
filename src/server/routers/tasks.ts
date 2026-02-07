@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
@@ -128,7 +129,7 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!task) {
-        throw new Error("Tarefa não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
       // Calcular métricas de SLA
@@ -171,7 +172,7 @@ export const tasksRouter = createTRPCRouter({
     .input(z.object({ taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.accept({
         taskId: input.taskId,
@@ -184,7 +185,7 @@ export const tasksRouter = createTRPCRouter({
     .input(z.object({ taskId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.start(input.taskId, ctx.tenant.userId);
     }),
@@ -199,7 +200,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.complete({
         taskId: input.taskId,
@@ -219,7 +220,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.delegate({
         taskId: input.taskId,
@@ -239,7 +240,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.cancel(input.taskId, ctx.tenant.userId, input.reason);
     }),
@@ -254,7 +255,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       return taskService.addComment(input.taskId, ctx.tenant.userId, input.comment);
     }),
@@ -269,7 +270,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       
       const task = await prisma.task.findFirst({
@@ -280,7 +281,7 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!task) {
-        throw new Error("Tarefa não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
       return prisma.task.update({
@@ -370,7 +371,7 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!task) {
-        throw new Error("Tarefa não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
       return prisma.taskAttachment.findMany({
@@ -393,7 +394,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
       const task = await prisma.task.findFirst({
@@ -404,7 +405,7 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!task) {
-        throw new Error("Tarefa não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
       return prisma.taskAttachment.create({
@@ -425,7 +426,7 @@ export const tasksRouter = createTRPCRouter({
     .input(z.object({ attachmentId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
       const attachment = await prisma.taskAttachment.findFirst({
@@ -438,12 +439,12 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!attachment) {
-        throw new Error("Anexo não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Anexo não encontrado" });
       }
 
       // Verificar se pertence à mesma empresa
       if (attachment.task.companyId !== ctx.companyId) {
-        throw new Error("Anexo não encontrado");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Anexo não encontrado" });
       }
 
       return prisma.taskAttachment.delete({
@@ -462,7 +463,7 @@ export const tasksRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.tenant.userId) {
-        throw new Error("Usuário não autenticado");
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
       const task = await prisma.task.findFirst({
@@ -473,7 +474,7 @@ export const tasksRouter = createTRPCRouter({
       });
 
       if (!task) {
-        throw new Error("Tarefa não encontrada");
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
       // Gerar path único para o arquivo

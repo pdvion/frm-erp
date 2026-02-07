@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { Prisma } from "@prisma/client";
@@ -7,6 +8,7 @@ import {
   PROMPT_SUGGESTIONS,
   type GeneratedWorkflow,
 } from "@/lib/ai/workflowGenerator";
+import { getOpenAIKey } from "@/server/services/getAIApiKey";
 
 export const workflowRouter = createTRPCRouter({
   // ============================================================================
@@ -290,10 +292,10 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      if (!definition) throw new Error("Workflow não encontrado ou inativo");
+      if (!definition) throw new TRPCError({ code: "NOT_FOUND", message: "Workflow não encontrado ou inativo" });
 
       const startStep = definition.steps[0];
-      if (!startStep) throw new Error("Workflow não possui etapa inicial");
+      if (!startStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow não possui etapa inicial" });
 
       const lastInstance = await ctx.prisma.workflowInstance.findFirst({
         where: { companyId: ctx.companyId },
@@ -378,9 +380,9 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      if (!instance) throw new Error("Instância não encontrada");
-      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
-      if (instance.status !== "IN_PROGRESS") throw new Error("Workflow não está em andamento");
+      if (!instance) throw new TRPCError({ code: "NOT_FOUND", message: "Instância não encontrada" });
+      if (!instance.currentStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow sem etapa atual" });
+      if (instance.status !== "IN_PROGRESS") throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow não está em andamento" });
 
       const currentHistory = await ctx.prisma.workflowStepHistory.findFirst({
         where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
@@ -582,9 +584,9 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      if (!instance) throw new Error("Instância não encontrada");
-      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
-      if (instance.status !== "IN_PROGRESS") throw new Error("Workflow não está em andamento");
+      if (!instance) throw new TRPCError({ code: "NOT_FOUND", message: "Instância não encontrada" });
+      if (!instance.currentStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow sem etapa atual" });
+      if (instance.status !== "IN_PROGRESS") throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow não está em andamento" });
 
       const currentContext = instance.data as Record<string, unknown> || {};
       const newContext = { ...currentContext, ...input.data };
@@ -656,9 +658,9 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      if (!instance) throw new Error("Instância não encontrada");
-      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
-      if (instance.currentStep.type !== "APPROVAL") throw new Error("Etapa atual não é de aprovação");
+      if (!instance) throw new TRPCError({ code: "NOT_FOUND", message: "Instância não encontrada" });
+      if (!instance.currentStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow sem etapa atual" });
+      if (instance.currentStep.type !== "APPROVAL") throw new TRPCError({ code: "BAD_REQUEST", message: "Etapa atual não é de aprovação" });
 
       await ctx.prisma.workflowStepHistory.updateMany({
         where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
@@ -712,8 +714,8 @@ export const workflowRouter = createTRPCRouter({
         include: { currentStep: true },
       });
 
-      if (!instance) throw new Error("Instância não encontrada");
-      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+      if (!instance) throw new TRPCError({ code: "NOT_FOUND", message: "Instância não encontrada" });
+      if (!instance.currentStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow sem etapa atual" });
 
       await ctx.prisma.workflowStepHistory.updateMany({
         where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
@@ -744,8 +746,8 @@ export const workflowRouter = createTRPCRouter({
         include: { currentStep: true },
       });
 
-      if (!instance) throw new Error("Instância não encontrada");
-      if (!instance.currentStep) throw new Error("Workflow sem etapa atual");
+      if (!instance) throw new TRPCError({ code: "NOT_FOUND", message: "Instância não encontrada" });
+      if (!instance.currentStep) throw new TRPCError({ code: "BAD_REQUEST", message: "Workflow sem etapa atual" });
 
       await ctx.prisma.workflowStepHistory.updateMany({
         where: { instanceId: instance.id, stepId: instance.currentStepId!, status: "PENDING" },
@@ -820,22 +822,11 @@ export const workflowRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Get AI token from settings
-      const aiConfig = await ctx.prisma.systemSetting.findFirst({
-        where: {
-          companyId: ctx.companyId,
-          category: "ai",
-          key: "openai_token",
-        },
-      });
+      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
 
-      if (!aiConfig?.value || typeof aiConfig.value !== "string") {
-        throw new Error(
-          "Token de IA não configurado. Configure em Configurações > IA."
-        );
+      if (!apiKey) {
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
-
-      const apiKey = aiConfig.value;
 
       try {
         let workflow: GeneratedWorkflow;
@@ -855,7 +846,7 @@ export const workflowRouter = createTRPCRouter({
         return workflow;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Erro desconhecido";
-        throw new Error(`Falha ao gerar workflow: ${message}`);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Falha ao gerar workflow: ${message}` });
       }
     }),
 
