@@ -39,6 +39,7 @@ describe("classifyByTextSimilarity", () => {
     expect(result.suggestions[0].id).toBe("1");
     expect(result.suggestions[0].score).toBeGreaterThan(0.8);
     expect(result.confidence).toBe("high");
+    expect(result.method).toBe("text-similarity");
   });
 
   it("should return partial match with medium score", () => {
@@ -60,11 +61,12 @@ describe("classifyByTextSimilarity", () => {
     expect(result.suggestions.length).toBeLessThanOrEqual(2);
   });
 
-  it("should include processing time", () => {
+  it("should include processing time and method", () => {
     const result = classifyByTextSimilarity("Rolamento", mockMaterials);
 
     expect(result.processingTime).toBeGreaterThanOrEqual(0);
     expect(typeof result.processingTime).toBe("number");
+    expect(result.method).toBe("text-similarity");
   });
 
   it("should match by code when included in description", () => {
