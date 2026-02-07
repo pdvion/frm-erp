@@ -2,14 +2,17 @@
  * Helper centralizado para buscar API keys de IA
  * Resolve inconsistência entre routers (VIO-1018)
  *
- * Padrão de armazenamento no systemSettings:
- *   key: "{provider}_token"
- *   value: { value: "sk-..." }  (JSON com campo value)
+ * Ordem de busca (VIO-1019):
+ *   1. Supabase Vault (criptografado via pgsodium)
+ *   2. systemSettings (fallback legado)
  *
- * Futuramente será migrado para Supabase Vault (VIO-1019)
+ * Padrão de armazenamento:
+ *   Vault: name = "{provider}_token_{companyId}", secret = "sk-..."
+ *   systemSettings: key = "{provider}_token", value = { value: "sk-..." }
  */
 
 import type { PrismaClient } from "@prisma/client";
+import { getSecret } from "./secrets";
 
 export type AIProvider = "openai" | "anthropic" | "google";
 
@@ -20,6 +23,7 @@ interface GetAIApiKeyOptions {
 
 /**
  * Busca a API key de IA configurada para uma empresa
+ * Tenta Vault primeiro, fallback para systemSettings
  *
  * @param prisma - Instância do Prisma
  * @param companyId - ID da empresa (tenant)
@@ -41,6 +45,17 @@ export async function getAIApiKey(
   for (const p of providers) {
     const key = `${p}_token`;
 
+    // 1. Tentar Supabase Vault (criptografado)
+    try {
+      const vaultSecret = await getSecret(prisma, key, companyId);
+      if (vaultSecret && vaultSecret.length > 0) {
+        return { apiKey: vaultSecret, provider: p };
+      }
+    } catch {
+      // Vault indisponível — seguir para fallback
+    }
+
+    // 2. Fallback: systemSettings (legado)
     const setting = await prisma.systemSetting.findFirst({
       where: {
         key,
