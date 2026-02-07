@@ -71,7 +71,6 @@ export function SemanticSearch({
   const [activeIndex, setActiveIndex] = useState(-1);
   const debouncedQuery = useDebounce(query, debounceMs);
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const shouldSearch = debouncedQuery.length >= minChars;
 
@@ -85,7 +84,8 @@ export function SemanticSearch({
     { enabled: shouldSearch && hasEmbeddings, staleTime: 10_000 }
   );
 
-  const results: SemanticResult[] = useMemo(
+  // Cast via unknown: SemanticSearchResult lacks entityType (added by enrichment)
+  const results = useMemo(
     () => (searchData?.results ?? []) as unknown as SemanticResult[],
     [searchData?.results]
   );
@@ -118,7 +118,7 @@ export function SemanticSearch({
     if (!isOpen || results.length === 0) return;
     if (e.key === "ArrowDown") { e.preventDefault(); setActiveIndex((i) => Math.min(i + 1, results.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setActiveIndex((i) => Math.max(i - 1, 0)); }
-    else if (e.key === "Enter" && activeIndex >= 0) { e.preventDefault(); handleSelect(results[activeIndex]); }
+    else if (e.key === "Enter") { e.preventDefault(); handleSelect(results[activeIndex >= 0 ? activeIndex : 0]); }
     else if (e.key === "Escape") { setIsOpen(false); }
   };
 
@@ -133,7 +133,6 @@ export function SemanticSearch({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
         )}
         <input
-          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

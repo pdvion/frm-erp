@@ -112,6 +112,19 @@ describe("SemanticSearch", () => {
     expect(mockOnSelect).toHaveBeenCalledWith({ id: "id-1", description: "A — Item A", score: 0.9 });
   });
 
+  it("selects first result on Enter without ArrowDown", async () => {
+    setupWithEmbeddings([
+      { entityId: "id-1", entityType: "material", similarity: 0.9, content: "A", entity: { code: "A", description: "Item A" } },
+      { entityId: "id-2", entityType: "material", similarity: 0.8, content: "B", entity: { code: "B", description: "Item B" } },
+    ]);
+    render(<SemanticSearch entityType="material" onSelect={mockOnSelect} />);
+    const input = screen.getByRole("combobox");
+    fireEvent.change(input, { target: { value: "test" } });
+    await waitFor(() => { expect(screen.getByText("A — Item A")).toBeTruthy(); });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(mockOnSelect).toHaveBeenCalledWith({ id: "id-1", description: "A — Item A", score: 0.9 });
+  });
+
   it("closes dropdown on Escape", async () => {
     setupWithEmbeddings([
       { entityId: "id-1", entityType: "material", similarity: 0.9, content: "A", entity: { code: "A", description: "Item A" } },
