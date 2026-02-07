@@ -5,6 +5,7 @@ import {
   classifyWithAI,
   type ClassificationResult,
 } from "@/lib/ai/classifier";
+import { getOpenAIKey } from "@/server/services/getAIApiKey";
 
 export const aiClassifierRouter = createTRPCRouter({
   /**
@@ -50,17 +51,7 @@ export const aiClassifierRouter = createTRPCRouter({
       let result: ClassificationResult;
 
       if (input.useAI) {
-        // Buscar token de IA configurado
-        const aiSetting = await ctx.prisma.systemSetting.findFirst({
-          where: {
-            key: "openai_token",
-            companyId: ctx.companyId,
-          },
-        });
-
-        const apiKey = aiSetting?.value
-          ? (aiSetting.value as { value: string }).value
-          : null;
+        const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
 
         if (apiKey) {
           result = await classifyWithAI(

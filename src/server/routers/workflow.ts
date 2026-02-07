@@ -7,6 +7,7 @@ import {
   PROMPT_SUGGESTIONS,
   type GeneratedWorkflow,
 } from "@/lib/ai/workflowGenerator";
+import { getOpenAIKey } from "@/server/services/getAIApiKey";
 
 export const workflowRouter = createTRPCRouter({
   // ============================================================================
@@ -820,22 +821,13 @@ export const workflowRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Get AI token from settings
-      const aiConfig = await ctx.prisma.systemSetting.findFirst({
-        where: {
-          companyId: ctx.companyId,
-          category: "ai",
-          key: "openai_token",
-        },
-      });
+      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
 
-      if (!aiConfig?.value || typeof aiConfig.value !== "string") {
+      if (!apiKey) {
         throw new Error(
           "Token de IA não configurado. Configure em Configurações > IA."
         );
       }
-
-      const apiKey = aiConfig.value;
 
       try {
         let workflow: GeneratedWorkflow;
