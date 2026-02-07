@@ -3,200 +3,299 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { getOpenAIKey } from "@/server/services/getAIApiKey";
 import {
-  composeMaterialEmbeddingText,
+  composeEmbeddingText,
   generateEmbedding,
   upsertEmbedding,
   deleteEmbedding,
   processEmbeddingsBatch,
   getEmbeddingStatus,
-  type MaterialEmbeddingData,
+  EMBEDDABLE_ENTITIES,
+  type EmbeddableEntity,
+  type EntityEmbeddingData,
 } from "@/lib/ai/embeddings";
+
+// ============================================
+// HELPERS — fetch + compose por entidade
+// ============================================
+
+const entityTypeSchema = z.enum(["material", "product", "customer", "supplier", "employee"]);
+
+/** Busca uma entidade pelo ID e retorna EntityEmbeddingData */
+async function fetchEntityData(
+  prisma: Parameters<typeof getOpenAIKey>[0],
+  entityType: EmbeddableEntity,
+  entityId: string,
+  companyId: string
+): Promise<EntityEmbeddingData | null> {
+  switch (entityType) {
+    case "material": {
+      const m = await prisma.material.findFirst({
+        where: { id: entityId, OR: [{ companyId }, { isShared: true }] },
+        include: { category: { select: { name: true } } },
+      });
+      if (!m) return null;
+      let subCategoryName: string | null = null;
+      if (m.subCategoryId) {
+        const sc = await prisma.category.findUnique({ where: { id: m.subCategoryId }, select: { name: true } });
+        subCategoryName = sc?.name ?? null;
+      }
+      return { type: "material", data: { id: m.id, code: m.code, description: m.description, internalCode: m.internalCode, ncm: m.ncm, unit: m.unit, categoryName: m.category?.name, subCategoryName, manufacturer: m.manufacturer, notes: m.notes, barcode: m.barcode } };
+    }
+    case "product": {
+      const p = await prisma.product.findFirst({
+        where: { id: entityId, companyId },
+        include: { category: { select: { name: true } }, material: { select: { description: true } } },
+      });
+      if (!p) return null;
+      return { type: "product", data: { id: p.id, code: p.code, name: p.name, shortDescription: p.shortDescription, description: p.description, tags: p.tags, categoryName: p.category?.name, materialDescription: p.material?.description, specifications: p.specifications as Record<string, unknown> | null } };
+    }
+    case "customer": {
+      const c = await prisma.customer.findFirst({
+        where: { id: entityId, companyId },
+      });
+      if (!c) return null;
+      return { type: "customer", data: { id: c.id, code: c.code, companyName: c.companyName, tradeName: c.tradeName, cnpj: c.cnpj, cpf: c.cpf, city: c.addressCity, state: c.addressState, contactName: c.contactName, notes: c.notes } };
+    }
+    case "supplier": {
+      const s = await prisma.supplier.findFirst({
+        where: { id: entityId, OR: [{ companyId }, { isShared: true }] },
+      });
+      if (!s) return null;
+      const cats: string[] = [];
+      if (s.cat01Embalagens) cats.push("Embalagens");
+      if (s.cat02Tintas) cats.push("Tintas");
+      if (s.cat03OleosGraxas) cats.push("Óleos/Graxas");
+      if (s.cat04Dispositivos) cats.push("Dispositivos");
+      if (s.cat05Acessorios) cats.push("Acessórios");
+      if (s.cat06Manutencao) cats.push("Manutenção");
+      if (s.cat07Servicos) cats.push("Serviços");
+      if (s.cat08Escritorio) cats.push("Escritório");
+      return { type: "supplier", data: { id: s.id, code: s.code, companyName: s.companyName, tradeName: s.tradeName, cnpj: s.cnpj, city: s.city, state: s.state, cnae: s.cnae, categories: cats, notes: s.notes } };
+    }
+    case "employee": {
+      const e = await prisma.employee.findFirst({
+        where: { id: entityId, companyId },
+        include: { department: { select: { name: true } }, position: { select: { name: true } } },
+      });
+      if (!e) return null;
+      return { type: "employee", data: { id: e.id, code: e.code, name: e.name, cpf: e.cpf, email: e.email, departmentName: e.department?.name, positionName: e.position?.name, contractType: e.contractType, notes: e.notes } };
+    }
+  }
+}
+
+/** Busca entidades pendentes de embedding em batch */
+async function fetchPendingEntities(
+  prisma: Parameters<typeof getOpenAIKey>[0],
+  entityType: EmbeddableEntity,
+  companyId: string,
+  existingIds: string[],
+  limit: number,
+  forceRegenerate: boolean
+): Promise<EntityEmbeddingData[]> {
+  const notInFilter = existingIds.length > 0 && !forceRegenerate
+    ? { id: { notIn: existingIds } }
+    : {};
+
+  switch (entityType) {
+    case "material": {
+      const items = await prisma.material.findMany({
+        where: { OR: [{ companyId }, { isShared: true }], status: "ACTIVE", ...notInFilter },
+        include: { category: { select: { name: true } } },
+        take: limit,
+        orderBy: { code: "asc" },
+      });
+      // Subcategorias em batch
+      const subCatIds = [...new Set(items.map((m) => m.subCategoryId).filter(Boolean))] as string[];
+      const subCats = subCatIds.length > 0
+        ? await prisma.category.findMany({ where: { id: { in: subCatIds } }, select: { id: true, name: true } })
+        : [];
+      const scMap = new Map(subCats.map((c) => [c.id, c.name]));
+      return items.map((m) => ({ type: "material" as const, data: { id: m.id, code: m.code, description: m.description, internalCode: m.internalCode, ncm: m.ncm, unit: m.unit, categoryName: m.category?.name, subCategoryName: m.subCategoryId ? scMap.get(m.subCategoryId) ?? null : null, manufacturer: m.manufacturer, notes: m.notes, barcode: m.barcode } }));
+    }
+    case "product": {
+      const items = await prisma.product.findMany({
+        where: { companyId, ...notInFilter },
+        include: { category: { select: { name: true } }, material: { select: { description: true } } },
+        take: limit,
+        orderBy: { code: "asc" },
+      });
+      return items.map((p) => ({ type: "product" as const, data: { id: p.id, code: p.code, name: p.name, shortDescription: p.shortDescription, description: p.description, tags: p.tags, categoryName: p.category?.name, materialDescription: p.material?.description, specifications: p.specifications as Record<string, unknown> | null } }));
+    }
+    case "customer": {
+      const items = await prisma.customer.findMany({
+        where: { companyId, status: "ACTIVE", ...notInFilter },
+        take: limit,
+        orderBy: { code: "asc" },
+      });
+      return items.map((c) => ({ type: "customer" as const, data: { id: c.id, code: c.code, companyName: c.companyName, tradeName: c.tradeName, cnpj: c.cnpj, cpf: c.cpf, city: c.addressCity, state: c.addressState, contactName: c.contactName, notes: c.notes } }));
+    }
+    case "supplier": {
+      const items = await prisma.supplier.findMany({
+        where: { OR: [{ companyId }, { isShared: true }], status: "ACTIVE", ...notInFilter },
+        take: limit,
+        orderBy: { code: "asc" },
+      });
+      return items.map((s) => {
+        const cats: string[] = [];
+        if (s.cat01Embalagens) cats.push("Embalagens");
+        if (s.cat02Tintas) cats.push("Tintas");
+        if (s.cat03OleosGraxas) cats.push("Óleos/Graxas");
+        if (s.cat04Dispositivos) cats.push("Dispositivos");
+        if (s.cat05Acessorios) cats.push("Acessórios");
+        if (s.cat06Manutencao) cats.push("Manutenção");
+        if (s.cat07Servicos) cats.push("Serviços");
+        if (s.cat08Escritorio) cats.push("Escritório");
+        return { type: "supplier" as const, data: { id: s.id, code: s.code, companyName: s.companyName, tradeName: s.tradeName, cnpj: s.cnpj, city: s.city, state: s.state, cnae: s.cnae, categories: cats, notes: s.notes } };
+      });
+    }
+    case "employee": {
+      const items = await prisma.employee.findMany({
+        where: { companyId, status: "ACTIVE", ...notInFilter },
+        include: { department: { select: { name: true } }, position: { select: { name: true } } },
+        take: limit,
+        orderBy: { code: "asc" },
+      });
+      return items.map((e) => ({ type: "employee" as const, data: { id: e.id, code: e.code, name: e.name, cpf: e.cpf, email: e.email, departmentName: e.department?.name, positionName: e.position?.name, contractType: e.contractType, notes: e.notes } }));
+    }
+  }
+}
+
+// ============================================
+// ROUTER
+// ============================================
 
 export const embeddingsRouter = createTRPCRouter({
   /**
-   * Gerar embedding para um material específico
+   * Gerar embedding para uma entidade específica
    */
-  generateForMaterial: tenantProcedure
-    .input(z.object({ materialId: z.string().uuid() }))
+  generateForEntity: tenantProcedure
+    .input(z.object({
+      entityType: entityTypeSchema,
+      entityId: z.string().uuid(),
+    }))
     .mutation(async ({ ctx, input }) => {
       const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "Token de IA não configurado. Configure em Configurações > IA.",
-        });
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
 
-      const material = await ctx.prisma.material.findFirst({
-        where: {
-          id: input.materialId,
-          OR: [{ companyId: ctx.companyId }, { isShared: true }],
-        },
-        include: {
-          category: { select: { name: true } },
-        },
-      });
-
-      if (!material) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado" });
+      const entityData = await fetchEntityData(ctx.prisma, input.entityType, input.entityId, ctx.companyId);
+      if (!entityData) {
+        throw new TRPCError({ code: "NOT_FOUND", message: `${input.entityType} não encontrado(a)` });
       }
 
-      // Buscar subcategoria se existir
-      let subCategoryName: string | null = null;
-      if (material.subCategoryId) {
-        const subCat = await ctx.prisma.category.findUnique({
-          where: { id: material.subCategoryId },
-          select: { name: true },
-        });
-        subCategoryName = subCat?.name ?? null;
-      }
-
-      const embeddingData: MaterialEmbeddingData = {
-        id: material.id,
-        code: material.code,
-        description: material.description,
-        internalCode: material.internalCode,
-        ncm: material.ncm,
-        unit: material.unit,
-        categoryName: material.category?.name,
-        subCategoryName,
-        manufacturer: material.manufacturer,
-        notes: material.notes,
-        barcode: material.barcode,
-      };
-
-      const content = composeMaterialEmbeddingText(embeddingData);
-
+      const content = composeEmbeddingText(entityData);
       const { embedding, tokenCount } = await generateEmbedding(content, apiKey);
 
       await upsertEmbedding(ctx.prisma, {
-        entityType: "material",
-        entityId: material.id,
+        entityType: input.entityType,
+        entityId: input.entityId,
         companyId: ctx.companyId,
         content,
-        metadata: {
-          code: material.code,
-          ncm: material.ncm,
-          tokenCount,
-        },
+        metadata: { tokenCount },
       }, embedding);
 
-      return {
-        success: true,
-        materialId: material.id,
-        content,
-        tokenCount,
-      };
+      return { success: true, entityType: input.entityType, entityId: input.entityId, content, tokenCount };
     }),
 
   /**
-   * Gerar embeddings em batch para todos os materiais pendentes
+   * Gerar embeddings em batch por tipo de entidade
    */
   generateBatch: tenantProcedure
-    .input(
-      z.object({
-        limit: z.number().min(1).max(500).default(100),
-        forceRegenerate: z.boolean().default(false),
-      })
-    )
+    .input(z.object({
+      entityType: entityTypeSchema,
+      limit: z.number().min(1).max(500).default(100),
+      forceRegenerate: z.boolean().default(false),
+    }))
     .mutation(async ({ ctx, input }) => {
       const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "Token de IA não configurado. Configure em Configurações > IA.",
-        });
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
 
-      // Buscar materiais que ainda não têm embedding
-      let materialIds: string[] = [];
-
+      // IDs que já têm embedding
+      let existingIds: string[] = [];
       if (!input.forceRegenerate) {
-        // Buscar IDs que já têm embedding
-        const existingEmbeddings = await ctx.prisma.embedding.findMany({
-          where: {
-            entityType: "material",
-            companyId: ctx.companyId,
-          },
+        const existing = await ctx.prisma.embedding.findMany({
+          where: { entityType: input.entityType, companyId: ctx.companyId },
           select: { entityId: true },
         });
-        materialIds = existingEmbeddings.map((e) => e.entityId);
+        existingIds = existing.map((e) => e.entityId);
       }
 
-      const materials = await ctx.prisma.material.findMany({
-        where: {
-          OR: [{ companyId: ctx.companyId }, { isShared: true }],
-          status: "ACTIVE",
-          ...(materialIds.length > 0 && !input.forceRegenerate
-            ? { id: { notIn: materialIds } }
-            : {}),
-        },
-        include: {
-          category: { select: { name: true } },
-        },
-        take: input.limit,
-        orderBy: { code: "asc" },
-      });
-
-      if (materials.length === 0) {
-        return {
-          total: 0,
-          success: 0,
-          failed: 0,
-          errors: [],
-          message: "Todos os materiais já possuem embeddings.",
-        };
-      }
-
-      // Buscar subcategorias em batch
-      const subCatIds = [...new Set(materials.map((m) => m.subCategoryId).filter(Boolean))] as string[];
-      const subCategories = subCatIds.length > 0
-        ? await ctx.prisma.category.findMany({
-            where: { id: { in: subCatIds } },
-            select: { id: true, name: true },
-          })
-        : [];
-      const subCatMap = new Map(subCategories.map((c) => [c.id, c.name]));
-
-      const embeddingData: MaterialEmbeddingData[] = materials.map((m) => ({
-        id: m.id,
-        code: m.code,
-        description: m.description,
-        internalCode: m.internalCode,
-        ncm: m.ncm,
-        unit: m.unit,
-        categoryName: m.category?.name,
-        subCategoryName: m.subCategoryId ? subCatMap.get(m.subCategoryId) ?? null : null,
-        manufacturer: m.manufacturer,
-        notes: m.notes,
-        barcode: m.barcode,
-      }));
-
-      const result = await processEmbeddingsBatch(
-        ctx.prisma,
-        embeddingData,
-        ctx.companyId,
-        apiKey
+      const entities = await fetchPendingEntities(
+        ctx.prisma, input.entityType, ctx.companyId, existingIds, input.limit, input.forceRegenerate
       );
 
-      return {
-        ...result,
-        message: `${result.success} de ${result.total} embeddings gerados com sucesso.`,
-      };
+      if (entities.length === 0) {
+        return { total: 0, success: 0, failed: 0, errors: [] as Array<{ entityId: string; error: string }>, message: `Todos os ${input.entityType}s já possuem embeddings.` };
+      }
+
+      const result = await processEmbeddingsBatch(ctx.prisma, entities, ctx.companyId, apiKey);
+
+      return { ...result, message: `${result.success} de ${result.total} embeddings (${input.entityType}) gerados.` };
     }),
 
   /**
-   * Remover embedding de um material
+   * Gerar embeddings para TODAS as entidades pendentes
    */
-  deleteForMaterial: tenantProcedure
-    .input(z.object({ materialId: z.string().uuid() }))
+  generateAll: tenantProcedure
+    .input(z.object({
+      limitPerEntity: z.number().min(1).max(200).default(50),
+      forceRegenerate: z.boolean().default(false),
+    }))
     .mutation(async ({ ctx, input }) => {
-      await deleteEmbedding(ctx.prisma, "material", input.materialId);
+      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      if (!apiKey) {
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
+      }
+
+      const results: Record<string, { total: number; success: number; failed: number }> = {};
+
+      for (const entityType of EMBEDDABLE_ENTITIES) {
+        let existingIds: string[] = [];
+        if (!input.forceRegenerate) {
+          const existing = await ctx.prisma.embedding.findMany({
+            where: { entityType, companyId: ctx.companyId },
+            select: { entityId: true },
+          });
+          existingIds = existing.map((e) => e.entityId);
+        }
+
+        const entities = await fetchPendingEntities(
+          ctx.prisma, entityType, ctx.companyId, existingIds, input.limitPerEntity, input.forceRegenerate
+        );
+
+        if (entities.length === 0) {
+          results[entityType] = { total: 0, success: 0, failed: 0 };
+          continue;
+        }
+
+        const result = await processEmbeddingsBatch(ctx.prisma, entities, ctx.companyId, apiKey);
+        results[entityType] = { total: result.total, success: result.success, failed: result.failed };
+      }
+
+      const totalSuccess = Object.values(results).reduce((s, r) => s + r.success, 0);
+      const totalProcessed = Object.values(results).reduce((s, r) => s + r.total, 0);
+
+      return { results, totalProcessed, totalSuccess, message: `${totalSuccess} de ${totalProcessed} embeddings gerados.` };
+    }),
+
+  /**
+   * Remover embedding de uma entidade
+   */
+  deleteForEntity: tenantProcedure
+    .input(z.object({
+      entityType: entityTypeSchema,
+      entityId: z.string().uuid(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await deleteEmbedding(ctx.prisma, input.entityType, input.entityId);
       return { success: true };
     }),
 
   /**
-   * Status dos embeddings da empresa
+   * Status dos embeddings da empresa (por entidade)
    */
   getStatus: tenantProcedure.query(async ({ ctx }) => {
     return getEmbeddingStatus(ctx.prisma, ctx.companyId);

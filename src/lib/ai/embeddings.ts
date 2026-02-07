@@ -1,13 +1,12 @@
 import OpenAI from "openai";
 import type { PrismaClient } from "@prisma/client";
-import { Prisma } from "@prisma/client";
 
 // ============================================
 // TYPES
 // ============================================
 
 export interface EmbeddingInput {
-  entityType: string;
+  entityType: EmbeddableEntity;
   entityId: string;
   companyId: string;
   content: string;
@@ -29,6 +28,15 @@ export interface BatchResult {
   errors: Array<{ entityId: string; error: string }>;
 }
 
+/** Entidades suportadas para embedding */
+export type EmbeddableEntity = "material" | "product" | "customer" | "supplier" | "employee";
+
+export const EMBEDDABLE_ENTITIES: EmbeddableEntity[] = [
+  "material", "product", "customer", "supplier", "employee",
+];
+
+// --- Data interfaces por entidade ---
+
 export interface MaterialEmbeddingData {
   id: string;
   code: number;
@@ -43,6 +51,65 @@ export interface MaterialEmbeddingData {
   barcode?: string | null;
 }
 
+export interface ProductEmbeddingData {
+  id: string;
+  code: string;
+  name: string;
+  shortDescription?: string | null;
+  description?: string | null;
+  tags?: string[];
+  categoryName?: string | null;
+  materialDescription?: string | null;
+  specifications?: Record<string, unknown> | null;
+}
+
+export interface CustomerEmbeddingData {
+  id: string;
+  code: string;
+  companyName: string;
+  tradeName?: string | null;
+  cnpj?: string | null;
+  cpf?: string | null;
+  city?: string | null;
+  state?: string | null;
+  contactName?: string | null;
+  notes?: string | null;
+  segment?: string | null;
+}
+
+export interface SupplierEmbeddingData {
+  id: string;
+  code: number;
+  companyName: string;
+  tradeName?: string | null;
+  cnpj?: string | null;
+  city?: string | null;
+  state?: string | null;
+  cnae?: string | null;
+  categories?: string[];
+  notes?: string | null;
+}
+
+export interface EmployeeEmbeddingData {
+  id: string;
+  code: number;
+  name: string;
+  cpf?: string | null;
+  email?: string | null;
+  departmentName?: string | null;
+  positionName?: string | null;
+  contractType: string;
+  notes?: string | null;
+}
+
+/** Union de todos os tipos de dados de embedding */
+export type EntityEmbeddingData =
+  | { type: "material"; data: MaterialEmbeddingData }
+  | { type: "product"; data: ProductEmbeddingData }
+  | { type: "customer"; data: CustomerEmbeddingData }
+  | { type: "supplier"; data: SupplierEmbeddingData }
+  | { type: "employee"; data: EmployeeEmbeddingData };
+
 // ============================================
 // CONSTANTS
 // ============================================
@@ -56,48 +123,92 @@ const BATCH_DELAY_MS = 200;
 // TEXT COMPOSITION
 // ============================================
 
-/**
- * Compõe o texto para embedding de um material
- * Combina campos relevantes para busca semântica
- */
-export function composeMaterialEmbeddingText(material: MaterialEmbeddingData): string {
-  const parts: string[] = [];
+/** Helper: junta partes não-nulas com separador pipe */
+function joinParts(parts: (string | null | undefined | false)[]): string {
+  return parts.filter(Boolean).join(" | ");
+}
 
-  parts.push(material.description);
+export function composeMaterialEmbeddingText(d: MaterialEmbeddingData): string {
+  return joinParts([
+    d.description,
+    d.internalCode && `Código interno: ${d.internalCode}`,
+    `Código: ${d.code}`,
+    d.ncm && `NCM: ${d.ncm}`,
+    d.categoryName && `Categoria: ${d.categoryName}`,
+    d.subCategoryName && `Subcategoria: ${d.subCategoryName}`,
+    `Unidade: ${d.unit}`,
+    d.manufacturer && `Fabricante: ${d.manufacturer}`,
+    d.barcode && `Código de barras: ${d.barcode}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
 
-  if (material.internalCode) {
-    parts.push(`Código interno: ${material.internalCode}`);
+export function composeProductEmbeddingText(d: ProductEmbeddingData): string {
+  const specsStr = d.specifications
+    ? Object.entries(d.specifications).map(([k, v]) => `${k}: ${v}`).join(", ")
+    : null;
+
+  return joinParts([
+    d.name,
+    `SKU: ${d.code}`,
+    d.shortDescription,
+    d.description,
+    d.categoryName && `Categoria: ${d.categoryName}`,
+    d.materialDescription && `Material: ${d.materialDescription}`,
+    d.tags && d.tags.length > 0 && `Tags: ${d.tags.join(", ")}`,
+    specsStr && `Especificações: ${specsStr}`,
+  ]);
+}
+
+export function composeCustomerEmbeddingText(d: CustomerEmbeddingData): string {
+  return joinParts([
+    d.companyName,
+    d.tradeName && `Nome fantasia: ${d.tradeName}`,
+    `Código: ${d.code}`,
+    d.cnpj && `CNPJ: ${d.cnpj}`,
+    d.cpf && `CPF: ${d.cpf}`,
+    d.city && d.state && `${d.city}/${d.state}`,
+    d.contactName && `Contato: ${d.contactName}`,
+    d.segment && `Segmento: ${d.segment}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
+
+export function composeSupplierEmbeddingText(d: SupplierEmbeddingData): string {
+  return joinParts([
+    d.companyName,
+    d.tradeName && `Nome fantasia: ${d.tradeName}`,
+    `Código: ${d.code}`,
+    d.cnpj && `CNPJ: ${d.cnpj}`,
+    d.city && d.state && `${d.city}/${d.state}`,
+    d.cnae && `CNAE: ${d.cnae}`,
+    d.categories && d.categories.length > 0 && `Categorias: ${d.categories.join(", ")}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
+
+export function composeEmployeeEmbeddingText(d: EmployeeEmbeddingData): string {
+  return joinParts([
+    d.name,
+    `Matrícula: ${d.code}`,
+    d.cpf && `CPF: ${d.cpf}`,
+    d.email && `Email: ${d.email}`,
+    d.departmentName && `Departamento: ${d.departmentName}`,
+    d.positionName && `Cargo: ${d.positionName}`,
+    `Contrato: ${d.contractType}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
+
+/** Compõe texto de embedding para qualquer entidade suportada */
+export function composeEmbeddingText(entity: EntityEmbeddingData): string {
+  switch (entity.type) {
+    case "material": return composeMaterialEmbeddingText(entity.data);
+    case "product": return composeProductEmbeddingText(entity.data);
+    case "customer": return composeCustomerEmbeddingText(entity.data);
+    case "supplier": return composeSupplierEmbeddingText(entity.data);
+    case "employee": return composeEmployeeEmbeddingText(entity.data);
   }
-
-  parts.push(`Código: ${material.code}`);
-
-  if (material.ncm) {
-    parts.push(`NCM: ${material.ncm}`);
-  }
-
-  if (material.categoryName) {
-    parts.push(`Categoria: ${material.categoryName}`);
-  }
-
-  if (material.subCategoryName) {
-    parts.push(`Subcategoria: ${material.subCategoryName}`);
-  }
-
-  parts.push(`Unidade: ${material.unit}`);
-
-  if (material.manufacturer) {
-    parts.push(`Fabricante: ${material.manufacturer}`);
-  }
-
-  if (material.barcode) {
-    parts.push(`Código de barras: ${material.barcode}`);
-  }
-
-  if (material.notes) {
-    parts.push(`Observações: ${material.notes}`);
-  }
-
-  return parts.join(" | ");
 }
 
 // ============================================
@@ -220,23 +331,23 @@ export async function deleteEmbedding(
 }
 
 /**
- * Processa embeddings em batch para materiais
+ * Processa embeddings em batch para qualquer entidade
  */
 export async function processEmbeddingsBatch(
   prisma: PrismaClient,
-  materials: MaterialEmbeddingData[],
+  entities: EntityEmbeddingData[],
   companyId: string,
   apiKey: string
 ): Promise<BatchResult> {
   const result: BatchResult = {
-    total: materials.length,
+    total: entities.length,
     success: 0,
     failed: 0,
     errors: [],
   };
 
   // Compor textos
-  const texts = materials.map(composeMaterialEmbeddingText);
+  const texts = entities.map(composeEmbeddingText);
 
   // Gerar embeddings em batch
   let embeddings: Array<{ embedding: number[]; tokenCount: number }>;
@@ -246,22 +357,21 @@ export async function processEmbeddingsBatch(
     const message = error instanceof Error ? error.message : "Erro desconhecido";
     return {
       ...result,
-      failed: materials.length,
-      errors: materials.map((m) => ({ entityId: m.id, error: message })),
+      failed: entities.length,
+      errors: entities.map((e) => ({ entityId: e.data.id, error: message })),
     };
   }
 
   // Persistir cada embedding
-  for (let i = 0; i < materials.length; i++) {
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
     try {
       await upsertEmbedding(prisma, {
-        entityType: "material",
-        entityId: materials[i].id,
+        entityType: entity.type,
+        entityId: entity.data.id,
         companyId,
         content: texts[i],
         metadata: {
-          code: materials[i].code,
-          ncm: materials[i].ncm,
           tokenCount: embeddings[i].tokenCount,
         },
       }, embeddings[i].embedding);
@@ -270,7 +380,7 @@ export async function processEmbeddingsBatch(
     } catch (error) {
       result.failed++;
       result.errors.push({
-        entityId: materials[i].id,
+        entityId: entity.data.id,
         error: error instanceof Error ? error.message : "Erro ao persistir",
       });
     }
@@ -283,52 +393,87 @@ export async function processEmbeddingsBatch(
 // STATUS
 // ============================================
 
-export interface EmbeddingStatus {
-  totalMaterials: number;
+export interface EntityEmbeddingStatus {
+  entityType: EmbeddableEntity;
+  totalEntities: number;
   totalEmbeddings: number;
   pendingCount: number;
   coveragePercent: number;
+}
+
+export interface EmbeddingStatus {
+  entities: EntityEmbeddingStatus[];
+  totalEntities: number;
+  totalEmbeddings: number;
+  overallCoveragePercent: number;
   lastUpdated: Date | null;
 }
 
 /**
- * Retorna status dos embeddings para uma empresa
+ * Retorna status dos embeddings para uma empresa, por entidade
  */
 export async function getEmbeddingStatus(
   prisma: PrismaClient,
   companyId: string
 ): Promise<EmbeddingStatus> {
-  const [totalMaterials, embeddingData] = await Promise.all([
-    prisma.material.count({
-      where: {
-        OR: [{ companyId }, { isShared: true }],
-        status: "ACTIVE",
-      },
-    }),
-    prisma.embedding.findMany({
-      where: {
-        entityType: "material",
-        companyId,
-      },
-      select: {
-        updatedAt: true,
-      },
-      orderBy: { updatedAt: "desc" },
-    }),
-  ]);
+  const tenantFilter = { OR: [{ companyId }, { isShared: true }] };
 
-  const totalEmbeddings = embeddingData.length;
-  const pendingCount = totalMaterials - totalEmbeddings;
-  const coveragePercent = totalMaterials > 0
-    ? Math.round((totalEmbeddings / totalMaterials) * 100)
-    : 0;
-  const lastUpdated = embeddingData[0]?.updatedAt ?? null;
+  // Contar entidades por tipo em paralelo
+  const [materials, products, customers, suppliers, employees, allEmbeddings] =
+    await Promise.all([
+      prisma.material.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
+      prisma.product.count({ where: { companyId } }),
+      prisma.customer.count({ where: { companyId, status: "ACTIVE" } }),
+      prisma.supplier.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
+      prisma.employee.count({ where: { companyId, status: "ACTIVE" } }),
+      prisma.embedding.groupBy({
+        by: ["entityType"],
+        where: { companyId },
+        _count: true,
+      }),
+    ]);
+
+  const embeddingCountMap = new Map(
+    allEmbeddings.map((e) => [e.entityType, e._count])
+  );
+
+  const entityCounts: Record<EmbeddableEntity, number> = {
+    material: materials,
+    product: products,
+    customer: customers,
+    supplier: suppliers,
+    employee: employees,
+  };
+
+  const entities: EntityEmbeddingStatus[] = EMBEDDABLE_ENTITIES.map((type) => {
+    const total = entityCounts[type];
+    const embedded = embeddingCountMap.get(type) ?? 0;
+    return {
+      entityType: type,
+      totalEntities: total,
+      totalEmbeddings: embedded,
+      pendingCount: Math.max(0, total - embedded),
+      coveragePercent: total > 0 ? Math.round((embedded / total) * 100) : 0,
+    };
+  });
+
+  const totalEntities = entities.reduce((s, e) => s + e.totalEntities, 0);
+  const totalEmbeddings = entities.reduce((s, e) => s + e.totalEmbeddings, 0);
+
+  // Último update
+  const lastEmbedding = await prisma.embedding.findFirst({
+    where: { companyId },
+    orderBy: { updatedAt: "desc" },
+    select: { updatedAt: true },
+  });
 
   return {
-    totalMaterials,
+    entities,
+    totalEntities,
     totalEmbeddings,
-    pendingCount,
-    coveragePercent,
-    lastUpdated,
+    overallCoveragePercent: totalEntities > 0
+      ? Math.round((totalEmbeddings / totalEntities) * 100)
+      : 0,
+    lastUpdated: lastEmbedding?.updatedAt ?? null,
   };
 }
