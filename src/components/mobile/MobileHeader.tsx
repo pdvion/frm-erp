@@ -83,21 +83,24 @@ export interface MobileDrawerMenuProps {
 }
 
 export function MobileDrawerMenu({ isOpen, onClose, children }: MobileDrawerMenuProps) {
-  if (!isOpen) return null;
-
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/50 transition-opacity"
+        className={`fixed inset-0 z-50 bg-black/50 transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={onClose}
         aria-hidden="true"
       />
       {/* Drawer */}
       <nav
-        className="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 shadow-xl transform transition-transform safe-area-top safe-area-bottom"
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 shadow-xl transition-transform duration-300 ease-in-out safe-area-top safe-area-bottom ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
         role="navigation"
         aria-label="Menu principal"
+        aria-hidden={!isOpen}
       >
         <div className="flex items-center justify-between h-14 px-4 border-b border-gray-200 dark:border-gray-800">
           <span className="text-lg font-bold text-blue-600 dark:text-blue-400">FRM ERP</span>

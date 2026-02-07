@@ -14,9 +14,10 @@ const API_CACHE = "frm-api-v1";
 
 const STATIC_ASSETS = [
   "/m",
+  "/m/offline",
   "/manifest.json",
-  "/icons/icon-192x192.svg",
-  "/icons/icon-512x512.svg",
+  "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png",
 ];
 
 const OFFLINE_PAGE = "/m/offline";
@@ -56,7 +57,17 @@ self.addEventListener("fetch", (event) => {
   // Skip chrome-extension and other non-http(s) requests
   if (!url.protocol.startsWith("http")) return;
 
-  // API requests: Stale While Revalidate
+  // Skip auth and sensitive API routes entirely (no caching)
+  if (
+    url.pathname.startsWith("/api/auth") ||
+    url.pathname.startsWith("/api/trpc") ||
+    url.pathname.includes("/token") ||
+    url.pathname.includes("/session")
+  ) {
+    return;
+  }
+
+  // API requests: Stale While Revalidate (non-sensitive only)
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(staleWhileRevalidate(request, API_CACHE));
     return;
