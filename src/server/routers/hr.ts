@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { Prisma } from "@prisma/client";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 
 // Tabela INSS 2024
 function calculateINSS(salary: number): number {
@@ -176,9 +177,13 @@ export const hrRouter = createTRPCRouter({
         orderBy: { code: "desc" },
       });
 
-      return ctx.prisma.employee.create({
+      const employee = await ctx.prisma.employee.create({
         data: { ...input, code: (lastEmployee?.code || 0) + 1, companyId: ctx.companyId, createdBy: ctx.tenant.userId },
       });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "employee", employee.id, "create");
+
+      return employee;
     }),
 
   updateEmployee: tenantProcedure
@@ -196,7 +201,11 @@ export const hrRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
-      return ctx.prisma.employee.update({ where: { id }, data });
+      const employee = await ctx.prisma.employee.update({ where: { id }, data });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "employee", employee.id, "update");
+
+      return employee;
     }),
 
   // ==========================================================================

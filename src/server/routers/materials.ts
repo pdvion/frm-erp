@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 
 export const materialsRouter = createTRPCRouter({
   // Listar todos os materiais
@@ -157,6 +158,8 @@ export const materialsRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "material", material.id, "create");
+
       return material;
     }),
 
@@ -229,6 +232,8 @@ export const materialsRouter = createTRPCRouter({
         });
       }
 
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "material", material.id, "update");
+
       return material;
     }),
 
@@ -250,6 +255,8 @@ export const materialsRouter = createTRPCRouter({
           companyId: ctx.companyId,
         });
       }
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "material", input.id, "delete");
 
       return deleted;
     }),

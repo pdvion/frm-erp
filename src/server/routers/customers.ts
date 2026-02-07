@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 import { Prisma } from "@prisma/client";
 
 export const customersRouter = createTRPCRouter({
@@ -140,6 +141,8 @@ export const customersRouter = createTRPCRouter({
         },
       });
 
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "customer", customer.id, "create");
+
       return customer;
     }),
 
@@ -183,6 +186,8 @@ export const customersRouter = createTRPCRouter({
         where: { id, ...tenantFilter(ctx.companyId, false) },
         data,
       });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "customer", customer.id, "update");
 
       return customer;
     }),

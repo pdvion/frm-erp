@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 
 export const suppliersRouter = createTRPCRouter({
   // Listar todos os fornecedores (com filtro de tenant)
@@ -169,6 +170,8 @@ export const suppliersRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "supplier", supplier.id, "create");
+
       return supplier;
     }),
 
@@ -249,6 +252,8 @@ export const suppliersRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
 
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "supplier", supplier.id, "update");
+
       return supplier;
     }),
 
@@ -273,6 +278,8 @@ export const suppliersRouter = createTRPCRouter({
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "supplier", input.id, "delete");
 
       return deleted;
     }),

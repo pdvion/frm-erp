@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { type Prisma, ProductStatus } from "@prisma/client";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 
 // Helper para gerar slug
 function generateSlug(name: string): string {
@@ -280,7 +281,7 @@ export const productCatalogRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const slug = input.slug || generateSlug(input.name);
 
-      return ctx.prisma.product.create({
+      const product = await ctx.prisma.product.create({
         data: {
           code: input.code,
           name: input.name,
@@ -303,6 +304,10 @@ export const productCatalogRouter = createTRPCRouter({
           companyId: ctx.companyId,
         },
       });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "product", product.id, "create");
+
+      return product;
     }),
 
   updateProduct: tenantProcedure
@@ -331,7 +336,7 @@ export const productCatalogRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, specifications, ...rest } = input;
 
-      return ctx.prisma.product.update({
+      const product = await ctx.prisma.product.update({
         where: { id },
         data: {
           ...rest,
@@ -339,12 +344,20 @@ export const productCatalogRouter = createTRPCRouter({
           publishedAt: rest.isPublished ? new Date() : undefined,
         },
       });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "product", product.id, "update");
+
+      return product;
     }),
 
   deleteProduct: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.product.delete({ where: { id: input.id } });
+      const deleted = await ctx.prisma.product.delete({ where: { id: input.id } });
+
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "product", input.id, "delete");
+
+      return deleted;
     }),
 
   publishProduct: tenantProcedure
