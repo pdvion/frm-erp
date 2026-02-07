@@ -1,11 +1,11 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Package, 
   Plus, 
-  Search, 
   Filter, 
   ChevronLeft,
   ChevronRight,
@@ -22,17 +22,32 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { SemanticSearch } from "@/components/SemanticSearch";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { useMultiTenant } from "@/hooks/useMultiTenant";
 
 function MaterialsContent() {
+  const router = useRouter();
   const { filters, setFilter, setFilters, resetFilters } = useUrlFilters({
     defaults: { page: 1, search: "", status: undefined },
   });
   const { showCompanyColumn } = useMultiTenant();
+
+  const handleSemanticSelect = useCallback(
+    (entity: { id: string }) => {
+      router.push(`/materials/${entity.id}`);
+    },
+    [router]
+  );
+
+  const handleQueryChange = useCallback(
+    (query: string) => {
+      setFilters({ search: query, page: 1 });
+    },
+    [setFilters]
+  );
 
   const search = (filters.search as string) || "";
   const page = (filters.page as number) || 1;
@@ -73,18 +88,14 @@ function MaterialsContent() {
       <div>
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-muted z-10" />
-            <Input
-              placeholder="Buscar por descrição ou código..."
-              value={search}
-              onChange={(e) => {
-                setFilters({ search: e.target.value, page: 1 });
-              }}
-              className="pl-10"
-            />
-          </div>
+          {/* Search — semantic when embeddings available, text fallback otherwise */}
+          <SemanticSearch
+            entityType="material"
+            onSelect={handleSemanticSelect}
+            onQueryChange={handleQueryChange}
+            placeholder="Buscar materiais..."
+            className="flex-1"
+          />
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
