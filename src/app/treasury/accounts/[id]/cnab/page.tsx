@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -62,27 +63,27 @@ export default function CnabConfigPage() {
 
   const saveConfigMutation = trpc.cnab.saveConfig.useMutation({
     onSuccess: () => {
-      alert("Configuração salva com sucesso!");
+      toast.success("Configuração salva com sucesso!");
       refetch();
     },
     onError: (error) => {
-      alert(`Erro ao salvar: ${error.message}`);
+      toast.error(`Erro ao salvar: ${error.message}`);
     },
   });
 
   const processRetornoMutation = trpc.cnab.processRetorno.useMutation({
     onSuccess: (data) => {
-      alert(
-        `Retorno processado!\n` +
-        `Banco: ${data.banco}\n` +
-        `Títulos pagos: ${data.totalPagos}\n` +
+      toast.success(
+        `Retorno processado! ` +
+        `Banco: ${data.banco} | ` +
+        `Títulos pagos: ${data.totalPagos} | ` +
         `Títulos rejeitados: ${data.totalRejeitados}\n` +
         `Valor total: R$ ${data.valorTotal?.toFixed(2)}\n` +
         `Baixados no sistema: ${data.baixados}`
       );
     },
     onError: (error) => {
-      alert(`Erro ao processar retorno: ${error.message}`);
+      toast.error(`Erro ao processar retorno: ${error.message}`);
     },
   });
 
@@ -106,7 +107,7 @@ export default function CnabConfigPage() {
 
   const handleSave = () => {
     if (!config.agencia || !config.conta || !config.contaDigito || !config.cedente || !config.cedenteDocumento) {
-      alert("Preencha todos os campos obrigatórios");
+      toast.warning("Preencha todos os campos obrigatórios");
       return;
     }
 
@@ -127,7 +128,7 @@ export default function CnabConfigPage() {
 
   const handleProcessRetorno = () => {
     if (!retornoContent) {
-      alert("Selecione um arquivo de retorno");
+      toast.warning("Selecione um arquivo de retorno");
       return;
     }
 

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -65,14 +66,14 @@ export default function SalesQuoteDetailPage() {
       refetch();
       utils.salesQuotes.list.invalidate();
       utils.salesOrders.list.invalidate();
-      alert(`Pedido #${order.code} criado com sucesso!`);
+      toast.success(`Pedido #${order.code} criado com sucesso!`);
     },
   });
 
   const duplicateMutation = trpc.salesQuotes.duplicate.useMutation({
     onSuccess: (newQuote) => {
       utils.salesQuotes.list.invalidate();
-      alert(`Orçamento #${newQuote.code} criado como cópia!`);
+      toast.success(`Orçamento #${newQuote.code} criado como cópia!`);
     },
   });
 

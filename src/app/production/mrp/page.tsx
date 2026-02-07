@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -58,13 +59,13 @@ export default function MrpPage() {
 
   const runMrpMutation = trpc.mrp.run.useMutation({
     onSuccess: (data) => {
-      alert(`MRP executado com sucesso!\n${data.totalSuggestions} sugestões geradas:\n- ${data.productionSuggestions} de produção\n- ${data.purchaseSuggestions} de compra`);
+      toast.success(`MRP executado! ${data.totalSuggestions} sugestões: ${data.productionSuggestions} produção, ${data.purchaseSuggestions} compra`);
       refetchDashboard();
       refetchRuns();
       setSelectedRunId(data.runId);
     },
     onError: (error) => {
-      alert(`Erro ao executar MRP: ${error.message}`);
+      toast.error(`Erro ao executar MRP: ${error.message}`);
     },
   });
 

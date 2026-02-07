@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -69,7 +70,7 @@ export default function IssuedInvoiceDetailPage() {
     if (reason && reason.length >= 15) {
       cancelMutation.mutate({ id, reason });
     } else if (reason) {
-      alert("Motivo deve ter pelo menos 15 caracteres");
+      toast.warning("Motivo deve ter pelo menos 15 caracteres");
     }
   };
 
@@ -78,7 +79,7 @@ export default function IssuedInvoiceDetailPage() {
     if (text && text.length >= 15) {
       correctionMutation.mutate({ id, correctionText: text });
     } else if (text) {
-      alert("Correção deve ter pelo menos 15 caracteres");
+      toast.warning("Correção deve ter pelo menos 15 caracteres");
     }
   };
 

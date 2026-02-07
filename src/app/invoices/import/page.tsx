@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PageHeader } from "@/components/PageHeader";
@@ -56,7 +57,7 @@ export default function ImportNFePage() {
     );
 
     if (xmlFiles.length === 0) {
-      alert("Selecione apenas arquivos XML");
+      toast.warning("Selecione apenas arquivos XML");
       return;
     }
 

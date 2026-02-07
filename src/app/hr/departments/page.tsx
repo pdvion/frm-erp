@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { 
   Building2, 
   Plus, 
@@ -55,7 +56,7 @@ export default function DepartmentsPage() {
       refetch();
     },
     onError: (error) => {
-      alert(error.message);
+      toast.error(error.message);
     },
   });
 

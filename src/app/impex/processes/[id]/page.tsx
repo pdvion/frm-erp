@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -39,17 +40,17 @@ export default function ImportProcessDetailPage({
 
   const deleteItemMutation = trpc.impex.deleteProcessItem.useMutation({
     onSuccess: () => refetch(),
-    onError: (error) => alert(`Erro ao excluir item: ${error.message}`),
+    onError: (error) => toast.error(`Erro ao excluir item: ${error.message}`),
   });
 
   const deleteCostMutation = trpc.impex.deleteProcessCost.useMutation({
     onSuccess: () => refetch(),
-    onError: (error) => alert(`Erro ao excluir custo: ${error.message}`),
+    onError: (error) => toast.error(`Erro ao excluir custo: ${error.message}`),
   });
 
   const deleteEventMutation = trpc.impex.deleteProcessEvent.useMutation({
     onSuccess: () => refetch(),
-    onError: (error) => alert(`Erro ao excluir evento: ${error.message}`),
+    onError: (error) => toast.error(`Erro ao excluir evento: ${error.message}`),
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {

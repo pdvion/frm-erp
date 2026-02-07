@@ -2,6 +2,8 @@
  * PDF Generator utility using browser print
  */
 
+import { toast } from "sonner";
+
 export interface PdfOptions {
   title: string;
   filename: string;
@@ -10,7 +12,7 @@ export interface PdfOptions {
 export function generatePdfFromHtml(content: string, options: PdfOptions): void {
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
-    alert("Por favor, permita pop-ups para gerar o PDF");
+    toast.warning("Por favor, permita pop-ups para gerar o PDF");
     return;
   }
 

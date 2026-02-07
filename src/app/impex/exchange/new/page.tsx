@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -35,7 +36,7 @@ export default function NewExchangeContractPage() {
       router.push(`/impex/exchange/${data.id}`);
     },
     onError: (error) => {
-      alert(`Erro ao criar contrato: ${error.message}`);
+      toast.error(`Erro ao criar contrato: ${error.message}`);
     },
   });
 

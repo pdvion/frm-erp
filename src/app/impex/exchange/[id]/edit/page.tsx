@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -52,7 +53,7 @@ export default function EditExchangeContractPage({
       router.push(`/impex/exchange/${id}`);
     },
     onError: (error) => {
-      alert(`Erro ao atualizar contrato: ${error.message}`);
+      toast.error(`Erro ao atualizar contrato: ${error.message}`);
     },
   });
 

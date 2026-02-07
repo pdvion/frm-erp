@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -112,7 +113,7 @@ export default function CnabPage() {
       .map((r: { id: string }) => r.id);
 
     if (pendingIds.length === 0) {
-      alert("Nenhum título pendente para gerar remessa");
+      toast.warning("Nenhum título pendente para gerar remessa");
       return;
     }
 

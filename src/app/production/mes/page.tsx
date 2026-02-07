@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -79,7 +80,7 @@ export default function MesPage() {
       refetchStatus();
       refetchDashboard();
       if (data.isComplete) {
-        alert("Ordem de produção concluída!");
+        toast.success("Ordem de produção concluída!");
       }
     },
   });

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
@@ -146,7 +147,7 @@ export default function NewVisualWorkflowPage() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      alert("Por favor, preencha o nome do workflow");
+      toast.warning("Por favor, preencha o nome do workflow");
       setShowSettings(true);
       return;
     }
@@ -198,7 +199,7 @@ export default function NewVisualWorkflowPage() {
       router.push("/workflow/definitions");
     } catch (error) {
       console.error("Error saving workflow:", error);
-      alert("Erro ao salvar workflow");
+      toast.error("Erro ao salvar workflow");
     } finally {
       setIsSaving(false);
     }

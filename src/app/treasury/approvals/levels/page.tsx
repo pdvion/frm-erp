@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -114,7 +115,7 @@ export default function ApprovalLevelsPage() {
     e.preventDefault();
 
     if (formData.approvers.length === 0) {
-      alert("Adicione pelo menos um aprovador");
+      toast.warning("Adicione pelo menos um aprovador");
       return;
     }
 
