@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowRight,
@@ -41,7 +42,7 @@ export default function CatalogSyncPage() {
 
   const syncMultipleMutation = trpc.productCatalog.syncMultiple.useMutation({
     onSuccess: (result) => {
-      alert(`${result.created} produtos criados, ${result.skipped} ignorados`);
+      toast.success(`${result.created} produtos criados, ${result.skipped} ignorados`);
       setSelectedMaterials([]);
       refetch();
       refetchStats();

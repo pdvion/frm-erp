@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -75,7 +76,7 @@ export default function NewProductionOrderPage() {
 
   const addMaterial = (material: { id: string; code: number; description: string }) => {
     if (materials.some((m) => m.materialId === material.id)) {
-      alert("Material já adicionado");
+      toast.warning("Material já adicionado");
       return;
     }
 
@@ -104,13 +105,13 @@ export default function NewProductionOrderPage() {
 
   const handleSubmit = () => {
     if (!productId) {
-      alert("Selecione um produto");
+      toast.warning("Selecione um produto");
       return;
     }
 
     const qty = parseFloat(quantity);
     if (isNaN(qty) || qty <= 0) {
-      alert("Informe uma quantidade válida");
+      toast.warning("Informe uma quantidade válida");
       return;
     }
 

@@ -5,7 +5,7 @@
  * @see https://supabase.com/docs/guides/database/vault
  */
 
-import { prisma } from "@/lib/prisma";
+import type { PrismaClient } from "@prisma/client";
 
 export type SecretName = 
   | "openai_token"
@@ -28,6 +28,7 @@ function getSecretName(name: SecretName, companyId: string): string {
  * Salva um secret no Supabase Vault
  */
 export async function saveSecret(
+  prisma: PrismaClient,
   name: SecretName,
   value: string,
   companyId: string,
@@ -58,6 +59,7 @@ export async function saveSecret(
  * Recupera um secret descriptografado do Vault
  */
 export async function getSecret(
+  prisma: PrismaClient,
   name: SecretName,
   companyId: string
 ): Promise<string | null> {
@@ -76,6 +78,7 @@ export async function getSecret(
  * Remove um secret do Vault
  */
 export async function deleteSecret(
+  prisma: PrismaClient,
   name: SecretName,
   companyId: string
 ): Promise<boolean> {
@@ -92,6 +95,7 @@ export async function deleteSecret(
  * Verifica se um secret existe no Vault
  */
 export async function hasSecret(
+  prisma: PrismaClient,
   name: SecretName,
   companyId: string
 ): Promise<boolean> {
@@ -109,7 +113,7 @@ export async function hasSecret(
 /**
  * Lista todos os secrets de uma empresa (sem valores)
  */
-export async function listSecrets(companyId: string): Promise<{
+export async function listSecrets(prisma: PrismaClient, companyId: string): Promise<{
   name: string;
   description: string | null;
   createdAt: Date;
@@ -138,6 +142,7 @@ export async function listSecrets(companyId: string): Promise<{
  * Migra secrets do system_settings para o Vault
  */
 export async function migrateSecretsFromSystemSettings(
+  prisma: PrismaClient,
   companyId: string,
   secretKeys: string[]
 ): Promise<{ migrated: string[]; skipped: string[] }> {
@@ -162,7 +167,7 @@ export async function migrateSecretsFromSystemSettings(
       continue;
     }
     
-    await saveSecret(key, secretValue, companyId, setting.description ?? undefined);
+    await saveSecret(prisma, key, secretValue, companyId, setting.description ?? undefined);
     migrated.push(key);
   }
   

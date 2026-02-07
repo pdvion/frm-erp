@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
@@ -85,11 +86,11 @@ export default function InvoiceDetailPage() {
 
   const generatePayablesMutation = trpc.nfe.generatePayables.useMutation({
     onSuccess: (data) => {
-      alert(`${data.created} título(s) gerado(s) no valor total de R$ ${data.total.toFixed(2)}`);
+      toast.success(`${data.created} título(s) gerado(s) no valor total de R$ ${data.total.toFixed(2)}`);
       refetch();
     },
     onError: (error) => {
-      alert(`Erro: ${error.message}`);
+      toast.error(error.message);
     },
   });
 

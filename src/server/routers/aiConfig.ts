@@ -13,6 +13,7 @@ import {
   getTaskConfigKey,
   type AITaskType,
 } from "@/lib/ai/taskConfig";
+import { saveSecret, deleteSecret, hasSecret, migrateSecretsFromSystemSettings } from "@/server/services/secrets";
 
 // Schema para providers
 const aiProviderSchema = z.enum(AI_PROVIDERS);
@@ -54,7 +55,7 @@ export const aiConfigRouter = createTRPCRouter({
     };
   }),
 
-  // Salvar token de IA
+  // Salvar token de IA (Vault + systemSettings)
   saveToken: sensitiveProcedure
     .input(
       z.object({
@@ -65,12 +66,16 @@ export const aiConfigRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const key = `${input.provider}_token`;
 
-      // Usar findFirst + create/update para evitar problemas com índice parcial
+      // 1. Salvar no Vault (criptografado)
+      try {
+        await saveSecret(ctx.prisma, key, input.token, ctx.companyId, `Token de API ${input.provider.toUpperCase()}`);
+      } catch {
+        // Vault indisponível — continuar com systemSettings
+      }
+
+      // 2. Salvar no systemSettings (fallback legado)
       const existing = await ctx.prisma.systemSetting.findFirst({
-        where: {
-          key,
-          companyId: ctx.companyId,
-        },
+        where: { key, companyId: ctx.companyId },
       });
 
       if (existing) {
@@ -97,7 +102,7 @@ export const aiConfigRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Remover token de IA
+  // Remover token de IA (Vault + systemSettings)
   removeToken: tenantProcedure
     .input(
       z.object({
@@ -107,15 +112,57 @@ export const aiConfigRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const key = `${input.provider}_token`;
 
+      // 1. Remover do Vault
+      try {
+        await deleteSecret(ctx.prisma, key, ctx.companyId);
+      } catch {
+        // Vault indisponível — continuar
+      }
+
+      // 2. Remover do systemSettings
       await ctx.prisma.systemSetting.deleteMany({
-        where: {
-          key,
-          companyId: ctx.companyId,
-        },
+        where: { key, companyId: ctx.companyId },
       });
 
       return { success: true };
     }),
+
+  // Migrar tokens do systemSettings para o Vault
+  migrateToVault: sensitiveProcedure.mutation(async ({ ctx }) => {
+    const secretKeys = ["openai_token", "anthropic_token", "google_token"];
+    const result = await migrateSecretsFromSystemSettings(ctx.prisma, ctx.companyId, secretKeys);
+
+    return {
+      success: true,
+      migrated: result.migrated,
+      skipped: result.skipped,
+    };
+  }),
+
+  // Verificar status do Vault
+  vaultStatus: tenantProcedure.query(async ({ ctx }) => {
+    const providers: AIProvider[] = ["openai", "anthropic", "google"];
+    const status: Record<string, { vault: boolean; legacy: boolean }> = {};
+
+    for (const p of providers) {
+      const key = `${p}_token`;
+      let inVault = false;
+      try {
+        inVault = await hasSecret(ctx.prisma, key, ctx.companyId);
+      } catch {
+        // Vault indisponível
+      }
+
+      const inLegacy = !!(await ctx.prisma.systemSetting.findFirst({
+        where: { key, companyId: ctx.companyId },
+        select: { id: true },
+      }));
+
+      status[p] = { vault: inVault, legacy: inLegacy };
+    }
+
+    return status;
+  }),
 
   // Definir provedor padrão
   setDefaultProvider: tenantProcedure

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -54,7 +55,7 @@ export default function ExchangeContractsPage() {
 
   const deleteMutation = trpc.impex.deleteExchangeContract.useMutation({
     onSuccess: () => refetch(),
-    onError: (error) => alert(`Erro ao excluir contrato: ${error.message}`),
+    onError: (error) => toast.error(`Erro ao excluir contrato: ${error.message}`),
   });
 
   const formatCurrency = (value: number | string | null | undefined, currency = "USD") => {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatDateTime } from "@/lib/formatters";
@@ -547,7 +548,7 @@ export default function ProductionOrderDetailPage() {
                 variant="danger"
                 onClick={() => {
                   if (!cancelReason.trim()) {
-                    alert("Informe o motivo");
+                    toast.warning("Informe o motivo");
                     return;
                   }
                   cancelMutation.mutate({ id, reason: cancelReason });

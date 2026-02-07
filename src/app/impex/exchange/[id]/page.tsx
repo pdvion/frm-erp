@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -56,7 +57,7 @@ export default function ExchangeContractDetailPage({
       refetch();
     },
     onError: (error) => {
-      alert(`Erro ao liquidar contrato: ${error.message}`);
+      toast.error(`Erro ao liquidar contrato: ${error.message}`);
     },
   });
 

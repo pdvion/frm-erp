@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -59,7 +60,7 @@ export default function NewRequisitionPage() {
     unit: string;
   }) => {
     if (items.some((i) => i.materialId === material.id)) {
-      alert("Material já adicionado");
+      toast.warning("Material já adicionado");
       return;
     }
 
@@ -90,7 +91,7 @@ export default function NewRequisitionPage() {
 
   const handleSubmit = () => {
     if (items.length === 0) {
-      alert("Adicione pelo menos um item");
+      toast.warning("Adicione pelo menos um item");
       return;
     }
 

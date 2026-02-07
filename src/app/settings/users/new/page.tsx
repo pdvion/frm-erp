@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -23,9 +24,9 @@ export default function NewUserPage() {
   const inviteMutation = trpc.users.invite.useMutation({
     onSuccess: (data) => {
       if (data.isNew) {
-        alert("Usuário criado com sucesso! Um e-mail de convite será enviado.");
+        toast.success("Usuário criado com sucesso! Um e-mail de convite será enviado.");
       } else {
-        alert("Usuário já existente foi adicionado a esta empresa.");
+        toast.info("Usuário já existente foi adicionado a esta empresa.");
       }
       router.push("/settings/users");
     },

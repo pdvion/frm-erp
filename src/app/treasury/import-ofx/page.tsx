@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -41,7 +42,7 @@ export default function ImportOFXPage() {
 
   const processFile = useCallback((file: File) => {
     if (!file.name.toLowerCase().endsWith(".ofx")) {
-      alert("Por favor, selecione um arquivo OFX válido");
+      toast.warning("Por favor, selecione um arquivo OFX válido");
       return;
     }
 

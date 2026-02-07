@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import {
@@ -166,7 +167,7 @@ export default function ApprovalsHistoryPage() {
             className="flex items-center gap-2 px-4 py-2 border border-theme rounded-lg text-theme hover:bg-theme-secondary transition-colors"
             onClick={() => {
               // TODO: Implementar exportação
-              alert("Exportação em desenvolvimento");
+              toast.info("Exportação em desenvolvimento");
             }}
           >
             <Download className="w-4 h-4" />

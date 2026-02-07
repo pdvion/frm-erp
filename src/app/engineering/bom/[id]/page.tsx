@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 
@@ -841,7 +842,7 @@ function CopyBomModal({
 
   const copyMutation = trpc.bom.copyBom.useMutation({
     onSuccess: () => {
-      alert(`Estrutura copiada com sucesso!`);
+      toast.success("Estrutura copiada com sucesso!");
       onSuccess();
     },
   });

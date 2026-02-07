@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageCard } from "@/components/ui/PageCard";
@@ -115,7 +116,7 @@ export default function DdaPage() {
           <Button
             onClick={() => {
               // TODO: Implementar sincronização real com API bancária (VIO-597)
-              alert("Sincronização com bancos será implementada após cadastro das credenciais bancárias.");
+              toast.info("Sincronização com bancos será implementada após cadastro das credenciais bancárias.");
             }}
             leftIcon={<RefreshCw className="h-4 w-4" />}
           >

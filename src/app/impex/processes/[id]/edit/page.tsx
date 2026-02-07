@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -69,7 +70,7 @@ export default function EditImportProcessPage({
       router.push(`/impex/processes/${id}`);
     },
     onError: (error) => {
-      alert(`Erro ao atualizar processo: ${error.message}`);
+      toast.error(`Erro ao atualizar processo: ${error.message}`);
     },
   });
 

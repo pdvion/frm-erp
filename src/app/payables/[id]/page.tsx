@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/formatters";
@@ -122,7 +123,7 @@ export default function PayableDetailPage() {
   const handlePayment = () => {
     const value = parseFloat(paymentValue);
     if (isNaN(value) || value <= 0) {
-      alert("Informe um valor válido");
+      toast.warning("Informe um valor válido");
       return;
     }
 
@@ -686,7 +687,7 @@ export default function PayableDetailPage() {
               <Button
                 onClick={() => {
                   if (!rescheduleDate || !rescheduleReason.trim()) {
-                    alert("Preencha todos os campos obrigatórios");
+                    toast.warning("Preencha todos os campos obrigatórios");
                     return;
                   }
                   rescheduleMutation.mutate({
@@ -752,7 +753,7 @@ export default function PayableDetailPage() {
               <Button
                 onClick={() => {
                   if (!cancelReason.trim()) {
-                    alert("Informe o motivo do cancelamento");
+                    toast.warning("Informe o motivo do cancelamento");
                     return;
                   }
                   cancelMutation.mutate({ id, reason: cancelReason });

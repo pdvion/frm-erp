@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { formatDateTime } from "@/lib/formatters";
@@ -489,7 +490,7 @@ export default function RequisitionDetailPage() {
                 variant="danger"
                 onClick={() => {
                   if (!cancelReason.trim()) {
-                    alert("Por favor, informe o motivo do cancelamento");
+                    toast.warning("Por favor, informe o motivo do cancelamento");
                     return;
                   }
                   cancelMutation.mutate({ id, reason: cancelReason });

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -45,7 +46,7 @@ export default function NewImportProcessPage() {
       router.push(`/impex/processes/${data.id}`);
     },
     onError: (error) => {
-      alert(`Erro ao criar processo: ${error.message}`);
+      toast.error(`Erro ao criar processo: ${error.message}`);
     },
   });
 
