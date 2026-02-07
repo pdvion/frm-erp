@@ -22,6 +22,8 @@ const publicRoutes = [
   "/mfa/setup",
 ];
 
+const mobileRoutes = ["/m"];
+
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -38,7 +40,11 @@ function AppLayoutContent({ children }: AppLayoutProps) {
     return pathname.startsWith(route + "/");
   });
 
-  if (isPublicRoute) {
+  const isMobileRoute = mobileRoutes.some((route) =>
+    pathname === route || pathname.startsWith(route + "/")
+  );
+
+  if (isPublicRoute || isMobileRoute) {
     return <>{children}</>;
   }
 
