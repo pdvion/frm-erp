@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable */
+ 
 /**
  * Generate PWA placeholder icons as SVG files.
  * Replace these with proper PNG icons for production.

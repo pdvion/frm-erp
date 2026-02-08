@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getGoogleKey } from "@/server/services/getAIApiKey";
 import {
   composeEmbeddingText,
   generateEmbedding,
@@ -23,7 +23,7 @@ const entityTypeSchema = z.enum(["material", "product", "customer", "supplier", 
 
 /** Busca uma entidade pelo ID e retorna EntityEmbeddingData */
 async function fetchEntityData(
-  prisma: Parameters<typeof getOpenAIKey>[0],
+  prisma: Parameters<typeof getGoogleKey>[0],
   entityType: EmbeddableEntity,
   entityId: string,
   companyId: string
@@ -86,7 +86,7 @@ async function fetchEntityData(
 
 /** Retorna resumo compacto de uma entidade para enriquecer resultados de busca */
 async function fetchEntitySummary(
-  prisma: Parameters<typeof getOpenAIKey>[0],
+  prisma: Parameters<typeof getGoogleKey>[0],
   entityType: EmbeddableEntity,
   entityId: string,
   companyId: string
@@ -132,7 +132,7 @@ async function fetchEntitySummary(
 
 /** Busca entidades pendentes de embedding em batch */
 async function fetchPendingEntities(
-  prisma: Parameters<typeof getOpenAIKey>[0],
+  prisma: Parameters<typeof getGoogleKey>[0],
   entityType: EmbeddableEntity,
   companyId: string,
   existingIds: string[],
@@ -221,7 +221,7 @@ export const embeddingsRouter = createTRPCRouter({
       entityId: z.string().uuid(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
@@ -255,7 +255,7 @@ export const embeddingsRouter = createTRPCRouter({
       forceRegenerate: z.boolean().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
@@ -292,7 +292,7 @@ export const embeddingsRouter = createTRPCRouter({
       forceRegenerate: z.boolean().default(false),
     }))
     .mutation(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
@@ -354,7 +354,7 @@ export const embeddingsRouter = createTRPCRouter({
       enrichResults: z.boolean().default(true),
     }))
     .query(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
       if (!apiKey) {
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
@@ -381,6 +381,108 @@ export const embeddingsRouter = createTRPCRouter({
       );
 
       return { results: enriched, total: enriched.length };
+    }),
+
+  /**
+   * Busca textual (fallback quando IA indisponível)
+   * Faz LIKE/contains em todas as entidades
+   */
+  textSearch: tenantProcedure
+    .input(z.object({
+      query: z.string().min(2).max(500),
+      limit: z.number().min(1).max(50).default(15),
+    }))
+    .query(async ({ ctx, input }) => {
+      const q = input.query;
+      const perEntity = Math.ceil(input.limit / 5);
+      const mode = "insensitive" as const;
+
+      const [materials, products, customers, suppliers, employees] = await Promise.all([
+        ctx.prisma.material.findMany({
+          where: {
+            OR: [{ companyId: ctx.companyId }, { isShared: true }],
+            AND: {
+              OR: [
+                { description: { contains: q, mode } },
+                { internalCode: { contains: q, mode } },
+                { ncm: { contains: q, mode } },
+                { manufacturer: { contains: q, mode } },
+                { barcode: { contains: q, mode } },
+              ],
+            },
+          },
+          select: { id: true, code: true, description: true, unit: true, ncm: true, manufacturer: true, status: true },
+          take: perEntity,
+          orderBy: { description: "asc" },
+        }),
+        ctx.prisma.product.findMany({
+          where: {
+            companyId: ctx.companyId,
+            OR: [
+              { name: { contains: q, mode } },
+              { code: { contains: q, mode } },
+              { shortDescription: { contains: q, mode } },
+            ],
+          },
+          select: { id: true, code: true, name: true, shortDescription: true, status: true, listPrice: true, salePrice: true },
+          take: perEntity,
+          orderBy: { name: "asc" },
+        }),
+        ctx.prisma.customer.findMany({
+          where: {
+            companyId: ctx.companyId,
+            OR: [
+              { companyName: { contains: q, mode } },
+              { tradeName: { contains: q, mode } },
+              { cnpj: { contains: q, mode } },
+              { cpf: { contains: q, mode } },
+              { contactName: { contains: q, mode } },
+            ],
+          },
+          select: { id: true, code: true, companyName: true, tradeName: true, cnpj: true, status: true, addressCity: true, addressState: true },
+          take: perEntity,
+          orderBy: { companyName: "asc" },
+        }),
+        ctx.prisma.supplier.findMany({
+          where: {
+            OR: [{ companyId: ctx.companyId }, { isShared: true }],
+            AND: {
+              OR: [
+                { companyName: { contains: q, mode } },
+                { tradeName: { contains: q, mode } },
+                { cnpj: { contains: q, mode } },
+              ],
+            },
+          },
+          select: { id: true, code: true, companyName: true, tradeName: true, cnpj: true, status: true, city: true, state: true },
+          take: perEntity,
+          orderBy: { companyName: "asc" },
+        }),
+        ctx.prisma.employee.findMany({
+          where: {
+            companyId: ctx.companyId,
+            OR: [
+              { name: { contains: q, mode } },
+              { cpf: { contains: q, mode } },
+              { email: { contains: q, mode } },
+            ],
+          },
+          select: { id: true, code: true, name: true, email: true, status: true, contractType: true },
+          take: perEntity,
+          orderBy: { name: "asc" },
+        }),
+      ]);
+
+      type TextResult = { entityId: string; entityType: string; entity: Record<string, unknown> };
+      const results: TextResult[] = [
+        ...materials.map((m) => ({ entityId: m.id, entityType: "material", entity: m as Record<string, unknown> })),
+        ...products.map((p) => ({ entityId: p.id, entityType: "product", entity: p as Record<string, unknown> })),
+        ...customers.map((c) => ({ entityId: c.id, entityType: "customer", entity: c as Record<string, unknown> })),
+        ...suppliers.map((s) => ({ entityId: s.id, entityType: "supplier", entity: s as Record<string, unknown> })),
+        ...employees.map((e) => ({ entityId: e.id, entityType: "employee", entity: e as Record<string, unknown> })),
+      ];
+
+      return { results: results.slice(0, input.limit), total: results.length };
     }),
 
   /**

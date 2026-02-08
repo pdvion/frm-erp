@@ -102,3 +102,17 @@ export async function getOpenAIKey(
   });
   return result?.apiKey ?? null;
 }
+
+/**
+ * Busca a API key Google com fallback
+ * Usado para embeddings (Google Gemini text-embedding-004)
+ */
+export async function getGoogleKey(
+  prisma: PrismaClient,
+  companyId: string
+): Promise<string | null> {
+  const result = await getAIApiKey(prisma, companyId, {
+    provider: "google",
+  });
+  return result?.apiKey ?? null;
+}

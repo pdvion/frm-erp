@@ -1310,8 +1310,8 @@ const columns: TableColumn<Item>[] = [
                   status === "demo"
                     ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
                     : status === "used"
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
-                    : "bg-theme-tertiary text-theme-muted border border-transparent"
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
+                      : "bg-theme-tertiary text-theme-muted border border-transparent"
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${

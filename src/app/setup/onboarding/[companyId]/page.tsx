@@ -88,7 +88,7 @@ export default function OnboardingWizardPage() {
               <div className={`flex flex-col items-center ${index > 0 ? "ml-4" : ""}`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep > step.id ? "bg-green-500 text-white" :
-                  currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
+                    currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
                 }`}>
                   {currentStep > step.id ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
                 </div>
