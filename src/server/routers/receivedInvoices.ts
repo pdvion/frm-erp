@@ -245,21 +245,24 @@ export const receivedInvoicesRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const includeRelations = {
-        supplier: true,
-        purchaseOrder: {
-          include: {
-            items: {
-              include: { material: true },
+      const queryOptions = {
+        omit: { xmlContent: true as const },
+        include: {
+          supplier: true,
+          purchaseOrder: {
+            include: {
+              items: {
+                include: { material: true },
+              },
             },
           },
-        },
-        items: {
-          include: {
-            material: { select: { id: true, code: true, description: true, unit: true } },
-            purchaseOrderItem: { select: { id: true, quantity: true, unitPrice: true } },
+          items: {
+            include: {
+              material: { select: { id: true, code: true, description: true, unit: true } },
+              purchaseOrderItem: { select: { id: true, quantity: true, unitPrice: true } },
+            },
+            orderBy: { itemNumber: "asc" as const },
           },
-          orderBy: { itemNumber: "asc" as const },
         },
       };
 
@@ -269,7 +272,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
         },
-        include: includeRelations,
+        ...queryOptions,
       });
 
       // Fallback: buscar por número da nota (caso o ID seja numérico)
@@ -281,7 +284,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
               invoiceNumber,
               ...tenantFilter(ctx.companyId, false),
             },
-            include: includeRelations,
+            ...queryOptions,
           });
         }
       }
