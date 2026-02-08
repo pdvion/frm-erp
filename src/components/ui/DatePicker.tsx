@@ -161,8 +161,8 @@ export function DatePicker({
               : isToday
                 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                 : isDisabled
-                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "text-theme-muted/50 cursor-not-allowed"
+                  : "text-theme-secondary hover:bg-theme-hover"
           }`}
         >
           {day}
@@ -176,7 +176,7 @@ export function DatePicker({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-theme-secondary mb-1">
           {label}
         </label>
       )}
@@ -185,18 +185,18 @@ export function DatePicker({
         onClick={handleOpen}
         className={`flex items-center gap-2 w-full px-3 py-2 border rounded-lg cursor-pointer transition-colors ${
           disabled
-            ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
-            : "bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500"
+            ? "bg-theme-secondary cursor-not-allowed"
+            : "bg-theme-input hover:border-theme"
         } ${
           error
             ? "border-red-500"
-            : "border-gray-300 dark:border-gray-600"
+            : "border-theme-input"
         }`}
       >
-        <Calendar className="w-4 h-4 text-gray-400" />
+        <Calendar className="w-4 h-4 text-theme-muted" />
         <span
           className={`flex-1 text-sm ${
-            value ? "text-gray-900 dark:text-gray-100" : "text-gray-400"
+            value ? "text-theme" : "text-theme-muted"
           }`}
         >
           {value ? formatDatePtBr(value) : placeholder}
@@ -205,7 +205,7 @@ export function DatePicker({
           <button
             type="button"
             onClick={handleClear}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-theme-muted hover:text-theme-secondary"
           >
             ×
           </button>
@@ -218,7 +218,7 @@ export function DatePicker({
         createPortal(
           <div
             ref={calendarRef}
-            className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4"
+            className="fixed z-[9999] bg-theme-card border border-theme rounded-lg shadow-lg p-4"
             style={{ top: coords.top, left: coords.left }}
           >
             {/* Header */}
@@ -226,19 +226,19 @@ export function DatePicker({
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-1 rounded hover:bg-theme-hover"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <ChevronLeft className="w-5 h-5 text-theme-muted" />
               </button>
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-semibold text-theme">
                 {MONTHS_PT[viewDate.getMonth()]} {viewDate.getFullYear()}
               </span>
               <button
                 type="button"
                 onClick={handleNextMonth}
-                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-1 rounded hover:bg-theme-hover"
               >
-                <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-theme-muted" />
               </button>
             </div>
 
@@ -247,7 +247,7 @@ export function DatePicker({
               {DAYS_PT.map((day) => (
                 <div
                   key={day}
-                  className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500 dark:text-gray-400"
+                  className="w-8 h-8 flex items-center justify-center text-xs font-medium text-theme-muted"
                 >
                   {day}
                 </div>
@@ -258,7 +258,7 @@ export function DatePicker({
             <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
 
             {/* Today button */}
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-3 pt-3 border-t border-theme">
               <button
                 type="button"
                 onClick={() => handleSelectDate(new Date())}
@@ -411,8 +411,8 @@ export function DateRangePicker({
               : inRange
                 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                 : isDisabled
-                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "text-theme-muted/50 cursor-not-allowed"
+                  : "text-theme-secondary hover:bg-theme-hover"
           }`}
         >
           {day}
@@ -433,7 +433,7 @@ export function DateRangePicker({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-theme-secondary mb-1">
           {label}
         </label>
       )}
@@ -442,14 +442,14 @@ export function DateRangePicker({
         onClick={handleOpen}
         className={`flex items-center gap-2 w-full px-3 py-2 border rounded-lg cursor-pointer transition-colors ${
           disabled
-            ? "bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
-            : "bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500"
-        } border-gray-300 dark:border-gray-600`}
+            ? "bg-theme-secondary cursor-not-allowed"
+            : "bg-theme-input hover:border-theme"
+        } border-theme-input`}
       >
-        <Calendar className="w-4 h-4 text-gray-400" />
+        <Calendar className="w-4 h-4 text-theme-muted" />
         <span
           className={`flex-1 text-sm ${
-            startDate ? "text-gray-900 dark:text-gray-100" : "text-gray-400"
+            startDate ? "text-theme" : "text-theme-muted"
           }`}
         >
           {displayValue}
@@ -461,10 +461,10 @@ export function DateRangePicker({
         createPortal(
           <div
             ref={calendarRef}
-            className="fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4"
+            className="fixed z-[9999] bg-theme-card border border-theme rounded-lg shadow-lg p-4"
             style={{ top: coords.top, left: coords.left }}
           >
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            <div className="text-xs text-theme-muted mb-2">
               {selecting === "start" ? "Selecione a data inicial" : "Selecione a data final"}
             </div>
 
@@ -472,19 +472,19 @@ export function DateRangePicker({
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-1 rounded hover:bg-theme-hover"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <ChevronLeft className="w-5 h-5 text-theme-muted" />
               </button>
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-semibold text-theme">
                 {MONTHS_PT[viewDate.getMonth()]} {viewDate.getFullYear()}
               </span>
               <button
                 type="button"
                 onClick={handleNextMonth}
-                className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-1 rounded hover:bg-theme-hover"
               >
-                <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-theme-muted" />
               </button>
             </div>
 
@@ -492,7 +492,7 @@ export function DateRangePicker({
               {DAYS_PT.map((day) => (
                 <div
                   key={day}
-                  className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500 dark:text-gray-400"
+                  className="w-8 h-8 flex items-center justify-center text-xs font-medium text-theme-muted"
                 >
                   {day}
                 </div>
