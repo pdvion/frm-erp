@@ -22,7 +22,7 @@ export function BottomNav({ items, className = "" }: BottomNavProps) {
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 safe-area-bottom ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-theme-header border-t border-theme safe-area-bottom ${className}`}
       role="navigation"
       aria-label="Navegação principal"
     >
@@ -37,7 +37,7 @@ export function BottomNav({ items, className = "" }: BottomNavProps) {
               className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[64px] transition-colors ${
                 isActive
                   ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400 active:text-gray-700 dark:active:text-gray-300"
+                  : "text-theme-muted active:text-theme-secondary"
               }`}
               aria-current={isActive ? "page" : undefined}
             >

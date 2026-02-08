@@ -67,7 +67,7 @@ export function Checkbox({
             flex items-center justify-center
             ${checked || indeterminate
       ? "bg-blue-600 border-blue-600"
-      : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      : "bg-theme-input border-theme-input"
     }
             peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2
             ${disabled ? "" : "peer-hover:border-blue-500"}
@@ -82,7 +82,7 @@ export function Checkbox({
         </div>
       </div>
       {label && (
-        <span className="text-sm text-gray-900 dark:text-gray-100 select-none">
+        <span className="text-sm text-theme select-none">
           {label}
         </span>
       )}

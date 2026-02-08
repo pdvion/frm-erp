@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star, X, Filter } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface FilterField {
   key: string;
@@ -227,13 +228,9 @@ export function AdvancedFilters({
           {/* Actions */}
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-theme">
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleClear}
-                className="px-3 py-1.5 text-sm text-theme-muted hover:text-theme transition-colors"
-              >
+              <Button variant="ghost" size="sm" onClick={handleClear}>
                 Limpar Filtros
-              </button>
+              </Button>
               {storageKey && (
                 <>
                   {showSaveDialog ? (
@@ -246,31 +243,23 @@ export function AdvancedFilters({
                         className="px-2 py-1 text-sm bg-theme-input border border-theme-input rounded text-theme"
                         onKeyDown={(e) => e.key === "Enter" && handleSaveFilter()}
                       />
-                      <button
-                        type="button"
-                        onClick={handleSaveFilter}
-                        className="px-2 py-1 text-sm bg-teal-600 text-white rounded hover:bg-teal-700"
-                      >
+                      <Button variant="primary" size="sm" onClick={handleSaveFilter}>
                         Salvar
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowSaveDialog(false)}
-                        className="text-theme-muted hover:text-theme"
-                      >
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setShowSaveDialog(false)}>
                         <X className="w-4 h-4" />
-                      </button>
+                      </Button>
                     </div>
                   ) : (
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setShowSaveDialog(true)}
                       disabled={!hasActiveFilters}
-                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-teal-400 hover:text-teal-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      leftIcon={<Star className="w-4 h-4" />}
                     >
-                      <Star className="w-4 h-4" />
                       Salvar Filtro
-                    </button>
+                    </Button>
                   )}
                 </>
               )}

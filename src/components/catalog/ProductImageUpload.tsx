@@ -133,10 +133,10 @@ export function ProductImageUpload({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <h3 className="text-sm font-medium text-theme-secondary">
           Imagens do Produto
         </h3>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-theme-muted">
           {images.length}/{maxImages} imagens
         </span>
       </div>
@@ -151,7 +151,7 @@ export function ProductImageUpload({
             "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
             isDragging
               ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-              : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+              : "border-theme hover:border-gray-400 dark:hover:border-gray-500"
           )}
         >
           <input
@@ -170,14 +170,14 @@ export function ProductImageUpload({
             {isUploading ? (
               <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
             ) : (
-              <Upload className="w-8 h-8 text-gray-400" />
+              <Upload className="w-8 h-8 text-theme-muted" />
             )}
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-theme-muted">
               {isUploading
                 ? "Enviando..."
                 : "Arraste imagens ou clique para selecionar"}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-theme-muted">
               JPG, PNG, WebP ou AVIF (máx. 5MB cada)
             </span>
           </label>
@@ -198,7 +198,7 @@ export function ProductImageUpload({
                 "relative group aspect-square rounded-lg overflow-hidden border-2 transition-all",
                 image.isPrimary
                   ? "border-yellow-400 ring-2 ring-yellow-200"
-                  : "border-gray-200 dark:border-gray-700",
+                  : "border-theme",
                 draggedIndex === index && "opacity-50"
               )}
             >
@@ -272,7 +272,7 @@ export function ProductImageUpload({
 
       {/* Empty State */}
       {images.length === 0 && !canUploadMore && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-theme-muted">
           Nenhuma imagem adicionada
         </div>
       )}

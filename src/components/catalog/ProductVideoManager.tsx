@@ -109,7 +109,7 @@ export function ProductVideoManager({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <h3 className="text-sm font-medium text-theme-secondary">
           Vídeos do Produto
         </h3>
         {!showAddForm && (
@@ -126,9 +126,9 @@ export function ProductVideoManager({
 
       {/* Add Form */}
       {showAddForm && (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-900 space-y-3">
+        <form onSubmit={handleSubmit} className="p-4 border border-theme rounded-lg bg-theme-secondary space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               URL do Vídeo *
             </label>
             <input
@@ -136,16 +136,16 @@ export function ProductVideoManager({
               value={formData.url}
               onChange={(e) => handleUrlChange(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-theme-muted mt-1">
               Suporta YouTube, Vimeo ou URL direta
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               Título *
             </label>
             <input
@@ -153,19 +153,19 @@ export function ProductVideoManager({
               value={formData.title}
               onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Título do vídeo"
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               Tipo
             </label>
             <select
               value={formData.type}
               onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value }))}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
             >
               {VIDEO_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -176,7 +176,7 @@ export function ProductVideoManager({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               Descrição
             </label>
             <textarea
@@ -184,7 +184,7 @@ export function ProductVideoManager({
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Descrição opcional"
               rows={2}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
             />
           </div>
 
@@ -220,10 +220,10 @@ export function ProductVideoManager({
             return (
               <div
                 key={video.id}
-                className="flex items-center gap-3 p-3 border rounded-lg bg-white dark:bg-gray-800"
+                className="flex items-center gap-3 p-3 border border-theme rounded-lg bg-theme-card"
               >
                 {/* Thumbnail */}
-                <div className="relative w-24 h-16 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden flex-shrink-0">
+                <div className="relative w-24 h-16 bg-theme-secondary rounded overflow-hidden flex-shrink-0">
                   {thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -233,7 +233,7 @@ export function ProductVideoManager({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Play size={24} className="text-gray-400" />
+                      <Play size={24} className="text-theme-muted" />
                     </div>
                   )}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -243,10 +243,10 @@ export function ProductVideoManager({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <h4 className="font-medium text-theme truncate">
                     {video.title}
                   </h4>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-2 text-xs text-theme-muted">
                     <span className="capitalize">
                       {VIDEO_TYPES.find((t) => t.value === video.type)?.label || video.type}
                     </span>
@@ -271,7 +271,7 @@ export function ProductVideoManager({
                     href={video.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded"
+                    className="p-2 text-theme-muted hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 rounded"
                     title="Abrir vídeo"
                   >
                     <ExternalLink size={16} />
@@ -281,7 +281,7 @@ export function ProductVideoManager({
                     size="icon"
                     onClick={() => handleDelete(video.id)}
                     disabled={deletingId === video.id}
-                    className="text-gray-500 hover:text-red-600"
+                    className="text-theme-muted hover:text-red-600"
                     title="Excluir vídeo"
                   >
                     {deletingId === video.id ? (
@@ -299,8 +299,8 @@ export function ProductVideoManager({
 
       {/* Empty State */}
       {videos.length === 0 && !showAddForm && (
-        <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
-          <Play size={32} className="mx-auto mb-2 text-gray-400" />
+        <div className="text-center py-8 text-theme-muted border-2 border-dashed border-theme rounded-lg">
+          <Play size={32} className="mx-auto mb-2 text-theme-muted" />
           <p>Nenhum vídeo adicionado</p>
           <Button
             variant="ghost"

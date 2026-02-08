@@ -19,13 +19,13 @@ export const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProp
           className={`
             w-full appearance-none rounded-lg border px-3 py-2 pr-10
             text-sm transition-colors
-            bg-white dark:bg-gray-800
-            text-gray-900 dark:text-gray-100
+            bg-theme-input
+            text-theme
             ${error
         ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-        : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+        : "border-theme-input focus:border-blue-500 focus:ring-blue-500"
       }
-            ${disabled ? "cursor-not-allowed opacity-50 bg-gray-100 dark:bg-gray-700" : ""}
+            ${disabled ? "cursor-not-allowed opacity-50 bg-theme-secondary" : ""}
             focus:outline-none focus:ring-2 focus:ring-offset-0
             ${className}
           `}
@@ -36,7 +36,7 @@ export const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProp
           {children}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted"
           aria-hidden="true"
         />
         {error && (

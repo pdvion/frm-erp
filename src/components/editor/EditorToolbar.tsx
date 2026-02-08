@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useCallback } from "react";
+import { Button } from "@/components/ui/Button";
 
 interface EditorToolbarProps {
   editor: Editor;
@@ -53,9 +54,9 @@ function ToolbarButton({
       disabled={disabled}
       title={title}
       className={cn(
-        "p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+        "p-1.5 rounded hover:bg-theme-hover transition-colors",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        isActive && "bg-gray-200 dark:bg-gray-700 text-blue-600 dark:text-blue-400"
+        isActive && "bg-theme-secondary text-blue-600 dark:text-blue-400"
       )}
     >
       {children}
@@ -64,7 +65,7 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />;
+  return <div className="w-px h-6 bg-theme-secondary mx-1" />;
 }
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
@@ -99,7 +100,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
   const iconSize = 18;
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2">
+    <div className="border-b border-theme bg-theme-secondary p-2">
       <div className="flex flex-wrap items-center gap-0.5">
         {/* Undo/Redo */}
         <ToolbarButton
@@ -272,7 +273,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
             className="absolute inset-0 opacity-0 w-8 h-8 cursor-pointer"
             title="Cor do texto"
           />
-          <div className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+          <div className="p-1.5 rounded hover:bg-theme-hover transition-colors cursor-pointer">
             <Palette size={iconSize} />
           </div>
         </div>
@@ -280,63 +281,55 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 
       {/* Link Input */}
       {showLinkInput && (
-        <div className="flex items-center gap-2 mt-2 p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600">
+        <div className="flex items-center gap-2 mt-2 p-2 bg-theme-card rounded border border-theme">
           <input
             type="url"
             placeholder="https://exemplo.com"
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && setLink()}
-            className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="flex-1 px-2 py-1 text-sm border border-theme-input rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
           />
-          <button
-            type="button"
-            onClick={setLink}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+          <Button variant="primary" size="sm" onClick={setLink}>
             Aplicar
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => {
               setShowLinkInput(false);
               setLinkUrl("");
             }}
-            className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500"
           >
             Cancelar
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Image Input */}
       {showImageInput && (
-        <div className="flex items-center gap-2 mt-2 p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600">
+        <div className="flex items-center gap-2 mt-2 p-2 bg-theme-card rounded border border-theme">
           <input
             type="url"
             placeholder="https://exemplo.com/imagem.jpg"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addImage()}
-            className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="flex-1 px-2 py-1 text-sm border border-theme-input rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-theme-input text-theme"
           />
-          <button
-            type="button"
-            onClick={addImage}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+          <Button variant="primary" size="sm" onClick={addImage}>
             Inserir
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => {
               setShowImageInput(false);
               setImageUrl("");
             }}
-            className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500"
           >
             Cancelar
-          </button>
+          </Button>
         </div>
       )}
     </div>

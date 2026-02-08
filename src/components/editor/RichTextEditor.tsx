@@ -88,7 +88,7 @@ export function RichTextEditor({
     return (
       <div
         className={cn(
-          "border rounded-lg bg-gray-50 dark:bg-gray-900 animate-pulse",
+          "border border-theme rounded-lg bg-theme-secondary animate-pulse",
           className
         )}
         style={{ minHeight }}
@@ -99,7 +99,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "border rounded-lg overflow-hidden bg-white dark:bg-gray-950",
+        "border border-theme rounded-lg overflow-hidden bg-theme-card",
         "focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500",
         className
       )}

@@ -27,7 +27,7 @@ interface ValidationTableProps {
 const ACTION_LABELS = {
   create: { label: "Criar", color: "text-green-600" },
   update: { label: "Atualizar", color: "text-blue-600" },
-  skip: { label: "Ignorar", color: "text-gray-500" },
+  skip: { label: "Ignorar", color: "text-theme-muted" },
   review: { label: "Revisar", color: "text-yellow-600" },
 };
 
@@ -78,7 +78,7 @@ export function ValidationTable({
       case "update":
         return <Edit2 size={14} className="text-blue-600" />;
       case "skip":
-        return <X size={14} className="text-gray-500" />;
+        return <X size={14} className="text-theme-muted" />;
       case "review":
         return <AlertTriangle size={14} className="text-yellow-600" />;
     }
@@ -114,9 +114,9 @@ export function ValidationTable({
       )}
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+          <thead className="bg-theme-table-header">
             <tr>
               <th className="px-4 py-3 text-left w-10">
                 <input
@@ -126,31 +126,31 @@ export function ValidationTable({
                   className="rounded"
                 />
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                 Tipo
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                 Nome
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                 Ação
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                 Confiança
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                 Motivo
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+              <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">
                 Ações
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700 border-theme-table">
             {items.map((item) => (
               <tr
                 key={item.id}
-                className={`hover:bg-gray-50 dark:hover:bg-gray-750 ${
+                className={`hover:bg-theme-hover ${
                   selectedIds.includes(item.id) ? "bg-blue-50 dark:bg-blue-950" : ""
                 }`}
               >
@@ -162,15 +162,15 @@ export function ValidationTable({
                     className="rounded"
                   />
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-theme-muted">
                   {TYPE_LABELS[item.type]}
                 </td>
                 <td className="px-4 py-3">
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
+                  <div className="font-medium text-theme">
                     {item.name}
                   </div>
                   {item.description && (
-                    <div className="text-sm text-gray-500">{item.description}</div>
+                    <div className="text-sm text-theme-muted">{item.description}</div>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -182,7 +182,7 @@ export function ValidationTable({
                 <td className="px-4 py-3">
                   <ConfidenceBadge confidence={item.confidence} size="sm" />
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500 max-w-xs truncate">
+                <td className="px-4 py-3 text-sm text-theme-muted max-w-xs truncate">
                   {item.reason || "-"}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -190,7 +190,7 @@ export function ValidationTable({
                     variant="ghost"
                     size="icon"
                     onClick={() => onEdit(item.id)}
-                    className="text-gray-400 hover:text-blue-600"
+                    className="text-theme-muted hover:text-blue-600"
                   >
                     <Edit2 size={16} />
                   </Button>
@@ -201,7 +201,7 @@ export function ValidationTable({
         </table>
 
         {items.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-theme-muted">
             Nenhum item para validar
           </div>
         )}
