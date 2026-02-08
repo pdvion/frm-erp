@@ -12,16 +12,10 @@ import {
   Paperclip,
   X,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
 
 interface TaskAttachmentsProps {
   taskId: string;
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -91,16 +85,15 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
           contentType: file.type,
         });
 
-        // Upload para Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from(uploadInfo.bucket)
-          .upload(uploadInfo.filePath, file, {
-            contentType: file.type,
-            upsert: false,
-          });
+        // Upload via signed URL (server-side auth)
+        const uploadResponse = await fetch(uploadInfo.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
 
-        if (uploadError) {
-          setUploadError(`Erro ao fazer upload: ${uploadError.message}`);
+        if (!uploadResponse.ok) {
+          setUploadError(`Erro ao fazer upload: ${uploadResponse.statusText}`);
           continue;
         }
 

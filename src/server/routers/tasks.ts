@@ -3,6 +3,13 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { taskService } from "../services/tasks";
+import { createClient } from "@supabase/supabase-js";
+
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 type TaskPriority = "URGENT" | "HIGH" | "NORMAL" | "LOW";
 type TaskEntityType = "NFE" | "REQUISITION" | "PURCHASE_ORDER" | "QUOTE" | "PAYABLE" | "RECEIVABLE" | "PRODUCTION_ORDER" | "OTHER";
@@ -482,11 +489,31 @@ export const tasksRouter = createTRPCRouter({
       const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
       const filePath = `tasks/${input.taskId}/${timestamp}-${sanitizedFileName}`;
 
-      // Retornar informações para upload direto
+      const supabase = getSupabaseAdmin();
+
+      // Criar URL assinada para upload (bypass RLS)
+      const { data, error } = await supabase.storage
+        .from("documents")
+        .createSignedUploadUrl(filePath);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Erro ao gerar URL de upload: ${error.message}`,
+        });
+      }
+
+      // Gerar URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from("documents")
+        .getPublicUrl(filePath);
+
       return {
         filePath,
         bucket: "documents",
-        publicUrl: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/documents/${filePath}`,
+        signedUrl: data.signedUrl,
+        token: data.token,
+        publicUrl: publicUrlData.publicUrl,
       };
     }),
 });

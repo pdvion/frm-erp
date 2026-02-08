@@ -17,7 +17,6 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertTriangle,
   Loader2,
   Building2,
   Calendar,
@@ -37,10 +36,8 @@ export default function InvoicesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(1);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [xmlContent, setXmlContent] = useState("");
 
-  const { data, isLoading, refetch } = trpc.receivedInvoices.list.useQuery({
+  const { data, isLoading } = trpc.receivedInvoices.list.useQuery({
     search: search || undefined,
     status: statusFilter ? (statusFilter as "PENDING" | "VALIDATED" | "APPROVED" | "REJECTED" | "CANCELLED") : undefined,
     page,
@@ -49,30 +46,6 @@ export default function InvoicesPage() {
 
   const { data: stats } = trpc.receivedInvoices.stats.useQuery();
 
-  const uploadMutation = trpc.receivedInvoices.uploadXml.useMutation({
-    onSuccess: () => {
-      setShowUploadModal(false);
-      setXmlContent("");
-      refetch();
-    },
-  });
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setXmlContent(event.target?.result as string);
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const handleUpload = () => {
-    if (xmlContent) {
-      uploadMutation.mutate({ xmlContent });
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -90,12 +63,12 @@ export default function InvoicesPage() {
               <Clock className="w-4 h-4" />
             NFe Pendentes SEFAZ
             </Link>
-            <Button
-              onClick={() => setShowUploadModal(true)}
+            <LinkButton
+              href="/invoices/import"
               leftIcon={<Upload className="w-4 h-4" />}
             >
             Importar XML
-            </Button>
+            </LinkButton>
           </div>
         }
       />
@@ -164,12 +137,12 @@ export default function InvoicesPage() {
               <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
               <h3 className="text-lg font-medium text-theme mb-2">Nenhuma NFe encontrada</h3>
               <p className="text-theme-muted mb-4">Importe um XML para começar</p>
-              <Button
-                onClick={() => setShowUploadModal(true)}
+              <LinkButton
+                href="/invoices/import"
                 leftIcon={<Upload className="w-4 h-4" />}
               >
                 Importar XML
-              </Button>
+              </LinkButton>
             </div>
           ) : (
             <>
@@ -300,80 +273,6 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {/* Upload Modal */}
-      {showUploadModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="upload-xml-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowUploadModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-            <h3 id="upload-xml-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <Upload className="w-5 h-5 text-blue-600" />
-              Importar XML NFe
-            </h3>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
-                Arquivo XML
-              </label>
-              <Input
-                type="file"
-                accept=".xml"
-                onChange={handleFileUpload}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {xmlContent && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center gap-2 text-green-700">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="font-medium">XML carregado</span>
-                </div>
-                <div className="text-sm text-green-600 mt-1">
-                  {xmlContent.length.toLocaleString()} caracteres
-                </div>
-              </div>
-            )}
-
-            {uploadMutation.error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center gap-2 text-red-700">
-                  <AlertTriangle className="w-5 h-5" />
-                  <span className="font-medium">Erro ao importar</span>
-                </div>
-                <div className="text-sm text-red-600 mt-1">
-                  {uploadMutation.error.message}
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowUploadModal(false);
-                  setXmlContent("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleUpload}
-                disabled={!xmlContent}
-                isLoading={uploadMutation.isPending}
-                className="flex-1"
-              >
-                {uploadMutation.isPending ? "Importando..." : "Importar"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

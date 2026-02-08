@@ -26,6 +26,7 @@ interface FileWithContent {
   content: string;
   status: "pending" | "validating" | "valid" | "invalid" | "importing" | "success" | "error" | "duplicate";
   error?: string;
+  invoiceId?: string;
   invoiceNumber?: number;
   chaveAcesso?: string;
 }
@@ -127,7 +128,7 @@ export default function ImportNFePage() {
       setFiles((prev) =>
         prev.map((f, i) =>
           i === index
-            ? { ...f, status: "success", invoiceNumber: result.invoice.invoiceNumber }
+            ? { ...f, status: "success", invoiceId: result.invoice.id, invoiceNumber: result.invoice.invoiceNumber }
             : f
         )
       );
@@ -171,6 +172,7 @@ export default function ImportNFePage() {
           return {
             ...f,
             status: res.success ? "success" : "error",
+            invoiceId: res.invoiceId,
             invoiceNumber: res.invoiceNumber,
             error: res.error,
           };
@@ -439,7 +441,7 @@ export default function ImportNFePage() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => router.push(`/invoices/${fileItem.invoiceNumber}`)}
+                          onClick={() => router.push(`/invoices/${fileItem.invoiceId || fileItem.invoiceNumber}`)}
                           leftIcon={<Eye className="w-4 h-4" />}
                           className="text-green-600"
                         >

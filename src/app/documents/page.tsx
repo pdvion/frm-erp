@@ -74,8 +74,13 @@ function DocumentsContent() {
   const documents = data?.documents ?? [];
   const pagination = data?.pagination;
 
+  const utils = trpc.useUtils();
+
   const deleteMutation = trpc.documents.delete.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetch();
+      utils.documents.stats.invalidate();
+    },
   });
 
   const logDownloadMutation = trpc.documents.logDownload.useMutation();
@@ -420,6 +425,7 @@ function DocumentsContent() {
           onClose={() => setShowUploadModal(false)}
           onSuccess={() => {
             refetch();
+            utils.documents.stats.invalidate();
             setShowUploadModal(false);
           }}
           categories={categories ?? []}

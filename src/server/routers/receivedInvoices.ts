@@ -241,33 +241,50 @@ export const receivedInvoicesRouter = createTRPCRouter({
       };
     }),
 
-  // Buscar NFe por ID
+  // Buscar NFe por ID (UUID) ou número da nota (fallback)
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const includeRelations = {
+        supplier: true,
+        purchaseOrder: {
+          include: {
+            items: {
+              include: { material: true },
+            },
+          },
+        },
+        items: {
+          include: {
+            material: { select: { id: true, code: true, description: true, unit: true } },
+            purchaseOrderItem: { select: { id: true, quantity: true, unitPrice: true } },
+          },
+          orderBy: { itemNumber: "asc" as const },
+        },
+      };
+
+      // Tentar buscar por UUID primeiro
+      let invoice = await ctx.prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
         },
-        include: {
-          supplier: true,
-          purchaseOrder: {
-            include: {
-              items: {
-                include: { material: true },
-              },
-            },
-          },
-          items: {
-            include: {
-              material: { select: { id: true, code: true, description: true, unit: true } },
-              purchaseOrderItem: { select: { id: true, quantity: true, unitPrice: true } },
-            },
-            orderBy: { itemNumber: "asc" },
-          },
-        },
+        include: includeRelations,
       });
+
+      // Fallback: buscar por número da nota (caso o ID seja numérico)
+      if (!invoice) {
+        const invoiceNumber = parseInt(input.id, 10);
+        if (!isNaN(invoiceNumber)) {
+          invoice = await ctx.prisma.receivedInvoice.findFirst({
+            where: {
+              invoiceNumber,
+              ...tenantFilter(ctx.companyId, false),
+            },
+            include: includeRelations,
+          });
+        }
+      }
 
       if (!invoice) {
         throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });
