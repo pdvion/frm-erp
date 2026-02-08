@@ -8,7 +8,7 @@
  */
 
 import type { PrismaClient } from "@prisma/client";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getGoogleKey } from "@/server/services/getAIApiKey";
 import {
   composeEmbeddingText,
   generateEmbedding,
@@ -73,7 +73,7 @@ async function _syncEntityEmbedding(
     }
 
     // Create/Update: gerar novo embedding
-    const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+    const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
     if (!apiKey) return; // Sem API key — skip silencioso
 
     const entityData = await fetchEntityForSync(ctx.prisma, entityType, entityId, ctx.companyId);

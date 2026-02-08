@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { callWithFallback, type AITokens } from "./router";
 
 export type ChartType = "line" | "bar" | "pie" | "area" | "donut";
 
@@ -108,21 +108,21 @@ export function suggestChartType(
  */
 export async function generateChartWithAI(
   prompt: string,
-  apiKey: string
+  tokens: AITokens
 ): Promise<ChartGenerationResult> {
-  const openai = new OpenAI({ apiKey });
-
   const dataSourcesDescription = AVAILABLE_DATA_SOURCES.map(
     (ds) =>
       `- ${ds.name}: ${ds.description}\n  Campos: ${ds.fields.map((f) => `${f.name} (${f.type})`).join(", ")}`
   ).join("\n");
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `Você é um assistente especializado em visualização de dados para ERP.
+  const response = await callWithFallback(
+    { primaryProvider: "google", primaryModel: "gemini-2.0-flash-exp", enableFallback: true },
+    tokens,
+    {
+      messages: [
+        {
+          role: "system",
+          content: `Você é um assistente especializado em visualização de dados para ERP.
 Dado um pedido em linguagem natural, você deve gerar uma configuração de gráfico.
 
 Fontes de dados disponíveis:
@@ -136,22 +136,21 @@ Retorne um JSON com:
 - suggestedQueries: array com 2-3 perguntas relacionadas que o usuário pode fazer
 
 Retorne apenas o JSON, sem markdown.`,
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    temperature: 0.3,
-    max_tokens: 1000,
-  });
-
-  const content = response.choices[0]?.message?.content ?? "{}";
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.3,
+      maxTokens: 1000,
+      responseFormat: "json",
+    }
+  );
 
   try {
-    return JSON.parse(content) as ChartGenerationResult;
+    return JSON.parse(response.content) as ChartGenerationResult;
   } catch {
-    // Fallback para configuração padrão
     return {
       config: {
         type: "bar",

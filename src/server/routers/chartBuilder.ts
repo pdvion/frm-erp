@@ -8,7 +8,7 @@ import {
   AVAILABLE_DATA_SOURCES,
   type ChartConfig,
 } from "@/lib/ai/chartGenerator";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getAllAITokens } from "@/server/services/getAIApiKey";
 
 const chartTypeSchema = z.enum(["line", "bar", "pie", "area", "donut"]);
 
@@ -34,10 +34,10 @@ export const chartBuilderRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const tokens = await getAllAITokens(ctx.prisma, ctx.companyId);
+      const hasAnyToken = Object.values(tokens).some(Boolean);
 
-      if (!apiKey) {
-        // Retornar sugestão padrão se não tiver IA configurada
+      if (!hasAnyToken) {
         return {
           config: {
             type: "bar" as const,
@@ -52,7 +52,7 @@ export const chartBuilderRouter = createTRPCRouter({
         };
       }
 
-      return generateChartWithAI(input.prompt, apiKey);
+      return generateChartWithAI(input.prompt, tokens);
     }),
 
   /**

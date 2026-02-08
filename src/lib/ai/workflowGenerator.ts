@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { callWithFallback, type AITokens } from "./router";
 
 export interface FormField {
   id: string;
@@ -162,29 +162,29 @@ const EXAMPLE_OUTPUT = `{
 
 export async function generateWorkflowFromPrompt(
   prompt: string,
-  apiKey: string
+  tokens: AITokens
 ): Promise<GeneratedWorkflow> {
-  const openai = new OpenAI({ apiKey });
+  const response = await callWithFallback(
+    { primaryProvider: "google", primaryModel: "gemini-2.0-flash-exp", enableFallback: true },
+    tokens,
+    {
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Exemplo de saída esperada:\n${EXAMPLE_OUTPUT}\n\nAgora gere um workflow para:\n${prompt}`,
+        },
+      ],
+      temperature: 0.7,
+      maxTokens: 4000,
+    }
+  );
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: `Exemplo de saída esperada:\n${EXAMPLE_OUTPUT}\n\nAgora gere um workflow para:\n${prompt}`,
-      },
-    ],
-    temperature: 0.7,
-    max_tokens: 4000,
-  });
-
-  const content = response.choices[0]?.message?.content;
+  const content = response.content;
   if (!content) {
     throw new Error("Resposta vazia da IA");
   }
 
-  // Remove markdown code blocks if present
   const jsonStr = content
     .replace(/```json\n?/g, "")
     .replace(/```\n?/g, "")
@@ -259,24 +259,25 @@ function validateAndFixWorkflow(workflow: GeneratedWorkflow): GeneratedWorkflow 
 export async function refineWorkflow(
   currentWorkflow: GeneratedWorkflow,
   refinementPrompt: string,
-  apiKey: string
+  tokens: AITokens
 ): Promise<GeneratedWorkflow> {
-  const openai = new OpenAI({ apiKey });
+  const response = await callWithFallback(
+    { primaryProvider: "google", primaryModel: "gemini-2.0-flash-exp", enableFallback: true },
+    tokens,
+    {
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Workflow atual:\n${JSON.stringify(currentWorkflow, null, 2)}\n\nRefinamento solicitado:\n${refinementPrompt}\n\nGere o workflow atualizado com as modificações solicitadas.`,
+        },
+      ],
+      temperature: 0.7,
+      maxTokens: 4000,
+    }
+  );
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      {
-        role: "user",
-        content: `Workflow atual:\n${JSON.stringify(currentWorkflow, null, 2)}\n\nRefinamento solicitado:\n${refinementPrompt}\n\nGere o workflow atualizado com as modificações solicitadas.`,
-      },
-    ],
-    temperature: 0.7,
-    max_tokens: 4000,
-  });
-
-  const content = response.choices[0]?.message?.content;
+  const content = response.content;
   if (!content) {
     throw new Error("Resposta vazia da IA");
   }

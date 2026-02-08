@@ -116,3 +116,26 @@ export async function getGoogleKey(
   });
   return result?.apiKey ?? null;
 }
+
+/**
+ * Busca TODOS os tokens de IA disponíveis para uma empresa.
+ * Usado pelo AI Router (callWithFallback) que tenta múltiplos providers.
+ */
+export async function getAllAITokens(
+  prisma: PrismaClient,
+  companyId: string
+): Promise<{ openai?: string; anthropic?: string; google?: string }> {
+  const tokens: { openai?: string; anthropic?: string; google?: string } = {};
+
+  const providers: AIProvider[] = ["openai", "anthropic", "google"];
+  await Promise.all(
+    providers.map(async (p) => {
+      const result = await getAIApiKey(prisma, companyId, { provider: p });
+      if (result?.apiKey) {
+        tokens[p] = result.apiKey;
+      }
+    })
+  );
+
+  return tokens;
+}
