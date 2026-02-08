@@ -102,10 +102,10 @@ export default function RequestVacationPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+          <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Data de Início *
                 </label>
                 <Input
@@ -122,7 +122,7 @@ export default function RequestVacationPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Quantidade de Dias *
                 </label>
                 <Input
@@ -133,13 +133,13 @@ export default function RequestVacationPage() {
                   max={30}
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Entre 5 e 30 dias</p>
+                <p className="text-xs text-theme-muted mt-1">Entre 5 e 30 dias</p>
               </div>
             </div>
 
             {formData.startDate && (
-              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="bg-theme-secondary rounded-lg p-4">
+                <p className="text-sm text-theme-muted">
                   <strong>Período:</strong> {new Date(formData.startDate).toLocaleDateString("pt-BR")} até{" "}
                   {calculateEndDate()}
                 </p>
@@ -147,7 +147,7 @@ export default function RequestVacationPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Vender Dias (Abono Pecuniário)
               </label>
               <Input
@@ -157,7 +157,7 @@ export default function RequestVacationPage() {
                 min={0}
                 max={10}
               />
-              <p className="text-xs text-gray-500 mt-1">Máximo de 10 dias (1/3 do período)</p>
+              <p className="text-xs text-theme-muted mt-1">Máximo de 10 dias (1/3 do período)</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -166,15 +166,15 @@ export default function RequestVacationPage() {
                 id="advanceThirteenth"
                 checked={formData.advanceThirteenth}
                 onChange={(e) => setFormData({ ...formData, advanceThirteenth: e.target.checked })}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-4 h-4 rounded border-theme-input text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="advanceThirteenth" className="text-sm text-gray-700 dark:text-gray-300">
+              <label htmlFor="advanceThirteenth" className="text-sm text-theme-secondary">
                 Solicitar adiantamento do 13º salário
               </label>
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="notes" className="block text-sm font-medium text-theme-secondary mb-2">
                 Observações
               </label>
               <Textarea
@@ -182,7 +182,7 @@ export default function RequestVacationPage() {
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-theme-input rounded-lg bg-theme-input text-theme focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Informações adicionais..."
               />
             </div>

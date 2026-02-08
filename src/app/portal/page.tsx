@@ -45,12 +45,12 @@ export default function EmployeePortalPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-8 bg-theme-secondary rounded w-1/3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-32 bg-gray-200 dark:bg-gray-700 rounded"
+                className="h-32 bg-theme-secondary rounded"
               />
             ))}
           </div>
@@ -105,7 +105,7 @@ export default function EmployeePortalPage() {
           </div>
         </Link>
         <Link href="/portal/profile">
-          <div className="bg-gray-600 hover:bg-gray-700 text-white rounded-lg p-4 text-center transition-colors cursor-pointer">
+          <div className="bg-slate-600 hover:bg-slate-700 text-white rounded-lg p-4 text-center transition-colors cursor-pointer">
             <User className="w-8 h-8 mx-auto mb-2" />
             <span className="font-medium">Meus Dados</span>
           </div>
@@ -114,41 +114,41 @@ export default function EmployeePortalPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Briefcase className="w-5 h-5" />
             Meu Perfil
           </h2>
           <div className="space-y-3">
             <div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-theme-muted">
                 Nome
               </span>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.name}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-theme-muted">
                 Cargo
               </span>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.position?.name || "Não definido"}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-theme-muted">
                 Departamento
               </span>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.department?.name || "Não definido"}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-theme-muted">
                 Admissão
               </span>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {new Date(profile.hireDate).toLocaleDateString("pt-BR")}
               </p>
             </div>
@@ -156,32 +156,32 @@ export default function EmployeePortalPage() {
         </div>
 
         {/* Vacation Balance */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Calendar className="w-5 h-5" />
             Saldo de Férias
           </h2>
           {vacations?.balance && (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-theme-muted">
                   Dias Adquiridos
                 </span>
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="text-2xl font-bold text-theme">
                   {vacations.balance.totalEarned}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-theme-muted">
                   Dias Usados
                 </span>
                 <span className="text-xl font-semibold text-red-600">
                   {vacations.balance.used}
                 </span>
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="border-t border-theme pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-theme-muted">
                     Disponível
                   </span>
                   <span className="text-3xl font-bold text-green-600">
@@ -197,24 +197,24 @@ export default function EmployeePortalPage() {
         </div>
 
         {/* Time Clock Summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5" />
             Ponto do Mês
           </h2>
           {timeRecords?.summary && (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-theme-muted">
                   Horas Trabalhadas
                 </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span className="font-semibold text-theme">
                   {timeRecords.summary.totalWorkedHours}h{" "}
                   {timeRecords.summary.totalWorkedMinutes}m
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-theme-muted">
                   Horas Extras
                 </span>
                 <span className="font-semibold text-blue-600">
@@ -223,15 +223,15 @@ export default function EmployeePortalPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-theme-muted">
                   Dias Trabalhados
                 </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
+                <span className="font-semibold text-theme">
                   {timeRecords.summary.workDays}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Faltas</span>
+                <span className="text-theme-muted">Faltas</span>
                 <span className="font-semibold text-red-600">
                   {timeRecords.summary.absences}
                 </span>
@@ -248,9 +248,9 @@ export default function EmployeePortalPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Payslips */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-theme flex items-center gap-2">
               <DollarSign className="w-5 h-5" />
               Últimos Holerites
             </h2>
@@ -265,21 +265,21 @@ export default function EmployeePortalPage() {
             {payslips?.map((payslip) => (
               <div
                 key={payslip.id}
-                className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                className="flex justify-between items-center p-3 bg-theme-secondary rounded-lg"
               >
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-theme">
                     {String(payslip.payroll.referenceMonth).padStart(2, "0")}/
                     {payslip.payroll.referenceYear}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-theme-muted">
                     {payslip.payroll.status === "CLOSED"
                       ? "Fechado"
                       : "Em processamento"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold text-gray-900 dark:text-white">
+                  <span className="font-semibold text-theme">
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
@@ -294,7 +294,7 @@ export default function EmployeePortalPage() {
               </div>
             ))}
             {(!payslips || payslips.length === 0) && (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+              <p className="text-theme-muted text-center py-4">
                 Nenhum holerite disponível
               </p>
             )}
@@ -302,8 +302,8 @@ export default function EmployeePortalPage() {
         </div>
 
         {/* Announcements */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Bell className="w-5 h-5" />
             Comunicados
           </h2>
@@ -312,21 +312,21 @@ export default function EmployeePortalPage() {
               announcements.map((announcement: { id: string; title: string; content: string; createdAt: Date }) => (
                 <div
                   key={announcement.id}
-                  className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                  className="p-3 bg-theme-secondary rounded-lg"
                 >
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-theme">
                     {announcement.title}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                  <p className="text-sm text-theme-muted mt-1 line-clamp-2">
                     {announcement.content}
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                  <p className="text-xs text-theme-muted mt-2">
                     {new Date(announcement.createdAt).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+              <p className="text-theme-muted text-center py-4">
                 Nenhum comunicado recente
               </p>
             )}

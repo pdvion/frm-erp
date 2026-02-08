@@ -77,8 +77,8 @@ export default function ProfilePage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-8 bg-theme-secondary rounded w-1/3" />
+          <div className="h-64 bg-theme-secondary rounded" />
         </div>
       </div>
     );
@@ -131,43 +131,43 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Personal Info (Read-only) */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <User className="w-5 h-5" />
             Dados Pessoais
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Nome Completo
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.name}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 CPF
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.cpf}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Data de Nascimento
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.birthDate != null
                   ? new Date(profile.birthDate).toLocaleDateString("pt-BR")
                   : "Não informado"}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 RG
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.rg || "Não informado"}
               </p>
             </div>
@@ -175,41 +175,41 @@ export default function ProfilePage() {
         </div>
 
         {/* Employment Info (Read-only) */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <User className="w-5 h-5" />
             Dados Profissionais
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Matrícula
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.code || "Não informado"}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Cargo
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.position?.name || "Não definido"}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Departamento
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.department?.name || "Não definido"}
               </p>
             </div>
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Data de Admissão
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.hireDate != null
                   ? new Date(profile.hireDate).toLocaleDateString("pt-BR")
                   : "Não informado"}
@@ -219,15 +219,15 @@ export default function ProfilePage() {
         </div>
 
         {/* Contact Info (Editable) */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Phone className="w-5 h-5" />
             Contato
           </h2>
           {isEditing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Telefone
                 </label>
                 <Input
@@ -239,7 +239,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   E-mail Pessoal
                 </label>
                 <Input
@@ -255,20 +255,20 @@ export default function ProfilePage() {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-gray-500 dark:text-gray-400">
+                <label className="text-sm text-theme-muted">
                   Telefone
                 </label>
-                <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-400" />
+                <p className="font-medium text-theme flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-theme-muted" />
                   {profile.phone || "Não informado"}
                 </p>
               </div>
               <div>
-                <label className="text-sm text-gray-500 dark:text-gray-400">
+                <label className="text-sm text-theme-muted">
                   E-mail Pessoal
                 </label>
-                <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-gray-400" />
+                <p className="font-medium text-theme flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-theme-muted" />
                   {profile.email || "Não informado"}
                 </p>
               </div>
@@ -277,15 +277,15 @@ export default function ProfilePage() {
         </div>
 
         {/* Address (Editable) */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <MapPin className="w-5 h-5" />
             Endereço
           </h2>
           {isEditing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Endereço
                 </label>
                 <Input
@@ -298,7 +298,7 @@ export default function ProfilePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Cidade
                   </label>
                   <Input
@@ -309,7 +309,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Estado
                   </label>
                   <Input
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   CEP
                 </label>
                 <Input
@@ -336,18 +336,18 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.address || "Não informado"}
               </p>
               {(profile.addressCity || profile.addressState) && (
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-theme-muted">
                   {profile.addressCity}
                   {profile.addressCity && profile.addressState && " - "}
                   {profile.addressState}
                 </p>
               )}
               {profile.addressZipCode && (
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-theme-muted">
                   CEP: {profile.addressZipCode}
                 </p>
               )}
@@ -356,14 +356,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Mobile Contact */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 lg:col-span-2">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <div className="bg-theme-card rounded-lg border border-theme p-6 lg:col-span-2">
+          <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
             <Phone className="w-5 h-5" />
             Celular
           </h2>
           {isEditing ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
                 Número do Celular
               </label>
               <Input
@@ -379,10 +379,10 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div>
-              <label className="text-sm text-gray-500 dark:text-gray-400">
+              <label className="text-sm text-theme-muted">
                 Celular
               </label>
-              <p className="font-medium text-gray-900 dark:text-white">
+              <p className="font-medium text-theme">
                 {profile.mobile || "Não informado"}
               </p>
             </div>

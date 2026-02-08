@@ -135,12 +135,12 @@ export default function TimesheetPage() {
       />
 
       {/* Month Navigation */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div className="bg-theme-card rounded-lg border border-theme p-4">
         <div className="flex items-center justify-between">
           <Button variant="secondary" size="sm" onClick={handlePreviousMonth}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+          <h2 className="text-lg font-semibold text-theme capitalize">
             {getMonthName()}
           </h2>
           <Button variant="secondary" size="sm" onClick={handleNextMonth}>
@@ -152,25 +152,25 @@ export default function TimesheetPage() {
       {/* Summary */}
       {timeRecords?.summary && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="bg-theme-card rounded-lg border border-theme p-4 text-center">
+            <p className="text-sm text-theme-muted">
               Dias Trabalhados
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-theme">
               {timeRecords.summary.workDays}
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="bg-theme-card rounded-lg border border-theme p-4 text-center">
+            <p className="text-sm text-theme-muted">
               Horas Trabalhadas
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-theme">
               {timeRecords.summary.totalWorkedHours}h{" "}
               {timeRecords.summary.totalWorkedMinutes}m
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="bg-theme-card rounded-lg border border-theme p-4 text-center">
+            <p className="text-sm text-theme-muted">
               Horas Extras
             </p>
             <p className="text-2xl font-bold text-blue-600">
@@ -178,14 +178,14 @@ export default function TimesheetPage() {
               {timeRecords.summary.totalOvertimeMinutes}m
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Atrasos</p>
+          <div className="bg-theme-card rounded-lg border border-theme p-4 text-center">
+            <p className="text-sm text-theme-muted">Atrasos</p>
             <p className="text-2xl font-bold text-yellow-600">
               {timeRecords.summary.lateArrivals}
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Faltas</p>
+          <div className="bg-theme-card rounded-lg border border-theme p-4 text-center">
+            <p className="text-sm text-theme-muted">Faltas</p>
             <p className="text-2xl font-bold text-red-600">
               {timeRecords.summary.absences}
             </p>
@@ -194,38 +194,38 @@ export default function TimesheetPage() {
       )}
 
       {/* Time Records Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-theme-table-header">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Data
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
                   Dia
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Entrada
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Saída Almoço
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Retorno
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Saída
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Total
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-theme-muted uppercase">
                   Extra
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 border-theme-table">
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center">
@@ -238,29 +238,29 @@ export default function TimesheetPage() {
                     key={record.id}
                     className={`${
                       isWeekend(record.date)
-                        ? "bg-gray-50 dark:bg-gray-700/50"
+                        ? "bg-theme-secondary"
                         : ""
-                    } hover:bg-gray-50 dark:hover:bg-gray-700/30`}
+                    } hover:bg-theme-hover`}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-theme">
                       {new Date(record.date).toLocaleDateString("pt-BR")}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 capitalize">
+                    <td className="px-4 py-3 text-sm text-theme-muted capitalize">
                       {getDayOfWeek(record.date)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-center text-theme">
                       {record.entryTime || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-center text-theme">
                       {record.lunchOutTime || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-center text-theme">
                       {record.lunchInTime || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-center text-theme">
                       {record.exitTime || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-center font-medium text-gray-900 dark:text-white">
+                    <td className="px-4 py-3 text-sm text-center font-medium text-theme">
                       {record.workedHours
                         ? `${record.workedHours}h ${record.workedMinutes || 0}m`
                         : "-"}
@@ -276,7 +276,7 @@ export default function TimesheetPage() {
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+                    className="px-4 py-8 text-center text-theme-muted"
                   >
                     Nenhum registro encontrado para este mês
                   </td>

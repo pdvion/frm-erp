@@ -38,7 +38,7 @@ export default function MobileHomePage() {
     <div className="p-4 space-y-6">
       {/* Quick Actions */}
       <section>
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+        <h2 className="text-sm font-semibold text-theme-muted uppercase tracking-wider mb-3">
           Acesso Rápido
         </h2>
         <div className="grid grid-cols-3 gap-3">
@@ -46,10 +46,10 @@ export default function MobileHomePage() {
             <Link
               key={action.href}
               href={action.href}
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-700 active:scale-95 transition-transform ${action.color}`}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-theme active:scale-95 transition-transform ${action.color}`}
             >
               {action.icon}
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              <span className="text-xs font-medium text-theme-secondary">
                 {action.label}
               </span>
             </Link>
@@ -59,7 +59,7 @@ export default function MobileHomePage() {
 
       {/* Pending Summary */}
       <section>
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+        <h2 className="text-sm font-semibold text-theme-muted uppercase tracking-wider mb-3">
           Pendências
         </h2>
         <div className="space-y-3">
@@ -94,7 +94,7 @@ export default function MobileHomePage() {
 
       {/* Recent Activity */}
       <section>
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+        <h2 className="text-sm font-semibold text-theme-muted uppercase tracking-wider mb-3">
           Atividade Recente
         </h2>
         <div className="space-y-2">
@@ -105,15 +105,15 @@ export default function MobileHomePage() {
           ].map((activity, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              className="flex items-center gap-3 p-3 bg-theme-card rounded-lg border border-theme"
             >
               {activity.icon}
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-900 dark:text-gray-100 truncate">
+                <p className="text-sm text-theme truncate">
                   {activity.text}
                 </p>
               </div>
-              <span className="text-xs text-gray-400 flex-shrink-0 flex items-center gap-1">
+              <span className="text-xs text-theme-muted flex-shrink-0 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {activity.time}
               </span>

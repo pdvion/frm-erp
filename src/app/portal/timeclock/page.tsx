@@ -149,8 +149,8 @@ export default function TimeClockPage() {
       />
 
       {/* Current Time Display */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400 mb-2">
+      <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
+        <p className="text-theme-muted mb-2">
           {currentTime.toLocaleDateString("pt-BR", {
             weekday: "long",
             year: "numeric",
@@ -158,11 +158,11 @@ export default function TimeClockPage() {
             day: "numeric",
           })}
         </p>
-        <p className="text-6xl font-bold text-gray-900 dark:text-white font-mono">
+        <p className="text-6xl font-bold text-theme font-mono">
           {currentTime.toLocaleTimeString("pt-BR")}
         </p>
         {profile && (
-          <p className="text-gray-600 dark:text-gray-400 mt-4">
+          <p className="text-theme-muted mt-4">
             {profile.name} - {profile.position?.name || "Colaborador"}
           </p>
         )}
@@ -192,7 +192,7 @@ export default function TimeClockPage() {
                 onClick={() => handleRegister(btn.type)}
                 disabled={!isEnabled || registerMutation.isPending}
                 className={`w-full h-24 flex flex-col items-center justify-center gap-2 ${
-                  isEnabled ? btn.color : "bg-gray-400"
+                  isEnabled ? btn.color : "bg-gray-400 dark:bg-gray-600"
                 } text-white`}
               >
                 {isRegistered ? (
@@ -204,7 +204,7 @@ export default function TimeClockPage() {
               </Button>
               {isRegistered && (
                 <div className="absolute -bottom-6 left-0 right-0 text-center">
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <span className="text-sm font-semibold text-theme-secondary">
                     {btn.time}
                   </span>
                 </div>
@@ -215,45 +215,45 @@ export default function TimeClockPage() {
       </div>
 
       {/* Today's Summary */}
-      <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="mt-8 bg-theme-card rounded-lg border border-theme p-6">
+        <h2 className="text-lg font-semibold text-theme mb-4">
           Registros de Hoje
         </h2>
         {todayEntry ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-center p-4 bg-theme-secondary rounded-lg">
+              <p className="text-sm text-theme-muted">
                 Entrada
               </p>
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+              <p className="text-xl font-semibold text-theme">
                 {todayEntry.entryTime || "--:--"}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-center p-4 bg-theme-secondary rounded-lg">
+              <p className="text-sm text-theme-muted">
                 Saída Almoço
               </p>
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+              <p className="text-xl font-semibold text-theme">
                 {todayEntry.lunchOutTime || "--:--"}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-center p-4 bg-theme-secondary rounded-lg">
+              <p className="text-sm text-theme-muted">
                 Retorno Almoço
               </p>
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+              <p className="text-xl font-semibold text-theme">
                 {todayEntry.lunchInTime || "--:--"}
               </p>
             </div>
-            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Saída</p>
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="text-center p-4 bg-theme-secondary rounded-lg">
+              <p className="text-sm text-theme-muted">Saída</p>
+              <p className="text-xl font-semibold text-theme">
                 {todayEntry.exitTime || "--:--"}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+          <p className="text-theme-muted text-center py-4">
             Nenhum registro hoje. Clique em &quot;Entrada&quot; para começar.
           </p>
         )}
