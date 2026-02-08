@@ -23,9 +23,9 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof CheckCircle }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
+  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400", icon: CheckCircle },
   INACTIVE: { label: "Inativo", color: "bg-theme-card text-theme-muted", icon: XCircle },
-  BLOCKED: { label: "Bloqueado", color: "bg-red-900/50 text-red-400", icon: AlertTriangle },
+  BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400", icon: AlertTriangle },
 };
 
 export default function CustomerDetailPage() {
@@ -107,7 +107,7 @@ export default function CustomerDetailPage() {
         icon={<Building2 className="w-6 h-6" />}
         backHref="/customers"
         breadcrumbs={breadcrumbs}
-        badge={customer.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
+        badge={customer.isShared ? { label: "Compartilhado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/50" } : undefined}
         actions={
           <LinkButton
             href={`/customers/${customerId}/edit`}

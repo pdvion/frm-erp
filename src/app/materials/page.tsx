@@ -128,8 +128,8 @@ function MaterialsContent() {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-6">
-            <p className="text-red-400">Erro ao carregar materiais: {error.message}</p>
+          <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-4 mb-6">
+            <p className="text-red-600 dark:text-red-400">Erro ao carregar materiais: {error.message}</p>
           </div>
         )}
 
@@ -245,10 +245,10 @@ function MaterialsContent() {
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             material.status === "ACTIVE" 
-                              ? "bg-green-900/50 text-green-400"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
                               : material.status === "INACTIVE"
                                 ? "bg-theme-secondary text-theme-secondary"
-                                : "bg-red-900/50 text-red-400"
+                                : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400"
                           }`}>
                             {material.status === "ACTIVE" ? "Ativo" : material.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>

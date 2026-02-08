@@ -254,12 +254,12 @@ export default function QuoteComparePage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
                             <span className={`font-medium ${
-                              index === 0 ? "text-green-400" : "text-theme"
+                              index === 0 ? "text-green-600 dark:text-green-400" : "text-theme"
                             }`}>
                               {formatCurrency(quote.unitPrice)}
                             </span>
                             {index > 0 && (
-                              <div className="text-xs text-red-400">
+                              <div className="text-xs text-red-600 dark:text-red-400">
                                 +{((quote.unitPrice - item.minPrice) / item.minPrice * 100).toFixed(1)}%
                               </div>
                             )}

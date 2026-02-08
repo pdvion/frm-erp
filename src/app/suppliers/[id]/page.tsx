@@ -22,9 +22,9 @@ import { LinkButton } from "@/components/ui/LinkButton";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 
 const statusConfig = {
-  ACTIVE: { label: "Ativo", color: "bg-green-900/50 text-green-400", icon: CheckCircle },
+  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400", icon: CheckCircle },
   INACTIVE: { label: "Inativo", color: "bg-theme-card text-theme-muted", icon: XCircle },
-  BLOCKED: { label: "Bloqueado", color: "bg-red-900/50 text-red-400", icon: AlertTriangle },
+  BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400", icon: AlertTriangle },
 };
 
 export default function SupplierDetailPage() {
@@ -94,7 +94,7 @@ export default function SupplierDetailPage() {
         icon={<Users className="w-6 h-6" />}
         backHref="/suppliers"
         breadcrumbs={breadcrumbs}
-        badge={supplier.isShared ? { label: "Compartilhado", color: "text-purple-400", bgColor: "bg-purple-900/50" } : undefined}
+        badge={supplier.isShared ? { label: "Compartilhado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/50" } : undefined}
         actions={
           <LinkButton
             href={`/suppliers/${supplierId}/edit`}

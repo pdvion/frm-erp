@@ -78,24 +78,25 @@ export default function InvoicesPage() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {Object.entries(statusConfig).map(([status, config]) => {
             const stat = stats?.find((s) => s.status === status);
+            const isActive = statusFilter === status;
             return (
-              <Button
+              <button
                 key={status}
-                variant={statusFilter === status ? "primary" : "outline"}
-                onClick={() => setStatusFilter(statusFilter === status ? "" : status)}
-                className={`p-4 h-auto flex-col items-start text-left ${
-                  statusFilter === status
-                    ? "border-indigo-500 bg-indigo-50"
-                    : ""
+                type="button"
+                onClick={() => setStatusFilter(isActive ? "" : status)}
+                className={`p-4 rounded-lg border text-left transition-colors ${
+                  isActive
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500"
+                    : "border-theme bg-theme-card hover:bg-theme-hover"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
-                  <span className="text-sm font-medium">{config.label}</span>
+                  <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                 </div>
-                <div className="text-2xl font-bold">{stat?.count ?? 0}</div>
-                <div className="text-sm opacity-70">{formatCurrency(stat?.total ?? 0)}</div>
-              </Button>
+                <div className="text-2xl font-bold text-theme">{stat?.count ?? 0}</div>
+                <div className="text-sm text-theme-muted">{formatCurrency(stat?.total ?? 0)}</div>
+              </button>
             );
           })}
         </div>

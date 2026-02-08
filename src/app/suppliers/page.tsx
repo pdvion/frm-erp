@@ -143,8 +143,8 @@ export default function SuppliersPage() {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-6">
-            <p className="text-red-400">Erro ao carregar fornecedores: {error.message}</p>
+          <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-4 mb-6">
+            <p className="text-red-600 dark:text-red-400">Erro ao carregar fornecedores: {error.message}</p>
           </div>
         )}
 
@@ -255,10 +255,10 @@ export default function SuppliersPage() {
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             supplier.status === "ACTIVE" 
-                              ? "bg-green-900/50 text-green-400"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
                               : supplier.status === "INACTIVE"
                                 ? "bg-theme-secondary text-theme-secondary"
-                                : "bg-red-900/50 text-red-400"
+                                : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400"
                           }`}>
                             {supplier.status === "ACTIVE" ? "Ativo" : supplier.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
                           </span>
@@ -272,10 +272,10 @@ export default function SuppliersPage() {
                           {supplier.qualityIndex !== null ? (
                             <div className={`text-sm font-medium ${
                               supplier.qualityIndex >= 80 
-                                ? "text-green-400" 
+                                ? "text-green-700 dark:text-green-400" 
                                 : supplier.qualityIndex >= 60 
-                                  ? "text-yellow-400" 
-                                  : "text-red-400"
+                                  ? "text-yellow-700 dark:text-yellow-400" 
+                                  : "text-red-700 dark:text-red-400"
                             }`}>
                               {supplier.qualityIndex.toFixed(1)}%
                             </div>

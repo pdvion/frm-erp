@@ -279,10 +279,10 @@ export default function MesPage() {
                       <p className="text-sm text-theme-secondary">{workCenterStatus.activeOrder.product?.description}</p>
                       <div className="mt-2 flex items-center gap-4 text-sm">
                         <span>Qtd: {formatNumber(workCenterStatus.activeOrder.quantity)}</span>
-                        <span className="text-green-400">
+                        <span className="text-green-600 dark:text-green-400">
                           Produzido: {formatNumber(workCenterStatus.activeOrder.producedQty)}
                         </span>
-                        <span className="text-yellow-400">
+                        <span className="text-yellow-600 dark:text-yellow-400">
                           Falta: {formatNumber(workCenterStatus.activeOrder.quantity - workCenterStatus.activeOrder.producedQty)}
                         </span>
                       </div>
@@ -302,9 +302,9 @@ export default function MesPage() {
                       <BarChart3 className="w-4 h-4 text-purple-400" />
                       <span>OEE Hoje: </span>
                       <span className={`font-medium ${
-                        workCenterStatus.oee >= 85 ? "text-green-400" :
-                          workCenterStatus.oee >= 60 ? "text-yellow-400" :
-                            "text-red-400"
+                        workCenterStatus.oee >= 85 ? "text-green-600 dark:text-green-400" :
+                          workCenterStatus.oee >= 60 ? "text-yellow-600 dark:text-yellow-400" :
+                            "text-red-600 dark:text-red-400"
                       }`}>
                         {formatNumber(workCenterStatus.oee)}%
                       </span>

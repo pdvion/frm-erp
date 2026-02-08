@@ -32,12 +32,12 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "text-yellow-400", bgColor: "bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "text-blue-400", bgColor: "bg-blue-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "text-purple-400", bgColor: "bg-purple-900/30", icon: <Truck className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "text-orange-400", bgColor: "bg-orange-900/30", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "text-green-400", bgColor: "bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "text-red-400", bgColor: "bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "text-yellow-800 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "text-blue-800 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: <CheckCircle className="w-4 h-4" /> },
+  SENT: { label: "Enviado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", icon: <Truck className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", color: "text-orange-800 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "text-red-800 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function PurchaseOrderDetailPage() {
@@ -93,11 +93,11 @@ export default function PurchaseOrderDetailPage() {
   if (error || !order) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 flex items-center gap-3">
-          <AlertCircle className="w-6 h-6 text-red-400" />
+        <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-6 flex items-center gap-3">
+          <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
           <div>
             <h3 className="font-medium text-theme">Erro ao carregar pedido</h3>
-            <p className="text-red-400 text-sm">
+            <p className="text-red-600 dark:text-red-400 text-sm">
               {error?.message || "Pedido não encontrado"}
             </p>
           </div>
@@ -194,7 +194,7 @@ export default function PurchaseOrderDetailPage() {
                 Itens ({order.items.length})
               </h2>
               {canReceive && (
-                <span className="text-sm text-orange-400 font-medium">
+                <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
                   Aguardando recebimento
                 </span>
               )}
@@ -251,7 +251,7 @@ export default function PurchaseOrderDetailPage() {
                           {item.quantity}
                         </td>
                         <td className="px-4 py-4 text-right">
-                          <span className={`font-medium ${isComplete ? "text-green-400" : "text-orange-400"}`}>
+                          <span className={`font-medium ${isComplete ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400"}`}>
                             {item.receivedQty}
                           </span>
                           {!isComplete && (
@@ -269,7 +269,7 @@ export default function PurchaseOrderDetailPage() {
                         {canReceive && (
                           <td className="px-4 py-4 text-center">
                             {isComplete ? (
-                              <span className="inline-flex items-center gap-1 text-green-400 text-sm">
+                              <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400 text-sm">
                                 <CheckCircle className="w-4 h-4" />
                                 Completo
                               </span>
@@ -314,7 +314,7 @@ export default function PurchaseOrderDetailPage() {
                       <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Desconto ({order.discountPercent}%):
                       </td>
-                      <td className="px-4 py-2 text-right text-green-400">
+                      <td className="px-4 py-2 text-right text-green-600 dark:text-green-400">
                         -{formatCurrency(order.totalValue * (order.discountPercent / 100))}
                       </td>
                       {canReceive && <td></td>}
@@ -397,7 +397,7 @@ export default function PurchaseOrderDetailPage() {
               {order.actualDeliveryDate && (
                 <div className="flex justify-between">
                   <span className="text-theme-muted">Entrega Real:</span>
-                  <span className="font-medium text-green-400">{formatDate(order.actualDeliveryDate)}</span>
+                  <span className="font-medium text-green-600 dark:text-green-400">{formatDate(order.actualDeliveryDate)}</span>
                 </div>
               )}
             </div>

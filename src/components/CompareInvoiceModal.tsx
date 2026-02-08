@@ -130,7 +130,7 @@ export function CompareInvoiceModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-theme-card rounded-xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-theme flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-blue-600" />
@@ -248,7 +248,7 @@ export function CompareInvoiceModal({
 
                   {/* Tabela de Comparação */}
                   <div className="border rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-theme-table">
                       <thead className="bg-theme-secondary">
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
@@ -271,7 +271,7 @@ export function CompareInvoiceModal({
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-theme-table">
                         {comparison.divergences.map((item) => (
                           <tr
                             key={item.invoiceItemId}
@@ -380,7 +380,7 @@ export function CompareInvoiceModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t bg-theme-secondary flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-theme bg-theme-secondary flex items-center justify-between">
           <div>
             {selectedPO && (
               <Button

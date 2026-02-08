@@ -329,8 +329,10 @@ export default function CompaniesPage() {
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleEdit(company)}
-                            className="p-1 text-theme-muted hover:text-blue-600"
+                            className="text-theme-muted hover:text-blue-600"
                             title="Editar"
                           >
                             <Edit className="w-4 h-4" />

@@ -182,7 +182,7 @@ export default function InventoryPage() {
         {/* Error State */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
-            <p className="text-red-400">Erro ao carregar estoque: {error.message}</p>
+            <p className="text-red-600 dark:text-red-400">Erro ao carregar estoque: {error.message}</p>
           </div>
         )}
 
