@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import { Upload, X, FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 
 interface UploadFile {
   id: string;
@@ -207,12 +208,9 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-theme">
           <h2 className="text-lg font-semibold text-theme">Upload de Documentos</h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-theme-muted hover:text-theme rounded-lg hover:bg-theme-secondary"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -313,12 +311,14 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
                     </div>
                     <div className="flex-shrink-0">
                       {file.status === "pending" && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => removeFile(file.id)}
-                          className="p-1 text-theme-muted hover:text-red-500"
+                          className="text-theme-muted hover:text-red-500"
                         >
                           <X className="w-4 h-4" />
-                        </button>
+                        </Button>
                       )}
                       {file.status === "uploading" && (
                         <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
@@ -347,29 +347,18 @@ export function DocumentUpload({ onClose, onSuccess, categories }: DocumentUploa
             {pendingCount > 0 && <span>{pendingCount} pendente(s)</span>}
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-theme-muted hover:text-theme transition-colors"
-            >
+            <Button variant="ghost" onClick={onClose}>
               {successCount > 0 ? "Fechar" : "Cancelar"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               onClick={handleUpload}
               disabled={pendingCount === 0 || isUploading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              isLoading={isUploading}
+              leftIcon={<Upload className="w-4 h-4" />}
             >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4" />
-                  Enviar {pendingCount > 0 ? `(${pendingCount})` : ""}
-                </>
-              )}
-            </button>
+              {isUploading ? "Enviando..." : `Enviar ${pendingCount > 0 ? `(${pendingCount})` : ""}`}
+            </Button>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ import {
   TrendingDown,
   Minus,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface CompareInvoiceModalProps {
   invoiceId: string;
@@ -143,12 +144,13 @@ export function CompareInvoiceModal({
               </p>
             </div>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 hover:bg-theme-tertiary rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -381,34 +383,32 @@ export function CompareInvoiceModal({
         <div className="px-6 py-4 border-t bg-theme-secondary flex items-center justify-between">
           <div>
             {selectedPO && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setSelectedPO(null)}
-                className="text-sm text-theme-secondary hover:text-theme"
               >
                 ← Voltar para seleção
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="ghost"
               onClick={onClose}
-              className="px-4 py-2 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
             >
               Cancelar
-            </button>
+            </Button>
             {selectedPO && comparison && (
-              <button
+              <Button
+                variant="primary"
                 onClick={handleApplyAll}
                 disabled={applyMutation.isPending || linkMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                isLoading={applyMutation.isPending || linkMutation.isPending}
+                leftIcon={<CheckCircle className="w-4 h-4" />}
               >
-                {(applyMutation.isPending || linkMutation.isPending) ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4" />
-                )}
                 Confirmar Conferência
-              </button>
+              </Button>
             )}
           </div>
         </div>

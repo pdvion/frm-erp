@@ -57,12 +57,9 @@ export function EditItemModal({ item, isOpen, onClose, onSave }: EditItemModalPr
       <div className="relative bg-theme-card rounded-lg shadow-xl w-full max-w-lg mx-4 border border-theme">
         <div className="flex items-center justify-between p-4 border-b border-theme">
           <h3 className="text-lg font-semibold text-theme">Editar Item</h3>
-          <button
-            onClick={onClose}
-            className="p-1 text-theme-muted hover:text-theme-secondary rounded"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose}>
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">

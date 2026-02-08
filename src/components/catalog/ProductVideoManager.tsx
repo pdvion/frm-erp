@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Plus, X, Play, ExternalLink, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export interface ProductVideo {
   id: string;
@@ -112,14 +113,14 @@ export function ProductVideoManager({
           Vídeos do Produto
         </h3>
         {!showAddForm && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setShowAddForm(true)}
-            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+            leftIcon={<Plus size={16} />}
           >
-            <Plus size={16} />
             Adicionar Vídeo
-          </button>
+          </Button>
         )}
       </div>
 
@@ -188,24 +189,23 @@ export function ProductVideoManager({
           </div>
 
           <div className="flex gap-2">
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={isAdding || !formData.url || !formData.title}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              isLoading={isAdding}
             >
-              {isAdding && <Loader2 size={16} className="animate-spin" />}
               Adicionar
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() => {
                 setShowAddForm(false);
                 setFormData({ url: "", title: "", type: "demo", description: "" });
               }}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
             >
               Cancelar
-            </button>
+            </Button>
           </div>
         </form>
       )}
@@ -276,11 +276,12 @@ export function ProductVideoManager({
                   >
                     <ExternalLink size={16} />
                   </a>
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => handleDelete(video.id)}
                     disabled={deletingId === video.id}
-                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded"
+                    className="text-gray-500 hover:text-red-600"
                     title="Excluir vídeo"
                   >
                     {deletingId === video.id ? (
@@ -288,7 +289,7 @@ export function ProductVideoManager({
                     ) : (
                       <X size={16} />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
@@ -301,13 +302,13 @@ export function ProductVideoManager({
         <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
           <Play size={32} className="mx-auto mb-2 text-gray-400" />
           <p>Nenhum vídeo adicionado</p>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setShowAddForm(true)}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-700"
           >
             Adicionar primeiro vídeo
-          </button>
+          </Button>
         </div>
       )}
     </div>

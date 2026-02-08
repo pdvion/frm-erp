@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Upload, X, FileText, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
 
 export interface ProductAttachment {
   id: string;
@@ -202,11 +203,12 @@ export function ProductAttachmentManager({
                         >
                           <Download size={16} />
                         </a>
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleDelete(attachment.id)}
                           disabled={deletingId === attachment.id}
-                          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded"
+                          className="text-gray-500 hover:text-red-600"
                           title="Excluir"
                         >
                           {deletingId === attachment.id ? (
@@ -214,7 +216,7 @@ export function ProductAttachmentManager({
                           ) : (
                             <X size={16} />
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}

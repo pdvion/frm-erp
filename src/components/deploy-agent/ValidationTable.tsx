@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, X, Edit2, AlertTriangle } from "lucide-react";
 import { ConfidenceBadge } from "./ConfidenceBadge";
+import { Button } from "@/components/ui/Button";
 
 export interface ValidationItem {
   id: string;
@@ -91,22 +92,24 @@ export function ValidationTable({
           <span className="text-sm text-blue-700 dark:text-blue-300">
             {selectedIds.length} selecionado(s)
           </span>
-          <button
+          <Button
+            variant="success"
+            size="sm"
             onClick={handleApproveSelected}
             disabled={isApplying}
-            className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50"
+            leftIcon={<Check size={14} />}
           >
-            <Check size={14} />
             Aprovar
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
             onClick={handleRejectSelected}
             disabled={isApplying}
-            className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded text-sm hover:bg-red-700 disabled:opacity-50"
+            leftIcon={<X size={14} />}
           >
-            <X size={14} />
             Rejeitar
-          </button>
+          </Button>
         </div>
       )}
 
@@ -183,12 +186,14 @@ export function ValidationTable({
                   {item.reason || "-"}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onEdit(item.id)}
-                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                    className="text-gray-400 hover:text-blue-600"
                   >
                     <Edit2 size={16} />
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}

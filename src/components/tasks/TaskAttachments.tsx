@@ -157,9 +157,9 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
       {uploadError && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
           <span className="text-sm text-red-700">{uploadError}</span>
-          <button onClick={() => setUploadError(null)}>
+          <Button variant="ghost" size="icon" onClick={() => setUploadError(null)}>
             <X className="w-4 h-4 text-red-500" />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -201,14 +201,16 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
                 >
                   <Download className="w-4 h-4" />
                 </a>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleRemove(attachment.id)}
                   disabled={removeAttachmentMutation.isPending}
-                  className="p-2 text-theme-muted hover:text-red-600 transition-colors disabled:opacity-50"
                   title="Remover"
+                  className="text-theme-muted hover:text-red-600"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
