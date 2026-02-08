@@ -4,13 +4,23 @@ description: Padrões do Design System para componentes de front-end
 
 # Workflow: Design System FRM ERP
 
-## ⚠️ OBRIGATÓRIO: Usar Componentes do Design System
+## 🚨 REGRA ABSOLUTA: ZERO HARDCODE
 
-**SEMPRE** antes de criar componentes de UI, verificar se já existe no Design System:
+**NADA deve ser hardcoded nas páginas.** Todo elemento visual DEVE vir de um componente do Design System.
 
+> Se o componente não existe no DS, **CRIE-O PRIMEIRO** em `src/components/ui/` e depois use-o na página.
+> NUNCA escrever classes CSS de cor, borda, badge ou alerta diretamente nas páginas.
+
+### Antes de qualquer código de UI:
 ```bash
 ls src/components/ui/
 ```
+
+### Fluxo obrigatório:
+1. **Precisa de um elemento visual?** → Buscar em `src/components/ui/`
+2. **Existe componente?** → Usar o componente
+3. **Não existe?** → **Criar o componente no DS primeiro**, depois usar
+4. **NUNCA** pular o passo 3 e colocar classes inline na página
 
 ## Componentes Disponíveis
 
@@ -84,48 +94,67 @@ O projeto usa **design tokens** via CSS custom properties. NUNCA usar cores hard
 | `text-theme-secondary` | Texto secundário | Labels, subtítulos |
 | `text-theme-muted` | Texto muted | Placeholders, hints |
 
-### 🚫 PROIBIDO: Cores Dark-Only
-
-**NUNCA** usar cores que só funcionam no dark mode sem par light:
+### 🚫 PROIBIDO: Qualquer cor hardcoded nas páginas
 
 ```tsx
-// ❌ PROIBIDO: dark-only (invisível no tema claro)
-"bg-green-900/50 text-green-400"
-"bg-red-900/20 border-red-800 text-red-400"
-"text-orange-400"
+// ❌ PROIBIDO: classes de cor inline em páginas
+<span className="bg-green-100 text-green-800 ...">Ativo</span>
+<div className="bg-red-50 border border-red-200 ...">Erro</div>
+<span className="text-orange-400">Aviso</span>
 
-// ✅ CORRETO: sempre pares light + dark
-"bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
-"bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800 text-red-700 dark:text-red-400"
-"text-orange-600 dark:text-orange-400"
+// ✅ CORRETO: usar componentes do DS
+import { Badge } from "@/components/ui/Badge";
+import { Alert } from "@/components/ui/Alert";
+
+<Badge variant="success">Ativo</Badge>
+<Alert variant="error">{error.message}</Alert>
 ```
 
-### Padrão de Badges de Status
+### Badges de Status → Componente `Badge`
 ```tsx
-// Template para statusConfig com cores light+dark
-const statusConfig = {
-  ACTIVE:    { label: "Ativo",     color: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400" },
-  PENDING:   { label: "Pendente",  color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  APPROVED:  { label: "Aprovado",  color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-  INACTIVE:  { label: "Inativo",   color: "bg-theme-secondary text-theme-secondary" },
+import { Badge } from "@/components/ui/Badge";
+
+// Variantes disponíveis: default | success | warning | error | info
+<Badge variant="success">Ativo</Badge>
+<Badge variant="warning">Pendente</Badge>
+<Badge variant="info">Aprovado</Badge>
+<Badge variant="error">Cancelado</Badge>
+<Badge variant="default">Inativo</Badge>
+
+// Para statusConfig, mapear status → variant do Badge:
+const statusVariant: Record<string, BadgeVariant> = {
+  ACTIVE: "success",
+  PENDING: "warning",
+  APPROVED: "info",
+  CANCELLED: "error",
+  INACTIVE: "default",
 };
+
+// Na renderização:
+<Badge variant={statusVariant[item.status]}>{statusLabel[item.status]}</Badge>
 ```
 
-### Padrão de Mensagens de Erro
+### Mensagens de Erro/Feedback → Componente `Alert`
 ```tsx
-// ✅ Correto: com pares light+dark
-<div className="p-4 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+import { Alert } from "@/components/ui/Alert";
+
+// Variantes: info | success | warning | error
+<Alert variant="error" title="Erro ao salvar">
   {error.message}
-</div>
+</Alert>
+
+<Alert variant="success">
+  Registro salvo com sucesso!
+</Alert>
+
+<Alert variant="warning" title="Atenção">
+  Existem campos não preenchidos.
+</Alert>
 ```
 
-### Cores Semânticas (accent)
-```tsx
-// Accent — estes já são visíveis em ambos os temas
-text-blue-600 dark:text-blue-400
-bg-blue-600 hover:bg-blue-700
-```
+### Se precisar de nova variante de cor
+> **NÃO** adicione classes inline. Adicione a variante ao componente do DS.
+> Exemplo: se precisar de um Badge roxo, adicione `purple` ao `Badge.tsx`, não escreva `bg-purple-100 text-purple-800` na página.
 
 ### Espaçamento
 ```tsx
@@ -202,78 +231,46 @@ export default function MinhaPage() {
 }
 ```
 
-## 🚫 PROIBIDO - Elementos HTML Nativos
+## 🚫 PROIBIDO - Hardcode de qualquer tipo
 
-### NUNCA usar elementos HTML nativos para UI:
-
+### Elementos HTML nativos
 ```tsx
-// ❌ PROIBIDO: <button> inline
+// ❌ <button>, <input>, <select>, <textarea> inline
 <button className="px-4 py-2 bg-blue-600...">Salvar</button>
-// ✅ CORRETO: Button do Design System
-<Button>Salvar</Button>
-
-// ❌ PROIBIDO: <input> inline
-<input type="text" className="w-full px-3 py-2 border..." />
-// ✅ CORRETO: Input ou FormField
+// ✅ Componente do DS
+<Button variant="primary">Salvar</Button>
 <Input value={value} onChange={onChange} />
-<FormField label="Nome"><Input /></FormField>
-
-// ❌ PROIBIDO: <select> inline
-<select className="w-full px-3 py-2 border...">
-// ✅ CORRETO: Select (com prop options) ou NativeSelect (com children)
 <Select options={options} value={value} onChange={onChange} />
-<NativeSelect value={value} onChange={onChange}>
-  <option value="a">A</option>
-</NativeSelect>
-
-// ❌ PROIBIDO: <textarea> inline
-<textarea className="w-full px-3 py-2 border..." rows={4} />
-// ✅ CORRETO: Textarea do Design System
 <Textarea value={value} onChange={onChange} rows={4} />
 ```
 
+### Cores e estilos inline
+```tsx
+// ❌ Classes de cor/borda/bg diretamente em páginas
+<span className="bg-green-100 text-green-800 ...">Ativo</span>
+<div className="bg-red-50 border border-red-200 ...">Erro</div>
+<div className="bg-white dark:bg-gray-800">Card</div>
+
+// ✅ Componentes do DS + theme tokens
+<Badge variant="success">Ativo</Badge>
+<Alert variant="error">{error.message}</Alert>
+<div className="bg-theme-card">Card</div>
+```
+
 ### Regra de Ouro
-> **Se existe no `src/components/ui/`, USE-O. Se não existe, CRIE-O primeiro.**
-
-## ❌ NÃO FAZER
-
-```tsx
-// ❌ Não criar botões inline
-<button className="px-4 py-2 bg-blue-600...">
-
-// ❌ Não usar cores hardcoded (nem com dark mode manual)
-<div className="bg-white dark:bg-gray-800">  // Use bg-theme-card
-
-// ❌ Não duplicar componentes existentes
-// Verificar src/components/ui/ primeiro!
-
-// ❌ Não usar min-h-screen (AppLayout já fornece)
-<div className="min-h-screen bg-gray-50">
-```
-
-## ✅ FAZER
-
-```tsx
-// ✅ Usar Button do Design System
-<Button variant="primary">Salvar</Button>
-
-// ✅ Usar theme tokens (suporta light+dark automaticamente)
-<div className="bg-theme-card">
-
-// ✅ Usar componentes existentes
-import { PageHeader, Button, Card } from "@/components/ui";
-
-// ✅ Estrutura simples sem layout próprio
-<div className="p-6 space-y-6">
-```
+> **Se existe em `src/components/ui/`, USE-O.**
+> **Se não existe, CRIE-O no DS primeiro, depois use.**
+> **NUNCA pule essa etapa e coloque estilos inline.**
 
 ## Checklist para Novas Páginas
 
+- [ ] **ZERO HARDCODE**: nenhuma classe de cor/badge/alerta inline
 - [ ] Usar `PageHeader` para título
-- [ ] Usar `Button` do Design System (com variant explícito)
-- [ ] Usar **theme tokens** para cores (NUNCA hardcoded)
-- [ ] Badges de status com pares light+dark
-- [ ] Mensagens de erro com pares light+dark
+- [ ] Usar `Button` do DS (com `variant` explícito)
+- [ ] Usar `Badge` do DS para status (NUNCA `<span>` com classes)
+- [ ] Usar `Alert` do DS para erros/feedback (NUNCA `<div>` com classes)
+- [ ] Usar **theme tokens** para backgrounds e bordas de layout
+- [ ] Se precisar de variante nova → adicionar ao componente do DS
 - [ ] Usar espaçamento consistente (p-6, space-y-6)
 - [ ] Ícones do Lucide
 - [ ] Não duplicar componentes existentes
