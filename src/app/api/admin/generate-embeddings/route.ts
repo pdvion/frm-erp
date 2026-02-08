@@ -118,6 +118,38 @@ async function fetchAllEntities(
         },
       }));
     }
+    case "task": {
+      const items = await prisma.task.findMany({
+        where: { companyId, ...notIn },
+        include: { owner: { select: { name: true } }, targetDepartment: { select: { name: true } } },
+        take: 500,
+      });
+      return items.map((t) => ({
+        type: "task" as const,
+        data: {
+          id: t.id, code: t.code, title: t.title, description: t.description,
+          priority: t.priority, status: t.status, entityType: t.entityType,
+          ownerName: t.owner?.name, departmentName: t.targetDepartment?.name,
+          resolution: t.resolution,
+        },
+      }));
+    }
+    case "sales_order": {
+      const items = await prisma.salesOrder.findMany({
+        where: { companyId, ...notIn },
+        include: { customer: { select: { companyName: true, tradeName: true } }, items: { select: { description: true }, take: 20 } },
+        take: 500,
+      });
+      return items.map((so) => ({
+        type: "sales_order" as const,
+        data: {
+          id: so.id, code: so.code, customerName: so.customer.companyName,
+          customerTradeName: so.customer.tradeName, status: so.status,
+          totalValue: so.totalValue, notes: so.notes,
+          itemDescriptions: so.items.map((i) => i.description).filter(Boolean) as string[],
+        },
+      }));
+    }
   }
 }
 

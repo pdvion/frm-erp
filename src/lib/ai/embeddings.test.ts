@@ -5,6 +5,8 @@ import {
   composeCustomerEmbeddingText,
   composeSupplierEmbeddingText,
   composeEmployeeEmbeddingText,
+  composeTaskEmbeddingText,
+  composeSalesOrderEmbeddingText,
   composeEmbeddingText,
   EMBEDDABLE_ENTITIES,
 } from "./embeddings";
@@ -119,6 +121,64 @@ describe("composeEmployeeEmbeddingText", () => {
   });
 });
 
+describe("composeTaskEmbeddingText", () => {
+  it("should compose text with all fields", () => {
+    const text = composeTaskEmbeddingText({
+      id: "uuid-1", code: 42, title: "Aprovar pedido de compra #1234",
+      description: "Pedido de compra de parafusos para a linha de produção",
+      priority: "HIGH", status: "PENDING",
+      entityType: "PURCHASE_ORDER", ownerName: "Carlos Silva",
+      departmentName: "Compras", resolution: null,
+    });
+    expect(text).toContain("Aprovar pedido de compra #1234");
+    expect(text).toContain("Tarefa #42");
+    expect(text).toContain("Prioridade: HIGH");
+    expect(text).toContain("Status: PENDING");
+    expect(text).toContain("Tipo: PURCHASE_ORDER");
+    expect(text).toContain("Responsável: Carlos Silva");
+    expect(text).toContain("Departamento: Compras");
+  });
+
+  it("should handle minimal task", () => {
+    const text = composeTaskEmbeddingText({ id: "uuid-2", code: 1, title: "Tarefa simples" });
+    expect(text).toBe("Tarefa simples | Tarefa #1");
+  });
+
+  it("should include resolution when present", () => {
+    const text = composeTaskEmbeddingText({
+      id: "uuid-3", code: 10, title: "Verificar estoque",
+      resolution: "Estoque conferido e ajustado",
+    });
+    expect(text).toContain("Resolução: Estoque conferido e ajustado");
+  });
+});
+
+describe("composeSalesOrderEmbeddingText", () => {
+  it("should compose text with all fields", () => {
+    const text = composeSalesOrderEmbeddingText({
+      id: "uuid-1", code: 5001, customerName: "Indústria ABC Ltda",
+      customerTradeName: "ABC", status: "CONFIRMED",
+      totalValue: 15750.50, notes: "Entrega urgente",
+      itemDescriptions: ["Parafuso M10x50", "Porca M10", "Arruela M10"],
+    });
+    expect(text).toContain("Pedido de Venda #5001");
+    expect(text).toContain("Cliente: Indústria ABC Ltda");
+    expect(text).toContain("(ABC)");
+    expect(text).toContain("Status: CONFIRMED");
+    expect(text).toContain("Valor: R$ 15750.50");
+    expect(text).toContain("Itens: Parafuso M10x50, Porca M10, Arruela M10");
+    expect(text).toContain("Observações: Entrega urgente");
+  });
+
+  it("should handle minimal sales order", () => {
+    const text = composeSalesOrderEmbeddingText({
+      id: "uuid-2", code: 5002, customerName: "Cliente XYZ",
+      status: "PENDING", totalValue: 0,
+    });
+    expect(text).toBe("Pedido de Venda #5002 | Cliente: Cliente XYZ | Status: PENDING | Valor: R$ 0.00");
+  });
+});
+
 describe("composeEmbeddingText (generic)", () => {
   it("should dispatch to correct composer", () => {
     const materialText = composeEmbeddingText({ type: "material", data: { id: "1", code: 1, description: "Test", unit: "UN" } });
@@ -126,16 +186,24 @@ describe("composeEmbeddingText (generic)", () => {
 
     const employeeText = composeEmbeddingText({ type: "employee", data: { id: "2", code: 1, name: "Maria", contractType: "CLT" } });
     expect(employeeText).toContain("Maria");
+
+    const taskText = composeEmbeddingText({ type: "task", data: { id: "3", code: 1, title: "Aprovar compra" } });
+    expect(taskText).toContain("Aprovar compra");
+
+    const orderText = composeEmbeddingText({ type: "sales_order", data: { id: "4", code: 1, customerName: "ABC", status: "PENDING", totalValue: 100 } });
+    expect(orderText).toContain("ABC");
   });
 });
 
 describe("EMBEDDABLE_ENTITIES", () => {
-  it("should contain all 5 entity types", () => {
-    expect(EMBEDDABLE_ENTITIES).toHaveLength(5);
+  it("should contain all 7 entity types", () => {
+    expect(EMBEDDABLE_ENTITIES).toHaveLength(7);
     expect(EMBEDDABLE_ENTITIES).toContain("material");
     expect(EMBEDDABLE_ENTITIES).toContain("product");
     expect(EMBEDDABLE_ENTITIES).toContain("customer");
     expect(EMBEDDABLE_ENTITIES).toContain("supplier");
     expect(EMBEDDABLE_ENTITIES).toContain("employee");
+    expect(EMBEDDABLE_ENTITIES).toContain("task");
+    expect(EMBEDDABLE_ENTITIES).toContain("sales_order");
   });
 });

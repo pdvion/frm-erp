@@ -29,10 +29,10 @@ export interface BatchResult {
 }
 
 /** Entidades suportadas para embedding */
-export type EmbeddableEntity = "material" | "product" | "customer" | "supplier" | "employee";
+export type EmbeddableEntity = "material" | "product" | "customer" | "supplier" | "employee" | "task" | "sales_order";
 
 export const EMBEDDABLE_ENTITIES: EmbeddableEntity[] = [
-  "material", "product", "customer", "supplier", "employee",
+  "material", "product", "customer", "supplier", "employee", "task", "sales_order",
 ];
 
 // --- Data interfaces por entidade ---
@@ -102,13 +102,39 @@ export interface EmployeeEmbeddingData {
   notes?: string | null;
 }
 
+export interface TaskEmbeddingData {
+  id: string;
+  code: number;
+  title: string;
+  description?: string | null;
+  priority?: string | null;
+  status?: string | null;
+  entityType?: string | null;
+  ownerName?: string | null;
+  departmentName?: string | null;
+  resolution?: string | null;
+}
+
+export interface SalesOrderEmbeddingData {
+  id: string;
+  code: number;
+  customerName: string;
+  customerTradeName?: string | null;
+  status: string;
+  totalValue: number;
+  notes?: string | null;
+  itemDescriptions?: string[];
+}
+
 /** Union de todos os tipos de dados de embedding */
 export type EntityEmbeddingData =
   | { type: "material"; data: MaterialEmbeddingData }
   | { type: "product"; data: ProductEmbeddingData }
   | { type: "customer"; data: CustomerEmbeddingData }
   | { type: "supplier"; data: SupplierEmbeddingData }
-  | { type: "employee"; data: EmployeeEmbeddingData };
+  | { type: "employee"; data: EmployeeEmbeddingData }
+  | { type: "task"; data: TaskEmbeddingData }
+  | { type: "sales_order"; data: SalesOrderEmbeddingData };
 
 // ============================================
 // CONSTANTS
@@ -200,6 +226,32 @@ export function composeEmployeeEmbeddingText(d: EmployeeEmbeddingData): string {
   ]);
 }
 
+export function composeTaskEmbeddingText(d: TaskEmbeddingData): string {
+  return joinParts([
+    d.title,
+    `Tarefa #${d.code}`,
+    d.description,
+    d.priority && `Prioridade: ${d.priority}`,
+    d.status && `Status: ${d.status}`,
+    d.entityType && `Tipo: ${d.entityType}`,
+    d.ownerName && `Responsável: ${d.ownerName}`,
+    d.departmentName && `Departamento: ${d.departmentName}`,
+    d.resolution && `Resolução: ${d.resolution}`,
+  ]);
+}
+
+export function composeSalesOrderEmbeddingText(d: SalesOrderEmbeddingData): string {
+  return joinParts([
+    `Pedido de Venda #${d.code}`,
+    `Cliente: ${d.customerName}`,
+    d.customerTradeName && `(${d.customerTradeName})`,
+    `Status: ${d.status}`,
+    `Valor: R$ ${d.totalValue.toFixed(2)}`,
+    d.itemDescriptions && d.itemDescriptions.length > 0 && `Itens: ${d.itemDescriptions.join(", ")}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
+
 /** Compõe texto de embedding para qualquer entidade suportada */
 export function composeEmbeddingText(entity: EntityEmbeddingData): string {
   switch (entity.type) {
@@ -208,6 +260,8 @@ export function composeEmbeddingText(entity: EntityEmbeddingData): string {
     case "customer": return composeCustomerEmbeddingText(entity.data);
     case "supplier": return composeSupplierEmbeddingText(entity.data);
     case "employee": return composeEmployeeEmbeddingText(entity.data);
+    case "task": return composeTaskEmbeddingText(entity.data);
+    case "sales_order": return composeSalesOrderEmbeddingText(entity.data);
   }
 }
 
@@ -485,13 +539,15 @@ export async function getEmbeddingStatus(
   const tenantFilter = { OR: [{ companyId }, { isShared: true }] };
 
   // Contar entidades por tipo em paralelo
-  const [materials, products, customers, suppliers, employees, allEmbeddings] =
+  const [materials, products, customers, suppliers, employees, tasks, salesOrders, allEmbeddings] =
     await Promise.all([
       prisma.material.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
       prisma.product.count({ where: { companyId } }),
       prisma.customer.count({ where: { companyId, status: "ACTIVE" } }),
       prisma.supplier.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
       prisma.employee.count({ where: { companyId, status: "ACTIVE" } }),
+      prisma.task.count({ where: { companyId } }),
+      prisma.salesOrder.count({ where: { companyId } }),
       prisma.embedding.groupBy({
         by: ["entityType"],
         where: { companyId },
@@ -509,6 +565,8 @@ export async function getEmbeddingStatus(
     customer: customers,
     supplier: suppliers,
     employee: employees,
+    task: tasks,
+    sales_order: salesOrders,
   };
 
   const entities: EntityEmbeddingStatus[] = EMBEDDABLE_ENTITIES.map((type) => {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { taskService } from "../services/tasks";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 import { createClient } from "@supabase/supabase-js";
 
 function getSupabaseAdmin() {
@@ -165,13 +166,15 @@ export const tasksRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      return taskService.create({
+      const task = await taskService.create({
         companyId: ctx.companyId!,
         ...input,
         priority: input.priority as TaskPriority | undefined,
         entityType: input.entityType as TaskEntityType | undefined,
         createdById: ctx.tenant.userId ?? undefined,
       });
+      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "task", task.id, "create");
+      return task;
     }),
 
   // Aceitar tarefa
@@ -209,11 +212,13 @@ export const tasksRouter = createTRPCRouter({
       if (!ctx.tenant.userId) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
-      return taskService.complete({
+      const task = await taskService.complete({
         taskId: input.taskId,
         userId: ctx.tenant.userId,
         resolution: input.resolution,
       });
+      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "task", task.id, "update");
+      return task;
     }),
 
   // Delegar tarefa
