@@ -87,6 +87,17 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 - [ ] Usar `isShared: true` para dados visíveis a todas as empresas
 - [ ] Filtro deve incluir: `OR: [{ companyId }, { isShared: true }]`
 
+## Design System / Cores
+
+### Theme Tokens
+- [ ] Usar theme tokens (`bg-theme-card`, `text-theme`, `border-theme`) em vez de cores hardcoded
+- [ ] NUNCA usar cores dark-only sem par light (ex: `bg-green-900/50 text-green-400`)
+- [ ] Badges de status SEMPRE com pares: `bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400`
+- [ ] Mensagens de erro: `bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800`
+- [ ] Testar visual no tema claro E escuro
+- [ ] Usar `Button` com `variant` explícito (default é `primary` = fundo azul)
+- [ ] Para icon buttons em tabelas: usar `variant="ghost" size="icon"`
+
 ## Código Limpo
 
 ### Imports

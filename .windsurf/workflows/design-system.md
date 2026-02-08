@@ -64,21 +64,65 @@ ls src/components/ui/
 
 ## Padrões de Estilo
 
-### Cores (Dark Mode)
+### ⚠️ OBRIGATÓRIO: Usar Theme Tokens (NÃO hardcoded)
+
+O projeto usa **design tokens** via CSS custom properties. NUNCA usar cores hardcoded como `bg-white dark:bg-gray-800`.
+
+### Tabela de Tokens de Cor
+| Token | Uso | Exemplo |
+|-------|-----|---------|
+| `bg-theme-card` | Background de cards | `<div className="bg-theme-card">` |
+| `bg-theme-secondary` | Background secundário | Table headers, seções |
+| `bg-theme-tertiary` | Background terciário | Nested cards |
+| `bg-theme-hover` | Hover state | `hover:bg-theme-hover` |
+| `bg-theme-table-header` | Header de tabelas | `<thead className="bg-theme-table-header">` |
+| `bg-theme-table-hover` | Hover em linhas | `hover:bg-theme-table-hover` |
+| `border-theme` | Bordas padrão | `border border-theme` |
+| `border-theme-input` | Bordas de inputs | `border-theme-input` |
+| `divide-theme-table` | Divisores de tabela | `divide-y divide-theme-table` |
+| `text-theme` | Texto primário | `<h1 className="text-theme">` |
+| `text-theme-secondary` | Texto secundário | Labels, subtítulos |
+| `text-theme-muted` | Texto muted | Placeholders, hints |
+
+### 🚫 PROIBIDO: Cores Dark-Only
+
+**NUNCA** usar cores que só funcionam no dark mode sem par light:
+
 ```tsx
-// Backgrounds
-bg-white dark:bg-gray-800        // Card principal
-bg-gray-50 dark:bg-gray-750      // Card secundário
-bg-gray-100 dark:bg-gray-700     // Hover
+// ❌ PROIBIDO: dark-only (invisível no tema claro)
+"bg-green-900/50 text-green-400"
+"bg-red-900/20 border-red-800 text-red-400"
+"text-orange-400"
 
-// Bordas
-border-gray-200 dark:border-gray-700
+// ✅ CORRETO: sempre pares light + dark
+"bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
+"bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800 text-red-700 dark:text-red-400"
+"text-orange-600 dark:text-orange-400"
+```
 
-// Texto
-text-gray-900 dark:text-gray-100  // Primário
-text-gray-500 dark:text-gray-400  // Secundário
+### Padrão de Badges de Status
+```tsx
+// Template para statusConfig com cores light+dark
+const statusConfig = {
+  ACTIVE:    { label: "Ativo",     color: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400" },
+  PENDING:   { label: "Pendente",  color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  APPROVED:  { label: "Aprovado",  color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  INACTIVE:  { label: "Inativo",   color: "bg-theme-secondary text-theme-secondary" },
+};
+```
 
-// Accent
+### Padrão de Mensagens de Erro
+```tsx
+// ✅ Correto: com pares light+dark
+<div className="p-4 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+  {error.message}
+</div>
+```
+
+### Cores Semânticas (accent)
+```tsx
+// Accent — estes já são visíveis em ambos os temas
 text-blue-600 dark:text-blue-400
 bg-blue-600 hover:bg-blue-700
 ```
@@ -150,7 +194,7 @@ export default function MinhaPage() {
       />
 
       {/* Conteúdo */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-theme-card rounded-lg border border-theme p-6">
         {/* ... */}
       </div>
     </div>
@@ -197,8 +241,8 @@ export default function MinhaPage() {
 // ❌ Não criar botões inline
 <button className="px-4 py-2 bg-blue-600...">
 
-// ❌ Não usar cores hardcoded sem dark mode
-<div className="bg-white">
+// ❌ Não usar cores hardcoded (nem com dark mode manual)
+<div className="bg-white dark:bg-gray-800">  // Use bg-theme-card
 
 // ❌ Não duplicar componentes existentes
 // Verificar src/components/ui/ primeiro!
@@ -213,8 +257,8 @@ export default function MinhaPage() {
 // ✅ Usar Button do Design System
 <Button variant="primary">Salvar</Button>
 
-// ✅ Sempre incluir dark mode
-<div className="bg-white dark:bg-gray-800">
+// ✅ Usar theme tokens (suporta light+dark automaticamente)
+<div className="bg-theme-card">
 
 // ✅ Usar componentes existentes
 import { PageHeader, Button, Card } from "@/components/ui";
@@ -226,9 +270,12 @@ import { PageHeader, Button, Card } from "@/components/ui";
 ## Checklist para Novas Páginas
 
 - [ ] Usar `PageHeader` para título
-- [ ] Usar `Button` do Design System
-- [ ] Incluir classes dark mode
+- [ ] Usar `Button` do Design System (com variant explícito)
+- [ ] Usar **theme tokens** para cores (NUNCA hardcoded)
+- [ ] Badges de status com pares light+dark
+- [ ] Mensagens de erro com pares light+dark
 - [ ] Usar espaçamento consistente (p-6, space-y-6)
 - [ ] Ícones do Lucide
 - [ ] Não duplicar componentes existentes
 - [ ] Verificar responsividade mobile
+- [ ] Testar no tema claro E escuro
