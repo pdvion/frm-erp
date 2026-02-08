@@ -106,11 +106,11 @@ export default function OnboardingWizardPage() {
 
       {/* Step Content */}
       <div className="bg-theme-card rounded-lg border border-theme p-6 min-h-[300px]">
-        {currentStep === 1 && <Step1Content company={company} formData={formData} setFormData={setFormData} />}
+        {currentStep === 1 && <Step1Content company={company} />}
         {currentStep === 2 && <Step2Content formData={formData} setFormData={setFormData} />}
         {currentStep === 3 && <Step3Content companyId={companyId} />}
-        {currentStep === 4 && <Step4Content formData={formData} setFormData={setFormData} />}
-        {currentStep === 5 && <Step5Content company={company} onboarding={onboarding} />}
+        {currentStep === 4 && <Step4Content />}
+        {currentStep === 5 && <Step5Content onboarding={onboarding} />}
       </div>
 
       {/* Navigation */}
@@ -146,7 +146,7 @@ interface OnboardingData {
   stepsCompleted?: unknown;
 }
 
-function Step1Content({ company }: { company: CompanyData | null | undefined; formData: Record<string, unknown>; setFormData: (d: Record<string, unknown>) => void }) {
+function Step1Content({ company }: { company: CompanyData | null | undefined }) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Dados Básicos da Empresa</h3>
@@ -193,7 +193,7 @@ function Step3Content({ companyId }: { companyId: string }) {
   );
 }
 
-function Step4Content({ formData, setFormData }: { formData: Record<string, unknown>; setFormData: (d: Record<string, unknown>) => void }) {
+function Step4Content() {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Usuários e Permissões</h3>
@@ -203,7 +203,7 @@ function Step4Content({ formData, setFormData }: { formData: Record<string, unkn
   );
 }
 
-function Step5Content({ company, onboarding }: { company: CompanyData | null | undefined; onboarding: OnboardingData | null | undefined }) {
+function Step5Content({ onboarding }: { onboarding: OnboardingData | null | undefined }) {
   const stepsCompleted = (onboarding?.stepsCompleted as Record<string, boolean>) || {};
   return (
     <div className="space-y-4">

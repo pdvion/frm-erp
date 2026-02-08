@@ -5,6 +5,10 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import {
+  SimpleBarChart,
+  ChartCard,
+} from "@/components/charts";
+import {
   LineChart,
   TrendingUp,
   TrendingDown,
@@ -137,16 +141,57 @@ export default function BIAnalyticsPage() {
             ))}
           </div>
 
-          {/* Gráfico placeholder */}
-          <div className="bg-theme-card border border-theme rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              Tendência de Receita
-            </h3>
-            <div className="h-64 flex items-center justify-center border border-dashed border-theme rounded-lg">
-              <div className="text-center text-theme-muted">
-                <LineChart className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>Gráfico de tendência</p>
-                <p className="text-sm">Período: {periodOptions.find(p => p.value === period)?.label}</p>
+          {/* Gráficos de resumo */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard
+              title="Resumo Financeiro"
+              subtitle={`Período: ${periodOptions.find(p => p.value === period)?.label}`}
+            >
+              <SimpleBarChart
+                data={[
+                  {
+                    name: "A Pagar (semana)",
+                    valor: dashboard?.financial?.dueThisWeek?.value || 0,
+                  },
+                  {
+                    name: "Vencidas",
+                    valor: dashboard?.financial?.overdue?.value || 0,
+                  },
+                  {
+                    name: "Estoque (valor)",
+                    valor: dashboard?.inventory?.totalValue || 0,
+                  },
+                ]}
+                dataKeys={[{ key: "valor", color: "#3B82F6", name: "Valor (R$)" }]}
+                height={260}
+                showGrid
+                showLegend={false}
+              />
+            </ChartCard>
+
+            <div className="bg-theme-card border border-theme rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-theme mb-1">Saúde do Estoque</h3>
+              <p className="text-sm text-theme-muted mb-4">Visão geral de itens</p>
+              <div className="space-y-4">
+                {[
+                  { label: "Total de Itens", value: dashboard?.inventory?.totalItems || 0, color: "bg-blue-500", textColor: "text-blue-600" },
+                  { label: "Estoque Baixo", value: dashboard?.inventory?.lowStockCount || 0, color: "bg-yellow-500", textColor: "text-yellow-600" },
+                  { label: "Quantidade Total", value: dashboard?.inventory?.totalQuantity || 0, color: "bg-green-500", textColor: "text-green-600" },
+                ].map((item) => {
+                  const total = dashboard?.inventory?.totalItems || 1;
+                  const pct = Math.min((item.value / total) * 100, 100);
+                  return (
+                    <div key={item.label}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm text-theme-muted">{item.label}</span>
+                        <span className={`font-semibold ${item.textColor}`}>{item.value}</span>
+                      </div>
+                      <div className="w-full bg-theme-tertiary rounded-full h-2.5">
+                        <div className={`h-2.5 rounded-full ${item.color}`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
