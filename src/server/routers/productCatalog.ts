@@ -7,9 +7,9 @@ import { TRPCError } from "@trpc/server";
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { type Prisma, ProductStatus, type AttributeDataType } from "@prisma/client";
+import { type Prisma, ProductStatus } from "@prisma/client";
 import { syncEntityEmbedding } from "../services/embeddingSync";
-import { validateProductSpecs, type SpecValidationResult } from "@/lib/catalog/spec-validator";
+import { validateProductSpecs } from "@/lib/catalog/spec-validator";
 
 // Helper para gerar slug
 function generateSlug(name: string): string {
@@ -970,6 +970,24 @@ export const productCatalogRouter = createTRPCRouter({
       }
       const { seedCatalogTaxonomy } = await import("@/lib/catalog/seed-taxonomy");
       return seedCatalogTaxonomy(ctx.prisma);
+    }),
+
+  // ==========================================
+  // RECONCILIAÇÃO MATERIAL → PRODUCT (VIO-1035)
+  // ==========================================
+
+  reconcileMaterials: tenantProcedure
+    .input(z.object({
+      dryRun: z.boolean().optional().default(true),
+      limit: z.number().int().min(1).max(1000).optional(),
+    }).optional())
+    .mutation(async ({ ctx, input }) => {
+      const { reconcileMaterials } = await import("@/lib/catalog/reconcile-materials");
+      return reconcileMaterials(ctx.prisma, {
+        companyId: ctx.companyId,
+        dryRun: input?.dryRun ?? true,
+        limit: input?.limit,
+      });
     }),
 
   // Análise avançada de materiais para sincronização com sugestão de categoria
