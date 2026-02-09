@@ -15,6 +15,9 @@ model Company {
   cnpj                 String?                 @unique
   ie                   String?
   address              String?
+  addressNumber        String?
+  addressComplement    String?
+  neighborhood         String?
   city                 String?
   state                String?
   zipCode              String?
