@@ -2,6 +2,7 @@
 
 import { useSession } from "@/hooks/useSession";
 import { Clock, RefreshCw, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface SessionTimeoutProps {
   timeoutMinutes?: number;
@@ -43,21 +44,25 @@ export function SessionTimeout({
           </div>
 
           <div className="flex gap-3">
-            <button
+            <Button
+              variant="outline"
+              size="lg"
               onClick={signOut}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-theme text-theme-secondary rounded-lg hover:bg-theme-secondary transition-colors font-medium"
+              leftIcon={<LogOut className="w-5 h-5" />}
+              className="flex-1"
             >
-              <LogOut className="w-5 h-5" />
               Sair
-            </button>
+            </Button>
             
-            <button
+            <Button
+              variant="primary"
+              size="lg"
               onClick={extendSession}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors font-medium"
+              leftIcon={<RefreshCw className="w-5 h-5" />}
+              className="flex-1"
             >
-              <RefreshCw className="w-5 h-5" />
               Continuar
-            </button>
+            </Button>
           </div>
         </div>
       </div>

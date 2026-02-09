@@ -9,7 +9,7 @@ export default function MobileRequisitionsPage() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h2 className="text-lg font-semibold text-theme">
           Requisições
         </h2>
         <Link
@@ -38,7 +38,7 @@ export default function MobileRequisitionsPage() {
         ))}
       </div>
 
-      <p className="text-center text-sm text-gray-400 dark:text-gray-500 pt-4">
+      <p className="text-center text-sm text-theme-muted pt-4">
         Módulo em desenvolvimento — VIO-964
       </p>
     </div>

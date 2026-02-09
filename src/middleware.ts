@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Rotas públicas que não precisam de autenticação
-  const publicRoutes = ["/login", "/auth", "/api/trpc", "/api/sefaz-proxy", "/api/cron", "/forgot-password", "/reset-password", "/set-password"];
+  const publicRoutes = ["/login", "/auth", "/api/trpc", "/api/sefaz-proxy", "/api/cron", "/api/admin", "/api/catalog", "/forgot-password", "/reset-password", "/set-password"];
   const isPublicRoute = publicRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );

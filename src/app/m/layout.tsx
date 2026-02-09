@@ -58,7 +58,7 @@ export default function MobileLayout({ children }: { children: ReactNode }) {
   const isSubpage = pathname !== "/m" && pathname.split("/").length > 2;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-theme">
       <MobileHeader
         title={title}
         backHref={isSubpage ? pathname.split("/").slice(0, -1).join("/") || "/m" : undefined}
@@ -77,7 +77,7 @@ export default function MobileLayout({ children }: { children: ReactNode }) {
               className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
                 isActive
                   ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                  : "text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-800"
+                  : "text-theme-secondary active:bg-theme-secondary"
               }`}
             >
               {item.icon}

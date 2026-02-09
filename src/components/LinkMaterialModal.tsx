@@ -12,6 +12,7 @@ import {
   CheckCircle,
   Tag,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface LinkMaterialModalProps {
   itemId: string;
@@ -85,12 +86,13 @@ export function LinkMaterialModal({
               {itemName} <span className="text-theme-muted">({itemCode})</span>
             </p>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 hover:bg-theme-tertiary rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Search */}
@@ -243,24 +245,21 @@ export function LinkMaterialModal({
               Salvar vínculo para futuras importações
             </label>
             <div className="flex items-center gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={onClose}
-                className="px-4 py-2 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="success"
                 onClick={handleCreateMaterial}
                 disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                isLoading={createMutation.isPending}
+                leftIcon={<Plus className="w-4 h-4" />}
               >
-                {createMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Plus className="w-4 h-4" />
-                )}
                 Criar Material
-              </button>
+              </Button>
             </div>
           </div>
 

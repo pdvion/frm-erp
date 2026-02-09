@@ -142,6 +142,7 @@ export const nfeRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const results: Array<{
         success: boolean;
+        invoiceId?: string;
         invoiceNumber?: number;
         accessKey?: string;
         error?: string;
@@ -179,7 +180,7 @@ export const nfeRouter = createTRPCRouter({
           });
 
           // Criar NFe
-          await prisma.receivedInvoice.create({
+          const created = await prisma.receivedInvoice.create({
             data: {
               accessKey: parsed.chaveAcesso,
               invoiceNumber: parsed.numero,
@@ -221,6 +222,7 @@ export const nfeRouter = createTRPCRouter({
 
           results.push({
             success: true,
+            invoiceId: created.id,
             invoiceNumber: parsed.numero,
             accessKey: parsed.chaveAcesso,
           });

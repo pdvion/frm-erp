@@ -11,8 +11,8 @@ export interface MobileCardProps {
 }
 
 export function MobileCard({ children, onClick, className = "", href }: MobileCardProps) {
-  const baseClass = `w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-left transition-colors ${
-    onClick || href ? "active:bg-gray-50 dark:active:bg-gray-750 cursor-pointer" : ""
+  const baseClass = `w-full bg-theme-card rounded-xl border border-theme p-4 text-left transition-colors ${
+    onClick || href ? "active:bg-theme-secondary cursor-pointer" : ""
   } ${className}`;
 
   if (href) {
@@ -49,13 +49,13 @@ export function MobileCardHeader({ title, subtitle, badge, icon }: MobileCardHea
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+          <h3 className="text-sm font-semibold text-theme truncate">
             {title}
           </h3>
           {badge}
         </div>
         {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+          <p className="text-xs text-theme-muted mt-0.5 truncate">
             {subtitle}
           </p>
         )}

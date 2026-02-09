@@ -123,7 +123,7 @@ export default function QuoteComparePage() {
                       </p>
                     </div>
                     {item.bestQuote && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 bg-green-900/30 text-green-400 rounded-full text-sm font-medium">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm font-medium">
                         <Award className="w-4 h-4" />
                         Melhor: {formatCurrency(item.minPrice)}
                       </div>
@@ -134,7 +134,7 @@ export default function QuoteComparePage() {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="bg-theme-card rounded-lg border border-theme p-4">
-                    <div className="flex items-center gap-2 text-green-400 mb-1">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-1">
                       <TrendingDown className="w-4 h-4" />
                       <span className="text-sm font-medium">Menor Preço</span>
                     </div>
@@ -144,7 +144,7 @@ export default function QuoteComparePage() {
                   </div>
 
                   <div className="bg-theme-card rounded-lg border border-theme p-4">
-                    <div className="flex items-center gap-2 text-red-400 mb-1">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-1">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-sm font-medium">Maior Preço</span>
                     </div>
@@ -154,7 +154,7 @@ export default function QuoteComparePage() {
                   </div>
 
                   <div className="bg-theme-card rounded-lg border border-theme p-4">
-                    <div className="flex items-center gap-2 text-blue-400 mb-1">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
                       <BarChart3 className="w-4 h-4" />
                       <span className="text-sm font-medium">Preço Médio</span>
                     </div>
@@ -164,7 +164,7 @@ export default function QuoteComparePage() {
                   </div>
 
                   <div className="bg-theme-card rounded-lg border border-theme p-4">
-                    <div className="flex items-center gap-2 text-purple-400 mb-1">
+                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 mb-1">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-sm font-medium">Variação</span>
                     </div>
@@ -215,12 +215,12 @@ export default function QuoteComparePage() {
                         <tr
                           key={quote.quoteId}
                           className={`${
-                            index === 0 ? "bg-green-900/20" : "hover:bg-theme-table-hover"
+                            index === 0 ? "bg-green-50 dark:bg-green-900/20" : "hover:bg-theme-table-hover"
                           }`}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             {index === 0 ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-xs font-medium">
                                 <Award className="w-3 h-3" />
                                 1º
                               </span>
@@ -244,7 +244,7 @@ export default function QuoteComparePage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <Link
                               href={`/quotes/${quote.quoteId}`}
-                              className="text-blue-400 hover:text-blue-300 font-mono text-sm"
+                              className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-mono text-sm"
                             >
                               #{quote.quoteCode.toString().padStart(6, "0")}
                             </Link>
@@ -254,12 +254,12 @@ export default function QuoteComparePage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
                             <span className={`font-medium ${
-                              index === 0 ? "text-green-400" : "text-theme"
+                              index === 0 ? "text-green-600 dark:text-green-400" : "text-theme"
                             }`}>
                               {formatCurrency(quote.unitPrice)}
                             </span>
                             {index > 0 && (
-                              <div className="text-xs text-red-400">
+                              <div className="text-xs text-red-600 dark:text-red-400">
                                 +{((quote.unitPrice - item.minPrice) / item.minPrice * 100).toFixed(1)}%
                               </div>
                             )}
@@ -275,7 +275,7 @@ export default function QuoteComparePage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right">
                             {quote.quoteStatus === "APPROVED" ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-900/30 text-green-400 rounded text-xs">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded text-xs">
                                 <CheckCircle className="w-3 h-3" />
                                 Aprovada
                               </span>

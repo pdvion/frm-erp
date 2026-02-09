@@ -265,7 +265,7 @@ export default function EditCustomerPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-theme-card rounded-xl border border-theme p-6">
         {error && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
             {error}
           </div>
         )}

@@ -12,16 +12,10 @@ import {
   Paperclip,
   X,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
 
 interface TaskAttachmentsProps {
   taskId: string;
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -91,16 +85,15 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
           contentType: file.type,
         });
 
-        // Upload para Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from(uploadInfo.bucket)
-          .upload(uploadInfo.filePath, file, {
-            contentType: file.type,
-            upsert: false,
-          });
+        // Upload via signed URL (server-side auth)
+        const uploadResponse = await fetch(uploadInfo.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
 
-        if (uploadError) {
-          setUploadError(`Erro ao fazer upload: ${uploadError.message}`);
+        if (!uploadResponse.ok) {
+          setUploadError(`Erro ao fazer upload: ${uploadResponse.statusText}`);
           continue;
         }
 
@@ -162,11 +155,11 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
       </div>
 
       {uploadError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
-          <span className="text-sm text-red-700">{uploadError}</span>
-          <button onClick={() => setUploadError(null)}>
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center justify-between">
+          <span className="text-sm text-red-700 dark:text-red-400">{uploadError}</span>
+          <Button variant="ghost" size="icon" onClick={() => setUploadError(null)}>
             <X className="w-4 h-4 text-red-500" />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -208,14 +201,16 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
                 >
                   <Download className="w-4 h-4" />
                 </a>
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleRemove(attachment.id)}
                   disabled={removeAttachmentMutation.isPending}
-                  className="p-2 text-theme-muted hover:text-red-600 transition-colors disabled:opacity-50"
                   title="Remover"
+                  className="text-theme-muted hover:text-red-600"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           ))}

@@ -115,9 +115,9 @@ describe("AI Task Config", () => {
   });
 
   describe("Task-specific configurations", () => {
-    it("MATERIAL_CLASSIFICATION should use anthropic for structured reasoning", () => {
+    it("MATERIAL_CLASSIFICATION should use google for structured reasoning", () => {
       const config = DEFAULT_TASK_CONFIG.MATERIAL_CLASSIFICATION;
-      expect(config.preferredProvider).toBe("anthropic");
+      expect(config.preferredProvider).toBe("google");
       expect(config.temperature).toBeLessThanOrEqual(0.3);
     });
 

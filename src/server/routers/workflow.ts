@@ -8,7 +8,7 @@ import {
   PROMPT_SUGGESTIONS,
   type GeneratedWorkflow,
 } from "@/lib/ai/workflowGenerator";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getAllAITokens } from "@/server/services/getAIApiKey";
 
 export const workflowRouter = createTRPCRouter({
   // ============================================================================
@@ -822,9 +822,10 @@ export const workflowRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+      const tokens = await getAllAITokens(ctx.prisma, ctx.companyId);
+      const hasAnyToken = Object.values(tokens).some(Boolean);
 
-      if (!apiKey) {
+      if (!hasAnyToken) {
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Token de IA não configurado. Configure em Configurações > IA." });
       }
 
@@ -832,15 +833,13 @@ export const workflowRouter = createTRPCRouter({
         let workflow: GeneratedWorkflow;
 
         if (input.currentWorkflow) {
-          // Refine existing workflow
           workflow = await refineWorkflow(
             input.currentWorkflow as GeneratedWorkflow,
             input.prompt,
-            apiKey
+            tokens
           );
         } else {
-          // Generate new workflow
-          workflow = await generateWorkflowFromPrompt(input.prompt, apiKey);
+          workflow = await generateWorkflowFromPrompt(input.prompt, tokens);
         }
 
         return workflow;

@@ -41,7 +41,7 @@ export default function VacationsPage() {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-theme-secondary text-theme-secondary">
             {status}
           </span>
         );
@@ -108,9 +108,9 @@ export default function VacationsPage() {
       </div>
 
       {/* Vacation History */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="bg-theme-card rounded-lg border border-theme">
+        <div className="p-4 border-b border-theme">
+          <h2 className="text-lg font-semibold text-theme">
             Histórico de Férias
           </h2>
         </div>
@@ -118,24 +118,24 @@ export default function VacationsPage() {
         {isLoading ? (
           <div className="p-6 space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div key={i} className="h-16 bg-theme-secondary rounded animate-pulse" />
             ))}
           </div>
         ) : vacations?.history && vacations.history.length > 0 ? (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="divide-y divide-theme">
             {vacations.history.map((vacation: { id: string; startDate: string | Date; endDate: string | Date; totalDays?: number | null; soldDays?: number | null; status?: string | null; notes?: string | null }) => (
-              <div key={vacation.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <div key={vacation.id} className="p-4 hover:bg-theme-hover">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                       <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">
+                      <p className="font-semibold text-theme">
                         {new Date(vacation.startDate).toLocaleDateString("pt-BR")} -{" "}
                         {new Date(vacation.endDate).toLocaleDateString("pt-BR")}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-theme-muted">
                         {vacation.totalDays || 30} dias
                         {(vacation.soldDays || 0) > 0 && ` (${vacation.soldDays} dias vendidos)`}
                       </p>
@@ -147,7 +147,7 @@ export default function VacationsPage() {
                   </div>
                 </div>
                 {vacation.notes && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 ml-16">
+                  <p className="text-sm text-theme-muted mt-2 ml-16">
                     {vacation.notes}
                   </p>
                 )}
@@ -156,8 +156,8 @@ export default function VacationsPage() {
           </div>
         ) : (
           <div className="p-12 text-center">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">
+            <Calendar className="w-12 h-12 text-theme-muted mx-auto mb-4" />
+            <p className="text-theme-muted">
               Nenhum registro de férias encontrado
             </p>
           </div>

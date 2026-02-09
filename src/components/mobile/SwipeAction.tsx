@@ -128,7 +128,7 @@ export function SwipeAction({
 
       {/* Content */}
       <div
-        className={`relative bg-white dark:bg-gray-800 ${swiping ? "" : "transition-transform duration-200"}`}
+        className={`relative bg-theme-card ${swiping ? "" : "transition-transform duration-200"}`}
         style={{ transform: `translateX(${offset}px)` }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

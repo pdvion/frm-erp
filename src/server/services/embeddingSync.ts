@@ -8,7 +8,7 @@
  */
 
 import type { PrismaClient } from "@prisma/client";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getGoogleKey } from "@/server/services/getAIApiKey";
 import {
   composeEmbeddingText,
   generateEmbedding,
@@ -21,6 +21,8 @@ import {
   type CustomerEmbeddingData,
   type SupplierEmbeddingData,
   type EmployeeEmbeddingData,
+  type TaskEmbeddingData,
+  type SalesOrderEmbeddingData,
 } from "@/lib/ai/embeddings";
 
 // ============================================
@@ -73,7 +75,7 @@ async function _syncEntityEmbedding(
     }
 
     // Create/Update: gerar novo embedding
-    const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+    const apiKey = await getGoogleKey(ctx.prisma, ctx.companyId);
     if (!apiKey) return; // Sem API key — skip silencioso
 
     const entityData = await fetchEntityForSync(ctx.prisma, entityType, entityId, ctx.companyId);
@@ -186,6 +188,40 @@ async function fetchEntityForSync(
         contractType: e.contractType, notes: e.notes,
       };
       return { type: "employee", data };
+    }
+    case "task": {
+      const t = await prisma.task.findFirst({
+        where: { id: entityId, companyId },
+        include: {
+          owner: { select: { name: true } },
+          targetDepartment: { select: { name: true } },
+        },
+      });
+      if (!t) return null;
+      const data: TaskEmbeddingData = {
+        id: t.id, code: t.code, title: t.title, description: t.description,
+        priority: t.priority, status: t.status,
+        entityType: t.entityType, ownerName: t.owner?.name,
+        departmentName: t.targetDepartment?.name, resolution: t.resolution,
+      };
+      return { type: "task", data };
+    }
+    case "sales_order": {
+      const so = await prisma.salesOrder.findFirst({
+        where: { id: entityId, companyId },
+        include: {
+          customer: { select: { companyName: true, tradeName: true } },
+          items: { select: { description: true }, take: 20 },
+        },
+      });
+      if (!so) return null;
+      const data: SalesOrderEmbeddingData = {
+        id: so.id, code: so.code, customerName: so.customer.companyName,
+        customerTradeName: so.customer.tradeName, status: so.status,
+        totalValue: so.totalValue, notes: so.notes,
+        itemDescriptions: so.items.map((i) => i.description).filter(Boolean) as string[],
+      };
+      return { type: "sales_order", data };
     }
   }
 }

@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { PrismaClient } from "@prisma/client";
 
 // ============================================
@@ -29,10 +29,10 @@ export interface BatchResult {
 }
 
 /** Entidades suportadas para embedding */
-export type EmbeddableEntity = "material" | "product" | "customer" | "supplier" | "employee";
+export type EmbeddableEntity = "material" | "product" | "customer" | "supplier" | "employee" | "task" | "sales_order";
 
 export const EMBEDDABLE_ENTITIES: EmbeddableEntity[] = [
-  "material", "product", "customer", "supplier", "employee",
+  "material", "product", "customer", "supplier", "employee", "task", "sales_order",
 ];
 
 // --- Data interfaces por entidade ---
@@ -102,21 +102,47 @@ export interface EmployeeEmbeddingData {
   notes?: string | null;
 }
 
+export interface TaskEmbeddingData {
+  id: string;
+  code: number;
+  title: string;
+  description?: string | null;
+  priority?: string | null;
+  status?: string | null;
+  entityType?: string | null;
+  ownerName?: string | null;
+  departmentName?: string | null;
+  resolution?: string | null;
+}
+
+export interface SalesOrderEmbeddingData {
+  id: string;
+  code: number;
+  customerName: string;
+  customerTradeName?: string | null;
+  status: string;
+  totalValue: number;
+  notes?: string | null;
+  itemDescriptions?: string[];
+}
+
 /** Union de todos os tipos de dados de embedding */
 export type EntityEmbeddingData =
   | { type: "material"; data: MaterialEmbeddingData }
   | { type: "product"; data: ProductEmbeddingData }
   | { type: "customer"; data: CustomerEmbeddingData }
   | { type: "supplier"; data: SupplierEmbeddingData }
-  | { type: "employee"; data: EmployeeEmbeddingData };
+  | { type: "employee"; data: EmployeeEmbeddingData }
+  | { type: "task"; data: TaskEmbeddingData }
+  | { type: "sales_order"; data: SalesOrderEmbeddingData };
 
 // ============================================
 // CONSTANTS
 // ============================================
 
-const EMBEDDING_MODEL = "text-embedding-3-small";
-const EMBEDDING_DIMENSIONS = 1536;
-const MAX_BATCH_SIZE = 2048;
+const EMBEDDING_MODEL = "gemini-embedding-001";
+export const EMBEDDING_DIMENSIONS = 3072;
+const MAX_BATCH_SIZE = 100; // Gemini batch limit
 const BATCH_DELAY_MS = 200;
 
 // ============================================
@@ -200,6 +226,32 @@ export function composeEmployeeEmbeddingText(d: EmployeeEmbeddingData): string {
   ]);
 }
 
+export function composeTaskEmbeddingText(d: TaskEmbeddingData): string {
+  return joinParts([
+    d.title,
+    `Tarefa #${d.code}`,
+    d.description,
+    d.priority && `Prioridade: ${d.priority}`,
+    d.status && `Status: ${d.status}`,
+    d.entityType && `Tipo: ${d.entityType}`,
+    d.ownerName && `Responsável: ${d.ownerName}`,
+    d.departmentName && `Departamento: ${d.departmentName}`,
+    d.resolution && `Resolução: ${d.resolution}`,
+  ]);
+}
+
+export function composeSalesOrderEmbeddingText(d: SalesOrderEmbeddingData): string {
+  return joinParts([
+    `Pedido de Venda #${d.code}`,
+    `Cliente: ${d.customerName}`,
+    d.customerTradeName && `(${d.customerTradeName})`,
+    `Status: ${d.status}`,
+    `Valor: R$ ${d.totalValue.toFixed(2)}`,
+    d.itemDescriptions && d.itemDescriptions.length > 0 && `Itens: ${d.itemDescriptions.join(", ")}`,
+    d.notes && `Observações: ${d.notes}`,
+  ]);
+}
+
 /** Compõe texto de embedding para qualquer entidade suportada */
 export function composeEmbeddingText(entity: EntityEmbeddingData): string {
   switch (entity.type) {
@@ -208,6 +260,8 @@ export function composeEmbeddingText(entity: EntityEmbeddingData): string {
     case "customer": return composeCustomerEmbeddingText(entity.data);
     case "supplier": return composeSupplierEmbeddingText(entity.data);
     case "employee": return composeEmployeeEmbeddingText(entity.data);
+    case "task": return composeTaskEmbeddingText(entity.data);
+    case "sales_order": return composeSalesOrderEmbeddingText(entity.data);
   }
 }
 
@@ -216,52 +270,50 @@ export function composeEmbeddingText(entity: EntityEmbeddingData): string {
 // ============================================
 
 /**
- * Gera embedding para um único texto
+ * Gera embedding para um único texto usando Google Gemini
  */
 export async function generateEmbedding(
   text: string,
   apiKey: string
 ): Promise<{ embedding: number[]; tokenCount: number }> {
-  const openai = new OpenAI({ apiKey });
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: EMBEDDING_MODEL });
 
-  const response = await openai.embeddings.create({
-    model: EMBEDDING_MODEL,
-    input: text,
-    dimensions: EMBEDDING_DIMENSIONS,
-  });
+  const result = await model.embedContent(text);
+  const embedding = result.embedding.values;
+
+  // Gemini não retorna token count diretamente; estimativa ~4 chars/token
+  const estimatedTokens = Math.ceil(text.length / 4);
 
   return {
-    embedding: response.data[0].embedding,
-    tokenCount: response.usage.total_tokens,
+    embedding,
+    tokenCount: estimatedTokens,
   };
 }
 
 /**
- * Gera embeddings em batch (máx 2048 por chamada da API)
+ * Gera embeddings em batch usando Google Gemini
  */
 export async function generateEmbeddingsBatch(
   texts: string[],
   apiKey: string
 ): Promise<Array<{ embedding: number[]; tokenCount: number }>> {
-  const openai = new OpenAI({ apiKey });
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: EMBEDDING_MODEL });
   const results: Array<{ embedding: number[]; tokenCount: number }> = [];
 
   // Processar em chunks de MAX_BATCH_SIZE
   for (let i = 0; i < texts.length; i += MAX_BATCH_SIZE) {
     const chunk = texts.slice(i, i + MAX_BATCH_SIZE);
 
-    const response = await openai.embeddings.create({
-      model: EMBEDDING_MODEL,
-      input: chunk,
-      dimensions: EMBEDDING_DIMENSIONS,
+    const batchResult = await model.batchEmbedContents({
+      requests: chunk.map((text) => ({ content: { role: "user", parts: [{ text }] } })),
     });
 
-    const tokensPerItem = Math.ceil(response.usage.total_tokens / chunk.length);
-
-    for (const item of response.data) {
+    for (let j = 0; j < batchResult.embeddings.length; j++) {
       results.push({
-        embedding: item.embedding,
-        tokenCount: tokensPerItem,
+        embedding: batchResult.embeddings[j].values,
+        tokenCount: Math.ceil(chunk[j].length / 4),
       });
     }
 
@@ -299,7 +351,7 @@ export async function upsertEmbedding(
       ${input.entityId}::uuid,
       ${input.companyId}::uuid,
       ${input.content},
-      ${vectorStr}::vector(1536),
+      ${vectorStr}::vector(3072),
       ${model},
       ${metadata}::jsonb,
       NOW(),
@@ -373,7 +425,7 @@ export async function semanticSearch(
   for (const entityType of types) {
     const results = await prisma.$queryRawUnsafe<SemanticSearchResult[]>(
       `SELECT entity_id AS "entityId", content, similarity, metadata
-       FROM match_embeddings($1::vector(1536), $2, $3::uuid, $4, $5)`,
+       FROM match_embeddings($1::vector(3072), $2, $3::uuid, $4, $5)`,
       vectorStr,
       entityType,
       options.companyId,
@@ -487,13 +539,15 @@ export async function getEmbeddingStatus(
   const tenantFilter = { OR: [{ companyId }, { isShared: true }] };
 
   // Contar entidades por tipo em paralelo
-  const [materials, products, customers, suppliers, employees, allEmbeddings] =
+  const [materials, products, customers, suppliers, employees, tasks, salesOrders, allEmbeddings] =
     await Promise.all([
       prisma.material.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
       prisma.product.count({ where: { companyId } }),
       prisma.customer.count({ where: { companyId, status: "ACTIVE" } }),
       prisma.supplier.count({ where: { ...tenantFilter, status: "ACTIVE" } }),
       prisma.employee.count({ where: { companyId, status: "ACTIVE" } }),
+      prisma.task.count({ where: { companyId } }),
+      prisma.salesOrder.count({ where: { companyId } }),
       prisma.embedding.groupBy({
         by: ["entityType"],
         where: { companyId },
@@ -511,6 +565,8 @@ export async function getEmbeddingStatus(
     customer: customers,
     supplier: suppliers,
     employee: employees,
+    task: tasks,
+    sales_order: salesOrders,
   };
 
   const entities: EntityEmbeddingStatus[] = EMBEDDABLE_ENTITIES.map((type) => {

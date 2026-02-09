@@ -63,7 +63,7 @@ export function Radio({
                 flex items-center justify-center
                 ${value === option.value
           ? "border-blue-600"
-          : "border-gray-300 dark:border-gray-600"
+          : "border-theme-input"
         }
                 peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2
                 ${!disabled && !option.disabled ? "peer-hover:border-blue-500" : ""}
@@ -74,7 +74,7 @@ export function Radio({
               )}
             </div>
           </div>
-          <span className="text-sm text-gray-900 dark:text-gray-100 select-none">
+          <span className="text-sm text-theme select-none">
             {option.label}
           </span>
         </label>

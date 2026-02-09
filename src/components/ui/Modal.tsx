@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface ModalProps {
   isOpen: boolean;
@@ -155,14 +156,14 @@ export function Modal({
             )}
           </div>
           {showCloseButton && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              className="p-2 text-theme-muted hover:text-theme hover:bg-theme-hover rounded-lg transition-colors"
               aria-label="Fechar modal"
             >
               <X className="w-5 h-5" />
-            </button>
+            </Button>
           )}
         </div>
 

@@ -1,6 +1,6 @@
-import OpenAI from "openai";
 import type { PrismaClient } from "@prisma/client";
 import { semanticSearch } from "./embeddings";
+import { callWithFallback, type AITokens } from "./router";
 
 export interface ClassificationSuggestion {
   id: string;
@@ -166,31 +166,30 @@ export function classifyByTextSimilarity(
 }
 
 /**
- * Classificador usando OpenAI chat (legado, mais lento e caro)
+ * Classificador usando IA chat (fallback quando não há embeddings)
  */
 export async function classifyWithAI(
   nfeDescription: string,
   materials: MaterialData[],
-  apiKey: string,
+  tokens: AITokens,
   limit = 5
 ): Promise<ClassificationResult> {
   const startTime = Date.now();
 
   try {
-    const openai = new OpenAI({ apiKey });
-
-    // Criar prompt para classificação
     const materialsList = materials
-      .slice(0, 50) // Limitar para não exceder contexto
+      .slice(0, 50)
       .map((m) => `- ID: ${m.id}, Código: ${m.code}, Descrição: ${m.description}`)
       .join("\n");
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `Você é um assistente especializado em classificação de materiais para ERP.
+    const response = await callWithFallback(
+      { primaryProvider: "google", primaryModel: "gemini-2.0-flash-exp", enableFallback: true },
+      tokens,
+      {
+        messages: [
+          {
+            role: "system",
+            content: `Você é um assistente especializado em classificação de materiais para ERP.
 Dado um item de NFe, você deve identificar qual material do cadastro corresponde melhor.
 Retorne um JSON com array "suggestions" contendo os melhores matches, cada um com:
 - id: ID do material
@@ -200,29 +199,27 @@ Retorne um JSON com array "suggestions" contendo os melhores matches, cada um co
 - reason: breve explicação do match
 
 Retorne apenas o JSON, sem markdown.`,
-        },
-        {
-          role: "user",
-          content: `Item da NFe: "${nfeDescription}"
+          },
+          {
+            role: "user",
+            content: `Item da NFe: "${nfeDescription}"
 
 Materiais cadastrados:
 ${materialsList}
 
 Identifique os ${limit} materiais mais prováveis.`,
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 1000,
-    });
+          },
+        ],
+        temperature: 0.3,
+        maxTokens: 1000,
+        responseFormat: "json",
+      }
+    );
 
-    const content = response.choices[0]?.message?.content ?? "{}";
-    
-    // Parse da resposta
     let parsed: { suggestions?: ClassificationSuggestion[] };
     try {
-      parsed = JSON.parse(content);
+      parsed = JSON.parse(response.content);
     } catch {
-      // Se falhar o parse, usar fallback
       return classifyByTextSimilarity(nfeDescription, materials, limit);
     }
 
@@ -239,7 +236,6 @@ Identifique os ${limit} materiais mais prováveis.`,
     };
   } catch (error) {
     console.error("Erro na classificação com IA:", error);
-    // Fallback para similaridade de texto
     return classifyByTextSimilarity(nfeDescription, materials, limit);
   }
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Send, Sparkles, Loader2, X, Lightbulb, Wand2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/Button";
 import type { GeneratedWorkflow } from "@/lib/ai/workflowGenerator";
 
 interface Message {
@@ -86,12 +87,9 @@ export function AIChatPanel({
           <Sparkles className="w-5 h-5 text-violet-500" />
           <h3 className="font-semibold text-theme">Criar com IA</h3>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1 text-theme-muted hover:text-theme rounded"
-        >
+        <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
 
       {/* Messages */}
@@ -170,13 +168,15 @@ export function AIChatPanel({
                       {message.workflow.transitions.length}
                     </p>
                   </div>
-                  <button
+                  <Button
+                    variant="primary"
+                    size="sm"
                     onClick={() => handleApplyWorkflow(message.workflow!)}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    leftIcon={<Wand2 className="w-4 h-4" />}
+                    className="w-full bg-violet-600 hover:bg-violet-700"
                   >
-                    <Wand2 className="w-4 h-4" />
                     Aplicar ao Canvas
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -216,13 +216,15 @@ export function AIChatPanel({
             className="flex-1 px-3 py-2 text-sm bg-theme-input border border-theme-input rounded-lg text-theme placeholder:text-theme-muted"
             disabled={generateMutation.isPending}
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="icon"
             disabled={!input.trim() || generateMutation.isPending}
-            className="px-3 py-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 text-white rounded-lg transition-colors"
+            className="bg-violet-600 hover:bg-violet-700"
           >
             <Send className="w-4 h-4" />
-          </button>
+          </Button>
         </form>
         {messages.length > 0 && (
           <p className="text-xs text-theme-muted mt-2">

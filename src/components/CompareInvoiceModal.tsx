@@ -16,6 +16,7 @@ import {
   TrendingDown,
   Minus,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface CompareInvoiceModalProps {
   invoiceId: string;
@@ -129,7 +130,7 @@ export function CompareInvoiceModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-theme-card rounded-xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-theme flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-blue-600" />
@@ -143,12 +144,13 @@ export function CompareInvoiceModal({
               </p>
             </div>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="p-2 hover:bg-theme-tertiary rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
@@ -218,20 +220,20 @@ export function CompareInvoiceModal({
                         {comparison.summary.totalItems}
                       </p>
                     </div>
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <p className="text-sm text-green-600">OK</p>
-                      <p className="text-2xl font-bold text-green-700">
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                      <p className="text-sm text-green-600 dark:text-green-400">OK</p>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
                         {comparison.summary.okItems}
                       </p>
                     </div>
-                    <div className="bg-yellow-50 rounded-lg p-4">
-                      <p className="text-sm text-yellow-600">Divergentes</p>
-                      <p className="text-2xl font-bold text-yellow-700">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400">Divergentes</p>
+                      <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
                         {comparison.summary.divergentItems}
                       </p>
                     </div>
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="text-sm text-blue-600">Diferença Valor</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                      <p className="text-sm text-blue-600 dark:text-blue-400">Diferença Valor</p>
                       <p className={`text-xl font-bold ${
                         comparison.summary.totalValueDivergence > 0
                           ? "text-red-600"
@@ -246,7 +248,7 @@ export function CompareInvoiceModal({
 
                   {/* Tabela de Comparação */}
                   <div className="border rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-theme-table">
                       <thead className="bg-theme-secondary">
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">
@@ -269,12 +271,12 @@ export function CompareInvoiceModal({
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-theme-table">
                         {comparison.divergences.map((item) => (
                           <tr
                             key={item.invoiceItemId}
                             className={
-                              item.status !== "OK" ? "bg-yellow-50" : ""
+                              item.status !== "OK" ? "bg-yellow-50 dark:bg-yellow-900/20" : ""
                             }
                           >
                             <td className="px-4 py-3">
@@ -355,7 +357,7 @@ export function CompareInvoiceModal({
                         <AlertTriangle className="w-4 h-4 text-yellow-600" />
                         Itens do pedido não encontrados na NFe
                       </h4>
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                         <ul className="space-y-2">
                           {comparison.missingInInvoice.map((item) => (
                             <li key={item.purchaseOrderItemId} className="text-sm">
@@ -378,37 +380,35 @@ export function CompareInvoiceModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t bg-theme-secondary flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-theme bg-theme-secondary flex items-center justify-between">
           <div>
             {selectedPO && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setSelectedPO(null)}
-                className="text-sm text-theme-secondary hover:text-theme"
               >
                 ← Voltar para seleção
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="ghost"
               onClick={onClose}
-              className="px-4 py-2 text-theme-secondary hover:bg-theme-tertiary rounded-lg transition-colors"
             >
               Cancelar
-            </button>
+            </Button>
             {selectedPO && comparison && (
-              <button
+              <Button
+                variant="primary"
                 onClick={handleApplyAll}
                 disabled={applyMutation.isPending || linkMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                isLoading={applyMutation.isPending || linkMutation.isPending}
+                leftIcon={<CheckCircle className="w-4 h-4" />}
               >
-                {(applyMutation.isPending || linkMutation.isPending) ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="w-4 h-4" />
-                )}
                 Confirmar Conferência
-              </button>
+              </Button>
             )}
           </div>
         </div>

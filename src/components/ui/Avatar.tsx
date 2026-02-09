@@ -128,7 +128,7 @@ export function AvatarGroup({
       })}
       {remainingCount > 0 && (
         <div
-          className={`relative ring-2 ring-white dark:ring-gray-900 rounded-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium ${config.container} ${config.text}`}
+          className={`relative ring-2 ring-white dark:ring-gray-900 rounded-full flex items-center justify-center bg-theme-secondary text-theme-muted font-medium ${config.container} ${config.text}`}
           style={{ zIndex: 0 }}
         >
           +{remainingCount}

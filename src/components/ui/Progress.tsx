@@ -65,7 +65,7 @@ export function Progress({
     return (
       <div className={`inline-flex flex-col items-center gap-1 ${className}`}>
         {label && (
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium text-theme-secondary">
             {label}
           </span>
         )}
@@ -82,7 +82,7 @@ export function Progress({
               r={radius}
               fill="none"
               strokeWidth={config.stroke}
-              className="stroke-gray-200 dark:stroke-gray-700"
+              className="stroke-current text-gray-200 dark:text-gray-700"
             />
             {/* Progress circle */}
             <circle
@@ -102,7 +102,7 @@ export function Progress({
           </svg>
           {showValue && !indeterminate && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+              <span className="text-xs font-semibold text-theme-secondary">
                 {Math.round(percentage)}%
               </span>
             </div>
@@ -118,19 +118,19 @@ export function Progress({
       {(label || showValue) && (
         <div className="flex justify-between items-center mb-1">
           {label && (
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-theme-secondary">
               {label}
             </span>
           )}
           {showValue && !indeterminate && (
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <span className="text-sm font-medium text-theme-muted">
               {Math.round(percentage)}%
             </span>
           )}
         </div>
       )}
       <div
-        className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden ${sizeConfig.linear[size]}`}
+        className={`w-full bg-theme-secondary rounded-full overflow-hidden ${sizeConfig.linear[size]}`}
         role="progressbar"
         aria-valuenow={indeterminate ? undefined : value}
         aria-valuemin={0}

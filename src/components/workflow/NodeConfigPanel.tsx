@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Plus, Trash2, Settings2 } from "lucide-react";
 import { Drawer } from "@/components/ui/Drawer";
+import { Button } from "@/components/ui/Button";
 import type { WorkflowStep } from "./WorkflowEditor";
 
 interface FormField {
@@ -64,12 +65,9 @@ export function NodeConfigPanel({ node, onClose, onUpdate }: NodeConfigPanelProp
     <div className="bg-theme-card border border-theme rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-theme">Configurar Nó</h3>
-        <button
-          onClick={onClose}
-          className="p-1 text-theme-muted hover:text-theme rounded"
-        >
+        <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-4">
@@ -162,18 +160,20 @@ export function NodeConfigPanel({ node, onClose, onUpdate }: NodeConfigPanelProp
         {/* Form Builder for ACTION and APPROVAL nodes */}
         {(node.type === "ACTION" || node.type === "APPROVAL") && (
           <div className="border-t border-theme pt-4">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setIsFormDrawerOpen(true)}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-violet-600 border border-violet-300 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20"
+              leftIcon={<Settings2 className="w-4 h-4" />}
+              className="w-full text-violet-600 border-violet-300"
             >
-              <Settings2 className="w-4 h-4" />
               Configurar Formulário
               {formFields.length > 0 && (
                 <span className="ml-1 px-1.5 py-0.5 text-xs bg-violet-100 dark:bg-violet-900 rounded">
                   {formFields.length}
                 </span>
               )}
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -198,12 +198,14 @@ export function NodeConfigPanel({ node, onClose, onUpdate }: NodeConfigPanelProp
               <div key={field.id} className="p-4 bg-theme-secondary rounded-lg border border-theme">
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-medium text-theme">{field.label || "Campo sem nome"}</span>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => removeFormField(index)}
-                    className="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
+                    className="text-red-500 hover:text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3">
@@ -282,13 +284,14 @@ export function NodeConfigPanel({ node, onClose, onUpdate }: NodeConfigPanelProp
             ))
           )}
 
-          <button
+          <Button
+            variant="outline"
             onClick={addFormField}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-violet-600 border-2 border-dashed border-violet-300 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors"
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="w-full border-2 border-dashed border-violet-300 text-violet-600"
           >
-            <Plus className="w-4 h-4" />
             Adicionar Campo
-          </button>
+          </Button>
         </div>
       </Drawer>
     </div>

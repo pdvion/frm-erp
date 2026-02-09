@@ -241,15 +241,12 @@ export const receivedInvoicesRouter = createTRPCRouter({
       };
     }),
 
-  // Buscar NFe por ID
+  // Buscar NFe por ID (UUID) ou número da nota (fallback)
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
-        where: {
-          id: input.id,
-          ...tenantFilter(ctx.companyId, false),
-        },
+      const queryOptions = {
+        omit: { xmlContent: true as const },
         include: {
           supplier: true,
           purchaseOrder: {
@@ -264,10 +261,34 @@ export const receivedInvoicesRouter = createTRPCRouter({
               material: { select: { id: true, code: true, description: true, unit: true } },
               purchaseOrderItem: { select: { id: true, quantity: true, unitPrice: true } },
             },
-            orderBy: { itemNumber: "asc" },
+            orderBy: { itemNumber: "asc" as const },
           },
         },
+      };
+
+      // Tentar buscar por UUID primeiro
+      let invoice = await ctx.prisma.receivedInvoice.findFirst({
+        where: {
+          id: input.id,
+          ...tenantFilter(ctx.companyId, false),
+        },
+        ...queryOptions,
       });
+
+      // Fallback: buscar por número da nota (caso o ID seja numérico)
+      if (!invoice) {
+        const isNumericOnly = /^\d+$/.test(input.id);
+        if (isNumericOnly) {
+          const invoiceNumber = parseInt(input.id, 10);
+          invoice = await ctx.prisma.receivedInvoice.findFirst({
+            where: {
+              invoiceNumber,
+              ...tenantFilter(ctx.companyId, false),
+            },
+            ...queryOptions,
+          });
+        }
+      }
 
       if (!invoice) {
         throw new TRPCError({ code: "NOT_FOUND", message: "NFe não encontrada" });

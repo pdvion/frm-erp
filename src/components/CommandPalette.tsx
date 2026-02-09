@@ -13,6 +13,7 @@ import {
   Loader2,
   Sparkles,
   Command,
+  Type,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -23,9 +24,9 @@ import { trpc } from "@/lib/trpc";
 interface SearchResult {
   entityId: string;
   entityType: string;
-  content: string;
-  similarity: number;
-  metadata: Record<string, unknown>;
+  content?: string;
+  similarity?: number;
+  metadata?: Record<string, unknown>;
   entity?: Record<string, unknown> | null;
 }
 
@@ -103,8 +104,8 @@ function SimilarityBadge({ value }: { value: number }) {
   const pct = Math.round(value * 100);
   const color =
     pct >= 80 ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/50" :
-    pct >= 60 ? "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/50" :
-    "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/50";
+      pct >= 60 ? "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/50" :
+        "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/50";
 
   return (
     <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${color}`}>
@@ -132,7 +133,7 @@ function ResultItem({
   if (!config) return null;
 
   const entity = result.entity as Record<string, unknown> | undefined;
-  const title = entity ? config.getTitle(entity) : result.content.slice(0, 80);
+  const title = entity ? config.getTitle(entity) : (result.content ?? "").slice(0, 80);
   const subtitle = entity ? config.getSubtitle(entity) : "";
 
   return (
@@ -157,7 +158,7 @@ function ResultItem({
         )}
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        <SimilarityBadge value={result.similarity} />
+        {result.similarity != null && <SimilarityBadge value={result.similarity} />}
         <span className={`text-xs px-1.5 py-0.5 rounded ${isSelected ? "bg-blue-500 text-blue-100" : "bg-theme-tertiary text-theme-muted"}`}>
           {config.label}
         </span>
@@ -187,16 +188,49 @@ export function CommandPalette() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // tRPC search query
-  const { data, isFetching } = trpc.embeddings.search.useQuery(
+  // Semantic search (primary)
+  const {
+    data: semanticData,
+    isFetching: semanticFetching,
+    isError: semanticError,
+  } = trpc.embeddings.search.useQuery(
     { query: debouncedQuery, limit: 15, threshold: 0.4, enrichResults: true },
-    { enabled: debouncedQuery.length >= 2, staleTime: 30_000 }
+    { enabled: debouncedQuery.length >= 2, staleTime: 30_000, retry: false }
   );
 
-  const results: SearchResult[] = useMemo(
-    () => (data?.results as SearchResult[]) ?? [],
-    [data?.results]
+  // Text search (fallback when semantic fails or returns empty)
+  const shouldFallback = semanticError || (!semanticFetching && debouncedQuery.length >= 2 && (semanticData?.results?.length ?? 0) === 0);
+  const {
+    data: textData,
+    isFetching: textFetching,
+  } = trpc.embeddings.textSearch.useQuery(
+    { query: debouncedQuery, limit: 15 },
+    { enabled: !!shouldFallback && debouncedQuery.length >= 2, staleTime: 30_000 }
   );
+
+  const isFetching = semanticFetching || (shouldFallback && textFetching);
+
+  const searchMode: "semantic" | "text" | null = useMemo(() => {
+    if ((semanticData?.results?.length ?? 0) > 0) return "semantic";
+    if ((textData?.results?.length ?? 0) > 0) return "text";
+    return null;
+  }, [semanticData?.results?.length, textData?.results?.length]);
+
+  const results: SearchResult[] = useMemo(() => {
+    const semanticResults = semanticData?.results;
+    const textResults = textData?.results;
+    if (semanticResults && semanticResults.length > 0) {
+      return semanticResults as SearchResult[];
+    }
+    if (textResults && textResults.length > 0) {
+      return textResults.map((r) => ({
+        entityId: r.entityId,
+        entityType: r.entityType,
+        entity: r.entity as Record<string, unknown>,
+      }));
+    }
+    return [];
+  }, [semanticData, textData]);
 
   // Reset selection when results change
   useEffect(() => {
@@ -304,13 +338,17 @@ export function CommandPalette() {
           >
             {/* Search input */}
             <div className="flex items-center gap-3 border-b border-theme px-4 py-3">
-              <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              {searchMode === "text" ? (
+                <Type className="w-5 h-5 text-amber-500 flex-shrink-0" />
+              ) : (
+                <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              )}
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Busca semântica — materiais, produtos, clientes..."
+                placeholder="Buscar materiais, produtos, clientes..."
                 className="flex-1 bg-transparent text-theme text-sm placeholder:text-theme-muted outline-none"
                 autoComplete="off"
                 spellCheck={false}
@@ -374,8 +412,11 @@ export function CommandPalette() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  {results.length} resultado{results.length !== 1 ? "s" : ""} · pgvector
+                  {searchMode === "semantic" ? (
+                    <><Sparkles className="w-3 h-3" /> {results.length} resultado{results.length !== 1 ? "s" : ""} · semântica</>
+                  ) : (
+                    <><Type className="w-3 h-3" /> {results.length} resultado{results.length !== 1 ? "s" : ""} · textual</>
+                  )}
                 </div>
               </div>
             )}

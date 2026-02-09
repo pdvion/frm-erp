@@ -88,7 +88,7 @@ export default function OnboardingWizardPage() {
               <div className={`flex flex-col items-center ${index > 0 ? "ml-4" : ""}`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep > step.id ? "bg-green-500 text-white" :
-                  currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
+                    currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                 }`}>
                   {currentStep > step.id ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
                 </div>
@@ -97,7 +97,7 @@ export default function OnboardingWizardPage() {
                 </span>
               </div>
               {index < STEPS.length - 1 && (
-                <div className={`w-16 h-0.5 mx-2 ${currentStep > step.id ? "bg-green-500" : "bg-gray-200"}`} />
+                <div className={`w-16 h-0.5 mx-2 ${currentStep > step.id ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"}`} />
               )}
             </div>
           ))}
@@ -106,11 +106,11 @@ export default function OnboardingWizardPage() {
 
       {/* Step Content */}
       <div className="bg-theme-card rounded-lg border border-theme p-6 min-h-[300px]">
-        {currentStep === 1 && <Step1Content company={company} formData={formData} setFormData={setFormData} />}
+        {currentStep === 1 && <Step1Content company={company} />}
         {currentStep === 2 && <Step2Content formData={formData} setFormData={setFormData} />}
         {currentStep === 3 && <Step3Content companyId={companyId} />}
-        {currentStep === 4 && <Step4Content formData={formData} setFormData={setFormData} />}
-        {currentStep === 5 && <Step5Content company={company} onboarding={onboarding} />}
+        {currentStep === 4 && <Step4Content />}
+        {currentStep === 5 && <Step5Content onboarding={onboarding} />}
       </div>
 
       {/* Navigation */}
@@ -146,7 +146,7 @@ interface OnboardingData {
   stepsCompleted?: unknown;
 }
 
-function Step1Content({ company }: { company: CompanyData | null | undefined; formData: Record<string, unknown>; setFormData: (d: Record<string, unknown>) => void }) {
+function Step1Content({ company }: { company: CompanyData | null | undefined }) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Dados Básicos da Empresa</h3>
@@ -193,7 +193,7 @@ function Step3Content({ companyId }: { companyId: string }) {
   );
 }
 
-function Step4Content({ formData, setFormData }: { formData: Record<string, unknown>; setFormData: (d: Record<string, unknown>) => void }) {
+function Step4Content() {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Usuários e Permissões</h3>
@@ -203,7 +203,7 @@ function Step4Content({ formData, setFormData }: { formData: Record<string, unkn
   );
 }
 
-function Step5Content({ company, onboarding }: { company: CompanyData | null | undefined; onboarding: OnboardingData | null | undefined }) {
+function Step5Content({ onboarding }: { onboarding: OnboardingData | null | undefined }) {
   const stepsCompleted = (onboarding?.stepsCompleted as Record<string, boolean>) || {};
   return (
     <div className="space-y-4">
@@ -212,7 +212,7 @@ function Step5Content({ company, onboarding }: { company: CompanyData | null | u
       <div className="space-y-2">
         {STEPS.slice(0, 4).map((step) => (
           <div key={step.id} className="flex items-center gap-2">
-            {stepsCompleted[String(step.id)] ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <div className="w-5 h-5 rounded-full border-2 border-gray-300" />}
+            {stepsCompleted[String(step.id)] ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600" />}
             <span className={stepsCompleted[String(step.id)] ? "text-theme-primary" : "text-theme-muted"}>{step.title}</span>
           </div>
         ))}

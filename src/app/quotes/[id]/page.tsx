@@ -32,11 +32,11 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "text-yellow-400", bgColor: "bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
-  SENT: { label: "Enviada", color: "text-blue-400", bgColor: "bg-blue-900/30", icon: <Send className="w-4 h-4" /> },
-  RECEIVED: { label: "Recebida", color: "text-purple-400", bgColor: "bg-purple-900/30", icon: <FileText className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovada", color: "text-green-400", bgColor: "bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitada", color: "text-red-400", bgColor: "bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "text-yellow-800 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
+  SENT: { label: "Enviada", color: "text-blue-800 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: <Send className="w-4 h-4" /> },
+  RECEIVED: { label: "Recebida", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", icon: <FileText className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovada", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitada", color: "text-red-800 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelada", color: "text-theme-muted", bgColor: "bg-theme-card", icon: <XCircle className="w-4 h-4" /> },
 };
 
@@ -97,11 +97,11 @@ export default function QuoteDetailPage() {
   if (error || !quote) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 flex items-center gap-3">
-          <AlertCircle className="w-6 h-6 text-red-400" />
+        <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-6 flex items-center gap-3">
+          <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
           <div>
             <h3 className="font-medium text-theme">Erro ao carregar cotação</h3>
-            <p className="text-red-400 text-sm">
+            <p className="text-red-600 dark:text-red-400 text-sm">
               {error?.message || "Cotação não encontrada"}
             </p>
           </div>
@@ -216,7 +216,7 @@ export default function QuoteDetailPage() {
                 Itens ({quote.items.length})
               </h2>
               {canEdit && (
-                <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300" leftIcon={<Plus className="w-4 h-4" />}>
+                <Button variant="ghost" size="sm" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" leftIcon={<Plus className="w-4 h-4" />}>
                   Adicionar Item
                 </Button>
               )}
@@ -269,7 +269,7 @@ export default function QuoteDetailPage() {
                       </td>
                       {canEdit && (
                         <td className="px-4 py-4">
-                          <Button variant="ghost" size="sm" className="p-1 text-red-400 hover:bg-red-900/20">
+                          <Button variant="ghost" size="sm" className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </td>
@@ -303,7 +303,7 @@ export default function QuoteDetailPage() {
                       <td colSpan={3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Desconto ({quote.discountPercent}%):
                       </td>
-                      <td className="px-4 py-2 text-right text-green-400">
+                      <td className="px-4 py-2 text-right text-green-600 dark:text-green-400">
                         -{formatCurrency(quote.totalValue * (quote.discountPercent / 100))}
                       </td>
                       {canEdit && <td></td>}

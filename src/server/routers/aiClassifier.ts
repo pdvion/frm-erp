@@ -6,7 +6,7 @@ import {
   classifyWithEmbeddings,
   type ClassificationResult,
 } from "@/lib/ai/classifier";
-import { getOpenAIKey } from "@/server/services/getAIApiKey";
+import { getAllAITokens, getGoogleKey } from "@/server/services/getAIApiKey";
 
 export const aiClassifierRouter = createTRPCRouter({
   /**
@@ -25,48 +25,55 @@ export const aiClassifierRouter = createTRPCRouter({
       let result: ClassificationResult;
 
       if (input.useAI) {
-        const apiKey = await getOpenAIKey(ctx.prisma, ctx.companyId);
+        const tokens = await getAllAITokens(ctx.prisma, ctx.companyId);
+        const hasAnyToken = Object.values(tokens).some(Boolean);
 
-        if (apiKey) {
+        if (hasAnyToken) {
           // v2: Tentar embedding matching primeiro (10x mais rápido, 100x mais barato)
           const embeddingCount = await ctx.prisma.embedding.count({
             where: { entityType: "material", companyId: ctx.companyId },
           });
 
           if (embeddingCount > 0) {
-            result = await classifyWithEmbeddings(
-              ctx.prisma,
-              input.nfeItemDescription,
-              apiKey,
-              ctx.companyId,
-              input.limit
-            );
+            const googleKey = await getGoogleKey(ctx.prisma, ctx.companyId);
+            if (googleKey) {
+              result = await classifyWithEmbeddings(
+                ctx.prisma,
+                input.nfeItemDescription,
+                googleKey,
+                ctx.companyId,
+                input.limit
+              );
+            } else {
+              // Sem Google key para embeddings, usar chat
+              const materials = await ctx.prisma.material.findMany({
+                where: { OR: [{ companyId: ctx.companyId }, { isShared: true }], status: "ACTIVE" },
+                select: { id: true, code: true, description: true, category: { select: { name: true } }, ncm: true },
+                take: 500,
+              });
+              const materialData = materials.map((m) => ({
+                id: m.id, code: m.code, description: m.description,
+                category: m.category?.name, ncm: m.ncm ?? undefined,
+              }));
+              result = await classifyWithAI(input.nfeItemDescription, materialData, tokens, input.limit);
+            }
           } else {
-            // Fallback: GPT chat (legado) se não houver embeddings
+            // Sem embeddings: usar IA chat
             const materials = await ctx.prisma.material.findMany({
-              where: {
-                OR: [{ companyId: ctx.companyId }, { isShared: true }],
-                status: "ACTIVE",
-              },
-              select: {
-                id: true, code: true, description: true,
-                category: { select: { name: true } }, ncm: true,
-              },
+              where: { OR: [{ companyId: ctx.companyId }, { isShared: true }], status: "ACTIVE" },
+              select: { id: true, code: true, description: true, category: { select: { name: true } }, ncm: true },
               take: 500,
             });
             const materialData = materials.map((m) => ({
               id: m.id, code: m.code, description: m.description,
               category: m.category?.name, ncm: m.ncm ?? undefined,
             }));
-            result = await classifyWithAI(input.nfeItemDescription, materialData, apiKey, input.limit);
+            result = await classifyWithAI(input.nfeItemDescription, materialData, tokens, input.limit);
           }
         } else {
-          // Sem API key: text similarity
+          // Sem nenhum token de IA: text similarity
           const materials = await ctx.prisma.material.findMany({
-            where: {
-              OR: [{ companyId: ctx.companyId }, { isShared: true }],
-              status: "ACTIVE",
-            },
+            where: { OR: [{ companyId: ctx.companyId }, { isShared: true }], status: "ACTIVE" },
             select: { id: true, code: true, description: true, category: { select: { name: true } }, ncm: true },
             take: 500,
           });

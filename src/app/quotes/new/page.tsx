@@ -157,9 +157,9 @@ export default function NewQuotePage() {
 
       <form onSubmit={handleSubmit}>
         {error && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg flex items-center gap-3">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-            <span className="text-red-400">{error}</span>
+            <span className="text-red-600 dark:text-red-400">{error}</span>
           </div>
         )}
 

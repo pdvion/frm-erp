@@ -160,7 +160,7 @@ export function Dropdown({
               role="menu"
               aria-orientation="vertical"
               onKeyDown={handleKeyDown}
-              className={`fixed z-[9999] min-w-[180px] py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg ${className}`}
+              className={`fixed z-[9999] min-w-[180px] py-1 bg-theme-card border border-theme rounded-lg shadow-lg ${className}`}
               style={{
                 top: coords.top,
                 left: align === "right" ? "auto" : coords.left,
@@ -209,7 +209,7 @@ export function DropdownItem({
   };
 
   const variantClasses = {
-    default: "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+    default: "text-theme-secondary hover:bg-theme-hover",
     danger: "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
   };
 
@@ -247,13 +247,13 @@ export function DropdownSubmenu({ trigger, children, icon }: DropdownSubmenuProp
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <div className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+      <div className="flex items-center gap-2 px-4 py-2 text-sm text-theme-secondary hover:bg-theme-hover cursor-pointer">
         {icon && <span className="w-4 h-4 flex-shrink-0">{icon}</span>}
         <span className="flex-1">{trigger}</span>
         <ChevronRight className="w-4 h-4" />
       </div>
       {isOpen && (
-        <div className="absolute left-full top-0 ml-1 min-w-[160px] py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+        <div className="absolute left-full top-0 ml-1 min-w-[160px] py-1 bg-theme-card border border-theme rounded-lg shadow-lg">
           {children}
         </div>
       )}
@@ -262,12 +262,12 @@ export function DropdownSubmenu({ trigger, children, icon }: DropdownSubmenuProp
 }
 
 export function DropdownDivider() {
-  return <div className="my-1 border-t border-gray-200 dark:border-gray-700" />;
+  return <div className="my-1 border-t border-theme" />;
 }
 
 export function DropdownLabel({ children }: { children: ReactNode }) {
   return (
-    <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+    <div className="px-4 py-2 text-xs font-semibold text-theme-muted uppercase tracking-wider">
       {children}
     </div>
   );

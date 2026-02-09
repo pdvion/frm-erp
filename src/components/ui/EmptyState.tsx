@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Inbox } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export interface EmptyStateProps {
   icon?: ReactNode;
@@ -23,24 +24,21 @@ export function EmptyState({
   action,
   className = "",
 }: EmptyStateProps) {
-  const buttonClasses =
-    "inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium";
-
   const renderAction = () => {
     if (!action) return null;
 
     if (action.href) {
       return (
-        <Link href={action.href} className={buttonClasses}>
-          {action.label}
+        <Link href={action.href}>
+          <Button variant="primary">{action.label}</Button>
         </Link>
       );
     }
 
     return (
-      <button type="button" onClick={action.onClick} className={buttonClasses}>
+      <Button variant="primary" onClick={action.onClick}>
         {action.label}
-      </button>
+      </Button>
     );
   };
 

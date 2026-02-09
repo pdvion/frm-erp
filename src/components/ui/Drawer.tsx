@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -75,13 +76,9 @@ export function Drawer({
                     <p className="mt-1 text-sm text-theme-muted">{description}</p>
                   )}
                 </div>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="rounded-lg p-2 text-theme-muted hover:bg-theme-hover hover:text-theme transition-colors"
-                >
+                <Button variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <X className="h-5 w-5" />
-                </button>
+                </Button>
               </div>
             </div>
 

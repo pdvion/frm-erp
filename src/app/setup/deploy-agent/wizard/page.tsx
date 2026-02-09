@@ -48,7 +48,6 @@ export default function DeployAgentWizardPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<WizardStepId>("upload");
   const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [applyOptions, setApplyOptions] = useState({
@@ -60,6 +59,9 @@ export default function DeployAgentWizardPage() {
   });
 
   const utils = trpc.useUtils();
+
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [applyError, setApplyError] = useState<string | null>(null);
 
   const analyzeMutation = trpc.deployAgent.analyzeXmlBatch.useMutation({
     onSuccess: (data) => {
@@ -82,10 +84,10 @@ export default function DeployAgentWizardPage() {
           })),
       });
       setCurrentStep("review");
-      setIsAnalyzing(false);
+      setAnalyzeError(null);
     },
-    onError: () => {
-      setIsAnalyzing(false);
+    onError: (error) => {
+      setAnalyzeError(error.message || "Erro ao analisar XMLs. Tente novamente.");
     },
   });
 
@@ -94,9 +96,11 @@ export default function DeployAgentWizardPage() {
       utils.deployAgent.getStats.invalidate();
       setCurrentStep("apply");
       setIsApplying(false);
+      setApplyError(null);
     },
-    onError: () => {
+    onError: (error) => {
       setIsApplying(false);
+      setApplyError(error.message || "Erro ao aplicar configuração. Tente novamente.");
     },
   });
 
@@ -151,7 +155,6 @@ export default function DeployAgentWizardPage() {
     const validFiles = files.filter((f) => f.status === "valid");
     if (validFiles.length === 0) return;
 
-    setIsAnalyzing(true);
     setCurrentStep("analysis");
     analyzeMutation.mutate({
       xmlContents: validFiles.map((f) => f.content),
@@ -166,10 +169,10 @@ export default function DeployAgentWizardPage() {
   };
 
   const steps: WizardStepDef[] = [
-    { id: "upload", title: "Upload de XMLs", description: "Selecione os arquivos" },
-    { id: "analysis", title: "Análise", description: "Processando dados" },
-    { id: "review", title: "Revisão", description: "Confirme as configurações" },
-    { id: "apply", title: "Aplicação", description: "Configuração aplicada" },
+    { id: "upload", title: "1. Upload", description: "Selecione XMLs de NFe" },
+    { id: "analysis", title: "2. Análise", description: "IA processa os dados" },
+    { id: "review", title: "3. Revisão", description: "Confirme o que importar" },
+    { id: "apply", title: "4. Pronto", description: "Configuração aplicada" },
   ];
 
   const validFilesCount = files.filter((f) => f.status === "valid").length;
@@ -303,19 +306,50 @@ export default function DeployAgentWizardPage() {
         {/* Analysis Step */}
         {currentStep === "analysis" && (
           <div className="text-center py-12">
-            <Loader2 className="w-16 h-16 mx-auto text-blue-500 animate-spin mb-6" />
-            <h2 className="text-xl font-semibold text-theme mb-2">
-              Analisando XMLs...
-            </h2>
-            <p className="text-theme-secondary mb-4">
-              Processando {validFilesCount} arquivo(s). Isso pode levar alguns segundos.
-            </p>
-            <div className="max-w-md mx-auto space-y-2">
-              <ProgressItem label="Validando estrutura XML" done />
-              <ProgressItem label="Extraindo entidades" done={isAnalyzing} />
-              <ProgressItem label="Analisando padrões fiscais" />
-              <ProgressItem label="Detectando configurações" />
-            </div>
+            {analyzeError ? (
+              <>
+                <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-6" />
+                <h2 className="text-xl font-semibold text-theme mb-2">
+                  Erro na Análise
+                </h2>
+                <p className="text-red-500 mb-6 max-w-md mx-auto text-sm">
+                  {analyzeError}
+                </p>
+                <div className="flex justify-center gap-3">
+                  <Button
+                    variant="secondary"
+                    onClick={() => { setCurrentStep("upload"); setAnalyzeError(null); }}
+                    leftIcon={<ArrowLeft size={16} />}
+                  >
+                    Voltar ao Upload
+                  </Button>
+                  <Button
+                    onClick={() => { setAnalyzeError(null); startAnalysis(); }}
+                    leftIcon={<Play size={16} />}
+                  >
+                    Tentar Novamente
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-16 h-16 mx-auto text-blue-500 animate-spin mb-6" />
+                <h2 className="text-xl font-semibold text-theme mb-2">
+                  Analisando {validFilesCount} XML{validFilesCount !== 1 ? "s" : ""}...
+                </h2>
+                <p className="text-theme-secondary mb-6">
+                  Extraindo fornecedores, materiais, impostos e formas de pagamento.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentStep("upload")}
+                  className="text-theme-muted"
+                >
+                  Cancelar
+                </Button>
+              </>
+            )}
           </div>
         )}
 
@@ -482,11 +516,22 @@ export default function DeployAgentWizardPage() {
               </div>
             </div>
 
+            {/* Error */}
+            {applyError && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-700 dark:text-red-400">Erro ao aplicar</p>
+                  <p className="text-sm text-red-600 dark:text-red-300 mt-1">{applyError}</p>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex justify-between">
               <Button
                 variant="secondary"
-                onClick={() => setCurrentStep("upload")}
+                onClick={() => { setCurrentStep("upload"); setApplyError(null); }}
                 leftIcon={<ArrowLeft size={16} />}
               >
                 Voltar
@@ -531,19 +576,6 @@ export default function DeployAgentWizardPage() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function ProgressItem({ label, done = false }: { label: string; done?: boolean }) {
-  return (
-    <div className="flex items-center gap-3">
-      {done ? (
-        <CheckCircle className="w-5 h-5 text-green-500" />
-      ) : (
-        <div className="w-5 h-5 rounded-full border-2 border-theme-muted" />
-      )}
-      <span className={done ? "text-theme" : "text-theme-muted"}>{label}</span>
     </div>
   );
 }

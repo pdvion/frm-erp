@@ -30,7 +30,7 @@ const variantStyles = {
     list: "border-b border-theme",
     tab: "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
     active: "border-blue-600 text-blue-600",
-    inactive: "border-transparent text-theme-muted hover:text-theme-secondary hover:border-gray-300",
+    inactive: "border-transparent text-theme-muted hover:text-theme-secondary hover:border-theme",
     disabled: "opacity-50 cursor-not-allowed",
   },
   pills: {

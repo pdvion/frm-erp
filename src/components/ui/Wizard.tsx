@@ -1,7 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 export interface WizardStep {
   id: string;
@@ -161,47 +162,31 @@ export function Wizard({
       <div className="border-t border-theme p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-theme-muted hover:text-theme transition-colors"
-            >
+            <Button variant="ghost" onClick={onCancel}>
               {cancelLabel}
-            </button>
+            </Button>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             onClick={handlePrev}
             disabled={isFirstStep || !canGoPrev || isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-theme-input text-theme-secondary rounded-lg hover:bg-theme-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            leftIcon={<ChevronLeft className="w-4 h-4" />}
           >
-            <ChevronLeft className="w-4 h-4" />
             {prevLabel}
-          </button>
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="primary"
             onClick={handleNext}
             disabled={!canGoNext || isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            isLoading={isSubmitting}
+            rightIcon={!isLastStep && !isSubmitting ? <ChevronRight className="w-4 h-4" /> : undefined}
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Salvando...
-              </>
-            ) : isLastStep ? (
-              submitLabel
-            ) : (
-              <>
-                {nextLabel}
-                <ChevronRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+            {isSubmitting ? "Salvando..." : isLastStep ? submitLabel : nextLabel}
+          </Button>
         </div>
       </div>
     </div>

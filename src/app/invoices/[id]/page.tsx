@@ -84,6 +84,16 @@ export default function InvoiceDetailPage() {
     },
   });
 
+  const createMaterialMutation = trpc.nfe.createMaterialFromItem.useMutation({
+    onSuccess: (material) => {
+      toast.success(`Material "${material.description}" criado (Cód: ${material.code})`);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const generatePayablesMutation = trpc.nfe.generatePayables.useMutation({
     onSuccess: (data) => {
       toast.success(`${data.created} título(s) gerado(s) no valor total de R$ ${data.total.toFixed(2)}`);
@@ -403,18 +413,31 @@ export default function InvoiceDetailPage() {
                             </span>
                           )}
                           {canApprove && !item.materialId && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setLinkingItem({
-                                id: item.id,
-                                name: item.productName,
-                                code: item.productCode,
-                              })}
-                              className="mt-1 text-xs"
-                            >
-                              Vincular
-                            </Button>
+                            <div className="flex flex-col gap-1 mt-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setLinkingItem({
+                                  id: item.id,
+                                  name: item.productName,
+                                  code: item.productCode,
+                                })}
+                                className="text-xs"
+                                leftIcon={<Link2 className="w-3 h-3" />}
+                              >
+                                Vincular
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => createMaterialMutation.mutate({ itemId: item.id })}
+                                disabled={createMaterialMutation.isPending}
+                                className="text-xs text-green-600 hover:text-green-700"
+                                leftIcon={<Package className="w-3 h-3" />}
+                              >
+                                Criar Material
+                              </Button>
+                            </div>
                           )}
                         </div>
                       </td>

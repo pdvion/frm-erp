@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
+import { syncEntityEmbedding } from "../services/embeddingSync";
 
 const salesOrderStatusEnum = z.enum([
   "PENDING",
@@ -180,6 +181,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
       });
 
+      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "sales_order", order.id, "create");
       return order;
     }),
 
@@ -239,6 +241,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
       });
 
+      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "sales_order", order.id, "update");
       return order;
     }),
 

@@ -64,10 +64,10 @@ export default function PayslipsPage() {
       />
 
       {/* Year Filter */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div className="bg-theme-card rounded-lg border border-theme p-4">
         <div className="flex items-center gap-4">
-          <Calendar className="w-5 h-5 text-gray-500" />
-          <span className="text-gray-700 dark:text-gray-300">Ano:</span>
+          <Calendar className="w-5 h-5 text-theme-muted" />
+          <span className="text-theme-secondary">Ano:</span>
           <div className="flex gap-2">
             {years.map((year) => (
               <Button
@@ -84,22 +84,22 @@ export default function PayslipsPage() {
       </div>
 
       {/* Payslips List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-theme-card rounded-lg border border-theme">
         {isLoading ? (
           <div className="p-6 space-y-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
+                className="h-16 bg-theme-secondary rounded animate-pulse"
               />
             ))}
           </div>
         ) : payslips && payslips.length > 0 ? (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="divide-y divide-theme">
             {payslips.map((payslip) => (
               <div
                 key={payslip.id}
-                className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="p-4 hover:bg-theme-hover transition-colors"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
@@ -107,11 +107,11 @@ export default function PayslipsPage() {
                       <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white capitalize">
+                      <p className="font-semibold text-theme capitalize">
                         {getMonthName(payslip.payroll.referenceMonth)}{" "}
                         {payslip.payroll.referenceYear}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-theme-muted">
                         {payslip.payroll.status === "CLOSED" ? (
                           <span className="text-green-600">Fechado</span>
                         ) : (
@@ -126,15 +126,15 @@ export default function PayslipsPage() {
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <p className="text-theme-muted">
                           Bruto
                         </p>
-                        <p className="font-medium text-gray-900 dark:text-white">
+                        <p className="font-medium text-theme">
                           {formatCurrency(payslip.grossSalary)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <p className="text-theme-muted">
                           Descontos
                         </p>
                         <p className="font-medium text-red-600">
@@ -146,7 +146,7 @@ export default function PayslipsPage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <p className="text-theme-muted">
                           Líquido
                         </p>
                         <p className="font-semibold text-green-600">
@@ -178,8 +178,8 @@ export default function PayslipsPage() {
           </div>
         ) : (
           <div className="p-12 text-center">
-            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">
+            <FileText className="w-12 h-12 text-theme-muted mx-auto mb-4" />
+            <p className="text-theme-muted">
               Nenhum holerite encontrado para {selectedYear}
             </p>
           </div>

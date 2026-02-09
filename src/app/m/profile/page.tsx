@@ -21,34 +21,34 @@ export default function MobileProfilePage() {
           <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{initials}</span>
         </div>
         <div className="text-center">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{displayName}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{displayEmail}</p>
+          <h2 className="text-lg font-semibold text-theme">{displayName}</h2>
+          <p className="text-sm text-theme-muted">{displayEmail}</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="bg-theme-card rounded-xl border border-theme divide-y divide-theme">
         <Link href="/m/notifications" className="flex items-center justify-between w-full px-4 py-3.5">
           <div className="flex items-center gap-3">
-            <Bell className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            <span className="text-sm text-gray-900 dark:text-gray-100">Notificações</span>
+            <Bell className="w-5 h-5 text-theme-muted" />
+            <span className="text-sm text-theme">Notificações</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <ChevronRight className="w-4 h-4 text-theme-muted" />
         </Link>
 
         <Button variant="ghost" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} className="flex items-center justify-between w-full px-4 py-3.5 rounded-none h-auto">
           <div className="flex items-center gap-3">
-            {resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> : <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
-            <span className="text-sm text-gray-900 dark:text-gray-100">{resolvedTheme === "dark" ? "Tema Claro" : "Tema Escuro"}</span>
+            {resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-theme-muted" /> : <Moon className="w-5 h-5 text-theme-muted" />}
+            <span className="text-sm text-theme">{resolvedTheme === "dark" ? "Tema Claro" : "Tema Escuro"}</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <ChevronRight className="w-4 h-4 text-theme-muted" />
         </Button>
 
         <Link href="/settings" className="flex items-center justify-between w-full px-4 py-3.5">
           <div className="flex items-center gap-3">
-            <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            <span className="text-sm text-gray-900 dark:text-gray-100">Configurações</span>
+            <Settings className="w-5 h-5 text-theme-muted" />
+            <span className="text-sm text-theme">Configurações</span>
           </div>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <ChevronRight className="w-4 h-4 text-theme-muted" />
         </Link>
       </div>
 
@@ -61,7 +61,7 @@ export default function MobileProfilePage() {
         Sair da Conta
       </Button>
 
-      <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+      <p className="text-center text-xs text-theme-muted">
         FRM ERP v1.0
       </p>
     </div>

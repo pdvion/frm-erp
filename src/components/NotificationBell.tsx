@@ -16,6 +16,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 const typeIcons = {
   info: Info,
@@ -132,25 +133,21 @@ export function NotificationBell() {
               <h3 className="font-semibold text-theme">Notificações</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleMarkAllAsRead}
                     disabled={markAllAsReadMutation.isPending}
-                    className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                    isLoading={markAllAsReadMutation.isPending}
+                    leftIcon={<CheckCheck className="w-3 h-3" />}
+                    className="text-xs"
                   >
-                    {markAllAsReadMutation.isPending ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <CheckCheck className="w-3 h-3" />
-                    )}
                     Marcar todas
-                  </button>
+                  </Button>
                 )}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-theme-muted hover:text-theme-secondary"
-                >
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                   <X className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -210,13 +207,15 @@ export function NotificationBell() {
                                 </Link>
                               )}
                               {!notification.isRead && (
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => handleMarkAsRead(notification.id)}
-                                  className="text-xs text-theme-muted hover:text-theme-secondary flex items-center gap-1"
+                                  leftIcon={<Check className="w-3 h-3" />}
+                                  className="text-xs h-auto py-0 px-1"
                                 >
-                                  <Check className="w-3 h-3" />
                                   Marcar como lida
-                                </button>
+                                </Button>
                               )}
                             </div>
                           </div>

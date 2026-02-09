@@ -60,7 +60,7 @@ export function Switch({
             ${sizeClasses.track} rounded-full transition-colors
             ${checked
       ? "bg-blue-600"
-      : "bg-gray-200 dark:bg-gray-700"
+      : "bg-theme-secondary"
     }
             peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2
           `}
@@ -75,7 +75,7 @@ export function Switch({
         />
       </div>
       {label && (
-        <span className="text-sm text-gray-900 dark:text-gray-100 select-none">
+        <span className="text-sm text-theme select-none">
           {label}
         </span>
       )}

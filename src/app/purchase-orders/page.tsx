@@ -32,12 +32,12 @@ import {
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-secondary text-theme-muted", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "bg-yellow-900/30 text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-blue-900/30 text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "bg-purple-900/30 text-purple-400", icon: <Truck className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-900/30 text-orange-400", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-green-900/30 text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-900/30 text-red-400", icon: <XCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
+  SENT: { label: "Enviado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Truck className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const statusColors: Record<string, string> = {
@@ -225,9 +225,9 @@ export default function PurchaseOrdersPage() {
       {isLoading ? (
         <TableSkeleton rows={5} columns={5} />
       ) : error ? (
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-400" />
-          <span className="text-red-400">Erro ao carregar pedidos</span>
+        <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+          <span className="text-red-600 dark:text-red-400">Erro ao carregar pedidos</span>
         </div>
       ) : data?.orders.length === 0 ? (
         <div className="bg-theme-card rounded-lg border border-theme p-12 text-center">

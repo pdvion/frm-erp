@@ -15,7 +15,7 @@ export default function MobileNotificationsPage() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notificações</h2>
+        <h2 className="text-lg font-semibold text-theme">Notificações</h2>
         <Badge variant="info">{mockNotifications.filter((n) => !n.read).length} novas</Badge>
       </div>
 
@@ -27,7 +27,7 @@ export default function MobileNotificationsPage() {
               subtitle={n.subtitle}
               icon={n.icon}
               badge={
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span className="text-xs text-theme-muted flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {n.time}
                 </span>
@@ -37,7 +37,7 @@ export default function MobileNotificationsPage() {
         ))}
       </div>
 
-      <p className="text-center text-sm text-gray-400 dark:text-gray-500 pt-4">
+      <p className="text-center text-sm text-theme-muted pt-4">
         Notificações em tempo real em breve
       </p>
     </div>
