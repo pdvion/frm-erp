@@ -225,7 +225,7 @@ export default function TimesheetPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700 border-theme-table">
+            <tbody className="divide-y divide-theme-table">
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center">

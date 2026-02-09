@@ -299,7 +299,7 @@ export default function MesPage() {
                   {/* OEE do Dia */}
                   {workCenterStatus?.oee !== null && workCenterStatus?.oee !== undefined && (
                     <div className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="w-4 h-4 text-purple-400" />
+                      <BarChart3 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                       <span>OEE Hoje: </span>
                       <span className={`font-medium ${
                         workCenterStatus.oee >= 85 ? "text-green-600 dark:text-green-400" :

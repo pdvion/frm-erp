@@ -95,7 +95,7 @@ async function fetchEntityData(
         include: { customer: { select: { companyName: true, tradeName: true } }, items: { select: { description: true }, take: 20 } },
       });
       if (!so) return null;
-      return { type: "sales_order", data: { id: so.id, code: so.code, customerName: so.customer.companyName, customerTradeName: so.customer.tradeName, status: so.status, totalValue: so.totalValue, notes: so.notes, itemDescriptions: so.items.map((i) => i.description).filter(Boolean) as string[] } };
+      return { type: "sales_order", data: { id: so.id, code: so.code, customerName: so.customer?.companyName ?? "Cliente removido", customerTradeName: so.customer?.tradeName, status: so.status, totalValue: so.totalValue, notes: so.notes, itemDescriptions: so.items.map((i) => i.description).filter(Boolean) as string[] } };
     }
   }
 }
@@ -558,7 +558,8 @@ export const embeddingsRouter = createTRPCRouter({
         ...salesOrders.map((so) => ({ entityId: so.id, entityType: "sales_order", entity: so as Record<string, unknown> })),
       ];
 
-      return { results: results.slice(0, input.limit), total: results.length };
+      const sliced = results.slice(0, input.limit);
+      return { results: sliced, total: sliced.length };
     }),
 
   /**

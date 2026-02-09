@@ -226,7 +226,7 @@ export default function PurchaseOrdersPage() {
         <TableSkeleton rows={5} columns={5} />
       ) : error ? (
         <div className="bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-400" />
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
           <span className="text-red-600 dark:text-red-400">Erro ao carregar pedidos</span>
         </div>
       ) : data?.orders.length === 0 ? (

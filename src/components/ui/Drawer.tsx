@@ -76,7 +76,7 @@ export function Drawer({
                     <p className="mt-1 text-sm text-theme-muted">{description}</p>
                   )}
                 </div>
-                <Button variant="ghost" size="icon" onClick={onClose}>
+                <Button variant="ghost" size="icon" onClick={onClose} aria-label="Fechar">
                   <X className="h-5 w-5" />
                 </Button>
               </div>

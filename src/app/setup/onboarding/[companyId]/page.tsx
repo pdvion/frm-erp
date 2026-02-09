@@ -88,7 +88,7 @@ export default function OnboardingWizardPage() {
               <div className={`flex flex-col items-center ${index > 0 ? "ml-4" : ""}`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   currentStep > step.id ? "bg-green-500 text-white" :
-                    currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-500"
+                    currentStep === step.id ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                 }`}>
                   {currentStep > step.id ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
                 </div>
@@ -97,7 +97,7 @@ export default function OnboardingWizardPage() {
                 </span>
               </div>
               {index < STEPS.length - 1 && (
-                <div className={`w-16 h-0.5 mx-2 ${currentStep > step.id ? "bg-green-500" : "bg-gray-200"}`} />
+                <div className={`w-16 h-0.5 mx-2 ${currentStep > step.id ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"}`} />
               )}
             </div>
           ))}
@@ -212,7 +212,7 @@ function Step5Content({ onboarding }: { onboarding: OnboardingData | null | unde
       <div className="space-y-2">
         {STEPS.slice(0, 4).map((step) => (
           <div key={step.id} className="flex items-center gap-2">
-            {stepsCompleted[String(step.id)] ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <div className="w-5 h-5 rounded-full border-2 border-gray-300" />}
+            {stepsCompleted[String(step.id)] ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600" />}
             <span className={stepsCompleted[String(step.id)] ? "text-theme-primary" : "text-theme-muted"}>{step.title}</span>
           </div>
         ))}

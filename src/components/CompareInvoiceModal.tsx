@@ -220,20 +220,20 @@ export function CompareInvoiceModal({
                         {comparison.summary.totalItems}
                       </p>
                     </div>
-                    <div className="bg-green-50 rounded-lg p-4">
-                      <p className="text-sm text-green-600">OK</p>
-                      <p className="text-2xl font-bold text-green-700">
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                      <p className="text-sm text-green-600 dark:text-green-400">OK</p>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
                         {comparison.summary.okItems}
                       </p>
                     </div>
-                    <div className="bg-yellow-50 rounded-lg p-4">
-                      <p className="text-sm text-yellow-600">Divergentes</p>
-                      <p className="text-2xl font-bold text-yellow-700">
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400">Divergentes</p>
+                      <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
                         {comparison.summary.divergentItems}
                       </p>
                     </div>
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <p className="text-sm text-blue-600">Diferença Valor</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                      <p className="text-sm text-blue-600 dark:text-blue-400">Diferença Valor</p>
                       <p className={`text-xl font-bold ${
                         comparison.summary.totalValueDivergence > 0
                           ? "text-red-600"
@@ -276,7 +276,7 @@ export function CompareInvoiceModal({
                           <tr
                             key={item.invoiceItemId}
                             className={
-                              item.status !== "OK" ? "bg-yellow-50" : ""
+                              item.status !== "OK" ? "bg-yellow-50 dark:bg-yellow-900/20" : ""
                             }
                           >
                             <td className="px-4 py-3">
@@ -357,7 +357,7 @@ export function CompareInvoiceModal({
                         <AlertTriangle className="w-4 h-4 text-yellow-600" />
                         Itens do pedido não encontrados na NFe
                       </h4>
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                         <ul className="space-y-2">
                           {comparison.missingInInvoice.map((item) => (
                             <li key={item.purchaseOrderItemId} className="text-sm">

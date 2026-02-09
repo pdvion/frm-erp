@@ -277,8 +277,9 @@ export const receivedInvoicesRouter = createTRPCRouter({
 
       // Fallback: buscar por número da nota (caso o ID seja numérico)
       if (!invoice) {
-        const invoiceNumber = parseInt(input.id, 10);
-        if (!isNaN(invoiceNumber)) {
+        const isNumericOnly = /^\d+$/.test(input.id);
+        if (isNumericOnly) {
+          const invoiceNumber = parseInt(input.id, 10);
           invoice = await ctx.prisma.receivedInvoice.findFirst({
             where: {
               invoiceNumber,

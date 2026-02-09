@@ -155,8 +155,8 @@ export function TaskAttachments({ taskId }: TaskAttachmentsProps) {
       </div>
 
       {uploadError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
-          <span className="text-sm text-red-700">{uploadError}</span>
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center justify-between">
+          <span className="text-sm text-red-700 dark:text-red-400">{uploadError}</span>
           <Button variant="ghost" size="icon" onClick={() => setUploadError(null)}>
             <X className="w-4 h-4 text-red-500" />
           </Button>

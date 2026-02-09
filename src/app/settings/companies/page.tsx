@@ -320,7 +320,7 @@ export default function CompaniesPage() {
                       <td className="px-4 py-3 text-center">
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           company.isActive
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
                             : "bg-theme-tertiary text-theme"
                         }`}>
                           {company.isActive ? "Ativa" : "Inativa"}
@@ -334,6 +334,7 @@ export default function CompaniesPage() {
                             onClick={() => handleEdit(company)}
                             className="text-theme-muted hover:text-blue-600"
                             title="Editar"
+                            aria-label="Editar empresa"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
