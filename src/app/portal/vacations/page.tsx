@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Calendar, Plus, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
 
 export default function VacationsPage() {
   const { data: vacations, isLoading } = trpc.employeePortal.getMyVacations.useQuery();
@@ -13,37 +14,37 @@ export default function VacationsPage() {
     switch (status) {
       case "PENDING":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+          <Badge variant="warning">
             <Clock className="w-3 h-3" />
             Pendente
-          </span>
+          </Badge>
         );
       case "APPROVED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+          <Badge variant="success">
             <CheckCircle className="w-3 h-3" />
             Aprovado
-          </span>
+          </Badge>
         );
       case "REJECTED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+          <Badge variant="error">
             <XCircle className="w-3 h-3" />
             Rejeitado
-          </span>
+          </Badge>
         );
       case "COMPLETED":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+          <Badge variant="info">
             <CheckCircle className="w-3 h-3" />
             Concluído
-          </span>
+          </Badge>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-theme-secondary text-theme-secondary">
+          <Badge variant="default">
             {status}
-          </span>
+          </Badge>
         );
     }
   };

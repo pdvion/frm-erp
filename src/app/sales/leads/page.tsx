@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   NEW: { label: "Novo", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
@@ -205,9 +206,9 @@ export default function LeadsPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                            <Badge variant={colorToVariant(config.color)}>
                               {config.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <Link

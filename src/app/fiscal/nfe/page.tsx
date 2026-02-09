@@ -21,6 +21,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
 
@@ -226,10 +227,10 @@ export default function NFePage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-center">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
+                            <Badge variant={colorToVariant(statusInfo.color)}>
                               <StatusIcon className="w-3 h-3" />
                               {statusInfo.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-right">
                             <Link

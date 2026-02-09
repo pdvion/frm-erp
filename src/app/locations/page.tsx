@@ -12,6 +12,7 @@ import {
   ArrowRightLeft,
   FolderTree,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const typeLabels: Record<string, string> = {
   WAREHOUSE: "Almoxarifado",
@@ -128,9 +129,9 @@ export default function LocationsPage() {
                       <td className="px-4 py-3 font-medium text-theme">{loc.code}</td>
                       <td className="px-4 py-3 text-sm text-theme-secondary">{loc.name}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${typeColors[loc.type] || "bg-theme-tertiary"}`}>
+                        <Badge variant={colorToVariant(typeColors[loc.type] || "")}>
                           {typeLabels[loc.type] || loc.type}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 text-sm text-theme-secondary">
                         {loc.parent ? (
@@ -141,9 +142,9 @@ export default function LocationsPage() {
                         ) : "-"}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${loc.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-theme-tertiary text-theme"}`}>
+                        <Badge variant={loc.isActive ? "success" : "default"}>
                           {loc.isActive ? "Ativo" : "Inativo"}
-                        </span>
+                        </Badge>
                       </td>
                     </tr>
                   ))}

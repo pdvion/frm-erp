@@ -25,6 +25,7 @@ import { formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const actionConfig = {
   CREATE: { label: "Criação", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: Plus },
@@ -230,10 +231,10 @@ export default function AuditPage() {
                                 </div>
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${config?.color ?? "bg-theme-tertiary text-theme"}`}>
+                                <Badge variant={colorToVariant(config?.color ?? "")}>
                                   <Icon className="w-3.5 h-3.5" />
                                   {config?.label ?? log.action}
-                                </span>
+                                </Badge>
                               </td>
                               <td className="px-4 py-3">
                                 <div className="text-sm text-theme">
@@ -324,9 +325,9 @@ export default function AuditPage() {
                     <div>
                       <dt className="text-xs text-theme-muted uppercase">Ação</dt>
                       <dd className="text-sm">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${actionConfig[logDetail.action as keyof typeof actionConfig]?.color}`}>
+                        <Badge variant={colorToVariant(actionConfig[logDetail.action as keyof typeof actionConfig]?.color)}>
                           {actionConfig[logDetail.action as keyof typeof actionConfig]?.label || logDetail.action}
-                        </span>
+                        </Badge>
                       </dd>
                     </div>
 

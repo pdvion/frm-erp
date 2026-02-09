@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   PENDING: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100" },
@@ -115,9 +116,9 @@ export default function ReceivableDetailPage() {
             {/* Status Card */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config.bgColor} ${config.color}`}>
+                <Badge variant={colorToVariant(config.color)}>
                   {config.label}
-                </span>
+                </Badge>
                 {receivable.documentNumber && (
                   <span className="text-sm text-theme-muted">
                     Doc: {receivable.documentNumber}

@@ -18,6 +18,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 export default function PayrollPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -222,12 +223,10 @@ export default function PayrollPage() {
                           {formatCurrency(payroll.netSalary || 0)}
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${statusConfig.color}`}
-                          >
+                          <Badge variant={colorToVariant(statusConfig.color)}>
                             <StatusIcon className="w-3 h-3" />
                             {statusConfig.label}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <Link

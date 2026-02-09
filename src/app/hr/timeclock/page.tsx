@@ -20,6 +20,7 @@ import {
   Users,
   AlertCircle,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const clockTypeConfig: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   CLOCK_IN: { label: "Entrada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: Play },
@@ -174,10 +175,10 @@ export default function TimeclockPage() {
                           <div className="text-sm text-theme-muted">#{entry.employee.code}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${config?.color}`}>
+                          <Badge variant={colorToVariant(config?.color)}>
                             <IconComponent className="w-3 h-3" />
                             {config?.label || entry.type}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-theme font-mono">
                           {new Date(entry.timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

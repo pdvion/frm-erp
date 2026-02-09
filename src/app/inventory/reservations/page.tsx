@@ -20,6 +20,7 @@ import {
   Trash2,
   Play,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   ACTIVE: { label: "Ativa", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Clock className="w-4 h-4" /> },
@@ -220,10 +221,10 @@ export default function ReservationsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                          <Badge variant={colorToVariant(config.color)}>
                             {config.icon}
                             {config.label}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {reservation.status === "ACTIVE" && (

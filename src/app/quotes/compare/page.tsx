@@ -17,6 +17,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export default function QuoteComparePage() {
   const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
@@ -220,10 +221,10 @@ export default function QuoteComparePage() {
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             {index === 0 ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-xs font-medium">
+                              <Badge variant="success">
                                 <Award className="w-3 h-3" />
                                 1º
-                              </span>
+                              </Badge>
                             ) : (
                               <span className="text-theme-muted">{index + 1}º</span>
                             )}

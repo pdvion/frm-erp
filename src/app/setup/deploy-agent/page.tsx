@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
 import {
   Bot,
   FileText,
@@ -308,22 +309,22 @@ export default function DeployAgentPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {invoice.status === "PENDING" && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600">
+                        <Badge variant="warning">
                           <Clock className="w-3 h-3" />
                           Pendente
-                        </span>
+                        </Badge>
                       )}
                       {invoice.status === "APPROVED" && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
+                        <Badge variant="success">
                           <CheckCircle className="w-3 h-3" />
                           Aprovada
-                        </span>
+                        </Badge>
                       )}
                       {invoice.status === "REJECTED" && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600">
+                        <Badge variant="error">
                           <XCircle className="w-3 h-3" />
                           Rejeitada
-                        </span>
+                        </Badge>
                       )}
                     </td>
                     <td className="px-4 py-3">

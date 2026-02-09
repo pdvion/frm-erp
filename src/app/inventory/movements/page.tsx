@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const movementTypeConfig = {
   ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: ArrowDownCircle },
@@ -144,10 +145,10 @@ export default function MovementsHistoryPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${config?.color ?? "bg-theme-tertiary text-theme"}`}>
+                            <Badge variant={colorToVariant(config?.color ?? "")}>
                               <Icon className="w-3.5 h-3.5" />
                               {config?.label ?? movement.movementType}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3">
                             {movement.inventory?.material?.id ? (

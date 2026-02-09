@@ -24,6 +24,7 @@ import {
   FileText,
   RefreshCw,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
@@ -321,10 +322,10 @@ export default function MrpPage() {
                       return (
                         <tr key={suggestion.id} className="border-b border-theme hover:bg-theme-hover">
                           <td className="py-3 px-3">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${typeInfo.color}`}>
+                            <Badge variant={colorToVariant(typeInfo.color)}>
                               {typeInfo.icon}
                               {typeInfo.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="py-3 px-3">
                             <div className="text-sm font-medium">{suggestion.material?.code}</div>
@@ -336,10 +337,10 @@ export default function MrpPage() {
                           <td className="py-3 px-3 text-sm">{formatDate(suggestion.suggestedDate)}</td>
                           <td className="py-3 px-3 text-sm">{formatDate(suggestion.requiredDate)}</td>
                           <td className="py-3 px-3">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusInfo.color}`}>
+                            <Badge variant={colorToVariant(statusInfo.color)}>
                               {statusInfo.icon}
                               {statusInfo.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="py-3 px-3 text-xs text-theme-muted max-w-xs truncate">
                             {suggestion.reason}

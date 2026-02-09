@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
@@ -34,10 +35,10 @@ function StatusBadge({ status }: { status: string }) {
   const { color, label, icon } = config[status] || config.PENDING;
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {icon}
       {label}
-    </span>
+    </Badge>
   );
 }
 

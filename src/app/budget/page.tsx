@@ -19,6 +19,7 @@ import {
   BarChart3,
   FileText,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: string;
@@ -34,9 +35,9 @@ function StatusBadge({ status }: StatusBadgeProps) {
   const { color, label } = config[status] || config.OK;
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {label}
-    </span>
+    </Badge>
   );
 }
 
@@ -50,9 +51,9 @@ function VersionStatusBadge({ status }: { status: string }) {
   const { color, label } = config[status] || config.DRAFT;
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {label}
-    </span>
+    </Badge>
   );
 }
 

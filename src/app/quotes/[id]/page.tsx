@@ -29,6 +29,7 @@ import {
   Plus,
 } from "lucide-react";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
@@ -343,10 +344,10 @@ export default function QuoteDetailPage() {
                 <option value="RECEIVED">Recebida</option>
               </NativeSelect>
             ) : (
-              <span className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${config.color}`}>
+              <Badge variant={colorToVariant(config.color)}>
                 {config.icon}
                 {config.label}
-              </span>
+              </Badge>
             )}
           </div>
 
