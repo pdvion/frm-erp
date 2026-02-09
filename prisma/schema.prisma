@@ -70,6 +70,8 @@ model Company {
   pickingLists         PickingList[]
   pixTransactions      PixTransaction[]
   productCategories    ProductCategory[]
+  attributeDefinitions AttributeDefinition[]
+  categoryAttributes   CategoryAttribute[]
   productionOrders     ProductionOrder[]
   products             Product[]
   purchaseOrders       PurchaseOrder[]
@@ -4798,27 +4800,75 @@ model ExchangeLiquidation {
 }
 
 model ProductCategory {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String
-  slug        String            @unique
-  description String?
-  imageUrl    String?           @map("image_url")
-  parentId    String?           @map("parent_id") @db.Uuid
-  order       Int?              @default(0)
-  isActive    Boolean?          @default(true) @map("is_active")
-  companyId   String?           @map("company_id") @db.Uuid
-  isShared    Boolean?          @default(false) @map("is_shared")
-  createdAt   DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime?         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company     Company?          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parent      ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children    ProductCategory[] @relation("CategoryHierarchy")
-  products    Product[]
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  slug              String               @unique
+  description       String?
+  imageUrl          String?              @map("image_url")
+  parentId          String?              @map("parent_id") @db.Uuid
+  order             Int?                 @default(0)
+  isActive          Boolean?             @default(true) @map("is_active")
+  level             CategoryLevel?
+  normReference     String?              @map("norm_reference")
+  technicalCode     String?              @map("technical_code")
+  icon              String?
+  companyId         String?              @map("company_id") @db.Uuid
+  isShared          Boolean?             @default(false) @map("is_shared")
+  createdAt         DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company?             @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent            ProductCategory?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children          ProductCategory[]    @relation("CategoryHierarchy")
+  products          Product[]
+  categoryAttributes CategoryAttribute[]
 
   @@index([companyId], map: "idx_product_categories_company")
   @@index([parentId], map: "idx_product_categories_parent")
   @@index([slug], map: "idx_product_categories_slug")
   @@map("product_categories")
+}
+
+model AttributeDefinition {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  key               String               @unique
+  dataType          AttributeDataType    @default(STRING) @map("data_type")
+  unit              String?
+  enumOptions       String[]             @default([]) @map("enum_options")
+  validationRegex   String?              @map("validation_regex")
+  description       String?
+  isActive          Boolean              @default(true) @map("is_active")
+  companyId         String?              @map("company_id") @db.Uuid
+  isShared          Boolean              @default(false) @map("is_shared")
+  createdAt         DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  categoryAttributes CategoryAttribute[]
+
+  @@index([companyId], map: "idx_attribute_definitions_company")
+  @@index([key], map: "idx_attribute_definitions_key")
+  @@map("attribute_definitions")
+}
+
+model CategoryAttribute {
+  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoryId    String               @map("category_id") @db.Uuid
+  attributeId   String               @map("attribute_id") @db.Uuid
+  isRequired    Boolean              @default(false) @map("is_required")
+  displayOrder  Int                  @default(0) @map("display_order")
+  defaultValue  String?              @map("default_value")
+  companyId     String?              @map("company_id") @db.Uuid
+  isShared      Boolean              @default(false) @map("is_shared")
+  createdAt     DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  category      ProductCategory      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  attribute     AttributeDefinition  @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  company       Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([categoryId], map: "idx_category_attributes_category")
+  @@index([attributeId], map: "idx_category_attributes_attribute")
+  @@index([companyId], map: "idx_category_attributes_company")
+  @@map("category_attributes")
 }
 
 model Product {
@@ -5859,4 +5909,19 @@ model IntercompanyTransferItem {
   @@index([transferId], map: "idx_intercompany_transfer_items_transfer")
   @@index([materialId], map: "idx_intercompany_transfer_items_material")
   @@map("intercompany_transfer_items")
+}
+
+enum CategoryLevel {
+  DOMAIN
+  TYPE
+  SUBFAMILY
+  SERIES
+}
+
+enum AttributeDataType {
+  FLOAT
+  INTEGER
+  STRING
+  BOOLEAN
+  ENUM
 }
