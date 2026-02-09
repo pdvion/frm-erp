@@ -43,7 +43,7 @@ export default function ImpExPage() {
       description: "Cadastro de portos marítimos, aeroportos e fronteiras",
       href: "/impex/ports",
       icon: Anchor,
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
       count: dashboard?.portsCount,
     },
     {
@@ -51,7 +51,7 @@ export default function ImpExPage() {
       description: "Despachantes aduaneiros e agentes de carga",
       href: "/impex/brokers",
       icon: Users,
-      color: "bg-green-100 text-green-600",
+      color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
       count: dashboard?.brokersCount,
     },
     {
@@ -59,7 +59,7 @@ export default function ImpExPage() {
       description: "FCL, LCL, Aéreo, Rodoviário",
       href: "/impex/cargo-types",
       icon: Package,
-      color: "bg-purple-100 text-purple-600",
+      color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
       count: dashboard?.cargoTypesCount,
     },
     {
@@ -67,7 +67,7 @@ export default function ImpExPage() {
       description: "Termos de comércio internacional",
       href: "/impex/incoterms",
       icon: FileText,
-      color: "bg-orange-100 text-orange-600",
+      color: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
       count: dashboard?.incotermsCount,
     },
   ];

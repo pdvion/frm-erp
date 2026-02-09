@@ -25,8 +25,8 @@ type StatusBadgeProps = {
 function StatusBadge({ status }: StatusBadgeProps) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
     PENDING: { color: "bg-theme-tertiary text-theme", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Separação", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
+    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Separação", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
     CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
   };
 
@@ -43,9 +43,9 @@ function StatusBadge({ status }: StatusBadgeProps) {
 function PriorityBadge({ priority }: { priority: string }) {
   const config: Record<string, { color: string; label: string }> = {
     LOW: { color: "bg-theme-tertiary text-theme-secondary", label: "Baixa" },
-    NORMAL: { color: "bg-blue-100 text-blue-700", label: "Normal" },
-    HIGH: { color: "bg-orange-100 text-orange-700", label: "Alta" },
-    URGENT: { color: "bg-red-100 text-red-700", label: "Urgente" },
+    NORMAL: { color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
+    HIGH: { color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
+    URGENT: { color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
   };
 
   const { color, label } = config[priority] || config.NORMAL;
@@ -59,10 +59,10 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function TypeBadge({ type }: { type: string }) {
   const config: Record<string, { color: string; label: string }> = {
-    REQUISITION: { color: "bg-purple-100 text-purple-700", label: "Requisição" },
-    SALES_ORDER: { color: "bg-cyan-100 text-cyan-700", label: "Pedido Venda" },
-    PRODUCTION_ORDER: { color: "bg-orange-100 text-orange-700", label: "Ordem Produção" },
-    TRANSFER: { color: "bg-indigo-100 text-indigo-700", label: "Transferência" },
+    REQUISITION: { color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400", label: "Requisição" },
+    SALES_ORDER: { color: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400", label: "Pedido Venda" },
+    PRODUCTION_ORDER: { color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", label: "Ordem Produção" },
+    TRANSFER: { color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400", label: "Transferência" },
   };
 
   const { color, label } = config[type] || config.REQUISITION;

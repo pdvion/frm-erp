@@ -30,11 +30,11 @@ const typeLabels: Record<string, string> = {
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
-  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800" },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800" },
-  PAID: { label: "Pago", color: "bg-green-100 text-green-600" },
-  HOMOLOGATED: { label: "Homologado", color: "bg-purple-100 text-purple-800" },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800" },
+  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  PAID: { label: "Pago", color: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" },
+  HOMOLOGATED: { label: "Homologado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function TerminationsPage() {

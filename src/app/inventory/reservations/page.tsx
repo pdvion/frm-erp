@@ -22,10 +22,10 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  ACTIVE: { label: "Ativa", color: "bg-blue-100 text-blue-800", icon: <Clock className="w-4 h-4" /> },
-  CONSUMED: { label: "Consumida", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
+  ACTIVE: { label: "Ativa", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Clock className="w-4 h-4" /> },
+  CONSUMED: { label: "Consumida", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
   RELEASED: { label: "Liberada", color: "bg-theme-tertiary text-theme", icon: <XCircle className="w-4 h-4" /> },
-  EXPIRED: { label: "Expirada", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> },
+  EXPIRED: { label: "Expirada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
 const documentTypeLabels: Record<string, string> = {

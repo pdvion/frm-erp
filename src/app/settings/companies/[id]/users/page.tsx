@@ -189,7 +189,7 @@ export default function CompanyUsersPage() {
                   <div className="flex items-center gap-4">
                     <span className={`px-2 py-1 text-xs rounded-full ${
                       userCompany.isDefault 
-                        ? "bg-green-100 text-green-800" 
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
                         : "bg-theme-tertiary text-theme-secondary"
                     }`}>
                       {userCompany.isDefault ? "Empresa Padrão" : "Vinculado"}

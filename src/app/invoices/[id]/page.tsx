@@ -33,18 +33,18 @@ import {
 import { Textarea } from "@/components/ui/Textarea";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
   REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const matchStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
-  MATCHED: { label: "Vinculado", color: "bg-green-100 text-green-700", icon: <Link2 className="w-4 h-4" /> },
-  DIVERGENT: { label: "Divergente", color: "bg-yellow-100 text-yellow-700", icon: <AlertTriangle className="w-4 h-4" /> },
-  NOT_FOUND: { label: "Não encontrado", color: "bg-red-100 text-red-600", icon: <Unlink className="w-4 h-4" /> },
+  MATCHED: { label: "Vinculado", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: <Link2 className="w-4 h-4" /> },
+  DIVERGENT: { label: "Divergente", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <AlertTriangle className="w-4 h-4" /> },
+  NOT_FOUND: { label: "Não encontrado", color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400", icon: <Unlink className="w-4 h-4" /> },
 };
 
 export default function InvoiceDetailPage() {

@@ -74,10 +74,10 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
 
   const statusColors: Record<string, string> = {
     DRAFT: "bg-theme-tertiary text-theme",
-    CALCULATED: "bg-blue-100 text-blue-800",
-    PROCESSED: "bg-blue-100 text-blue-800",
-    APPROVED: "bg-green-100 text-green-800",
-    PAID: "bg-emerald-100 text-emerald-800",
+    CALCULATED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    PROCESSED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    APPROVED: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    PAID: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
   };
 
   const statusLabels: Record<string, string> = {

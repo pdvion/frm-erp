@@ -171,10 +171,10 @@ export default function PayablesAgingReportPage() {
                         <td className="px-4 py-3 whitespace-nowrap text-center">
                           {item.daysOverdue > 0 ? (
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              item.daysOverdue > 90 ? "bg-red-100 text-red-800" :
+                              item.daysOverdue > 90 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" :
                                 item.daysOverdue > 60 ? "bg-red-50 text-red-700" :
-                                  item.daysOverdue > 30 ? "bg-orange-100 text-orange-800" :
-                                    "bg-yellow-100 text-yellow-800"
+                                  item.daysOverdue > 30 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                                    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
                             }`}>
                               {item.daysOverdue} dias
                             </span>

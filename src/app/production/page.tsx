@@ -31,9 +31,9 @@ import {
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PLANNED: { label: "Planejada", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
-  RELEASED: { label: "Liberada", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Produção", color: "bg-purple-100 text-purple-800", icon: <Play className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
+  RELEASED: { label: "Liberada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Play className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
 };
 

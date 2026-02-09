@@ -23,13 +23,13 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  CONFIRMED: { label: "Confirmado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_PRODUCTION: { label: "Em Produção", color: "bg-purple-100 text-purple-800", icon: <Factory className="w-4 h-4" /> },
-  READY: { label: "Pronto", color: "bg-indigo-100 text-indigo-800", icon: <Package className="w-4 h-4" /> },
-  SHIPPED: { label: "Enviado", color: "bg-orange-100 text-orange-800", icon: <Truck className="w-4 h-4" /> },
-  DELIVERED: { label: "Entregue", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  CONFIRMED: { label: "Confirmado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_PRODUCTION: { label: "Em Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Factory className="w-4 h-4" /> },
+  READY: { label: "Pronto", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400", icon: <Package className="w-4 h-4" /> },
+  SHIPPED: { label: "Enviado", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Truck className="w-4 h-4" /> },
+  DELIVERED: { label: "Entregue", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function SalesOrderDetailPage() {

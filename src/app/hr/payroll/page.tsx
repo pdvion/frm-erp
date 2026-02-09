@@ -35,11 +35,11 @@ export default function PayrollPage() {
       case "DRAFT":
         return { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary", icon: FileText };
       case "CALCULATED":
-        return { label: "Calculada", color: "bg-blue-100 text-blue-700", icon: Clock };
+        return { label: "Calculada", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: Clock };
       case "APPROVED":
-        return { label: "Aprovada", color: "bg-green-100 text-green-700", icon: CheckCircle };
+        return { label: "Aprovada", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle };
       case "PAID":
-        return { label: "Paga", color: "bg-emerald-100 text-emerald-700", icon: DollarSign };
+        return { label: "Paga", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", icon: DollarSign };
       default:
         return { label: status, color: "bg-theme-tertiary text-theme-secondary", icon: FileText };
     }

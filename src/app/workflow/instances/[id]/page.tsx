@@ -17,12 +17,12 @@ import {
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-yellow-100 text-yellow-800", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
+    PENDING: { color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
     CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
-    REJECTED: { color: "bg-red-100 text-red-800", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
-    APPROVED: { color: "bg-green-100 text-green-800", label: "Aprovado", icon: <CheckCircle className="h-3 w-3" /> },
+    REJECTED: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
+    APPROVED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Aprovado", icon: <CheckCircle className="h-3 w-3" /> },
   };
 
   const { color, label, icon } = config[status] || config.PENDING;
@@ -99,11 +99,11 @@ export default function WorkflowInstanceDetailPage({
                     <div className="flex flex-col items-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         task.status === "COMPLETED"
-                          ? "bg-green-100 text-green-600"
+                          ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                           : task.status === "REJECTED"
-                            ? "bg-red-100 text-red-600"
+                            ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
                             : task.status === "IN_PROGRESS"
-                              ? "bg-blue-100 text-blue-600"
+                              ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
                               : "bg-theme-tertiary text-theme-secondary"
                       }`}>
                         {task.status === "COMPLETED" ? (

@@ -48,11 +48,11 @@ export default function OEEStopsPage() {
   };
 
   const stopTypes = [
-    { value: "PLANNED", label: "Planejada", color: "bg-blue-100 text-blue-800" },
-    { value: "UNPLANNED", label: "Não Planejada", color: "bg-red-100 text-red-800" },
-    { value: "SETUP", label: "Setup", color: "bg-purple-100 text-purple-800" },
-    { value: "MAINTENANCE", label: "Manutenção", color: "bg-orange-100 text-orange-800" },
-    { value: "QUALITY", label: "Qualidade", color: "bg-yellow-100 text-yellow-800" },
+    { value: "PLANNED", label: "Planejada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+    { value: "UNPLANNED", label: "Não Planejada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+    { value: "SETUP", label: "Setup", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+    { value: "MAINTENANCE", label: "Manutenção", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
+    { value: "QUALITY", label: "Qualidade", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
     { value: "MATERIAL", label: "Falta Material", color: "bg-theme-tertiary text-theme" },
     { value: "OTHER", label: "Outros", color: "bg-theme-tertiary text-theme" },
   ];

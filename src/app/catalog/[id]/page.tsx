@@ -218,10 +218,10 @@ export default function ProductDetailPage() {
               <span
                 className={`px-2 py-1 text-xs font-medium rounded ${
                   product.status === "active"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                     : product.status === "draft"
                       ? "bg-theme-tertiary text-theme-secondary"
-                      : "bg-yellow-100 text-yellow-700"
+                      : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                 }`}
               >
                 {product.status === "active"

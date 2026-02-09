@@ -103,7 +103,7 @@ export default function NotificationsPage() {
               <Button
                 onClick={() => setCategory(undefined)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  !category ? "bg-blue-100 text-blue-700" : "text-theme-secondary hover:bg-theme-hover"
+                  !category ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "text-theme-secondary hover:bg-theme-hover"
                 }`}
               >
                 Todas
@@ -113,7 +113,7 @@ export default function NotificationsPage() {
                   key={key}
                   onClick={() => setCategory(key)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    category === key ? "bg-blue-100 text-blue-700" : "text-theme-secondary hover:bg-theme-hover"
+                    category === key ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" : "text-theme-secondary hover:bg-theme-hover"
                   }`}
                 >
                   {label}
@@ -179,9 +179,9 @@ export default function NotificationsPage() {
                               </p>
                               <span className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${
                                 notification.category === "error"
-                                  ? "bg-red-100 text-red-700"
+                                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                                   : notification.category === "business"
-                                    ? "bg-blue-100 text-blue-700"
+                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                                     : "bg-theme-tertiary text-theme-secondary"
                               }`}>
                                 {categoryLabels[notification.category as keyof typeof categoryLabels] || notification.category}

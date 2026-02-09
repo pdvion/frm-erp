@@ -27,9 +27,9 @@ type StatusBadgeProps = {
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const config = {
-    BELOW: { color: "bg-red-100 text-red-800", icon: TrendingDown, label: "Abaixo" },
-    ON_TARGET: { color: "bg-green-100 text-green-800", icon: CheckCircle, label: "Na Meta" },
-    ABOVE: { color: "bg-blue-100 text-blue-800", icon: TrendingUp, label: "Acima" },
+    BELOW: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: TrendingDown, label: "Abaixo" },
+    ON_TARGET: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle, label: "Na Meta" },
+    ABOVE: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: TrendingUp, label: "Acima" },
   };
 
   const { color, icon: Icon, label } = config[status];
@@ -44,9 +44,9 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
 function PriorityBadge({ priority }: { priority: number }) {
   const config: Record<number, { color: string; label: string }> = {
-    1: { color: "bg-red-100 text-red-800", label: "Urgente" },
-    2: { color: "bg-orange-100 text-orange-800", label: "Alta" },
-    3: { color: "bg-blue-100 text-blue-800", label: "Normal" },
+    1: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
+    2: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
+    3: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
     4: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
   };
 

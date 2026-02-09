@@ -26,9 +26,9 @@ const typeLabels: Record<string, string> = {
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   PENDING: { label: "Pendente", color: "bg-theme-tertiary text-theme" },
-  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800" },
-  PAID: { label: "Pago", color: "bg-green-100 text-green-800" },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800" },
+  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  PAID: { label: "Pago", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function ThirteenthPage() {

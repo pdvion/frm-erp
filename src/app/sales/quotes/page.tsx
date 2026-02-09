@@ -23,12 +23,12 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
-  SENT: { label: "Enviado", color: "bg-blue-100 text-blue-800" },
-  VIEWED: { label: "Visualizado", color: "bg-purple-100 text-purple-800" },
-  ACCEPTED: { label: "Aceito", color: "bg-green-100 text-green-800" },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800" },
-  EXPIRED: { label: "Expirado", color: "bg-yellow-100 text-yellow-800" },
-  CONVERTED: { label: "Convertido", color: "bg-indigo-100 text-indigo-800" },
+  SENT: { label: "Enviado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  VIEWED: { label: "Visualizado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  ACCEPTED: { label: "Aceito", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  EXPIRED: { label: "Expirado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  CONVERTED: { label: "Convertido", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400" },
 };
 
 export default function SalesQuotesPage() {

@@ -24,10 +24,10 @@ type StatusBadgeProps = {
 function StatusBadge({ status }: StatusBadgeProps) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
     PENDING: { color: "bg-theme-tertiary text-theme", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
+    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
     CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
-    REJECTED: { color: "bg-red-100 text-red-800", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
+    REJECTED: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
   };
 
   const { color, label, icon } = config[status] || config.PENDING;
@@ -42,11 +42,11 @@ function StatusBadge({ status }: StatusBadgeProps) {
 
 function CategoryBadge({ category }: { category: string }) {
   const config: Record<string, { color: string; label: string }> = {
-    PURCHASE: { color: "bg-purple-100 text-purple-800", label: "Compras" },
-    PAYMENT: { color: "bg-green-100 text-green-800", label: "Pagamentos" },
-    HR: { color: "bg-blue-100 text-blue-800", label: "RH" },
-    PRODUCTION: { color: "bg-orange-100 text-orange-800", label: "Produção" },
-    SALES: { color: "bg-cyan-100 text-cyan-800", label: "Vendas" },
+    PURCHASE: { color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", label: "Compras" },
+    PAYMENT: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Pagamentos" },
+    HR: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "RH" },
+    PRODUCTION: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Produção" },
+    SALES: { color: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400", label: "Vendas" },
     GENERAL: { color: "bg-theme-tertiary text-theme", label: "Geral" },
   };
 

@@ -19,10 +19,10 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-yellow-100 text-yellow-800", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    ACCEPTED: { color: "bg-blue-100 text-blue-800", label: "Aceita", icon: <Play className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800", label: "Concluída", icon: <CheckCircle className="h-3 w-3" /> },
+    PENDING: { color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    ACCEPTED: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Aceita", icon: <Play className="h-3 w-3" /> },
+    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluída", icon: <CheckCircle className="h-3 w-3" /> },
     CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelada", icon: <XCircle className="h-3 w-3" /> },
   };
 
@@ -38,9 +38,9 @@ function StatusBadge({ status }: { status: string }) {
 
 function PriorityBadge({ priority }: { priority: string }) {
   const config: Record<string, { color: string; label: string }> = {
-    URGENT: { color: "bg-red-100 text-red-800", label: "Urgente" },
-    HIGH: { color: "bg-orange-100 text-orange-800", label: "Alta" },
-    NORMAL: { color: "bg-blue-100 text-blue-800", label: "Normal" },
+    URGENT: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
+    HIGH: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
+    NORMAL: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
     LOW: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
   };
 

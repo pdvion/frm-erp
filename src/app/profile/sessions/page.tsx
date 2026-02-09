@@ -170,7 +170,7 @@ export default function SessionsPage() {
                         <div className="flex items-center gap-4">
                           <div className={`p-3 rounded-xl ${
                             session.isCurrent 
-                              ? "bg-green-100 text-green-600" 
+                              ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" 
                               : "bg-theme-tertiary text-theme-secondary"
                           }`}>
                             <DeviceIcon className="w-6 h-6" />

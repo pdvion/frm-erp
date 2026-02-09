@@ -26,17 +26,17 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitada", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
-  CONVERTED: { label: "Convertida", color: "bg-blue-100 text-blue-800", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+  CONVERTED: { label: "Convertida", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <FileText className="w-4 h-4" /> },
 };
 
 const typeConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PRODUCTION: { label: "Produção", color: "bg-purple-100 text-purple-800", icon: <Factory className="w-4 h-4" /> },
-  PURCHASE: { label: "Compra", color: "bg-blue-100 text-blue-800", icon: <ShoppingCart className="w-4 h-4" /> },
-  RESCHEDULE: { label: "Reprogramar", color: "bg-orange-100 text-orange-800", icon: <Calendar className="w-4 h-4" /> },
-  CANCEL: { label: "Cancelar", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
+  PRODUCTION: { label: "Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Factory className="w-4 h-4" /> },
+  PURCHASE: { label: "Compra", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <ShoppingCart className="w-4 h-4" /> },
+  RESCHEDULE: { label: "Reprogramar", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Calendar className="w-4 h-4" /> },
+  CANCEL: { label: "Cancelar", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function MrpPage() {
@@ -229,9 +229,9 @@ export default function MrpPage() {
                       <td className="py-3 px-3 text-sm">{run.horizonDays} dias</td>
                       <td className="py-3 px-3">
                         <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                          run.status === "COMPLETED" ? "bg-green-100 text-green-800" :
-                            run.status === "RUNNING" ? "bg-blue-100 text-blue-800" :
-                              "bg-red-100 text-red-800"
+                          run.status === "COMPLETED" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                            run.status === "RUNNING" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                              "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                         }`}>
                           {run.status === "COMPLETED" ? <CheckCircle className="w-3 h-3" /> :
                             run.status === "RUNNING" ? <RefreshCw className="w-3 h-3 animate-spin" /> :

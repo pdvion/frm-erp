@@ -1,11 +1,25 @@
 "use client";
 
-type BadgeVariant = "default" | "success" | "warning" | "error" | "info";
+type BadgeVariant =
+  | "default"
+  | "success"
+  | "warning"
+  | "error"
+  | "info"
+  | "purple"
+  | "orange"
+  | "cyan"
+  | "pink"
+  | "outline";
+
+type BadgeSize = "sm" | "md" | "lg";
 
 interface BadgeProps {
   variant?: BadgeVariant;
+  size?: BadgeSize;
   children: React.ReactNode;
   className?: string;
+  dot?: boolean;
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
@@ -14,17 +28,43 @@ const variantStyles: Record<BadgeVariant, string> = {
   warning: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
   error: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
   info: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  purple: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  orange: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  cyan: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+  pink: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
+  outline: "bg-transparent border border-theme text-theme-secondary",
 };
 
-export function Badge({ variant = "default", children, className = "" }: BadgeProps) {
+const dotColors: Record<BadgeVariant, string> = {
+  default: "bg-gray-500",
+  success: "bg-green-500",
+  warning: "bg-yellow-500",
+  error: "bg-red-500",
+  info: "bg-blue-500",
+  purple: "bg-purple-500",
+  orange: "bg-orange-500",
+  cyan: "bg-cyan-500",
+  pink: "bg-pink-500",
+  outline: "bg-gray-500",
+};
+
+const sizeStyles: Record<BadgeSize, string> = {
+  sm: "px-1.5 py-0.5 text-[10px]",
+  md: "px-2.5 py-0.5 text-xs",
+  lg: "px-3 py-1 text-sm",
+};
+
+export function Badge({ variant = "default", size = "md", children, className = "", dot = false }: BadgeProps) {
   return (
     <span
       className={`
-        inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+        inline-flex items-center gap-1.5 rounded-full font-medium
         ${variantStyles[variant]}
+        ${sizeStyles[size]}
         ${className}
       `}
     >
+      {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]}`} />}
       {children}
     </span>
   );

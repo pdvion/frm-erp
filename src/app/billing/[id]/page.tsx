@@ -32,9 +32,9 @@ import {
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
+  AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  DENIED: { label: "Denegada", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
+  DENIED: { label: "Denegada", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
 export default function BillingDetailPage() {

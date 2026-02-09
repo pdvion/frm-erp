@@ -28,9 +28,9 @@ type ProductStatus = "draft" | "active" | "inactive" | "discontinued";
 
 const STATUS_LABELS: Record<ProductStatus, { label: string; color: string }> = {
   draft: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary" },
-  active: { label: "Ativo", color: "bg-green-100 text-green-700" },
-  inactive: { label: "Inativo", color: "bg-yellow-100 text-yellow-700" },
-  discontinued: { label: "Descontinuado", color: "bg-red-100 text-red-700" },
+  active: { label: "Ativo", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+  inactive: { label: "Inativo", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  discontinued: { label: "Descontinuado", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function CatalogPage() {

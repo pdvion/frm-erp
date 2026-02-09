@@ -29,10 +29,10 @@ import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-blue-100 text-blue-800", icon: <CreditCard className="w-4 h-4" /> },
-  PAID: { label: "Recebido", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  OVERDUE: { label: "Vencido", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CreditCard className="w-4 h-4" /> },
+  PAID: { label: "Recebido", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  OVERDUE: { label: "Vencido", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <AlertTriangle className="w-4 h-4" /> },
   CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
   WRITTEN_OFF: { label: "Baixado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
 };

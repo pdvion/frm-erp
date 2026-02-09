@@ -154,9 +154,9 @@ export default function ProductionLogsPage() {
                     <td className="px-4 py-3 text-sm text-theme">{item.quality.toFixed(1)}%</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-sm font-medium ${
-                        item.oee >= 85 ? "bg-green-100 text-green-800" :
-                          item.oee >= 65 ? "bg-yellow-100 text-yellow-800" :
-                            "bg-red-100 text-red-800"
+                        item.oee >= 85 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                          item.oee >= 65 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                       }`}>
                         {item.oee.toFixed(1)}%
                       </span>

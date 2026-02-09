@@ -24,6 +24,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { Badge } from "@/components/ui/Badge";
 import { SemanticSearch } from "@/components/SemanticSearch";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { useMultiTenant } from "@/hooks/useMultiTenant";
@@ -243,15 +244,9 @@ function MaterialsContent() {
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            material.status === "ACTIVE" 
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
-                              : material.status === "INACTIVE"
-                                ? "bg-theme-secondary text-theme-secondary"
-                                : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400"
-                          }`}>
+                          <Badge variant={material.status === "ACTIVE" ? "success" : material.status === "INACTIVE" ? "default" : "error"}>
                             {material.status === "ACTIVE" ? "Ativo" : material.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap">
                           {material.isShared ? (
