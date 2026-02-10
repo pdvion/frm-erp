@@ -302,29 +302,30 @@ export const leadsRouter = createTRPCRouter({
 
       const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
 
-      // Criar cliente
-      const customer = await ctx.prisma.customer.create({
-        data: {
-          code: nextCode,
-          companyId: ctx.companyId,
-          companyName: lead.companyName,
-          email: lead.email,
-          phone: lead.phone,
-          status: "ACTIVE",
-        },
-      });
+      // Transação para garantir atomicidade (customer + lead update)
+      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+        const customer = await tx.customer.create({
+          data: {
+            code: nextCode,
+            companyId: ctx.companyId,
+            companyName: lead.companyName,
+            email: lead.email,
+            phone: lead.phone,
+            status: "ACTIVE",
+          },
+        });
 
-      // Atualizar lead
-      await ctx.prisma.lead.update({
-        where: { id: input.leadId },
-        data: {
-          customerId: customer.id,
-          status: "WON",
-          wonAt: new Date(),
-        },
-      });
+        await tx.lead.update({
+          where: { id: input.leadId },
+          data: {
+            customerId: customer.id,
+            status: "WON",
+            wonAt: new Date(),
+          },
+        });
 
-      return customer;
+        return customer;
+      });
     }),
 
   // Estatísticas do funil

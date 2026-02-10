@@ -88,32 +88,27 @@ describe("createTenantPrisma — RLS Extension", () => {
   });
 
   describe("findMany — tenant model", () => {
-    it("injects companyId OR filter into where clause", async () => {
+    it("injects companyId filter using AND to preserve existing where", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).material.findMany({ where: { unit: "KG" } });
 
-      // O queryFn recebe os args modificados
-      expect(queryFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            unit: "KG",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-              { companyId: null },
-            ]),
-          }),
-        })
-      );
+      // composeTenantWhere wraps in AND: [existingWhere, filter]
+      const calledArgs = queryFn.mock.calls[0][0];
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ unit: "KG" });
+      expect(calledArgs.where.AND[1].OR).toContainEqual({ companyId: COMPANY_A });
+      expect(calledArgs.where.AND[1].OR).toContainEqual({ companyId: null });
     });
 
-    it("works with empty where clause", async () => {
+    it("works with empty where clause (no AND wrapper needed)", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).material.findMany({});
 
+      // Empty where → filter applied directly
       expect(queryFn).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -131,7 +126,7 @@ describe("createTenantPrisma — RLS Extension", () => {
     it("includes isShared: true in OR filter for shared models", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
-      // Material is in SHARED_MODELS
+      // Material is in SHARED_MODELS — empty where so filter applied directly
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).material.findMany({ where: {} });
 
@@ -166,22 +161,16 @@ describe("createTenantPrisma — RLS Extension", () => {
   });
 
   describe("findFirst — tenant model", () => {
-    it("injects companyId filter", async () => {
+    it("injects companyId filter using AND", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).lead.findFirst({ where: { id: "lead-1" } });
 
-      expect(queryFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            id: "lead-1",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-            ]),
-          }),
-        })
-      );
+      const calledArgs = queryFn.mock.calls[0][0];
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ id: "lead-1" });
+      expect(calledArgs.where.AND[1].OR).toContainEqual({ companyId: COMPANY_A });
     });
   });
 
@@ -241,6 +230,7 @@ describe("createTenantPrisma — RLS Extension", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).inventory.count({ where: {} });
 
+      // Empty where → filter applied directly
       expect(queryFn).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -254,7 +244,7 @@ describe("createTenantPrisma — RLS Extension", () => {
   });
 
   describe("aggregate — tenant model", () => {
-    it("injects companyId filter", async () => {
+    it("injects companyId filter using AND", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -263,16 +253,10 @@ describe("createTenantPrisma — RLS Extension", () => {
         _sum: { amount: true },
       });
 
-      expect(queryFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            status: "PENDING",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-            ]),
-          }),
-        })
-      );
+      const calledArgs = queryFn.mock.calls[0][0];
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ status: "PENDING" });
+      expect(calledArgs.where.AND[1].OR).toContainEqual({ companyId: COMPANY_A });
     });
   });
 
@@ -287,6 +271,7 @@ describe("createTenantPrisma — RLS Extension", () => {
         _count: true,
       });
 
+      // Empty where → filter applied directly
       expect(queryFn).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -361,8 +346,8 @@ describe("createTenantPrisma — RLS Extension", () => {
     });
   });
 
-  describe("update — tenant model", () => {
-    it("injects companyId filter into where", async () => {
+  describe("update — tenant model (write filter)", () => {
+    it("injects strict companyId filter (no null) using AND", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -371,21 +356,16 @@ describe("createTenantPrisma — RLS Extension", () => {
         data: { status: "WON" },
       });
 
-      expect(queryFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            id: "lead-1",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-            ]),
-          }),
-        })
-      );
+      // Write ops use buildTenantWriteFilter → { companyId } (no OR, no null)
+      const calledArgs = queryFn.mock.calls[0][0];
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ id: "lead-1" });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
     });
   });
 
-  describe("delete — tenant model", () => {
-    it("injects companyId filter into where", async () => {
+  describe("delete — tenant model (write filter)", () => {
+    it("injects strict companyId filter (no null) using AND", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -393,21 +373,15 @@ describe("createTenantPrisma — RLS Extension", () => {
         where: { id: "lead-1" },
       });
 
-      expect(queryFn).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            id: "lead-1",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-            ]),
-          }),
-        })
-      );
+      const calledArgs = queryFn.mock.calls[0][0];
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ id: "lead-1" });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
     });
   });
 
-  describe("upsert — tenant model", () => {
-    it("injects companyId in where and create", async () => {
+  describe("upsert — tenant model (write filter)", () => {
+    it("injects strict companyId in where (AND) and companyId in create", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -417,19 +391,17 @@ describe("createTenantPrisma — RLS Extension", () => {
         update: { description: "Updated" },
       });
 
-      expect(queryFn).toHaveBeenCalledWith(
+      const calledArgs = queryFn.mock.calls[0][0];
+      // Write filter: AND with strict companyId
+      expect(calledArgs.where.AND).toBeDefined();
+      expect(calledArgs.where.AND[0]).toEqual({ id: "m1" });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
+      // Create data gets companyId injected
+      expect(calledArgs.create).toEqual(
         expect.objectContaining({
-          where: expect.objectContaining({
-            id: "m1",
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-            ]),
-          }),
-          create: expect.objectContaining({
-            description: "New",
-            unit: "KG",
-            companyId: COMPANY_A,
-          }),
+          description: "New",
+          unit: "KG",
+          companyId: COMPANY_A,
         })
       );
     });
@@ -442,10 +414,11 @@ describe("createTenantPrisma — RLS Extension", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).lead.findFirst({ where: { id: "lead-from-b" } });
 
-      // The filter should include Company A's companyId, not B's
+      // AND-based composition: filter is in AND[1]
       const calledArgs = queryFn.mock.calls[0][0];
-      expect(calledArgs.where.OR).toContainEqual({ companyId: COMPANY_A });
-      expect(calledArgs.where.OR).not.toContainEqual({ companyId: COMPANY_B });
+      const filter = calledArgs.where.AND[1];
+      expect(filter.OR).toContainEqual({ companyId: COMPANY_A });
+      expect(filter.OR).not.toContainEqual({ companyId: COMPANY_B });
     });
 
     it("update with Company A context cannot modify Company B data", async () => {
@@ -457,8 +430,9 @@ describe("createTenantPrisma — RLS Extension", () => {
         data: { status: "PAID" },
       });
 
+      // Write filter: strict companyId (no OR)
       const calledArgs = queryFn.mock.calls[0][0];
-      expect(calledArgs.where.OR).toContainEqual({ companyId: COMPANY_A });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
     });
 
     it("delete with Company A context cannot delete Company B data", async () => {
@@ -469,8 +443,9 @@ describe("createTenantPrisma — RLS Extension", () => {
         where: { id: "order-from-b" },
       });
 
+      // Write filter: strict companyId (no OR)
       const calledArgs = queryFn.mock.calls[0][0];
-      expect(calledArgs.where.OR).toContainEqual({ companyId: COMPANY_A });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
     });
   });
 });

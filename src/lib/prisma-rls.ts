@@ -127,7 +127,8 @@ const SHARED_MODELS = new Set([
 ]);
 
 /**
- * Cria filtro de tenant para queries
+ * Cria filtro de tenant para queries de leitura.
+ * Inclui registros da empresa, registros sem dono (null) e compartilhados.
  */
 function buildTenantFilter(model: string, companyId: string) {
   const hasShared = SHARED_MODELS.has(model);
@@ -148,6 +149,25 @@ function buildTenantFilter(model: string, companyId: string) {
       { companyId: null },
     ],
   };
+}
+
+/**
+ * Cria filtro de tenant para operações de escrita (update/delete).
+ * NÃO inclui companyId:null para evitar mutação de registros de sistema.
+ */
+function buildTenantWriteFilter(_model: string, companyId: string) {
+  return { companyId };
+}
+
+/**
+ * Compõe o filtro de tenant com o where existente usando AND,
+ * preservando condições OR do usuário.
+ */
+function composeTenantWhere(existingWhere: Record<string, unknown> | undefined, filter: Record<string, unknown>) {
+  if (!existingWhere || Object.keys(existingWhere).length === 0) {
+    return filter;
+  }
+  return { AND: [existingWhere, filter] };
 }
 
 /**
@@ -176,14 +196,14 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         async findMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async findFirst({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
@@ -201,21 +221,21 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         async count({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async aggregate({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async groupBy({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
@@ -244,36 +264,36 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         },
         async update({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async updateMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async delete({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async deleteMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async upsert({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
             // Injeta companyId na criação
             const createData = args.create as Record<string, unknown>;
             if (!createData.companyId) {

@@ -340,15 +340,28 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      // Verificar se o usuário existe
+      // Verificar se o usuário existe e pertence ao mesmo tenant
       const user = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
+        include: {
+          companies: {
+            where: { companyId: ctx.companyId },
+            select: { companyId: true },
+          },
+        },
       });
 
       if (!user) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Usuário não encontrado",
+        });
+      }
+
+      if (!user.companies || user.companies.length === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Usuário não pertence a esta empresa",
         });
       }
 

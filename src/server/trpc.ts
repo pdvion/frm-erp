@@ -172,7 +172,7 @@ const csrfProtection = t.middleware(async ({ ctx, type, next }) => {
 // Feature flag: ativar RLS + Audit Extensions no tenantProcedure
 // Quando ON: ctx.prisma é automaticamente filtrado por companyId + auditado
 // Quando OFF: comportamento atual (tenantFilter manual)
-const ENABLE_PRISMA_RLS = process.env.ENABLE_PRISMA_RLS !== "false"; // ON by default
+const ENABLE_PRISMA_RLS = process.env.ENABLE_PRISMA_RLS?.toLowerCase() !== "false"; // ON by default
 
 // Procedure que requer empresa ativa
 export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx, next }) => {
@@ -196,6 +196,9 @@ export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx,
       userId: ctx.tenant.userId,
       userEmail: ctx.supabaseUser?.email,
       companyId: ctx.tenant.companyId,
+      ipAddress: ctx.headers.get("x-forwarded-for") ?? ctx.headers.get("x-real-ip") ?? undefined,
+      userAgent: ctx.headers.get("user-agent") ?? undefined,
+      requestPath: ctx.headers.get("x-trpc-source") ?? undefined,
     });
   }
 

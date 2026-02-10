@@ -388,94 +388,93 @@ export const productionRouter = createTRPCRouter({
       const newProducedQty = Number(order.producedQty) + Number(input.quantity);
       const isComplete = newProducedQty >= Number(order.quantity);
 
-      // Atualizar OP
-      await ctx.prisma.productionOrder.update({
-        where: { id: input.orderId },
-        data: {
-          producedQty: newProducedQty,
-          status: isComplete ? "COMPLETED" : "IN_PROGRESS",
-          actualEnd: isComplete ? new Date() : undefined,
-        },
-      });
-
-      // Atualizar operação se especificada
-      if (input.operationId) {
-        await ctx.prisma.productionOrderOperation.update({
-          where: { id: input.operationId },
+      // Transação para garantir atomicidade (OP + operação + inventário)
+      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+        // Atualizar OP
+        await tx.productionOrder.update({
+          where: { id: input.orderId },
           data: {
-            completedQty: { increment: input.quantity },
-            scrapQty: { increment: input.scrapQty },
-            completedAt: isComplete ? new Date() : undefined,
+            producedQty: newProducedQty,
+            status: isComplete ? "COMPLETED" : "IN_PROGRESS",
+            actualEnd: isComplete ? new Date() : undefined,
           },
         });
-      }
 
-      // Dar entrada do produto acabado no estoque
-      if (input.quantity > 0) {
-        let inventory = order.product.inventory[0];
-        
-        if (!inventory) {
-          // Criar registro de estoque
-          inventory = await ctx.prisma.inventory.create({
+        // Atualizar operação se especificada
+        if (input.operationId) {
+          await tx.productionOrderOperation.update({
+            where: { id: input.operationId },
             data: {
-              materialId: order.product.id,
-              companyId: ctx.companyId,
-              inventoryType: "FINISHED",
-              quantity: 0,
-              availableQty: 0,
-              unitCost: 0,
-              totalCost: 0,
+              completedQty: { increment: input.quantity },
+              scrapQty: { increment: input.scrapQty },
+              completedAt: isComplete ? new Date() : undefined,
             },
           });
         }
 
-        // Calcular custo de produção baseado nos materiais consumidos
-        const consumedMaterials = await ctx.prisma.productionOrderMaterial.findMany({
-          where: { orderId: order.id },
-          include: { material: true },
-        });
-        
-        let totalMaterialCost = 0;
-        for (const mat of consumedMaterials) {
-          const materialCost = mat.material.lastPurchasePrice || 0;
-          totalMaterialCost += Number(materialCost) * Number(mat.consumedQty);
+        // Dar entrada do produto acabado no estoque
+        if (input.quantity > 0) {
+          let inventory = order.product.inventory[0];
+          
+          if (!inventory) {
+            inventory = await tx.inventory.create({
+              data: {
+                materialId: order.product.id,
+                companyId: ctx.companyId,
+                inventoryType: "FINISHED",
+                quantity: 0,
+                availableQty: 0,
+                unitCost: 0,
+                totalCost: 0,
+              },
+            });
+          }
+
+          // Calcular custo de produção baseado nos materiais consumidos
+          const consumedMaterials = await tx.productionOrderMaterial.findMany({
+            where: { orderId: order.id },
+            include: { material: true },
+          });
+          
+          let totalMaterialCost = 0;
+          for (const mat of consumedMaterials) {
+            const materialCost = mat.material.lastPurchasePrice || 0;
+            totalMaterialCost += Number(materialCost) * Number(mat.consumedQty);
+          }
+          
+          const unitCost = newProducedQty > 0 
+            ? totalMaterialCost / newProducedQty 
+            : totalMaterialCost / Number(order.quantity);
+          const totalCost = unitCost * input.quantity;
+
+          await tx.inventoryMovement.create({
+            data: {
+              inventoryId: inventory.id,
+              movementType: "ENTRY",
+              quantity: input.quantity,
+              unitCost,
+              totalCost,
+              balanceAfter: Number(inventory.quantity) + Number(input.quantity),
+              documentType: "OP",
+              documentNumber: String(order.code),
+              documentId: order.id,
+              notes: `Produção OP #${order.code} - ${order.product.description}`,
+              userId: ctx.tenant.userId,
+            },
+          });
+
+          // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
+          await tx.inventory.update({
+            where: { id: inventory.id },
+            data: {
+              quantity: { increment: input.quantity },
+              lastMovementAt: new Date(),
+            },
+          });
         }
-        
-        // Custo unitário = custo total dos materiais / quantidade produzida
-        const unitCost = newProducedQty > 0 
-          ? totalMaterialCost / newProducedQty 
-          : totalMaterialCost / Number(order.quantity);
-        const totalCost = unitCost * input.quantity;
 
-        // Criar movimentação de entrada
-        await ctx.prisma.inventoryMovement.create({
-          data: {
-            inventoryId: inventory.id,
-            movementType: "ENTRY",
-            quantity: input.quantity,
-            unitCost,
-            totalCost,
-            balanceAfter: Number(inventory.quantity) + Number(input.quantity),
-            documentType: "OP",
-            documentNumber: String(order.code),
-            documentId: order.id,
-            notes: `Produção OP #${order.code} - ${order.product.description}`,
-            userId: ctx.tenant.userId,
-          },
-        });
-
-        // Atualizar estoque
-        await ctx.prisma.inventory.update({
-          where: { id: inventory.id },
-          data: {
-            quantity: { increment: input.quantity },
-            // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
-            lastMovementAt: new Date(),
-          },
-        });
-      }
-
-      return { success: true, newProducedQty, isComplete };
+        return { success: true, newProducedQty, isComplete };
+      });
     }),
 
   // Consumir material
@@ -531,45 +530,45 @@ export const productionRouter = createTRPCRouter({
       const unitCost = inventory.unitCost;
       const totalCost = Number(unitCost) * Number(input.quantity);
 
-      // Atualizar material da OP
-      await ctx.prisma.productionOrderMaterial.update({
-        where: { id: input.materialId },
-        data: {
-          consumedQty: { increment: input.quantity },
-          unitCost,
-          totalCost: { increment: totalCost },
-        },
-      });
+      // Transação para garantir atomicidade (material OP + movimentação + estoque)
+      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+        await tx.productionOrderMaterial.update({
+          where: { id: input.materialId },
+          data: {
+            consumedQty: { increment: input.quantity },
+            unitCost,
+            totalCost: { increment: totalCost },
+          },
+        });
 
-      // Criar movimentação de saída
-      await ctx.prisma.inventoryMovement.create({
-        data: {
-          inventoryId: inventory.id,
-          movementType: "EXIT",
-          quantity: input.quantity,
-          unitCost,
-          totalCost,
-          balanceAfter: Number(inventory.quantity) - Number(input.quantity),
-          documentType: "OP",
-          documentNumber: String(orderMaterial.order.code),
-          documentId: orderMaterial.order.id,
-          notes: `Consumo OP #${orderMaterial.order.code} - ${orderMaterial.material.description}`,
-          userId: ctx.tenant.userId,
-        },
-      });
+        await tx.inventoryMovement.create({
+          data: {
+            inventoryId: inventory.id,
+            movementType: "EXIT",
+            quantity: input.quantity,
+            unitCost,
+            totalCost,
+            balanceAfter: Number(inventory.quantity) - Number(input.quantity),
+            documentType: "OP",
+            documentNumber: String(orderMaterial.order.code),
+            documentId: orderMaterial.order.id,
+            notes: `Consumo OP #${orderMaterial.order.code} - ${orderMaterial.material.description}`,
+            userId: ctx.tenant.userId,
+          },
+        });
 
-      // Atualizar estoque
-      await ctx.prisma.inventory.update({
-        where: { id: inventory.id },
-        data: {
-          quantity: { decrement: input.quantity },
-          // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
-          totalCost: { decrement: totalCost },
-          lastMovementAt: new Date(),
-        },
-      });
+        // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
+        await tx.inventory.update({
+          where: { id: inventory.id },
+          data: {
+            quantity: { decrement: input.quantity },
+            totalCost: { decrement: totalCost },
+            lastMovementAt: new Date(),
+          },
+        });
 
-      return { success: true };
+        return { success: true };
+      });
     }),
 
   // Cancelar OP

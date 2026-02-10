@@ -382,61 +382,61 @@ export const salesQuotesRouter = createTRPCRouter({
 
       const nextOrderCode = (lastOrder?.code ?? 0) + 1;
 
-      // Criar pedido
-      const order = await ctx.prisma.salesOrder.create({
-        data: {
-          code: nextOrderCode,
-          companyId: ctx.companyId,
-          customerId: quote.customerId,
-          quoteId: quote.id,
-          status: "PENDING",
-          deliveryDate: quote.deliveryDays
-            ? new Date(Date.now() + quote.deliveryDays * 24 * 60 * 60 * 1000)
-            : null,
-          paymentTerms: quote.paymentTerms,
-          shippingMethod: quote.shippingMethod,
-          subtotal: quote.subtotal,
-          discountPercent: quote.discountPercent,
-          discountValue: quote.discountValue,
-          shippingValue: quote.shippingValue,
-          totalValue: quote.totalValue,
-          notes: quote.notes,
-          internalNotes: quote.internalNotes,
-          createdBy: ctx.tenant.userId,
-          items: {
-            create: quote.items.map((item, index) => ({
-              materialId: item.materialId,
-              description: item.description,
-              quantity: item.quantity,
-              unit: item.unit,
-              unitPrice: item.unitPrice,
-              discountPercent: item.discountPercent,
-              totalPrice: item.totalPrice,
-              sequence: index + 1,
-              notes: item.notes,
-            })),
+      // Transação para garantir atomicidade (order + quote update + lead update)
+      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+        const order = await tx.salesOrder.create({
+          data: {
+            code: nextOrderCode,
+            companyId: ctx.companyId,
+            customerId: quote.customerId,
+            quoteId: quote.id,
+            status: "PENDING",
+            deliveryDate: quote.deliveryDays
+              ? new Date(Date.now() + quote.deliveryDays * 24 * 60 * 60 * 1000)
+              : null,
+            paymentTerms: quote.paymentTerms,
+            shippingMethod: quote.shippingMethod,
+            subtotal: quote.subtotal,
+            discountPercent: quote.discountPercent,
+            discountValue: quote.discountValue,
+            shippingValue: quote.shippingValue,
+            totalValue: quote.totalValue,
+            notes: quote.notes,
+            internalNotes: quote.internalNotes,
+            createdBy: ctx.tenant.userId,
+            items: {
+              create: quote.items.map((item, index) => ({
+                materialId: item.materialId,
+                description: item.description,
+                quantity: item.quantity,
+                unit: item.unit,
+                unitPrice: item.unitPrice,
+                discountPercent: item.discountPercent,
+                totalPrice: item.totalPrice,
+                sequence: index + 1,
+                notes: item.notes,
+              })),
+            },
           },
-        },
-      });
-
-      // Atualizar orçamento
-      await ctx.prisma.salesQuote.update({
-        where: { id: input.id },
-        data: {
-          status: "CONVERTED",
-          convertedToOrderId: order.id,
-        },
-      });
-
-      // Atualizar lead se houver
-      if (quote.leadId) {
-        await ctx.prisma.lead.update({
-          where: { id: quote.leadId },
-          data: { status: "WON", wonAt: new Date() },
         });
-      }
 
-      return order;
+        await tx.salesQuote.update({
+          where: { id: input.id },
+          data: {
+            status: "CONVERTED",
+            convertedToOrderId: order.id,
+          },
+        });
+
+        if (quote.leadId) {
+          await tx.lead.update({
+            where: { id: quote.leadId },
+            data: { status: "WON", wonAt: new Date() },
+          });
+        }
+
+        return order;
+      });
     }),
 
   // Duplicar orçamento

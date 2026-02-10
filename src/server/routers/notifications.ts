@@ -22,7 +22,7 @@ export const notificationsRouter = createTRPCRouter({
       const where = {
         OR: [
           { userId },
-          { userId: null }, // Notificações globais
+          { userId: null, companyId: ctx.companyId }, // Notificações globais da mesma empresa
         ],
         ...(category && { category }),
         ...(unreadOnly && { isRead: false }),

@@ -1301,7 +1301,7 @@ export const nfeRouter = createTRPCRouter({
 
       if (nfeData.duplicatas.length === 0) {
         // Se não há duplicatas, criar um título único com o valor total
-        const nextCode = await getNextPayableCode(ctx.companyId);
+        const nextCode = await getNextPayableCode(ctx.prisma, ctx.companyId);
         
         await ctx.prisma.accountsPayable.create({
           data: {
@@ -1331,7 +1331,7 @@ export const nfeRouter = createTRPCRouter({
 
       for (let i = 0; i < nfeData.duplicatas.length; i++) {
         const dup = nfeData.duplicatas[i];
-        const nextCode = await getNextPayableCode(ctx.companyId);
+        const nextCode = await getNextPayableCode(ctx.prisma, ctx.companyId);
 
         const payable = await ctx.prisma.accountsPayable.create({
           data: {
@@ -1364,8 +1364,9 @@ export const nfeRouter = createTRPCRouter({
 });
 
 // Função auxiliar para obter próximo código de título
-async function getNextPayableCode(companyId: string): Promise<number> {
-  const lastPayable = await ctx.prisma.accountsPayable.findFirst({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getNextPayableCode(prisma: any, companyId: string): Promise<number> {
+  const lastPayable = await prisma.accountsPayable.findFirst({
     where: { companyId },
     orderBy: { code: "desc" },
     select: { code: true },
