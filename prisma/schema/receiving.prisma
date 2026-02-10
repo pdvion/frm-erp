@@ -1,0 +1,205 @@
+model MaterialReceiving {
+  id              String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code            Int
+  companyId       String                  @db.Uuid
+  supplierId      String                  @db.Uuid
+  purchaseOrderId String?                 @db.Uuid
+  invoiceId       String?                 @db.Uuid
+  status          ReceivingStatus         @default(PENDING)
+  receivingDate   DateTime                @default(now())
+  expectedDate    DateTime?
+  nfeNumber       String?
+  nfeSeries       String?
+  nfeKey          String?
+  nfeXml          String?
+  nfeIssueDate    DateTime?
+  totalValue      Decimal                   @db.Decimal(15, 2) @default(0)
+  freightValue    Decimal                   @db.Decimal(15, 2) @default(0)
+  insuranceValue  Decimal                   @db.Decimal(15, 2) @default(0)
+  discountValue   Decimal                   @db.Decimal(15, 2) @default(0)
+  otherExpenses   Decimal                   @db.Decimal(15, 2) @default(0)
+  locationId      String?                 @db.Uuid
+  notes           String?
+  internalNotes   String?
+  conferredBy     String?                 @db.Uuid
+  conferredAt     DateTime?
+  approvedBy      String?                 @db.Uuid
+  approvedAt      DateTime?
+  rejectedBy      String?                 @db.Uuid
+  rejectedAt      DateTime?
+  rejectionReason String?
+  createdBy       String?                 @db.Uuid
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @default(now()) @updatedAt
+  items           MaterialReceivingItem[]
+  company         Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "material_receivings_company_fkey")
+  invoice         ReceivedInvoice?        @relation(fields: [invoiceId], references: [id], onUpdate: NoAction, map: "material_receivings_invoice_fkey")
+  location        StockLocation?          @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "material_receivings_location_fkey")
+  purchaseOrder   PurchaseOrder?          @relation(fields: [purchaseOrderId], references: [id], onUpdate: NoAction, map: "material_receivings_po_fkey")
+  supplier        Supplier                @relation(fields: [supplierId], references: [id], onUpdate: NoAction, map: "material_receivings_supplier_fkey")
+
+  @@unique([code, companyId])
+  @@index([supplierId])
+  @@index([status])
+  @@index([receivingDate])
+  @@index([companyId], map: "idx_material_receivings_companyId")
+  @@index([invoiceId], map: "idx_material_receivings_invoice")
+  @@index([locationId], map: "idx_material_receivings_location")
+  @@index([purchaseOrderId], map: "idx_material_receivings_purchaseorder")
+  @@index([supplierId], map: "idx_material_receivings_supplier")
+  @@map("material_receivings")
+}
+
+model MaterialReceivingItem {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  receivingId         String                @db.Uuid
+  materialId          String                @db.Uuid
+  purchaseOrderItemId String?               @db.Uuid
+  nfeItemNumber       Int?
+  description         String?
+  unit                String                @default("UN")
+  nfeQuantity         Decimal  @db.Decimal(15, 4)
+  receivedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  approvedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  rejectedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  unitPrice           Decimal  @db.Decimal(15, 2)
+  totalPrice          Decimal  @db.Decimal(15, 2)
+  icmsBase            Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue           Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiBase             Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue            Decimal                 @db.Decimal(15, 2) @default(0)
+  status              ReceivingItemStatus   @default(PENDING)
+  rejectionReason     String?
+  batchNumber         String?
+  expirationDate      DateTime?
+  certificateNumber   String?
+  qualityStatus       String?
+  qualityNotes        String?
+  locationId          String?               @db.Uuid
+  conferredBy         String?               @db.Uuid
+  conferredAt         DateTime?
+  notes               String?
+  createdAt           DateTime              @default(now())
+  location            StockLocation?        @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "material_receiving_items_location_fkey")
+  material            Material              @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "material_receiving_items_material_fkey")
+  purchaseOrderItem   PurchaseOrderItem?    @relation(fields: [purchaseOrderItemId], references: [id], onUpdate: NoAction, map: "material_receiving_items_poItem_fkey")
+  receiving           MaterialReceiving     @relation(fields: [receivingId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "material_receiving_items_receiving_fkey")
+  certificates        QualityCertificate[]
+  divergences         ReceivingDivergence[]
+
+  @@index([receivingId])
+  @@index([materialId])
+  @@index([status])
+  @@index([locationId], map: "idx_material_receiving_items_location")
+  @@index([materialId], map: "idx_material_receiving_items_material")
+  @@index([purchaseOrderItemId], map: "idx_material_receiving_items_purchaseorderitem")
+  @@index([receivingId], map: "idx_material_receiving_items_receiving")
+  @@map("material_receiving_items")
+}
+
+model ReceivingDivergence {
+  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  receivingItemId String                @db.Uuid
+  type            String
+  expectedValue   String?
+  receivedValue   String?
+  description     String
+  resolution      String?
+  resolvedBy      String?               @db.Uuid
+  resolvedAt      DateTime?
+  createdAt       DateTime              @default(now())
+  receivingItem   MaterialReceivingItem @relation(fields: [receivingItemId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "receiving_divergences_item_fkey")
+
+  @@index([receivingItemId])
+  @@map("receiving_divergences")
+}
+
+model QualityCertificate {
+  id                String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  receivingItemId   String                @db.Uuid
+  certificateNumber String
+  issueDate         DateTime?
+  expirationDate    DateTime?
+  issuer            String?
+  fileUrl           String?
+  notes             String?
+  createdAt         DateTime              @default(now())
+  receivingItem     MaterialReceivingItem @relation(fields: [receivingItemId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "quality_certificates_item_fkey")
+
+  @@index([receivingItemId])
+  @@map("quality_certificates")
+}
+
+model PickingList {
+  id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String                @db.Uuid
+  code          String                @db.VarChar(50)
+  status        String                @default("PENDING") @db.VarChar(20)
+  priority      String                @default("NORMAL") @db.VarChar(20)
+  type          String                @default("REQUISITION") @db.VarChar(50)
+  sourceId      String?               @db.Uuid
+  sourceType    String?               @db.VarChar(50)
+  assignedTo    String?               @db.Uuid
+  startedAt     DateTime?
+  completedAt   DateTime?
+  notes         String?
+  createdBy     String?               @db.Uuid
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @default(now()) @updatedAt
+  items         PickingListItem[]
+  assignee      User?                 @relation("PickingAssignee", fields: [assignedTo], references: [id], onUpdate: NoAction)
+  company       Company               @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  creator       User?                 @relation("PickingCreator", fields: [createdBy], references: [id], onUpdate: NoAction)
+  verifications PickingVerification[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([sourceId])
+  @@index([createdBy])
+  @@map("picking_lists")
+}
+
+model PickingListItem {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pickingListId  String         @db.Uuid
+  materialId     String         @db.Uuid
+  locationId     String?        @db.Uuid
+  requestedQty   Decimal        @db.Decimal(15, 4)
+  pickedQty      Decimal        @default(0) @db.Decimal(15, 4)
+  status         String         @default("PENDING") @db.VarChar(20)
+  sequence       Int            @default(0)
+  lotNumber      String?        @db.VarChar(100)
+  serialNumber   String?        @db.VarChar(100)
+  expirationDate DateTime?      @db.Date
+  notes          String?
+  pickedAt       DateTime?
+  pickedBy       String?        @db.Uuid
+  location       StockLocation? @relation(fields: [locationId], references: [id], onUpdate: NoAction)
+  material       Material       @relation(fields: [materialId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  picker         User?          @relation(fields: [pickedBy], references: [id], onUpdate: NoAction)
+  pickingList    PickingList    @relation(fields: [pickingListId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([pickingListId])
+  @@index([materialId])
+  @@index([locationId])
+  @@index([pickedBy])
+  @@map("picking_list_items")
+}
+
+model PickingVerification {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pickingListId String      @db.Uuid
+  verifiedBy    String      @db.Uuid
+  verifiedAt    DateTime    @default(now())
+  status        String      @db.VarChar(20)
+  discrepancies Json?       @default("[]")
+  notes         String?
+  pickingList   PickingList @relation(fields: [pickingListId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  verifier      User        @relation(fields: [verifiedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([pickingListId])
+  @@index([verifiedBy])
+  @@map("picking_verifications")
+}

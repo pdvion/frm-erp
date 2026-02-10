@@ -1,0 +1,132 @@
+model StrategicGoal {
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId    String          @db.Uuid
+  year         Int
+  title        String          @db.VarChar(255)
+  description  String?
+  category     String          @db.VarChar(50)
+  targetValue  Decimal?        @db.Decimal(15, 2)
+  unit         String?         @db.VarChar(20)
+  weight       Decimal?        @default(1.0) @db.Decimal(5, 2)
+  status       String          @default("ACTIVE") @db.VarChar(20)
+  ownerId      String?         @db.Uuid
+  departmentId String?         @db.Uuid
+  parentId     String?         @db.Uuid
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now()) @updatedAt
+  actionPlans  ActionPlan[]
+  indicators   GoalIndicator[]
+  company      Company         @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  department   Department?     @relation(fields: [departmentId], references: [id], onUpdate: NoAction)
+  owner        User?           @relation(fields: [ownerId], references: [id], onUpdate: NoAction)
+  parent       StrategicGoal?  @relation("GoalHierarchy", fields: [parentId], references: [id], onUpdate: NoAction)
+  children     StrategicGoal[] @relation("GoalHierarchy")
+
+  @@index([companyId])
+  @@index([year])
+  @@index([parentId])
+  @@index([departmentId])
+  @@index([ownerId])
+  @@map("strategic_goals")
+}
+
+model GoalIndicator {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  goalId         String             @db.Uuid
+  companyId      String             @db.Uuid
+  name           String             @db.VarChar(255)
+  description    String?
+  formula        String?
+  unit           String?            @db.VarChar(20)
+  polarity       String             @default("HIGHER") @db.VarChar(10)
+  frequency      String             @default("MONTHLY") @db.VarChar(20)
+  targetMin      Decimal?           @db.Decimal(15, 2)
+  targetExpected Decimal?           @db.Decimal(15, 2)
+  targetMax      Decimal?           @db.Decimal(15, 2)
+  currentValue   Decimal?           @db.Decimal(15, 2)
+  lastUpdated    DateTime?
+  dataSource     String?            @db.VarChar(100)
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @default(now()) @updatedAt
+  actionPlans    ActionPlan[]
+  company        Company            @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  goal           StrategicGoal      @relation(fields: [goalId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  history        IndicatorHistory[]
+
+  @@index([goalId])
+  @@index([companyId])
+  @@map("goal_indicators")
+}
+
+model IndicatorHistory {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  indicatorId String        @db.Uuid
+  period      DateTime      @db.Date
+  value       Decimal       @db.Decimal(15, 4)
+  target      Decimal?      @db.Decimal(15, 4)
+  status      String        @default("ON_TARGET") @db.VarChar(20)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  indicator   GoalIndicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([indicatorId, period])
+  @@index([indicatorId])
+  @@index([period])
+  @@map("indicator_history")
+}
+
+model ActionPlan {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String           @db.Uuid
+  goalId         String?          @db.Uuid
+  indicatorId    String?          @db.Uuid
+  title          String           @db.VarChar(255)
+  description    String?
+  type           String           @default("CORRECTIVE") @db.VarChar(20)
+  priority       Int              @default(3)
+  status         String           @default("PENDING") @db.VarChar(20)
+  responsibleId  String?          @db.Uuid
+  dueDate        DateTime?        @db.Date
+  completedAt    DateTime?
+  progress       Int?             @default(0)
+  rootCause      String?
+  expectedResult String?
+  actualResult   String?
+  createdBy      String?          @db.Uuid
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now()) @updatedAt
+  tasks          ActionPlanTask[]
+  company        Company          @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  creator        User?            @relation("ActionPlanCreator", fields: [createdBy], references: [id], onUpdate: NoAction)
+  goal           StrategicGoal?   @relation(fields: [goalId], references: [id], onUpdate: NoAction)
+  indicator      GoalIndicator?   @relation(fields: [indicatorId], references: [id], onUpdate: NoAction)
+  responsible    User?            @relation("ActionPlanResponsible", fields: [responsibleId], references: [id], onUpdate: NoAction)
+
+  @@index([companyId])
+  @@index([goalId])
+  @@index([status])
+  @@index([createdBy])
+  @@index([indicatorId])
+  @@index([responsibleId])
+  @@map("action_plans")
+}
+
+model ActionPlanTask {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actionPlanId  String     @db.Uuid
+  title         String     @db.VarChar(255)
+  description   String?
+  responsibleId String?    @db.Uuid
+  dueDate       DateTime?  @db.Date
+  completedAt   DateTime?
+  status        String     @default("PENDING") @db.VarChar(20)
+  sequence      Int?       @default(0)
+  createdAt     DateTime   @default(now())
+  actionPlan    ActionPlan @relation(fields: [actionPlanId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  responsible   User?      @relation(fields: [responsibleId], references: [id], onUpdate: NoAction)
+
+  @@index([actionPlanId])
+  @@index([responsibleId])
+  @@map("action_plan_tasks")
+}

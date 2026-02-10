@@ -1,0 +1,810 @@
+model Category {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code      Int?
+  name      String
+  parentId  String?    @db.Uuid
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  isShared  Boolean    @default(false)
+  companyId String?    @db.Uuid
+  company   Company?   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Category[] @relation("CategoryHierarchy")
+  materials Material[]
+
+  @@index([companyId])
+  @@index([parentId])
+  @@map("categories")
+}
+
+model AccountsPayable {
+  id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                 Int
+  companyId            String                  @db.Uuid
+  supplierId           String                  @db.Uuid
+  documentType         PayableType             @default(INVOICE)
+  documentNumber       String?                 @db.VarChar(50)
+  documentId           String?                 @db.Uuid
+  invoiceId            String?                 @db.Uuid
+  description          String
+  dueDate              DateTime
+  issueDate            DateTime                @default(now())
+  originalValue        Decimal  @db.Decimal(15, 2)
+  discountValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  interestValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  fineValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  paidValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  netValue             Decimal  @db.Decimal(15, 2)
+  status               PayableStatus           @default(PENDING)
+  paidAt               DateTime?
+  installmentNumber    Int                     @default(1)
+  totalInstallments    Int                     @default(1)
+  categoryId           String?                 @db.Uuid
+  costCenterId         String?                 @db.Uuid
+  notes                String?
+  barcode              String?                 @db.VarChar(100)
+  createdBy            String?                 @db.Uuid
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  bankAccountId        String?                 @db.Uuid
+  approvalStatus       ApprovalStatus?         @default(PENDING)
+  scheduledPaymentDate DateTime?
+  additionalInfo       String?                 @map("additional_info")
+  hasWithholding       Boolean?                @default(false) @map("has_withholding")
+  withholdingIr        Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_ir")
+  withholdingIss       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_iss")
+  withholdingInss      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_inss")
+  withholdingPis       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_pis")
+  withholdingCofins    Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_cofins")
+  withholdingCsll      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_csll")
+  supplierAlphaCode    String?                 @map("supplier_alpha_code")
+  supplierCnpj         String?                 @map("supplier_cnpj")
+  supplierIe           String?                 @map("supplier_ie")
+  supplierStateCode    Int?                    @map("supplier_state_code")
+  costCenterGroup      Int?                    @map("cost_center_group")
+  costCenterCode       String?                 @map("cost_center_code")
+  costCenterNotes      String?                 @map("cost_center_notes")
+  sectorConfirmedAt    DateTime?               @map("sector_confirmed_at") @db.Timestamptz(6)
+  sectorConfirmedById  String?                 @map("sector_confirmed_by_id")
+  physicalDeliveryAt   DateTime?               @map("physical_delivery_at") @db.Timestamptz(6)
+  physicalDeliveryById String?                 @map("physical_delivery_by_id")
+  paymentReleasedAt    DateTime?               @map("payment_released_at") @db.Timestamptz(6)
+  paymentReleasedById  String?                 @map("payment_released_by_id")
+  paymentBankId        String?                 @map("payment_bank_id")
+  pdfFileName          String?                 @map("pdf_file_name")
+  contractType         payable_contract_type?  @map("contract_type")
+  bankAccount          BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
+  company              Company                 @relation(fields: [companyId], references: [id])
+  costCenter           CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
+  invoice              ReceivedInvoice?        @relation(fields: [invoiceId], references: [id])
+  supplier             Supplier                @relation(fields: [supplierId], references: [id])
+  bankTransactions     BankTransaction[]
+  dda_boletos          DdaBoleto[]
+  approvals            PayableApproval[]
+  attachments          PayableAttachment[]
+  costAllocations      PayableCostAllocation[]
+  payments             PayablePayment[]
+  paymentRequests      PaymentRequest[]
+
+  @@unique([companyId, code])
+  @@index([invoiceId])
+  @@index([bankAccountId], map: "idx_accounts_payable_bankaccount")
+  @@index([companyId], map: "idx_accounts_payable_companyId")
+  @@index([costCenterId], map: "idx_accounts_payable_costcenter")
+  @@index([supplierId], map: "idx_accounts_payable_supplierId")
+  @@unique([companyId, legacyId])
+  @@map("accounts_payable")
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
+}
+
+model PayablePayment {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payableId         String          @db.Uuid
+  paymentDate       DateTime
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal           @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal           @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal           @db.Decimal(15, 2) @default(0)
+  paymentMethod     String?         @db.VarChar(50)
+  bankAccountId     String?         @db.Uuid
+  notes             String?
+  createdBy         String?         @db.Uuid
+  createdAt         DateTime        @default(now())
+  bankTransactionId String?         @db.Uuid
+  payable           AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade)
+
+  @@index([payableId])
+  @@index([paymentDate])
+  @@map("payable_payments")
+}
+
+model CostCenter {
+  id                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code               String
+  name               String
+  description        String?
+  parentId           String?                 @db.Uuid
+  companyId          String                  @db.Uuid
+  isActive           Boolean                 @default(true)
+  budget             Decimal?                  @db.Decimal(15, 2) @default(0)
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @default(now()) @updatedAt
+  accounts_payable   AccountsPayable[]
+  receivables        AccountsReceivable[]
+  budgetActuals      BudgetActual[]
+  budgetAlerts       BudgetAlert[]
+  budgetEntries      BudgetEntry[]
+  company            Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "cost_centers_company_fkey")
+  parent             CostCenter?             @relation("CostCenterHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "cost_centers_parent_fkey")
+  children           CostCenter[]            @relation("CostCenterHierarchy")
+  departments        Department[]
+  payableAllocations PayableCostAllocation[]
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([parentId])
+  @@unique([companyId, legacyId])
+  @@map("cost_centers")
+}
+
+model BankAccount {
+  id                                                                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                                                                   String
+  name                                                                   String
+  bankCode                                                               String?
+  bankName                                                               String?
+  agency                                                                 String?
+  agencyDigit                                                            String?
+  accountNumber                                                          String?
+  accountDigit                                                           String?
+  accountType                                                            BankAccountType      @default(CHECKING)
+  companyId                                                              String               @db.Uuid
+  initialBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  currentBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  creditLimit                                                            Decimal?               @db.Decimal(15, 2) @default(0)
+  isActive                                                               Boolean              @default(true)
+  isDefault                                                              Boolean              @default(false)
+  notes                                                                  String?
+  createdAt                                                              DateTime             @default(now())
+  updatedAt                                                              DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  accounts_payable                                                       AccountsPayable[]
+  receivables                                                            AccountsReceivable[]
+  company                                                                Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
+  transactions                                                           BankTransaction[]
+  bank_transactions_bank_transactions_transferToAccountIdTobank_accounts BankTransaction[]    @relation("bank_transactions_transferToAccountIdTobank_accounts")
+  exchange_contracts                                                     ExchangeContract[]
+  pixTransactions                                                        PixTransaction[]
+  receivablePayments                                                     ReceivablePayment[]
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_bank_accounts_companyId")
+  @@unique([companyId, legacyId])
+  @@map("bank_accounts")
+}
+
+model BankTransaction {
+  id                                                                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bankAccountId                                                      String              @db.Uuid
+  transactionDate                                                    DateTime
+  type                                                               BankTransactionType
+  description                                                        String
+  value                                                              Decimal  @db.Decimal(15, 2)
+  balanceAfter                                                       Decimal  @db.Decimal(15, 2)
+  documentNumber                                                     String?
+  payableId                                                          String?             @db.Uuid
+  receivableId                                                       String?             @db.Uuid
+  transferToAccountId                                                String?             @db.Uuid
+  reconciled                                                         Boolean             @default(false)
+  reconciledAt                                                       DateTime?
+  reconciledBy                                                       String?             @db.Uuid
+  externalId                                                         String?
+  notes                                                              String?
+  createdBy                                                          String?             @db.Uuid
+  createdAt                                                          DateTime            @default(now())
+  bankAccount                                                        BankAccount         @relation(fields: [bankAccountId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "bank_transactions_account_fkey")
+  payable                                                            AccountsPayable?    @relation(fields: [payableId], references: [id], onUpdate: NoAction, map: "bank_transactions_payable_fkey")
+  receivable                                                         AccountsReceivable? @relation(fields: [receivableId], references: [id], onUpdate: NoAction, map: "bank_transactions_receivable_fkey")
+  bank_accounts_bank_transactions_transferToAccountIdTobank_accounts BankAccount?        @relation("bank_transactions_transferToAccountIdTobank_accounts", fields: [transferToAccountId], references: [id], onUpdate: NoAction, map: "bank_transactions_transfer_fkey")
+  receivablePayments                                                 ReceivablePayment[]
+
+  @@index([payableId])
+  @@index([receivableId])
+  @@index([reconciled])
+  @@index([bankAccountId], map: "idx_bank_transactions_bankAccountId")
+  @@index([transferToAccountId], map: "idx_bank_transactions_transfer")
+  @@map("bank_transactions")
+}
+
+model PixTransaction {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transactionId     String       @unique
+  e2eId             String?
+  type              String       @default("PAYMENT")
+  status            String       @default("PENDING")
+  pixKeyType        String
+  pixKey            String
+  value             Decimal  @db.Decimal(15, 2)
+  fee               Decimal        @db.Decimal(15, 2) @default(0)
+  recipientName     String
+  recipientDocument String?
+  recipientBank     String?
+  recipientAgency   String?
+  recipientAccount  String?
+  description       String?
+  bankAccountId     String?      @db.Uuid
+  payableId         String?      @db.Uuid
+  scheduledAt       DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  errorCode         String?
+  errorMessage      String?
+  companyId         String       @db.Uuid
+  createdBy         String?      @db.Uuid
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now()) @updatedAt
+  bankAccount       BankAccount? @relation(fields: [bankAccountId], references: [id])
+  company           Company      @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([pixKey])
+  @@index([bankAccountId])
+  @@map("pix_transactions")
+}
+
+model AccountsReceivable {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code              Int
+  companyId         String              @db.Uuid
+  customerId        String              @db.Uuid
+  documentType      ReceivableType      @default(INVOICE)
+  documentNumber    String?
+  documentId        String?             @db.Uuid
+  description       String
+  dueDate           DateTime
+  issueDate         DateTime            @default(now())
+  originalValue     Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal               @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal               @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal               @db.Decimal(15, 2) @default(0)
+  paidValue         Decimal               @db.Decimal(15, 2) @default(0)
+  netValue          Decimal  @db.Decimal(15, 2)
+  status            ReceivableStatus    @default(PENDING)
+  paidAt            DateTime?
+  installmentNumber Int                 @default(1)
+  totalInstallments Int                 @default(1)
+  categoryId        String?             @db.Uuid
+  costCenterId      String?             @db.Uuid
+  bankAccountId     String?             @db.Uuid
+  boletoNumber      String?
+  boletoBarcode     String?
+  boletoUrl         String?
+  pixCode           String?
+  notes             String?
+  createdBy         String?             @db.Uuid
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  issuedInvoiceId   String?             @db.Uuid
+  bankAccount       BankAccount?        @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_receivable_bankaccount_fkey")
+  company           Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
+  costCenter        CostCenter?         @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_receivable_costcenter_fkey")
+  customer          Customer            @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "accounts_receivable_customer_fkey")
+  issuedInvoice     IssuedInvoice?      @relation(fields: [issuedInvoiceId], references: [id])
+  bankTransactions  BankTransaction[]
+  collectionActions CollectionAction[]
+  payments          ReceivablePayment[]
+
+  @@unique([code, companyId])
+  @@index([bankAccountId], map: "idx_accounts_receivable_bankaccount")
+  @@index([companyId], map: "idx_accounts_receivable_companyId")
+  @@index([costCenterId], map: "idx_accounts_receivable_costcenter")
+  @@index([customerId], map: "idx_accounts_receivable_customerId")
+  @@index([issuedInvoiceId], map: "idx_accounts_receivable_issuedinvoice")
+  @@unique([companyId, legacyId])
+  @@map("accounts_receivable")
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
+}
+
+model ReceivablePayment {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  receivableId      String             @db.Uuid
+  paymentDate       DateTime
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal              @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal              @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal              @db.Decimal(15, 2) @default(0)
+  paymentMethod     String?
+  bankAccountId     String?            @db.Uuid
+  bankTransactionId String?            @db.Uuid
+  notes             String?
+  createdBy         String?            @db.Uuid
+  createdAt         DateTime           @default(now())
+  bankAccount       BankAccount?       @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "receivable_payments_bankaccount_fkey")
+  receivable        AccountsReceivable @relation(fields: [receivableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "receivable_payments_receivable_fkey")
+  bankTransaction   BankTransaction?   @relation(fields: [bankTransactionId], references: [id], onUpdate: NoAction, map: "receivable_payments_transaction_fkey")
+
+  @@index([receivableId])
+  @@index([paymentDate])
+  @@index([bankAccountId], map: "idx_receivable_payments_bank_account")
+  @@index([bankTransactionId], map: "idx_receivable_payments_transaction")
+  @@map("receivable_payments")
+}
+
+model PayableApproval {
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payableId  String          @db.Uuid
+  approverId String          @db.Uuid
+  level      Int             @default(1)
+  status     ApprovalStatus  @default(PENDING)
+  approvedAt DateTime?
+  comments   String?
+  createdAt  DateTime        @default(now())
+  approver   User            @relation(fields: [approverId], references: [id], onUpdate: NoAction, map: "payable_approvals_approver_fkey")
+  payable    AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payable_approvals_payable_fkey")
+
+  @@index([payableId])
+  @@index([approverId])
+  @@index([status])
+  @@map("payable_approvals")
+}
+
+model PayableAttachment {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payableId   String          @db.Uuid
+  fileName    String
+  fileType    String
+  fileSize    Int
+  fileUrl     String
+  description String?
+  uploadedBy  String?         @db.Uuid
+  createdAt   DateTime        @default(now())
+  payable     AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payable_attachments_payable_fkey")
+
+  @@index([payableId])
+  @@map("payable_attachments")
+}
+
+model PayableCostAllocation {
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payableId    String          @db.Uuid
+  costCenterId String          @db.Uuid
+  percentage   Decimal  @db.Decimal(10, 4)
+  value        Decimal  @db.Decimal(15, 2)
+  createdAt    DateTime        @default(now())
+  costCenter   CostCenter      @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "payable_cost_allocations_costcenter_fkey")
+  payable      AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payable_cost_allocations_payable_fkey")
+
+  @@index([payableId])
+  @@index([costCenterId])
+  @@map("payable_cost_allocations")
+}
+
+model ApprovalThreshold {
+  id                String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId         String                      @db.Uuid
+  name              String
+  minValue          Decimal                       @db.Decimal(15, 4) @default(0)
+  maxValue          Decimal?  @db.Decimal(15, 4)
+  requiredApprovers Int                         @default(1)
+  isActive          Boolean                     @default(true)
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @default(now()) @updatedAt
+  approvers         ApprovalThresholdApprover[]
+  company           Company                     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "approval_thresholds_company_fkey")
+
+  @@index([companyId])
+  @@map("approval_thresholds")
+}
+
+model ApprovalThresholdApprover {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  thresholdId String            @db.Uuid
+  userId      String            @db.Uuid
+  level       Int               @default(1)
+  createdAt   DateTime          @default(now())
+  threshold   ApprovalThreshold @relation(fields: [thresholdId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "approval_threshold_approvers_threshold_fkey")
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "approval_threshold_approvers_user_fkey")
+
+  @@index([thresholdId])
+  @@index([userId])
+  @@map("approval_threshold_approvers")
+}
+
+model BudgetAccount {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String          @db.Uuid
+  code        String          @db.VarChar(20)
+  name        String          @db.VarChar(255)
+  description String?
+  type        String          @default("EXPENSE") @db.VarChar(20)
+  parentId    String?         @db.Uuid
+  level       Int             @default(1)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now()) @updatedAt
+  company     Company         @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  parent      BudgetAccount?  @relation("BudgetAccountHierarchy", fields: [parentId], references: [id], onUpdate: NoAction)
+  children    BudgetAccount[] @relation("BudgetAccountHierarchy")
+  actuals     BudgetActual[]
+  alerts      BudgetAlert[]
+  entries     BudgetEntry[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([parentId])
+  @@map("budget_accounts")
+}
+
+model BudgetVersion {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String        @db.Uuid
+  year        Int
+  name        String        @db.VarChar(100)
+  type        String        @default("ORIGINAL") @db.VarChar(20)
+  status      String        @default("DRAFT") @db.VarChar(20)
+  description String?
+  approvedBy  String?       @db.Uuid
+  approvedAt  DateTime?
+  createdBy   String?       @db.Uuid
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  alerts      BudgetAlert[]
+  entries     BudgetEntry[]
+  approver    User?         @relation("BudgetApprover", fields: [approvedBy], references: [id], onUpdate: NoAction)
+  company     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  creator     User?         @relation("BudgetCreator", fields: [createdBy], references: [id], onUpdate: NoAction)
+
+  @@index([companyId, year])
+  @@index([approvedBy])
+  @@index([createdBy])
+  @@map("budget_versions")
+  @@index([companyId])
+}
+
+model BudgetEntry {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  versionId    String        @db.Uuid
+  accountId    String        @db.Uuid
+  costCenterId String?       @db.Uuid
+  month        Int
+  amount       Decimal       @default(0) @db.Decimal(15, 2)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+  account      BudgetAccount @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id], onUpdate: NoAction)
+  version      BudgetVersion @relation(fields: [versionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([versionId, accountId, costCenterId, month], map: "budget_entries_unique")
+  @@index([versionId])
+  @@index([accountId])
+  @@index([costCenterId])
+  @@map("budget_entries")
+}
+
+model BudgetActual {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId    String        @db.Uuid
+  accountId    String        @db.Uuid
+  costCenterId String?       @db.Uuid
+  date         DateTime      @db.Date
+  amount       Decimal       @db.Decimal(15, 2)
+  description  String?
+  documentType String?       @db.VarChar(50)
+  documentId   String?       @db.Uuid
+  createdAt    DateTime      @default(now())
+  account      BudgetAccount @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id], onUpdate: NoAction)
+
+  @@index([companyId, date])
+  @@index([accountId])
+  @@index([costCenterId])
+  @@map("budget_actuals")
+  @@index([companyId])
+}
+
+model BudgetAlert {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String        @db.Uuid
+  versionId       String        @db.Uuid
+  accountId       String        @db.Uuid
+  costCenterId    String?       @db.Uuid
+  month           Int
+  type            String        @db.VarChar(20)
+  budgetAmount    Decimal       @db.Decimal(15, 2)
+  actualAmount    Decimal       @db.Decimal(15, 2)
+  variance        Decimal       @db.Decimal(15, 2)
+  variancePercent Decimal       @db.Decimal(5, 2)
+  isResolved      Boolean       @default(false)
+  resolvedBy      String?       @db.Uuid
+  resolvedAt      DateTime?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  account         BudgetAccount @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  costCenter      CostCenter?   @relation(fields: [costCenterId], references: [id], onUpdate: NoAction)
+  resolver        User?         @relation(fields: [resolvedBy], references: [id], onUpdate: NoAction)
+  version         BudgetVersion @relation(fields: [versionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId])
+  @@index([isResolved])
+  @@index([accountId])
+  @@index([costCenterId])
+  @@index([resolvedBy])
+  @@index([versionId])
+  @@map("budget_alerts")
+}
+
+model ApprovalLevel {
+  id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId            String                  @db.Uuid
+  code                 String                  @db.VarChar(50)
+  name                 String                  @db.VarChar(100)
+  description          String?
+  minValue             Decimal                 @default(0) @db.Decimal(15, 2)
+  maxValue             Decimal?                @db.Decimal(15, 2)
+  requiresAllApprovers Boolean                 @default(false)
+  sequence             Int                     @default(0)
+  isActive             Boolean                 @default(true)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @default(now()) @updatedAt
+  approvers            ApprovalLevelApprover[]
+  company              Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  paymentApprovals     PaymentApproval[]
+  paymentRequests      PaymentRequest[]        @relation("CurrentLevel")
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@map("approval_levels")
+}
+
+model ApprovalLevelApprover {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  levelId    String        @db.Uuid
+  userId     String        @db.Uuid
+  canApprove Boolean       @default(true)
+  canReject  Boolean       @default(true)
+  sequence   Int           @default(0)
+  createdAt  DateTime      @default(now())
+  level      ApprovalLevel @relation(fields: [levelId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([levelId, userId])
+  @@index([levelId])
+  @@index([userId])
+  @@map("approval_level_approvers")
+}
+
+model PaymentRequest {
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String               @db.Uuid
+  code           String               @db.VarChar(50)
+  payableId      String               @db.Uuid
+  amount         Decimal              @db.Decimal(15, 2)
+  dueDate        DateTime             @db.Date
+  status         PaymentRequestStatus @default(PENDING)
+  currentLevelId String?              @db.Uuid
+  requestedBy    String               @db.Uuid
+  requestedAt    DateTime             @default(now())
+  justification  String?
+  urgency        String               @default("NORMAL") @db.VarChar(20)
+  completedAt    DateTime?
+  notes          String?
+  approvals      PaymentApproval[]
+  company        Company              @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  currentLevel   ApprovalLevel?       @relation("CurrentLevel", fields: [currentLevelId], references: [id], onUpdate: NoAction)
+  payable        AccountsPayable      @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  requester      User                 @relation("PaymentRequester", fields: [requestedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([payableId])
+  @@index([requestedBy])
+  @@index([currentLevelId])
+  @@map("payment_requests")
+}
+
+model PaymentApproval {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requestId   String         @db.Uuid
+  levelId     String         @db.Uuid
+  approverId  String         @db.Uuid
+  action      String         @db.VarChar(20)
+  comments    String?
+  delegatedTo String?        @db.Uuid
+  actionAt    DateTime       @default(now())
+  approver    User           @relation("PaymentApprover", fields: [approverId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  delegate    User?          @relation("PaymentDelegate", fields: [delegatedTo], references: [id], onUpdate: NoAction)
+  level       ApprovalLevel  @relation(fields: [levelId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  request     PaymentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([requestId])
+  @@index([approverId])
+  @@index([delegatedTo])
+  @@index([levelId])
+  @@map("payment_approvals")
+}
+
+model DdaBoleto {
+  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId           String           @map("company_id") @db.Uuid
+  codigoBarras        String?          @map("codigo_barras") @db.VarChar(48)
+  linhaDigitavel      String?          @map("linha_digitavel") @db.VarChar(54)
+  nossoNumero         String?          @map("nosso_numero") @db.VarChar(20)
+  seuNumero           String?          @map("seu_numero") @db.VarChar(20)
+  valorOriginal       Decimal          @map("valor_original") @db.Decimal(15, 2)
+  valorDesconto       Decimal?         @default(0) @map("valor_desconto") @db.Decimal(15, 2)
+  valorJuros          Decimal?         @default(0) @map("valor_juros") @db.Decimal(15, 2)
+  valorMulta          Decimal?         @default(0) @map("valor_multa") @db.Decimal(15, 2)
+  valorFinal          Decimal          @map("valor_final") @db.Decimal(15, 2)
+  dataEmissao         DateTime?        @map("data_emissao") @db.Date
+  dataVencimento      DateTime         @map("data_vencimento") @db.Date
+  dataLimitePagamento DateTime?        @map("data_limite_pagamento") @db.Date
+  cedenteCnpj         String?          @map("cedente_cnpj") @db.VarChar(18)
+  cedenteNome         String?          @map("cedente_nome") @db.VarChar(200)
+  cedenteBanco        String?          @map("cedente_banco") @db.VarChar(3)
+  cedenteAgencia      String?          @map("cedente_agencia") @db.VarChar(10)
+  cedenteConta        String?          @map("cedente_conta") @db.VarChar(20)
+  sacadoCnpj          String?          @map("sacado_cnpj") @db.VarChar(18)
+  sacadoNome          String?          @map("sacado_nome") @db.VarChar(200)
+  status              String?          @default("PENDENTE") @db.VarChar(20)
+  origem              String?          @default("DDA") @db.VarChar(20)
+  accountsPayableId   String?          @map("accounts_payable_id") @db.Uuid
+  supplierId          String?          @map("supplier_id") @db.Uuid
+  aprovadoPor         String?          @map("aprovado_por") @db.Uuid
+  aprovadoEm          DateTime?        @map("aprovado_em") @db.Timestamp(6)
+  motivoRejeicao      String?          @map("motivo_rejeicao")
+  pagoEm              DateTime?        @map("pago_em") @db.Timestamp(6)
+  comprovanteUrl      String?          @map("comprovante_url")
+  createdAt           DateTime?        @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime?        @default(now()) @map("updated_at") @db.Timestamp(6)
+  createdBy           String?          @map("created_by") @db.Uuid
+  accountsPayable     AccountsPayable? @relation(fields: [accountsPayableId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedByUser      User?            @relation("dda_boletos_aprovado_porTousers", fields: [aprovadoPor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company             Company          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdByUser       User?            @relation("dda_boletos_created_byTousers", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier            Supplier?        @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([accountsPayableId], map: "idx_dda_boletos_accounts_payable_id")
+  @@index([aprovadoPor], map: "idx_dda_boletos_aprovado_por")
+  @@index([cedenteCnpj], map: "idx_dda_boletos_cedente")
+  @@index([codigoBarras], map: "idx_dda_boletos_codigo_barras")
+  @@index([companyId], map: "idx_dda_boletos_company")
+  @@index([createdBy], map: "idx_dda_boletos_created_by")
+  @@index([status], map: "idx_dda_boletos_status")
+  @@index([supplierId], map: "idx_dda_boletos_supplier_id")
+  @@index([dataVencimento], map: "idx_dda_boletos_vencimento")
+  @@map("dda_boletos")
+}
+
+model DdaConfig {
+  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId           String       @map("company_id") @db.Uuid
+  bancoCodigo         String       @map("banco_codigo") @db.VarChar(3)
+  bancoNome           String?      @map("banco_nome") @db.VarChar(100)
+  agencia             String?      @db.VarChar(10)
+  conta               String?      @db.VarChar(20)
+  convenio            String?      @db.VarChar(20)
+  ambiente            String?      @default("HOMOLOGACAO") @db.VarChar(10)
+  clientId            String?      @map("client_id")
+  clientSecret        String?      @map("client_secret")
+  certificadoId       String?      @map("certificado_id")
+  ativo               Boolean?     @default(true)
+  autoAprovarAte      Decimal?     @default(0) @map("auto_aprovar_ate") @db.Decimal(15, 2)
+  notificarNovos      Boolean?     @default(true) @map("notificar_novos")
+  emailNotificacao    String?      @map("email_notificacao") @db.VarChar(200)
+  ultimaSincronizacao DateTime?    @map("ultima_sincronizacao") @db.Timestamp(6)
+  createdAt           DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime?    @default(now()) @map("updated_at") @db.Timestamp(6)
+  company             Company      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ddaSyncLogs         DdaSyncLog[]
+
+  @@unique([companyId, bancoCodigo])
+  @@map("dda_config")
+  @@index([companyId])
+}
+
+model DdaSyncLog {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId          String     @map("company_id") @db.Uuid
+  configId           String?    @map("config_id") @db.Uuid
+  tipo               String     @db.VarChar(20)
+  status             String     @db.VarChar(20)
+  boletosEncontrados Int?       @default(0) @map("boletos_encontrados")
+  boletosNovos       Int?       @default(0) @map("boletos_novos")
+  boletosAtualizados Int?       @default(0) @map("boletos_atualizados")
+  erroMensagem       String?    @map("erro_mensagem")
+  iniciadoEm         DateTime?  @default(now()) @map("iniciado_em") @db.Timestamp(6)
+  finalizadoEm       DateTime?  @map("finalizado_em") @db.Timestamp(6)
+  company            Company    @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ddaConfig          DdaConfig? @relation(fields: [configId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_dda_sync_log_company_id")
+  @@index([configId], map: "idx_dda_sync_log_config_id")
+  @@map("dda_sync_log")
+}
+
+model CollectionRule {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  companyId   String               @map("company_id") @db.Uuid
+  name        String               @db.VarChar(100)
+  description String?
+  isActive    Boolean?             @default(true) @map("is_active")
+  isDefault   Boolean?             @default(false) @map("is_default")
+  createdBy   String?              @map("created_by") @db.Uuid
+  createdAt   DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  actions     CollectionAction[]
+  steps       CollectionRuleStep[]
+  company     Company              @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([isActive], map: "idx_collection_rules_active")
+  @@index([companyId], map: "idx_collection_rules_company")
+  @@unique([companyId, legacyId])
+  @@map("collection_rules")
+}
+
+model CollectionRuleStep {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  collectionRuleId String             @map("collection_rule_id") @db.Uuid
+  stepOrder        Int                @map("step_order")
+  name             String             @db.VarChar(100)
+  daysOffset       Int                @map("days_offset")
+  actionType       String             @map("action_type") @db.VarChar(50)
+  templateSubject  String?            @map("template_subject") @db.VarChar(255)
+  templateBody     String?            @map("template_body")
+  isActive         Boolean?           @default(true) @map("is_active")
+  createdAt        DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  actions          CollectionAction[]
+  collectionRule   CollectionRule     @relation(fields: [collectionRuleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([collectionRuleId, stepOrder])
+  @@index([collectionRuleId], map: "idx_collection_rule_steps_rule")
+  @@map("collection_rule_steps")
+}
+
+model CollectionAction {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  receivableId     String              @map("receivable_id") @db.Uuid
+  collectionRuleId String?             @map("collection_rule_id") @db.Uuid
+  stepId           String?             @map("step_id") @db.Uuid
+  actionType       String              @map("action_type") @db.VarChar(50)
+  actionDate       DateTime?           @default(now()) @map("action_date") @db.Timestamptz(6)
+  status           String              @default("PENDING") @db.VarChar(20)
+  contactInfo      String?             @map("contact_info") @db.VarChar(255)
+  messageContent   String?             @map("message_content")
+  responseContent  String?             @map("response_content")
+  responseDate     DateTime?           @map("response_date") @db.Timestamptz(6)
+  notes            String?
+  createdBy        String?             @map("created_by") @db.Uuid
+  createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  collectionRule   CollectionRule?     @relation(fields: [collectionRuleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  receivable       AccountsReceivable  @relation(fields: [receivableId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  step             CollectionRuleStep? @relation(fields: [stepId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([actionDate], map: "idx_collection_actions_date")
+  @@index([receivableId], map: "idx_collection_actions_receivable")
+  @@index([collectionRuleId], map: "idx_collection_actions_rule")
+  @@index([status], map: "idx_collection_actions_status")
+  @@index([stepId], map: "idx_collection_actions_step")
+  @@map("collection_actions")
+}

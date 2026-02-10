@@ -1,0 +1,275 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+model Company {
+  id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
+  code                 Int                     @unique
+  name                 String
+  tradeName            String?
+  cnpj                 String?                 @unique
+  ie                   String?
+  address              String?
+  addressNumber        String?
+  addressComplement    String?
+  neighborhood         String?
+  city                 String?
+  state                String?
+  zipCode              String?
+  phone                String?
+  email                String?
+  isActive             Boolean                 @default(true)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @default(now()) @updatedAt
+  accountsPayable      AccountsPayable[]
+  accountsReceivable   AccountsReceivable[]
+  actionPlans          ActionPlan[]
+  aiUsageLogs          AiUsageLog[]
+  approvalLevels       ApprovalLevel[]
+  approvalThresholds   ApprovalThreshold[]
+  bankAccounts         BankAccount[]
+  budgetAccounts       BudgetAccount[]
+  budgetActuals        BudgetActual[]
+  budgetAlerts         BudgetAlert[]
+  budgetVersions       BudgetVersion[]
+  categories           Category[]
+  cloneLogsSource      CloneLog[]              @relation("CloneSource")
+  cloneLogsTarget      CloneLog[]              @relation("CloneTarget")
+  collectionRules      CollectionRule[]
+  costCenters          CostCenter[]
+  customers            Customer[]
+  dashboards           Dashboard[]
+  dda_boletos          DdaBoleto[]
+  dda_config           DdaConfig[]
+  dda_sync_log         DdaSyncLog[]
+  departments          Department[]
+  employees            Employee[]
+  goalIndicators       GoalIndicator[]
+  holidays             Holiday[]
+  inventory            Inventory[]
+  jobPositions         JobPosition[]
+  kpiValues            KpiValue[]
+  kpis                 Kpi[]
+  leads                Lead[]
+  materialReceivings   MaterialReceiving[]
+  materialRequisitions MaterialRequisition[]
+  materials            Material[]
+  mrpRuns              MrpRun[]
+  non_conformities     NonConformity[]
+  notificationGroups   NotificationGroup[]
+  notifications        Notification[]
+  oeeTargets           OeeTarget[]
+  paymentRequests      PaymentRequest[]
+  payrolls             Payroll[]
+  physicalInventories  PhysicalInventory[]
+  pickingLists         PickingList[]
+  pixTransactions      PixTransaction[]
+  productCategories    ProductCategory[]
+  attributeDefinitions AttributeDefinition[]
+  categoryAttributes   CategoryAttribute[]
+  productionOrders     ProductionOrder[]
+  products             Product[]
+  purchaseOrders       PurchaseOrder[]
+  quality_inspections  QualityInspection[]
+  receivedInvoices     ReceivedInvoice[]
+  salesOrders          SalesOrder[]
+  salesQuotes          SalesQuote[]
+  savedReports         SavedReport[]
+  sefazPendingNfes     SefazPendingNfe[]
+  sefazSyncConfig      SefazSyncConfig?
+  sefazSyncLogs        SefazSyncLog[]
+  stockLocations       StockLocation[]
+  stockReservations    StockReservation[]
+  stockTransfers       StockTransfer[]
+  strategicGoals       StrategicGoal[]
+  supplierReturns      SupplierReturn[]
+  suppliers            Supplier[]
+  systemLogs           SystemLog[]
+  systemSettings       SystemSetting[]
+  tasks                Task[]
+  terminations         Termination[]
+  thirteenthSalaries   ThirteenthSalary[]
+  userCompanies        UserCompany[]
+  permissions          UserCompanyPermission[]
+  userGroups           UserGroup[]
+  users                User[]
+  vacations            Vacation[]
+  workCenters          WorkCenter[]
+  workSchedules        WorkSchedule[]
+  workflowDefinitions  WorkflowDefinition[]
+  workflowInstances    WorkflowInstance[]
+  onboarding                    CompanyOnboarding?
+  intercompanyTransfersSource   IntercompanyTransfer[] @relation("IntercompanyTransferSource")
+  intercompanyTransfersTarget   IntercompanyTransfer[] @relation("IntercompanyTransferTarget")
+
+  @@map("companies")
+}
+
+model CompanyOnboarding {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String    @unique @db.Uuid
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  currentStep    Int       @default(1)
+  stepsCompleted Json      @default("{}")
+  step1Data      Json?
+  step2Data      Json?
+  step3Data      Json?
+  step4Data      Json?
+  step5Data      Json?
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+
+  @@map("company_onboarding")
+}
+
+model User {
+  id                                            String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                                          Int?
+  email                                         String                      @unique
+  name                                          String
+  password                                      String?
+  isActive                                      Boolean                     @default(true)
+  companyId                                     String?                     @db.Uuid
+  createdAt                                     DateTime                    @default(now())
+  updatedAt                                     DateTime                    @default(now()) @updatedAt
+  actionPlanTasks                               ActionPlanTask[]
+  actionPlansCreated                            ActionPlan[]                @relation("ActionPlanCreator")
+  actionPlansResponsible                        ActionPlan[]                @relation("ActionPlanResponsible")
+  approvalLevelApprovers                        ApprovalLevelApprover[]
+  approverThresholds                            ApprovalThresholdApprover[]
+  auditLogs                                     AuditLog[]
+  budgetAlertsResolved                          BudgetAlert[]
+  budgetVersionsApproved                        BudgetVersion[]             @relation("BudgetApprover")
+  budgetVersionsCreated                         BudgetVersion[]             @relation("BudgetCreator")
+  cloneLogs                                     CloneLog[]
+  dashboardsCreated                             Dashboard[]
+  dda_boletos_dda_boletos_aprovado_porTousers   DdaBoleto[]                 @relation("dda_boletos_aprovado_porTousers")
+  dda_boletos_dda_boletos_created_byTousers     DdaBoleto[]                 @relation("dda_boletos_created_byTousers")
+  employeeProfile                               Employee[]
+  inventoryMovements                            InventoryMovement[]
+  assignedLeads                                 Lead[]
+  addedGroupMembers                             NotificationGroupMember[]   @relation("GroupMemberAddedBy")
+  notificationGroupMemberships                  NotificationGroupMember[]
+  notificationPreferences                       NotificationPreference[]
+  notifications                                 Notification[]
+  payableApprovals                              PayableApproval[]
+  paymentApprovalsGiven                         PaymentApproval[]           @relation("PaymentApprover")
+  paymentApprovalsDelegated                     PaymentApproval[]           @relation("PaymentDelegate")
+  paymentRequestsCreated                        PaymentRequest[]            @relation("PaymentRequester")
+  pickingItemsPicked                            PickingListItem[]
+  pickingListsAssigned                          PickingList[]               @relation("PickingAssignee")
+  pickingListsCreated                           PickingList[]               @relation("PickingCreator")
+  pickingVerifications                          PickingVerification[]
+  quality_inspections                           QualityInspection[]
+  requisitionApprovals                          RequisitionApproval[]
+  savedReports                                  SavedReport[]
+  transfersApproved                             StockTransfer[]             @relation("TransferApproved")
+  transfersReceived                             StockTransfer[]             @relation("TransferReceived")
+  transfersRequested                            StockTransfer[]             @relation("TransferRequested")
+  transfersShipped                              StockTransfer[]             @relation("TransferShipped")
+  strategicGoalsOwned                           StrategicGoal[]
+  systemLogs                                    SystemLog[]
+  settingsUpdated                               SystemSetting[]
+  task_history_task_history_new_owner_idTousers TaskHistory[]               @relation("task_history_new_owner_idTousers")
+  task_history_task_history_old_owner_idTousers TaskHistory[]               @relation("task_history_old_owner_idTousers")
+  taskHistory                                   TaskHistory[]
+  tasksCreated                                  Task[]                      @relation("TaskCreatedBy")
+  tasksOwned                                    Task[]                      @relation("TaskOwner")
+  tasksTargeted                                 Task[]                      @relation("TaskTargetUser")
+  time_clock_entries                            TimeClockEntry[]
+  tutorials                                     Tutorial[]
+  userCompanies                                 UserCompany[]
+  permissions                                   UserCompanyPermission[]
+  addedToGroups                                 UserGroupMember[]           @relation("AddedByUser")
+  groupMemberships                              UserGroupMember[]
+  company                                       Company?                    @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workflowDefinitionsCreated                    WorkflowDefinition[]
+  workflowInstancesCancelled                    WorkflowInstance[]          @relation("WorkflowCanceller")
+  workflowInstancesStarted                      WorkflowInstance[]          @relation("WorkflowStarter")
+  workflowStepsAssigned                         WorkflowStepHistory[]       @relation("StepAssignee")
+  workflowStepsCompleted                        WorkflowStepHistory[]       @relation("StepCompleter")
+  workflowStepEscalations                       WorkflowStep[]              @relation("StepEscalation")
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model UserCompany {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  companyId String   @db.Uuid
+  isDefault Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, companyId])
+  @@index([companyId], map: "idx_user_companies_company")
+  @@index([companyId], map: "idx_user_companies_companyId")
+  @@index([userId], map: "idx_user_companies_user")
+  @@index([userId])
+  @@map("user_companies")
+}
+
+model UserCompanyPermission {
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String          @db.Uuid
+  companyId  String          @db.Uuid
+  module     SystemModule
+  permission PermissionLevel @default(NONE)
+  canShare   Boolean         @default(false)
+  canClone   Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @default(now()) @updatedAt
+  company    Company         @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, companyId, module])
+  @@index([companyId], map: "idx_user_company_permissions_companyId")
+  @@index([userId])
+  @@map("user_company_permissions")
+}
+
+model UserGroup {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String            @db.VarChar(100)
+  description String?
+  companyId   String?           @db.Uuid
+  permissions Json              @default("[]")
+  isSystem    Boolean           @default(false)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now()) @updatedAt
+  members     UserGroupMember[]
+  company     Company?          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId], map: "idx_user_groups_companyId")
+  @@map("user_groups")
+}
+
+model UserGroupMember {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @db.Uuid
+  groupId     String    @db.Uuid
+  addedBy     String?   @db.Uuid
+  addedAt     DateTime  @default(now())
+  addedByUser User?     @relation("AddedByUser", fields: [addedBy], references: [id])
+  group       UserGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([groupId], map: "idx_user_group_members_groupId")
+  @@index([addedBy])
+  @@index([userId])
+  @@map("user_group_members")
+}

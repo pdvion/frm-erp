@@ -1,0 +1,388 @@
+model ProductionOrder {
+  id                      String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                    Int
+  companyId               String                     @db.Uuid
+  productId               String                     @db.Uuid
+  quantity                Decimal  @db.Decimal(15, 4)
+  producedQty             Decimal                      @db.Decimal(15, 4) @default(0)
+  plannedStart            DateTime?
+  plannedEnd              DateTime?
+  actualStart             DateTime?
+  actualEnd               DateTime?
+  dueDate                 DateTime?
+  status                  ProductionOrderStatus      @default(PLANNED)
+  priority                Int                        @default(3)
+  salesOrderNumber        String?                    @db.VarChar(50)
+  customerName            String?                    @db.VarChar(200)
+  notes                   String?
+  createdBy               String?                    @db.Uuid
+  createdAt               DateTime                   @default(now())
+  updatedAt               DateTime                   @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  request_type            production_request_type?
+  execution_type          production_execution_type?
+  customer_id             String?
+  delivery_date           DateTime?                  @db.Timestamptz(6)
+  delivery_type           production_delivery_type?
+  suggested_delivery_date DateTime?                  @db.Timestamptz(6)
+  delivery_date_changed   Boolean?                   @default(false)
+  responsible_employee_id String?
+  delivery_user_id        String?
+  finished_quantity       Int?                       @default(0)
+  painted_quantity        Int?                       @default(0)
+  raw_material_origin     raw_material_origin?
+  export_code             Int?
+  grouped_order_id        String?
+  type_before_urgency     Int?
+  date_before_urgency     DateTime?                  @db.Timestamptz(6)
+  printed                 Boolean?                   @default(false)
+  non_conformities        NonConformity[]
+  production_costs        ProductionCost[]
+  productionLogs          ProductionLog[]
+  materials               ProductionOrderMaterial[]
+  operations              ProductionOrderOperation[]
+  company                 Company                    @relation(fields: [companyId], references: [id])
+  product                 Material                   @relation("ProductionProduct", fields: [productId], references: [id])
+  quality_inspections     QualityInspection[]
+  salesOrderItems         SalesOrderItem[]
+
+  @@unique([companyId, code])
+  @@index([dueDate])
+  @@index([companyId], map: "idx_production_orders_companyId")
+  @@index([productId], map: "idx_production_orders_product")
+  @@unique([companyId, legacyId])
+  @@map("production_orders")
+  @@index([companyId, status])
+}
+
+model ProductionOrderMaterial {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String          @db.Uuid
+  materialId  String          @db.Uuid
+  requiredQty Decimal  @db.Decimal(15, 4)
+  consumedQty Decimal           @db.Decimal(15, 4) @default(0)
+  unitCost    Decimal           @db.Decimal(15, 2) @default(0)
+  totalCost   Decimal           @db.Decimal(15, 2) @default(0)
+  notes       String?
+  createdAt   DateTime        @default(now())
+  material    Material        @relation("ProductionMaterial", fields: [materialId], references: [id])
+  order       ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([materialId])
+  @@index([materialId], map: "idx_production_order_materials_material")
+  @@index([orderId], map: "idx_production_order_materials_order")
+  @@map("production_order_materials")
+}
+
+model ProductionOrderOperation {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId         String          @db.Uuid
+  sequence        Int
+  name            String          @db.VarChar(200)
+  workCenter      String?         @db.VarChar(100)
+  setupTime       Decimal           @db.Decimal(15, 2) @default(0)
+  runTime         Decimal           @db.Decimal(15, 2) @default(0)
+  actualSetupTime Decimal           @db.Decimal(15, 2) @default(0)
+  actualRunTime   Decimal           @db.Decimal(15, 2) @default(0)
+  plannedQty      Decimal  @db.Decimal(15, 4)
+  completedQty    Decimal           @db.Decimal(15, 4) @default(0)
+  scrapQty        Decimal           @db.Decimal(15, 4) @default(0)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  order           ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId], map: "idx_production_order_operations_orderId")
+  @@map("production_order_operations")
+}
+
+model BomItem {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parentMaterialId String   @db.Uuid
+  childMaterialId  String   @db.Uuid
+  quantity         Decimal  @db.Decimal(15, 4)
+  unit             String   @default("UN")
+  scrapPercentage  Decimal    @db.Decimal(10, 4) @default(0)
+  leadTimeDays     Int      @default(0)
+  sequence         Int      @default(0)
+  notes            String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+  childMaterial    Material @relation("BomChild", fields: [childMaterialId], references: [id], onUpdate: NoAction, map: "bom_items_child_fkey")
+  parentMaterial   Material @relation("BomParent", fields: [parentMaterialId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "bom_items_parent_fkey")
+
+  @@unique([parentMaterialId, childMaterialId], map: "bom_items_parent_child_key")
+  @@index([parentMaterialId])
+  @@index([childMaterialId])
+  @@map("bom_items")
+}
+
+model MrpParameter {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  materialId             String   @unique @db.Uuid
+  minLotSize             Decimal    @db.Decimal(15, 4) @default(1)
+  lotMultiple            Decimal    @db.Decimal(15, 2) @default(1)
+  safetyStock            Decimal    @db.Decimal(15, 2) @default(0)
+  productionLeadTimeDays Int      @default(1)
+  purchaseLeadTimeDays   Int      @default(7)
+  orderPolicy            String   @default("LOT_FOR_LOT")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @default(now()) @updatedAt
+  material               Material @relation(fields: [materialId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mrp_parameters_material_fkey")
+
+  @@index([materialId])
+  @@index([materialId], map: "idx_mrp_parameters_material")
+  @@map("mrp_parameters")
+}
+
+model MrpRun {
+  id                    String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId             String          @db.Uuid
+  runDate               DateTime        @default(now())
+  horizonDays           Int             @default(30)
+  status                String          @default("RUNNING")
+  totalSuggestions      Int             @default(0)
+  productionSuggestions Int             @default(0)
+  purchaseSuggestions   Int             @default(0)
+  completedAt           DateTime?
+  createdBy             String?         @db.Uuid
+  notes                 String?
+  company               Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "mrp_runs_company_fkey")
+  suggestions           MrpSuggestion[]
+
+  @@index([companyId])
+  @@index([runDate])
+  @@map("mrp_runs")
+}
+
+model MrpSuggestion {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  runId            String              @db.Uuid
+  materialId       String              @db.Uuid
+  type             MrpSuggestionType
+  status           MrpSuggestionStatus @default(PENDING)
+  suggestedDate    DateTime
+  requiredDate     DateTime
+  quantity         Decimal  @db.Decimal(15, 4)
+  sourceOrderId    String?             @db.Uuid
+  sourceOrderType  String?
+  reason           String?
+  convertedOrderId String?             @db.Uuid
+  convertedAt      DateTime?
+  approvedBy       String?             @db.Uuid
+  approvedAt       DateTime?
+  rejectedBy       String?             @db.Uuid
+  rejectedAt       DateTime?
+  rejectionReason  String?
+  createdAt        DateTime            @default(now())
+  material         Material            @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "mrp_suggestions_material_fkey")
+  run              MrpRun              @relation(fields: [runId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mrp_suggestions_run_fkey")
+
+  @@index([runId])
+  @@index([materialId])
+  @@index([status])
+  @@index([type])
+  @@index([materialId], map: "idx_mrp_suggestions_material")
+  @@index([runId], map: "idx_mrp_suggestions_run")
+  @@map("mrp_suggestions")
+}
+
+model WorkCenter {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code             String
+  name             String
+  description      String?
+  companyId        String          @db.Uuid
+  capacityPerHour  Decimal           @db.Decimal(15, 4) @default(1)
+  hoursPerDay      Decimal           @db.Decimal(15, 4) @default(8)
+  daysPerWeek      Int             @default(5)
+  efficiencyTarget Decimal           @db.Decimal(15, 2) @default(85)
+  setupTimeMinutes Int             @default(0)
+  costPerHour      Decimal           @db.Decimal(15, 4) @default(0)
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @default(now()) @updatedAt
+  machineStops     MachineStop[]
+  oeeTargets       OeeTarget[]
+  productionLogs   ProductionLog[]
+  company          Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "work_centers_company_fkey")
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_work_centers_companyId")
+  @@unique([companyId, legacyId])
+  @@map("work_centers")
+}
+
+model ProductionLog {
+  id                    String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workCenterId          String           @db.Uuid
+  productionOrderId     String?          @db.Uuid
+  operatorId            String?          @db.Uuid
+  shiftDate             DateTime         @db.Date
+  shiftNumber           Int              @default(1)
+  plannedQuantity       Decimal            @db.Decimal(15, 4) @default(0)
+  producedQuantity      Decimal            @db.Decimal(15, 4) @default(0)
+  goodQuantity          Decimal            @db.Decimal(15, 4) @default(0)
+  scrapQuantity         Decimal            @db.Decimal(15, 4) @default(0)
+  reworkQuantity        Decimal            @db.Decimal(15, 4) @default(0)
+  plannedTimeMinutes    Int              @default(0)
+  actualTimeMinutes     Int              @default(0)
+  setupTimeMinutes      Int              @default(0)
+  runTimeMinutes        Int              @default(0)
+  stopTimeMinutes       Int              @default(0)
+  cycleTimeSeconds      Decimal?  @db.Decimal(15, 2)
+  idealCycleTimeSeconds Decimal?  @db.Decimal(15, 2)
+  notes                 String?
+  createdBy             String?          @db.Uuid
+  createdAt             DateTime         @default(now())
+  machineStops          MachineStop[]
+  productionOrder       ProductionOrder? @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "production_logs_order_fkey")
+  workCenter            WorkCenter       @relation(fields: [workCenterId], references: [id], onUpdate: NoAction, map: "production_logs_workcenter_fkey")
+
+  @@index([workCenterId])
+  @@index([shiftDate])
+  @@index([productionOrderId])
+  @@index([productionOrderId], map: "idx_production_logs_order")
+  @@index([workCenterId], map: "idx_production_logs_workcenter")
+  @@map("production_logs")
+}
+
+model MachineStop {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workCenterId    String         @db.Uuid
+  productionLogId String?        @db.Uuid
+  stopType        StopType
+  startTime       DateTime
+  endTime         DateTime?
+  durationMinutes Int?
+  reason          String
+  solution        String?
+  reportedBy      String?        @db.Uuid
+  createdAt       DateTime       @default(now())
+  productionLog   ProductionLog? @relation(fields: [productionLogId], references: [id], onUpdate: NoAction, map: "machine_stops_log_fkey")
+  workCenter      WorkCenter     @relation(fields: [workCenterId], references: [id], onUpdate: NoAction, map: "machine_stops_workcenter_fkey")
+
+  @@index([workCenterId])
+  @@index([startTime])
+  @@index([stopType])
+  @@index([productionLogId], map: "idx_machine_stops_productionlog")
+  @@index([workCenterId], map: "idx_machine_stops_workcenter")
+  @@map("machine_stops")
+}
+
+model OeeTarget {
+  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId          String      @db.Uuid
+  workCenterId       String?     @db.Uuid
+  year               Int
+  month              Int?
+  availabilityTarget Float       @default(90)
+  performanceTarget  Float       @default(95)
+  qualityTarget      Float       @default(99)
+  oeeTarget          Float       @default(85)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @default(now()) @updatedAt
+  company            Company     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "oee_targets_company_fkey")
+  workCenter         WorkCenter? @relation(fields: [workCenterId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "oee_targets_workcenter_fkey")
+
+  @@index([companyId])
+  @@index([workCenterId])
+  @@index([year, month])
+  @@index([workCenterId], map: "idx_oee_targets_workcenter")
+  @@map("oee_targets")
+}
+
+model ProductionCost {
+  id                String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionOrderId String                   @map("production_order_id") @db.Uuid
+  companyId         String                   @map("company_id") @db.Uuid
+  status            String                   @default("DRAFT")
+  materialCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  materialCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_cost_std")
+  materialVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_variance")
+  laborCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  laborCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_cost_std")
+  laborVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_variance")
+  laborHours        Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours")
+  laborHoursStd     Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours_std")
+  overheadCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  overheadCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_cost_std")
+  overheadVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_variance")
+  totalCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("total_cost")
+  totalCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_variance")
+  unitCost          Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  unitCostStd       Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost_std")
+  quantityProduced  Decimal?                   @db.Decimal(15, 4) @default(0) @map("quantity_produced")
+  calculatedAt      DateTime?                @map("calculated_at")
+  closedAt          DateTime?                @map("closed_at")
+  createdAt         DateTime                 @default(now()) @map("created_at")
+  updatedAt         DateTime                 @default(now()) @map("updated_at")
+  laborItems        ProductionCostLabor[]
+  materialItems     ProductionCostMaterial[]
+  productionOrder   ProductionOrder          @relation(fields: [productionOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_production_costs_company_id")
+  @@index([productionOrderId], map: "idx_production_costs_production_order_id")
+  @@index([status], map: "idx_production_costs_status")
+  @@map("production_costs")
+}
+
+model ProductionCostMaterial {
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionCostId String         @map("production_cost_id") @db.Uuid
+  materialId       String         @map("material_id") @db.Uuid
+  quantityStd      Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_std")
+  quantityActual   Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_actual")
+  unitCost         Decimal?         @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([productionCostId], map: "idx_production_cost_materials_production_cost_id")
+  @@map("production_cost_materials")
+}
+
+model ProductionCostLabor {
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionCostId String         @map("production_cost_id") @db.Uuid
+  workCenterId     String?        @map("work_center_id") @db.Uuid
+  operationId      String?        @map("operation_id") @db.Uuid
+  hoursStd         Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_std")
+  hoursActual      Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_actual")
+  hourlyRate       Decimal?         @db.Decimal(10, 4) @default(0) @map("hourly_rate")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([productionCostId], map: "idx_production_cost_labor_production_cost_id")
+  @@map("production_cost_labor")
+}
+
+model MaterialStandardCost {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  materialId    String   @map("material_id") @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  effectiveDate DateTime @default(now()) @map("effective_date")
+  materialCost  Decimal    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  laborCost     Decimal?   @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  overheadCost  Decimal?   @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  totalCost     Decimal    @db.Decimal(15, 2) @default(0) @map("total_cost")
+  notes         String?
+  createdBy     String?  @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([companyId], map: "idx_material_standard_costs_company_id")
+  @@index([materialId], map: "idx_material_standard_costs_material_id")
+  @@map("material_standard_costs")
+}

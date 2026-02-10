@@ -1,0 +1,168 @@
+model ProductCategory {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  slug              String               @unique
+  description       String?
+  imageUrl          String?              @map("image_url")
+  parentId          String?              @map("parent_id") @db.Uuid
+  order             Int?                 @default(0)
+  isActive          Boolean?             @default(true) @map("is_active")
+  level             CategoryLevel?
+  normReference     String?              @map("norm_reference")
+  technicalCode     String?              @map("technical_code")
+  icon              String?
+  companyId         String?              @map("company_id") @db.Uuid
+  isShared          Boolean?             @default(false) @map("is_shared")
+  createdAt         DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company?             @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent            ProductCategory?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children          ProductCategory[]    @relation("CategoryHierarchy")
+  products          Product[]
+  categoryAttributes CategoryAttribute[]
+
+  @@index([companyId], map: "idx_product_categories_company")
+  @@index([parentId], map: "idx_product_categories_parent")
+  @@index([slug], map: "idx_product_categories_slug")
+  @@map("product_categories")
+}
+
+model AttributeDefinition {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  key               String               @unique
+  dataType          AttributeDataType    @default(STRING) @map("data_type")
+  unit              String?
+  enumOptions       String[]             @default([]) @map("enum_options")
+  validationRegex   String?              @map("validation_regex")
+  description       String?
+  isActive          Boolean              @default(true) @map("is_active")
+  companyId         String?              @map("company_id") @db.Uuid
+  isShared          Boolean              @default(false) @map("is_shared")
+  createdAt         DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  categoryAttributes CategoryAttribute[]
+
+  @@index([companyId], map: "idx_attribute_definitions_company")
+  @@index([key], map: "idx_attribute_definitions_key")
+  @@map("attribute_definitions")
+}
+
+model CategoryAttribute {
+  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoryId    String               @map("category_id") @db.Uuid
+  attributeId   String               @map("attribute_id") @db.Uuid
+  isRequired    Boolean              @default(false) @map("is_required")
+  displayOrder  Int                  @default(0) @map("display_order")
+  defaultValue  String?              @map("default_value")
+  companyId     String?              @map("company_id") @db.Uuid
+  isShared      Boolean              @default(false) @map("is_shared")
+  createdAt     DateTime?            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  category      ProductCategory      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  attribute     AttributeDefinition  @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  company       Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@index([categoryId], map: "idx_category_attributes_category")
+  @@index([attributeId], map: "idx_category_attributes_attribute")
+  @@index([companyId], map: "idx_category_attributes_company")
+  @@map("category_attributes")
+}
+
+model Product {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
+  code             String              @unique
+  materialId       String?             @map("material_id") @db.Uuid
+  name             String
+  shortDescription String?             @map("short_description")
+  description      String?
+  specifications   Json?
+  slug             String              @unique
+  metaTitle        String?             @map("meta_title")
+  metaDescription  String?             @map("meta_description")
+  listPrice        Decimal?            @map("list_price") @db.Decimal(15, 2)
+  salePrice        Decimal?            @map("sale_price") @db.Decimal(15, 2)
+  categoryId       String?             @map("category_id") @db.Uuid
+  tags             String[]            @default([])
+  status           ProductStatus?      @default(DRAFT)
+  isPublished      Boolean?            @default(false) @map("is_published")
+  publishedAt      DateTime?           @map("published_at") @db.Timestamptz(6)
+  featuredOrder    Int?                @map("featured_order")
+  companyId        String?             @map("company_id") @db.Uuid
+  isShared         Boolean?            @default(false) @map("is_shared")
+  createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  attachments      ProductAttachment[]
+  images           ProductImage[]
+  videos           ProductVideo[]
+  category         ProductCategory?    @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company          Company?            @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  material         Material?           @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([categoryId], map: "idx_products_category")
+  @@index([companyId], map: "idx_products_company")
+  @@index([materialId], map: "idx_products_material")
+  @@index([isPublished], map: "idx_products_published")
+  @@index([slug], map: "idx_products_slug")
+  @@index([status], map: "idx_products_status")
+  @@map("products")
+}
+
+model ProductImage {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId    String    @map("product_id") @db.Uuid
+  url          String
+  thumbnailUrl String?   @map("thumbnail_url")
+  alt          String?
+  caption      String?
+  order        Int?      @default(0)
+  isPrimary    Boolean?  @default(false) @map("is_primary")
+  width        Int?
+  height       Int?
+  sizeBytes    Int?      @map("size_bytes")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([isPrimary], map: "idx_product_images_primary")
+  @@index([productId], map: "idx_product_images_product")
+  @@map("product_images")
+}
+
+model ProductVideo {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId    String            @map("product_id") @db.Uuid
+  url          String
+  thumbnailUrl String?           @map("thumbnail_url")
+  title        String
+  description  String?
+  type         ProductVideoType? @default(DEMO)
+  duration     Int?
+  order        Int?              @default(0)
+  createdAt    DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  product      Product           @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([productId], map: "idx_product_videos_product")
+  @@index([type], map: "idx_product_videos_type")
+  @@map("product_videos")
+}
+
+model ProductAttachment {
+  id        String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId String                 @map("product_id") @db.Uuid
+  url       String
+  fileName  String                 @map("file_name")
+  fileType  String                 @map("file_type")
+  sizeBytes Int?                   @map("size_bytes")
+  type      ProductAttachmentType? @default(DATASHEET)
+  order     Int?                   @default(0)
+  createdAt DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
+  product   Product                @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([productId], map: "idx_product_attachments_product")
+  @@index([type], map: "idx_product_attachments_type")
+  @@map("product_attachments")
+}

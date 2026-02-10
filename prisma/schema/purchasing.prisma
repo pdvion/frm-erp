@@ -1,0 +1,374 @@
+model Supplier {
+  id                      String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                    Int                          @unique
+  companyName             String
+  tradeName               String?
+  cnpj                    String?                      @unique
+  cpf                     String?
+  ie                      String?
+  im                      String?
+  address                 String?
+  number                  String?
+  complement              String?
+  neighborhood            String?
+  city                    String?
+  state                   String?
+  zipCode                 String?
+  country                 String                       @default("Brasil")
+  phone                   String?
+  mobile                  String?
+  email                   String?
+  website                 String?
+  contactName             String?
+  paymentTerms            String?
+  notes                   String?
+  status                  SupplierStatus               @default(ACTIVE)
+  qualityIndex            Decimal?  @db.Decimal(10, 4)
+  companyId               String                       @db.Uuid
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime                     @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  isShared                Boolean                      @default(false)
+  cat01Embalagens         Boolean?                     @default(false) @map("cat01_embalagens")
+  cat02Tintas             Boolean?                     @default(false) @map("cat02_tintas")
+  cat03OleosGraxas        Boolean?                     @default(false) @map("cat03_oleos_graxas")
+  cat04Dispositivos       Boolean?                     @default(false) @map("cat04_dispositivos")
+  cat05Acessorios         Boolean?                     @default(false) @map("cat05_acessorios")
+  cat06Manutencao         Boolean?                     @default(false) @map("cat06_manutencao")
+  cat07Servicos           Boolean?                     @default(false) @map("cat07_servicos")
+  cat08Escritorio         Boolean?                     @default(false) @map("cat08_escritorio")
+  isWholesaler            Boolean?                     @default(false) @map("is_wholesaler")
+  isRetailer              Boolean?                     @default(false) @map("is_retailer")
+  isIndustry              Boolean?                     @default(false) @map("is_industry")
+  isService               Boolean?                     @default(false) @map("is_service")
+  activityTypeId          String?                      @map("activity_type_id")
+  cnae                    String?
+  certificationType       supplier_certification_type? @map("certification_type")
+  certificationExpiryDate DateTime?                    @map("certification_expiry_date") @db.Timestamptz(6)
+  certificationFileName   String?                      @map("certification_file_name")
+  overallQualityPercent   Decimal?                       @db.Decimal(10, 4) @map("overall_quality_percent")
+  iqfPercent              Decimal?                       @db.Decimal(10, 4) @map("iqf_percent")
+  qualityCalcDate         DateTime?                    @map("quality_calc_date") @db.Timestamptz(6)
+  iqfStatus               supplier_iqf_status?         @map("iqf_status")
+  taxRegime               String?                      @map("tax_regime")
+  sefazQueryDate          DateTime?                    @map("sefaz_query_date") @db.Timestamptz(6)
+  hasFinancialContract    Boolean?                     @default(false) @map("has_financial_contract")
+  accountsPayable         AccountsPayable[]
+  dda_boletos             DdaBoleto[]
+  import_processes        ImportProcess[]
+  inventoryMovements      InventoryMovement[]
+  materialReceivings      MaterialReceiving[]
+  purchaseOrders          PurchaseOrder[]
+  quotes                  Quote[]
+  receivedInvoices        ReceivedInvoice[]
+  supplierMaterials       SupplierMaterial[]
+  supplierReturns         SupplierReturn[]
+  company                 Company                      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_suppliers_companyId")
+  @@unique([companyId, legacyId])
+  @@map("suppliers")
+  @@index([companyId, code])
+}
+
+model SupplierMaterial {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  supplierId    String    @db.Uuid
+  materialId    String    @db.Uuid
+  supplierCode  String?
+  lastPrice     Decimal?  @db.Decimal(15, 2)
+  lastPriceDate DateTime?
+  leadTimeDays  Int?
+  minOrderQty   Decimal?  @db.Decimal(15, 4)
+  isPreferred   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  material      Material  @relation(fields: [materialId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  supplier      Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([supplierId, materialId])
+  @@index([materialId])
+  @@map("supplier_materials")
+}
+
+model Quote {
+  id                    String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                  Int             @unique
+  supplierId            String          @db.Uuid
+  status                QuoteStatus     @default(DRAFT)
+  requestDate           DateTime        @default(now())
+  responseDate          DateTime?
+  validUntil            DateTime?
+  paymentTerms          String?
+  deliveryTerms         String?
+  freightValue          Decimal           @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal           @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal           @db.Decimal(15, 2) @default(0)
+  notes                 String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @default(now()) @updatedAt
+  revision              Int?            @default(1)
+  preApprovedById       String?         @map("pre_approved_by_id")
+  preApprovedAt         DateTime?       @map("pre_approved_at") @db.Timestamptz(6)
+  approvedById          String?         @map("approved_by_id")
+  approvedAt            DateTime?       @map("approved_at") @db.Timestamptz(6)
+  materialsModifiedById String?         @map("materials_modified_by_id")
+  materialsModifiedAt   DateTime?       @map("materials_modified_at") @db.Timestamptz(6)
+  suppliersModifiedById String?         @map("suppliers_modified_by_id")
+  suppliersModifiedAt   DateTime?       @map("suppliers_modified_at") @db.Timestamptz(6)
+  quotePdfName          String?         @map("quote_pdf_name")
+  quotePrintedAt        DateTime?       @map("quote_printed_at") @db.Timestamptz(6)
+  attachment1           String?
+  attachment2           String?
+  attachment3           String?
+  analysisExecuted      Boolean?        @default(false) @map("analysis_executed")
+  conversationHistory   String?         @map("conversation_history")
+  ownerCompanyId        String?         @map("owner_company_id")
+  costCenterGroup       Int?            @map("cost_center_group")
+  requisitionId         String?         @map("requisition_id")
+  requesterName         String?         @map("requester_name")
+  approverName          String?         @map("approver_name")
+  completionPercent     Int?            @default(0) @map("completion_percent")
+  purchaseOrders        PurchaseOrder[]
+  items                 QuoteItem[]
+  supplier              Supplier        @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([supplierId], map: "idx_quotes_supplierId")
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quoteId            String              @db.Uuid
+  materialId         String              @db.Uuid
+  quantity           Decimal  @db.Decimal(15, 4)
+  unitPrice          Decimal               @db.Decimal(15, 2) @default(0)
+  totalPrice         Decimal               @db.Decimal(15, 2) @default(0)
+  deliveryDays       Int?
+  notes              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @default(now()) @updatedAt
+  purchaseOrderItems PurchaseOrderItem[]
+  material           Material            @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quote              Quote               @relation(fields: [quoteId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([materialId], map: "idx_quote_items_materialId")
+  @@index([quoteId], map: "idx_quote_items_quoteId")
+  @@map("quote_items")
+}
+
+model PurchaseOrder {
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                  Int                 @unique
+  supplierId            String              @db.Uuid
+  quoteId               String?             @db.Uuid
+  status                PurchaseOrderStatus @default(DRAFT)
+  orderDate             DateTime            @default(now())
+  expectedDeliveryDate  DateTime?
+  actualDeliveryDate    DateTime?
+  paymentTerms          String?
+  deliveryTerms         String?
+  freightValue          Decimal               @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal               @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal               @db.Decimal(15, 2) @default(0)
+  notes                 String?
+  companyId             String              @db.Uuid
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  application           String?
+  quoteSupplierCode     Int?                @map("quote_supplier_code")
+  billingCompanyId      String?             @map("billing_company_id")
+  costCenterGroup       Int?                @map("cost_center_group")
+  carrier               String?
+  deliveryAddress       String?             @map("delivery_address")
+  deliveryPhone         String?             @map("delivery_phone")
+  operationNature       operation_nature?   @map("operation_nature")
+  paymentConditionId    String?             @map("payment_condition_id")
+  paymentConditionDesc  String?             @map("payment_condition_desc")
+  freightType           freight_type?       @map("freight_type")
+  fobFreightValue       Decimal?              @db.Decimal(15, 2) @default(0) @map("fob_freight_value")
+  pickupKm              Float?              @map("pickup_km")
+  pickupValue           Decimal?              @db.Decimal(15, 2) @map("pickup_value")
+  cancellationReason    String?             @map("cancellation_reason")
+  financialApproved     Boolean?            @default(false) @map("financial_approved")
+  financialApprovedById String?             @map("financial_approved_by_id")
+  financialApprovedAt   DateTime?           @map("financial_approved_at") @db.Timestamptz(6)
+  analysisApprovedById  String?             @map("analysis_approved_by_id")
+  analysisApprovedAt    DateTime?           @map("analysis_approved_at") @db.Timestamptz(6)
+  import_process_items  ImportProcessItem[]
+  materialReceivings    MaterialReceiving[]
+  items                 PurchaseOrderItem[]
+  company               Company             @relation(fields: [companyId], references: [id])
+  quote                 Quote?              @relation(fields: [quoteId], references: [id])
+  supplier              Supplier            @relation(fields: [supplierId], references: [id])
+  receivedInvoices      ReceivedInvoice[]
+
+  @@index([status])
+  @@index([companyId], map: "idx_purchase_orders_companyId")
+  @@index([supplierId], map: "idx_purchase_orders_supplierId")
+  @@index([quoteId])
+  @@unique([companyId, legacyId])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id                     String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchaseOrderId        String                  @db.Uuid
+  materialId             String                  @db.Uuid
+  quoteItemId            String?                 @db.Uuid
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal                   @db.Decimal(15, 2) @default(0)
+  totalPrice             Decimal                   @db.Decimal(15, 2) @default(0)
+  receivedQty            Decimal                   @db.Decimal(15, 4) @default(0)
+  deliveryDays           Int?
+  notes                  String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @default(now()) @updatedAt
+  materialReceivingItems MaterialReceivingItem[]
+  material               Material                @relation(fields: [materialId], references: [id])
+  purchaseOrder          PurchaseOrder           @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  quoteItem              QuoteItem?              @relation(fields: [quoteItemId], references: [id])
+  receivedInvoiceItems   ReceivedInvoiceItem[]
+
+  @@index([materialId], map: "idx_purchase_order_items_materialId")
+  @@index([purchaseOrderId], map: "idx_purchase_order_items_purchaseOrderId")
+  @@index([quoteItemId])
+  @@map("purchase_order_items")
+}
+
+model MaterialRequisition {
+  id          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        Int
+  companyId   String                    @db.Uuid
+  type        RequisitionType           @default(PRODUCTION)
+  costCenter  String?                   @db.VarChar(50)
+  projectCode String?                   @db.VarChar(50)
+  orderNumber String?                   @db.VarChar(50)
+  requestedBy String?                   @db.Uuid
+  requestedAt DateTime                  @default(now())
+  department  String?                   @db.VarChar(100)
+  status      RequisitionStatus         @default(DRAFT)
+  approvedBy  String?                   @db.Uuid
+  approvedAt  DateTime?
+  separatedBy String?                   @db.Uuid
+  separatedAt DateTime?
+  notes       String?
+  priority    Int                       @default(3)
+  createdBy   String?                   @db.Uuid
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @default(now()) @updatedAt
+  items       MaterialRequisitionItem[]
+  company     Company                   @relation(fields: [companyId], references: [id])
+  approvals   RequisitionApproval[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([status])
+  @@index([requestedAt])
+  @@index([type])
+  @@map("material_requisitions")
+}
+
+model MaterialRequisitionItem {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requisitionId String              @db.Uuid
+  materialId    String              @db.Uuid
+  requestedQty  Decimal  @db.Decimal(15, 4)
+  approvedQty   Decimal?  @db.Decimal(15, 4)
+  separatedQty  Decimal               @db.Decimal(10, 4) @default(0)
+  unitCost      Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost     Decimal               @db.Decimal(15, 2) @default(0)
+  notes         String?
+  createdAt     DateTime            @default(now())
+  material      Material            @relation(fields: [materialId], references: [id])
+  requisition   MaterialRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+
+  @@index([requisitionId])
+  @@index([materialId])
+  @@map("material_requisition_items")
+}
+
+model RequisitionApproval {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requisitionId String              @db.Uuid
+  level         Int                 @default(1)
+  approverId    String              @db.Uuid
+  status        ApprovalStatus      @default(PENDING)
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  comments      String?
+  createdAt     DateTime            @default(now())
+  approver      User                @relation(fields: [approverId], references: [id], onUpdate: NoAction, map: "requisition_approvals_approver_fkey")
+  requisition   MaterialRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "requisition_approvals_requisition_fkey")
+
+  @@index([requisitionId])
+  @@index([approverId])
+  @@index([status])
+  @@map("requisition_approvals")
+}
+
+model SupplierReturn {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  returnNumber        Int                  @default(autoincrement())
+  status              SupplierReturnStatus @default(DRAFT)
+  supplierId          String               @db.Uuid
+  receivedInvoiceId   String?              @db.Uuid
+  totalValue          Decimal                @db.Decimal(15, 2) @default(0)
+  returnDate          DateTime             @default(now())
+  approvedAt          DateTime?
+  approvedBy          String?              @db.Uuid
+  invoicedAt          DateTime?
+  completedAt         DateTime?
+  cancelledAt         DateTime?
+  cancelledBy         String?              @db.Uuid
+  cancellationReason  String?
+  returnInvoiceId     String?              @db.Uuid
+  returnInvoiceNumber Int?
+  returnInvoiceKey    String?              @db.VarChar(44)
+  notes               String?
+  companyId           String               @db.Uuid
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now()) @updatedAt
+  createdBy           String?              @db.Uuid
+  items               SupplierReturnItem[]
+  company             Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction)
+  receivedInvoice     ReceivedInvoice?     @relation(fields: [receivedInvoiceId], references: [id], onUpdate: NoAction)
+  supplier            Supplier             @relation(fields: [supplierId], references: [id], onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_supplier_returns_company")
+  @@index([returnDate], map: "idx_supplier_returns_date")
+  @@index([receivedInvoiceId], map: "idx_supplier_returns_receivedinvoiceid")
+  @@index([status], map: "idx_supplier_returns_status")
+  @@index([supplierId], map: "idx_supplier_returns_supplier")
+  @@map("supplier_returns")
+}
+
+model SupplierReturnItem {
+  id                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  returnId               String               @db.Uuid
+  materialId             String               @db.Uuid
+  receivedInvoiceItemId  String?              @db.Uuid
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal  @db.Decimal(15, 2)
+  totalPrice             Decimal  @db.Decimal(15, 2)
+  reason                 ReturnReason         @default(OTHER)
+  reasonNotes            String?
+  stockLocationId        String?              @db.Uuid
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @default(now()) @updatedAt
+  material               Material             @relation(fields: [materialId], references: [id], onUpdate: NoAction)
+  received_invoice_items ReceivedInvoiceItem? @relation(fields: [receivedInvoiceItemId], references: [id], onUpdate: NoAction)
+  return                 SupplierReturn       @relation(fields: [returnId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  stockLocation          StockLocation?       @relation(fields: [stockLocationId], references: [id], onUpdate: NoAction)
+
+  @@index([materialId], map: "idx_supplier_return_items_material")
+  @@index([receivedInvoiceItemId], map: "idx_supplier_return_items_receivedinvoiceitemid")
+  @@index([returnId], map: "idx_supplier_return_items_return")
+  @@index([stockLocationId], map: "idx_supplier_return_items_stocklocationid")
+  @@map("supplier_return_items")
+}

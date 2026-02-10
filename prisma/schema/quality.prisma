@@ -1,0 +1,88 @@
+model QualityInspection {
+  id                String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int
+  companyId         String                  @map("company_id") @db.Uuid
+  type              String                  @default("RECEIVING")
+  status            String                  @default("PENDING")
+  materialId        String?                 @map("material_id") @db.Uuid
+  productionOrderId String?                 @map("production_order_id") @db.Uuid
+  receivedInvoiceId String?                 @map("received_invoice_id") @db.Uuid
+  lotNumber         String?                 @map("lot_number")
+  quantity          Decimal                   @db.Decimal(15, 4) @default(0)
+  sampleSize        Int?                    @map("sample_size")
+  approvedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("approved_qty")
+  rejectedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("rejected_qty")
+  inspectionDate    DateTime                @default(now()) @map("inspection_date")
+  completedAt       DateTime?               @map("completed_at")
+  inspectorId       String?                 @map("inspector_id") @db.Uuid
+  notes             String?
+  createdAt         DateTime                @default(now()) @map("created_at")
+  updatedAt         DateTime                @default(now()) @map("updated_at")
+  non_conformities  NonConformity[]
+  items             QualityInspectionItem[]
+  company           Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_quality_inspections_company")
+  inspector         User?                   @relation(fields: [inspectorId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_inspector")
+  material          Material?               @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_material")
+  productionOrder   ProductionOrder?        @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_production_order")
+
+  @@index([companyId], map: "idx_quality_inspections_company_id")
+  @@index([materialId], map: "idx_quality_inspections_material_id")
+  @@index([productionOrderId], map: "idx_quality_inspections_production_order_id")
+  @@index([inspectorId], map: "idx_quality_inspections_inspector_id")
+  @@index([status], map: "idx_quality_inspections_status")
+  @@map("quality_inspections")
+}
+
+model QualityInspectionItem {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inspectionId   String            @map("inspection_id") @db.Uuid
+  characteristic String
+  specification  String?
+  toleranceMin   Decimal?            @db.Decimal(10, 4) @map("tolerance_min")
+  toleranceMax   Decimal?            @db.Decimal(10, 4) @map("tolerance_max")
+  measuredValue  Decimal?            @db.Decimal(15, 6) @map("measured_value")
+  result         String?           @default("PENDING")
+  notes          String?
+  createdAt      DateTime          @default(now()) @map("created_at")
+  inspection     QualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([inspectionId], map: "idx_quality_inspection_items_inspection_id")
+  @@map("quality_inspection_items")
+}
+
+model NonConformity {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int
+  companyId         String             @map("company_id") @db.Uuid
+  type              String             @default("INTERNAL")
+  status            String             @default("OPEN")
+  severity          String             @default("MINOR")
+  inspectionId      String?            @map("inspection_id") @db.Uuid
+  productionOrderId String?            @map("production_order_id") @db.Uuid
+  materialId        String?            @map("material_id") @db.Uuid
+  lotNumber         String?            @map("lot_number")
+  quantity          Decimal?             @db.Decimal(15, 4) @default(0)
+  description       String
+  rootCause         String?            @map("root_cause")
+  immediateAction   String?            @map("immediate_action")
+  correctiveAction  String?            @map("corrective_action")
+  preventiveAction  String?            @map("preventive_action")
+  responsibleId     String?            @map("responsible_id") @db.Uuid
+  dueDate           DateTime?          @map("due_date")
+  closedAt          DateTime?          @map("closed_at")
+  closedBy          String?            @map("closed_by") @db.Uuid
+  createdBy         String?            @map("created_by") @db.Uuid
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @map("updated_at")
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_non_conformities_company")
+  inspection        QualityInspection? @relation(fields: [inspectionId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_inspection")
+  material          Material?          @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_material")
+  productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_production_order")
+
+  @@index([companyId], map: "idx_non_conformities_company_id")
+  @@index([inspectionId], map: "idx_non_conformities_inspection_id")
+  @@index([materialId], map: "idx_non_conformities_material_id")
+  @@index([productionOrderId], map: "idx_non_conformities_production_order_id")
+  @@index([status], map: "idx_non_conformities_status")
+  @@map("non_conformities")
+}

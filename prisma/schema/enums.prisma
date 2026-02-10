@@ -1,0 +1,693 @@
+enum MaterialStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum MovementType {
+  ENTRY
+  EXIT
+  TRANSFER
+  ADJUSTMENT
+  RETURN
+  PRODUCTION
+}
+
+enum InventoryType {
+  RAW_MATERIAL
+  SEMI_FINISHED
+  FINISHED
+  CRITICAL
+  DEAD
+  SCRAP
+}
+
+enum QuoteStatus {
+  DRAFT
+  PENDING
+  SENT
+  RECEIVED
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PayableStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PayableType {
+  INVOICE
+  SERVICE
+  TAX
+  OTHER
+}
+
+enum PermissionLevel {
+  NONE
+  VIEW
+  EDIT
+  FULL
+}
+
+enum SystemModule {
+  MATERIALS
+  SUPPLIERS
+  QUOTES
+  RECEIVING
+  MATERIAL_OUT
+  INVENTORY
+  REPORTS
+  SETTINGS
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  SENT
+  PARTIAL
+  COMPLETED
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+}
+
+enum RequisitionStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  IN_SEPARATION
+  PARTIAL
+  COMPLETED
+  CANCELLED
+}
+
+enum RequisitionType {
+  PRODUCTION
+  MAINTENANCE
+  ADMINISTRATIVE
+  PROJECT
+  OTHER
+}
+
+enum ProductionOrderStatus {
+  PLANNED
+  RELEASED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BankAccountType {
+  CHECKING
+  SAVINGS
+  INVESTMENT
+  CASH
+}
+
+enum ReceivableStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+  WRITTEN_OFF
+}
+
+enum ReceivableType {
+  INVOICE
+  SERVICE
+  CONTRACT
+  OTHER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum BankTransactionType {
+  CREDIT
+  DEBIT
+  TRANSFER_IN
+  TRANSFER_OUT
+  FEE
+  INTEREST
+  ADJUSTMENT
+}
+
+enum MrpSuggestionType {
+  PRODUCTION
+  PURCHASE
+  RESCHEDULE
+  CANCEL
+}
+
+enum MrpSuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CONVERTED
+}
+
+enum StopType {
+  PLANNED
+  UNPLANNED
+  SETUP
+  MAINTENANCE
+  QUALITY
+  MATERIAL
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  COLD_CALL
+  TRADE_SHOW
+  SOCIAL_MEDIA
+  EMAIL
+  OTHER
+}
+
+enum SalesQuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CONVERTED
+}
+
+enum SalesOrderStatus {
+  PENDING
+  CONFIRMED
+  IN_PRODUCTION
+  READY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum TransferStatus {
+  DRAFT
+  PENDING
+  IN_TRANSIT
+  RECEIVED
+  CANCELLED
+}
+
+enum LocationType {
+  WAREHOUSE
+  PRODUCTION
+  QUALITY
+  SHIPPING
+  RECEIVING
+  EXTERNAL
+}
+
+enum ContractType {
+  CLT
+  PJ
+  TEMPORARY
+  INTERN
+  APPRENTICE
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  VACATION
+  LEAVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum TimeClockType {
+  CLOCK_IN
+  CLOCK_OUT
+  BREAK_START
+  BREAK_END
+}
+
+enum PayrollEventType {
+  SALARY
+  OVERTIME
+  BONUS
+  COMMISSION
+  ALLOWANCE
+  DEDUCTION
+  TAX
+  BENEFIT
+}
+
+enum WorkScheduleType {
+  FIXED
+  ROTATING
+  FLEXIBLE
+  SHIFT
+}
+
+enum HoursBankType {
+  CREDIT
+  DEBIT
+  COMPENSATION
+  EXPIRATION
+  ADJUSTMENT
+}
+
+enum TimeClockAdjustmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VacationStatus {
+  SCHEDULED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ThirteenthType {
+  FIRST_INSTALLMENT
+  SECOND_INSTALLMENT
+  FULL
+  PROPORTIONAL
+}
+
+enum ThirteenthStatus {
+  PENDING
+  CALCULATED
+  PAID
+  CANCELLED
+}
+
+enum TerminationType {
+  RESIGNATION
+  DISMISSAL_WITH_CAUSE
+  DISMISSAL_NO_CAUSE
+  MUTUAL_AGREEMENT
+  CONTRACT_END
+  RETIREMENT
+  DEATH
+}
+
+enum TerminationStatus {
+  DRAFT
+  CALCULATED
+  APPROVED
+  PAID
+  HOMOLOGATED
+  CANCELLED
+}
+
+enum ReceivingStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  PARTIAL
+  CANCELLED
+}
+
+enum ReceivingItemStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PARTIAL
+}
+
+enum TaskStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+
+  @@map("task_status")
+}
+
+enum TaskPriority {
+  URGENT
+  HIGH
+  NORMAL
+  LOW
+
+  @@map("task_priority")
+}
+
+enum TaskEntityType {
+  NFE
+  REQUISITION
+  PURCHASE_ORDER
+  QUOTE
+  PAYABLE
+  RECEIVABLE
+  PRODUCTION_ORDER
+  OTHER
+
+  @@map("task_entity_type")
+}
+
+enum WorkflowCategory {
+  APPROVAL
+  PROCESS
+  NOTIFICATION
+  INTEGRATION
+}
+
+enum WorkflowTriggerType {
+  MANUAL
+  AUTOMATIC
+  SCHEDULED
+  EVENT
+}
+
+enum WorkflowStepType {
+  START
+  APPROVAL
+  TASK
+  DECISION
+  NOTIFICATION
+  END
+  USER_TASK
+  SERVICE_TASK
+  SCRIPT_TASK
+  GATEWAY_EXCLUSIVE
+  GATEWAY_PARALLEL
+  GATEWAY_INCLUSIVE
+  SUBPROCESS
+  TIMER_EVENT
+  MESSAGE_EVENT
+  SIGNAL_EVENT
+}
+
+enum WorkflowAssigneeType {
+  USER
+  ROLE
+  DEPARTMENT
+  DYNAMIC
+}
+
+enum WorkflowInstanceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum WorkflowStepAction {
+  APPROVED
+  REJECTED
+  COMPLETED
+  DELEGATED
+  SKIPPED
+}
+
+enum PaymentRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum SefazManifestacao {
+  CIENCIA
+  CONFIRMACAO
+  DESCONHECIMENTO
+  NAO_REALIZADA
+
+  @@map("sefaz_manifestacao")
+}
+
+enum SupplierReturnStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  INVOICED
+  COMPLETED
+  CANCELLED
+}
+
+enum ReturnReason {
+  QUALITY_ISSUE
+  WRONG_PRODUCT
+  WRONG_QUANTITY
+  DAMAGED
+  EXPIRED
+  NOT_ORDERED
+  PRICE_DIFFERENCE
+  OTHER
+}
+
+enum GedDocumentStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum GedEntityType {
+  SUPPLIER
+  CUSTOMER
+  EMPLOYEE
+  CONTRACT
+  PURCHASE_ORDER
+  SALES_ORDER
+  INVOICE
+  MATERIAL
+  PROJECT
+  GENERAL
+}
+
+enum PortType {
+  MARITIME
+  AIRPORT
+  BORDER
+
+  @@map("port_type")
+}
+
+enum ImportStatus {
+  DRAFT
+  PENDING_SHIPMENT
+  IN_TRANSIT
+  ARRIVED
+  IN_CLEARANCE
+  CLEARED
+  DELIVERED
+  CANCELLED
+
+  @@map("import_status")
+}
+
+enum ExchangeStatus {
+  OPEN
+  PARTIALLY_LIQUIDATED
+  LIQUIDATED
+  CANCELLED
+
+  @@map("exchange_status")
+}
+
+enum ProductStatus {
+  DRAFT        @map("draft")
+  ACTIVE       @map("active")
+  INACTIVE     @map("inactive")
+  DISCONTINUED @map("discontinued")
+
+  @@map("product_status")
+}
+
+enum ProductVideoType {
+  TRAINING     @map("training")
+  DEMO         @map("demo")
+  TESTIMONIAL  @map("testimonial")
+  UNBOXING     @map("unboxing")
+  INSTALLATION @map("installation")
+
+  @@map("product_video_type")
+}
+
+enum ProductAttachmentType {
+  DATASHEET   @map("datasheet")
+  MANUAL      @map("manual")
+  CERTIFICATE @map("certificate")
+  BROCHURE    @map("brochure")
+  WARRANTY    @map("warranty")
+
+  @@map("product_attachment_type")
+}
+
+enum collection_action_status {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  RESPONDED
+}
+
+enum collection_action_type {
+  EMAIL
+  SMS
+  WHATSAPP
+  PHONE
+  LETTER
+  NEGATIVATION
+  PROTEST
+}
+
+enum contract_type {
+  PURCHASE
+  FINANCIAL
+  PRESUMED
+}
+
+enum freight_type {
+  CIF
+  FOB
+  PICKUP
+}
+
+enum invoice_status {
+  PENDING
+  VALIDATED
+  APPROVED
+  REJECTED
+}
+
+enum operation_nature {
+  INDUSTRIALIZATION
+  RESALE
+  CONSUMPTION
+  SERVICES
+  RAW_MATERIAL
+  SECONDARY
+  PACKAGING
+  FIXED_ASSET
+}
+
+enum payable_contract_type {
+  PURCHASE
+  FINANCIAL
+  PRESUMED
+}
+
+enum production_delivery_type {
+  ASSEMBLED
+  LOOSE
+}
+
+enum production_execution_type {
+  MANUFACTURE
+  ALTER
+}
+
+enum production_request_type {
+  SALES
+  STOCK
+  EXPORT
+  NORMAL
+  REWORK
+}
+
+enum raw_material_origin {
+  INDUSTRIALIZED_STOCK
+  RAW_MATERIAL
+  FOUNDRY
+}
+
+enum supplier_certification_type {
+  UNDEFINED
+  ISO_RBS
+  INITIAL_EVAL
+  STRATEGIC
+}
+
+enum supplier_iqf_status {
+  NEW
+  APPROVED
+  REJECTED
+}
+
+enum DependentType {
+  SPOUSE
+  CHILD
+  STEPCHILD
+  PARENT
+  LEGAL_GUARDIAN
+  OTHER
+}
+
+enum LeaveType {
+  MEDICAL
+  MATERNITY
+  PATERNITY
+  BEREAVEMENT
+  MARRIAGE
+  MILITARY
+  JURY_DUTY
+  BLOOD_DONATION
+  UNION
+  OTHER
+}
+
+enum LotStatus {
+  AVAILABLE
+  RESERVED
+  QUARANTINE
+  EXPIRED
+  CONSUMED
+  BLOCKED
+}
+
+enum CategoryLevel {
+  DOMAIN
+  TYPE
+  SUBFAMILY
+  SERIES
+}
+
+enum AttributeDataType {
+  FLOAT
+  INTEGER
+  STRING
+  BOOLEAN
+  ENUM
+}

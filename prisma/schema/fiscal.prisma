@@ -1,0 +1,320 @@
+model ReceivedInvoice {
+  id                          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  accessKey                   String                @unique @db.VarChar(44)
+  invoiceNumber               Int
+  series                      Int                   @default(1)
+  issueDate                   DateTime
+  supplierId                  String?               @db.Uuid
+  supplierCnpj                String                @db.VarChar(18)
+  supplierName                String                @db.VarChar(255)
+  totalProducts               Decimal                 @db.Decimal(15, 2) @default(0)
+  totalInvoice                Decimal                 @db.Decimal(15, 2) @default(0)
+  freightValue                Decimal                 @db.Decimal(15, 2) @default(0)
+  discountValue               Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsBase                    Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue                   Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  pisValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  cofinsValue                 Decimal                 @db.Decimal(15, 2) @default(0)
+  status                      String                @default("PENDING") @db.VarChar(20)
+  purchaseOrderId             String?               @db.Uuid
+  receivedAt                  DateTime?
+  receivedBy                  String?               @db.Uuid
+  approvedAt                  DateTime?
+  approvedBy                  String?               @db.Uuid
+  rejectedAt                  DateTime?
+  rejectedBy                  String?               @db.Uuid
+  rejectionReason             String?
+  companyId                   String                @db.Uuid
+  xmlContent                  String?
+  createdAt                   DateTime              @default(now())
+  updatedAt                   DateTime              @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
+  insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
+  other_expenses              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_credit                 Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_sn_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  ipi_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  pis_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  cofins_credit               Decimal?                @db.Decimal(15, 2) @default(0)
+  cost_center_group           Int?
+  cost_center_confirmed_by_id String?
+  payment_condition_id        String?
+  installments_calculated     Boolean?              @default(false)
+  payment_date                DateTime?             @db.Timestamptz(6)
+  additional_info             String?
+  xml_supplier_id             String?
+  accountsPayable             AccountsPayable[]
+  materialReceivings          MaterialReceiving[]
+  items                       ReceivedInvoiceItem[]
+  company                     Company               @relation(fields: [companyId], references: [id], onUpdate: NoAction)
+  purchaseOrder               PurchaseOrder?        @relation(fields: [purchaseOrderId], references: [id], onUpdate: NoAction)
+  supplier                    Supplier?             @relation(fields: [supplierId], references: [id], onUpdate: NoAction)
+  sefazPendingNfes            SefazPendingNfe[]
+  supplierReturns             SupplierReturn[]
+
+  @@index([companyId], map: "idx_received_invoices_companyId")
+  @@index([supplierId], map: "idx_received_invoices_supplierId")
+  @@index([purchaseOrderId])
+  @@unique([companyId, legacyId])
+  @@map("received_invoices")
+  @@index([companyId, status])
+}
+
+model ReceivedInvoiceItem {
+  id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId             String               @db.Uuid
+  itemNumber            Int
+  productCode           String               @db.VarChar(60)
+  productName           String               @db.VarChar(255)
+  ncm                   String?              @db.VarChar(10)
+  cfop                  Int
+  quantity              Decimal  @db.Decimal(15, 4)
+  unit                  String               @db.VarChar(10)
+  unitPrice             Decimal  @db.Decimal(15, 2)
+  totalPrice            Decimal  @db.Decimal(15, 2)
+  icmsRate              Decimal                @db.Decimal(10, 4) @default(0)
+  icmsValue             Decimal                @db.Decimal(15, 2) @default(0)
+  ipiRate               Decimal                @db.Decimal(10, 4) @default(0)
+  ipiValue              Decimal                @db.Decimal(15, 2) @default(0)
+  materialId            String?              @db.Uuid
+  purchaseOrderItemId   String?              @db.Uuid
+  matchStatus           String               @default("PENDING") @db.VarChar(20)
+  divergenceType        String?              @db.VarChar(20)
+  divergenceNote        String?
+  receivedQty           Decimal                @db.Decimal(15, 4) @default(0)
+  createdAt             DateTime             @default(now())
+  invoice               ReceivedInvoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  material              Material?            @relation(fields: [materialId], references: [id], onUpdate: NoAction)
+  purchaseOrderItem     PurchaseOrderItem?   @relation(fields: [purchaseOrderItemId], references: [id], onUpdate: NoAction)
+  supplier_return_items SupplierReturnItem[]
+
+  @@index([invoiceId], map: "idx_received_invoice_items_invoiceId")
+  @@index([materialId], map: "idx_received_invoice_items_materialId")
+  @@index([purchaseOrderItemId])
+  @@map("received_invoice_items")
+}
+
+model IssuedInvoice {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code               Int
+  invoiceNumber      String               @db.VarChar(20)
+  series             String               @default("1") @db.VarChar(5)
+  model              String               @default("55") @db.VarChar(5)
+  accessKey          String?              @db.VarChar(50)
+  protocolNumber     String?              @db.VarChar(20)
+  companyId          String               @db.Uuid
+  customerId         String               @db.Uuid
+  salesOrderId       String?              @db.Uuid
+  issueDate          DateTime             @default(now())
+  operationType      String               @default("SALE") @db.VarChar(20)
+  status             String               @default("DRAFT") @db.VarChar(20)
+  subtotal           Decimal              @default(0) @db.Decimal(15, 2)
+  discountValue      Decimal              @default(0) @db.Decimal(15, 2)
+  shippingValue      Decimal              @default(0) @db.Decimal(15, 2)
+  icmsBase           Decimal?             @default(0) @db.Decimal(15, 2)
+  icmsValue          Decimal?             @default(0) @db.Decimal(15, 2)
+  ipiValue           Decimal?             @default(0) @db.Decimal(15, 2)
+  pisValue           Decimal?             @default(0) @db.Decimal(15, 2)
+  cofinsValue        Decimal?             @default(0) @db.Decimal(15, 2)
+  totalValue         Decimal              @default(0) @db.Decimal(15, 2)
+  paymentTerms       String?
+  notes              String?
+  xmlContent         String?
+  authorizedAt       DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  correctionSeq      Int?                 @default(0)
+  lastCorrection     String?
+  lastCorrectionAt   DateTime?
+  createdBy          String?              @db.Uuid
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  receivables        AccountsReceivable[]
+  items              IssuedInvoiceItem[]
+  customer           Customer             @relation(fields: [customerId], references: [id])
+  salesOrder         SalesOrder?          @relation("IssuedInvoiceOrder", fields: [salesOrderId], references: [id])
+  nfe_queue_jobs     nfe_queue_jobs[]
+
+  @@index([salesOrderId])
+  @@index([issueDate])
+  @@index([companyId], map: "idx_issued_invoices_companyId")
+  @@index([customerId], map: "idx_issued_invoices_customerId")
+  @@unique([companyId, legacyId])
+  @@map("issued_invoices")
+  @@index([companyId, status])
+}
+
+model IssuedInvoiceItem {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId       String        @db.Uuid
+  materialId      String        @db.Uuid
+  description     String?
+  quantity        Decimal       @db.Decimal(15, 4)
+  unit            String        @default("UN") @db.VarChar(10)
+  unitPrice       Decimal       @db.Decimal(15, 4)
+  discountPercent Decimal?      @default(0) @db.Decimal(5, 2)
+  totalPrice      Decimal       @db.Decimal(15, 2)
+  sequence        Int           @default(0)
+  cfop            String?       @db.VarChar(10)
+  ncm             String?       @db.VarChar(20)
+  icmsBase        Decimal?      @default(0) @db.Decimal(15, 2)
+  icmsRate        Decimal?      @default(0) @db.Decimal(5, 2)
+  icmsValue       Decimal?      @default(0) @db.Decimal(15, 2)
+  ipiBase         Decimal?      @default(0) @db.Decimal(15, 2)
+  ipiRate         Decimal?      @default(0) @db.Decimal(5, 2)
+  ipiValue        Decimal?      @default(0) @db.Decimal(15, 2)
+  createdAt       DateTime      @default(now())
+  invoice         IssuedInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  material        Material      @relation(fields: [materialId], references: [id])
+
+  @@index([invoiceId], map: "idx_issued_invoice_items_invoiceId")
+  @@index([materialId], map: "idx_issued_invoice_items_material")
+  @@map("issued_invoice_items")
+}
+
+model SefazSyncConfig {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String    @unique @db.Uuid
+  isEnabled      Boolean   @default(false)
+  syncInterval   Int       @default(60)
+  lastSyncAt     DateTime?
+  nextSyncAt     DateTime?
+  autoManifest   Boolean   @default(false)
+  manifestType   String?   @default("CIENCIA") @db.VarChar(20)
+  notifyOnNewNfe Boolean   @default(true)
+  notifyEmail    String?   @db.VarChar(255)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("sefaz_sync_configs")
+}
+
+model SefazSyncLog {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId    String    @db.Uuid
+  syncType     String    @db.VarChar(20)
+  status       String    @db.VarChar(20)
+  startedAt    DateTime  @default(now())
+  completedAt  DateTime?
+  nfesFound    Int?      @default(0)
+  nfesImported Int?      @default(0)
+  nfesSkipped  Int?      @default(0)
+  nfesError    Int?      @default(0)
+  errorMessage String?
+  details      Json?     @default("{}")
+  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("sefaz_sync_logs")
+}
+
+model SefazPendingNfe {
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId         String                 @db.Uuid
+  chaveAcesso       String                 @db.VarChar(44)
+  cnpjEmitente      String                 @db.VarChar(14)
+  nomeEmitente      String?                @db.VarChar(255)
+  dataEmissao       DateTime?              @db.Date
+  valorTotal        Decimal?               @db.Decimal(15, 2)
+  situacao          String                 @default("PENDENTE") @db.VarChar(20)
+  manifestacao      String?                @db.VarChar(20)
+  manifestadaEm     DateTime?
+  xmlContent        String?
+  errorMessage      String?
+  receivedInvoiceId String?                @db.Uuid
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @default(now()) @updatedAt
+  manifestacoes     SefazManifestacaoLog[]
+  company           Company                @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  receivedInvoice   ReceivedInvoice?       @relation(fields: [receivedInvoiceId], references: [id], onUpdate: NoAction)
+
+  @@unique([companyId, chaveAcesso])
+  @@index([situacao])
+  @@index([chaveAcesso])
+  @@index([companyId], map: "idx_sefaz_pending_nfes_companyId")
+  @@index([receivedInvoiceId])
+  @@map("sefaz_pending_nfes")
+}
+
+model SefazManifestacaoLog {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId        String           @db.Uuid
+  chaveAcesso      String           @db.VarChar(44)
+  tipo             String           @db.VarChar(20)
+  justificativa    String?          @db.VarChar(255)
+  protocolo        String?          @db.VarChar(50)
+  dataManifestacao DateTime?        @default(now()) @db.Timestamptz(6)
+  status           String           @db.VarChar(20)
+  errorMessage     String?
+  pendingNfeId     String?          @db.Uuid
+  userId           String?          @db.Uuid
+  createdAt        DateTime?        @default(now()) @db.Timestamptz(6)
+  pendingNfe       SefazPendingNfe? @relation(fields: [pendingNfeId], references: [id], onUpdate: NoAction, map: "fk_manifestacao_pending_nfe")
+
+  @@index([chaveAcesso], map: "idx_sefaz_manifestacao_logs_chave")
+  @@index([companyId], map: "idx_sefaz_manifestacao_logs_company")
+  @@index([dataManifestacao], map: "idx_sefaz_manifestacao_logs_data")
+  @@index([pendingNfeId], map: "idx_sefaz_manifestacao_logs_pendingNfeId")
+  @@index([tipo], map: "idx_sefaz_manifestacao_logs_tipo")
+  @@map("sefaz_manifestacao_logs")
+}
+
+model import_documents {
+  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  import_process_id String        @db.Uuid
+  document_type     String        @db.VarChar(50)
+  document_number   String?       @db.VarChar(100)
+  issue_date        DateTime?     @db.Date
+  file_name         String?       @db.VarChar(255)
+  file_path         String?       @db.VarChar(500)
+  notes             String?
+  created_at        DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime      @default(now()) @db.Timestamptz(6)
+  import_processes  ImportProcess @relation(fields: [import_process_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([import_process_id], map: "idx_import_documents_process")
+}
+
+model nfe_queue_jobs {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nfe_id          String        @db.Uuid
+  company_id      String        @db.Uuid
+  status          String        @default("pending")
+  attempts        Int           @default(0)
+  max_attempts    Int           @default(3)
+  last_error      String?
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime      @default(now()) @db.Timestamptz(6)
+  completed_at    DateTime?     @db.Timestamptz(6)
+  next_retry_at   DateTime?     @db.Timestamptz(6)
+  message_id      BigInt?
+  issued_invoices IssuedInvoice @relation(fields: [nfe_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nfe")
+
+  @@index([company_id], map: "idx_nfe_queue_jobs_company_id")
+  @@index([nfe_id], map: "idx_nfe_queue_jobs_nfe_id")
+  @@index([status], map: "idx_nfe_queue_jobs_status")
+}
+
+model TaxRegime {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tax_regimes")
+}

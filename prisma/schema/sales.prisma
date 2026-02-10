@@ -1,0 +1,266 @@
+model Customer {
+  id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                    String
+  companyId               String               @db.Uuid
+  type                    String               @default("COMPANY")
+  companyName             String
+  tradeName               String?
+  cnpj                    String?
+  cpf                     String?
+  stateRegistration       String?
+  municipalRegistration   String?
+  email                   String?
+  phone                   String?
+  mobile                  String?
+  website                 String?
+  contactName             String?
+  addressStreet           String?
+  addressNumber           String?
+  addressComplement       String?
+  addressNeighborhood     String?
+  addressCity             String?
+  addressState            String?
+  addressZipCode          String?
+  creditLimit             Decimal?               @db.Decimal(15, 2) @default(0)
+  paymentTermDays         Int?                 @default(30)
+  status                  String               @default("ACTIVE")
+  notes                   String?
+  isShared                Boolean              @default(false)
+  createdBy               String?              @db.Uuid
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  customerGroupId         String?              @map("customer_group_id")
+  customerTypeId          String?              @map("customer_type_id")
+  alphaCode               String?              @map("alpha_code")
+  salesRepId              String?              @map("sales_rep_id")
+  externalSalesRepId      String?              @map("external_sales_rep_id")
+  mainContactId           String?              @map("main_contact_id")
+  lastVisitDate           DateTime?            @map("last_visit_date") @db.Timestamptz(6)
+  relationshipStartDate   DateTime?            @map("relationship_start_date") @db.Timestamptz(6)
+  visitFrequency          Int?                 @map("visit_frequency")
+  generatePeriodicVisit   Boolean?             @default(false) @map("generate_periodic_visit")
+  minInvoiceValue         Decimal?               @db.Decimal(15, 4) @map("min_invoice_value")
+  defaultMessage          String?              @map("default_message")
+  defaultPaymentCondition String?              @map("default_payment_condition")
+  applySt                 Boolean?             @default(false) @map("apply_st")
+  defaultOrderNotes       String?              @map("default_order_notes")
+  receivables             AccountsReceivable[]
+  company                 Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "customers_company_fkey")
+  issuedInvoices          IssuedInvoice[]
+  leads                   Lead[]
+  salesOrders             SalesOrder[]
+  salesQuotes             SalesQuote[]
+
+  @@unique([code, companyId])
+  @@index([cnpj])
+  @@index([status])
+  @@index([companyId], map: "idx_customers_companyId")
+  @@unique([companyId, legacyId])
+  @@map("customers")
+  @@index([companyId, code])
+}
+
+model Lead {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              String
+  companyId         String         @db.Uuid
+  customerId        String?        @db.Uuid
+  companyName       String
+  contactName       String?
+  email             String?
+  phone             String?
+  source            LeadSource     @default(OTHER)
+  status            LeadStatus     @default(NEW)
+  estimatedValue    Decimal?  @db.Decimal(15, 2)
+  probability       Int?           @default(50)
+  expectedCloseDate DateTime?
+  description       String?
+  notes             String?
+  assignedTo        String?        @db.Uuid
+  lastContactAt     DateTime?
+  wonAt             DateTime?
+  lostAt            DateTime?
+  lostReason        String?
+  createdBy         String?        @db.Uuid
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @default(now()) @updatedAt
+  activities        LeadActivity[]
+  assignedUser      User?          @relation(fields: [assignedTo], references: [id], onUpdate: NoAction, map: "leads_assigned_fkey")
+  company           Company        @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "leads_company_fkey")
+  customer          Customer?      @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "leads_customer_fkey")
+  salesQuotes       SalesQuote[]
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([assignedTo], map: "idx_leads_assignedto")
+  @@map("leads")
+}
+
+model LeadActivity {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leadId      String    @db.Uuid
+  type        String
+  subject     String
+  description String?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdBy   String?   @db.Uuid
+  createdAt   DateTime  @default(now())
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "lead_activities_lead_fkey")
+
+  @@index([leadId])
+  @@index([leadId], map: "idx_lead_activities_lead")
+  @@map("lead_activities")
+}
+
+model SalesQuote {
+  id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                                            Int
+  companyId                                       String           @db.Uuid
+  customerId                                      String           @db.Uuid
+  leadId                                          String?          @db.Uuid
+  status                                          SalesQuoteStatus @default(DRAFT)
+  issueDate                                       DateTime         @default(now())
+  validUntil                                      DateTime?
+  deliveryDays                                    Int?
+  paymentTerms                                    String?
+  shippingMethod                                  String?
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
+  notes                                           String?
+  internalNotes                                   String?
+  sentAt                                          DateTime?
+  viewedAt                                        DateTime?
+  acceptedAt                                      DateTime?
+  rejectedAt                                      DateTime?
+  rejectionReason                                 String?
+  convertedToOrderId                              String?          @db.Uuid
+  createdBy                                       String?          @db.Uuid
+  createdAt                                       DateTime         @default(now())
+  updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  sales_orders_sales_orders_quoteIdTosales_quotes SalesOrder[]     @relation("sales_orders_quoteIdTosales_quotes")
+  items                                           SalesQuoteItem[]
+  company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
+  customer                                        Customer         @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "sales_quotes_customer_fkey")
+  lead                                            Lead?            @relation(fields: [leadId], references: [id], onUpdate: NoAction, map: "sales_quotes_lead_fkey")
+  convertedToOrder                                SalesOrder?      @relation("QuoteToOrder", fields: [convertedToOrderId], references: [id], onUpdate: NoAction, map: "sales_quotes_order_fkey")
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([convertedToOrderId], map: "idx_sales_quotes_converted_order")
+  @@index([leadId], map: "idx_sales_quotes_lead")
+  @@unique([companyId, legacyId])
+  @@map("sales_quotes")
+  @@index([companyId, status])
+}
+
+model SalesQuoteItem {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quoteId         String     @db.Uuid
+  materialId      String     @db.Uuid
+  description     String?
+  quantity        Decimal  @db.Decimal(15, 4)
+  unit            String     @default("UN")
+  unitPrice       Decimal  @db.Decimal(15, 2)
+  discountPercent Decimal      @db.Decimal(10, 4) @default(0)
+  totalPrice      Decimal  @db.Decimal(15, 2)
+  sequence        Int        @default(0)
+  notes           String?
+  createdAt       DateTime   @default(now())
+  material        Material   @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "sales_quote_items_material_fkey")
+  quote           SalesQuote @relation(fields: [quoteId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sales_quote_items_quote_fkey")
+
+  @@index([quoteId])
+  @@index([materialId], map: "idx_sales_quote_items_material")
+  @@map("sales_quote_items")
+}
+
+model SalesOrder {
+  id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                                            Int
+  companyId                                       String           @db.Uuid
+  customerId                                      String           @db.Uuid
+  quoteId                                         String?          @db.Uuid
+  status                                          SalesOrderStatus @default(PENDING)
+  orderDate                                       DateTime         @default(now())
+  deliveryDate                                    DateTime?
+  shippedAt                                       DateTime?
+  deliveredAt                                     DateTime?
+  paymentTerms                                    String?
+  shippingMethod                                  String?
+  shippingAddress                                 String?
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
+  notes                                           String?
+  internalNotes                                   String?
+  invoiceNumber                                   String?
+  invoiceDate                                     DateTime?
+  trackingCode                                    String?
+  cancelledAt                                     DateTime?
+  cancellationReason                              String?
+  createdBy                                       String?          @db.Uuid
+  createdAt                                       DateTime         @default(now())
+  updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  issuedInvoices                                  IssuedInvoice[]  @relation("IssuedInvoiceOrder")
+  items                                           SalesOrderItem[]
+  company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")
+  customer                                        Customer         @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "sales_orders_customer_fkey")
+  sales_quotes_sales_orders_quoteIdTosales_quotes SalesQuote?      @relation("sales_orders_quoteIdTosales_quotes", fields: [quoteId], references: [id], onUpdate: NoAction, map: "sales_orders_quote_fkey")
+  sourceQuote                                     SalesQuote[]     @relation("QuoteToOrder")
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+  @@index([quoteId], map: "idx_sales_orders_quote")
+  @@unique([companyId, legacyId])
+  @@map("sales_orders")
+  @@index([companyId, status])
+}
+
+model SalesOrderItem {
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId           String           @db.Uuid
+  materialId        String           @db.Uuid
+  description       String?
+  quantity          Decimal  @db.Decimal(15, 4)
+  deliveredQty      Decimal            @db.Decimal(15, 4) @default(0)
+  unit              String           @default("UN")
+  unitPrice         Decimal  @db.Decimal(15, 2)
+  discountPercent   Decimal            @db.Decimal(10, 4) @default(0)
+  totalPrice        Decimal  @db.Decimal(15, 2)
+  sequence          Int              @default(0)
+  productionOrderId String?          @db.Uuid
+  notes             String?
+  createdAt         DateTime         @default(now())
+  material          Material         @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "sales_order_items_material_fkey")
+  order             SalesOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sales_order_items_order_fkey")
+  productionOrder   ProductionOrder? @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "sales_order_items_production_fkey")
+
+  @@index([orderId])
+  @@index([materialId], map: "idx_sales_order_items_material")
+  @@index([productionOrderId], map: "idx_sales_order_items_production")
+  @@map("sales_order_items")
+}

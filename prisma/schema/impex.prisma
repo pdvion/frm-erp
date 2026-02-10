@@ -1,0 +1,245 @@
+model Port {
+  id                                                           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                                                         String          @unique
+  name                                                         String
+  country                                                      String
+  type                                                         PortType
+  companyId                                                    String?         @db.Uuid
+  isShared                                                     Boolean         @default(true)
+  isActive                                                     Boolean         @default(true)
+  createdAt                                                    DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt                                                    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  import_processes_import_processes_destination_port_idToports ImportProcess[] @relation("import_processes_destination_port_idToports")
+  import_processes_import_processes_origin_port_idToports      ImportProcess[] @relation("import_processes_origin_port_idToports")
+
+  @@index([companyId], map: "idx_ports_company")
+  @@index([country], map: "idx_ports_country")
+  @@index([type], map: "idx_ports_type")
+  @@map("ports")
+}
+
+model CustomsBroker {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code             Int             @default(autoincrement())
+  name             String
+  cnpj             String          @unique
+  email            String?
+  phone            String?
+  address          String?
+  city             String?
+  state            String?
+  companyId        String          @db.Uuid
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  import_processes ImportProcess[]
+
+  @@index([companyId], map: "idx_customs_brokers_company")
+  @@map("customs_brokers")
+}
+
+model CargoType {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code             String          @unique
+  name             String
+  description      String?
+  isShared         Boolean         @default(true)
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  import_processes ImportProcess[]
+
+  @@map("cargo_types")
+}
+
+model Incoterm {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code             String          @unique
+  name             String
+  description      String?
+  isShared         Boolean         @default(true)
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  import_processes ImportProcess[]
+
+  @@map("incoterms")
+}
+
+model ImportProcess {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  processNumber       String               @map("process_number") @db.VarChar(50)
+  reference           String?              @db.VarChar(100)
+  supplierId          String?              @map("supplier_id") @db.Uuid
+  brokerId            String?              @map("broker_id") @db.Uuid
+  incotermId          String?              @map("incoterm_id") @db.Uuid
+  cargoTypeId         String?              @map("cargo_type_id") @db.Uuid
+  originPortId        String?              @map("origin_port_id") @db.Uuid
+  destinationPortId   String?              @map("destination_port_id") @db.Uuid
+  status              ImportStatus         @default(DRAFT)
+  orderDate           DateTime?            @map("order_date") @db.Date
+  etd                 DateTime?            @db.Date
+  eta                 DateTime?            @db.Date
+  actualDeparture     DateTime?            @map("actual_departure") @db.Date
+  actualArrival       DateTime?            @map("actual_arrival") @db.Date
+  clearanceDate       DateTime?            @map("clearance_date") @db.Date
+  deliveryDate        DateTime?            @map("delivery_date") @db.Date
+  vesselName          String?              @map("vessel_name") @db.VarChar(200)
+  voyageNumber        String?              @map("voyage_number") @db.VarChar(50)
+  blNumber            String?              @map("bl_number") @db.VarChar(100)
+  containerNumbers    String?              @map("container_numbers")
+  currency            String?              @default("USD") @db.VarChar(3)
+  fobValue            Decimal?             @default(0) @map("fob_value") @db.Decimal(18, 2)
+  freightValue        Decimal?             @default(0) @map("freight_value") @db.Decimal(18, 2)
+  insuranceValue      Decimal?             @default(0) @map("insurance_value") @db.Decimal(18, 2)
+  cifValue            Decimal?             @default(0) @map("cif_value") @db.Decimal(18, 2)
+  customsFees         Decimal?             @default(0) @map("customs_fees") @db.Decimal(18, 2)
+  storageFees         Decimal?             @default(0) @map("storage_fees") @db.Decimal(18, 2)
+  otherCosts          Decimal?             @default(0) @map("other_costs") @db.Decimal(18, 2)
+  totalCostBrl        Decimal?             @default(0) @map("total_cost_brl") @db.Decimal(18, 2)
+  diNumber            String?              @map("di_number") @db.VarChar(50)
+  diDate              DateTime?            @map("di_date") @db.Date
+  notes               String?
+  companyId           String               @map("company_id") @db.Uuid
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
+  exchangeContracts   ExchangeContract[]
+  importDocuments     import_documents[]
+  importProcessCosts  ImportProcessCost[]
+  importProcessEvents ImportProcessEvent[]
+  importProcessItems  ImportProcessItem[]
+  customsBroker       CustomsBroker?       @relation(fields: [brokerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cargoType           CargoType?           @relation(fields: [cargoTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  destinationPort     Port?                @relation("import_processes_destination_port_idToports", fields: [destinationPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  incoterm            Incoterm?            @relation(fields: [incotermId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  originPort          Port?                @relation("import_processes_origin_port_idToports", fields: [originPortId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier            Supplier?            @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([processNumber, companyId], map: "unique_process_number")
+  @@index([brokerId], map: "idx_import_processes_broker")
+  @@index([cargoTypeId], map: "idx_import_processes_cargo_type")
+  @@index([companyId], map: "idx_import_processes_company")
+  @@index([eta, etd], map: "idx_import_processes_dates")
+  @@index([destinationPortId], map: "idx_import_processes_dest_port")
+  @@index([incotermId], map: "idx_import_processes_incoterm")
+  @@index([originPortId], map: "idx_import_processes_origin_port")
+  @@index([status], map: "idx_import_processes_status")
+  @@index([supplierId], map: "idx_import_processes_supplier")
+  @@map("import_processes")
+}
+
+model ImportProcessItem {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String         @map("import_process_id") @db.Uuid
+  materialId      String?        @map("material_id") @db.Uuid
+  purchaseOrderId String?        @map("purchase_order_id") @db.Uuid
+  description     String?        @db.VarChar(500)
+  ncmCode         String?        @map("ncm_code") @db.VarChar(10)
+  quantity        Decimal        @default(0) @db.Decimal(18, 4)
+  unit            String?        @db.VarChar(10)
+  unitPrice       Decimal?       @default(0) @map("unit_price") @db.Decimal(18, 6)
+  totalPrice      Decimal?       @default(0) @map("total_price") @db.Decimal(18, 2)
+  iiPercent       Decimal?       @default(0) @map("ii_percent") @db.Decimal(5, 2)
+  iiValue         Decimal?       @default(0) @map("ii_value") @db.Decimal(18, 2)
+  ipiPercent      Decimal?       @default(0) @map("ipi_percent") @db.Decimal(5, 2)
+  ipiValue        Decimal?       @default(0) @map("ipi_value") @db.Decimal(18, 2)
+  pisPercent      Decimal?       @default(0) @map("pis_percent") @db.Decimal(5, 2)
+  pisValue        Decimal?       @default(0) @map("pis_value") @db.Decimal(18, 2)
+  cofinsPercent   Decimal?       @default(0) @map("cofins_percent") @db.Decimal(5, 2)
+  cofinsValue     Decimal?       @default(0) @map("cofins_value") @db.Decimal(18, 2)
+  icmsPercent     Decimal?       @default(0) @map("icms_percent") @db.Decimal(5, 2)
+  icmsValue       Decimal?       @default(0) @map("icms_value") @db.Decimal(18, 2)
+  totalTaxes      Decimal?       @default(0) @map("total_taxes") @db.Decimal(18, 2)
+  landedCost      Decimal?       @default(0) @map("landed_cost") @db.Decimal(18, 2)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @default(now()) @map("updated_at") @db.Timestamptz(6)
+  importProcess   ImportProcess  @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  material        Material?      @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([materialId], map: "idx_import_process_items_material")
+  @@index([importProcessId], map: "idx_import_process_items_process")
+  @@index([purchaseOrderId], map: "idx_import_process_items_purchase_order")
+  @@map("import_process_items")
+}
+
+model ImportProcessEvent {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String        @map("import_process_id") @db.Uuid
+  eventType       String        @map("event_type") @db.VarChar(50)
+  eventDate       DateTime      @map("event_date") @db.Timestamptz(6)
+  description     String?
+  userId          String?       @map("user_id") @db.Uuid
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  importProcess   ImportProcess @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([importProcessId], map: "idx_import_process_events_process")
+  @@index([eventDate], map: "idx_import_process_events_date")
+  @@map("import_process_events")
+}
+
+model ImportProcessCost {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importProcessId String        @map("import_process_id") @db.Uuid
+  costType        String        @map("cost_type") @db.VarChar(50)
+  description     String
+  value           Decimal       @db.Decimal(15, 2)
+  currency        String        @default("BRL") @db.VarChar(3)
+  isEstimated     Boolean       @default(true) @map("is_estimated")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+  importProcess   ImportProcess @relation(fields: [importProcessId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([importProcessId], map: "idx_import_process_costs_process")
+  @@map("import_process_costs")
+}
+
+model ExchangeContract {
+  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractNumber       String                @map("contract_number") @db.VarChar(100)
+  bankAccountId        String                @map("bank_account_id") @db.Uuid
+  processId            String?               @map("process_id") @db.Uuid
+  foreignValue         Decimal               @map("foreign_value") @db.Decimal(15, 2)
+  foreignCurrency      String                @default("USD") @map("foreign_currency") @db.VarChar(3)
+  contractRate         Decimal               @map("contract_rate") @db.Decimal(10, 6)
+  brlValue             Decimal               @map("brl_value") @db.Decimal(15, 2)
+  contractDate         DateTime              @map("contract_date") @db.Date
+  maturityDate         DateTime              @map("maturity_date") @db.Date
+  liquidationDate      DateTime?             @map("liquidation_date") @db.Date
+  liquidatedValue      Decimal?              @map("liquidated_value") @db.Decimal(15, 2)
+  liquidationRate      Decimal?              @map("liquidation_rate") @db.Decimal(10, 6)
+  exchangeVariation    Decimal?              @map("exchange_variation") @db.Decimal(15, 2)
+  status               ExchangeStatus        @default(OPEN)
+  notes                String?
+  companyId            String                @map("company_id") @db.Uuid
+  createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  bankAccount          BankAccount           @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  importProcess        ImportProcess?        @relation(fields: [processId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  exchangeLiquidations ExchangeLiquidation[]
+
+  @@unique([contractNumber, companyId], map: "unique_contract_number_company")
+  @@index([bankAccountId], map: "idx_exchange_contracts_bank")
+  @@index([companyId], map: "idx_exchange_contracts_company")
+  @@index([maturityDate], map: "idx_exchange_contracts_maturity")
+  @@index([processId], map: "idx_exchange_contracts_process")
+  @@index([status], map: "idx_exchange_contracts_status")
+  @@map("exchange_contracts")
+}
+
+model ExchangeLiquidation {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractId       String           @map("contract_id") @db.Uuid
+  foreignValue     Decimal          @map("foreign_value") @db.Decimal(15, 2)
+  liquidationRate  Decimal          @map("liquidation_rate") @db.Decimal(10, 6)
+  brlValue         Decimal          @map("brl_value") @db.Decimal(15, 2)
+  variation        Decimal          @db.Decimal(15, 2)
+  liquidationDate  DateTime         @map("liquidation_date") @db.Date
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  exchangeContract ExchangeContract @relation(fields: [contractId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([contractId], map: "idx_exchange_liquidations_contract")
+  @@index([liquidationDate], map: "idx_exchange_liquidations_date")
+  @@map("exchange_liquidations")
+}

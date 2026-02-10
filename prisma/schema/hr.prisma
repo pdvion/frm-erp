@@ -1,0 +1,802 @@
+model Department {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code           String
+  name           String
+  description    String?
+  managerId      String?         @db.Uuid
+  parentId       String?         @db.Uuid
+  companyId      String          @db.Uuid
+  costCenterId   String?         @db.Uuid
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now()) @updatedAt
+  company        Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "departments_company_fkey")
+  costCenter     CostCenter?     @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "departments_costCenter_fkey")
+  parent         Department?     @relation("DepartmentHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "departments_parent_fkey")
+  children       Department[]    @relation("DepartmentHierarchy")
+  employees      Employee[]
+  positions      JobPosition[]
+  notifications  Notification[]
+  strategicGoals StrategicGoal[]
+  tasks          Task[]          @relation("TaskTargetDepartment")
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_departments_companyId")
+  @@index([costCenterId], map: "idx_departments_costcenter")
+  @@index([parentId], map: "idx_departments_parent")
+  @@unique([companyId, legacyId])
+  @@map("departments")
+}
+
+model JobPosition {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code         String
+  name         String
+  description  String?
+  departmentId String?     @db.Uuid
+  companyId    String      @db.Uuid
+  baseSalary   Decimal?  @db.Decimal(15, 2)
+  level        Int?        @default(1)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt
+  employees    Employee[]
+  company      Company     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "job_positions_company_fkey")
+  department   Department? @relation(fields: [departmentId], references: [id], onUpdate: NoAction, map: "job_positions_department_fkey")
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_job_positions_companyId")
+  @@index([departmentId], map: "idx_job_positions_department")
+  @@index([departmentId], map: "idx_job_positions_departmentId")
+  @@unique([companyId, legacyId])
+  @@map("job_positions")
+}
+
+model Employee {
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                Int
+  companyId           String             @db.Uuid
+  userId              String?            @db.Uuid
+  name                String
+  cpf                 String?
+  rg                  String?
+  birthDate           DateTime?          @db.Date
+  gender              String?
+  maritalStatus       String?
+  email               String?
+  phone               String?
+  mobile              String?
+  address             String?
+  addressNumber       String?
+  addressComplement   String?
+  addressNeighborhood String?
+  addressCity         String?
+  addressState        String?
+  addressZipCode      String?
+  departmentId        String?            @db.Uuid
+  positionId          String?            @db.Uuid
+  managerId           String?            @db.Uuid
+  contractType        ContractType       @default(CLT)
+  status              EmployeeStatus     @default(ACTIVE)
+  hireDate            DateTime           @db.Date
+  terminationDate     DateTime?          @db.Date
+  salary              Decimal              @db.Decimal(15, 2) @default(0)
+  workHoursPerDay     Decimal              @db.Decimal(15, 4) @default(8)
+  workDaysPerWeek     Int                @default(5)
+  bankName            String?
+  bankBranch          String?
+  bankAccount         String?
+  bankAccountType     String?
+  pixKey              String?
+  pis                 String?
+  ctps                String?
+  voterRegistration   String?
+  militaryService     String?
+  notes               String?
+  photo               String?
+  createdBy           String?            @db.Uuid
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  insalubrityDegree   String?            @map("insalubrity_degree")
+  hasDangerousness    Boolean?           @default(false) @map("has_dangerousness")
+  dependentsCount     Int?               @default(0) @map("dependents_count")
+  bankCode            String?            @map("bank_code")
+  bankAgency          String?            @map("bank_agency")
+  bankAccountDigit    String?            @map("bank_account_digit")
+  employee_benefits   EmployeeBenefit[]
+  employee_trainings  EmployeeTraining[]
+  company             Company            @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "employees_company_fkey")
+  department          Department?        @relation(fields: [departmentId], references: [id], onUpdate: NoAction, map: "employees_department_fkey")
+  manager             Employee?          @relation("EmployeeManager", fields: [managerId], references: [id], onUpdate: NoAction, map: "employees_manager_fkey")
+  subordinates        Employee[]         @relation("EmployeeManager")
+  position            JobPosition?       @relation(fields: [positionId], references: [id], onUpdate: NoAction, map: "employees_position_fkey")
+  user                User?              @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "employees_user_fkey")
+  payrollItems        PayrollItem[]
+  skill_matrix        SkillMatrix[]
+  terminations        Termination[]
+  thirteenthSalaries  ThirteenthSalary[]
+  timeClockEntries    TimeClockEntry[]
+  timesheetDays       TimesheetDay[]
+  transport_vouchers  TransportVoucher[]
+  vacations           Vacation[]
+  dependents          EmployeeDependent[]
+  leaveRecords        LeaveRecord[]
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_employees_companyId")
+  @@index([departmentId], map: "idx_employees_departmentId")
+  @@index([managerId], map: "idx_employees_manager")
+  @@index([positionId], map: "idx_employees_position")
+  @@index([userId], map: "idx_employees_user")
+  @@unique([companyId, legacyId])
+  @@map("employees")
+  @@index([companyId, code])
+}
+
+model TimeClockEntry {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId    String        @db.Uuid
+  type          TimeClockType
+  timestamp     DateTime
+  location      String?
+  latitude      Float?
+  longitude     Float?
+  deviceId      String?
+  ipAddress     String?
+  isManual      Boolean       @default(false)
+  justification String?
+  approvedBy    String?       @db.Uuid
+  approvedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  users         User?         @relation(fields: [approvedBy], references: [id], onUpdate: NoAction)
+  employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "time_clock_entries_employee_fkey")
+
+  @@index([employeeId])
+  @@index([timestamp])
+  @@index([approvedBy], map: "idx_time_clock_entries_approved_by")
+  @@index([employeeId], map: "idx_time_clock_entries_employee")
+  @@map("time_clock_entries")
+}
+
+model TimesheetDay {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @db.Uuid
+  date           DateTime  @db.Date
+  scheduledHours Decimal     @db.Decimal(15, 4) @default(8)
+  workedHours    Decimal     @db.Decimal(15, 4) @default(0)
+  overtimeHours  Decimal     @db.Decimal(15, 4) @default(0)
+  nightHours     Decimal     @db.Decimal(15, 4) @default(0)
+  absenceHours   Decimal     @db.Decimal(15, 4) @default(0)
+  isHoliday      Boolean   @default(false)
+  isWeekend      Boolean   @default(false)
+  status         String    @default("PENDING")
+  notes          String?
+  approvedBy     String?   @db.Uuid
+  approvedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  overtime50     Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_50")
+  overtime100    Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_100")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "timesheet_days_employee_fkey")
+
+  @@unique([employeeId, date], map: "timesheet_days_employee_date_key")
+  @@index([employeeId])
+  @@index([date])
+  @@index([employeeId], map: "idx_timesheet_days_employee")
+  @@map("timesheet_days")
+}
+
+model WorkSchedule {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  companyId        String             @db.Uuid
+  name             String
+  code             String?
+  type             WorkScheduleType   @default(FIXED)
+  description      String?
+  weeklyHours      Decimal              @db.Decimal(15, 4) @default(44)
+  dailyHours       Decimal              @db.Decimal(15, 4) @default(8)
+  toleranceMinutes Int                @default(10)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now()) @updatedAt
+  employees        EmployeeSchedule[]
+  company          Company            @relation(fields: [companyId], references: [id])
+  shifts           WorkShift[]
+
+  @@unique([companyId, code])
+  @@index([companyId], map: "idx_work_schedules_companyId")
+  @@unique([companyId, legacyId])
+  @@map("work_schedules")
+}
+
+model WorkShift {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scheduleId     String       @db.Uuid
+  dayOfWeek      Int
+  startTime      String
+  endTime        String
+  breakStartTime String?
+  breakEndTime   String?
+  breakDuration  Int          @default(60)
+  isWorkDay      Boolean      @default(true)
+  schedule       WorkSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleId, dayOfWeek])
+  @@map("work_shifts")
+}
+
+model EmployeeSchedule {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId String       @db.Uuid
+  scheduleId String       @db.Uuid
+  startDate  DateTime     @db.Date
+  endDate    DateTime?    @db.Date
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  schedule   WorkSchedule @relation(fields: [scheduleId], references: [id])
+
+  @@index([scheduleId], map: "idx_employee_schedules_scheduleId")
+  @@map("employee_schedules")
+}
+
+model HoursBank {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String        @db.Uuid
+  employeeId  String        @db.Uuid
+  type        HoursBankType
+  date        DateTime      @db.Date
+  hours       Decimal  @db.Decimal(15, 4)
+  balance     Decimal  @db.Decimal(15, 2)
+  referenceId String?       @db.Uuid
+  description String?
+  expiresAt   DateTime?     @db.Date
+  approvedBy  String?       @db.Uuid
+  approvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([companyId], map: "idx_hours_bank_companyId")
+  @@index([employeeId], map: "idx_hours_bank_employeeId")
+  @@map("hours_bank")
+}
+
+model TimeClockAdjustment {
+  id              String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String                    @db.Uuid
+  employeeId      String                    @db.Uuid
+  date            DateTime                  @db.Date
+  originalEntryId String?                   @db.Uuid
+  adjustmentType  String
+  clockType       TimeClockType
+  originalTime    DateTime?
+  newTime         DateTime?
+  reason          String
+  status          TimeClockAdjustmentStatus @default(PENDING)
+  requestedBy     String?                   @db.Uuid
+  requestedAt     DateTime                  @default(now())
+  reviewedBy      String?                   @db.Uuid
+  reviewedAt      DateTime?
+  reviewNotes     String?
+
+  @@index([companyId], map: "idx_time_clock_adjustments_companyId")
+  @@index([employeeId], map: "idx_time_clock_adjustments_employeeId")
+  @@map("time_clock_adjustments")
+}
+
+model Holiday {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
+  companyId  String?  @db.Uuid
+  date       DateTime @db.Date
+  name       String
+  type       String   @default("NATIONAL")
+  isOptional Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  company    Company? @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, date])
+  @@index([companyId], map: "idx_holidays_companyId")
+  @@map("holidays")
+}
+
+model Payroll {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code            Int
+  companyId       String        @db.Uuid
+  referenceMonth  Int
+  referenceYear   Int
+  status          String        @default("DRAFT")
+  totalGross      Decimal         @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal         @db.Decimal(15, 2) @default(0)
+  totalNet        Decimal         @db.Decimal(15, 2) @default(0)
+  employeeCount   Int           @default(0)
+  processedAt     DateTime?
+  processedBy     String?       @db.Uuid
+  approvedAt      DateTime?
+  approvedBy      String?       @db.Uuid
+  paidAt          DateTime?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+  items           PayrollItem[]
+  company         Company       @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "payrolls_company_fkey")
+
+  @@unique([code, companyId])
+  @@unique([companyId, referenceMonth, referenceYear], map: "payrolls_company_month_year_key")
+  @@index([companyId])
+  @@unique([companyId, legacyId])
+  @@map("payrolls")
+}
+
+model PayrollItem {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payrollId       String         @db.Uuid
+  employeeId      String         @db.Uuid
+  baseSalary      Decimal          @db.Decimal(15, 2) @default(0)
+  workedDays      Int            @default(0)
+  workedHours     Decimal          @db.Decimal(15, 4) @default(0)
+  overtimeHours   Decimal          @db.Decimal(15, 4) @default(0)
+  nightHours      Decimal          @db.Decimal(15, 4) @default(0)
+  absenceDays     Int            @default(0)
+  grossSalary     Decimal          @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal          @db.Decimal(15, 2) @default(0)
+  netSalary       Decimal          @db.Decimal(15, 2) @default(0)
+  inss            Decimal          @db.Decimal(15, 2) @default(0)
+  irrf            Decimal          @db.Decimal(15, 2) @default(0)
+  fgts            Decimal          @db.Decimal(15, 2) @default(0)
+  notes           String?
+  createdAt       DateTime       @default(now())
+  events          PayrollEvent[]
+  employee        Employee       @relation(fields: [employeeId], references: [id], onUpdate: NoAction, map: "payroll_items_employee_fkey")
+  payroll         Payroll        @relation(fields: [payrollId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payroll_items_payroll_fkey")
+
+  @@unique([payrollId, employeeId], map: "payroll_items_payroll_employee_key")
+  @@index([payrollId])
+  @@index([employeeId], map: "idx_payroll_items_employeeId")
+  @@map("payroll_items")
+}
+
+model PayrollEvent {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payrollItemId String           @db.Uuid
+  type          PayrollEventType
+  code          String
+  description   String
+  reference     Decimal?  @db.Decimal(15, 2)
+  value         Decimal  @db.Decimal(15, 2)
+  isDeduction   Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  payrollItem   PayrollItem      @relation(fields: [payrollItemId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payroll_events_item_fkey")
+
+  @@index([payrollItemId])
+  @@map("payroll_events")
+}
+
+model Vacation {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId         String          @db.Uuid
+  employeeId        String          @db.Uuid
+  acquisitionStart  DateTime        @db.Date
+  acquisitionEnd    DateTime        @db.Date
+  startDate         DateTime        @db.Date
+  endDate           DateTime        @db.Date
+  totalDays         Int?            @default(30)
+  soldDays          Int?            @default(0)
+  enjoyedDays       Int?            @default(30)
+  status            VacationStatus? @default(SCHEDULED)
+  baseSalary        Decimal?          @db.Decimal(15, 2) @default(0)
+  vacationPay       Decimal?          @db.Decimal(15, 2) @default(0)
+  oneThirdBonus     Decimal?          @db.Decimal(15, 2) @default(0)
+  soldDaysValue     Decimal?          @db.Decimal(15, 2) @default(0)
+  totalGross        Decimal?          @db.Decimal(15, 2) @default(0)
+  inssDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  irrfDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  otherDeductions   Decimal?          @db.Decimal(15, 2) @default(0)
+  totalNet          Decimal?          @db.Decimal(15, 2) @default(0)
+  paymentDate       DateTime?       @db.Date
+  noticeDate        DateTime?       @db.Date
+  isCollective      Boolean?        @default(false)
+  collectiveGroupId String?         @db.Uuid
+  notes             String?
+  approvedBy        String?         @db.Uuid
+  approvedAt        DateTime?
+  createdBy         String?         @db.Uuid
+  createdAt         DateTime?       @default(now())
+  updatedAt         DateTime?       @default(now()) @updatedAt
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee          Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([startDate])
+  @@index([companyId], map: "idx_vacations_companyId")
+  @@index([employeeId], map: "idx_vacations_employeeId")
+  @@map("vacations")
+}
+
+model ThirteenthSalary {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String            @db.Uuid
+  employeeId      String            @db.Uuid
+  year            Int
+  type            ThirteenthType
+  status          ThirteenthStatus? @default(PENDING)
+  monthsWorked    Int?              @default(12)
+  baseSalary      Decimal?            @db.Decimal(15, 2) @default(0)
+  averageVariable Decimal?            @db.Decimal(15, 2) @default(0)
+  grossValue      Decimal?            @db.Decimal(15, 2) @default(0)
+  inssDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  irrfDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  otherDeductions Decimal?            @db.Decimal(15, 2) @default(0)
+  netValue        Decimal?            @db.Decimal(15, 2) @default(0)
+  paymentDate     DateTime?         @db.Date
+  notes           String?
+  createdBy       String?           @db.Uuid
+  createdAt       DateTime?         @default(now())
+  updatedAt       DateTime?         @default(now()) @updatedAt
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee        Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([employeeId, year, type])
+  @@index([companyId], map: "idx_thirteenth_salaries_companyId")
+  @@index([employeeId], map: "idx_thirteenth_salaries_employeeId")
+  @@map("thirteenth_salaries")
+}
+
+model Termination {
+  id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId               String             @db.Uuid
+  employeeId              String             @db.Uuid
+  type                    TerminationType
+  status                  TerminationStatus? @default(DRAFT)
+  noticeDate              DateTime?          @db.Date
+  terminationDate         DateTime           @db.Date
+  lastWorkDay             DateTime?          @db.Date
+  noticePeriodDays        Int?               @default(30)
+  noticePeriodWorked      Boolean?           @default(false)
+  noticePeriodIndemnity   Boolean?           @default(false)
+  baseSalary              Decimal?             @db.Decimal(15, 2) @default(0)
+  salaryBalance           Decimal?             @db.Decimal(15, 2) @default(0)
+  noticePeriodValue       Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationBalance         Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationProportional    Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationOneThird        Decimal?             @db.Decimal(15, 2) @default(0)
+  thirteenthProportional  Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsBalance             Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsFine                Decimal?             @db.Decimal(15, 2) @default(0)
+  otherEarnings           Decimal?             @db.Decimal(15, 2) @default(0)
+  totalGross              Decimal?             @db.Decimal(15, 2) @default(0)
+  inssDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  irrfDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  advanceDeduction        Decimal?             @db.Decimal(15, 2) @default(0)
+  otherDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalNet                Decimal?             @db.Decimal(15, 2) @default(0)
+  paymentDate             DateTime?          @db.Date
+  homologationDate        DateTime?          @db.Date
+  trctNumber              String?            @db.VarChar(50)
+  grffGenerated           Boolean?           @default(false)
+  grffDate                DateTime?          @db.Date
+  eligibleForUnemployment Boolean?           @default(false)
+  unemploymentGuides      Int?               @default(0)
+  notes                   String?
+  reason                  String?
+  approvedBy              String?            @db.Uuid
+  approvedAt              DateTime?
+  createdBy               String?            @db.Uuid
+  createdAt               DateTime?          @default(now())
+  updatedAt               DateTime?          @default(now()) @updatedAt
+  company                 Company            @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee                Employee           @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_terminations_companyId")
+  @@index([employeeId], map: "idx_terminations_employeeId")
+  @@map("terminations")
+}
+
+model BenefitType {
+  id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                    String
+  name                    String
+  description             String?
+  companyId               String            @map("company_id") @db.Uuid
+  category                String            @default("OTHER")
+  calculationType         String            @default("FIXED") @map("calculation_type")
+  defaultValue            Decimal?            @db.Decimal(15, 2) @default(0) @map("default_value")
+  defaultPercentage       Decimal?            @db.Decimal(10, 4) @default(0) @map("default_percentage")
+  employeeDiscountPercent Decimal?            @db.Decimal(10, 4) @default(0) @map("employee_discount_percent")
+  isTaxable               Boolean?          @default(false) @map("is_taxable")
+  affectsInss             Boolean?          @default(false) @map("affects_inss")
+  affectsIrrf             Boolean?          @default(false) @map("affects_irrf")
+  affectsFgts             Boolean?          @default(false) @map("affects_fgts")
+  isActive                Boolean?          @default(true) @map("is_active")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @default(now()) @map("updated_at")
+  employeeBenefits        EmployeeBenefit[]
+
+  @@index([companyId], map: "idx_benefit_types_company_id")
+  @@unique([companyId, legacyId])
+  @@map("benefit_types")
+}
+
+model EmployeeBenefit {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId          String      @map("employee_id") @db.Uuid
+  benefitTypeId       String      @map("benefit_type_id") @db.Uuid
+  companyId           String      @map("company_id") @db.Uuid
+  status              String      @default("ACTIVE")
+  startDate           DateTime    @default(now()) @map("start_date")
+  endDate             DateTime?   @map("end_date")
+  value               Decimal?      @db.Decimal(15, 2) @default(0)
+  employeeDiscount    Decimal?      @db.Decimal(15, 2) @default(0) @map("employee_discount")
+  companyContribution Decimal?      @db.Decimal(15, 2) @default(0) @map("company_contribution")
+  quantity            Decimal?      @db.Decimal(15, 4) @default(1)
+  notes               String?
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @default(now()) @map("updated_at")
+  benefitType         BenefitType @relation(fields: [benefitTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee            Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([benefitTypeId], map: "idx_employee_benefits_benefit_type_id")
+  @@index([employeeId], map: "idx_employee_benefits_employee_id")
+  @@index([companyId], map: "idx_employee_benefits_company_id")
+  @@map("employee_benefits")
+}
+
+model TransportVoucher {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String   @map("employee_id") @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
+  lineType       String   @default("BUS") @map("line_type")
+  lineName       String   @map("line_name")
+  fareValue      Decimal    @db.Decimal(15, 2) @default(0) @map("fare_value")
+  quantityPerDay Int?     @default(2) @map("quantity_per_day")
+  workingDays    Int?     @default(22) @map("working_days")
+  isActive       Boolean? @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([employeeId], map: "idx_transport_vouchers_employee_id")
+  @@index([companyId], map: "idx_transport_vouchers_company_id")
+  @@map("transport_vouchers")
+}
+
+model Training {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code              String
+  name              String
+  description       String?
+  companyId         String             @map("company_id") @db.Uuid
+  category          String?
+  durationHours     Int?               @default(0) @map("duration_hours")
+  instructor        String?
+  provider          String?
+  cost              Decimal?             @db.Decimal(15, 2) @default(0)
+  isMandatory       Boolean?           @default(false) @map("is_mandatory")
+  validityMonths    Int?               @map("validity_months")
+  isActive          Boolean?           @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @map("updated_at")
+  employeeTrainings EmployeeTraining[]
+
+  @@index([companyId], map: "idx_trainings_company_id")
+  @@unique([companyId, legacyId])
+  @@map("trainings")
+}
+
+model EmployeeTraining {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  trainingId     String    @map("training_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
+  status         String    @default("SCHEDULED")
+  scheduledDate  DateTime? @map("scheduled_date")
+  completionDate DateTime? @map("completion_date")
+  expirationDate DateTime? @map("expiration_date")
+  score          Float?
+  certificateUrl String?   @map("certificate_url")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  training       Training  @relation(fields: [trainingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([employeeId], map: "idx_employee_trainings_employee_id")
+  @@index([trainingId], map: "idx_employee_trainings_training_id")
+  @@index([companyId], map: "idx_employee_trainings_company_id")
+  @@map("employee_trainings")
+}
+
+model SkillMatrix {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  skillName      String    @map("skill_name")
+  companyId      String    @map("company_id") @db.Uuid
+  category       String?
+  level          Int       @default(0)
+  maxLevel       Int?      @default(4) @map("max_level")
+  certifiedAt    DateTime? @map("certified_at")
+  certifiedBy    String?   @map("certified_by") @db.Uuid
+  expirationDate DateTime? @map("expiration_date")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([employeeId], map: "idx_skill_matrix_employee_id")
+  @@index([companyId], map: "idx_skill_matrix_company_id")
+  @@map("skill_matrix")
+}
+
+model AdmissionProcess {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                Int                 @default(autoincrement())
+  companyId           String              @map("company_id") @db.Uuid
+  candidateName       String              @map("candidate_name")
+  candidateEmail      String?             @map("candidate_email")
+  candidatePhone      String?             @map("candidate_phone")
+  candidateCpf        String?             @map("candidate_cpf")
+  positionId          String?             @map("position_id") @db.Uuid
+  departmentId        String?             @map("department_id") @db.Uuid
+  proposedSalary      Decimal?              @db.Decimal(15, 2) @map("proposed_salary")
+  proposedStartDate   DateTime?           @map("proposed_start_date")
+  status              String              @default("DRAFT")
+  currentStep         Int?                @default(1) @map("current_step")
+  totalSteps          Int?                @default(5) @map("total_steps")
+  recruiterId         String?             @map("recruiter_id") @db.Uuid
+  managerId           String?             @map("manager_id") @db.Uuid
+  notes               String?
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @default(now()) @map("updated_at")
+  completedAt         DateTime?           @map("completed_at")
+  admission_documents AdmissionDocument[]
+  admission_exams     AdmissionExam[]
+  admission_steps     AdmissionStep[]
+
+  @@index([companyId], map: "idx_admission_processes_company_id")
+  @@index([status], map: "idx_admission_processes_status")
+  @@map("admission_processes")
+}
+
+model AdmissionStep {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  stepNumber       Int              @map("step_number")
+  stepName         String           @map("step_name")
+  stepType         String           @default("DOCUMENT") @map("step_type")
+  status           String           @default("PENDING")
+  assignedTo       String?          @map("assigned_to") @db.Uuid
+  dueDate          DateTime?        @map("due_date")
+  completedAt      DateTime?        @map("completed_at")
+  completedBy      String?          @map("completed_by") @db.Uuid
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([admissionId], map: "idx_admission_steps_admission_id")
+  @@map("admission_steps")
+}
+
+model AdmissionDocument {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  documentType     String           @map("document_type")
+  documentName     String           @map("document_name")
+  fileUrl          String?          @map("file_url")
+  status           String           @default("PENDING")
+  isRequired       Boolean?         @default(true) @map("is_required")
+  uploadedAt       DateTime?        @map("uploaded_at")
+  verifiedAt       DateTime?        @map("verified_at")
+  verifiedBy       String?          @map("verified_by") @db.Uuid
+  rejectionReason  String?          @map("rejection_reason")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([admissionId], map: "idx_admission_documents_admission_id")
+  @@map("admission_documents")
+}
+
+model AdmissionExam {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admissionId      String           @map("admission_id") @db.Uuid
+  examType         String           @default("ADMISSIONAL") @map("exam_type")
+  clinicName       String?          @map("clinic_name")
+  scheduledDate    DateTime?        @map("scheduled_date")
+  completedDate    DateTime?        @map("completed_date")
+  result           String?
+  asoNumber        String?          @map("aso_number")
+  asoUrl           String?          @map("aso_url")
+  validUntil       DateTime?        @map("valid_until")
+  notes            String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  admissionProcess AdmissionProcess @relation(fields: [admissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([admissionId], map: "idx_admission_exams_admission_id")
+  @@map("admission_exams")
+}
+
+model EmployeeDependent {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String        @map("employee_id") @db.Uuid
+  companyId      String        @map("company_id") @db.Uuid
+  name           String
+  cpf            String?       @db.VarChar(14)
+  birthDate      DateTime?     @map("birth_date") @db.Date
+  type           DependentType
+  isIRDeductible Boolean       @default(false) @map("is_ir_deductible")
+  isSalarioFamilia Boolean     @default(false) @map("is_salario_familia")
+  isActive       Boolean       @default(true) @map("is_active")
+  notes          String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+  employee       Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_employee_dependents_employee_id")
+  @@index([companyId], map: "idx_employee_dependents_company_id")
+  @@map("employee_dependents")
+}
+
+model LeaveRecord {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
+  type           LeaveType
+  startDate      DateTime  @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  days           Int?
+  cid            String?   @db.VarChar(10)
+  documentNumber String?   @map("document_number")
+  notes          String?
+  approvedBy     String?   @map("approved_by") @db.Uuid
+  approvedAt     DateTime? @map("approved_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_leave_records_employee_id")
+  @@index([companyId], map: "idx_leave_records_company_id")
+  @@index([startDate], map: "idx_leave_records_start_date")
+  @@map("leave_records")
+}
+
+model IncomeTaxTable {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year          Int
+  month         Int?
+  minValue      Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue      Decimal? @map("max_value") @db.Decimal(15, 2)
+  rate          Decimal  @db.Decimal(5, 2)
+  deduction     Decimal  @db.Decimal(15, 2)
+  dependentDeduction Decimal @default(0) @map("dependent_deduction") @db.Decimal(15, 2)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_income_tax_table_range")
+  @@index([year], map: "idx_income_tax_table_year")
+  @@map("income_tax_tables")
+}
+
+model INSSTable {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year      Int
+  month     Int?
+  minValue  Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue  Decimal  @map("max_value") @db.Decimal(15, 2)
+  rate      Decimal  @db.Decimal(5, 2)
+  ceiling   Decimal? @db.Decimal(15, 2)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_inss_table_range")
+  @@index([year], map: "idx_inss_table_year")
+  @@map("inss_tables")
+}
