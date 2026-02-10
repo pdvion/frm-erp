@@ -94,6 +94,7 @@ export const productionRouter = createTRPCRouter({
             },
           },
           operations: {
+            include: { workCenter: true },
             orderBy: { sequence: "asc" },
           },
         },
@@ -132,7 +133,7 @@ export const productionRouter = createTRPCRouter({
       operations: z.array(z.object({
         sequence: z.number(),
         name: z.string(),
-        workCenter: z.string().optional(),
+        workCenterId: z.string().uuid().optional(),
         setupTime: z.number().default(0),
         runTime: z.number().default(0),
         plannedQty: z.number().positive(),
@@ -176,7 +177,7 @@ export const productionRouter = createTRPCRouter({
             create: input.operations.map((op) => ({
               sequence: op.sequence,
               name: op.name,
-              workCenter: op.workCenter,
+              workCenterId: op.workCenterId,
               setupTime: op.setupTime,
               runTime: op.runTime,
               plannedQty: op.plannedQty,
@@ -240,7 +241,7 @@ export const productionRouter = createTRPCRouter({
       orderId: z.string(),
       sequence: z.number(),
       name: z.string(),
-      workCenter: z.string().optional(),
+      workCenterId: z.string().uuid().optional(),
       setupTime: z.number().default(0),
       runTime: z.number().default(0),
       plannedQty: z.number().positive(),
@@ -272,7 +273,7 @@ export const productionRouter = createTRPCRouter({
           orderId: input.orderId,
           sequence: input.sequence,
           name: input.name,
-          workCenter: input.workCenter,
+          workCenterId: input.workCenterId,
           setupTime: input.setupTime,
           runTime: input.runTime,
           plannedQty: input.plannedQty,

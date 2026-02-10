@@ -289,7 +289,7 @@ export const mesRouter = createTRPCRouter({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "IN_PROGRESS",
-          operations: { some: { workCenter: workCenter.code } },
+          operations: { some: { workCenterId: workCenter.id } },
         },
         include: { product: true },
         orderBy: { priority: "asc" },

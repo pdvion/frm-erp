@@ -1146,7 +1146,7 @@ model ProductionOrderOperation {
   orderId         String          @db.Uuid
   sequence        Int
   name            String          @db.VarChar(200)
-  workCenter      String?         @db.VarChar(100)
+  workCenterId    String?         @db.Uuid
   setupTime       Decimal           @db.Decimal(15, 2) @default(0)
   runTime         Decimal           @db.Decimal(15, 2) @default(0)
   actualSetupTime Decimal           @db.Decimal(15, 2) @default(0)
@@ -1159,8 +1159,10 @@ model ProductionOrderOperation {
   notes           String?
   createdAt       DateTime        @default(now())
   order           ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  workCenter      WorkCenter?     @relation(fields: [workCenterId], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "production_order_operations_workcenter_fkey")
 
   @@index([orderId], map: "idx_production_order_operations_orderId")
+  @@index([workCenterId])
   @@map("production_order_operations")
 }
 
@@ -1640,6 +1642,7 @@ model WorkCenter {
   updatedAt        DateTime        @default(now()) @updatedAt
   machineStops     MachineStop[]
   oeeTargets       OeeTarget[]
+  operations       ProductionOrderOperation[]
   productionLogs   ProductionLog[]
   company          Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "work_centers_company_fkey")
 
