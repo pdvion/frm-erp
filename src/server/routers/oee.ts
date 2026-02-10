@@ -150,8 +150,11 @@ export const oeeRouter = createTRPCRouter({
       solution: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const stop = await ctx.prisma.machineStop.findUnique({ where: { id: input.id } });
-      if (!stop) {
+      const stop = await ctx.prisma.machineStop.findFirst({
+        where: { id: input.id },
+        include: { workCenter: { select: { companyId: true } } },
+      });
+      if (!stop || stop.workCenter.companyId !== ctx.companyId) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Parada não encontrada" });
       }
 

@@ -537,8 +537,13 @@ export const impexRouter = createTRPCRouter({
       const { id, ...data } = input;
       
       // Get current item to recalculate total
-      const current = await ctx.prisma.importProcessItem.findUnique({ where: { id } });
-      if (!current) throw new TRPCError({ code: "NOT_FOUND", message: "Item not found" });
+      const current = await ctx.prisma.importProcessItem.findFirst({
+        where: { id },
+        include: { importProcess: { select: { companyId: true } } },
+      });
+      if (!current || current.importProcess.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item not found" });
+      }
       
       const quantity = data.quantity ?? Number(current.quantity);
       const unitPrice = data.unitPrice ?? Number(current.unitPrice);
@@ -782,8 +787,11 @@ export const impexRouter = createTRPCRouter({
       // Recalculate BRL value if needed
       let brlValue: number | undefined;
       if (foreignValue !== undefined || contractRate !== undefined) {
-        const current = await ctx.prisma.exchangeContract.findUnique({ where: { id } });
-        if (current) {
+        const current = await ctx.prisma.exchangeContract.findFirst({
+          where: { id },
+          include: { bankAccount: { select: { companyId: true } } },
+        });
+        if (current && current.bankAccount.companyId === ctx.companyId) {
           const fv = foreignValue ?? Number(current.foreignValue);
           const cr = contractRate ?? Number(current.contractRate);
           brlValue = fv * cr;

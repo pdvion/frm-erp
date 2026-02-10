@@ -473,6 +473,12 @@ export const timeclockRouter = createTRPCRouter({
   deleteHoliday: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const holiday = await ctx.prisma.holiday.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!holiday) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Feriado não encontrado" });
+      }
       return ctx.prisma.holiday.delete({ where: { id: input.id } });
     }),
 

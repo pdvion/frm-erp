@@ -73,6 +73,13 @@ export const mrpRouter = createTRPCRouter({
   removeBomItem: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      const item = await ctx.prisma.bomItem.findFirst({
+        where: { id: input.id },
+        include: { parentMaterial: { select: { companyId: true } } },
+      });
+      if (!item || item.parentMaterial.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
+      }
       await ctx.prisma.bomItem.delete({ where: { id: input.id } });
       return { success: true };
     }),

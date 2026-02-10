@@ -329,7 +329,10 @@ export const nfeQueueRouter = createTRPCRouter({
       batchSize: z.number().int().min(1).max(10).default(5),
     }))
     .mutation(async ({ input }) => {
-      // Validar API key (em produção, usar variável de ambiente)
+      // Validar API key
+      if (!process.env.NFE_QUEUE_API_KEY && process.env.NODE_ENV === "production") {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "NFE_QUEUE_API_KEY não configurada" });
+      }
       const expectedKey = process.env.NFE_QUEUE_API_KEY || "dev-queue-key";
       if (input.apiKey !== expectedKey) {
         throw new TRPCError({

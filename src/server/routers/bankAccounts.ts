@@ -259,8 +259,8 @@ export const bankAccountsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const [fromAccount, toAccount] = await Promise.all([
-        ctx.prisma.bankAccount.findUnique({ where: { id: input.fromAccountId } }),
-        ctx.prisma.bankAccount.findUnique({ where: { id: input.toAccountId } }),
+        ctx.prisma.bankAccount.findFirst({ where: { id: input.fromAccountId, ...tenantFilter(ctx.companyId) } }),
+        ctx.prisma.bankAccount.findFirst({ where: { id: input.toAccountId, ...tenantFilter(ctx.companyId) } }),
       ]);
 
       if (!fromAccount || !toAccount) {

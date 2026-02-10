@@ -122,7 +122,9 @@ export const receivingRouter = createTRPCRouter({
   startConference: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const receiving = await ctx.prisma.materialReceiving.findUnique({ where: { id: input.id } });
+      const receiving = await ctx.prisma.materialReceiving.findFirst({
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
+      });
       if (!receiving) throw new TRPCError({ code: "NOT_FOUND" });
       if (receiving.status !== "PENDING") {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Recebimento não está pendente" });

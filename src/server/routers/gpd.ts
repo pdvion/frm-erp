@@ -117,6 +117,12 @@ export const gpdRouter = createTRPCRouter({
   deleteGoal: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const goal = await ctx.prisma.strategicGoal.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!goal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Objetivo não encontrado" });
+      }
       return ctx.prisma.strategicGoal.delete({
         where: { id: input.id },
       });
@@ -406,6 +412,12 @@ export const gpdRouter = createTRPCRouter({
   deleteActionPlan: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const plan = await ctx.prisma.actionPlan.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!plan) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Plano de ação não encontrado" });
+      }
       return ctx.prisma.actionPlan.delete({
         where: { id: input.id },
       });
@@ -490,6 +502,13 @@ export const gpdRouter = createTRPCRouter({
   deleteTask: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const task = await ctx.prisma.actionPlanTask.findFirst({
+        where: { id: input.id },
+        include: { actionPlan: { select: { companyId: true } } },
+      });
+      if (!task || task.actionPlan.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
+      }
       return ctx.prisma.actionPlanTask.delete({
         where: { id: input.id },
       });
