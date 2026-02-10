@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import { getTenantContext, hasPermission, type SystemModule, type PermissionLevel } from "./context";
 import { checkRateLimit, type RateLimitType } from "@/lib/rate-limit";
 import { RateLimitError } from "@/lib/errors";
+import { createTenantPrisma } from "@/lib/prisma-rls";
+import { createAuditedPrisma } from "@/lib/prisma-audit";
 
 async function getSupabaseUser() {
   try {
@@ -167,6 +169,11 @@ const csrfProtection = t.middleware(async ({ ctx, type, next }) => {
   return next();
 });
 
+// Feature flag: ativar RLS + Audit Extensions no tenantProcedure
+// Quando ON: ctx.prisma é automaticamente filtrado por companyId + auditado
+// Quando OFF: comportamento atual (tenantFilter manual)
+const ENABLE_PRISMA_RLS = process.env.ENABLE_PRISMA_RLS !== "false"; // ON by default
+
 // Procedure que requer empresa ativa
 export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx, next }) => {
   if (!ctx.tenant.companyId) {
@@ -175,9 +182,27 @@ export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx,
       message: "Nenhuma empresa ativa. Selecione uma empresa para continuar.",
     });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let enhancedPrisma: any = ctx.prisma;
+
+  if (ENABLE_PRISMA_RLS) {
+    // RLS: injeta companyId automaticamente em todas as queries de TENANT_MODELS
+    const tenantPrisma = createTenantPrisma(ctx.prisma, ctx.tenant.companyId);
+
+    // Audit: registra CREATE/UPDATE/DELETE em AUDITED_MODELS
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    enhancedPrisma = createAuditedPrisma(tenantPrisma as any, {
+      userId: ctx.tenant.userId,
+      userEmail: ctx.supabaseUser?.email,
+      companyId: ctx.tenant.companyId,
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,
+      prisma: enhancedPrisma,
       companyId: ctx.tenant.companyId,
     },
   });

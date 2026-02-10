@@ -103,6 +103,11 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
     return prisma;
   }
 
+  // Guard: se $extends não está disponível (ex: mock em testes), retorna original
+  if (typeof prisma.$extends !== "function") {
+    return prisma;
+  }
+
   return prisma.$extends({
     name: "tenant-rls",
     query: {

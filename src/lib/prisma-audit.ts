@@ -163,6 +163,11 @@ function getEntityCode(entity: Record<string, unknown>): string | undefined {
  * @returns Cliente Prisma com auditoria aplicada
  */
 export function createAuditedPrisma(prisma: PrismaClient, context: AuditContext) {
+  // Guard: se $extends não está disponível (ex: mock em testes), retorna original
+  if (typeof prisma.$extends !== "function") {
+    return prisma;
+  }
+
   return prisma.$extends({
     name: "audit-log",
     query: {
