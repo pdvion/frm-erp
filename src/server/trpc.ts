@@ -160,21 +160,25 @@ export const createProtectedProcedure = (module: SystemModule, requiredLevel: Pe
   });
 };
 
-// Helper para criar filtro de tenant (inclui dados compartilhados)
-export function tenantFilter(companyId: string | null, includeShared = true) {
+// Helper para criar filtro de tenant
+// Para models com companyId NOT NULL, usar tenantFilter(companyId) → { companyId }
+// Para models com companyId nullable + isShared, usar tenantFilterShared(companyId)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function tenantFilter(companyId: string | null, _includeShared?: boolean) {
   if (!companyId) return {};
-  
-  if (includeShared) {
-    return {
-      OR: [
-        { companyId },
-        { companyId: null },
-        { isShared: true },
-      ],
-    };
-  }
-  
   return { companyId };
+}
+
+// Filtro para models com isShared (Category, ProductCategory, etc.)
+export function tenantFilterShared(companyId: string | null) {
+  if (!companyId) return {};
+  return {
+    OR: [
+      { companyId },
+      { companyId: null },
+      { isShared: true },
+    ],
+  };
 }
 
 // Middleware de rate limiting

@@ -32,7 +32,7 @@ export const timeclockRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       // VIO-558: Validar que funcionário pertence à empresa
-      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.companyId);
 
       return ctx.prisma.timeClockEntry.create({
         data: {
@@ -58,7 +58,7 @@ export const timeclockRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       // VIO-558: Validar que funcionário pertence à empresa
-      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.companyId);
 
       return ctx.prisma.timeClockEntry.create({
         data: {
@@ -82,7 +82,7 @@ export const timeclockRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       // VIO-554: Aplicar filtro multi-tenant via employee.companyId
       const where = {
-        employee: { companyId: ctx.tenant.companyId },
+        employee: { companyId: ctx.companyId },
         timestamp: {
           gte: input.startDate,
           lte: input.endDate,
@@ -120,7 +120,7 @@ export const timeclockRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.workSchedule.findMany({
         where: {
-          ...tenantFilter(ctx.tenant.companyId),
+          ...tenantFilter(ctx.companyId),
           ...(input.search && {
             OR: [
               { name: { contains: input.search, mode: "insensitive" } },
@@ -177,7 +177,7 @@ export const timeclockRouter = createTRPCRouter({
       return ctx.prisma.workSchedule.create({
         data: {
           ...scheduleData,
-          companyId: ctx.tenant.companyId,
+          companyId: ctx.companyId,
           shifts: {
             create: shifts,
           },
@@ -247,15 +247,15 @@ export const timeclockRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       // VIO-559: Validar que funcionário pertence à empresa
-      await validateEmployee(ctx.prisma, input.employeeId, ctx.tenant.companyId);
+      await validateEmployee(ctx.prisma, input.employeeId, ctx.companyId);
 
       const lastEntry = await ctx.prisma.hoursBank.findFirst({
-        where: { employeeId: input.employeeId, companyId: ctx.tenant.companyId },
+        where: { employeeId: input.employeeId, companyId: ctx.companyId },
         orderBy: { date: "desc" },
       });
 
       const movements = await ctx.prisma.hoursBank.findMany({
-        where: { employeeId: input.employeeId, companyId: ctx.tenant.companyId },
+        where: { employeeId: input.employeeId, companyId: ctx.companyId },
         orderBy: { date: "desc" },
         take: 30,
       });
@@ -276,7 +276,7 @@ export const timeclockRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       const where = {
-        ...tenantFilter(ctx.tenant.companyId),
+        ...tenantFilter(ctx.companyId),
         ...(input.employeeId && { employeeId: input.employeeId }),
         ...(input.startDate && input.endDate && {
           date: { gte: input.startDate, lte: input.endDate },
@@ -317,7 +317,7 @@ export const timeclockRouter = createTRPCRouter({
 
       return ctx.prisma.hoursBank.create({
         data: {
-          companyId: ctx.tenant.companyId,
+          companyId: ctx.companyId,
           employeeId: input.employeeId,
           type: input.type,
           date: input.date,
@@ -344,7 +344,7 @@ export const timeclockRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       const where = {
-        ...tenantFilter(ctx.tenant.companyId),
+        ...tenantFilter(ctx.companyId),
         ...(input.employeeId && { employeeId: input.employeeId }),
         ...(input.status !== "ALL" && { status: input.status }),
       };
@@ -376,7 +376,7 @@ export const timeclockRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.timeClockAdjustment.create({
         data: {
-          companyId: ctx.tenant.companyId,
+          companyId: ctx.companyId,
           employeeId: input.employeeId,
           date: input.date,
           adjustmentType: input.adjustmentType,
@@ -442,7 +442,7 @@ export const timeclockRouter = createTRPCRouter({
       return ctx.prisma.holiday.findMany({
         where: {
           OR: [
-            { companyId: ctx.tenant.companyId },
+            { companyId: ctx.companyId },
             { companyId: null },
           ],
           date: { gte: startDate, lte: endDate },
@@ -461,7 +461,7 @@ export const timeclockRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.holiday.create({
         data: {
-          companyId: input.type === "COMPANY" ? ctx.tenant.companyId : null,
+          companyId: input.type === "COMPANY" ? ctx.companyId : null,
           date: input.date,
           name: input.name,
           type: input.type,
@@ -571,7 +571,7 @@ export const timeclockRouter = createTRPCRouter({
         where: {
           date: { gte: startDate, lte: endDate },
           OR: [
-            { companyId: ctx.tenant.companyId },
+            { companyId: ctx.companyId },
             { companyId: null },
           ],
         },
