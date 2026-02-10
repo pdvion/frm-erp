@@ -281,7 +281,7 @@ export const emailIntegrationRouter = createTRPCRouter({
         autoFetch: boolean;
         fetchInterval: number;
       };
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn("[emailIntegration] Failed to parse email config JSON:", e);
       return null;
     }

@@ -287,7 +287,7 @@ export const cnabRouter = createTRPCRouter({
             });
             baixados++;
           }
-        } catch (e) {
+        } catch (e: unknown) {
           console.warn("[cnab] Erro ao baixar título:", titulo.nossoNumero, e);
           erros.push(`Erro ao baixar título ${titulo.nossoNumero}`);
         }

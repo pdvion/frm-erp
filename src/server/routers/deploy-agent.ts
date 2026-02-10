@@ -112,7 +112,7 @@ export const deployAgentRouter = createTRPCRouter({
       if (invoice.xmlContent) {
         try {
           parsedData = parseNFeXml(invoice.xmlContent);
-        } catch (e) {
+        } catch (e: unknown) {
           console.warn("[deploy-agent] Failed to parse NFe XML:", e);
         }
       }

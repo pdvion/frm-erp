@@ -69,7 +69,7 @@ export const aiConfigRouter = createTRPCRouter({
       // 1. Salvar no Vault (criptografado)
       try {
         await saveSecret(ctx.prisma, key, input.token, ctx.companyId, `Token de API ${input.provider.toUpperCase()}`);
-      } catch (e) {
+      } catch (e: unknown) {
         console.warn("[aiConfig] Vault indisponível ao salvar token:", e);
       }
 
@@ -115,7 +115,7 @@ export const aiConfigRouter = createTRPCRouter({
       // 1. Remover do Vault
       try {
         await deleteSecret(ctx.prisma, key, ctx.companyId);
-      } catch (e) {
+      } catch (e: unknown) {
         console.warn("[aiConfig] Vault indisponível ao remover token:", e);
       }
 
@@ -149,7 +149,7 @@ export const aiConfigRouter = createTRPCRouter({
       let inVault = false;
       try {
         inVault = await hasSecret(ctx.prisma, key, ctx.companyId);
-      } catch (e) {
+      } catch (e: unknown) {
         console.warn("[aiConfig] Vault indisponível ao verificar token:", e);
       }
 
