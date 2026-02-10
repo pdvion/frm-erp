@@ -97,7 +97,9 @@ model Company {
   workSchedules        WorkSchedule[]
   workflowDefinitions  WorkflowDefinition[]
   workflowInstances    WorkflowInstance[]
-  onboarding           CompanyOnboarding?
+  onboarding                    CompanyOnboarding?
+  intercompanyTransfersSource   IntercompanyTransfer[] @relation("IntercompanyTransferSource")
+  intercompanyTransfersTarget   IntercompanyTransfer[] @relation("IntercompanyTransferTarget")
 
   @@map("companies")
 }
@@ -413,6 +415,8 @@ model Material {
   stockTransferItems          StockTransferItem[]
   supplierMaterials           SupplierMaterial[]
   supplierReturnItems         SupplierReturnItem[]
+  lots                        Lot[]
+  intercompanyTransferItems   IntercompanyTransferItem[]
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
@@ -2163,6 +2167,8 @@ model Employee {
   timesheetDays       TimesheetDay[]
   transport_vouchers  TransportVoucher[]
   vacations           Vacation[]
+  dependents          EmployeeDependent[]
+  leaveRecords        LeaveRecord[]
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_employees_companyId")
@@ -5119,6 +5125,7 @@ enum SalesOrderStatus {
 }
 
 enum TransferStatus {
+  DRAFT
   PENDING
   IN_TRANSIT
   RECEIVED
@@ -5539,4 +5546,214 @@ enum supplier_iqf_status {
   NEW
   APPROVED
   REJECTED
+}
+
+// ============================================================================
+// FASE 4 — NOVOS MODELS
+// ============================================================================
+
+enum DependentType {
+  SPOUSE
+  CHILD
+  STEPCHILD
+  PARENT
+  LEGAL_GUARDIAN
+  OTHER
+}
+
+enum LeaveType {
+  MEDICAL
+  MATERNITY
+  PATERNITY
+  BEREAVEMENT
+  MARRIAGE
+  MILITARY
+  JURY_DUTY
+  BLOOD_DONATION
+  UNION
+  OTHER
+}
+
+enum LotStatus {
+  AVAILABLE
+  RESERVED
+  QUARANTINE
+  EXPIRED
+  CONSUMED
+  BLOCKED
+}
+
+model EmployeeDependent {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String        @map("employee_id") @db.Uuid
+  companyId      String        @map("company_id") @db.Uuid
+  name           String
+  cpf            String?       @db.VarChar(14)
+  birthDate      DateTime?     @map("birth_date") @db.Date
+  type           DependentType
+  isIRDeductible Boolean       @default(false) @map("is_ir_deductible")
+  isSalarioFamilia Boolean     @default(false) @map("is_salario_familia")
+  isActive       Boolean       @default(true) @map("is_active")
+  notes          String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+  employee       Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_employee_dependents_employee_id")
+  @@index([companyId], map: "idx_employee_dependents_company_id")
+  @@map("employee_dependents")
+}
+
+model LeaveRecord {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
+  type           LeaveType
+  startDate      DateTime  @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  days           Int?
+  cid            String?   @db.VarChar(10)
+  documentNumber String?   @map("document_number")
+  notes          String?
+  approvedBy     String?   @map("approved_by") @db.Uuid
+  approvedAt     DateTime? @map("approved_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_leave_records_employee_id")
+  @@index([companyId], map: "idx_leave_records_company_id")
+  @@index([startDate], map: "idx_leave_records_start_date")
+  @@map("leave_records")
+}
+
+model IncomeTaxTable {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year          Int
+  month         Int?
+  minValue      Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue      Decimal? @map("max_value") @db.Decimal(15, 2)
+  rate          Decimal  @db.Decimal(5, 2)
+  deduction     Decimal  @db.Decimal(15, 2)
+  dependentDeduction Decimal @default(0) @map("dependent_deduction") @db.Decimal(15, 2)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_income_tax_table_range")
+  @@index([year], map: "idx_income_tax_table_year")
+  @@map("income_tax_tables")
+}
+
+model INSSTable {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year      Int
+  month     Int?
+  minValue  Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue  Decimal  @map("max_value") @db.Decimal(15, 2)
+  rate      Decimal  @db.Decimal(5, 2)
+  ceiling   Decimal? @db.Decimal(15, 2)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_inss_table_range")
+  @@index([year], map: "idx_inss_table_year")
+  @@map("inss_tables")
+}
+
+model Lot {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String
+  materialId   String      @map("material_id") @db.Uuid
+  companyId    String      @map("company_id") @db.Uuid
+  status       LotStatus   @default(AVAILABLE)
+  quantity     Decimal     @db.Decimal(15, 4)
+  reservedQty  Decimal     @default(0) @map("reserved_qty") @db.Decimal(15, 4)
+  unitCost     Decimal?    @map("unit_cost") @db.Decimal(15, 4)
+  manufactureDate DateTime? @map("manufacture_date") @db.Date
+  expirationDate  DateTime? @map("expiration_date") @db.Date
+  supplierId   String?     @map("supplier_id") @db.Uuid
+  locationId   String?     @map("location_id") @db.Uuid
+  notes        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
+  material     Material    @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  movements    LotMovement[]
+
+  @@unique([code, companyId], map: "uq_lots_code_company")
+  @@index([materialId], map: "idx_lots_material_id")
+  @@index([companyId], map: "idx_lots_company_id")
+  @@index([status], map: "idx_lots_status")
+  @@index([expirationDate], map: "idx_lots_expiration_date")
+  @@map("lots")
+}
+
+model LotMovement {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lotId         String   @map("lot_id") @db.Uuid
+  type          String
+  quantity      Decimal  @db.Decimal(15, 4)
+  documentType  String?  @map("document_type")
+  documentId    String?  @map("document_id") @db.Uuid
+  notes         String?
+  userId        String?  @map("user_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  lot           Lot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId], map: "idx_lot_movements_lot_id")
+  @@index([createdAt], map: "idx_lot_movements_created_at")
+  @@map("lot_movements")
+}
+
+model TaxRegime {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tax_regimes")
+}
+
+model IntercompanyTransfer {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int            @default(autoincrement())
+  sourceCompanyId   String         @map("source_company_id") @db.Uuid
+  targetCompanyId   String         @map("target_company_id") @db.Uuid
+  status            TransferStatus @default(DRAFT)
+  transferDate      DateTime?      @map("transfer_date")
+  shippedAt         DateTime?      @map("shipped_at")
+  receivedAt        DateTime?      @map("received_at")
+  notes             String?
+  createdBy         String?        @map("created_by") @db.Uuid
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+  sourceCompany     Company        @relation("IntercompanyTransferSource", fields: [sourceCompanyId], references: [id], onDelete: NoAction)
+  targetCompany     Company        @relation("IntercompanyTransferTarget", fields: [targetCompanyId], references: [id], onDelete: NoAction)
+  items             IntercompanyTransferItem[]
+
+  @@index([sourceCompanyId], map: "idx_intercompany_transfers_source")
+  @@index([targetCompanyId], map: "idx_intercompany_transfers_target")
+  @@index([status], map: "idx_intercompany_transfers_status")
+  @@map("intercompany_transfers")
+}
+
+model IntercompanyTransferItem {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transferId  String               @map("transfer_id") @db.Uuid
+  materialId  String               @map("material_id") @db.Uuid
+  quantity    Decimal              @db.Decimal(15, 4)
+  unitCost    Decimal?             @map("unit_cost") @db.Decimal(15, 4)
+  lotId       String?              @map("lot_id") @db.Uuid
+  notes       String?
+  createdAt   DateTime             @default(now()) @map("created_at")
+  transfer    IntercompanyTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  material    Material             @relation(fields: [materialId], references: [id], onDelete: NoAction)
+
+  @@index([transferId], map: "idx_intercompany_transfer_items_transfer")
+  @@index([materialId], map: "idx_intercompany_transfer_items_material")
+  @@map("intercompany_transfer_items")
 }
