@@ -50,6 +50,10 @@ reviews:
       - "main"
       - "develop"
       - "develop-base"
+      - "refactor/**"
+      - "fix/**"
+      - "feat/**"
+      - "feature/**"
   tools:
     shellcheck:
       enabled: true

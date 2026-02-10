@@ -11,6 +11,10 @@ reviews:
     base_branches:
       - main
       - develop
+      - "refactor/**"
+      - "fix/**"
+      - "feat/**"
+      - "feature/**"
 
   # Configurações de review
   request_changes_workflow: true
