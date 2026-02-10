@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter, uploadProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { taskService } from "../services/tasks";
 import { syncEntityEmbedding } from "../services/embeddingSync";
 import { createClient } from "@supabase/supabase-js";
@@ -68,7 +67,7 @@ export const tasksRouter = createTRPCRouter({
 
       if (availableTasks && ctx.tenant.userId) {
         // Buscar grupos do usuário
-        const userGroups = await prisma.userGroupMember.findMany({
+        const userGroups = await ctx.prisma.userGroupMember.findMany({
           where: { userId: ctx.tenant.userId },
           select: { groupId: true },
         });
@@ -87,7 +86,7 @@ export const tasksRouter = createTRPCRouter({
       }
 
       const [tasks, total] = await Promise.all([
-        prisma.task.findMany({
+        ctx.prisma.task.findMany({
           where,
           include: {
             owner: { select: { id: true, name: true, email: true } },
@@ -101,7 +100,7 @@ export const tasksRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.task.count({ where }),
+        ctx.prisma.task.count({ where }),
       ]);
 
       return {
@@ -116,7 +115,7 @@ export const tasksRouter = createTRPCRouter({
   getById: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const task = await prisma.task.findFirst({
+      const task = await ctx.prisma.task.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -173,7 +172,7 @@ export const tasksRouter = createTRPCRouter({
         entityType: input.entityType as TaskEntityType | undefined,
         createdById: ctx.tenant.userId ?? undefined,
       });
-      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "task", task.id, "create");
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "task", task.id, "create");
       return task;
     }),
 
@@ -217,7 +216,7 @@ export const tasksRouter = createTRPCRouter({
         userId: ctx.tenant.userId,
         resolution: input.resolution,
       });
-      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "task", task.id, "update");
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "task", task.id, "update");
       return task;
     }),
 
@@ -285,7 +284,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
       
-      const task = await prisma.task.findFirst({
+      const task = await ctx.prisma.task.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -296,7 +295,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
-      return prisma.task.update({
+      return ctx.prisma.task.update({
         where: { id: input.id },
         data: {
           status: input.status,
@@ -308,12 +307,12 @@ export const tasksRouter = createTRPCRouter({
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [byStatus, byPriority, overdue, myPending] = await Promise.all([
-      prisma.task.groupBy({
+      ctx.prisma.task.groupBy({
         by: ["status"],
         where: tenantFilter(ctx.companyId, false),
         _count: true,
       }),
-      prisma.task.groupBy({
+      ctx.prisma.task.groupBy({
         by: ["priority"],
         where: {
           ...tenantFilter(ctx.companyId, false),
@@ -321,7 +320,7 @@ export const tasksRouter = createTRPCRouter({
         },
         _count: true,
       }),
-      prisma.task.count({
+      ctx.prisma.task.count({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: { notIn: ["COMPLETED", "CANCELLED"] },
@@ -329,7 +328,7 @@ export const tasksRouter = createTRPCRouter({
         },
       }),
       ctx.tenant.userId
-        ? prisma.task.count({
+        ? ctx.prisma.task.count({
           where: {
             ...tenantFilter(ctx.companyId, false),
             ownerId: ctx.tenant.userId,
@@ -349,7 +348,7 @@ export const tasksRouter = createTRPCRouter({
 
   // Dashboard de tarefas por departamento
   departmentDashboard: tenantProcedure.query(async ({ ctx }) => {
-    const departments = await prisma.department.findMany({
+    const departments = await ctx.prisma.department.findMany({
       where: tenantFilter(ctx.companyId, false),
       select: {
         id: true,
@@ -375,7 +374,7 @@ export const tasksRouter = createTRPCRouter({
   listAttachments: tenantProcedure
     .input(z.object({ taskId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const task = await prisma.task.findFirst({
+      const task = await ctx.prisma.task.findFirst({
         where: {
           id: input.taskId,
           ...tenantFilter(ctx.companyId, false),
@@ -386,7 +385,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
-      return prisma.taskAttachment.findMany({
+      return ctx.prisma.taskAttachment.findMany({
         where: { taskId: input.taskId },
         orderBy: { createdAt: "desc" },
       });
@@ -409,7 +408,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
-      const task = await prisma.task.findFirst({
+      const task = await ctx.prisma.task.findFirst({
         where: {
           id: input.taskId,
           ...tenantFilter(ctx.companyId, false),
@@ -420,7 +419,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Tarefa não encontrada" });
       }
 
-      return prisma.taskAttachment.create({
+      return ctx.prisma.taskAttachment.create({
         data: {
           taskId: input.taskId,
           fileName: input.fileName,
@@ -441,7 +440,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
-      const attachment = await prisma.taskAttachment.findFirst({
+      const attachment = await ctx.prisma.taskAttachment.findFirst({
         where: { id: input.attachmentId },
         include: {
           task: {
@@ -459,7 +458,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Anexo não encontrado" });
       }
 
-      return prisma.taskAttachment.delete({
+      return ctx.prisma.taskAttachment.delete({
         where: { id: input.attachmentId },
       });
     }),
@@ -478,7 +477,7 @@ export const tasksRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não autenticado" });
       }
 
-      const task = await prisma.task.findFirst({
+      const task = await ctx.prisma.task.findFirst({
         where: {
           id: input.taskId,
           ...tenantFilter(ctx.companyId, false),

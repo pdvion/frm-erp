@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { startWorkflowForEntity, getWorkflowStatus } from "@/lib/workflow-integration";
@@ -56,7 +55,7 @@ export const requisitionsRouter = createTRPCRouter({
       }
 
       const [requisitions, total] = await Promise.all([
-        prisma.materialRequisition.findMany({
+        ctx.prisma.materialRequisition.findMany({
           where,
           include: {
             items: {
@@ -72,7 +71,7 @@ export const requisitionsRouter = createTRPCRouter({
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.materialRequisition.count({ where }),
+        ctx.prisma.materialRequisition.count({ where }),
       ]);
 
       return {
@@ -87,7 +86,7 @@ export const requisitionsRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -123,7 +122,7 @@ export const requisitionsRouter = createTRPCRouter({
       ].filter((id): id is string => !!id);
 
       const users = userIds.length > 0
-        ? await prisma.user.findMany({
+        ? await ctx.prisma.user.findMany({
           where: { id: { in: userIds } },
           select: { id: true, name: true },
         })
@@ -158,7 +157,7 @@ export const requisitionsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Obter próximo código
-      const lastRequisition = await prisma.materialRequisition.findFirst({
+      const lastRequisition = await ctx.prisma.materialRequisition.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -166,7 +165,7 @@ export const requisitionsRouter = createTRPCRouter({
       const nextCode = (lastRequisition?.code || 0) + 1;
 
       // Criar requisição com itens
-      const requisition = await prisma.materialRequisition.create({
+      const requisition = await ctx.prisma.materialRequisition.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -209,7 +208,7 @@ export const requisitionsRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.requisitionId,
           ...tenantFilter(ctx.companyId, false),
@@ -230,7 +229,7 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.materialRequisitionItem.create({
+      return ctx.prisma.materialRequisitionItem.create({
         data: {
           requisitionId: input.requisitionId,
           materialId: input.materialId,
@@ -249,7 +248,7 @@ export const requisitionsRouter = createTRPCRouter({
       itemId: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const item = await prisma.materialRequisitionItem.findFirst({
+      const item = await ctx.prisma.materialRequisitionItem.findFirst({
         where: { id: input.itemId },
         include: {
           requisition: true,
@@ -277,7 +276,7 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.materialRequisitionItem.delete({
+      return ctx.prisma.materialRequisitionItem.delete({
         where: { id: input.itemId },
       });
     }),
@@ -286,7 +285,7 @@ export const requisitionsRouter = createTRPCRouter({
   submit: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -315,7 +314,7 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.materialRequisition.update({
+      return ctx.prisma.materialRequisition.update({
         where: { id: input.id },
         data: { status: "PENDING" },
       });
@@ -331,7 +330,7 @@ export const requisitionsRouter = createTRPCRouter({
       })).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -356,7 +355,7 @@ export const requisitionsRouter = createTRPCRouter({
       // Atualizar quantidades aprovadas
       if (input.items) {
         for (const item of input.items) {
-          await prisma.materialRequisitionItem.update({
+          await ctx.prisma.materialRequisitionItem.update({
             where: { id: item.itemId },
             data: { approvedQty: item.approvedQty },
           });
@@ -364,14 +363,14 @@ export const requisitionsRouter = createTRPCRouter({
       } else {
         // Aprovar todas as quantidades solicitadas
         for (const item of requisition.items) {
-          await prisma.materialRequisitionItem.update({
+          await ctx.prisma.materialRequisitionItem.update({
             where: { id: item.id },
             data: { approvedQty: item.requestedQty },
           });
         }
       }
 
-      return prisma.materialRequisition.update({
+      return ctx.prisma.materialRequisition.update({
         where: { id: input.id },
         data: {
           status: "APPROVED",
@@ -385,7 +384,7 @@ export const requisitionsRouter = createTRPCRouter({
   startSeparation: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -406,7 +405,7 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.materialRequisition.update({
+      return ctx.prisma.materialRequisition.update({
         where: { id: input.id },
         data: {
           status: "IN_SEPARATION",
@@ -422,7 +421,7 @@ export const requisitionsRouter = createTRPCRouter({
       quantity: z.number().positive(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const item = await prisma.materialRequisitionItem.findFirst({
+      const item = await ctx.prisma.materialRequisitionItem.findFirst({
         where: { id: input.itemId },
         include: {
           requisition: true,
@@ -482,7 +481,7 @@ export const requisitionsRouter = createTRPCRouter({
 
       // Atualizar item
       const newSeparatedQty = Number(item.separatedQty) + Number(input.quantity);
-      await prisma.materialRequisitionItem.update({
+      await ctx.prisma.materialRequisitionItem.update({
         where: { id: input.itemId },
         data: {
           separatedQty: newSeparatedQty,
@@ -492,7 +491,7 @@ export const requisitionsRouter = createTRPCRouter({
       });
 
       // Criar movimentação de saída
-      await prisma.inventoryMovement.create({
+      await ctx.prisma.inventoryMovement.create({
         data: {
           inventoryId: inventory.id,
           movementType: "EXIT",
@@ -509,7 +508,7 @@ export const requisitionsRouter = createTRPCRouter({
       });
 
       // Atualizar estoque
-      await prisma.inventory.update({
+      await ctx.prisma.inventory.update({
         where: { id: inventory.id },
         data: {
           quantity: { decrement: input.quantity },
@@ -520,7 +519,7 @@ export const requisitionsRouter = createTRPCRouter({
       });
 
       // Verificar se requisição foi completada
-      const allItems = await prisma.materialRequisitionItem.findMany({
+      const allItems = await ctx.prisma.materialRequisitionItem.findMany({
         where: { requisitionId: item.requisition.id },
       });
 
@@ -539,7 +538,7 @@ export const requisitionsRouter = createTRPCRouter({
       }
 
       if (newStatus !== item.requisition.status) {
-        await prisma.materialRequisition.update({
+        await ctx.prisma.materialRequisition.update({
           where: { id: item.requisition.id },
           data: {
             status: newStatus,
@@ -558,7 +557,7 @@ export const requisitionsRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -582,7 +581,7 @@ export const requisitionsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.materialRequisition.update({
+      return ctx.prisma.materialRequisition.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -594,12 +593,12 @@ export const requisitionsRouter = createTRPCRouter({
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [byStatus, byType, recentCount] = await Promise.all([
-      prisma.materialRequisition.groupBy({
+      ctx.prisma.materialRequisition.groupBy({
         by: ["status"],
         where: tenantFilter(ctx.companyId, false),
         _count: true,
       }),
-      prisma.materialRequisition.groupBy({
+      ctx.prisma.materialRequisition.groupBy({
         by: ["type"],
         where: {
           ...tenantFilter(ctx.companyId, false),
@@ -607,7 +606,7 @@ export const requisitionsRouter = createTRPCRouter({
         },
         _count: true,
       }),
-      prisma.materialRequisition.count({
+      ctx.prisma.materialRequisition.count({
         where: {
           ...tenantFilter(ctx.companyId, false),
           requestedAt: {
@@ -632,7 +631,7 @@ export const requisitionsRouter = createTRPCRouter({
   submitForApproval: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const requisition = await prisma.materialRequisition.findFirst({
+      const requisition = await ctx.prisma.materialRequisition.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -680,7 +679,7 @@ export const requisitionsRouter = createTRPCRouter({
       }
 
       // Atualizar status da requisição para PENDING
-      await prisma.materialRequisition.update({
+      await ctx.prisma.materialRequisition.update({
         where: { id: input.id },
         data: { status: "PENDING" },
       });
@@ -717,7 +716,7 @@ export const requisitionsRouter = createTRPCRouter({
       const { dateFrom, dateTo, groupBy, materialId, costCenter, department } = input;
 
       // Buscar itens de requisições completadas no período
-      const items = await prisma.materialRequisitionItem.findMany({
+      const items = await ctx.prisma.materialRequisitionItem.findMany({
         where: {
           requisition: {
             ...tenantFilter(ctx.companyId, false),

@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, publicProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 // Categorias de configurações
@@ -21,10 +20,10 @@ export const settingsRouter = createTRPCRouter({
       key: z.string(),
       companyId: z.string().uuid().optional(),
     }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       // Primeiro tenta buscar configuração específica da empresa
       if (input.companyId) {
-        const companySetting = await prisma.systemSetting.findFirst({
+        const companySetting = await ctx.prisma.systemSetting.findFirst({
           where: {
             key: input.key,
             companyId: input.companyId,
@@ -34,7 +33,7 @@ export const settingsRouter = createTRPCRouter({
       }
 
       // Fallback para configuração global
-      const globalSetting = await prisma.systemSetting.findFirst({
+      const globalSetting = await ctx.prisma.systemSetting.findFirst({
         where: {
           key: input.key,
           companyId: null,
@@ -50,8 +49,8 @@ export const settingsRouter = createTRPCRouter({
       prefix: z.string(),
       companyId: z.string().uuid().optional(),
     }))
-    .query(async ({ input }) => {
-      const settings = await prisma.systemSetting.findMany({
+    .query(async ({ input, ctx }) => {
+      const settings = await ctx.prisma.systemSetting.findMany({
         where: {
           key: { startsWith: input.prefix },
           OR: [
@@ -86,7 +85,7 @@ export const settingsRouter = createTRPCRouter({
       category: z.string(),
     }))
     .query(async ({ input, ctx }) => {
-      const settings = await prisma.systemSetting.findMany({
+      const settings = await ctx.prisma.systemSetting.findMany({
         where: {
           category: input.category,
           OR: [
@@ -129,7 +128,7 @@ export const settingsRouter = createTRPCRouter({
       const companyId = input.global ? null : ctx.companyId;
 
       // Verificar se a configuração existe
-      const existing = await prisma.systemSetting.findFirst({
+      const existing = await ctx.prisma.systemSetting.findFirst({
         where: {
           key: input.key,
           companyId,
@@ -138,7 +137,7 @@ export const settingsRouter = createTRPCRouter({
 
       if (existing) {
         // Atualizar existente
-        return prisma.systemSetting.update({
+        return ctx.prisma.systemSetting.update({
           where: { id: existing.id },
           data: {
             value: input.value as object,
@@ -149,7 +148,7 @@ export const settingsRouter = createTRPCRouter({
       }
 
       // Buscar a configuração global para obter categoria
-      const globalSetting = await prisma.systemSetting.findFirst({
+      const globalSetting = await ctx.prisma.systemSetting.findFirst({
         where: {
           key: input.key,
           companyId: null,
@@ -164,7 +163,7 @@ export const settingsRouter = createTRPCRouter({
       }
 
       // Criar nova configuração para a empresa
-      return prisma.systemSetting.create({
+      return ctx.prisma.systemSetting.create({
         data: {
           key: input.key,
           value: input.value as object,
@@ -186,7 +185,7 @@ export const settingsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se já existe
-      const existing = await prisma.systemSetting.findFirst({
+      const existing = await ctx.prisma.systemSetting.findFirst({
         where: {
           key: input.key,
           companyId: null,
@@ -200,7 +199,7 @@ export const settingsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.systemSetting.create({
+      return ctx.prisma.systemSetting.create({
         data: {
           key: input.key,
           value: input.value as object,
@@ -218,7 +217,7 @@ export const settingsRouter = createTRPCRouter({
       key: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      await prisma.systemSetting.deleteMany({
+      await ctx.prisma.systemSetting.deleteMany({
         where: {
           key: input.key,
           companyId: ctx.companyId,
@@ -234,8 +233,8 @@ export const settingsRouter = createTRPCRouter({
     .input(z.object({
       companyId: z.string().uuid().optional(),
     }).optional())
-    .query(async ({ input }) => {
-      const settings = await prisma.systemSetting.findMany({
+    .query(async ({ input, ctx }) => {
+      const settings = await ctx.prisma.systemSetting.findMany({
         where: {
           category: "landing",
           OR: [

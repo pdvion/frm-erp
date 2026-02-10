@@ -5,7 +5,6 @@
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { tenantFilter } from "../trpc";
 
@@ -24,7 +23,7 @@ export const nfeQueueRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se NFe existe e pertence à empresa
-      const nfe = await prisma.issuedInvoice.findFirst({
+      const nfe = await ctx.prisma.issuedInvoice.findFirst({
         where: {
           id: input.nfeId,
           ...tenantFilter(ctx.companyId),
@@ -39,7 +38,7 @@ export const nfeQueueRouter = createTRPCRouter({
       }
 
       // Verificar se já não está na fila
-      const existingJob = await prisma.$queryRaw<{ id: string }[]>`
+      const existingJob = await ctx.prisma.$queryRaw<{ id: string }[]>`
         SELECT id FROM nfe_queue_jobs 
         WHERE nfe_id = ${input.nfeId}::uuid 
         AND status IN ('pending', 'processing', 'retry')
@@ -54,7 +53,7 @@ export const nfeQueueRouter = createTRPCRouter({
       }
 
       // Enfileirar usando função do banco
-      const result = await prisma.$queryRaw<{ enqueue_nfe_emission: string }[]>`
+      const result = await ctx.prisma.$queryRaw<{ enqueue_nfe_emission: string }[]>`
         SELECT enqueue_nfe_emission(
           ${input.nfeId}::uuid,
           ${ctx.companyId}::uuid,
@@ -65,7 +64,7 @@ export const nfeQueueRouter = createTRPCRouter({
       const jobId = result[0]?.enqueue_nfe_emission;
 
       // Atualizar status da NFe para PENDING_TRANSMISSION
-      await prisma.issuedInvoice.update({
+      await ctx.prisma.issuedInvoice.update({
         where: { id: input.nfeId },
         data: { 
           status: "PENDING_TRANSMISSION",
@@ -88,7 +87,7 @@ export const nfeQueueRouter = createTRPCRouter({
       jobId: z.string().uuid(),
     }))
     .query(async ({ input, ctx }) => {
-      const job = await prisma.$queryRaw<{
+      const job = await ctx.prisma.$queryRaw<{
         id: string;
         nfe_id: string;
         status: string;
@@ -136,7 +135,7 @@ export const nfeQueueRouter = createTRPCRouter({
       offset: z.number().int().min(0).default(0),
     }))
     .query(async ({ input, ctx }) => {
-      const jobs = await prisma.$queryRaw<{
+      const jobs = await ctx.prisma.$queryRaw<{
         id: string;
         nfe_id: string;
         status: string;
@@ -150,16 +149,16 @@ export const nfeQueueRouter = createTRPCRouter({
       }[]>`
         SELECT * FROM nfe_queue_jobs 
         WHERE company_id = ${ctx.companyId}::uuid
-        ${input.status ? prisma.$queryRaw`AND status = ${input.status}` : prisma.$queryRaw``}
+        ${input.status ? ctx.prisma.$queryRaw`AND status = ${input.status}` : ctx.prisma.$queryRaw``}
         ORDER BY created_at DESC
         LIMIT ${input.limit}
         OFFSET ${input.offset}
       `;
 
-      const countResult = await prisma.$queryRaw<{ count: bigint }[]>`
+      const countResult = await ctx.prisma.$queryRaw<{ count: bigint }[]>`
         SELECT COUNT(*) as count FROM nfe_queue_jobs 
         WHERE company_id = ${ctx.companyId}::uuid
-        ${input.status ? prisma.$queryRaw`AND status = ${input.status}` : prisma.$queryRaw``}
+        ${input.status ? ctx.prisma.$queryRaw`AND status = ${input.status}` : ctx.prisma.$queryRaw``}
       `;
 
       return {
@@ -188,7 +187,7 @@ export const nfeQueueRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se job existe e está pendente
-      const job = await prisma.$queryRaw<{ id: string; status: string; nfe_id: string }[]>`
+      const job = await ctx.prisma.$queryRaw<{ id: string; status: string; nfe_id: string }[]>`
         SELECT id, status, nfe_id FROM nfe_queue_jobs 
         WHERE id = ${input.jobId}::uuid 
         AND company_id = ${ctx.companyId}::uuid
@@ -209,7 +208,7 @@ export const nfeQueueRouter = createTRPCRouter({
       }
 
       // Atualizar status do job
-      await prisma.$executeRaw`
+      await ctx.prisma.$executeRaw`
         UPDATE nfe_queue_jobs 
         SET status = 'failed', 
             last_error = 'Cancelado pelo usuário',
@@ -218,7 +217,7 @@ export const nfeQueueRouter = createTRPCRouter({
       `;
 
       // Reverter status da NFe
-      await prisma.issuedInvoice.update({
+      await ctx.prisma.issuedInvoice.update({
         where: { id: job[0].nfe_id },
         data: { 
           status: "DRAFT",
@@ -238,7 +237,7 @@ export const nfeQueueRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se job existe e falhou
-      const job = await prisma.$queryRaw<{ id: string; status: string; nfe_id: string }[]>`
+      const job = await ctx.prisma.$queryRaw<{ id: string; status: string; nfe_id: string }[]>`
         SELECT id, status, nfe_id FROM nfe_queue_jobs 
         WHERE id = ${input.jobId}::uuid 
         AND company_id = ${ctx.companyId}::uuid
@@ -259,7 +258,7 @@ export const nfeQueueRouter = createTRPCRouter({
       }
 
       // Criar novo job
-      const result = await prisma.$queryRaw<{ enqueue_nfe_emission: string }[]>`
+      const result = await ctx.prisma.$queryRaw<{ enqueue_nfe_emission: string }[]>`
         SELECT enqueue_nfe_emission(
           ${job[0].nfe_id}::uuid,
           ${ctx.companyId}::uuid,
@@ -268,7 +267,7 @@ export const nfeQueueRouter = createTRPCRouter({
       `;
 
       // Atualizar status da NFe
-      await prisma.issuedInvoice.update({
+      await ctx.prisma.issuedInvoice.update({
         where: { id: job[0].nfe_id },
         data: { 
           status: "PENDING_TRANSMISSION",
@@ -287,7 +286,7 @@ export const nfeQueueRouter = createTRPCRouter({
    */
   getQueueStats: tenantProcedure
     .query(async ({ ctx }) => {
-      const stats = await prisma.$queryRaw<{
+      const stats = await ctx.prisma.$queryRaw<{
         status: string;
         count: bigint;
       }[]>`
@@ -328,7 +327,7 @@ export const nfeQueueRouter = createTRPCRouter({
       apiKey: z.string(),
       batchSize: z.number().int().min(1).max(10).default(5),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       // Validar API key
       if (!process.env.NFE_QUEUE_API_KEY && process.env.NODE_ENV === "production") {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "NFE_QUEUE_API_KEY não configurada" });
@@ -342,7 +341,7 @@ export const nfeQueueRouter = createTRPCRouter({
       }
 
       // Ler mensagens da fila
-      const messages = await prisma.$queryRaw<{
+      const messages = await ctx.prisma.$queryRaw<{
         msg_id: bigint;
         message: {
           job_id: string;
@@ -361,7 +360,7 @@ export const nfeQueueRouter = createTRPCRouter({
 
         try {
           // Marcar job como processing
-          await prisma.$executeRaw`
+          await ctx.prisma.$executeRaw`
             UPDATE nfe_queue_jobs 
             SET status = 'processing', updated_at = NOW()
             WHERE id = ${job_id}::uuid
@@ -373,7 +372,7 @@ export const nfeQueueRouter = createTRPCRouter({
 
           if (sefazResult.success) {
             // Atualizar NFe com protocolo
-            await prisma.issuedInvoice.update({
+            await ctx.prisma.issuedInvoice.update({
               where: { id: nfe_id },
               data: {
                 status: "AUTHORIZED",
@@ -384,12 +383,12 @@ export const nfeQueueRouter = createTRPCRouter({
             });
 
             // Marcar job como completo
-            await prisma.$executeRaw`
+            await ctx.prisma.$executeRaw`
               SELECT complete_nfe_job(${job_id}::uuid, true, NULL)
             `;
 
             // Deletar mensagem da fila
-            await prisma.$executeRaw`
+            await ctx.prisma.$executeRaw`
               SELECT pgmq.delete('nfe_emission', ${msg.msg_id})
             `;
 
@@ -401,12 +400,12 @@ export const nfeQueueRouter = createTRPCRouter({
           const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
 
           // Marcar job como falha (com retry automático se aplicável)
-          await prisma.$executeRaw`
+          await ctx.prisma.$executeRaw`
             SELECT complete_nfe_job(${job_id}::uuid, false, ${errorMessage})
           `;
 
           // Deletar mensagem da fila original (retry vai para outra fila)
-          await prisma.$executeRaw`
+          await ctx.prisma.$executeRaw`
             SELECT pgmq.delete('nfe_emission', ${msg.msg_id})
           `;
 

@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 export const usersRouter = createTRPCRouter({
@@ -20,7 +19,7 @@ export const usersRouter = createTRPCRouter({
       const { search, status = "all", page = 1, limit = 20 } = input ?? {};
 
       // Buscar usuários vinculados à empresa
-      const userCompanies = await prisma.userCompany.findMany({
+      const userCompanies = await ctx.prisma.userCompany.findMany({
         where: {
           companyId: ctx.companyId,
           ...(status !== "all" && { isActive: status === "active" }),
@@ -61,7 +60,7 @@ export const usersRouter = createTRPCRouter({
         take: limit,
       });
 
-      const total = await prisma.userCompany.count({
+      const total = await ctx.prisma.userCompany.count({
         where: {
           companyId: ctx.companyId,
           ...(status !== "all" && { isActive: status === "active" }),
@@ -101,7 +100,7 @@ export const usersRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const userCompany = await prisma.userCompany.findFirst({
+      const userCompany = await ctx.prisma.userCompany.findFirst({
         where: {
           userId: input.id,
           companyId: ctx.companyId,
@@ -161,13 +160,13 @@ export const usersRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Verificar se e-mail já existe
-      const existingUser = await prisma.user.findUnique({
+      const existingUser = await ctx.prisma.user.findUnique({
         where: { email: input.email },
       });
 
       if (existingUser) {
         // Verificar se já está na empresa
-        const existingAccess = await prisma.userCompany.findFirst({
+        const existingAccess = await ctx.prisma.userCompany.findFirst({
           where: {
             userId: existingUser.id,
             companyId: ctx.companyId,
@@ -182,7 +181,7 @@ export const usersRouter = createTRPCRouter({
         }
 
         // Adicionar acesso à empresa
-        await prisma.userCompany.create({
+        await ctx.prisma.userCompany.create({
           data: {
             userId: existingUser.id,
             companyId: ctx.companyId!,
@@ -192,7 +191,7 @@ export const usersRouter = createTRPCRouter({
 
         // Adicionar aos grupos
         if (input.groupIds?.length) {
-          await prisma.userGroupMember.createMany({
+          await ctx.prisma.userGroupMember.createMany({
             data: input.groupIds.map((groupId) => ({
               userId: existingUser.id,
               groupId,
@@ -206,7 +205,7 @@ export const usersRouter = createTRPCRouter({
       }
 
       // Criar novo usuário
-      const user = await prisma.user.create({
+      const user = await ctx.prisma.user.create({
         data: {
           name: input.name,
           email: input.email,
@@ -215,7 +214,7 @@ export const usersRouter = createTRPCRouter({
       });
 
       // Adicionar acesso à empresa
-      await prisma.userCompany.create({
+      await ctx.prisma.userCompany.create({
         data: {
           userId: user.id,
           companyId: ctx.companyId!,
@@ -225,7 +224,7 @@ export const usersRouter = createTRPCRouter({
 
       // Adicionar aos grupos
       if (input.groupIds?.length) {
-        await prisma.userGroupMember.createMany({
+        await ctx.prisma.userGroupMember.createMany({
           data: input.groupIds.map((groupId) => ({
             userId: user.id,
             groupId,
@@ -249,7 +248,7 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userCompany = await prisma.userCompany.findFirst({
+      const userCompany = await ctx.prisma.userCompany.findFirst({
         where: {
           userId: input.id,
           companyId: ctx.companyId,
@@ -265,7 +264,7 @@ export const usersRouter = createTRPCRouter({
 
       // Atualizar nome se fornecido
       if (input.name) {
-        await prisma.user.update({
+        await ctx.prisma.user.update({
           where: { id: input.id },
           data: { name: input.name },
         });
@@ -274,7 +273,7 @@ export const usersRouter = createTRPCRouter({
       // Atualizar grupos se fornecido
       if (input.groupIds !== undefined) {
         // Remover memberships atuais
-        await prisma.userGroupMember.deleteMany({
+        await ctx.prisma.userGroupMember.deleteMany({
           where: {
             userId: input.id,
             group: {
@@ -285,7 +284,7 @@ export const usersRouter = createTRPCRouter({
 
         // Adicionar novas memberships
         if (input.groupIds.length > 0) {
-          await prisma.userGroupMember.createMany({
+          await ctx.prisma.userGroupMember.createMany({
             data: input.groupIds.map((groupId) => ({
               userId: input.id,
               groupId,
@@ -302,7 +301,7 @@ export const usersRouter = createTRPCRouter({
   deactivate: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const userCompany = await prisma.userCompany.findFirst({
+      const userCompany = await ctx.prisma.userCompany.findFirst({
         where: {
           userId: input.id,
           companyId: ctx.companyId,
@@ -316,7 +315,7 @@ export const usersRouter = createTRPCRouter({
         });
       }
 
-      await prisma.userCompany.update({
+      await ctx.prisma.userCompany.update({
         where: { id: userCompany.id },
         data: { isActive: false },
       });
@@ -328,7 +327,7 @@ export const usersRouter = createTRPCRouter({
   activate: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const userCompany = await prisma.userCompany.findFirst({
+      const userCompany = await ctx.prisma.userCompany.findFirst({
         where: {
           userId: input.id,
           companyId: ctx.companyId,
@@ -342,7 +341,7 @@ export const usersRouter = createTRPCRouter({
         });
       }
 
-      await prisma.userCompany.update({
+      await ctx.prisma.userCompany.update({
         where: { id: userCompany.id },
         data: { isActive: true },
       });
@@ -353,13 +352,13 @@ export const usersRouter = createTRPCRouter({
   // Estatísticas de usuários
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [total, active, inactive] = await Promise.all([
-      prisma.userCompany.count({
+      ctx.prisma.userCompany.count({
         where: { companyId: ctx.companyId },
       }),
-      prisma.userCompany.count({
+      ctx.prisma.userCompany.count({
         where: { companyId: ctx.companyId, isActive: true },
       }),
-      prisma.userCompany.count({
+      ctx.prisma.userCompany.count({
         where: { companyId: ctx.companyId, isActive: false },
       }),
     ]);

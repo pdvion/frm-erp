@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
 
@@ -79,7 +78,7 @@ export const admissionRouter = createTRPCRouter({
       if (status) where.status = status;
 
       const [admissions, total] = await Promise.all([
-        prisma.admissionProcess.findMany({
+        ctx.prisma.admissionProcess.findMany({
           where,
           include: {
             _count: { select: { admission_documents: true, admission_steps: true } },
@@ -88,7 +87,7 @@ export const admissionRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.admissionProcess.count({ where }),
+        ctx.prisma.admissionProcess.count({ where }),
       ]);
 
       return { admissions, total, page, pages: Math.ceil(total / limit) };
@@ -98,7 +97,7 @@ export const admissionRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const admission = await prisma.admissionProcess.findFirst({
+      const admission = await ctx.prisma.admissionProcess.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
           admission_steps: { orderBy: { stepNumber: "asc" } },
@@ -130,7 +129,7 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const admission = await prisma.admissionProcess.create({
+      const admission = await ctx.prisma.admissionProcess.create({
         data: {
           companyId: ctx.companyId,
           candidateName: input.candidateName,
@@ -182,14 +181,14 @@ export const admissionRouter = createTRPCRouter({
       const { id, proposedStartDate, ...data } = input;
       
       // Validate tenant ownership
-      const existing = await prisma.admissionProcess.findFirst({
+      const existing = await ctx.prisma.admissionProcess.findFirst({
         where: { id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
       }
       
-      const updated = await prisma.admissionProcess.update({
+      const updated = await ctx.prisma.admissionProcess.update({
         where: { id },
         data: {
           ...data,
@@ -210,8 +209,8 @@ export const admissionRouter = createTRPCRouter({
       documentId: z.string().uuid(),
       fileUrl: z.string(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionDocument.update({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
           fileUrl: input.fileUrl,
@@ -229,7 +228,7 @@ export const admissionRouter = createTRPCRouter({
       rejectionReason: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.admissionDocument.update({
+      return ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
           status: input.approved ? "VERIFIED" : "REJECTED",
@@ -249,8 +248,8 @@ export const admissionRouter = createTRPCRouter({
       scheduledDate: z.string(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionExam.create({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionExam.create({
         data: {
           admissionId: input.admissionId,
           examType: input.examType,
@@ -271,8 +270,8 @@ export const admissionRouter = createTRPCRouter({
       validUntil: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionExam.update({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionExam.update({
         where: { id: input.examId },
         data: {
           result: input.result,
@@ -292,7 +291,7 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const step = await prisma.admissionStep.update({
+      const step = await ctx.prisma.admissionStep.update({
         where: { id: input.stepId },
         data: {
           status: "COMPLETED",
@@ -304,7 +303,7 @@ export const admissionRouter = createTRPCRouter({
       });
 
       // Avançar para próxima etapa
-      const nextStep = await prisma.admissionStep.findFirst({
+      const nextStep = await ctx.prisma.admissionStep.findFirst({
         where: {
           admissionId: step.admissionId,
           stepNumber: step.stepNumber + 1,
@@ -312,12 +311,12 @@ export const admissionRouter = createTRPCRouter({
       });
 
       if (nextStep) {
-        await prisma.admissionStep.update({
+        await ctx.prisma.admissionStep.update({
           where: { id: nextStep.id },
           data: { status: "IN_PROGRESS" },
         });
 
-        await prisma.admissionProcess.update({
+        await ctx.prisma.admissionProcess.update({
           where: { id: step.admissionId },
           data: { currentStep: nextStep.stepNumber },
         });
@@ -332,8 +331,8 @@ export const admissionRouter = createTRPCRouter({
       id: z.string().uuid(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionProcess.update({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "APPROVED",
@@ -348,8 +347,8 @@ export const admissionRouter = createTRPCRouter({
       id: z.string().uuid(),
       reason: z.string(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionProcess.update({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "REJECTED",
@@ -362,7 +361,7 @@ export const admissionRouter = createTRPCRouter({
   complete: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
-      const admission = await prisma.admissionProcess.findFirst({
+      const admission = await ctx.prisma.admissionProcess.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -375,7 +374,7 @@ export const admissionRouter = createTRPCRouter({
       }
 
       // Buscar próximo código de funcionário
-      const lastEmployee = await prisma.employee.findFirst({
+      const lastEmployee = await ctx.prisma.employee.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -384,7 +383,7 @@ export const admissionRouter = createTRPCRouter({
       const nextCode = (lastEmployee?.code || 0) + 1;
 
       // Criar funcionário
-      const employee = await prisma.employee.create({
+      const employee = await ctx.prisma.employee.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -402,7 +401,7 @@ export const admissionRouter = createTRPCRouter({
       });
 
       // Atualizar processo
-      await prisma.admissionProcess.update({
+      await ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "COMPLETED",
@@ -419,8 +418,8 @@ export const admissionRouter = createTRPCRouter({
       id: z.string().uuid(),
       reason: z.string(),
     }))
-    .mutation(async ({ input }) => {
-      return prisma.admissionProcess.update({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -440,18 +439,18 @@ export const admissionRouter = createTRPCRouter({
       rejected,
       byStatus,
     ] = await Promise.all([
-      prisma.admissionProcess.count({ where: { companyId: ctx.companyId } }),
-      prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "DRAFT" } }),
-      prisma.admissionProcess.count({
+      ctx.prisma.admissionProcess.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "DRAFT" } }),
+      ctx.prisma.admissionProcess.count({
         where: {
           companyId: ctx.companyId,
           status: { in: ["DOCUMENTS", "EXAM", "APPROVAL"] },
         },
       }),
-      prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "APPROVED" } }),
-      prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "COMPLETED" } }),
-      prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "REJECTED" } }),
-      prisma.admissionProcess.groupBy({
+      ctx.prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "APPROVED" } }),
+      ctx.prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "COMPLETED" } }),
+      ctx.prisma.admissionProcess.count({ where: { companyId: ctx.companyId, status: "REJECTED" } }),
+      ctx.prisma.admissionProcess.groupBy({
         by: ["status"],
         where: { companyId: ctx.companyId },
         _count: true,

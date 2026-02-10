@@ -6,7 +6,6 @@ import { TRPCError } from "@trpc/server";
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { parseNFeXml } from "@/lib/nfe-parser";
 import { processNFeEntities } from "@/lib/deploy-agent/entity-importer";
 import {
@@ -44,7 +43,7 @@ export const deployAgentRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { status, limit, cursor } = input;
 
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(status ? { status } : {}),
@@ -85,7 +84,7 @@ export const deployAgentRouter = createTRPCRouter({
   getImportDetails: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const invoice = await prisma.receivedInvoice.findFirst({
+      const invoice = await ctx.prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId),
@@ -126,7 +125,7 @@ export const deployAgentRouter = createTRPCRouter({
       // Verificar se fornecedor existe
       if (invoice.supplierCnpj) {
         const cnpjLimpo = invoice.supplierCnpj.replace(/\D/g, "");
-        const existingSupplier = await prisma.supplier.findFirst({
+        const existingSupplier = await ctx.prisma.supplier.findFirst({
           where: {
             OR: [
               { cnpj: { contains: cnpjLimpo } },
@@ -153,7 +152,7 @@ export const deployAgentRouter = createTRPCRouter({
 
       // Verificar materiais
       for (const item of invoice.items) {
-        const existingMaterial = await prisma.material.findFirst({
+        const existingMaterial = await ctx.prisma.material.findFirst({
           where: {
             internalCode: item.productCode,
             ...tenantFilter(ctx.companyId),
@@ -188,7 +187,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.receivedInvoice.findFirst({
+      const invoice = await ctx.prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId),
@@ -222,7 +221,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.receivedInvoice.findFirst({
+      const invoice = await ctx.prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId),
@@ -242,7 +241,7 @@ export const deployAgentRouter = createTRPCRouter({
       });
 
       // Atualizar status da NFe
-      await prisma.receivedInvoice.update({
+      await ctx.prisma.receivedInvoice.update({
         where: { id: input.invoiceId },
         data: {
           status: "APPROVED",
@@ -252,7 +251,7 @@ export const deployAgentRouter = createTRPCRouter({
 
       // Vincular fornecedor se foi criado/encontrado
       if (summary.suppliers.length > 0 && summary.suppliers[0].id) {
-        await prisma.receivedInvoice.update({
+        await ctx.prisma.receivedInvoice.update({
           where: { id: input.invoiceId },
           data: { supplierId: summary.suppliers[0].id },
         });
@@ -272,7 +271,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.receivedInvoice.update({
+      const invoice = await ctx.prisma.receivedInvoice.update({
         where: {
           id: input.invoiceId,
           companyId: ctx.companyId,
@@ -292,19 +291,19 @@ export const deployAgentRouter = createTRPCRouter({
    */
   getStats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, approved, rejected, totalSuppliers, totalMaterials] = await Promise.all([
-      prisma.receivedInvoice.count({
+      ctx.prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "PENDING" },
       }),
-      prisma.receivedInvoice.count({
+      ctx.prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "APPROVED" },
       }),
-      prisma.receivedInvoice.count({
+      ctx.prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "REJECTED" },
       }),
-      prisma.supplier.count({
+      ctx.prisma.supplier.count({
         where: tenantFilter(ctx.companyId),
       }),
-      prisma.material.count({
+      ctx.prisma.material.count({
         where: tenantFilter(ctx.companyId),
       }),
     ]);
@@ -330,7 +329,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -414,7 +413,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -450,7 +449,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -486,7 +485,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -557,7 +556,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -593,7 +592,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await prisma.receivedInvoice.findMany({
+      const invoices = await ctx.prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
@@ -735,7 +734,7 @@ export const deployAgentRouter = createTRPCRouter({
       };
 
       if (input.importSuppliers) {
-        const pendingInvoices = await prisma.receivedInvoice.findMany({
+        const pendingInvoices = await ctx.prisma.receivedInvoice.findMany({
           where: {
             ...tenantFilter(ctx.companyId),
             status: "PENDING",
@@ -759,7 +758,7 @@ export const deployAgentRouter = createTRPCRouter({
         }
 
         for (const cnpj of supplierCnpjs) {
-          const exists = await prisma.supplier.findFirst({
+          const exists = await ctx.prisma.supplier.findFirst({
             where: { ...tenantFilter(ctx.companyId), cnpj },
           });
 
@@ -770,7 +769,7 @@ export const deployAgentRouter = createTRPCRouter({
       }
 
       if (input.importMaterials) {
-        const pendingInvoices = await prisma.receivedInvoice.findMany({
+        const pendingInvoices = await ctx.prisma.receivedInvoice.findMany({
           where: {
             ...tenantFilter(ctx.companyId),
             status: "PENDING",
@@ -799,7 +798,7 @@ export const deployAgentRouter = createTRPCRouter({
           const numericCode = parseInt(materialCode, 10);
           if (isNaN(numericCode)) continue;
 
-          const exists = await prisma.material.findFirst({
+          const exists = await ctx.prisma.material.findFirst({
             where: { ...tenantFilter(ctx.companyId), code: numericCode },
           });
 

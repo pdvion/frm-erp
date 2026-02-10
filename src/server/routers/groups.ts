@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, authProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 // Schema de permissões disponíveis no sistema
@@ -126,7 +125,7 @@ export const groupsRouter = createTRPCRouter({
       includeMembers: z.boolean().default(false),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const groups = await prisma.userGroup.findMany({
+      const groups = await ctx.prisma.userGroup.findMany({
         where: {
           OR: [
             { companyId: null }, // Grupos globais do sistema
@@ -167,7 +166,7 @@ export const groupsRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
-      const group = await prisma.userGroup.findFirst({
+      const group = await ctx.prisma.userGroup.findFirst({
         where: {
           id: input.id,
           OR: [
@@ -215,7 +214,7 @@ export const groupsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se já existe grupo com mesmo nome na empresa
-      const existing = await prisma.userGroup.findFirst({
+      const existing = await ctx.prisma.userGroup.findFirst({
         where: {
           name: input.name,
           companyId: ctx.companyId,
@@ -229,7 +228,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      const group = await prisma.userGroup.create({
+      const group = await ctx.prisma.userGroup.create({
         data: {
           name: input.name,
           description: input.description,
@@ -252,7 +251,7 @@ export const groupsRouter = createTRPCRouter({
       isActive: z.boolean().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const group = await prisma.userGroup.findFirst({
+      const group = await ctx.prisma.userGroup.findFirst({
         where: {
           id: input.id,
           OR: [
@@ -277,7 +276,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      const updated = await prisma.userGroup.update({
+      const updated = await ctx.prisma.userGroup.update({
         where: { id: input.id },
         data: {
           ...(input.name && { name: input.name }),
@@ -294,7 +293,7 @@ export const groupsRouter = createTRPCRouter({
   delete: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
-      const group = await prisma.userGroup.findFirst({
+      const group = await ctx.prisma.userGroup.findFirst({
         where: {
           id: input.id,
           companyId: ctx.companyId, // Só pode excluir grupos da própria empresa
@@ -309,7 +308,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      await prisma.userGroup.delete({
+      await ctx.prisma.userGroup.delete({
         where: { id: input.id },
       });
 
@@ -324,7 +323,7 @@ export const groupsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se o grupo existe e é acessível
-      const group = await prisma.userGroup.findFirst({
+      const group = await ctx.prisma.userGroup.findFirst({
         where: {
           id: input.groupId,
           OR: [
@@ -342,7 +341,7 @@ export const groupsRouter = createTRPCRouter({
       }
 
       // Verificar se o usuário existe
-      const user = await prisma.user.findUnique({
+      const user = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
       });
 
@@ -354,7 +353,7 @@ export const groupsRouter = createTRPCRouter({
       }
 
       // Verificar se já é membro
-      const existingMember = await prisma.userGroupMember.findUnique({
+      const existingMember = await ctx.prisma.userGroupMember.findUnique({
         where: {
           userId_groupId: {
             userId: input.userId,
@@ -370,7 +369,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      const member = await prisma.userGroupMember.create({
+      const member = await ctx.prisma.userGroupMember.create({
         data: {
           userId: input.userId,
           groupId: input.groupId,
@@ -398,7 +397,7 @@ export const groupsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se o grupo é acessível
-      const group = await prisma.userGroup.findFirst({
+      const group = await ctx.prisma.userGroup.findFirst({
         where: {
           id: input.groupId,
           OR: [
@@ -415,7 +414,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      await prisma.userGroupMember.deleteMany({
+      await ctx.prisma.userGroupMember.deleteMany({
         where: {
           userId: input.userId,
           groupId: input.groupId,
@@ -429,7 +428,7 @@ export const groupsRouter = createTRPCRouter({
   getUserGroups: tenantProcedure
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
-      const memberships = await prisma.userGroupMember.findMany({
+      const memberships = await ctx.prisma.userGroupMember.findMany({
         where: {
           userId: input.userId,
           group: {
@@ -452,7 +451,7 @@ export const groupsRouter = createTRPCRouter({
   getUserPermissions: tenantProcedure
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
-      const memberships = await prisma.userGroupMember.findMany({
+      const memberships = await ctx.prisma.userGroupMember.findMany({
         where: {
           userId: input.userId,
           group: {

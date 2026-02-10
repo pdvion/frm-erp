@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 
@@ -48,7 +47,7 @@ export const productionRouter = createTRPCRouter({
       }
 
       const [orders, total] = await Promise.all([
-        prisma.productionOrder.findMany({
+        ctx.prisma.productionOrder.findMany({
           where,
           include: {
             product: {
@@ -60,7 +59,7 @@ export const productionRouter = createTRPCRouter({
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.productionOrder.count({ where }),
+        ctx.prisma.productionOrder.count({ where }),
       ]);
 
       return {
@@ -75,7 +74,7 @@ export const productionRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -141,7 +140,7 @@ export const productionRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Obter próximo código
-      const lastOrder = await prisma.productionOrder.findFirst({
+      const lastOrder = await ctx.prisma.productionOrder.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -149,7 +148,7 @@ export const productionRouter = createTRPCRouter({
       const nextCode = (lastOrder?.code || 0) + 1;
 
       // Criar OP com materiais e operações
-      const order = await prisma.productionOrder.create({
+      const order = await ctx.prisma.productionOrder.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -203,7 +202,7 @@ export const productionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
           ...tenantFilter(ctx.companyId, false),
@@ -224,7 +223,7 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      return prisma.productionOrderMaterial.create({
+      return ctx.prisma.productionOrderMaterial.create({
         data: {
           orderId: input.orderId,
           materialId: input.materialId,
@@ -247,7 +246,7 @@ export const productionRouter = createTRPCRouter({
       plannedQty: z.number().positive(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
           ...tenantFilter(ctx.companyId, false),
@@ -268,7 +267,7 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      return prisma.productionOrderOperation.create({
+      return ctx.prisma.productionOrderOperation.create({
         data: {
           orderId: input.orderId,
           sequence: input.sequence,
@@ -285,7 +284,7 @@ export const productionRouter = createTRPCRouter({
   release: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -307,7 +306,7 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      return prisma.productionOrder.update({
+      return ctx.prisma.productionOrder.update({
         where: { id: input.id },
         data: { status: "RELEASED" },
       });
@@ -317,7 +316,7 @@ export const productionRouter = createTRPCRouter({
   start: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -338,7 +337,7 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      return prisma.productionOrder.update({
+      return ctx.prisma.productionOrder.update({
         where: { id: input.id },
         data: {
           status: "IN_PROGRESS",
@@ -356,7 +355,7 @@ export const productionRouter = createTRPCRouter({
       operationId: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.orderId,
           ...tenantFilter(ctx.companyId, false),
@@ -390,7 +389,7 @@ export const productionRouter = createTRPCRouter({
       const isComplete = newProducedQty >= Number(order.quantity);
 
       // Atualizar OP
-      await prisma.productionOrder.update({
+      await ctx.prisma.productionOrder.update({
         where: { id: input.orderId },
         data: {
           producedQty: newProducedQty,
@@ -401,7 +400,7 @@ export const productionRouter = createTRPCRouter({
 
       // Atualizar operação se especificada
       if (input.operationId) {
-        await prisma.productionOrderOperation.update({
+        await ctx.prisma.productionOrderOperation.update({
           where: { id: input.operationId },
           data: {
             completedQty: { increment: input.quantity },
@@ -417,7 +416,7 @@ export const productionRouter = createTRPCRouter({
         
         if (!inventory) {
           // Criar registro de estoque
-          inventory = await prisma.inventory.create({
+          inventory = await ctx.prisma.inventory.create({
             data: {
               materialId: order.product.id,
               companyId: ctx.companyId,
@@ -431,7 +430,7 @@ export const productionRouter = createTRPCRouter({
         }
 
         // Calcular custo de produção baseado nos materiais consumidos
-        const consumedMaterials = await prisma.productionOrderMaterial.findMany({
+        const consumedMaterials = await ctx.prisma.productionOrderMaterial.findMany({
           where: { orderId: order.id },
           include: { material: true },
         });
@@ -449,7 +448,7 @@ export const productionRouter = createTRPCRouter({
         const totalCost = unitCost * input.quantity;
 
         // Criar movimentação de entrada
-        await prisma.inventoryMovement.create({
+        await ctx.prisma.inventoryMovement.create({
           data: {
             inventoryId: inventory.id,
             movementType: "ENTRY",
@@ -466,7 +465,7 @@ export const productionRouter = createTRPCRouter({
         });
 
         // Atualizar estoque
-        await prisma.inventory.update({
+        await ctx.prisma.inventory.update({
           where: { id: inventory.id },
           data: {
             quantity: { increment: input.quantity },
@@ -486,7 +485,7 @@ export const productionRouter = createTRPCRouter({
       quantity: z.number().positive(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const orderMaterial = await prisma.productionOrderMaterial.findFirst({
+      const orderMaterial = await ctx.prisma.productionOrderMaterial.findFirst({
         where: { id: input.materialId },
         include: {
           order: true,
@@ -533,7 +532,7 @@ export const productionRouter = createTRPCRouter({
       const totalCost = Number(unitCost) * Number(input.quantity);
 
       // Atualizar material da OP
-      await prisma.productionOrderMaterial.update({
+      await ctx.prisma.productionOrderMaterial.update({
         where: { id: input.materialId },
         data: {
           consumedQty: { increment: input.quantity },
@@ -543,7 +542,7 @@ export const productionRouter = createTRPCRouter({
       });
 
       // Criar movimentação de saída
-      await prisma.inventoryMovement.create({
+      await ctx.prisma.inventoryMovement.create({
         data: {
           inventoryId: inventory.id,
           movementType: "EXIT",
@@ -560,7 +559,7 @@ export const productionRouter = createTRPCRouter({
       });
 
       // Atualizar estoque
-      await prisma.inventory.update({
+      await ctx.prisma.inventory.update({
         where: { id: inventory.id },
         data: {
           quantity: { decrement: input.quantity },
@@ -580,7 +579,7 @@ export const productionRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -611,7 +610,7 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      return prisma.productionOrder.update({
+      return ctx.prisma.productionOrder.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -623,20 +622,20 @@ export const productionRouter = createTRPCRouter({
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [byStatus, urgentCount, lateCount] = await Promise.all([
-      prisma.productionOrder.groupBy({
+      ctx.prisma.productionOrder.groupBy({
         by: ["status"],
         where: tenantFilter(ctx.companyId, false),
         _count: true,
         _sum: { quantity: true, producedQty: true },
       }),
-      prisma.productionOrder.count({
+      ctx.prisma.productionOrder.count({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: { in: ["PLANNED", "RELEASED", "IN_PROGRESS"] },
           priority: 1,
         },
       }),
-      prisma.productionOrder.count({
+      ctx.prisma.productionOrder.count({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: { in: ["PLANNED", "RELEASED", "IN_PROGRESS"] },

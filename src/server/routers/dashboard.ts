@@ -1,5 +1,4 @@
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { createModuleLogger } from "@/lib/logger";
 
 const dashboardLogger = createModuleLogger("dashboard");
@@ -17,7 +16,7 @@ export const dashboardRouter = createTRPCRouter({
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     // Estoque
-    const inventoryStats = await prisma.inventory.aggregate({
+    const inventoryStats = await ctx.prisma.inventory.aggregate({
       where: tenantFilter(ctx.companyId, false),
       _sum: { quantity: true },
       _count: true,
@@ -25,20 +24,20 @@ export const dashboardRouter = createTRPCRouter({
 
     // Estoque abaixo do mínimo
     const lowStockCount = ctx.companyId
-      ? await prisma.$queryRaw<[{ count: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ count: bigint }]>`
           SELECT COUNT(*) as count FROM inventory i
           JOIN materials m ON i."materialId" = m.id
           WHERE i."companyId" = ${ctx.companyId}::uuid
           AND i.quantity < COALESCE(m."minQuantity", 0)
         `
-      : await prisma.$queryRaw<[{ count: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ count: bigint }]>`
           SELECT COUNT(*) as count FROM inventory i
           JOIN materials m ON i."materialId" = m.id
           WHERE i.quantity < COALESCE(m."minQuantity", 0)
         `;
 
     // Cotações pendentes
-    const pendingQuotes = await prisma.quote.count({
+    const pendingQuotes = await ctx.prisma.quote.count({
       where: {
         supplier: tenantFilter(ctx.companyId, true),
         status: { in: ["PENDING", "SENT"] },
@@ -46,7 +45,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Pedidos de compra em aberto
-    const openPurchaseOrders = await prisma.purchaseOrder.count({
+    const openPurchaseOrders = await ctx.prisma.purchaseOrder.count({
       where: {
         supplier: tenantFilter(ctx.companyId, true),
         status: { in: ["PENDING", "APPROVED", "SENT", "PARTIAL"] },
@@ -55,19 +54,19 @@ export const dashboardRouter = createTRPCRouter({
 
     // NFes pendentes de aprovação - usando raw query para evitar erro de enum
     const pendingInvoicesResult = ctx.companyId
-      ? await prisma.$queryRaw<[{ count: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ count: bigint }]>`
           SELECT COUNT(*) as count FROM received_invoices
           WHERE "companyId" = ${ctx.companyId}::uuid
           AND status IN ('PENDING', 'VALIDATED')
         `
-      : await prisma.$queryRaw<[{ count: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ count: bigint }]>`
           SELECT COUNT(*) as count FROM received_invoices
           WHERE status IN ('PENDING', 'VALIDATED')
         `;
     const pendingInvoices = Number(pendingInvoicesResult[0]?.count || 0);
 
     // Contas a pagar vencidas
-    const payablesOverdue = await prisma.accountsPayable.aggregate({
+    const payablesOverdue = await ctx.prisma.accountsPayable.aggregate({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: "PENDING",
@@ -78,7 +77,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Contas a pagar hoje
-    const payablesToday = await prisma.accountsPayable.aggregate({
+    const payablesToday = await ctx.prisma.accountsPayable.aggregate({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: "PENDING",
@@ -92,7 +91,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Contas a pagar esta semana
-    const payablesThisWeek = await prisma.accountsPayable.aggregate({
+    const payablesThisWeek = await ctx.prisma.accountsPayable.aggregate({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: "PENDING",
@@ -103,7 +102,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Pago este mês
-    const paidThisMonth = await prisma.accountsPayable.aggregate({
+    const paidThisMonth = await ctx.prisma.accountsPayable.aggregate({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: "PAID",
@@ -114,7 +113,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Requisições pendentes
-    const pendingRequisitions = await prisma.materialRequisition.count({
+    const pendingRequisitions = await ctx.prisma.materialRequisition.count({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: { in: ["PENDING", "APPROVED", "IN_SEPARATION"] },
@@ -123,7 +122,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Tarefas - usando raw query para evitar problemas de tipo
     const taskStats = ctx.companyId
-      ? await prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
           SELECT 
             COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
             COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
@@ -132,7 +131,7 @@ export const dashboardRouter = createTRPCRouter({
           FROM tasks
           WHERE company_id = ${ctx.companyId}::uuid
         `
-      : await prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ pending: bigint, in_progress: bigint, overdue: bigint, my_tasks: bigint }]>`
           SELECT 
             COUNT(*) FILTER (WHERE status = 'PENDING') as pending,
             COUNT(*) FILTER (WHERE status = 'IN_PROGRESS') as in_progress,
@@ -143,12 +142,12 @@ export const dashboardRouter = createTRPCRouter({
 
     // Calcular valor total do estoque
     const inventoryValue = ctx.companyId
-      ? await prisma.$queryRaw<[{ total: number }]>`
+      ? await ctx.prisma.$queryRaw<[{ total: number }]>`
           SELECT COALESCE(SUM(i.quantity * i."unitCost"), 0) as total
           FROM inventory i
           WHERE i."companyId" = ${ctx.companyId}::uuid
         `
-      : await prisma.$queryRaw<[{ total: number }]>`
+      : await ctx.prisma.$queryRaw<[{ total: number }]>`
           SELECT COALESCE(SUM(i.quantity * i."unitCost"), 0) as total
           FROM inventory i
         `;
@@ -198,7 +197,7 @@ export const dashboardRouter = createTRPCRouter({
   // Atividades recentes
   recentActivity: tenantProcedure.query(async ({ ctx }) => {
     // Últimas NFes
-    const recentInvoices = await prisma.receivedInvoice.findMany({
+    const recentInvoices = await ctx.prisma.receivedInvoice.findMany({
       where: tenantFilter(ctx.companyId, false),
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -213,7 +212,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Últimas requisições
-    const recentRequisitions = await prisma.materialRequisition.findMany({
+    const recentRequisitions = await ctx.prisma.materialRequisition.findMany({
       where: tenantFilter(ctx.companyId, false),
       orderBy: { requestedAt: "desc" },
       take: 5,
@@ -228,7 +227,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Últimas tarefas - usando raw query
     const recentTasks = ctx.companyId
-      ? await prisma.$queryRaw<Array<{
+      ? await ctx.prisma.$queryRaw<Array<{
           id: string;
           code: number;
           title: string;
@@ -242,7 +241,7 @@ export const dashboardRouter = createTRPCRouter({
           ORDER BY created_at DESC
           LIMIT 5
         `
-      : await prisma.$queryRaw<Array<{
+      : await ctx.prisma.$queryRaw<Array<{
           id: string;
           code: number;
           title: string;
@@ -295,7 +294,7 @@ export const dashboardRouter = createTRPCRouter({
     }> = [];
 
     // Verificar estoque baixo
-    const lowStock = await prisma.$queryRaw<[{ count: bigint }]>`
+    const lowStock = await ctx.prisma.$queryRaw<[{ count: bigint }]>`
       SELECT COUNT(*) as count FROM inventory i
       JOIN materials m ON i."materialId" = m.id
       WHERE i."companyId" = ${ctx.companyId}
@@ -313,7 +312,7 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     // Verificar contas vencidas
-    const overduePayables = await prisma.accountsPayable.count({
+    const overduePayables = await ctx.prisma.accountsPayable.count({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: "PENDING",
@@ -332,7 +331,7 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     // Verificar NFes pendentes - usando raw query para evitar erro de enum
-    const pendingInvoicesAlert = await prisma.$queryRaw<[{ count: bigint }]>`
+    const pendingInvoicesAlert = await ctx.prisma.$queryRaw<[{ count: bigint }]>`
       SELECT COUNT(*) as count FROM received_invoices
       WHERE "companyId" = ${ctx.companyId}::uuid
       AND status = 'PENDING'
@@ -350,7 +349,7 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     // Verificar tarefas atrasadas
-    const overdueTasks = await prisma.$queryRaw<[{ count: bigint }]>`
+    const overdueTasks = await ctx.prisma.$queryRaw<[{ count: bigint }]>`
       SELECT COUNT(*) as count FROM tasks
       WHERE company_id = ${ctx.companyId}::uuid
       AND status IN ('PENDING', 'ACCEPTED', 'IN_PROGRESS')
@@ -394,7 +393,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Pagamentos por mês (últimos 6 meses) - SQL seguro via prepared statements
     const paymentsByMonth = await safeQuery(() => 
-      prisma.$queryRaw<Array<{ month: string; paid: number; pending: number }>>`
+      ctx.prisma.$queryRaw<Array<{ month: string; paid: number; pending: number }>>`
         SELECT 
           TO_CHAR(DATE_TRUNC('month', "dueDate"), 'Mon') as month,
           COALESCE(SUM(CASE WHEN status = 'PAID' THEN "netValue" ELSE 0 END), 0)::float as paid,
@@ -409,7 +408,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Compras por categoria (top 5)
     const purchasesByCategory = await safeQuery(() =>
-      prisma.$queryRaw<Array<{ name: string; value: number }>>`
+      ctx.prisma.$queryRaw<Array<{ name: string; value: number }>>`
         SELECT 
           COALESCE(c.name, 'Sem Categoria') as name,
           COALESCE(SUM(ri."totalInvoice"), 0)::float as value
@@ -428,7 +427,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Estoque por categoria
     const inventoryByCategory = await safeQuery(() =>
-      prisma.$queryRaw<Array<{ name: string; value: number }>>`
+      ctx.prisma.$queryRaw<Array<{ name: string; value: number }>>`
         SELECT 
           COALESCE(c.name, 'Sem Categoria') as name,
           COALESCE(SUM(i.quantity * COALESCE(m."lastPurchasePrice", 0)), 0)::float as value
@@ -444,7 +443,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Requisições por mês
     const requisitionsByMonth = await safeQuery(() =>
-      prisma.$queryRaw<Array<{ month: string; count: number }>>`
+      ctx.prisma.$queryRaw<Array<{ month: string; count: number }>>`
         SELECT 
           TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
           COUNT(*)::int as count
@@ -458,7 +457,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Fluxo de caixa projetado (próximos 30 dias)
     const cashFlowProjection = await safeQuery(() =>
-      prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
+      ctx.prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
         WITH dates AS (
           SELECT generate_series(
             CURRENT_DATE,
@@ -520,7 +519,7 @@ export const dashboardRouter = createTRPCRouter({
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     // Cotações
-    const quotesStats = await prisma.quote.groupBy({
+    const quotesStats = await ctx.prisma.quote.groupBy({
       by: ["status"],
       where: { supplier: tenantFilter(ctx.companyId, true) },
       _count: true,
@@ -528,7 +527,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // Pedidos de compra
-    const ordersStats = await prisma.purchaseOrder.groupBy({
+    const ordersStats = await ctx.prisma.purchaseOrder.groupBy({
       by: ["status"],
       where: { supplier: tenantFilter(ctx.companyId, true) },
       _count: true,
@@ -536,7 +535,7 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     // NFes recebidas no mês
-    const nfesThisMonth = await prisma.$queryRaw<[{ count: bigint; total: number }]>`
+    const nfesThisMonth = await ctx.prisma.$queryRaw<[{ count: bigint; total: number }]>`
       SELECT COUNT(*) as count, COALESCE(SUM("totalInvoice"), 0)::float as total
       FROM received_invoices
       WHERE "companyId" = ${ctx.companyId}::uuid
@@ -544,7 +543,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Top 5 fornecedores por valor
-    const topSuppliers = await prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
+    const topSuppliers = await ctx.prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
       SELECT 
         s."tradeName" as name,
         COALESCE(SUM(ri."totalInvoice"), 0)::float as total,
@@ -559,7 +558,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Compras por categoria (últimos 30 dias)
-    const purchasesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+    const purchasesByCategory = await ctx.prisma.$queryRaw<Array<{ name: string; value: number }>>`
       SELECT 
         COALESCE(c.name, 'Sem Categoria') as name,
         COALESCE(SUM(rii."totalPrice"), 0)::float as value
@@ -576,7 +575,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Evolução de compras (últimos 6 meses)
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-    const purchasesEvolution = await prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
+    const purchasesEvolution = await ctx.prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "issueDate"), 'Mon') as month,
         COALESCE(SUM("totalInvoice"), 0)::float as total,
@@ -629,7 +628,7 @@ export const dashboardRouter = createTRPCRouter({
   // Dashboard específico do módulo Estoque
   inventoryKpis: tenantProcedure.query(async ({ ctx }) => {
     // Resumo geral do estoque
-    const inventorySummary = await prisma.$queryRaw<[{ 
+    const inventorySummary = await ctx.prisma.$queryRaw<[{ 
       total_items: bigint; 
       total_value: number;
       low_stock: bigint;
@@ -649,7 +648,7 @@ export const dashboardRouter = createTRPCRouter({
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const movementsSummary = await prisma.$queryRaw<[{
+    const movementsSummary = await ctx.prisma.$queryRaw<[{
       entries: bigint;
       exits: bigint;
       entries_value: number;
@@ -666,7 +665,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Estoque por localização
-    const stockByLocation = await prisma.$queryRaw<Array<{ name: string; value: number; count: bigint }>>`
+    const stockByLocation = await ctx.prisma.$queryRaw<Array<{ name: string; value: number; count: bigint }>>`
       SELECT 
         COALESCE(sl.name, 'Sem Local') as name,
         COALESCE(SUM(i.quantity * i."unitCost"), 0)::float as value,
@@ -680,7 +679,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Estoque por categoria
-    const stockByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+    const stockByCategory = await ctx.prisma.$queryRaw<Array<{ name: string; value: number }>>`
       SELECT 
         COALESCE(c.name, 'Sem Categoria') as name,
         COALESCE(SUM(i.quantity * i."unitCost"), 0)::float as value
@@ -698,7 +697,7 @@ export const dashboardRouter = createTRPCRouter({
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
     sixMonthsAgo.setDate(1);
 
-    const stockEvolution = await prisma.$queryRaw<Array<{ month: string; entries: number; exits: number }>>`
+    const stockEvolution = await ctx.prisma.$queryRaw<Array<{ month: string; entries: number; exits: number }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
         COALESCE(SUM(CASE WHEN type = 'ENTRY' THEN quantity * "unitCost" ELSE 0 END), 0)::float as entries,
@@ -750,7 +749,7 @@ export const dashboardRouter = createTRPCRouter({
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Contas a pagar
-    const payablesSummary = await prisma.$queryRaw<[{
+    const payablesSummary = await ctx.prisma.$queryRaw<[{
       overdue_count: bigint;
       overdue_value: number;
       today_count: bigint;
@@ -778,7 +777,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Contas a receber
-    const receivablesSummary = await prisma.$queryRaw<[{
+    const receivablesSummary = await ctx.prisma.$queryRaw<[{
       overdue_count: bigint;
       overdue_value: number;
       today_count: bigint;
@@ -802,7 +801,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Fluxo de caixa projetado (próximos 30 dias)
-    const cashFlow = await prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
+    const cashFlow = await ctx.prisma.$queryRaw<Array<{ date: string; payables: number; receivables: number }>>`
       WITH dates AS (
         SELECT generate_series(CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', INTERVAL '7 days')::date as date
       )
@@ -815,7 +814,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Pagamentos por forma de pagamento
-    const paymentsByMethod = await prisma.$queryRaw<Array<{ method: string; value: number; count: bigint }>>`
+    const paymentsByMethod = await ctx.prisma.$queryRaw<Array<{ method: string; value: number; count: bigint }>>`
       SELECT 
         COALESCE("paymentMethod", 'Outros') as method,
         COALESCE(SUM("paidValue"), 0)::float as value,
@@ -865,7 +864,7 @@ export const dashboardRouter = createTRPCRouter({
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
     // Pedidos de venda
-    const salesOrdersStats = await prisma.$queryRaw<[{
+    const salesOrdersStats = await ctx.prisma.$queryRaw<[{
       total: bigint;
       pending: bigint;
       approved: bigint;
@@ -885,7 +884,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // NFes emitidas no mês
-    const issuedInvoicesMonth = await prisma.$queryRaw<[{ count: bigint; total: number }]>`
+    const issuedInvoicesMonth = await ctx.prisma.$queryRaw<[{ count: bigint; total: number }]>`
       SELECT COUNT(*) as count, COALESCE(SUM("totalValue"), 0)::float as total
       FROM issued_invoices
       WHERE "companyId" = ${ctx.companyId}::uuid
@@ -893,7 +892,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Top 5 clientes por valor
-    const topCustomers = await prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
+    const topCustomers = await ctx.prisma.$queryRaw<Array<{ name: string; total: number; count: bigint }>>`
       SELECT 
         c."tradeName" as name,
         COALESCE(SUM(so."totalValue"), 0)::float as total,
@@ -908,7 +907,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Vendas por categoria (últimos 30 dias)
-    const salesByCategory = await prisma.$queryRaw<Array<{ name: string; value: number }>>`
+    const salesByCategory = await ctx.prisma.$queryRaw<Array<{ name: string; value: number }>>`
       SELECT 
         COALESCE(c.name, 'Sem Categoria') as name,
         COALESCE(SUM(soi."totalPrice"), 0)::float as value
@@ -924,7 +923,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Evolução de vendas (últimos 6 meses)
-    const salesEvolution = await prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
+    const salesEvolution = await ctx.prisma.$queryRaw<Array<{ month: string; total: number; count: bigint }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
         COALESCE(SUM("totalValue"), 0)::float as total,
@@ -937,7 +936,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Contas a receber do mês
-    const receivablesMonth = await prisma.$queryRaw<[{ pending: number; received: number }]>`
+    const receivablesMonth = await ctx.prisma.$queryRaw<[{ pending: number; received: number }]>`
       SELECT 
         COALESCE(SUM("netValue") FILTER (WHERE status = 'PENDING'), 0)::float as pending,
         COALESCE(SUM("paidValue") FILTER (WHERE status = 'PAID' AND "paidAt" >= ${startOfMonth}), 0)::float as received
@@ -988,7 +987,7 @@ export const dashboardRouter = createTRPCRouter({
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
     // Ordens de produção
-    const productionOrdersStats = await prisma.$queryRaw<[{
+    const productionOrdersStats = await ctx.prisma.$queryRaw<[{
       total: bigint;
       pending: bigint;
       in_progress: bigint;
@@ -1006,7 +1005,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Produção do mês
-    const monthProduction = await prisma.$queryRaw<[{ count: bigint; quantity: number }]>`
+    const monthProduction = await ctx.prisma.$queryRaw<[{ count: bigint; quantity: number }]>`
       SELECT 
         COUNT(*) as count,
         COALESCE(SUM("producedQuantity"), 0)::float as quantity
@@ -1020,7 +1019,7 @@ export const dashboardRouter = createTRPCRouter({
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const oeeStats = await prisma.$queryRaw<[{ avg_oee: number; avg_availability: number; avg_performance: number; avg_quality: number }]>`
+    const oeeStats = await ctx.prisma.$queryRaw<[{ avg_oee: number; avg_availability: number; avg_performance: number; avg_quality: number }]>`
       SELECT 
         COALESCE(AVG(oee), 0)::float as avg_oee,
         COALESCE(AVG(availability), 0)::float as avg_availability,
@@ -1032,7 +1031,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Produção por produto (top 5)
-    const productionByProduct = await prisma.$queryRaw<Array<{ name: string; quantity: number }>>`
+    const productionByProduct = await ctx.prisma.$queryRaw<Array<{ name: string; quantity: number }>>`
       SELECT 
         m.name,
         COALESCE(SUM(po."producedQuantity"), 0)::float as quantity
@@ -1047,7 +1046,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Evolução da produção (últimos 6 meses)
-    const productionEvolution = await prisma.$queryRaw<Array<{ month: string; quantity: number; orders: bigint }>>`
+    const productionEvolution = await ctx.prisma.$queryRaw<Array<{ month: string; quantity: number; orders: bigint }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "actualEndDate"), 'Mon') as month,
         COALESCE(SUM("producedQuantity"), 0)::float as quantity,
@@ -1100,7 +1099,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Funcionários ativos - suporta "Todas as Empresas"
     const employeesStats = companyId
-      ? await prisma.$queryRaw<[{
+      ? await ctx.prisma.$queryRaw<[{
           total: bigint;
           active: bigint;
           on_vacation: bigint;
@@ -1114,7 +1113,7 @@ export const dashboardRouter = createTRPCRouter({
           FROM employees
           WHERE "companyId" = ${companyId}::uuid
         `
-      : await prisma.$queryRaw<[{
+      : await ctx.prisma.$queryRaw<[{
           total: bigint;
           active: bigint;
           on_vacation: bigint;
@@ -1130,7 +1129,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Férias programadas no mês
     const vacationsMonth = companyId
-      ? await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
           SELECT 
             COUNT(*) as count,
             COUNT(*) FILTER (WHERE status = 'PENDING') as pending
@@ -1139,7 +1138,7 @@ export const dashboardRouter = createTRPCRouter({
           AND "startDate" <= ${endOfMonth}
           AND "endDate" >= ${startOfMonth}
         `
-      : await prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ count: bigint; pending: bigint }]>`
           SELECT 
             COUNT(*) as count,
             COUNT(*) FILTER (WHERE status = 'PENDING') as pending
@@ -1150,7 +1149,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Aniversariantes do mês
     const birthdaysMonth = companyId
-      ? await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
+      ? await ctx.prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
           SELECT name, "birthDate" as birth_date
           FROM employees
           WHERE "companyId" = ${companyId}::uuid
@@ -1159,7 +1158,7 @@ export const dashboardRouter = createTRPCRouter({
           ORDER BY EXTRACT(DAY FROM "birthDate")
           LIMIT 10
         `
-      : await prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
+      : await ctx.prisma.$queryRaw<Array<{ name: string; birth_date: Date }>>`
           SELECT name, "birthDate" as birth_date
           FROM employees
           WHERE status = 'ACTIVE'
@@ -1170,7 +1169,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Folha de pagamento do mês
     const payrollMonth = companyId
-      ? await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
           SELECT 
             COALESCE(SUM("grossSalary"), 0)::float as total_gross,
             COALESCE(SUM("netSalary"), 0)::float as total_net,
@@ -1179,7 +1178,7 @@ export const dashboardRouter = createTRPCRouter({
           WHERE "companyId" = ${companyId}::uuid
           AND "referenceMonth" = ${startOfMonth}
         `
-      : await prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ total_gross: number; total_net: number; count: bigint }]>`
           SELECT 
             COALESCE(SUM("grossSalary"), 0)::float as total_gross,
             COALESCE(SUM("netSalary"), 0)::float as total_net,
@@ -1190,7 +1189,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Funcionários por departamento
     const employeesByDepartment = companyId
-      ? await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+      ? await ctx.prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
           SELECT 
             COALESCE(d.name, 'Sem Departamento') as name,
             COUNT(*) as count
@@ -1202,7 +1201,7 @@ export const dashboardRouter = createTRPCRouter({
           ORDER BY count DESC
           LIMIT 6
         `
-      : await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+      : await ctx.prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
           SELECT 
             COALESCE(d.name, 'Sem Departamento') as name,
             COUNT(*) as count
@@ -1217,7 +1216,7 @@ export const dashboardRouter = createTRPCRouter({
     // Admissões e demissões (últimos 6 meses)
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
     const hiringTrend = companyId
-      ? await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
+      ? await ctx.prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
           SELECT 
             TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
             COUNT(*) as admissions,
@@ -1228,7 +1227,7 @@ export const dashboardRouter = createTRPCRouter({
           GROUP BY DATE_TRUNC('month', "admissionDate")
           ORDER BY DATE_TRUNC('month', "admissionDate")
         `
-      : await prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
+      : await ctx.prisma.$queryRaw<Array<{ month: string; admissions: bigint; terminations: bigint }>>`
           SELECT 
             TO_CHAR(DATE_TRUNC('month', "admissionDate"), 'Mon') as month,
             COUNT(*) as admissions,
@@ -1241,7 +1240,7 @@ export const dashboardRouter = createTRPCRouter({
 
     // Ponto do dia (se houver timeclock)
     const timeclockToday = companyId
-      ? await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
+      ? await ctx.prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
           SELECT 
             COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
             0::bigint as absent,
@@ -1250,7 +1249,7 @@ export const dashboardRouter = createTRPCRouter({
           WHERE t."companyId" = ${companyId}::uuid
           AND DATE(t."clockIn") = CURRENT_DATE
         `
-      : await prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
+      : await ctx.prisma.$queryRaw<[{ present: bigint; absent: bigint; late: bigint }]>`
           SELECT 
             COUNT(DISTINCT t."employeeId") FILTER (WHERE t."clockIn" IS NOT NULL) as present,
             0::bigint as absent,
@@ -1304,7 +1303,7 @@ export const dashboardRouter = createTRPCRouter({
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
 
     // NFes recebidas
-    const receivedInvoices = await prisma.$queryRaw<[{
+    const receivedInvoices = await ctx.prisma.$queryRaw<[{
       total: bigint;
       pending: bigint;
       validated: bigint;
@@ -1324,7 +1323,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // NFes emitidas
-    const issuedInvoices = await prisma.$queryRaw<[{
+    const issuedInvoices = await ctx.prisma.$queryRaw<[{
       total: bigint;
       authorized: bigint;
       cancelled: bigint;
@@ -1342,7 +1341,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Impostos do mês (estimativa baseada em NFes)
-    const taxesMonth = await prisma.$queryRaw<[{
+    const taxesMonth = await ctx.prisma.$queryRaw<[{
       icms: number;
       ipi: number;
       pis: number;
@@ -1359,7 +1358,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Evolução de NFes (últimos 6 meses)
-    const nfesEvolution = await prisma.$queryRaw<Array<{ month: string; received: bigint; issued: bigint }>>`
+    const nfesEvolution = await ctx.prisma.$queryRaw<Array<{ month: string; received: bigint; issued: bigint }>>`
       WITH received AS (
         SELECT DATE_TRUNC('month', "issueDate") as month, COUNT(*) as count
         FROM received_invoices
@@ -1420,7 +1419,7 @@ export const dashboardRouter = createTRPCRouter({
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Usuários
-    const usersStats = await prisma.$queryRaw<[{
+    const usersStats = await ctx.prisma.$queryRaw<[{
       total: bigint;
       active: bigint;
       admins: bigint;
@@ -1435,7 +1434,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Logs de auditoria
-    const auditStats = await prisma.$queryRaw<[{
+    const auditStats = await ctx.prisma.$queryRaw<[{
       total: bigint;
       today: bigint;
       creates: bigint;
@@ -1454,7 +1453,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Logs de autenticação
-    const authStats = await prisma.$queryRaw<[{
+    const authStats = await ctx.prisma.$queryRaw<[{
       logins: bigint;
       failed: bigint;
     }]>`
@@ -1467,7 +1466,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Atividade por módulo (últimos 30 dias)
-    const activityByModule = await prisma.$queryRaw<Array<{ module: string; count: bigint }>>`
+    const activityByModule = await ctx.prisma.$queryRaw<Array<{ module: string; count: bigint }>>`
       SELECT 
         "entityType" as module,
         COUNT(*) as count
@@ -1511,7 +1510,7 @@ export const dashboardRouter = createTRPCRouter({
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Relatórios gerados
-    const reportsGenerated = await prisma.$queryRaw<[{
+    const reportsGenerated = await ctx.prisma.$queryRaw<[{
       total: bigint;
       today: bigint;
       week: bigint;
@@ -1527,7 +1526,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Relatórios por tipo
-    const reportsByType = await prisma.$queryRaw<Array<{ type: string; count: bigint }>>`
+    const reportsByType = await ctx.prisma.$queryRaw<Array<{ type: string; count: bigint }>>`
       SELECT 
         "reportType" as type,
         COUNT(*) as count
@@ -1540,7 +1539,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Relatórios por usuário
-    const reportsByUser = await prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
+    const reportsByUser = await ctx.prisma.$queryRaw<Array<{ name: string; count: bigint }>>`
       SELECT 
         COALESCE(u.name, 'Sistema') as name,
         COUNT(*) as count
@@ -1579,7 +1578,7 @@ export const dashboardRouter = createTRPCRouter({
     const startOfYear = new Date(today.getFullYear(), 0, 1);
 
     // Resumo financeiro anual
-    const financialSummary = await prisma.$queryRaw<[{
+    const financialSummary = await ctx.prisma.$queryRaw<[{
       revenue: number;
       expenses: number;
       profit: number;
@@ -1595,7 +1594,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Vendas do mês vs mês anterior
-    const salesComparison = await prisma.$queryRaw<[{
+    const salesComparison = await ctx.prisma.$queryRaw<[{
       current_month: number;
       previous_month: number;
     }]>`
@@ -1609,7 +1608,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Compras do mês vs mês anterior
-    const purchasesComparison = await prisma.$queryRaw<[{
+    const purchasesComparison = await ctx.prisma.$queryRaw<[{
       current_month: number;
       previous_month: number;
     }]>`
@@ -1623,7 +1622,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Produção do mês
-    const productionSummary = await prisma.$queryRaw<[{
+    const productionSummary = await ctx.prisma.$queryRaw<[{
       orders: bigint;
       quantity: number;
       oee: number;
@@ -1639,7 +1638,7 @@ export const dashboardRouter = createTRPCRouter({
     `;
 
     // Indicadores de estoque
-    const inventorySummary = await prisma.$queryRaw<[{
+    const inventorySummary = await ctx.prisma.$queryRaw<[{
       total_value: number;
       low_stock: bigint;
       out_of_stock: bigint;

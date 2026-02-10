@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 export const leadsRouter = createTRPCRouter({
@@ -45,7 +44,7 @@ export const leadsRouter = createTRPCRouter({
       }
 
       const [leads, total] = await Promise.all([
-        prisma.lead.findMany({
+        ctx.prisma.lead.findMany({
           where,
           include: {
             customer: { select: { id: true, code: true } },
@@ -56,7 +55,7 @@ export const leadsRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.lead.count({ where }),
+        ctx.prisma.lead.count({ where }),
       ]);
 
       return {
@@ -70,7 +69,7 @@ export const leadsRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const lead = await prisma.lead.findFirst({
+      const lead = await ctx.prisma.lead.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId),
@@ -115,7 +114,7 @@ export const leadsRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       // Gerar código sequencial
-      const lastLead = await prisma.lead.findFirst({
+      const lastLead = await ctx.prisma.lead.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -123,7 +122,7 @@ export const leadsRouter = createTRPCRouter({
 
       const nextCode = lastLead ? String(parseInt(lastLead.code) + 1).padStart(6, "0") : "000001";
 
-      const lead = await prisma.lead.create({
+      const lead = await ctx.prisma.lead.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -170,7 +169,7 @@ export const leadsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
 
-      const existing = await prisma.lead.findFirst({
+      const existing = await ctx.prisma.lead.findFirst({
         where: { id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -187,7 +186,7 @@ export const leadsRouter = createTRPCRouter({
         statusData.lostAt = new Date();
       }
 
-      const lead = await prisma.lead.update({
+      const lead = await ctx.prisma.lead.update({
         where: { id },
         data: {
           companyName: data.companyName,
@@ -213,7 +212,7 @@ export const leadsRouter = createTRPCRouter({
   delete: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const existing = await prisma.lead.findFirst({
+      const existing = await ctx.prisma.lead.findFirst({
         where: { id: input.id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -221,7 +220,7 @@ export const leadsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Lead não encontrado" });
       }
 
-      await prisma.lead.delete({ where: { id: input.id } });
+      await ctx.prisma.lead.delete({ where: { id: input.id } });
 
       return { success: true };
     }),
@@ -238,7 +237,7 @@ export const leadsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const lead = await prisma.lead.findFirst({
+      const lead = await ctx.prisma.lead.findFirst({
         where: { id: input.leadId, ...tenantFilter(ctx.companyId) },
       });
 
@@ -246,7 +245,7 @@ export const leadsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Lead não encontrado" });
       }
 
-      const activity = await prisma.leadActivity.create({
+      const activity = await ctx.prisma.leadActivity.create({
         data: {
           leadId: input.leadId,
           type: input.type,
@@ -258,7 +257,7 @@ export const leadsRouter = createTRPCRouter({
       });
 
       // Atualizar último contato
-      await prisma.lead.update({
+      await ctx.prisma.lead.update({
         where: { id: input.leadId },
         data: { lastContactAt: new Date() },
       });
@@ -269,8 +268,8 @@ export const leadsRouter = createTRPCRouter({
   // Completar atividade
   completeActivity: tenantProcedure
     .input(z.object({ activityId: z.string() }))
-    .mutation(async ({ input }) => {
-      const activity = await prisma.leadActivity.update({
+    .mutation(async ({ input, ctx }) => {
+      const activity = await ctx.prisma.leadActivity.update({
         where: { id: input.activityId },
         data: { completedAt: new Date() },
       });
@@ -282,7 +281,7 @@ export const leadsRouter = createTRPCRouter({
   convertToCustomer: tenantProcedure
     .input(z.object({ leadId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const lead = await prisma.lead.findFirst({
+      const lead = await ctx.prisma.lead.findFirst({
         where: { id: input.leadId, ...tenantFilter(ctx.companyId) },
       });
 
@@ -295,7 +294,7 @@ export const leadsRouter = createTRPCRouter({
       }
 
       // Gerar código do cliente
-      const lastCustomer = await prisma.customer.findFirst({
+      const lastCustomer = await ctx.prisma.customer.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -304,7 +303,7 @@ export const leadsRouter = createTRPCRouter({
       const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
 
       // Criar cliente
-      const customer = await prisma.customer.create({
+      const customer = await ctx.prisma.customer.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -316,7 +315,7 @@ export const leadsRouter = createTRPCRouter({
       });
 
       // Atualizar lead
-      await prisma.lead.update({
+      await ctx.prisma.lead.update({
         where: { id: input.leadId },
         data: {
           customerId: customer.id,
@@ -330,7 +329,7 @@ export const leadsRouter = createTRPCRouter({
 
   // Estatísticas do funil
   funnelStats: tenantProcedure.query(async ({ ctx }) => {
-    const stats = await prisma.lead.groupBy({
+    const stats = await ctx.prisma.lead.groupBy({
       by: ["status"],
       where: tenantFilter(ctx.companyId),
       _count: true,
@@ -362,35 +361,35 @@ export const leadsRouter = createTRPCRouter({
       totalValue,
       bySource,
     ] = await Promise.all([
-      prisma.lead.count({ where: tenantFilter(ctx.companyId) }),
-      prisma.lead.count({
+      ctx.prisma.lead.count({ where: tenantFilter(ctx.companyId) }),
+      ctx.prisma.lead.count({
         where: {
           ...tenantFilter(ctx.companyId),
           createdAt: { gte: startOfMonth },
         },
       }),
-      prisma.lead.count({
+      ctx.prisma.lead.count({
         where: {
           ...tenantFilter(ctx.companyId),
           status: "WON",
           wonAt: { gte: startOfMonth },
         },
       }),
-      prisma.lead.count({
+      ctx.prisma.lead.count({
         where: {
           ...tenantFilter(ctx.companyId),
           status: "LOST",
           lostAt: { gte: startOfMonth },
         },
       }),
-      prisma.lead.aggregate({
+      ctx.prisma.lead.aggregate({
         where: {
           ...tenantFilter(ctx.companyId),
           status: { notIn: ["LOST"] },
         },
         _sum: { estimatedValue: true },
       }),
-      prisma.lead.groupBy({
+      ctx.prisma.lead.groupBy({
         by: ["source"],
         where: tenantFilter(ctx.companyId),
         _count: true,

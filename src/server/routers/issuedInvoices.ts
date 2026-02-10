@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 const invoiceStatusEnum = z.enum([
@@ -57,7 +56,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       }
 
       const [invoices, total] = await Promise.all([
-        prisma.issuedInvoice.findMany({
+        ctx.prisma.issuedInvoice.findMany({
           where,
           include: {
             customer: { select: { id: true, code: true, companyName: true } },
@@ -68,7 +67,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.issuedInvoice.count({ where }),
+        ctx.prisma.issuedInvoice.count({ where }),
       ]);
 
       return {
@@ -82,7 +81,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const invoice = await prisma.issuedInvoice.findFirst({
+      const invoice = await ctx.prisma.issuedInvoice.findFirst({
         where: {
           id: input.id,
           companyId: ctx.companyId,
@@ -122,7 +121,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       // Buscar pedido
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.salesOrderId, ...tenantFilter(ctx.companyId) },
         include: {
           customer: true,
@@ -139,7 +138,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       }
 
       // Gerar código e número da NF
-      const lastInvoice = await prisma.issuedInvoice.findFirst({
+      const lastInvoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true, invoiceNumber: true },
@@ -162,7 +161,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         cfop: "5102", // Venda de mercadoria (simplificado)
       }));
 
-      const invoice = await prisma.issuedInvoice.create({
+      const invoice = await ctx.prisma.issuedInvoice.create({
         data: {
           code: nextCode,
           invoiceNumber: nextNumber,
@@ -212,7 +211,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       // Gerar código e número
-      const lastInvoice = await prisma.issuedInvoice.findFirst({
+      const lastInvoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -225,7 +224,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       let subtotal = 0;
       const itemsData = await Promise.all(
         input.items.map(async (item, index) => {
-          const material = await prisma.material.findUnique({
+          const material = await ctx.prisma.material.findUnique({
             where: { id: item.materialId },
             select: { ncm: true, description: true },
           });
@@ -248,7 +247,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         })
       );
 
-      const invoice = await prisma.issuedInvoice.create({
+      const invoice = await ctx.prisma.issuedInvoice.create({
         data: {
           code: nextCode,
           invoiceNumber: nextNumber,
@@ -276,7 +275,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
   authorize: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.issuedInvoice.findFirst({
+      const invoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -292,7 +291,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       const accessKey = `${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}${Math.random().toString().slice(2, 46)}`;
       const protocolNumber = `${Date.now()}`;
 
-      const updated = await prisma.issuedInvoice.update({
+      const updated = await ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
         data: {
           status: "AUTHORIZED",
@@ -304,7 +303,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
 
       // Atualizar status do pedido se houver
       if (invoice.salesOrderId) {
-        await prisma.salesOrder.update({
+        await ctx.prisma.salesOrder.update({
           where: { id: invoice.salesOrderId },
           data: {
             invoiceNumber: invoice.invoiceNumber,
@@ -325,7 +324,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.issuedInvoice.findFirst({
+      const invoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -345,7 +344,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         }
       }
 
-      return prisma.issuedInvoice.update({
+      return ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -364,7 +363,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.issuedInvoice.findFirst({
+      const invoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -381,7 +380,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Limite de 20 cartas de correção atingido" });
       }
 
-      return prisma.issuedInvoice.update({
+      return ctx.prisma.issuedInvoice.update({
         where: { id: input.id },
         data: {
           correctionSeq: nextSeq,
@@ -405,7 +404,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await prisma.issuedInvoice.findFirst({
+      const invoice = await ctx.prisma.issuedInvoice.findFirst({
         where: { id: input.invoiceId, companyId: ctx.companyId },
         include: { receivables: true },
       });
@@ -427,7 +426,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
       // Criar parcelas
       const receivables = await Promise.all(
         input.installments.map((inst, index) =>
-          prisma.accountsReceivable.create({
+          ctx.prisma.accountsReceivable.create({
             data: {
               code: Date.now() + index,
               companyId: ctx.companyId,
@@ -463,18 +462,18 @@ export const issuedInvoicesRouter = createTRPCRouter({
       yearlyRevenue,
       byStatus,
     ] = await Promise.all([
-      prisma.issuedInvoice.count({ where: { companyId: ctx.companyId } }),
-      prisma.issuedInvoice.count({
+      ctx.prisma.issuedInvoice.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.issuedInvoice.count({
         where: { companyId: ctx.companyId, status: "DRAFT" },
       }),
-      prisma.issuedInvoice.count({
+      ctx.prisma.issuedInvoice.count({
         where: {
           companyId: ctx.companyId,
           issueDate: { gte: startOfMonth },
           status: "AUTHORIZED",
         },
       }),
-      prisma.issuedInvoice.aggregate({
+      ctx.prisma.issuedInvoice.aggregate({
         where: {
           companyId: ctx.companyId,
           issueDate: { gte: startOfMonth },
@@ -482,7 +481,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         },
         _sum: { totalValue: true },
       }),
-      prisma.issuedInvoice.aggregate({
+      ctx.prisma.issuedInvoice.aggregate({
         where: {
           companyId: ctx.companyId,
           issueDate: { gte: startOfYear },
@@ -490,7 +489,7 @@ export const issuedInvoicesRouter = createTRPCRouter({
         },
         _sum: { totalValue: true },
       }),
-      prisma.issuedInvoice.groupBy({
+      ctx.prisma.issuedInvoice.groupBy({
         by: ["status"],
         where: { companyId: ctx.companyId },
         _count: true,

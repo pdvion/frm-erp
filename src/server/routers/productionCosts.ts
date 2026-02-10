@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 const costStatusEnum = z.enum(["DRAFT", "CALCULATED", "CLOSED"]);
@@ -36,7 +35,7 @@ export const productionCostsRouter = createTRPCRouter({
       if (status) where.status = status;
 
       const [costs, total] = await Promise.all([
-        prisma.productionCost.findMany({
+        ctx.prisma.productionCost.findMany({
           where,
           include: {
             productionOrder: {
@@ -54,7 +53,7 @@ export const productionCostsRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.productionCost.count({ where }),
+        ctx.prisma.productionCost.count({ where }),
       ]);
 
       return {
@@ -69,7 +68,7 @@ export const productionCostsRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const cost = await prisma.productionCost.findFirst({
+      const cost = await ctx.prisma.productionCost.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
           productionOrder: {
@@ -99,7 +98,7 @@ export const productionCostsRouter = createTRPCRouter({
   byProductionOrder: tenantProcedure
     .input(z.object({ productionOrderId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const cost = await prisma.productionCost.findFirst({
+      const cost = await ctx.prisma.productionCost.findFirst({
         where: { productionOrderId: input.productionOrderId, companyId: ctx.companyId },
         include: {
           productionOrder: {
@@ -122,7 +121,7 @@ export const productionCostsRouter = createTRPCRouter({
     .input(z.object({ productionOrderId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       // Buscar OP com materiais e logs de produção
-      const order = await prisma.productionOrder.findFirst({
+      const order = await ctx.prisma.productionOrder.findFirst({
         where: { id: input.productionOrderId, companyId: ctx.companyId },
         include: {
           product: true,
@@ -138,7 +137,7 @@ export const productionCostsRouter = createTRPCRouter({
       }
 
       // Verificar se já existe custo para esta OP
-      let existingCost = await prisma.productionCost.findFirst({
+      let existingCost = await ctx.prisma.productionCost.findFirst({
         where: { productionOrderId: input.productionOrderId },
       });
 
@@ -250,10 +249,10 @@ export const productionCostsRouter = createTRPCRouter({
       // Criar ou atualizar custo
       if (existingCost) {
         // Deletar detalhes antigos
-        await prisma.productionCostMaterial.deleteMany({ where: { productionCostId: existingCost.id } });
-        await prisma.productionCostLabor.deleteMany({ where: { productionCostId: existingCost.id } });
+        await ctx.prisma.productionCostMaterial.deleteMany({ where: { productionCostId: existingCost.id } });
+        await ctx.prisma.productionCostLabor.deleteMany({ where: { productionCostId: existingCost.id } });
 
-        existingCost = await prisma.productionCost.update({
+        existingCost = await ctx.prisma.productionCost.update({
           where: { id: existingCost.id },
           data: {
             status: "CALCULATED",
@@ -281,7 +280,7 @@ export const productionCostsRouter = createTRPCRouter({
           include: { materialItems: true, laborItems: true },
         });
       } else {
-        existingCost = await prisma.productionCost.create({
+        existingCost = await ctx.prisma.productionCost.create({
           data: {
             productionOrderId: input.productionOrderId,
             companyId: ctx.companyId,
@@ -318,7 +317,7 @@ export const productionCostsRouter = createTRPCRouter({
   close: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const cost = await prisma.productionCost.findFirst({
+      const cost = await ctx.prisma.productionCost.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -334,7 +333,7 @@ export const productionCostsRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Custo precisa ser calculado antes de fechar" });
       }
 
-      return prisma.productionCost.update({
+      return ctx.prisma.productionCost.update({
         where: { id: input.id },
         data: {
           status: "CLOSED",
@@ -347,7 +346,7 @@ export const productionCostsRouter = createTRPCRouter({
   getStandardCost: tenantProcedure
     .input(z.object({ materialId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const cost = await prisma.materialStandardCost.findFirst({
+      const cost = await ctx.prisma.materialStandardCost.findFirst({
         where: { materialId: input.materialId, companyId: ctx.companyId },
         orderBy: { effectiveDate: "desc" },
       });
@@ -369,7 +368,7 @@ export const productionCostsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const totalCost = input.materialCost + (input.laborCost || 0) + (input.overheadCost || 0);
 
-      const cost = await prisma.materialStandardCost.create({
+      const cost = await ctx.prisma.materialStandardCost.create({
         data: {
           materialId: input.materialId,
           companyId: ctx.companyId,
@@ -398,14 +397,14 @@ export const productionCostsRouter = createTRPCRouter({
       avgVariance,
       byStatus,
     ] = await Promise.all([
-      prisma.productionCost.count({ where: { companyId: ctx.companyId } }),
-      prisma.productionCost.count({
+      ctx.prisma.productionCost.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.productionCost.count({
         where: { companyId: ctx.companyId, status: "CALCULATED" },
       }),
-      prisma.productionCost.count({
+      ctx.prisma.productionCost.count({
         where: { companyId: ctx.companyId, status: "CLOSED" },
       }),
-      prisma.productionCost.aggregate({
+      ctx.prisma.productionCost.aggregate({
         where: {
           companyId: ctx.companyId,
           calculatedAt: { gte: startOfMonth },
@@ -413,11 +412,11 @@ export const productionCostsRouter = createTRPCRouter({
         _sum: { totalCost: true },
         _count: true,
       }),
-      prisma.productionCost.aggregate({
+      ctx.prisma.productionCost.aggregate({
         where: { companyId: ctx.companyId, status: { in: ["CALCULATED", "CLOSED"] } },
         _avg: { totalVariance: true },
       }),
-      prisma.productionCost.groupBy({
+      ctx.prisma.productionCost.groupBy({
         by: ["status"],
         where: { companyId: ctx.companyId },
         _count: true,

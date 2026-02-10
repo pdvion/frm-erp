@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import type { SystemModule } from "../context";
 
@@ -17,7 +16,7 @@ export const companiesRouter = createTRPCRouter({
       });
     }
 
-    return prisma.company.findMany({
+    return ctx.prisma.company.findMany({
       orderBy: { code: "asc" },
       include: {
         _count: {
@@ -34,8 +33,8 @@ export const companiesRouter = createTRPCRouter({
   // Obter empresa por ID
   getById: tenantProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      return prisma.company.findUnique({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.company.findUnique({
         where: { id: input.id },
         include: {
           _count: {
@@ -80,7 +79,7 @@ export const companiesRouter = createTRPCRouter({
 
       // Verificar CNPJ duplicado
       if (input.cnpj) {
-        const existing = await prisma.company.findUnique({
+        const existing = await ctx.prisma.company.findUnique({
           where: { cnpj: input.cnpj },
         });
         if (existing) {
@@ -92,13 +91,13 @@ export const companiesRouter = createTRPCRouter({
       }
 
       // Buscar próximo código
-      const lastCompany = await prisma.company.findFirst({
+      const lastCompany = await ctx.prisma.company.findFirst({
         orderBy: { code: "desc" },
       });
       const nextCode = (lastCompany?.code || 0) + 1;
 
       // Criar empresa
-      const company = await prisma.company.create({
+      const company = await ctx.prisma.company.create({
         data: {
           code: nextCode,
           ...input,
@@ -140,7 +139,7 @@ export const companiesRouter = createTRPCRouter({
 
       // Verificar CNPJ duplicado
       if (data.cnpj) {
-        const existing = await prisma.company.findFirst({
+        const existing = await ctx.prisma.company.findFirst({
           where: { cnpj: data.cnpj, NOT: { id } },
         });
         if (existing) {
@@ -151,7 +150,7 @@ export const companiesRouter = createTRPCRouter({
         }
       }
 
-      return prisma.company.update({
+      return ctx.prisma.company.update({
         where: { id },
         data,
       });
@@ -180,7 +179,7 @@ export const companiesRouter = createTRPCRouter({
       }
 
       // Verificar se vínculo já existe
-      const existing = await prisma.userCompany.findUnique({
+      const existing = await ctx.prisma.userCompany.findUnique({
         where: {
           userId_companyId: {
             userId: input.userId,
@@ -197,7 +196,7 @@ export const companiesRouter = createTRPCRouter({
       }
 
       // Criar vínculo
-      const userCompany = await prisma.userCompany.create({
+      const userCompany = await ctx.prisma.userCompany.create({
         data: {
           userId: input.userId,
           companyId: input.companyId,
@@ -210,7 +209,7 @@ export const companiesRouter = createTRPCRouter({
       const modules: SystemModule[] = ["MATERIALS", "SUPPLIERS", "QUOTES", "RECEIVING", "MATERIAL_OUT", "INVENTORY", "REPORTS", "SETTINGS"];
       
       if (input.permissions && input.permissions.length > 0) {
-        await prisma.userCompanyPermission.createMany({
+        await ctx.prisma.userCompanyPermission.createMany({
           data: input.permissions.map((p) => ({
             userId: input.userId,
             companyId: input.companyId,
@@ -222,7 +221,7 @@ export const companiesRouter = createTRPCRouter({
         });
       } else {
         // Permissões padrão: VIEW para todos os módulos
-        await prisma.userCompanyPermission.createMany({
+        await ctx.prisma.userCompanyPermission.createMany({
           data: modules.map((module) => ({
             userId: input.userId,
             companyId: input.companyId,
@@ -253,7 +252,7 @@ export const companiesRouter = createTRPCRouter({
       }
 
       // Remover permissões
-      await prisma.userCompanyPermission.deleteMany({
+      await ctx.prisma.userCompanyPermission.deleteMany({
         where: {
           userId: input.userId,
           companyId: input.companyId,
@@ -261,7 +260,7 @@ export const companiesRouter = createTRPCRouter({
       });
 
       // Remover vínculo
-      await prisma.userCompany.delete({
+      await ctx.prisma.userCompany.delete({
         where: {
           userId_companyId: {
             userId: input.userId,
@@ -276,8 +275,8 @@ export const companiesRouter = createTRPCRouter({
   // Listar usuários de uma empresa
   listUsers: tenantProcedure
     .input(z.object({ companyId: z.string() }))
-    .query(async ({ input }) => {
-      return prisma.userCompany.findMany({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.userCompany.findMany({
         where: { companyId: input.companyId },
         include: {
           user: {
@@ -315,7 +314,7 @@ export const companiesRouter = createTRPCRouter({
       }
 
       // Deletar permissões existentes
-      await prisma.userCompanyPermission.deleteMany({
+      await ctx.prisma.userCompanyPermission.deleteMany({
         where: {
           userId: input.userId,
           companyId: input.companyId,
@@ -323,7 +322,7 @@ export const companiesRouter = createTRPCRouter({
       });
 
       // Criar novas permissões
-      await prisma.userCompanyPermission.createMany({
+      await ctx.prisma.userCompanyPermission.createMany({
         data: input.permissions.map((p) => ({
           userId: input.userId,
           companyId: input.companyId,

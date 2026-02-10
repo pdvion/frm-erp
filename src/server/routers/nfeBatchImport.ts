@@ -5,7 +5,6 @@
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { tenantFilter } from "../trpc";
 
@@ -220,7 +219,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
     .input(z.object({
       xmlFiles: z.array(nfeXmlSchema).min(1).max(100),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const results: {
         fileName: string;
         status: "valid" | "invalid" | "duplicate";
@@ -236,7 +235,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
         try {
           const parsed = parseNFeXml(file.xmlContent);
           
-          const existing = await prisma.receivedInvoice.findUnique({
+          const existing = await ctx.prisma.receivedInvoice.findUnique({
             where: { accessKey: parsed.chaveAcesso },
           });
 
@@ -303,7 +302,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
         try {
           const parsed = parseNFeXml(file.xmlContent);
 
-          const existing = await prisma.receivedInvoice.findUnique({
+          const existing = await ctx.prisma.receivedInvoice.findUnique({
             where: { accessKey: parsed.chaveAcesso },
           });
 
@@ -332,7 +331,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
           }
 
           // Buscar ou criar fornecedor
-          let supplier = await prisma.supplier.findFirst({
+          let supplier = await ctx.prisma.supplier.findFirst({
             where: {
               cnpj: { contains: parsed.emitente.cnpj },
               ...tenantFilter(ctx.companyId),
@@ -340,12 +339,12 @@ export const nfeBatchImportRouter = createTRPCRouter({
           });
 
           if (!supplier) {
-            const maxCode = await prisma.supplier.aggregate({
+            const maxCode = await ctx.prisma.supplier.aggregate({
               where: tenantFilter(ctx.companyId),
               _max: { code: true },
             });
 
-            supplier = await prisma.supplier.create({
+            supplier = await ctx.prisma.supplier.create({
               data: {
                 code: (maxCode._max.code || 0) + 1,
                 companyName: parsed.emitente.razaoSocial,
@@ -360,7 +359,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
           }
 
           // Criar NFe de entrada
-          const invoice = await prisma.receivedInvoice.create({
+          const invoice = await ctx.prisma.receivedInvoice.create({
             data: {
               accessKey: parsed.chaveAcesso,
               invoiceNumber: parsed.numero,
@@ -386,7 +385,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
 
           // Criar itens
           for (const item of parsed.itens) {
-            const material = await prisma.material.findFirst({
+            const material = await ctx.prisma.material.findFirst({
               where: {
                 OR: [
                   { internalCode: item.codigo },
@@ -396,7 +395,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
               },
             });
 
-            await prisma.receivedInvoiceItem.create({
+            await ctx.prisma.receivedInvoiceItem.create({
               data: {
                 invoiceId: invoice.id,
                 materialId: material?.id,
@@ -462,7 +461,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
         try {
           const parsed = parseNFeXml(file.xmlContent);
 
-          const existing = await prisma.issuedInvoice.findFirst({
+          const existing = await ctx.prisma.issuedInvoice.findFirst({
             where: { accessKey: parsed.chaveAcesso },
           });
 
@@ -491,7 +490,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
           }
 
           // Buscar ou criar cliente
-          let customer = await prisma.customer.findFirst({
+          let customer = await ctx.prisma.customer.findFirst({
             where: {
               OR: [
                 { cnpj: { contains: parsed.destinatario.cnpj } },
@@ -502,14 +501,14 @@ export const nfeBatchImportRouter = createTRPCRouter({
           });
 
           if (!customer) {
-            const maxCodeResult = await prisma.customer.aggregate({
+            const maxCodeResult = await ctx.prisma.customer.aggregate({
               where: tenantFilter(ctx.companyId),
               _max: { code: true },
             });
 
             const isCnpj = parsed.destinatario.cnpj.length === 14;
             const nextCode = String(Number(maxCodeResult._max.code || "0") + 1);
-            customer = await prisma.customer.create({
+            customer = await ctx.prisma.customer.create({
               data: {
                 code: nextCode,
                 companyName: parsed.destinatario.razaoSocial,
@@ -524,12 +523,12 @@ export const nfeBatchImportRouter = createTRPCRouter({
           }
 
           // Criar NFe de saída
-          const maxInvoiceCode = await prisma.issuedInvoice.aggregate({
+          const maxInvoiceCode = await ctx.prisma.issuedInvoice.aggregate({
             where: { companyId: ctx.companyId },
             _max: { code: true },
           });
 
-          const invoice = await prisma.issuedInvoice.create({
+          const invoice = await ctx.prisma.issuedInvoice.create({
             data: {
               code: (maxInvoiceCode._max.code || 0) + 1,
               invoiceNumber: String(parsed.numero),
@@ -557,7 +556,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
 
           // Criar itens
           for (const item of parsed.itens) {
-            const material = await prisma.material.findFirst({
+            const material = await ctx.prisma.material.findFirst({
               where: {
                 OR: [
                   { internalCode: item.codigo },
@@ -568,7 +567,7 @@ export const nfeBatchImportRouter = createTRPCRouter({
             });
 
             if (material) {
-              await prisma.issuedInvoiceItem.create({
+              await ctx.prisma.issuedInvoiceItem.create({
                 data: {
                   invoiceId: invoice.id,
                   materialId: material.id,
@@ -613,17 +612,17 @@ export const nfeBatchImportRouter = createTRPCRouter({
    */
   getStats: tenantProcedure.query(async ({ ctx }) => {
     const [receivedCount, issuedCount, receivedTotal, issuedTotal] = await Promise.all([
-      prisma.receivedInvoice.count({
+      ctx.prisma.receivedInvoice.count({
         where: { companyId: ctx.companyId },
       }),
-      prisma.issuedInvoice.count({
+      ctx.prisma.issuedInvoice.count({
         where: { companyId: ctx.companyId },
       }),
-      prisma.receivedInvoice.aggregate({
+      ctx.prisma.receivedInvoice.aggregate({
         where: { companyId: ctx.companyId },
         _sum: { totalInvoice: true },
       }),
-      prisma.issuedInvoice.aggregate({
+      ctx.prisma.issuedInvoice.aggregate({
         where: { companyId: ctx.companyId },
         _sum: { totalValue: true },
       }),

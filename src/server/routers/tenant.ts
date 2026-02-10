@@ -1,7 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, authProcedure, supabaseAuthProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import type { SystemModule } from "../context";
 
 export const tenantRouter = createTRPCRouter({
@@ -13,7 +12,7 @@ export const tenantRouter = createTRPCRouter({
     }
 
     // Verificar se usuário já existe
-    let localUser = await prisma.user.findUnique({
+    let localUser = await ctx.prisma.user.findUnique({
       where: { email: ctx.supabaseUser.email },
     });
 
@@ -22,7 +21,7 @@ export const tenantRouter = createTRPCRouter({
     }
 
     // Buscar empresa padrão
-    const defaultCompany = await prisma.company.findFirst({
+    const defaultCompany = await ctx.prisma.company.findFirst({
       orderBy: { code: "asc" },
     });
 
@@ -31,14 +30,14 @@ export const tenantRouter = createTRPCRouter({
     }
 
     // Buscar próximo código
-    const lastUser = await prisma.user.findFirst({
+    const lastUser = await ctx.prisma.user.findFirst({
       orderBy: { code: "desc" },
       select: { code: true },
     });
     const nextCode = (lastUser?.code ?? 0) + 1;
 
     // Criar usuário
-    localUser = await prisma.user.create({
+    localUser = await ctx.prisma.user.create({
       data: {
         code: nextCode,
         email: ctx.supabaseUser.email,
@@ -50,7 +49,7 @@ export const tenantRouter = createTRPCRouter({
     });
 
     // Vincular à empresa
-    await prisma.userCompany.create({
+    await ctx.prisma.userCompany.create({
       data: {
         userId: localUser.id,
         companyId: defaultCompany.id,
@@ -61,7 +60,7 @@ export const tenantRouter = createTRPCRouter({
 
     // Criar permissões
     const modules: SystemModule[] = ["MATERIALS", "SUPPLIERS", "QUOTES", "RECEIVING", "MATERIAL_OUT", "INVENTORY", "REPORTS", "SETTINGS"];
-    await prisma.userCompanyPermission.createMany({
+    await ctx.prisma.userCompanyPermission.createMany({
       data: modules.map((module) => ({
         userId: localUser!.id,
         companyId: defaultCompany.id,

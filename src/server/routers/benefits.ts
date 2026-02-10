@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
 
@@ -30,7 +29,7 @@ export const benefitsRouter = createTRPCRouter({
       if (input?.category) where.category = input.category;
       if (!input?.includeInactive) where.isActive = true;
 
-      return prisma.benefitType.findMany({
+      return ctx.prisma.benefitType.findMany({
         where,
         include: { _count: { select: { employeeBenefits: true } } },
         orderBy: { name: "asc" },
@@ -53,7 +52,7 @@ export const benefitsRouter = createTRPCRouter({
       affectsFgts: z.boolean().default(false),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.benefitType.create({
+      return ctx.prisma.benefitType.create({
         data: { ...input, companyId: ctx.companyId },
       });
     }),
@@ -76,14 +75,14 @@ export const benefitsRouter = createTRPCRouter({
       const { id, ...data } = input;
       
       // Validate tenant ownership
-      const existing = await prisma.benefitType.findFirst({
+      const existing = await ctx.prisma.benefitType.findFirst({
         where: { id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de benefício não encontrado" });
       }
       
-      const updated = await prisma.benefitType.update({
+      const updated = await ctx.prisma.benefitType.update({
         where: { id },
         data,
       });
@@ -117,7 +116,7 @@ export const benefitsRouter = createTRPCRouter({
       if (status) where.status = status;
 
       const [benefits, total] = await Promise.all([
-        prisma.employeeBenefit.findMany({
+        ctx.prisma.employeeBenefit.findMany({
           where,
           include: {
             employee: { select: { id: true, code: true, name: true } },
@@ -127,7 +126,7 @@ export const benefitsRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.employeeBenefit.count({ where }),
+        ctx.prisma.employeeBenefit.count({ where }),
       ]);
 
       return { benefits, total, page, pages: Math.ceil(total / limit) };
@@ -146,7 +145,7 @@ export const benefitsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Verificar se já existe benefício ativo do mesmo tipo
-      const existing = await prisma.employeeBenefit.findFirst({
+      const existing = await ctx.prisma.employeeBenefit.findFirst({
         where: {
           employeeId: input.employeeId,
           benefitTypeId: input.benefitTypeId,
@@ -161,7 +160,7 @@ export const benefitsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.employeeBenefit.create({
+      return ctx.prisma.employeeBenefit.create({
         data: {
           employeeId: input.employeeId,
           benefitTypeId: input.benefitTypeId,
@@ -195,14 +194,14 @@ export const benefitsRouter = createTRPCRouter({
       const { id, endDate, ...data } = input;
       
       // Validate tenant ownership
-      const existing = await prisma.employeeBenefit.findFirst({
+      const existing = await ctx.prisma.employeeBenefit.findFirst({
         where: { id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Benefício não encontrado" });
       }
       
-      const updated = await prisma.employeeBenefit.update({
+      const updated = await ctx.prisma.employeeBenefit.update({
         where: { id },
         data: {
           ...data,
@@ -221,14 +220,14 @@ export const benefitsRouter = createTRPCRouter({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
       // Validate tenant ownership
-      const existing = await prisma.employeeBenefit.findFirst({
+      const existing = await ctx.prisma.employeeBenefit.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Benefício não encontrado" });
       }
       
-      const updated = await prisma.employeeBenefit.update({
+      const updated = await ctx.prisma.employeeBenefit.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -247,8 +246,8 @@ export const benefitsRouter = createTRPCRouter({
 
   listTransportVouchers: tenantProcedure
     .input(z.object({ employeeId: z.string() }))
-    .query(async ({ input }) => {
-      return prisma.transportVoucher.findMany({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.transportVoucher.findMany({
         where: { employeeId: input.employeeId, isActive: true },
         orderBy: { lineName: "asc" },
       });
@@ -264,7 +263,7 @@ export const benefitsRouter = createTRPCRouter({
       workingDays: z.number().int().positive().default(22),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.transportVoucher.create({
+      return ctx.prisma.transportVoucher.create({
         data: { ...input, companyId: ctx.companyId },
       });
     }),
@@ -283,24 +282,24 @@ export const benefitsRouter = createTRPCRouter({
       const { id, ...data } = input;
       
       // Validate tenant ownership
-      const existing = await prisma.transportVoucher.findFirst({
+      const existing = await ctx.prisma.transportVoucher.findFirst({
         where: { id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Vale transporte não encontrado" });
       }
       
-      return prisma.transportVoucher.update({ where: { id }, data });
+      return ctx.prisma.transportVoucher.update({ where: { id }, data });
     }),
 
   calculateTransportVoucher: tenantProcedure
     .input(z.object({ employeeId: z.string() }))
-    .query(async ({ input }) => {
-      const vouchers = await prisma.transportVoucher.findMany({
+    .query(async ({ input, ctx }) => {
+      const vouchers = await ctx.prisma.transportVoucher.findMany({
         where: { employeeId: input.employeeId, isActive: true },
       });
 
-      const employee = await prisma.employee.findUnique({
+      const employee = await ctx.prisma.employee.findUnique({
         where: { id: input.employeeId },
         select: { salary: true },
       });
@@ -346,7 +345,7 @@ export const benefitsRouter = createTRPCRouter({
       if (input?.isMandatory !== undefined) where.isMandatory = input.isMandatory;
       if (!input?.includeInactive) where.isActive = true;
 
-      return prisma.training.findMany({
+      return ctx.prisma.training.findMany({
         where,
         include: { _count: { select: { employeeTrainings: true } } },
         orderBy: { name: "asc" },
@@ -367,7 +366,7 @@ export const benefitsRouter = createTRPCRouter({
       validityMonths: z.number().int().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.training.create({
+      return ctx.prisma.training.create({
         data: { ...input, companyId: ctx.companyId },
       });
     }),
@@ -394,7 +393,7 @@ export const benefitsRouter = createTRPCRouter({
       if (status) where.status = status;
 
       const [trainings, total] = await Promise.all([
-        prisma.employeeTraining.findMany({
+        ctx.prisma.employeeTraining.findMany({
           where,
           include: {
             employee: { select: { id: true, code: true, name: true } },
@@ -404,7 +403,7 @@ export const benefitsRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.employeeTraining.count({ where }),
+        ctx.prisma.employeeTraining.count({ where }),
       ]);
 
       return { trainings, total, page, pages: Math.ceil(total / limit) };
@@ -418,7 +417,7 @@ export const benefitsRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const training = await prisma.training.findUnique({
+      const training = await ctx.prisma.training.findUnique({
         where: { id: input.trainingId },
         select: { validityMonths: true },
       });
@@ -431,7 +430,7 @@ export const benefitsRouter = createTRPCRouter({
         expirationDate.setMonth(expirationDate.getMonth() + training.validityMonths);
       }
 
-      return prisma.employeeTraining.create({
+      return ctx.prisma.employeeTraining.create({
         data: {
           employeeId: input.employeeId,
           trainingId: input.trainingId,
@@ -454,8 +453,8 @@ export const benefitsRouter = createTRPCRouter({
       certificateUrl: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const training = await prisma.employeeTraining.findUnique({
+    .mutation(async ({ input, ctx }) => {
+      const training = await ctx.prisma.employeeTraining.findUnique({
         where: { id: input.id },
         include: { training: { select: { validityMonths: true } } },
       });
@@ -468,7 +467,7 @@ export const benefitsRouter = createTRPCRouter({
         expirationDate.setMonth(expirationDate.getMonth() + training.training.validityMonths);
       }
 
-      return prisma.employeeTraining.update({
+      return ctx.prisma.employeeTraining.update({
         where: { id: input.id },
         data: {
           status: "COMPLETED",
@@ -497,7 +496,7 @@ export const benefitsRouter = createTRPCRouter({
       if (input?.category) where.category = input.category;
       if (input?.minLevel) where.level = { gte: input.minLevel };
 
-      return prisma.skillMatrix.findMany({
+      return ctx.prisma.skillMatrix.findMany({
         where,
         include: {
           employee: { select: { id: true, code: true, name: true } },
@@ -516,7 +515,7 @@ export const benefitsRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.skillMatrix.create({
+      return ctx.prisma.skillMatrix.create({
         data: { ...input, companyId: ctx.companyId },
       });
     }),
@@ -533,14 +532,14 @@ export const benefitsRouter = createTRPCRouter({
       const { id, certifiedAt, expirationDate, ...data } = input;
       
       // Validate tenant ownership
-      const existing = await prisma.skillMatrix.findFirst({
+      const existing = await ctx.prisma.skillMatrix.findFirst({
         where: { id, companyId: ctx.companyId },
       });
       if (!existing) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Competência não encontrada" });
       }
       
-      return prisma.skillMatrix.update({
+      return ctx.prisma.skillMatrix.update({
         where: { id },
         data: {
           ...data,
@@ -559,7 +558,7 @@ export const benefitsRouter = createTRPCRouter({
       };
       if (input?.category) where.category = input.category;
 
-      const skills = await prisma.skillMatrix.groupBy({
+      const skills = await ctx.prisma.skillMatrix.groupBy({
         by: ["skillName", "category"],
         where,
         _count: true,
@@ -586,21 +585,21 @@ export const benefitsRouter = createTRPCRouter({
       skillsCount,
       benefitsByCategory,
     ] = await Promise.all([
-      prisma.benefitType.count({ where: { companyId: ctx.companyId, isActive: true } }),
-      prisma.employeeBenefit.count({ where: { companyId: ctx.companyId, status: "ACTIVE" } }),
-      prisma.training.count({ where: { companyId: ctx.companyId, isActive: true } }),
-      prisma.employeeTraining.count({
+      ctx.prisma.benefitType.count({ where: { companyId: ctx.companyId, isActive: true } }),
+      ctx.prisma.employeeBenefit.count({ where: { companyId: ctx.companyId, status: "ACTIVE" } }),
+      ctx.prisma.training.count({ where: { companyId: ctx.companyId, isActive: true } }),
+      ctx.prisma.employeeTraining.count({
         where: { companyId: ctx.companyId, status: "SCHEDULED" },
       }),
-      prisma.employeeTraining.count({
+      ctx.prisma.employeeTraining.count({
         where: {
           companyId: ctx.companyId,
           status: "COMPLETED",
           expirationDate: { lt: new Date() },
         },
       }),
-      prisma.skillMatrix.count({ where: { companyId: ctx.companyId } }),
-      prisma.employeeBenefit.groupBy({
+      ctx.prisma.skillMatrix.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.employeeBenefit.groupBy({
         by: ["benefitTypeId"],
         where: { companyId: ctx.companyId, status: "ACTIVE" },
         _count: true,
