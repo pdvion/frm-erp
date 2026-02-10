@@ -12,6 +12,7 @@ import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
 import { EditorToolbar } from "./EditorToolbar";
 import { cn } from "@/lib/utils";
+import DOMPurify from "isomorphic-dompurify";
 
 export interface RichTextEditorProps {
   content: string;
@@ -136,7 +137,7 @@ export function RichTextViewer({ content, className }: RichTextViewerProps) {
         "prose-pre:bg-gray-900 prose-pre:text-gray-100",
         className
       )}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
     />
   );
 }

@@ -69,8 +69,8 @@ export const aiConfigRouter = createTRPCRouter({
       // 1. Salvar no Vault (criptografado)
       try {
         await saveSecret(ctx.prisma, key, input.token, ctx.companyId, `Token de API ${input.provider.toUpperCase()}`);
-      } catch {
-        // Vault indisponível — continuar com systemSettings
+      } catch (e) {
+        console.warn("[aiConfig] Vault indisponível ao salvar token:", e);
       }
 
       // 2. Salvar no systemSettings (fallback legado)
@@ -115,8 +115,8 @@ export const aiConfigRouter = createTRPCRouter({
       // 1. Remover do Vault
       try {
         await deleteSecret(ctx.prisma, key, ctx.companyId);
-      } catch {
-        // Vault indisponível — continuar
+      } catch (e) {
+        console.warn("[aiConfig] Vault indisponível ao remover token:", e);
       }
 
       // 2. Remover do systemSettings
@@ -149,8 +149,8 @@ export const aiConfigRouter = createTRPCRouter({
       let inVault = false;
       try {
         inVault = await hasSecret(ctx.prisma, key, ctx.companyId);
-      } catch {
-        // Vault indisponível
+      } catch (e) {
+        console.warn("[aiConfig] Vault indisponível ao verificar token:", e);
       }
 
       const inLegacy = !!(await ctx.prisma.systemSetting.findFirst({

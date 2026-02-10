@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { HelpCircle, X, ExternalLink, Loader2 } from "lucide-react";
+import DOMPurify from "isomorphic-dompurify";
 
 interface HelpButtonProps {
   module: string;
@@ -253,5 +254,5 @@ function formatInline(text: string): React.ReactNode {
   // Links
   text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>');
 
-  return <span dangerouslySetInnerHTML={{ __html: text }} />;
+  return <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }} />;
 }

@@ -117,10 +117,8 @@ describe("tRPC procedure calls (caller)", () => {
     await expect(caller.tenant.switchCompany({ companyId: "c2" })).rejects.toBeInstanceOf(Error);
   });
 
-  it("tenant.ensureUser returns created false when user already exists", async () => {
-    // Este teste verifica o comportamento quando o usuário já existe
-    // O router tenant.ts importa prisma diretamente, então não podemos mockar via ctx
-    // Testamos apenas o fluxo de retorno quando não há supabaseUser
+  it("tenant.ensureUser rejects without supabase session", async () => {
+    // ensureUser agora usa supabaseAuthProcedure — requer sessão Supabase válida
     const ctx: TestCtx = {
       prisma: prisma as PrismaClient,
       tenant: { userId: null, companyId: null, companies: [], permissions: new Map() },
@@ -129,10 +127,6 @@ describe("tRPC procedure calls (caller)", () => {
     };
 
     const caller = createCaller(ctx);
-    const result = await caller.tenant.ensureUser();
-
-    // Sem supabaseUser, retorna created: false
-    expect(result.created).toBe(false);
-    expect(result.userId).toBeNull();
+    await expect(caller.tenant.ensureUser()).rejects.toThrow("Sessão Supabase inválida");
   });
 });

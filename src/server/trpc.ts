@@ -114,6 +114,23 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
+// Procedure que requer sessão Supabase válida (email), mas NÃO exige usuário local
+// Útil para endpoints como ensureUser que rodam antes do usuário existir no banco local
+export const supabaseAuthProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.supabaseUser?.email) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Sessão Supabase inválida.",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      supabaseUser: ctx.supabaseUser,
+    },
+  });
+});
+
 // Procedure que requer apenas autenticação (userId), sem exigir empresa ativa
 // Útil para endpoints como notificações que funcionam independente da empresa
 export const authProcedure = t.procedure.use(async ({ ctx, next }) => {
