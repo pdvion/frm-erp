@@ -350,6 +350,8 @@ model Material {
   companyId                   String                    @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   isShared                    Boolean                   @default(false)
   purchaseUnit                String?                   @map("purchase_unit")
   unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
@@ -461,6 +463,8 @@ model Supplier {
   companyId               String                       @db.Uuid
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   isShared                Boolean                      @default(false)
   cat01Embalagens         Boolean?                     @default(false) @map("cat01_embalagens")
   cat02Tintas             Boolean?                     @default(false) @map("cat02_tintas")
@@ -708,6 +712,8 @@ model PurchaseOrder {
   companyId             String              @db.Uuid
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   application           String?
   quoteSupplierCode     Int?                @map("quote_supplier_code")
   billingCompanyId      String?             @map("billing_company_id")
@@ -828,6 +834,8 @@ model ReceivedInvoice {
   xmlContent                  String?
   createdAt                   DateTime              @default(now())
   updatedAt                   DateTime              @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
   icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
   insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
@@ -926,6 +934,8 @@ model AccountsPayable {
   createdBy            String?                 @db.Uuid
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   bankAccountId        String?                 @db.Uuid
   approvalStatus       ApprovalStatus?         @default(PENDING)
   scheduledPaymentDate DateTime?
@@ -1072,6 +1082,8 @@ model ProductionOrder {
   createdBy               String?                    @db.Uuid
   createdAt               DateTime                   @default(now())
   updatedAt               DateTime                   @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   request_type            production_request_type?
   execution_type          production_execution_type?
   customer_id             String?
@@ -1201,6 +1213,8 @@ model BankAccount {
   notes                                                                  String?
   createdAt                                                              DateTime             @default(now())
   updatedAt                                                              DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   accounts_payable                                                       AccountsPayable[]
   receivables                                                            AccountsReceivable[]
   company                                                                Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
@@ -1319,6 +1333,8 @@ model Customer {
   createdBy               String?              @db.Uuid
   createdAt               DateTime             @default(now())
   updatedAt               DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   customerGroupId         String?              @map("customer_group_id")
   customerTypeId          String?              @map("customer_type_id")
   alphaCode               String?              @map("alpha_code")
@@ -1383,6 +1399,8 @@ model AccountsReceivable {
   createdBy         String?             @db.Uuid
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   issuedInvoiceId   String?             @db.Uuid
   bankAccount       BankAccount?        @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_receivable_bankaccount_fkey")
   company           Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
@@ -1794,6 +1812,8 @@ model SalesQuote {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   sales_orders_sales_orders_quoteIdTosales_quotes SalesOrder[]     @relation("sales_orders_quoteIdTosales_quotes")
   items                                           SalesQuoteItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
@@ -1863,6 +1883,8 @@ model SalesOrder {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   issuedInvoices                                  IssuedInvoice[]  @relation("IssuedInvoiceOrder")
   items                                           SalesOrderItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")
@@ -2194,6 +2216,8 @@ model Employee {
   createdBy           String?            @db.Uuid
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   insalubrityDegree   String?            @map("insalubrity_degree")
   hasDangerousness    Boolean?           @default(false) @map("has_dangerousness")
   dependentsCount     Int?               @default(0) @map("dependents_count")
@@ -2994,6 +3018,8 @@ model IssuedInvoice {
   createdBy          String?              @db.Uuid
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   receivables        AccountsReceivable[]
   items              IssuedInvoiceItem[]
   customer           Customer             @relation(fields: [customerId], references: [id])
@@ -3397,6 +3423,8 @@ model WorkflowDefinition {
   createdBy     String?              @db.Uuid
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   canvasLayout  Json?
   formSchema    Json?
   variables     Json?                @default("[]")
@@ -4845,6 +4873,8 @@ model Product {
   isShared         Boolean?            @default(false) @map("is_shared")
   createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   attachments      ProductAttachment[]
   images           ProductImage[]
   videos           ProductVideo[]
