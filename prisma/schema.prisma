@@ -4189,6 +4189,7 @@ model EmployeeBenefit {
 
   @@index([benefitTypeId], map: "idx_employee_benefits_benefit_type_id")
   @@index([employeeId], map: "idx_employee_benefits_employee_id")
+  @@index([companyId], map: "idx_employee_benefits_company_id")
   @@map("employee_benefits")
 }
 
@@ -4207,6 +4208,7 @@ model TransportVoucher {
   employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([employeeId], map: "idx_transport_vouchers_employee_id")
+  @@index([companyId], map: "idx_transport_vouchers_company_id")
   @@map("transport_vouchers")
 }
 
@@ -4251,6 +4253,7 @@ model EmployeeTraining {
 
   @@index([employeeId], map: "idx_employee_trainings_employee_id")
   @@index([trainingId], map: "idx_employee_trainings_training_id")
+  @@index([companyId], map: "idx_employee_trainings_company_id")
   @@map("employee_trainings")
 }
 
@@ -4271,6 +4274,7 @@ model SkillMatrix {
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([employeeId], map: "idx_skill_matrix_employee_id")
+  @@index([companyId], map: "idx_skill_matrix_company_id")
   @@map("skill_matrix")
 }
 
