@@ -254,6 +254,7 @@ export default function LandingPage() {
                   <Input
                     type="email"
                     id="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -272,6 +273,7 @@ export default function LandingPage() {
                   <Input
                     type="password"
                     id="password"
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -344,9 +346,9 @@ export default function LandingPage() {
           {/* Footer */}
           <p className="text-center text-sm text-theme-muted mt-6">
             Ao entrar, você concorda com nossos{" "}
-            <Link href="/docs/terms" className="text-[var(--frm-light)] hover:underline">Termos de Uso</Link>
+            <span className="text-[var(--frm-light)]">Termos de Uso</span>
             {" "}e{" "}
-            <Link href="/docs/privacy" className="text-[var(--frm-light)] hover:underline">Política de Privacidade</Link>
+            <span className="text-[var(--frm-light)]">Política de Privacidade</span>
           </p>
         </div>
       </div>
