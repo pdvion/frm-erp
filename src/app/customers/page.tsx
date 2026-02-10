@@ -23,9 +23,9 @@ import {
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800" },
+  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
   INACTIVE: { label: "Inativo", color: "bg-theme-tertiary text-theme-secondary" },
-  BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800" },
+  BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function CustomersPage() {

@@ -27,32 +27,32 @@ import {
 } from "lucide-react";
 
 const inspectionStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Andamento", color: "bg-blue-100 text-blue-800", icon: <AlertCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800", icon: <AlertTriangle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Andamento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <AlertCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
 const inspectionTypeConfig: Record<string, { label: string; color: string }> = {
-  RECEIVING: { label: "Recebimento", color: "bg-blue-100 text-blue-800" },
-  IN_PROCESS: { label: "Em Processo", color: "bg-purple-100 text-purple-800" },
-  FINAL: { label: "Final", color: "bg-green-100 text-green-800" },
+  RECEIVING: { label: "Recebimento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  IN_PROCESS: { label: "Em Processo", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  FINAL: { label: "Final", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
   AUDIT: { label: "Auditoria", color: "bg-theme-tertiary text-theme" },
 };
 
 const ncSeverityConfig: Record<string, { label: string; color: string }> = {
-  MINOR: { label: "Menor", color: "bg-yellow-100 text-yellow-800" },
-  MAJOR: { label: "Maior", color: "bg-orange-100 text-orange-800" },
-  CRITICAL: { label: "Crítica", color: "bg-red-100 text-red-800" },
+  MINOR: { label: "Menor", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  MAJOR: { label: "Maior", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
+  CRITICAL: { label: "Crítica", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 const ncStatusConfig: Record<string, { label: string; color: string }> = {
-  OPEN: { label: "Aberta", color: "bg-red-100 text-red-800" },
-  ANALYZING: { label: "Em Análise", color: "bg-yellow-100 text-yellow-800" },
-  ACTION: { label: "Ação em Andamento", color: "bg-blue-100 text-blue-800" },
-  VERIFICATION: { label: "Verificação", color: "bg-purple-100 text-purple-800" },
-  CLOSED: { label: "Fechada", color: "bg-green-100 text-green-800" },
+  OPEN: { label: "Aberta", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  ANALYZING: { label: "Em Análise", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  ACTION: { label: "Ação em Andamento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  VERIFICATION: { label: "Verificação", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  CLOSED: { label: "Fechada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
 };
 
 export default function QualityPage() {

@@ -27,8 +27,8 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800", icon: <Calculator className="w-4 h-4" /> },
-  CLOSED: { label: "Fechado", color: "bg-green-100 text-green-800", icon: <Lock className="w-4 h-4" /> },
+  CALCULATED: { label: "Calculado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Calculator className="w-4 h-4" /> },
+  CLOSED: { label: "Fechado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <Lock className="w-4 h-4" /> },
 };
 
 export default function ProductionCostsPage() {

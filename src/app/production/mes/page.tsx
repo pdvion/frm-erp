@@ -26,11 +26,11 @@ import {
 } from "lucide-react";
 
 const stopTypeConfig: Record<string, { label: string; color: string }> = {
-  PLANNED: { label: "Planejada", color: "bg-blue-100 text-blue-800" },
-  UNPLANNED: { label: "Não Planejada", color: "bg-red-100 text-red-800" },
-  SETUP: { label: "Setup", color: "bg-yellow-100 text-yellow-800" },
-  MAINTENANCE: { label: "Manutenção", color: "bg-orange-100 text-orange-800" },
-  QUALITY: { label: "Qualidade", color: "bg-purple-100 text-purple-800" },
+  PLANNED: { label: "Planejada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  UNPLANNED: { label: "Não Planejada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  SETUP: { label: "Setup", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  MAINTENANCE: { label: "Manutenção", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
+  QUALITY: { label: "Qualidade", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
   MATERIAL: { label: "Material", color: "bg-theme-tertiary text-theme" },
   OTHER: { label: "Outro", color: "bg-theme-tertiary text-theme" },
 };

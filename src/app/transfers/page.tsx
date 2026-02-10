@@ -26,11 +26,11 @@ import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-blue-100 text-blue-800", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_TRANSIT: { label: "Em Trânsito", color: "bg-purple-100 text-purple-800", icon: <Truck className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_TRANSIT: { label: "Em Trânsito", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Truck className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function TransfersPage() {

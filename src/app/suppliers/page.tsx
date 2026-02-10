@@ -24,6 +24,7 @@ import { Select } from "@/components/ui/Select";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { ExportButtons } from "@/components/ui/export-buttons";
 import { CompanyBadge } from "@/components/ui/CompanyBadge";
+import { Badge } from "@/components/ui/Badge";
 import { useMultiTenant } from "@/hooks/useMultiTenant";
 
 interface Supplier {
@@ -253,15 +254,9 @@ export default function SuppliersPage() {
                           </div>
                         </td>
                         <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            supplier.status === "ACTIVE" 
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
-                              : supplier.status === "INACTIVE"
-                                ? "bg-theme-secondary text-theme-secondary"
-                                : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400"
-                          }`}>
+                          <Badge variant={supplier.status === "ACTIVE" ? "success" : supplier.status === "INACTIVE" ? "default" : "error"}>
                             {supplier.status === "ACTIVE" ? "Ativo" : supplier.status === "INACTIVE" ? "Inativo" : "Bloqueado"}
-                          </span>
+                          </Badge>
                           {supplier.isShared && (
                             <span className="ml-1 inline-flex items-center gap-0.5 text-xs text-blue-400" title="Compartilhado">
                               <Building2 className="w-3 h-3" />

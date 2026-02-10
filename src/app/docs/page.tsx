@@ -86,7 +86,7 @@ export default function DocsPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   !selectedCategory
-                    ? "bg-blue-100 text-blue-700"
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                     : "text-theme-secondary hover:bg-theme-hover"
                 }`}
               >
@@ -98,7 +98,7 @@ export default function DocsPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     selectedCategory === cat
-                      ? "bg-blue-100 text-blue-700"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                       : "text-theme-secondary hover:bg-theme-hover"
                   }`}
                 >

@@ -18,12 +18,12 @@ import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
 import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const movementTypeConfig = {
-  ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800", icon: ArrowDownCircle },
-  EXIT: { label: "Saída", color: "bg-red-100 text-red-800", icon: ArrowUpCircle },
-  TRANSFER: { label: "Transferência", color: "bg-blue-100 text-blue-800", icon: RefreshCw },
-  ADJUSTMENT: { label: "Ajuste", color: "bg-yellow-100 text-yellow-800", icon: RefreshCw },
-  RETURN: { label: "Devolução", color: "bg-purple-100 text-purple-800", icon: ArrowDownCircle },
-  PRODUCTION: { label: "Produção", color: "bg-orange-100 text-orange-800", icon: RefreshCw },
+  ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: ArrowDownCircle },
+  EXIT: { label: "Saída", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: ArrowUpCircle },
+  TRANSFER: { label: "Transferência", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: RefreshCw },
+  ADJUSTMENT: { label: "Ajuste", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: RefreshCw },
+  RETURN: { label: "Devolução", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: ArrowDownCircle },
+  PRODUCTION: { label: "Produção", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: RefreshCw },
 };
 
 export default function MovementsHistoryPage() {

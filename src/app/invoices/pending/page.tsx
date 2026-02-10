@@ -35,20 +35,20 @@ import { Input } from "@/components/ui/Input";
 type SituacaoNfe = "PENDENTE" | "PROCESSANDO" | "IMPORTADA" | "IGNORADA" | "ERRO";
 
 const situacaoConfig: Record<SituacaoNfe, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDENTE: { label: "Pendente", color: "bg-amber-100 text-amber-800", icon: <Clock className="w-3 h-3" /> },
-  PROCESSANDO: { label: "Processando", color: "bg-blue-100 text-blue-800", icon: <Loader2 className="w-3 h-3 animate-spin" /> },
-  IMPORTADA: { label: "Importada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-3 h-3" /> },
+  PENDENTE: { label: "Pendente", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400", icon: <Clock className="w-3 h-3" /> },
+  PROCESSANDO: { label: "Processando", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Loader2 className="w-3 h-3 animate-spin" /> },
+  IMPORTADA: { label: "Importada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-3 h-3" /> },
   IGNORADA: { label: "Ignorada", color: "bg-theme-tertiary text-theme", icon: <Ban className="w-3 h-3" /> },
-  ERRO: { label: "Erro", color: "bg-red-100 text-red-800", icon: <AlertCircle className="w-3 h-3" /> },
+  ERRO: { label: "Erro", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <AlertCircle className="w-3 h-3" /> },
 };
 
 type ManifestacaoTipo = "CIENCIA" | "CONFIRMACAO" | "DESCONHECIMENTO" | "NAO_REALIZADA";
 
 const manifestacaoConfig: Record<ManifestacaoTipo, { label: string; color: string; icon: React.ReactNode; description: string }> = {
-  CIENCIA: { label: "Ciência", color: "bg-blue-100 text-blue-800", icon: <Eye className="w-3 h-3" />, description: "Ciência da operação - Você tomou conhecimento da NFe" },
-  CONFIRMACAO: { label: "Confirmação", color: "bg-green-100 text-green-800", icon: <CheckCheck className="w-3 h-3" />, description: "Confirmação da operação - Você confirma o recebimento" },
-  DESCONHECIMENTO: { label: "Desconhecimento", color: "bg-amber-100 text-amber-800", icon: <HelpCircle className="w-3 h-3" />, description: "Desconhecimento da operação - Você não reconhece a NFe" },
-  NAO_REALIZADA: { label: "Não Realizada", color: "bg-red-100 text-red-800", icon: <XOctagon className="w-3 h-3" />, description: "Operação não realizada - A operação não foi concluída" },
+  CIENCIA: { label: "Ciência", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Eye className="w-3 h-3" />, description: "Ciência da operação - Você tomou conhecimento da NFe" },
+  CONFIRMACAO: { label: "Confirmação", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCheck className="w-3 h-3" />, description: "Confirmação da operação - Você confirma o recebimento" },
+  DESCONHECIMENTO: { label: "Desconhecimento", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400", icon: <HelpCircle className="w-3 h-3" />, description: "Desconhecimento da operação - Você não reconhece a NFe" },
+  NAO_REALIZADA: { label: "Não Realizada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XOctagon className="w-3 h-3" />, description: "Operação não realizada - A operação não foi concluída" },
 };
 
 export default function PendingInvoicesPage() {

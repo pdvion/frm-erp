@@ -299,7 +299,7 @@ export default function WorkCentersPage() {
                         onClick={() => handleToggleActive(wc.id, wc.isActive)}
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
                           wc.isActive
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-theme-tertiary text-theme-secondary"
                         }`}
                       >

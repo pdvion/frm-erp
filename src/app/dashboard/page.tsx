@@ -257,9 +257,9 @@ export default function DashboardPage() {
                             <span className="text-sm text-theme">{task.title}</span>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded ${
-                            task.status === "COMPLETED" ? "bg-green-100 text-green-700" :
-                              task.status === "IN_PROGRESS" ? "bg-purple-100 text-purple-700" :
-                                "bg-yellow-100 text-yellow-700"
+                            task.status === "COMPLETED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                              task.status === "IN_PROGRESS" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
+                                "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                           }`}>{task.status}</span>
                         </Link>
                       ))}
@@ -298,9 +298,9 @@ export default function DashboardPage() {
                             <span className="text-sm text-theme">#{req.code} - {req.type}</span>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded ${
-                            req.status === "COMPLETED" ? "bg-green-100 text-green-700" :
-                              req.status === "APPROVED" ? "bg-blue-100 text-blue-700" :
-                                "bg-yellow-100 text-yellow-700"
+                            req.status === "COMPLETED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                              req.status === "APPROVED" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+                                "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                           }`}>{req.status}</span>
                         </Link>
                       ))}

@@ -22,9 +22,9 @@ import {
 function UrgencyBadge({ urgency }: { urgency: string }) {
   const config: Record<string, { color: string; label: string }> = {
     LOW: { color: "bg-theme-tertiary text-theme-secondary", label: "Baixa" },
-    NORMAL: { color: "bg-blue-100 text-blue-700", label: "Normal" },
-    HIGH: { color: "bg-orange-100 text-orange-700", label: "Alta" },
-    URGENT: { color: "bg-red-100 text-red-700", label: "Urgente" },
+    NORMAL: { color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
+    HIGH: { color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
+    URGENT: { color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
   };
 
   const { color, label } = config[urgency] || config.NORMAL;

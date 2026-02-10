@@ -182,7 +182,7 @@ interface ModalFooterProps {
 export function ModalFooter({ children, className = "" }: ModalFooterProps) {
   return (
     <div
-      className={`flex items-center justify-end gap-3 px-6 py-4 border-t border-theme bg-theme-tertiary ${className}`}
+      className={`flex items-center justify-end gap-3 px-6 py-4 border-t border-theme bg-theme-tertiary -mx-6 -mb-4 mt-4 sticky bottom-0 ${className}`}
     >
       {children}
     </div>

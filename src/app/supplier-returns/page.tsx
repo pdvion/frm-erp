@@ -27,11 +27,11 @@ import type { SupplierReturnStatus } from "@prisma/client";
 
 const statusConfig: Record<SupplierReturnStatus, { label: string; color: string }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800" },
-  APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800" },
-  INVOICED: { label: "Faturada", color: "bg-purple-100 text-purple-800" },
-  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800" },
-  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-800" },
+  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  INVOICED: { label: "Faturada", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function SupplierReturnsPage() {

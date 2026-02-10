@@ -27,14 +27,14 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 
 const actionConfig = {
-  CREATE: { label: "Criação", color: "bg-green-100 text-green-800", icon: Plus },
-  UPDATE: { label: "Atualização", color: "bg-blue-100 text-blue-800", icon: Pencil },
-  DELETE: { label: "Exclusão", color: "bg-red-100 text-red-800", icon: Trash2 },
+  CREATE: { label: "Criação", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: Plus },
+  UPDATE: { label: "Atualização", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Pencil },
+  DELETE: { label: "Exclusão", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: Trash2 },
   VIEW: { label: "Visualização", color: "bg-theme-tertiary text-theme", icon: Eye },
-  LOGIN: { label: "Login", color: "bg-purple-100 text-purple-800", icon: LogIn },
-  LOGOUT: { label: "Logout", color: "bg-purple-100 text-purple-800", icon: LogOut },
-  EXPORT: { label: "Exportação", color: "bg-orange-100 text-orange-800", icon: Download },
-  IMPORT: { label: "Importação", color: "bg-orange-100 text-orange-800", icon: Upload },
+  LOGIN: { label: "Login", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: LogIn },
+  LOGOUT: { label: "Logout", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: LogOut },
+  EXPORT: { label: "Exportação", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: Download },
+  IMPORT: { label: "Importação", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: Upload },
 };
 
 const entityTypeLabels: Record<string, string> = {

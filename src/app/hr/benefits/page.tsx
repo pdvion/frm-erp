@@ -24,22 +24,22 @@ import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
 
 const categoryConfig: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  TRANSPORT: { label: "Vale Transporte", icon: <Bus className="w-4 h-4" />, color: "bg-blue-100 text-blue-800" },
-  MEAL: { label: "Vale Refeição", icon: <Utensils className="w-4 h-4" />, color: "bg-orange-100 text-orange-800" },
-  FOOD: { label: "Vale Alimentação", icon: <Utensils className="w-4 h-4" />, color: "bg-green-100 text-green-800" },
-  HEALTH: { label: "Plano de Saúde", icon: <Heart className="w-4 h-4" />, color: "bg-red-100 text-red-800" },
-  DENTAL: { label: "Plano Odontológico", icon: <Heart className="w-4 h-4" />, color: "bg-pink-100 text-pink-800" },
-  LIFE_INSURANCE: { label: "Seguro de Vida", icon: <Heart className="w-4 h-4" />, color: "bg-purple-100 text-purple-800" },
-  PENSION: { label: "Previdência", icon: <Award className="w-4 h-4" />, color: "bg-indigo-100 text-indigo-800" },
-  EDUCATION: { label: "Auxílio Educação", icon: <GraduationCap className="w-4 h-4" />, color: "bg-cyan-100 text-cyan-800" },
-  CHILDCARE: { label: "Auxílio Creche", icon: <Users className="w-4 h-4" />, color: "bg-yellow-100 text-yellow-800" },
+  TRANSPORT: { label: "Vale Transporte", icon: <Bus className="w-4 h-4" />, color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
+  MEAL: { label: "Vale Refeição", icon: <Utensils className="w-4 h-4" />, color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
+  FOOD: { label: "Vale Alimentação", icon: <Utensils className="w-4 h-4" />, color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  HEALTH: { label: "Plano de Saúde", icon: <Heart className="w-4 h-4" />, color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+  DENTAL: { label: "Plano Odontológico", icon: <Heart className="w-4 h-4" />, color: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400" },
+  LIFE_INSURANCE: { label: "Seguro de Vida", icon: <Heart className="w-4 h-4" />, color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
+  PENSION: { label: "Previdência", icon: <Award className="w-4 h-4" />, color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400" },
+  EDUCATION: { label: "Auxílio Educação", icon: <GraduationCap className="w-4 h-4" />, color: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400" },
+  CHILDCARE: { label: "Auxílio Creche", icon: <Users className="w-4 h-4" />, color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
   OTHER: { label: "Outros", icon: <Gift className="w-4 h-4" />, color: "bg-theme-tertiary text-theme" },
 };
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800" },
-  SUSPENDED: { label: "Suspenso", color: "bg-yellow-100 text-yellow-800" },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800" },
+  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+  SUSPENDED: { label: "Suspenso", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function BenefitsPage() {
