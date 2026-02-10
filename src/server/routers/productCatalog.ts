@@ -2,12 +2,14 @@ import { TRPCError } from "@trpc/server";
 /**
  * Router tRPC para Catálogo de Produtos
  * VIO-885: Modelo de Dados do Catálogo
+ * VIO-1034: Taxonomia 4 níveis + Templates de Atributos Técnicos
  */
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { type Prisma, ProductStatus } from "@prisma/client";
 import { syncEntityEmbedding } from "../services/embeddingSync";
+import { validateProductSpecs } from "@/lib/catalog/spec-validator";
 
 // Helper para gerar slug
 function generateSlug(name: string): string {
@@ -873,6 +875,120 @@ export const productCatalogRouter = createTRPCRouter({
       syncPercentage: totalMaterials > 0 ? Math.round((materialsWithProduct / totalMaterials) * 100) : 0,
     };
   }),
+
+  // ==========================================
+  // TAXONOMIA & ATRIBUTOS (VIO-1034)
+  // ==========================================
+
+  listAttributeDefinitions: tenantProcedure
+    .input(z.object({ includeInactive: z.boolean().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.attributeDefinition.findMany({
+        where: {
+          OR: [{ isShared: true }, ...(ctx.companyId ? [{ companyId: ctx.companyId }] : [])],
+          ...(input?.includeInactive ? {} : { isActive: true }),
+        },
+        orderBy: { name: "asc" },
+      });
+    }),
+
+  getCategoryAttributes: tenantProcedure
+    .input(z.object({ categoryId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.categoryAttribute.findMany({
+        where: {
+          categoryId: input.categoryId,
+          OR: [{ isShared: true }, ...(ctx.companyId ? [{ companyId: ctx.companyId }] : [])],
+        },
+        include: { attribute: true },
+        orderBy: { displayOrder: "asc" },
+      });
+    }),
+
+  createCategoryAttribute: tenantProcedure
+    .input(z.object({
+      categoryId: z.string().uuid(),
+      attributeId: z.string().uuid(),
+      isRequired: z.boolean().optional(),
+      displayOrder: z.number().int().optional(),
+      defaultValue: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // §0.10: Reject if shared binding already exists for this pair
+      const existingShared = await ctx.prisma.categoryAttribute.findFirst({
+        where: { categoryId: input.categoryId, attributeId: input.attributeId, companyId: null },
+      });
+
+      if (existingShared) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Já existe um binding compartilhado para este par categoria/atributo",
+        });
+      }
+
+      return ctx.prisma.categoryAttribute.create({
+        data: {
+          categoryId: input.categoryId,
+          attributeId: input.attributeId,
+          isRequired: input.isRequired ?? false,
+          displayOrder: input.displayOrder ?? 0,
+          defaultValue: input.defaultValue,
+          companyId: ctx.companyId,
+          isShared: false,
+        },
+        include: { attribute: true },
+      });
+    }),
+
+  deleteCategoryAttribute: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const ca = await ctx.prisma.categoryAttribute.findUnique({ where: { id: input.id } });
+      if (!ca) throw new TRPCError({ code: "NOT_FOUND" });
+      if (ca.isShared && ca.companyId === null) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Não é possível remover bindings compartilhados" });
+      }
+      return ctx.prisma.categoryAttribute.delete({ where: { id: input.id } });
+    }),
+
+  validateSpecs: tenantProcedure
+    .input(z.object({
+      categoryId: z.string().uuid(),
+      specifications: z.record(z.string(), z.unknown()),
+    }))
+    .query(async ({ ctx, input }) => {
+      const { collectCategoryAttributes } = await import("@/lib/catalog/spec-validator");
+      const attributes = await collectCategoryAttributes(ctx.prisma, input.categoryId, ctx.companyId);
+      return validateProductSpecs(input.specifications, attributes);
+    }),
+
+  seedTaxonomy: tenantProcedure
+    .mutation(async ({ ctx }) => {
+      const hasPermission = ctx.tenant.permissions.get("SETTINGS")?.level === "FULL";
+      if (!hasPermission) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Sem permissão para executar seed" });
+      }
+      const { seedCatalogTaxonomy } = await import("@/lib/catalog/seed-taxonomy");
+      return seedCatalogTaxonomy(ctx.prisma);
+    }),
+
+  // ==========================================
+  // RECONCILIAÇÃO MATERIAL → PRODUCT (VIO-1035)
+  // ==========================================
+
+  reconcileMaterials: tenantProcedure
+    .input(z.object({
+      dryRun: z.boolean().optional().default(true),
+      limit: z.number().int().min(1).max(1000).optional(),
+    }).optional())
+    .mutation(async ({ ctx, input }) => {
+      const { reconcileMaterials } = await import("@/lib/catalog/reconcile-materials");
+      return reconcileMaterials(ctx.prisma, {
+        companyId: ctx.companyId,
+        dryRun: input?.dryRun ?? true,
+        limit: input?.limit,
+      });
+    }),
 
   // Análise avançada de materiais para sincronização com sugestão de categoria
   analyzeMaterialsForSync: tenantProcedure
