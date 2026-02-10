@@ -383,7 +383,7 @@ export const salesQuotesRouter = createTRPCRouter({
       const nextOrderCode = (lastOrder?.code ?? 0) + 1;
 
       // Transação para garantir atomicidade (order + quote update + lead update)
-      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+      return ctx.prisma.$transaction(async (tx) => {
         const order = await tx.salesOrder.create({
           data: {
             code: nextOrderCode,

@@ -303,7 +303,7 @@ export const leadsRouter = createTRPCRouter({
       const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
 
       // Transação para garantir atomicidade (customer + lead update)
-      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+      return ctx.prisma.$transaction(async (tx) => {
         const customer = await tx.customer.create({
           data: {
             code: nextCode,
