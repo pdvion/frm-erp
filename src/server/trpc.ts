@@ -221,16 +221,22 @@ export const createProtectedProcedure = (module: SystemModule, requiredLevel: Pe
   });
 };
 
-// Helper para criar filtro de tenant
-// Para models com companyId NOT NULL, usar tenantFilter(companyId) → { companyId }
-// Para models com companyId nullable + isShared, usar tenantFilterShared(companyId)
+/**
+ * @deprecated Redundante com RLS Extension (VIO-1066). O `tenantProcedure` agora injeta
+ * companyId automaticamente via `createTenantPrisma`. Use `ctx.prisma` diretamente.
+ * Será removido após migração completa dos routers (VIO-1072).
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function tenantFilter(companyId: string | null, _includeShared?: boolean) {
   if (!companyId) return {};
   return { companyId };
 }
 
-// Filtro para models com isShared (Category, ProductCategory, etc.)
+/**
+ * @deprecated Redundante com RLS Extension (VIO-1066). O `createTenantPrisma` já trata
+ * SHARED_MODELS automaticamente. Use `ctx.prisma` diretamente.
+ * Será removido após migração completa dos routers (VIO-1072).
+ */
 export function tenantFilterShared(companyId: string | null) {
   if (!companyId) return {};
   return {
