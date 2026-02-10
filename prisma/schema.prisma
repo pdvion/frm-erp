@@ -8,6 +8,7 @@ datasource db {
 
 model Company {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                 Int                     @unique
   name                 String
   tradeName            String?
@@ -331,6 +332,7 @@ model Category {
 
 model Material {
   id                          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                        Int                       @unique
   internalCode                String?
   description                 String
@@ -431,6 +433,7 @@ model Material {
 
 model Supplier {
   id                      String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                    Int                          @unique
   companyName             String
   tradeName               String?
@@ -523,6 +526,7 @@ model SupplierMaterial {
 
 model Inventory {
   id                       String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   materialId               String              @db.Uuid
   companyId                String              @db.Uuid
   inventoryType            InventoryType       @default(RAW_MATERIAL)
@@ -687,6 +691,7 @@ model QuoteItem {
 
 model PurchaseOrder {
   id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                  Int                 @unique
   supplierId            String              @db.Uuid
   quoteId               String?             @db.Uuid
@@ -793,6 +798,7 @@ model AuditLog {
 
 model ReceivedInvoice {
   id                          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   accessKey                   String                @unique @db.VarChar(44)
   invoiceNumber               Int
   series                      Int                   @default(1)
@@ -892,6 +898,7 @@ model ReceivedInvoiceItem {
 
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                 Int
   companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
@@ -1046,6 +1053,7 @@ model MaterialRequisitionItem {
 
 model ProductionOrder {
   id                      String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                    Int
   companyId               String                     @db.Uuid
   productId               String                     @db.Uuid
@@ -1145,6 +1153,7 @@ model ProductionOrderOperation {
 
 model CostCenter {
   id                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code               String
   name               String
   description        String?
@@ -1173,6 +1182,7 @@ model CostCenter {
 
 model BankAccount {
   id                                                                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                                                                   String
   name                                                                   String
   bankCode                                                               String?
@@ -1279,6 +1289,7 @@ model PixTransaction {
 
 model Customer {
   id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                    String
   companyId               String               @db.Uuid
   type                    String               @default("COMPANY")
@@ -1341,6 +1352,7 @@ model Customer {
 
 model AccountsReceivable {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code              Int
   companyId         String              @db.Uuid
   customerId        String              @db.Uuid
@@ -1592,6 +1604,7 @@ model MrpSuggestion {
 
 model WorkCenter {
   id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code             String
   name             String
   description      String?
@@ -1753,6 +1766,7 @@ model LeadActivity {
 
 model SalesQuote {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -1820,6 +1834,7 @@ model SalesQuoteItem {
 
 model SalesOrder {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -1891,6 +1906,7 @@ model SalesOrderItem {
 
 model StockLocation {
   id                  String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                String
   name                String
   description         String?
@@ -2078,6 +2094,7 @@ model InventoryCount {
 
 model Department {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code           String
   name           String
   description    String?
@@ -2108,6 +2125,7 @@ model Department {
 
 model JobPosition {
   id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code         String
   name         String
   description  String?
@@ -2132,6 +2150,7 @@ model JobPosition {
 
 model Employee {
   id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                Int
   companyId           String             @db.Uuid
   userId              String?            @db.Uuid
@@ -2266,6 +2285,7 @@ model TimesheetDay {
 
 model WorkSchedule {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   companyId        String             @db.Uuid
   name             String
   code             String?
@@ -2364,6 +2384,7 @@ model TimeClockAdjustment {
 
 model Holiday {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   companyId  String?  @db.Uuid
   date       DateTime @db.Date
   name       String
@@ -2380,6 +2401,7 @@ model Holiday {
 
 model Payroll {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code            Int
   companyId       String        @db.Uuid
   referenceMonth  Int
@@ -2938,6 +2960,7 @@ model TaskAttachment {
 
 model IssuedInvoice {
   id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code               Int
   invoiceNumber      String               @db.VarChar(20)
   series             String               @default("1") @db.VarChar(5)
@@ -3901,6 +3924,7 @@ model SavedReport {
 
 model CollectionRule {
   id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   companyId   String               @map("company_id") @db.Uuid
   name        String               @db.VarChar(100)
   description String?
@@ -4213,6 +4237,7 @@ model MaterialStandardCost {
 
 model BenefitType {
   id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                    String
   name                    String
   description             String?
@@ -4283,6 +4308,7 @@ model TransportVoucher {
 
 model Training {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code              String
   name              String
   description       String?
@@ -4797,6 +4823,7 @@ model ProductCategory {
 
 model Product {
   id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code             String              @unique
   materialId       String?             @map("material_id") @db.Uuid
   name             String
