@@ -426,6 +426,7 @@ model Material {
   @@index([categoryId])
   @@map("materials")
   @@index([companyId])
+  @@index([companyId, code])
 }
 
 model Supplier {
@@ -497,6 +498,7 @@ model Supplier {
   @@index([companyId], map: "idx_suppliers_companyId")
   @@map("suppliers")
   @@index([companyId])
+  @@index([companyId, code])
 }
 
 model SupplierMaterial {
@@ -556,6 +558,7 @@ model Inventory {
   @@index([id, version], map: "idx_inventory_version")
   @@map("inventory")
   @@index([companyId])
+  @@index([companyId, materialId])
 }
 
 model InventoryMovement {
@@ -850,6 +853,7 @@ model ReceivedInvoice {
   @@index([purchaseOrderId])
   @@map("received_invoices")
   @@index([companyId])
+  @@index([companyId, status])
 }
 
 model ReceivedInvoiceItem {
@@ -963,6 +967,8 @@ model AccountsPayable {
   @@index([supplierId], map: "idx_accounts_payable_supplierId")
   @@map("accounts_payable")
   @@index([companyId])
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
 }
 
 model PayablePayment {
@@ -1091,6 +1097,7 @@ model ProductionOrder {
   @@index([productId], map: "idx_production_orders_product")
   @@map("production_orders")
   @@index([companyId])
+  @@index([companyId, status])
 }
 
 model ProductionOrderMaterial {
@@ -1329,6 +1336,7 @@ model Customer {
   @@index([companyId], map: "idx_customers_companyId")
   @@map("customers")
   @@index([companyId])
+  @@index([companyId, code])
 }
 
 model AccountsReceivable {
@@ -1381,6 +1389,8 @@ model AccountsReceivable {
   @@index([issuedInvoiceId], map: "idx_accounts_receivable_issuedinvoice")
   @@map("accounts_receivable")
   @@index([companyId])
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
 }
 
 model ReceivablePayment {
@@ -1784,6 +1794,7 @@ model SalesQuote {
   @@index([convertedToOrderId], map: "idx_sales_quotes_converted_order")
   @@index([leadId], map: "idx_sales_quotes_lead")
   @@map("sales_quotes")
+  @@index([companyId, status])
 }
 
 model SalesQuoteItem {
@@ -1850,6 +1861,7 @@ model SalesOrder {
   @@index([status])
   @@index([quoteId], map: "idx_sales_orders_quote")
   @@map("sales_orders")
+  @@index([companyId, status])
 }
 
 model SalesOrderItem {
@@ -2196,6 +2208,7 @@ model Employee {
   @@index([userId], map: "idx_employees_user")
   @@map("employees")
   @@index([companyId])
+  @@index([companyId, code])
 }
 
 model TimeClockEntry {
@@ -2970,6 +2983,7 @@ model IssuedInvoice {
   @@index([customerId], map: "idx_issued_invoices_customerId")
   @@map("issued_invoices")
   @@index([companyId])
+  @@index([companyId, status])
 }
 
 model IssuedInvoiceItem {
