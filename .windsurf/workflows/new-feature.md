@@ -19,12 +19,25 @@ Se a feature precisa de novas tabelas ou campos:
 **Padrões obrigatórios:**
 ```prisma
 model NovaEntidade {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId String?  @map("company_id") @db.Uuid  // Multi-tenant
-  isShared  Boolean  @default(false) @map("is_shared")  // Compartilhamento
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId String    @map("company_id") @db.Uuid  // NOT NULL (padrão v1)
+  isShared  Boolean   @default(false) @map("is_shared")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
   
+  // Soft delete (opcional, recomendado para entidades críticas)
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by") @db.Uuid
+  
+  // Legacy ID (se migração Delphi)
+  legacyId  Int?      @map("legacy_id")
+  
+  // Campos monetários — SEMPRE Decimal, NUNCA Float
+  // totalValue Decimal @map("total_value") @db.Decimal(15, 2)
+  
+  @@index([companyId])
+  @@unique([companyId, legacyId])  // Se tiver legacyId
   @@map("nome_tabela_snake_case")
 }
 ```

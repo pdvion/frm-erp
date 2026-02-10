@@ -69,18 +69,17 @@ export default function <Modulo>Page() {
       />
 
       {/* Filtros */}
-      <div className="flex items-center gap-4">
+      <div className="bg-theme-card border border-theme rounded-lg p-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted" size={18} />
+          <Input
             placeholder="Buscar..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
+            className="pl-10"
           />
         </div>
       </div>
@@ -95,24 +94,24 @@ export default function <Modulo>Page() {
           Nenhum registro encontrado
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-theme-card rounded-lg border border-theme overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-750">
+            <thead className="bg-theme-table-header border-b border-theme">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Nome</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">Ações</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Nome</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-theme-muted uppercase">Status</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-theme-muted uppercase">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-theme-table">
               {items.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                <tr key={item.id} className="hover:bg-theme-table-hover transition-colors">
                   <td className="px-4 py-3">
                     <Link href={`/<modulo>/${item.id}`} className="text-blue-600 hover:underline">
                       {item.name}
                     </Link>
                   </td>
-                  <td className="px-4 py-3">{item.status}</td>
+                  <td className="px-4 py-3"><Badge variant={statusVariant[item.status]}>{item.status}</Badge></td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link href={`/<modulo>/${item.id}/edit`}>
@@ -206,16 +205,14 @@ export default function New<Modulo>Page() {
       />
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+        <div className="bg-theme-card rounded-lg border border-theme p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-theme mb-1">
               Nome
             </label>
-            <input
-              type="text"
+            <Input
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
               required
             />
           </div>
@@ -254,5 +251,6 @@ export default function New<Modulo>Page() {
 - [ ] Registrar rotas em `src/lib/routes/registry.ts`
 - [ ] Usar componentes do Design System (Button, PageHeader, etc)
 - [ ] Componentes inexistentes no Design System devem ser criados no Design System e depois usados na criação das páginas
-- [ ] Incluir classes dark mode
+- [ ] Usar theme tokens (`bg-theme-card`, `text-theme`, `border-theme`) — NUNCA `bg-white dark:bg-gray-800`
+- [ ] Usar `<Badge>` / `<StatusBadge>` para status — NUNCA `<span>` com classes
 - [ ] Executar `pnpm type-check && pnpm lint`

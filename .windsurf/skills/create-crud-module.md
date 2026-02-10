@@ -43,7 +43,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
-import { CompanySwitcher } from "@/components/CompanySwitcher";
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
+// ⚠️ NUNCA importar CompanySwitcher nas páginas — já está no AppLayout
 
 // Ícones do Lucide
 import { ChevronLeft, Save, X, Loader2, Plus, Edit, Trash2, Eye } from "lucide-react";

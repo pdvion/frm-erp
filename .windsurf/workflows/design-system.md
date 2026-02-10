@@ -61,7 +61,8 @@ ls src/components/ui/
 | Componente | Uso |
 |------------|-----|
 | `Alert` | Alertas e mensagens |
-| `Badge` | Badges e tags |
+| `Badge` | Badges e tags (13 variantes + outline) |
+| `StatusBadge` | Badge semântico por status string (ACTIVE→success, etc.) |
 | `EmptyState` | Estado vazio |
 | `Skeleton` | Loading skeleton |
 | `Toaster` | Notificações toast |
@@ -110,24 +111,42 @@ import { Alert } from "@/components/ui/Alert";
 <Alert variant="error">{error.message}</Alert>
 ```
 
-### Badges de Status → Componente `Badge`
+### Badges de Status → Componente `Badge` ou `StatusBadge`
 ```tsx
-import { Badge } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
-// Variantes disponíveis: default | success | warning | error | info
+// Variantes disponíveis (13 + outline):
+// default | success | warning | error | info | purple | orange | cyan | pink
+// | indigo | emerald | amber | rose | outline
 <Badge variant="success">Ativo</Badge>
 <Badge variant="warning">Pendente</Badge>
 <Badge variant="info">Aprovado</Badge>
 <Badge variant="error">Cancelado</Badge>
-<Badge variant="default">Inativo</Badge>
+<Badge variant="indigo">Em Análise</Badge>
+<Badge variant="emerald">Concluído</Badge>
+<Badge variant="amber">Parcial</Badge>
+<Badge variant="outline">Rascunho</Badge>
 
-// Para statusConfig, mapear status → variant do Badge:
+// StatusBadge — mapeia status string automaticamente:
+<StatusBadge status="ACTIVE" />   // → success "Ativo"
+<StatusBadge status="PENDING" />  // → warning "Pendente"
+<StatusBadge status="CANCELLED" /> // → default "Cancelado"
+
+// colorToVariant — converte classes Tailwind para BadgeVariant:
+import { colorToVariant } from "@/components/ui/Badge";
+const variant = colorToVariant("bg-green-100 text-green-800"); // → "success"
+
+// Para statusConfig manual, mapear status → variant do Badge:
 const statusVariant: Record<string, BadgeVariant> = {
   ACTIVE: "success",
   PENDING: "warning",
   APPROVED: "info",
-  CANCELLED: "error",
+  CANCELLED: "default",
   INACTIVE: "default",
+  IN_PROGRESS: "indigo",
+  COMPLETED: "emerald",
+  PARTIAL: "amber",
 };
 
 // Na renderização:

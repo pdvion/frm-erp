@@ -84,13 +84,27 @@ const count = result._count;  // pode ser objeto ou número
 const count = typeof result._count === 'number' ? result._count : result._count._all;
 ```
 
-### 5. _sum pode ser undefined
+### 5. _sum pode ser undefined (e retorna Decimal)
 ```typescript
 // ❌ ERRADO
 const total = result._sum.valorFinal;
 
+// ✅ CORRETO — converter Decimal para Number
+const total = Number(result._sum?.valorFinal ?? 0);
+```
+
+### 5b. Decimal → Number (OBRIGATÓRIO)
+```typescript
+// ❌ ERRADO — Prisma retorna Decimal (objeto), não number
+formatCurrency(invoice.totalValue)
+if (a.value > b.value) // comparação de strings!
+Number(x) ?? 0  // BUG: Number() nunca retorna null
+
 // ✅ CORRETO
-const total = result._sum?.valorFinal || 0;
+formatCurrency(Number(invoice.totalValue))
+if (Number(a.value) > Number(b.value))
+Number(x ?? 0)  // nullish coalescing ANTES do Number()
+Number(payment.value).toFixed(2)  // .toFixed() após Number()
 ```
 
 ### 6. Filtros com tenantFilter
@@ -167,6 +181,19 @@ const embedding = await prisma.embedding.findFirst({
   where: { entityType: "material", entityId: id },
   select: { id: true, content: true, metadata: true }, // sem campo embedding
 });
+```
+
+### 9b. catch(e: unknown) — OBRIGATÓRIO
+```typescript
+// ❌ ERRADO
+try { ... } catch (e) { console.log(e.message); }
+try { ... } catch (e: any) { ... }
+try { ... } catch (e) { /* silencioso */ }
+
+// ✅ CORRETO
+try { ... } catch (e: unknown) {
+  console.warn("Descrição do contexto:", e instanceof Error ? e.message : String(e));
+}
 ```
 
 ### 9. API keys de IA — usar helper centralizado

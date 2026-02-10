@@ -25,6 +25,11 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 
 ## Tratamento de Erros
 
+### catch(e: unknown) — OBRIGATÓRIO
+- [ ] SEMPRE usar `catch (e: unknown)` em vez de `catch (e)` ou `catch (e: any)`
+- [ ] Dentro do catch, usar `e instanceof Error ? e.message : String(e)`
+- [ ] NUNCA silenciar catches — usar `console.warn()` no mínimo
+
 ### Mutations tRPC
 - [ ] Sempre incluir `onError` em mutations
 - [ ] Mostrar toast/feedback ao usuário em caso de erro
@@ -82,18 +87,35 @@ Checklist de verificação para evitar problemas identificados pelo CodeRabbit e
 - [ ] SEMPRE filtrar por `companyId` em queries de dados
 - [ ] Usar `tenantProcedure` em vez de `publicProcedure`
 - [ ] Incluir `companyId` ao criar novos registros
+- [ ] `companyId` é NOT NULL (Schema v1) — não usar `String?`
+
+### IDOR Prevention (CRÍTICO)
+- [ ] Em updates/deletes, SEMPRE verificar `companyId` antes de operar
+- [ ] Usar `findFirst({ where: { id, companyId } })` antes de `update/delete`
+- [ ] NUNCA confiar apenas no `id` do input — validar ownership
 
 ### Dados Compartilhados
 - [ ] Usar `isShared: true` para dados visíveis a todas as empresas
 - [ ] Filtro deve incluir: `OR: [{ companyId }, { isShared: true }]`
+
+## Tipos Numéricos (Decimal)
+
+### Decimal → Number
+- [ ] Prisma retorna `Decimal` (objeto), não `number`
+- [ ] SEMPRE converter com `Number(value)` antes de operações matemáticas
+- [ ] `Number(x) ?? 0` é BUG — `Number()` nunca retorna null. Usar `Number(x ?? 0)`
+- [ ] `value.toFixed(2)` → `Number(value).toFixed(2)` para Decimals
+- [ ] Comparações: `Number(a) > Number(b)`, não `a > b` (string comparison)
 
 ## Design System / Cores
 
 ### Theme Tokens
 - [ ] Usar theme tokens (`bg-theme-card`, `text-theme`, `border-theme`) em vez de cores hardcoded
 - [ ] NUNCA usar cores dark-only sem par light (ex: `bg-green-900/50 text-green-400`)
-- [ ] Badges de status SEMPRE com pares: `bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400`
-- [ ] Mensagens de erro: `bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800`
+- [ ] Badges: usar `<Badge variant="...">` ou `<StatusBadge status="...">` do DS
+- [ ] NUNCA usar `<span className="bg-green-100 text-green-800...">` para status
+- [ ] 13 variantes de Badge: default, success, warning, error, info, purple, orange, cyan, pink, indigo, emerald, amber, rose + outline
+- [ ] Mensagens de erro: usar `<Alert variant="error">` do DS
 - [ ] Testar visual no tema claro E escuro
 - [ ] Usar `Button` com `variant` explícito (default é `primary` = fundo azul)
 - [ ] Para icon buttons em tabelas: usar `variant="ghost" size="icon"`
@@ -146,3 +168,6 @@ pnpm build
 ## Referências
 - Issues VIO-476 a VIO-493: Correções CodeRabbit PR #1
 - Issues VIO-538 a VIO-542: Correções CodeRabbit PR #2
+- Issues VIO-1039: Badge DS migration
+- Issues VIO-1046: Schema v1 Fase 3 (indexes, legacyId, softDelete)
+- Issues VIO-1051–1058: Security audit (IDOR, XSS, CSRF, catch typing)

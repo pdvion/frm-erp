@@ -59,7 +59,7 @@ O Windsurf faz review automático quando o PR é marcado como "ready for review"
 **Limites:** 50 arquivos/PR, 500 reviews/mês por organização
 
 ### Opção B: CodeRabbit (Backup)
-O CodeRabbit faz review automático em PRs para branches `main`, `develop`.
+O CodeRabbit faz review automático em PRs para branches `main`, `develop`, e branches de feature (`refactor/**`, `fix/**`, `feat/**`, `feature/**`).
 
 **Configuração:** `.coderabbit.yaml`
 

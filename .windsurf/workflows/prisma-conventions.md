@@ -12,11 +12,11 @@ description: Convenções obrigatórias para schema Prisma - nomenclatura e padr
 ```prisma
 model Example {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId       String?   @map("company_id") @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid  // NOT NULL (padrão após Schema v1)
   createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @default(now()) @map("updated_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
   processNumber   String    @map("process_number")
-  foreignValue    Decimal   @map("foreign_value") @db.Decimal(15, 2)
+  foreignValue    Decimal   @map("foreign_value") @db.Decimal(15, 2)  // Decimal para monetários
   
   // Relações também em camelCase
   importProcess   ImportProcess @relation(fields: [importProcessId], references: [id])
@@ -67,13 +67,66 @@ Se o comando acima retornar resultados, há campos que precisam ser corrigidos.
 ## Campos Padrão (Copiar/Colar)
 
 ```prisma
-// Campos de auditoria padrão
+// Campos obrigatórios
 id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-companyId String?   @map("company_id") @db.Uuid
+companyId String    @map("company_id") @db.Uuid  // NOT NULL (padrão v1)
 createdAt DateTime  @default(now()) @map("created_at")
 updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+
+// Campos opcionais comuns
 isShared  Boolean   @default(false) @map("is_shared")
 isActive  Boolean   @default(true) @map("is_active")
+
+// Soft delete (15 modelos prioritários já têm)
+deletedAt DateTime? @map("deleted_at")
+deletedBy String?   @map("deleted_by") @db.Uuid
+
+// Legacy ID (para migração Delphi — 27 modelos já têm)
+legacyId  Int?      @map("legacy_id")
+// ⚠️ Usar @@unique([companyId, legacyId]) em vez de @unique
+
+// Campos monetários — SEMPRE Decimal, NUNCA Float
+totalValue Decimal  @map("total_value") @db.Decimal(15, 2)
+unitCost   Decimal  @map("unit_cost") @db.Decimal(15, 4)
+```
+
+## ⚠️ Tipos Numéricos: Decimal vs Float
+
+```prisma
+// ❌ ERRADO — Float causa imprecisão em valores monetários
+totalValue Float @map("total_value")
+
+// ✅ CORRETO — Decimal com precisão explícita
+totalValue Decimal @map("total_value") @db.Decimal(15, 2)  // monetário
+quantity   Decimal @map("quantity") @db.Decimal(15, 4)     // quantidade
+weight     Decimal @map("weight") @db.Decimal(15, 6)       // medida
+```
+
+**No TypeScript**, converter Decimal para Number:
+```typescript
+// Prisma retorna Decimal (objeto), não number
+formatCurrency(Number(invoice.totalValue))  // ✅
+formatCurrency(invoice.totalValue)          // ❌ Type error
+```
+
+## Índices e Uniqueness
+
+```prisma
+// ✅ Índice de tenant — obrigatório em TODOS os modelos com companyId
+@@index([companyId])
+
+// ✅ Índice composto — para queries frequentes
+@@index([companyId, status])
+@@index([companyId, code])
+@@index([companyId, dueDate])
+
+// ✅ legacyId multi-tenant — unique POR empresa, não global
+legacyId  Int?  @map("legacy_id")
+@@unique([companyId, legacyId])  // ✅ CORRETO
+// legacyId Int? @unique           // ❌ ERRADO — conflito entre empresas
+
+// ⚠️ Se @@unique já inclui companyId, o @@index([companyId]) é redundante
+// O Prisma/Postgres usa o índice do unique para queries por companyId
 ```
 
 ## Relações
