@@ -24,34 +24,72 @@ import { Prisma, PrismaClient, AuditAction } from "@prisma/client";
  */
 
 // Modelos que devem ser auditados
+// Atualizado VIO-1071: 27 → 52 models (entidades críticas para rastreabilidade)
+// Exclui models de alto volume/baixo valor de auditoria (KpiValue, BudgetActual, etc.)
 const AUDITED_MODELS = new Set([
+  // --- Cadastros ---
   "Material",
   "Supplier",
   "Customer",
-  "AccountsPayable",
-  "AccountsReceivable",
-  "PurchaseOrder",
-  "SalesOrder",
-  "SalesQuote",
-  "ProductionOrder",
-  "Inventory",
-  "InventoryMovement",
-  "ReceivedInvoice",
-  "IssuedInvoice",
   "Employee",
-  "PayrollEntry",
-  "BankAccount",
-  "Budget",
-  "CostCenter",
-  "FinancialCategory",
-  "ApprovalLevel",
-  "User",
-  "Company",
   "Product",
   "ProductCategory",
+  "User",
+  "Company",
+  // --- Financeiro ---
+  "AccountsPayable",
+  "AccountsReceivable",
+  "BankAccount",
+  "Budget",
+  "BudgetAccount",
+  "BudgetVersion",
+  "CollectionRule",
+  "CostCenter",
+  "FinancialCategory",
+  "PaymentRequest",
+  "ApprovalLevel",
+  "ApprovalThreshold",
+  "DdaConfig",
+  // --- Compras ---
+  "PurchaseOrder",
+  "MaterialRequisition",
+  // --- Vendas ---
+  "SalesOrder",
+  "SalesQuote",
+  "Lead",
+  // --- Estoque ---
+  "Inventory",
+  "InventoryMovement",
+  "Lot",
+  "StockTransfer",
+  "PhysicalInventory",
+  // --- Produção ---
+  "ProductionOrder",
+  "ProductionCost",
+  // --- Fiscal ---
+  "ReceivedInvoice",
+  "IssuedInvoice",
+  // --- RH/DP ---
+  "PayrollEntry",
+  "Payroll",
+  "Vacation",
+  "Termination",
+  "ThirteenthSalary",
+  "AdmissionProcess",
+  // --- Qualidade ---
+  "QualityInspection",
+  "NonConformity",
+  // --- Documentos ---
   "GedDocument",
+  // --- Workflow ---
   "Workflow",
   "WorkflowDefinition",
+  "WorkflowInstance",
+  // --- Comex ---
+  "ImportProcess",
+  "ExchangeContract",
+  // --- Manutenção ---
+  "MaintenanceOrder",
 ]);
 
 // Campos sensíveis que não devem ser logados
