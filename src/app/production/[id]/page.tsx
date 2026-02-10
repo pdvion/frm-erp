@@ -172,7 +172,7 @@ export default function ProductionOrderDetailPage() {
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-theme-secondary">Progresso</span>
-                      <span className="font-medium">{Number(order.producedQty)} / {Number(order.quantity)} {Number(order.product.unit)}</span>
+                      <span className="font-medium">{Number(order.producedQty)} / {Number(order.quantity)} {order.product.unit}</span>
                     </div>
                     <div className="w-full bg-theme-tertiary rounded-full h-3">
                       <div

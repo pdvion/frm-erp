@@ -108,6 +108,12 @@ export const gpdRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
+      const goal = await ctx.prisma.strategicGoal.findFirst({
+        where: { id, companyId: ctx.companyId },
+      });
+      if (!goal) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Objetivo não encontrado" });
+      }
       return ctx.prisma.strategicGoal.update({
         where: { id },
         data,

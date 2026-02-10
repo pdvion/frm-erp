@@ -442,8 +442,8 @@ export const productionRouter = createTRPCRouter({
         }
         
         // Custo unitário = custo total dos materiais / quantidade produzida
-        const unitCost = Number(order.producedQty) > 0 
-          ? totalMaterialCost / Number(order.producedQty) 
+        const unitCost = newProducedQty > 0 
+          ? totalMaterialCost / newProducedQty 
           : totalMaterialCost / Number(order.quantity);
         const totalCost = unitCost * input.quantity;
 

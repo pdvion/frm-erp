@@ -175,7 +175,7 @@ export default function AiUsagePage() {
           />
           <StatCard
             title="Custo Estimado"
-            value={formatCostUSD(Number(summary?.totalCost) ?? 0)}
+            value={formatCostUSD(Number(summary?.totalCost ?? 0))}
             change={summary?.costChange}
             icon={DollarSign}
             color="bg-green-600"

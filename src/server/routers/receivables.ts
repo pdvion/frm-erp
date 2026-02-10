@@ -520,7 +520,7 @@ export const receivablesRouter = createTRPCRouter({
           fineValue: Number(receivable.fineValue) - Number(payment.fineValue),
           status: newStatus,
           paidAt: null,
-          notes: `${receivable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${payment.value.toFixed(2)}`.trim(),
+          notes: `${receivable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${Number(payment.value).toFixed(2)}`.trim(),
         },
       });
 

@@ -205,7 +205,7 @@ export default function RequisitionDetailPage() {
                       const remaining = Number(approved) - Number(item.separatedQty);
                       const inventory = item.material.inventory[0];
                       const available = inventory?.availableQty || 0;
-                      const isComplete = item.separatedQty >= approved;
+                      const isComplete = Number(item.separatedQty) >= Number(approved);
 
                       return (
                         <tr key={item.id} className={isComplete ? "bg-green-50" : ""}>
@@ -221,7 +221,7 @@ export default function RequisitionDetailPage() {
                             {Number(item.requestedQty)}
                           </td>
                           <td className="px-4 py-3 text-right text-theme-secondary">
-                            {Number(item.approvedQty) ?? "-"}
+                            {item.approvedQty != null ? Number(item.approvedQty) : "-"}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
