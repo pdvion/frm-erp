@@ -8,6 +8,7 @@ datasource db {
 
 model Company {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code                 Int                     @unique
   name                 String
   tradeName            String?
@@ -327,6 +328,7 @@ model Category {
 
 model Material {
   id                          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                        Int                       @unique
   internalCode                String?
   description                 String
@@ -344,6 +346,8 @@ model Material {
   companyId                   String                    @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   isShared                    Boolean                   @default(false)
   purchaseUnit                String?                   @map("purchase_unit")
   unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
@@ -420,11 +424,14 @@ model Material {
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
+  @@unique([companyId, legacyId])
   @@map("materials")
+  @@index([companyId, code])
 }
 
 model Supplier {
   id                      String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                    Int                          @unique
   companyName             String
   tradeName               String?
@@ -452,6 +459,8 @@ model Supplier {
   companyId               String                       @db.Uuid
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   isShared                Boolean                      @default(false)
   cat01Embalagens         Boolean?                     @default(false) @map("cat01_embalagens")
   cat02Tintas             Boolean?                     @default(false) @map("cat02_tintas")
@@ -490,7 +499,9 @@ model Supplier {
   company                 Company                      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([companyId], map: "idx_suppliers_companyId")
+  @@unique([companyId, legacyId])
   @@map("suppliers")
+  @@index([companyId, code])
 }
 
 model SupplierMaterial {
@@ -515,6 +526,7 @@ model SupplierMaterial {
 
 model Inventory {
   id                       String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   materialId               String              @db.Uuid
   companyId                String              @db.Uuid
   inventoryType            InventoryType       @default(RAW_MATERIAL)
@@ -548,7 +560,9 @@ model Inventory {
   @@unique([materialId, companyId, inventoryType])
   @@index([companyId], map: "idx_inventory_companyId")
   @@index([id, version], map: "idx_inventory_version")
+  @@unique([companyId, legacyId])
   @@map("inventory")
+  @@index([companyId, materialId])
 }
 
 model InventoryMovement {
@@ -606,6 +620,7 @@ model StockReservation {
   @@index([documentType, documentId])
   @@index([inventoryId], map: "idx_stock_reservations_inventory")
   @@map("stock_reservations")
+  @@index([companyId])
 }
 
 model Quote {
@@ -676,6 +691,7 @@ model QuoteItem {
 
 model PurchaseOrder {
   id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                  Int                 @unique
   supplierId            String              @db.Uuid
   quoteId               String?             @db.Uuid
@@ -692,6 +708,8 @@ model PurchaseOrder {
   companyId             String              @db.Uuid
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   application           String?
   quoteSupplierCode     Int?                @map("quote_supplier_code")
   billingCompanyId      String?             @map("billing_company_id")
@@ -724,6 +742,7 @@ model PurchaseOrder {
   @@index([companyId], map: "idx_purchase_orders_companyId")
   @@index([supplierId], map: "idx_purchase_orders_supplierId")
   @@index([quoteId])
+  @@unique([companyId, legacyId])
   @@map("purchase_orders")
 }
 
@@ -781,6 +800,7 @@ model AuditLog {
 
 model ReceivedInvoice {
   id                          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   accessKey                   String                @unique @db.VarChar(44)
   invoiceNumber               Int
   series                      Int                   @default(1)
@@ -810,6 +830,8 @@ model ReceivedInvoice {
   xmlContent                  String?
   createdAt                   DateTime              @default(now())
   updatedAt                   DateTime              @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
   icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
   insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
@@ -839,7 +861,9 @@ model ReceivedInvoice {
   @@index([companyId], map: "idx_received_invoices_companyId")
   @@index([supplierId], map: "idx_received_invoices_supplierId")
   @@index([purchaseOrderId])
+  @@unique([companyId, legacyId])
   @@map("received_invoices")
+  @@index([companyId, status])
 }
 
 model ReceivedInvoiceItem {
@@ -878,6 +902,7 @@ model ReceivedInvoiceItem {
 
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                 Int
   companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
@@ -905,6 +930,8 @@ model AccountsPayable {
   createdBy            String?                 @db.Uuid
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   bankAccountId        String?                 @db.Uuid
   approvalStatus       ApprovalStatus?         @default(PENDING)
   scheduledPaymentDate DateTime?
@@ -951,7 +978,10 @@ model AccountsPayable {
   @@index([companyId], map: "idx_accounts_payable_companyId")
   @@index([costCenterId], map: "idx_accounts_payable_costcenter")
   @@index([supplierId], map: "idx_accounts_payable_supplierId")
+  @@unique([companyId, legacyId])
   @@map("accounts_payable")
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
 }
 
 model PayablePayment {
@@ -1029,6 +1059,7 @@ model MaterialRequisitionItem {
 
 model ProductionOrder {
   id                      String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                    Int
   companyId               String                     @db.Uuid
   productId               String                     @db.Uuid
@@ -1047,6 +1078,8 @@ model ProductionOrder {
   createdBy               String?                    @db.Uuid
   createdAt               DateTime                   @default(now())
   updatedAt               DateTime                   @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   request_type            production_request_type?
   execution_type          production_execution_type?
   customer_id             String?
@@ -1078,7 +1111,9 @@ model ProductionOrder {
   @@index([dueDate])
   @@index([companyId], map: "idx_production_orders_companyId")
   @@index([productId], map: "idx_production_orders_product")
+  @@unique([companyId, legacyId])
   @@map("production_orders")
+  @@index([companyId, status])
 }
 
 model ProductionOrderMaterial {
@@ -1126,6 +1161,7 @@ model ProductionOrderOperation {
 
 model CostCenter {
   id                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code               String
   name               String
   description        String?
@@ -1149,11 +1185,13 @@ model CostCenter {
   @@unique([code, companyId])
   @@index([companyId])
   @@index([parentId])
+  @@unique([companyId, legacyId])
   @@map("cost_centers")
 }
 
 model BankAccount {
   id                                                                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                                                                   String
   name                                                                   String
   bankCode                                                               String?
@@ -1172,6 +1210,8 @@ model BankAccount {
   notes                                                                  String?
   createdAt                                                              DateTime             @default(now())
   updatedAt                                                              DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   accounts_payable                                                       AccountsPayable[]
   receivables                                                            AccountsReceivable[]
   company                                                                Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
@@ -1183,6 +1223,7 @@ model BankAccount {
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_bank_accounts_companyId")
+  @@unique([companyId, legacyId])
   @@map("bank_accounts")
 }
 
@@ -1259,6 +1300,7 @@ model PixTransaction {
 
 model Customer {
   id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                    String
   companyId               String               @db.Uuid
   type                    String               @default("COMPANY")
@@ -1288,6 +1330,8 @@ model Customer {
   createdBy               String?              @db.Uuid
   createdAt               DateTime             @default(now())
   updatedAt               DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   customerGroupId         String?              @map("customer_group_id")
   customerTypeId          String?              @map("customer_type_id")
   alphaCode               String?              @map("alpha_code")
@@ -1314,11 +1358,14 @@ model Customer {
   @@index([cnpj])
   @@index([status])
   @@index([companyId], map: "idx_customers_companyId")
+  @@unique([companyId, legacyId])
   @@map("customers")
+  @@index([companyId, code])
 }
 
 model AccountsReceivable {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code              Int
   companyId         String              @db.Uuid
   customerId        String              @db.Uuid
@@ -1349,6 +1396,8 @@ model AccountsReceivable {
   createdBy         String?             @db.Uuid
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   issuedInvoiceId   String?             @db.Uuid
   bankAccount       BankAccount?        @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_receivable_bankaccount_fkey")
   company           Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
@@ -1365,7 +1414,10 @@ model AccountsReceivable {
   @@index([costCenterId], map: "idx_accounts_receivable_costcenter")
   @@index([customerId], map: "idx_accounts_receivable_customerId")
   @@index([issuedInvoiceId], map: "idx_accounts_receivable_issuedinvoice")
+  @@unique([companyId, legacyId])
   @@map("accounts_receivable")
+  @@index([companyId, status])
+  @@index([companyId, dueDate])
 }
 
 model ReceivablePayment {
@@ -1567,6 +1619,7 @@ model MrpSuggestion {
 
 model WorkCenter {
   id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code             String
   name             String
   description      String?
@@ -1587,6 +1640,7 @@ model WorkCenter {
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_work_centers_companyId")
+  @@unique([companyId, legacyId])
   @@map("work_centers")
 }
 
@@ -1727,6 +1781,7 @@ model LeadActivity {
 
 model SalesQuote {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -1754,6 +1809,8 @@ model SalesQuote {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   sales_orders_sales_orders_quoteIdTosales_quotes SalesOrder[]     @relation("sales_orders_quoteIdTosales_quotes")
   items                                           SalesQuoteItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
@@ -1767,7 +1824,9 @@ model SalesQuote {
   @@index([status])
   @@index([convertedToOrderId], map: "idx_sales_quotes_converted_order")
   @@index([leadId], map: "idx_sales_quotes_lead")
+  @@unique([companyId, legacyId])
   @@map("sales_quotes")
+  @@index([companyId, status])
 }
 
 model SalesQuoteItem {
@@ -1793,6 +1852,7 @@ model SalesQuoteItem {
 
 model SalesOrder {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -1821,6 +1881,8 @@ model SalesOrder {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   issuedInvoices                                  IssuedInvoice[]  @relation("IssuedInvoiceOrder")
   items                                           SalesOrderItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")
@@ -1833,7 +1895,9 @@ model SalesOrder {
   @@index([customerId])
   @@index([status])
   @@index([quoteId], map: "idx_sales_orders_quote")
+  @@unique([companyId, legacyId])
   @@map("sales_orders")
+  @@index([companyId, status])
 }
 
 model SalesOrderItem {
@@ -1863,6 +1927,7 @@ model SalesOrderItem {
 
 model StockLocation {
   id                  String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                String
   name                String
   description         String?
@@ -1891,6 +1956,7 @@ model StockLocation {
   @@index([companyId])
   @@index([type])
   @@index([parentId], map: "idx_stock_locations_parent")
+  @@unique([companyId, legacyId])
   @@map("stock_locations")
 }
 
@@ -2050,6 +2116,7 @@ model InventoryCount {
 
 model Department {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code           String
   name           String
   description    String?
@@ -2074,11 +2141,13 @@ model Department {
   @@index([companyId], map: "idx_departments_companyId")
   @@index([costCenterId], map: "idx_departments_costcenter")
   @@index([parentId], map: "idx_departments_parent")
+  @@unique([companyId, legacyId])
   @@map("departments")
 }
 
 model JobPosition {
   id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code         String
   name         String
   description  String?
@@ -2097,11 +2166,13 @@ model JobPosition {
   @@index([companyId], map: "idx_job_positions_companyId")
   @@index([departmentId], map: "idx_job_positions_department")
   @@index([departmentId], map: "idx_job_positions_departmentId")
+  @@unique([companyId, legacyId])
   @@map("job_positions")
 }
 
 model Employee {
   id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                Int
   companyId           String             @db.Uuid
   userId              String?            @db.Uuid
@@ -2145,6 +2216,8 @@ model Employee {
   createdBy           String?            @db.Uuid
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   insalubrityDegree   String?            @map("insalubrity_degree")
   hasDangerousness    Boolean?           @default(false) @map("has_dangerousness")
   dependentsCount     Int?               @default(0) @map("dependents_count")
@@ -2176,7 +2249,9 @@ model Employee {
   @@index([managerId], map: "idx_employees_manager")
   @@index([positionId], map: "idx_employees_position")
   @@index([userId], map: "idx_employees_user")
+  @@unique([companyId, legacyId])
   @@map("employees")
+  @@index([companyId, code])
 }
 
 model TimeClockEntry {
@@ -2234,6 +2309,7 @@ model TimesheetDay {
 
 model WorkSchedule {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   companyId        String             @db.Uuid
   name             String
   code             String?
@@ -2251,6 +2327,7 @@ model WorkSchedule {
 
   @@unique([companyId, code])
   @@index([companyId], map: "idx_work_schedules_companyId")
+  @@unique([companyId, legacyId])
   @@map("work_schedules")
 }
 
@@ -2329,6 +2406,7 @@ model TimeClockAdjustment {
 
 model Holiday {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   companyId  String?  @db.Uuid
   date       DateTime @db.Date
   name       String
@@ -2344,6 +2422,7 @@ model Holiday {
 
 model Payroll {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code            Int
   companyId       String        @db.Uuid
   referenceMonth  Int
@@ -2367,6 +2446,7 @@ model Payroll {
   @@unique([code, companyId])
   @@unique([companyId, referenceMonth, referenceYear], map: "payrolls_company_month_year_key")
   @@index([companyId])
+  @@unique([companyId, legacyId])
   @@map("payrolls")
 }
 
@@ -2894,6 +2974,7 @@ model TaskAttachment {
 
 model IssuedInvoice {
   id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code               Int
   invoiceNumber      String               @db.VarChar(20)
   series             String               @default("1") @db.VarChar(5)
@@ -2927,6 +3008,8 @@ model IssuedInvoice {
   createdBy          String?              @db.Uuid
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   receivables        AccountsReceivable[]
   items              IssuedInvoiceItem[]
   customer           Customer             @relation(fields: [customerId], references: [id])
@@ -2937,7 +3020,9 @@ model IssuedInvoice {
   @@index([issueDate])
   @@index([companyId], map: "idx_issued_invoices_companyId")
   @@index([customerId], map: "idx_issued_invoices_customerId")
+  @@unique([companyId, legacyId])
   @@map("issued_invoices")
+  @@index([companyId, status])
 }
 
 model IssuedInvoiceItem {
@@ -3236,6 +3321,7 @@ model BudgetVersion {
   @@index([approvedBy])
   @@index([createdBy])
   @@map("budget_versions")
+  @@index([companyId])
 }
 
 model BudgetEntry {
@@ -3278,6 +3364,7 @@ model BudgetActual {
   @@index([accountId])
   @@index([costCenterId])
   @@map("budget_actuals")
+  @@index([companyId])
 }
 
 model BudgetAlert {
@@ -3326,6 +3413,8 @@ model WorkflowDefinition {
   createdBy     String?              @db.Uuid
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   canvasLayout  Json?
   formSchema    Json?
   variables     Json?                @default("[]")
@@ -3649,7 +3738,6 @@ model SefazSyncConfig {
   updatedAt      DateTime  @default(now()) @updatedAt
   company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@index([companyId])
   @@map("sefaz_sync_configs")
 }
 
@@ -3801,6 +3889,7 @@ model DdaConfig {
 
   @@unique([companyId, bancoCodigo])
   @@map("dda_config")
+  @@index([companyId])
 }
 
 model DdaSyncLog {
@@ -3847,6 +3936,7 @@ model SavedReport {
 
 model CollectionRule {
   id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   companyId   String               @map("company_id") @db.Uuid
   name        String               @db.VarChar(100)
   description String?
@@ -3861,6 +3951,7 @@ model CollectionRule {
 
   @@index([isActive], map: "idx_collection_rules_active")
   @@index([companyId], map: "idx_collection_rules_company")
+  @@unique([companyId, legacyId])
   @@map("collection_rules")
 }
 
@@ -4153,6 +4244,7 @@ model MaterialStandardCost {
 
 model BenefitType {
   id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code                    String
   name                    String
   description             String?
@@ -4172,6 +4264,7 @@ model BenefitType {
   employeeBenefits        EmployeeBenefit[]
 
   @@index([companyId], map: "idx_benefit_types_company_id")
+  @@unique([companyId, legacyId])
   @@map("benefit_types")
 }
 
@@ -4220,6 +4313,7 @@ model TransportVoucher {
 
 model Training {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
   code              String
   name              String
   description       String?
@@ -4237,6 +4331,7 @@ model Training {
   employeeTrainings EmployeeTraining[]
 
   @@index([companyId], map: "idx_trainings_company_id")
+  @@unique([companyId, legacyId])
   @@map("trainings")
 }
 
@@ -4725,6 +4820,7 @@ model ProductCategory {
 
 model Product {
   id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?                    @unique
   code             String              @unique
   materialId       String?             @map("material_id") @db.Uuid
   name             String
@@ -4746,6 +4842,8 @@ model Product {
   isShared         Boolean?            @default(false) @map("is_shared")
   createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
   attachments      ProductAttachment[]
   images           ProductImage[]
   videos           ProductVideo[]
@@ -4841,6 +4939,7 @@ model AiUsageLog {
   @@index([provider, model], map: "idx_ai_usage_logs_provider_model")
   @@index([taskType], map: "idx_ai_usage_logs_task_type")
   @@map("ai_usage_logs")
+  @@index([companyId])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -4898,6 +4997,7 @@ model Embedding {
   @@unique([entityType, entityId])
   @@index([entityType, companyId])
   @@map("embeddings")
+  @@index([companyId])
 }
 
 enum MaterialStatus {
