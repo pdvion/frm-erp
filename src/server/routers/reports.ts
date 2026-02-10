@@ -49,8 +49,8 @@ export const reportsRouter = createTRPCRouter({
       const totals = filtered.reduce(
         (acc, item) => ({
           totalItems: acc.totalItems + 1,
-          totalQuantity: acc.totalQuantity + item.quantity,
-          totalValue: acc.totalValue + item.totalCost,
+          totalQuantity: acc.totalQuantity + Number(item.quantity),
+          totalValue: Number(acc.totalValue) + Number(item.totalCost),
           belowMinimum: acc.belowMinimum + (item.availableQty < (item.material.minQuantity || 0) ? 1 : 0),
         }),
         { totalItems: 0, totalQuantity: 0, totalValue: 0, belowMinimum: 0 }
@@ -325,11 +325,11 @@ export const reportsRouter = createTRPCRouter({
       orderBy: { totalCost: "desc" },
     });
 
-    const totalValue = inventory.reduce((acc, item) => acc + item.totalCost, 0);
+    const totalValue = inventory.reduce((acc, item) => acc + Number(item.totalCost), 0);
     let cumulativeValue = 0;
 
     const items = inventory.map((item) => {
-      cumulativeValue += item.totalCost;
+      cumulativeValue += Number(item.totalCost);
       const cumulativePercent = (cumulativeValue / totalValue) * 100;
       let classification: "A" | "B" | "C";
       if (cumulativePercent <= 80) classification = "A";
@@ -343,16 +343,16 @@ export const reportsRouter = createTRPCRouter({
         category: item.material.category?.name || "Sem categoria",
         quantity: item.quantity,
         totalCost: item.totalCost,
-        percentOfTotal: (item.totalCost / totalValue) * 100,
+        percentOfTotal: (Number(item.totalCost) / totalValue) * 100,
         cumulativePercent,
         classification,
       };
     });
 
     const summary = {
-      classA: { count: items.filter((i) => i.classification === "A").length, value: items.filter((i) => i.classification === "A").reduce((acc, i) => acc + i.totalCost, 0) },
-      classB: { count: items.filter((i) => i.classification === "B").length, value: items.filter((i) => i.classification === "B").reduce((acc, i) => acc + i.totalCost, 0) },
-      classC: { count: items.filter((i) => i.classification === "C").length, value: items.filter((i) => i.classification === "C").reduce((acc, i) => acc + i.totalCost, 0) },
+      classA: { count: items.filter((i) => i.classification === "A").length, value: items.filter((i) => i.classification === "A").reduce((acc, i) => acc + Number(i.totalCost), 0) },
+      classB: { count: items.filter((i) => i.classification === "B").length, value: items.filter((i) => i.classification === "B").reduce((acc, i) => acc + Number(i.totalCost), 0) },
+      classC: { count: items.filter((i) => i.classification === "C").length, value: items.filter((i) => i.classification === "C").reduce((acc, i) => acc + Number(i.totalCost), 0) },
       totalItems: items.length,
       totalValue,
     };
@@ -401,7 +401,7 @@ export const reportsRouter = createTRPCRouter({
           };
         }
         bySupplier[key].orderCount++;
-        bySupplier[key].totalValue += order.totalValue;
+        bySupplier[key].totalValue += Number(order.totalValue);
       });
 
       const items = Object.values(bySupplier).sort((a, b) => b.totalValue - a.totalValue);

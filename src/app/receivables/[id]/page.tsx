@@ -94,7 +94,7 @@ export default function ReceivableDetailPage() {
     );
   }
 
-  const remaining = receivable.netValue - receivable.paidValue;
+  const remaining = Number(receivable.netValue) - Number(receivable.paidValue);
   const isOverdue = receivable.status === "PENDING" && new Date(receivable.dueDate) < new Date();
   const displayStatus = isOverdue ? "OVERDUE" : receivable.status;
   const config = statusConfig[displayStatus] || statusConfig.PENDING;
@@ -203,19 +203,19 @@ export default function ReceivableDetailPage() {
                           {formatDate(payment.paymentDate)}
                           {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                         </div>
-                        {(payment.discountValue > 0 || payment.interestValue > 0 || payment.fineValue > 0) && (
+                        {(Number(payment.discountValue) > 0 || Number(payment.interestValue) > 0 || Number(payment.fineValue) > 0) && (
                           <div className="text-xs text-theme-muted mt-1">
-                            {payment.discountValue > 0 && (
+                            {Number(payment.discountValue) > 0 && (
                               <span className="text-green-600 mr-2">
                                 Desc: {formatCurrency(payment.discountValue)}
                               </span>
                             )}
-                            {payment.interestValue > 0 && (
+                            {Number(payment.interestValue) > 0 && (
                               <span className="text-red-600 mr-2">
                                 Juros: {formatCurrency(payment.interestValue)}
                               </span>
                             )}
-                            {payment.fineValue > 0 && (
+                            {Number(payment.fineValue) > 0 && (
                               <span className="text-red-600">
                                 Multa: {formatCurrency(payment.fineValue)}
                               </span>
@@ -241,19 +241,19 @@ export default function ReceivableDetailPage() {
                   <span className="text-theme-muted">Valor Original</span>
                   <span className="font-medium">{formatCurrency(receivable.originalValue)}</span>
                 </div>
-                {receivable.discountValue > 0 && (
+                {Number(receivable.discountValue) > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Desconto</span>
                     <span>-{formatCurrency(receivable.discountValue)}</span>
                   </div>
                 )}
-                {receivable.interestValue > 0 && (
+                {Number(receivable.interestValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Juros</span>
                     <span>+{formatCurrency(receivable.interestValue)}</span>
                   </div>
                 )}
-                {receivable.fineValue > 0 && (
+                {Number(receivable.fineValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Multa</span>
                     <span>+{formatCurrency(receivable.fineValue)}</span>
@@ -302,7 +302,7 @@ export default function ReceivableDetailPage() {
                   >
                     Baixa Parcial
                   </Button>
-                  {receivable.paidValue === 0 && (
+                  {Number(receivable.paidValue) === 0 && (
                     <Button
                       variant="outline"
                       onClick={() => setShowCancelModal(true)}

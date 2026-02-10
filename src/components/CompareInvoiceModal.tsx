@@ -191,7 +191,7 @@ export function CompareInvoiceModal({
                             Pedido #{po.code}
                           </p>
                           <p className="text-sm text-theme-muted">
-                            {po.itemsCount} itens • {formatCurrency(po.totalValue)}
+                            {po.itemsCount} itens • {formatCurrency(Number(po.totalValue))}
                           </p>
                         </div>
                       </div>
@@ -365,7 +365,7 @@ export function CompareInvoiceModal({
                                 {item.materialDescription}
                               </span>
                               <span className="text-theme-muted ml-2">
-                                ({item.quantity} x {formatCurrency(item.unitPrice)})
+                                ({Number(item.quantity)} x {formatCurrency(Number(item.unitPrice))})
                               </span>
                             </li>
                           ))}

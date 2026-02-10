@@ -192,7 +192,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
                   </div>
                   <div className="text-right">
                     {event.reference && (
-                      <p className="text-sm text-theme-muted">{event.reference}</p>
+                      <p className="text-sm text-theme-muted">{Number(event.reference)}</p>
                     )}
                     <p className="font-semibold text-green-600">
                       {formatCurrency(event.value)}
@@ -226,7 +226,7 @@ export default function PayslipPage({ params }: PayslipPageProps) {
                   </div>
                   <div className="text-right">
                     {event.reference && (
-                      <p className="text-sm text-theme-muted">{event.reference}</p>
+                      <p className="text-sm text-theme-muted">{Number(event.reference)}</p>
                     )}
                     <p className="font-semibold text-red-600">
                       {formatCurrency(event.value)}

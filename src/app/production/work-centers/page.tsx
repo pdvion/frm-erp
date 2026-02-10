@@ -74,12 +74,12 @@ export default function WorkCentersPage() {
       code: wc.code,
       name: wc.name,
       description: wc.description || "",
-      capacityPerHour: wc.capacityPerHour,
-      hoursPerDay: wc.hoursPerDay,
+      capacityPerHour: Number(wc.capacityPerHour),
+      hoursPerDay: Number(wc.hoursPerDay),
       daysPerWeek: wc.daysPerWeek,
-      efficiencyTarget: wc.efficiencyTarget,
+      efficiencyTarget: Number(wc.efficiencyTarget),
       setupTimeMinutes: wc.setupTimeMinutes,
-      costPerHour: wc.costPerHour,
+      costPerHour: Number(wc.costPerHour),
     });
     setShowForm(true);
   };
@@ -271,19 +271,19 @@ export default function WorkCentersPage() {
                     <td className="py-3 px-4 text-center">
                       <div className="flex items-center justify-center gap-1 text-sm">
                         <Factory className="w-4 h-4 text-theme-muted" />
-                        {wc.capacityPerHour}/h
+                        {Number(wc.capacityPerHour)}/h
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
                       <div className="flex items-center justify-center gap-1 text-sm">
                         <Clock className="w-4 h-4 text-theme-muted" />
-                        {wc.hoursPerDay}h x {wc.daysPerWeek}d
+                        {Number(wc.hoursPerDay)}h x {Number(wc.daysPerWeek)}d
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
                       <div className="flex items-center justify-center gap-1 text-sm">
                         <Target className="w-4 h-4 text-theme-muted" />
-                        {wc.efficiencyTarget}%
+                        {Number(wc.efficiencyTarget)}%
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">

@@ -150,8 +150,11 @@ export const oeeRouter = createTRPCRouter({
       solution: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const stop = await ctx.prisma.machineStop.findUnique({ where: { id: input.id } });
-      if (!stop) {
+      const stop = await ctx.prisma.machineStop.findFirst({
+        where: { id: input.id },
+        include: { workCenter: { select: { companyId: true } } },
+      });
+      if (!stop || stop.workCenter.companyId !== ctx.companyId) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Parada não encontrada" });
       }
 
@@ -207,10 +210,10 @@ export const oeeRouter = createTRPCRouter({
           runTime: acc.runTime + log.runTimeMinutes,
           stopTime: acc.stopTime + log.stopTimeMinutes,
           setupTime: acc.setupTime + log.setupTimeMinutes,
-          plannedQty: acc.plannedQty + log.plannedQuantity,
-          producedQty: acc.producedQty + log.producedQuantity,
-          goodQty: acc.goodQty + log.goodQuantity,
-          scrapQty: acc.scrapQty + log.scrapQuantity,
+          plannedQty: Number(acc.plannedQty) + Number(log.plannedQuantity),
+          producedQty: Number(acc.producedQty) + Number(log.producedQuantity),
+          goodQty: Number(acc.goodQty) + Number(log.goodQuantity),
+          scrapQty: Number(acc.scrapQty) + Number(log.scrapQuantity),
         }),
         {
           plannedTime: 0,
@@ -300,9 +303,9 @@ export const oeeRouter = createTRPCRouter({
             (acc, log) => ({
               plannedTime: acc.plannedTime + log.plannedTimeMinutes,
               stopTime: acc.stopTime + log.stopTimeMinutes,
-              plannedQty: acc.plannedQty + log.plannedQuantity,
-              producedQty: acc.producedQty + log.producedQuantity,
-              goodQty: acc.goodQty + log.goodQuantity,
+              plannedQty: Number(acc.plannedQty) + Number(log.plannedQuantity),
+              producedQty: Number(acc.producedQty) + Number(log.producedQuantity),
+              goodQty: Number(acc.goodQty) + Number(log.goodQuantity),
             }),
             { plannedTime: 0, stopTime: 0, plannedQty: 0, producedQty: 0, goodQty: 0 }
           );

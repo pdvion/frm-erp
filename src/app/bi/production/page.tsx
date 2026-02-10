@@ -70,8 +70,8 @@ export default function BIProductionPage() {
   const { data: statsData, isLoading } = trpc.production.stats.useQuery();
   
   // Calcular KPIs a partir dos dados do backend
-  const totalPlanned = statsData?.byStatus?.reduce((acc, s) => acc + (s.totalQty || 0), 0) || 0;
-  const totalProduced = statsData?.byStatus?.reduce((acc, s) => acc + (s.producedQty || 0), 0) || 0;
+  const totalPlanned = statsData?.byStatus?.reduce((acc, s) => Number(acc) + (Number(s.totalQty) || 0), 0) || 0;
+  const totalProduced = statsData?.byStatus?.reduce((acc, s) => Number(acc) + (Number(s.producedQty) || 0), 0) || 0;
   
   const productionKPIs = {
     oee: totalPlanned > 0 ? Math.round((totalProduced / totalPlanned) * 100 * 0.85) : defaultKPIs.oee,

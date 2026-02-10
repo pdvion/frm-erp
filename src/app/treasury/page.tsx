@@ -115,7 +115,7 @@ export default function TreasuryPage() {
                                 </div>
                               </div>
                             </div>
-                            <div className={`text-sm font-medium ${account.currentBalance >= 0 ? "text-green-600" : "text-red-600"}`}>
+                            <div className={`text-sm font-medium ${Number(account.currentBalance) >= 0 ? "text-green-600" : "text-red-600"}`}>
                               {formatCurrency(account.currentBalance)}
                             </div>
                           </div>

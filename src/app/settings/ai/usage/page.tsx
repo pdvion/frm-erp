@@ -175,7 +175,7 @@ export default function AiUsagePage() {
           />
           <StatCard
             title="Custo Estimado"
-            value={formatCostUSD(summary?.totalCost ?? 0)}
+            value={formatCostUSD(Number(summary?.totalCost ?? 0))}
             change={summary?.costChange}
             icon={DollarSign}
             color="bg-green-600"
@@ -387,7 +387,7 @@ export default function AiUsagePage() {
                       {formatNumber(log.totalTokens)}
                     </td>
                     <td className="px-4 py-3 text-sm text-right">
-                      {formatCostUSD(log.estimatedCost)}
+                      {formatCostUSD(Number(log.estimatedCost))}
                     </td>
                     <td className="px-4 py-3 text-sm text-right">
                       {log.latencyMs}ms

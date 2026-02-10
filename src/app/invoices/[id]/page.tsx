@@ -393,7 +393,7 @@ export default function InvoiceDetailPage() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="font-medium">{item.quantity}</span>
+                        <span className="font-medium">{Number(item.quantity)}</span>
                         <span className="text-theme-muted ml-1">{item.unit}</span>
                       </td>
                       <td className="px-4 py-3 text-right font-medium">

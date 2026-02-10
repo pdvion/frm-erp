@@ -238,8 +238,8 @@ export const receivablesRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Título já está pago ou cancelado" });
       }
 
-      const totalPaid = receivable.paidValue + input.value;
-      const remaining = receivable.netValue - totalPaid;
+      const totalPaid = Number(receivable.paidValue) + Number(input.value);
+      const remaining = Number(receivable.netValue) - totalPaid;
       const newStatus = remaining <= 0 ? "PAID" : "PARTIAL";
 
       // Criar pagamento e atualizar título
@@ -262,9 +262,9 @@ export const receivablesRouter = createTRPCRouter({
           where: { id: input.receivableId },
           data: {
             paidValue: totalPaid,
-            discountValue: receivable.discountValue + input.discountValue,
-            interestValue: receivable.interestValue + input.interestValue,
-            fineValue: receivable.fineValue + input.fineValue,
+            discountValue: Number(receivable.discountValue) + Number(input.discountValue),
+            interestValue: Number(receivable.interestValue) + input.interestValue,
+            fineValue: Number(receivable.fineValue) + input.fineValue,
             status: newStatus,
             paidAt: newStatus === "PAID" ? new Date() : null,
           },
@@ -279,7 +279,7 @@ export const receivablesRouter = createTRPCRouter({
 
         if (bankAccount) {
           const netPayment = input.value + input.interestValue + input.fineValue - input.discountValue;
-          const newBalance = bankAccount.currentBalance + netPayment;
+          const newBalance = Number(bankAccount.currentBalance) + netPayment;
 
           await ctx.prisma.$transaction([
             ctx.prisma.bankTransaction.create({
@@ -320,7 +320,7 @@ export const receivablesRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Título não encontrado" });
       }
 
-      if (receivable.paidValue > 0) {
+      if (Number(receivable.paidValue) > 0) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Título com pagamentos não pode ser cancelado" });
       }
 
@@ -362,7 +362,7 @@ export const receivablesRouter = createTRPCRouter({
       let dueNext30DaysValue = 0;
 
       for (const r of receivables) {
-        const remaining = r.netValue - r.paidValue;
+        const remaining = Number(r.netValue) - Number(r.paidValue);
         const dueDate = new Date(r.dueDate);
 
         if (dueDate < today) {
@@ -424,7 +424,7 @@ export const receivablesRouter = createTRPCRouter({
       };
 
       for (const r of receivables) {
-        const remaining = r.netValue - r.paidValue;
+        const remaining = Number(r.netValue) - Number(r.paidValue);
         const dueDate = new Date(r.dueDate);
         const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -508,19 +508,19 @@ export const receivablesRouter = createTRPCRouter({
       }
 
       // Atualizar título
-      const newPaidValue = Math.max(0, receivable.paidValue - payment.value);
+      const newPaidValue = Math.max(0, Number(receivable.paidValue) - Number(payment.value));
       const newStatus = newPaidValue <= 0 ? "PENDING" : "PARTIAL";
 
       await ctx.prisma.accountsReceivable.update({
         where: { id: payment.receivableId },
         data: {
           paidValue: newPaidValue,
-          discountValue: receivable.discountValue - payment.discountValue,
-          interestValue: receivable.interestValue - payment.interestValue,
-          fineValue: receivable.fineValue - payment.fineValue,
+          discountValue: Number(receivable.discountValue) - Number(payment.discountValue),
+          interestValue: Number(receivable.interestValue) - Number(payment.interestValue),
+          fineValue: Number(receivable.fineValue) - Number(payment.fineValue),
           status: newStatus,
           paidAt: null,
-          notes: `${receivable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${payment.value.toFixed(2)}`.trim(),
+          notes: `${receivable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${Number(payment.value).toFixed(2)}`.trim(),
         },
       });
 
@@ -567,7 +567,7 @@ export const receivablesRouter = createTRPCRouter({
           customerName: customer?.tradeName || customer?.companyName || "Desconhecido",
           totalValue: r._sum.netValue || 0,
           paidValue: r._sum.paidValue || 0,
-          remainingValue: (r._sum.netValue || 0) - (r._sum.paidValue || 0),
+          remainingValue: (Number(r._sum.netValue) || 0) - (Number(r._sum.paidValue) || 0),
           count: r._count,
         };
       });

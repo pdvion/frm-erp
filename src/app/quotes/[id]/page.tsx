@@ -260,13 +260,13 @@ export default function QuoteDetailPage() {
                         )}
                       </td>
                       <td className="px-4 py-4 text-right text-theme">
-                        {item.quantity}
+                        {Number(item.quantity)}
                       </td>
                       <td className="px-4 py-4 text-right text-theme">
                         {formatCurrency(item.unitPrice)}
                       </td>
                       <td className="px-4 py-4 text-right font-medium text-theme">
-                        {formatCurrency(item.totalPrice || item.quantity * item.unitPrice)}
+                        {formatCurrency(Number(item.totalPrice) || Number(item.quantity) * Number(item.unitPrice))}
                       </td>
                       {canEdit && (
                         <td className="px-4 py-4">
@@ -288,7 +288,7 @@ export default function QuoteDetailPage() {
                     </td>
                     {canEdit && <td></td>}
                   </tr>
-                  {quote.freightValue > 0 && (
+                  {Number(quote.freightValue) > 0 && (
                     <tr>
                       <td colSpan={3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Frete:
@@ -299,13 +299,13 @@ export default function QuoteDetailPage() {
                       {canEdit && <td></td>}
                     </tr>
                   )}
-                  {quote.discountPercent > 0 && (
+                  {Number(quote.discountPercent) > 0 && (
                     <tr>
                       <td colSpan={3} className="px-4 py-2 text-right text-sm text-theme-secondary">
-                        Desconto ({quote.discountPercent}%):
+                        Desconto ({Number(quote.discountPercent)}%):
                       </td>
                       <td className="px-4 py-2 text-right text-green-600 dark:text-green-400">
-                        -{formatCurrency(quote.totalValue * (quote.discountPercent / 100))}
+                        -{formatCurrency(Number(quote.totalValue) * (Number(quote.discountPercent) / 100))}
                       </td>
                       {canEdit && <td></td>}
                     </tr>

@@ -54,9 +54,10 @@ const monthYearFormatter = new Intl.DateTimeFormat("pt-BR", {
  * @param value - Valor numérico
  * @returns String formatada (ex: "R$ 1.234,56")
  */
-export function formatCurrency(value: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatCurrency(value: any): string {
   if (value == null) return "R$ 0,00";
-  return currencyFormatter.format(value);
+  return currencyFormatter.format(Number(value));
 }
 
 /**
@@ -64,9 +65,10 @@ export function formatCurrency(value: number | null | undefined): string {
  * @param value - Valor numérico
  * @returns String formatada (ex: "1.234,56")
  */
-export function formatNumber(value: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatNumber(value: any): string {
   if (value == null) return "0,00";
-  return numberFormatter.format(value);
+  return numberFormatter.format(Number(value));
 }
 
 /**
@@ -74,9 +76,10 @@ export function formatNumber(value: number | null | undefined): string {
  * @param value - Valor numérico
  * @returns String formatada (ex: "1.234")
  */
-export function formatInteger(value: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatInteger(value: any): string {
   if (value == null) return "0";
-  return integerFormatter.format(value);
+  return integerFormatter.format(Number(value));
 }
 
 /**
@@ -84,9 +87,10 @@ export function formatInteger(value: number | null | undefined): string {
  * @param value - Valor decimal (0.15 = 15%)
  * @returns String formatada (ex: "15,0%")
  */
-export function formatPercent(value: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatPercent(value: any): string {
   if (value == null) return "0,0%";
-  return percentFormatter.format(value);
+  return percentFormatter.format(Number(value));
 }
 
 /**
@@ -207,9 +211,10 @@ export function formatNFeKey(key: string | null | undefined): string {
  * @param hours - Horas em decimal
  * @returns String formatada (ex: "08:30")
  */
-export function formatHours(hours: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatHours(hours: any): string {
   if (hours == null) return "00:00";
-  const totalMinutes = Math.round(hours * 60);
+  const totalMinutes = Math.round(Number(hours) * 60);
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;

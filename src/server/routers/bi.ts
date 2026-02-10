@@ -391,8 +391,8 @@ export const biRouter = createTRPCRouter({
         overdueCount: overdueReceivables._count,
       },
       cashFlow: {
-        thisMonth: (receivablesThisMonth._sum.netValue || 0) - (payablesThisMonth._sum.netValue || 0),
-        lastMonth: (receivablesLastMonth._sum.netValue || 0) - (payablesLastMonth._sum.netValue || 0),
+        thisMonth: (Number(receivablesThisMonth._sum.netValue) || 0) - (Number(payablesThisMonth._sum.netValue) || 0),
+        lastMonth: (Number(receivablesLastMonth._sum.netValue) || 0) - (Number(payablesLastMonth._sum.netValue) || 0),
       },
     };
   }),

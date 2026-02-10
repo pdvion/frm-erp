@@ -283,7 +283,7 @@ export default function EmployeePortalPage() {
                     {new Intl.NumberFormat("pt-BR", {
                       style: "currency",
                       currency: "BRL",
-                    }).format(payslip.netSalary || 0)}
+                    }).format(Number(payslip.netSalary || 0))}
                   </span>
                   <Link href={`/portal/payslips/${payslip.id}`}>
                     <Button variant="secondary" size="sm">

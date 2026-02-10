@@ -292,7 +292,7 @@ export default function ReceivablesPage() {
                             {formatCurrency(receivable.netValue)}
                           </td>
                           <td className="px-4 py-3 text-right text-sm text-green-600">
-                            {receivable.paidValue > 0 ? formatCurrency(receivable.paidValue) : "-"}
+                            {Number(receivable.paidValue) > 0 ? formatCurrency(receivable.paidValue) : "-"}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <Badge variant={colorToVariant(config.color)}>

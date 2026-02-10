@@ -116,9 +116,9 @@ export default function PayableDetailPage() {
   const isOverdue = payable.status === "PENDING" && new Date(payable.dueDate) < today;
   const displayStatus = isOverdue ? "OVERDUE" : payable.status;
   const config = statusConfig[displayStatus];
-  const balance = payable.netValue - payable.paidValue;
+  const balance = Number(payable.netValue) - Number(payable.paidValue);
   const canPay = payable.status !== "PAID" && payable.status !== "CANCELLED";
-  const canCancel = payable.status !== "PAID" && payable.status !== "CANCELLED" && payable.paidValue === 0;
+  const canCancel = payable.status !== "PAID" && payable.status !== "CANCELLED" && Number(payable.paidValue) === 0;
 
   const handlePayment = () => {
     const value = parseFloat(paymentValue);
@@ -301,12 +301,12 @@ export default function PayableDetailPage() {
                     <span className="text-sm text-theme-muted">Total de Retenções</span>
                     <span className="font-bold text-theme">
                       {formatCurrency(
-                        (payable.withholdingIr || 0) +
-                        (payable.withholdingIss || 0) +
-                        (payable.withholdingInss || 0) +
-                        (payable.withholdingPis || 0) +
-                        (payable.withholdingCofins || 0) +
-                        (payable.withholdingCsll || 0)
+                        (Number(payable.withholdingIr) || 0) +
+                        (Number(payable.withholdingIss) || 0) +
+                        (Number(payable.withholdingInss) || 0) +
+                        (Number(payable.withholdingPis) || 0) +
+                        (Number(payable.withholdingCofins) || 0) +
+                        (Number(payable.withholdingCsll) || 0)
                       )}
                     </span>
                   </div>
@@ -399,19 +399,19 @@ export default function PayableDetailPage() {
                           {formatDate(payment.paymentDate)}
                           {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                         </div>
-                        {(payment.discountValue > 0 || payment.interestValue > 0 || payment.fineValue > 0) && (
+                        {(Number(payment.discountValue) > 0 || Number(payment.interestValue) > 0 || Number(payment.fineValue) > 0) && (
                           <div className="text-xs text-theme-muted mt-1">
-                            {payment.discountValue > 0 && (
+                            {Number(payment.discountValue) > 0 && (
                               <span className="text-green-600 mr-2">
                                 Desc: {formatCurrency(payment.discountValue)}
                               </span>
                             )}
-                            {payment.interestValue > 0 && (
+                            {Number(payment.interestValue) > 0 && (
                               <span className="text-red-600 mr-2">
                                 Juros: {formatCurrency(payment.interestValue)}
                               </span>
                             )}
-                            {payment.fineValue > 0 && (
+                            {Number(payment.fineValue) > 0 && (
                               <span className="text-red-600">
                                 Multa: {formatCurrency(payment.fineValue)}
                               </span>
@@ -439,19 +439,19 @@ export default function PayableDetailPage() {
                   <span className="text-theme-muted">Valor Original</span>
                   <span className="font-medium text-theme">{formatCurrency(payable.originalValue)}</span>
                 </div>
-                {payable.discountValue > 0 && (
+                {Number(payable.discountValue) > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Desconto</span>
                     <span>-{formatCurrency(payable.discountValue)}</span>
                   </div>
                 )}
-                {payable.interestValue > 0 && (
+                {Number(payable.interestValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Juros</span>
                     <span>+{formatCurrency(payable.interestValue)}</span>
                   </div>
                 )}
-                {payable.fineValue > 0 && (
+                {Number(payable.fineValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Multa</span>
                     <span>+{formatCurrency(payable.fineValue)}</span>
@@ -461,7 +461,7 @@ export default function PayableDetailPage() {
                   <span className="font-medium text-theme">Valor Líquido</span>
                   <span className="font-bold text-theme">{formatCurrency(payable.netValue)}</span>
                 </div>
-                {payable.paidValue > 0 && (
+                {Number(payable.paidValue) > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Valor Pago</span>
                     <span>-{formatCurrency(payable.paidValue)}</span>

@@ -466,9 +466,9 @@ export const nfeRouter = createTRPCRouter({
         }
 
         // Calcular novo custo médio
-        const currentTotal = inventory.quantity * inventory.unitCost;
-        const newTotal = item.quantity * item.unitPrice;
-        const newQuantity = inventory.quantity + item.quantity;
+        const currentTotal = Number(inventory.quantity) * Number(inventory.unitCost);
+        const newTotal = Number(item.quantity) * Number(item.unitPrice);
+        const newQuantity = Number(inventory.quantity) + Number(item.quantity);
         const newUnitCost = newQuantity > 0 ? (currentTotal + newTotal) / newQuantity : item.unitPrice;
 
         // Atualizar estoque
@@ -477,8 +477,8 @@ export const nfeRouter = createTRPCRouter({
           data: {
             quantity: newQuantity,
             unitCost: newUnitCost,
-            totalCost: newQuantity * newUnitCost,
-            availableQty: newQuantity - inventory.reservedQty,
+            totalCost: newQuantity * Number(newUnitCost),
+            availableQty: newQuantity - Number(inventory.reservedQty),
             lastMovementAt: new Date(),
           },
         });
@@ -558,7 +558,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Gerar título a pagar automaticamente
       let payableId: string | null = null;
-      if (invoice.supplierId && invoice.totalInvoice > 0) {
+      if (invoice.supplierId && Number(invoice.totalInvoice) > 0) {
         // Gerar código sequencial para o título
         const lastPayable = await prisma.accountsPayable.findFirst({
           where: tenantFilter(ctx.companyId, false),
@@ -1029,9 +1029,9 @@ export const nfeRouter = createTRPCRouter({
             purchaseOrderItemId: null,
             materialId: invoiceItem.materialId,
             materialDescription: invoiceItem.material?.description || invoiceItem.productName,
-            invoiceQty: invoiceItem.quantity,
+            invoiceQty: Number(invoiceItem.quantity),
             purchaseOrderQty: null,
-            invoicePrice: invoiceItem.unitPrice,
+            invoicePrice: Number(invoiceItem.unitPrice),
             purchaseOrderPrice: null,
             qtyDivergence: null,
             priceDivergence: null,
@@ -1043,13 +1043,13 @@ export const nfeRouter = createTRPCRouter({
           continue;
         }
 
-        const qtyDivergence = invoiceItem.quantity - poItem.quantity;
-        const priceDivergence = invoiceItem.unitPrice - poItem.unitPrice;
-        const qtyDivergencePercent = poItem.quantity > 0
-          ? (qtyDivergence / poItem.quantity) * 100
+        const qtyDivergence = Number(invoiceItem.quantity) - Number(poItem.quantity);
+        const priceDivergence = Number(invoiceItem.unitPrice) - Number(poItem.unitPrice);
+        const qtyDivergencePercent = Number(poItem.quantity) > 0
+          ? (qtyDivergence / Number(poItem.quantity)) * 100
           : 0;
-        const priceDivergencePercent = poItem.unitPrice > 0
-          ? (priceDivergence / poItem.unitPrice) * 100
+        const priceDivergencePercent = Number(poItem.unitPrice) > 0
+          ? (priceDivergence / Number(poItem.unitPrice)) * 100
           : 0;
 
         // Tolerância de 1% para preço e 0% para quantidade
@@ -1073,10 +1073,10 @@ export const nfeRouter = createTRPCRouter({
           purchaseOrderItemId: poItem.id,
           materialId: invoiceItem.materialId,
           materialDescription: invoiceItem.material?.description || invoiceItem.productName,
-          invoiceQty: invoiceItem.quantity,
-          purchaseOrderQty: poItem.quantity,
-          invoicePrice: invoiceItem.unitPrice,
-          purchaseOrderPrice: poItem.unitPrice,
+          invoiceQty: Number(invoiceItem.quantity),
+          purchaseOrderQty: Number(poItem.quantity),
+          invoicePrice: Number(invoiceItem.unitPrice),
+          purchaseOrderPrice: Number(poItem.unitPrice),
           qtyDivergence,
           priceDivergence,
           qtyDivergencePercent,
@@ -1114,7 +1114,7 @@ export const nfeRouter = createTRPCRouter({
           okItems: divergences.filter((d) => d.status === "OK").length,
           divergentItems: totalDivergences,
           missingItems: missingInInvoice.length,
-          totalValueDivergence: invoice.totalInvoice - purchaseOrder.totalValue,
+          totalValueDivergence: Number(invoice.totalInvoice) - Number(purchaseOrder.totalValue),
         },
       };
     }),
@@ -1213,7 +1213,8 @@ export const nfeRouter = createTRPCRouter({
         totalValue: po.totalValue,
         itemsCount: po.items.length,
         receivedCount: po._count.receivedInvoices,
-        items: po.items.map((item: { id: string; material: { description: string } | null; quantity: number; unitPrice: number }) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items: po.items.map((item: { id: string; material: { description: string } | null; quantity: any; unitPrice: any }) => ({
           id: item.id,
           materialDescription: item.material?.description || "",
           quantity: item.quantity,
@@ -1354,7 +1355,7 @@ export const nfeRouter = createTRPCRouter({
         payables.push(payable);
       }
 
-      const totalValue = payables.reduce((sum, p) => sum + p.netValue, 0);
+      const totalValue = payables.reduce((sum, p) => sum + Number(p.netValue), 0);
 
       return {
         created: payables.length,

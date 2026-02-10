@@ -306,7 +306,7 @@ export const benefitsRouter = createTRPCRouter({
       });
 
       const totalMonthly = vouchers.reduce((sum, v) => {
-        return sum + (v.fareValue * (v.quantityPerDay || 0) * (v.workingDays || 0));
+        return sum + (Number(v.fareValue) * (v.quantityPerDay || 0) * (v.workingDays || 0));
       }, 0);
 
       // Desconto máximo de 6% do salário (CLT)
@@ -319,7 +319,7 @@ export const benefitsRouter = createTRPCRouter({
         totalMonthly,
         employeeDiscount,
         companyContribution,
-        discountPercentage: employee?.salary ? (employeeDiscount / employee.salary) * 100 : 0,
+        discountPercentage: employee?.salary ? (employeeDiscount / Number(employee.salary)) * 100 : 0,
       };
     }),
 
@@ -615,7 +615,8 @@ export const benefitsRouter = createTRPCRouter({
       pendingTrainings,
       expiredTrainings,
       skillsCount,
-      benefitsByCategory: benefitsByCategory.map((b: { benefitTypeId: string; _count: number; _sum: { value: number | null } }) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      benefitsByCategory: benefitsByCategory.map((b: { benefitTypeId: string; _count: number; _sum: { value: any } }) => ({
         benefitTypeId: b.benefitTypeId,
         count: b._count,
         totalValue: b._sum?.value ?? 0,

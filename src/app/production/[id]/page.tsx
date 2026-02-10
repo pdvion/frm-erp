@@ -97,15 +97,15 @@ export default function ProductionOrderDetailPage() {
   }
 
   const config = statusConfig[order.status];
-  const progress = order.quantity > 0 ? Math.round((order.producedQty / order.quantity) * 100) : 0;
-  const remainingQty = order.quantity - order.producedQty;
+  const progress = Number(order.quantity) > 0 ? Math.round((Number(order.producedQty) / Number(order.quantity)) * 100) : 0;
+  const remainingQty = Number(order.quantity) - Number(order.producedQty);
 
   const canRelease = order.status === "PLANNED";
   const canStart = order.status === "RELEASED";
   const canReport = order.status === "IN_PROGRESS";
   const canConsume = ["RELEASED", "IN_PROGRESS"].includes(order.status);
   const canCancel = !["COMPLETED", "CANCELLED"].includes(order.status) && 
-    !order.materials.some((m) => m.consumedQty > 0);
+    !order.materials.some((m) => Number(m.consumedQty) > 0);
 
   return (
     <div className="space-y-6">
@@ -172,7 +172,7 @@ export default function ProductionOrderDetailPage() {
                   <div className="mt-4">
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-theme-secondary">Progresso</span>
-                      <span className="font-medium">{order.producedQty} / {order.quantity} {order.product.unit}</span>
+                      <span className="font-medium">{Number(order.producedQty)} / {Number(order.quantity)} {order.product.unit}</span>
                     </div>
                     <div className="w-full bg-theme-tertiary rounded-full h-3">
                       <div
@@ -258,7 +258,7 @@ export default function ProductionOrderDetailPage() {
                     </thead>
                     <tbody className="divide-y divide-theme-table">
                       {order.materials.map((mat) => {
-                        const remaining = mat.requiredQty - mat.consumedQty;
+                        const remaining = Number(mat.requiredQty) - Number(mat.consumedQty);
                         const inventory = mat.material.inventory[0];
                         const available = inventory?.availableQty || 0;
                         const isComplete = mat.consumedQty >= mat.requiredQty;
@@ -270,19 +270,19 @@ export default function ProductionOrderDetailPage() {
                               <div className="text-xs text-theme-muted">Cód: {mat.material.code}</div>
                             </td>
                             <td className="px-4 py-3 text-right font-medium text-theme">
-                              {mat.requiredQty}
+                              {Number(mat.requiredQty)}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
-                                {mat.consumedQty}
+                                {Number(mat.consumedQty)}
                               </span>
                               {!isComplete && remaining > 0 && (
                                 <span className="text-theme-muted text-sm ml-1">(falta {remaining})</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className={available < remaining ? "text-red-600" : "text-theme-secondary"}>
-                                {available}
+                              <span className={Number(available) < remaining ? "text-red-600" : "text-theme-secondary"}>
+                                {Number(available)}
                               </span>
                             </td>
                             {canConsume && (
@@ -294,14 +294,14 @@ export default function ProductionOrderDetailPage() {
                                         type="number"
                                         value={consumeQty}
                                         onChange={(e) => setConsumeQty(e.target.value)}
-                                        placeholder={String(Math.min(remaining, available))}
+                                        placeholder={String(Math.min(remaining, Number(available)))}
                                         className="w-20 px-2 py-1 border border-theme-input rounded text-sm"
                                       />
                                       <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => {
-                                          const qty = parseFloat(consumeQty) || Math.min(remaining, available);
+                                          const qty = parseFloat(consumeQty) || Math.min(remaining, Number(available));
                                           if (qty > 0) {
                                             consumeMutation.mutate({ materialId: mat.id, quantity: qty });
                                           }
@@ -328,7 +328,7 @@ export default function ProductionOrderDetailPage() {
                                       variant="secondary"
                                       size="sm"
                                       onClick={() => setConsumingMaterial(mat.id)}
-                                      disabled={available <= 0}
+                                      disabled={Number(available) <= 0}
                                     >
                                       Consumir
                                     </Button>
@@ -390,10 +390,10 @@ export default function ProductionOrderDetailPage() {
                             <td className="px-4 py-3 text-theme-secondary">{op.sequence}</td>
                             <td className="px-4 py-3 font-medium text-theme">{op.name}</td>
                             <td className="px-4 py-3 text-theme-secondary">{op.workCenter || "-"}</td>
-                            <td className="px-4 py-3 text-right text-theme">{op.plannedQty}</td>
+                            <td className="px-4 py-3 text-right text-theme">{Number(op.plannedQty)}</td>
                             <td className="px-4 py-3 text-right">
                               <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
-                                {op.completedQty}
+                                {Number(op.completedQty)}
                               </span>
                             </td>
                             <td className="px-4 py-3 text-center">

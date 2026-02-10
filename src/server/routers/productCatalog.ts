@@ -353,6 +353,12 @@ export const productCatalogRouter = createTRPCRouter({
   deleteProduct: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.prisma.product.findFirst({
+        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Produto não encontrado" });
+      }
       const deleted = await ctx.prisma.product.delete({ where: { id: input.id } });
 
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "product", input.id, "delete");
@@ -453,6 +459,13 @@ export const productCatalogRouter = createTRPCRouter({
   deleteImage: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const image = await ctx.prisma.productImage.findFirst({
+        where: { id: input.id },
+        include: { product: { select: { companyId: true } } },
+      });
+      if (!image || image.product.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Imagem não encontrada" });
+      }
       return ctx.prisma.productImage.delete({ where: { id: input.id } });
     }),
 
@@ -521,6 +534,13 @@ export const productCatalogRouter = createTRPCRouter({
   deleteVideo: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const video = await ctx.prisma.productVideo.findFirst({
+        where: { id: input.id },
+        include: { product: { select: { companyId: true } } },
+      });
+      if (!video || video.product.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Vídeo não encontrado" });
+      }
       return ctx.prisma.productVideo.delete({ where: { id: input.id } });
     }),
 
@@ -571,6 +591,13 @@ export const productCatalogRouter = createTRPCRouter({
   deleteAttachment: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const attachment = await ctx.prisma.productAttachment.findFirst({
+        where: { id: input.id },
+        include: { product: { select: { companyId: true } } },
+      });
+      if (!attachment || attachment.product.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Anexo não encontrado" });
+      }
       return ctx.prisma.productAttachment.delete({ where: { id: input.id } });
     }),
 
@@ -883,7 +910,7 @@ export const productCatalogRouter = createTRPCRouter({
         };
 
         const suggestedCategory = categoryMap[ncmChapter] || "Geral";
-        const suggestedPrice = (material.lastPurchasePrice || 0) * (1 + markup / 100);
+        const suggestedPrice = (Number(material.lastPurchasePrice) || 0) * (1 + markup / 100);
 
         return {
           id: material.id,

@@ -219,7 +219,7 @@ export default function FinanceDashboardPage() {
                     </h2>
                     
                     <div className="space-y-3">
-                      {payablesStats.totalOverdue.value > 0 && (
+                      {Number(payablesStats.totalOverdue.value) > 0 && (
                         <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                           <span className="text-red-700">Vencidos</span>
                           <span className="font-bold text-red-600">{formatCurrency(payablesStats.totalOverdue.value)}</span>

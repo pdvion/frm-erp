@@ -169,8 +169,8 @@ export const payrollRouter = createTRPCRouter({
       await ctx.prisma.$transaction(async (tx) => {
         for (const item of payroll.items) {
           const employee = item.employee;
-          const baseSalary = item.baseSalary || employee.salary || 0;
-          const hourlyRate = baseSalary / 220; // 220 horas mensais padrão
+          const baseSalary = Number(item.baseSalary || employee.salary || 0);
+          const hourlyRate = Number(baseSalary) / 220; // 220 horas mensais padrão
 
           // Buscar timesheet do funcionário para o mês
           const timesheetDays = await tx.timesheetDay.findMany({
@@ -181,16 +181,16 @@ export const payrollRouter = createTRPCRouter({
           });
 
           // Calcular horas trabalhadas
-          const workedHours = timesheetDays.reduce((sum, day) => sum + (day.workedHours || 0), 0);
+          const workedHours = timesheetDays.reduce((sum, day) => sum + (Number(day.workedHours) || 0), 0);
           const overtimeHours50 = timesheetDays.reduce(
-            (sum, day) => sum + (day.overtime50 || 0),
+            (sum, day) => sum + (Number(day.overtime50) || 0),
             0
           );
           const overtimeHours100 = timesheetDays.reduce(
-            (sum, day) => sum + (day.overtime100 || 0),
+            (sum, day) => sum + (Number(day.overtime100) || 0),
             0
           );
-          const nightHours = timesheetDays.reduce((sum, day) => sum + (day.nightHours || 0), 0);
+          const nightHours = timesheetDays.reduce((sum, day) => sum + (Number(day.nightHours) || 0), 0);
           const absenceDays = timesheetDays.filter((day) => day.status === "ABSENCE").length;
 
           // Eventos a criar
@@ -315,7 +315,7 @@ export const payrollRouter = createTRPCRouter({
 
           // 8. Faltas
           if (absenceDays > 0) {
-            const absenceValue = (baseSalary / 30) * absenceDays;
+            const absenceValue = (Number(baseSalary) / 30) * absenceDays;
             grossSalary -= absenceValue;
             events.push({
               code: "101",
@@ -340,7 +340,7 @@ export const payrollRouter = createTRPCRouter({
 
           // Calcular IRRF
           const dependentes = employee.dependentsCount || 0;
-          const irrf = calculateIRRF(grossSalary - inss, dependentes);
+          const irrf = calculateIRRF(Number(grossSalary) - inss, dependentes);
           if (irrf > 0) {
             events.push({
               code: "202",
@@ -353,15 +353,15 @@ export const payrollRouter = createTRPCRouter({
           }
 
           // Calcular FGTS (não é desconto, mas provisão)
-          const fgts = grossSalary * 0.08;
+          const fgts = Number(grossSalary) * 0.08;
 
           // Outros descontos existentes (VT, VR, etc)
           const existingDeductions = item.events
             .filter((e) => e.isDeduction && !["201", "202"].includes(e.code))
-            .reduce((sum, e) => sum + e.value, 0);
+            .reduce((sum, e) => sum + Number(e.value), 0);
 
           const totalItemDeductions = inss + irrf + existingDeductions;
-          const netSalary = grossSalary - totalItemDeductions;
+          const netSalary = Number(grossSalary) - totalItemDeductions;
 
           // Limpar eventos antigos e criar novos
           await tx.payrollEvent.deleteMany({ where: { payrollItemId: item.id } });
@@ -525,14 +525,14 @@ export const payrollRouter = createTRPCRouter({
 
       const totals = payroll.items.reduce(
         (acc, item) => ({
-          inss: acc.inss + item.inss,
-          irrf: acc.irrf + item.irrf,
-          fgts: acc.fgts + item.fgts,
-          inssPatronal: acc.inssPatronal + item.grossSalary * 0.2, // 20% patronal
-          rat: acc.rat + item.grossSalary * 0.03, // RAT 3% (média)
-          terceiros: acc.terceiros + item.grossSalary * 0.058, // Sistema S 5.8%
-          provisaoFerias: acc.provisaoFerias + item.grossSalary / 12 + item.grossSalary / 12 / 3,
-          provisao13: acc.provisao13 + item.grossSalary / 12,
+          inss: Number(acc.inss) + Number(item.inss),
+          irrf: Number(acc.irrf) + Number(item.irrf),
+          fgts: Number(acc.fgts) + Number(item.fgts),
+          inssPatronal: acc.inssPatronal + Number(item.grossSalary) * 0.2, // 20% patronal
+          rat: acc.rat + Number(item.grossSalary) * 0.03, // RAT 3% (média)
+          terceiros: acc.terceiros + Number(item.grossSalary) * 0.058, // Sistema S 5.8%
+          provisaoFerias: acc.provisaoFerias + Number(item.grossSalary) / 12 + Number(item.grossSalary) / 12 / 3,
+          provisao13: acc.provisao13 + Number(item.grossSalary) / 12,
         }),
         {
           inss: 0,
@@ -567,7 +567,7 @@ export const payrollRouter = createTRPCRouter({
           total: totals.provisaoFerias + totals.provisao13,
         },
         totalCost:
-          payroll.totalGross +
+          Number(payroll.totalGross) +
           totals.fgts +
           totals.inssPatronal +
           totals.rat +
@@ -729,7 +729,7 @@ export const payrollRouter = createTRPCRouter({
             input.paymentDate.toISOString().slice(0, 10).replace(/-/g, "") +
             "BRL" +
             "000000000000000" +
-            `${Math.round(item.netSalary * 100)}`.padStart(15, "0") +
+            `${Math.round(Number(item.netSalary) * 100)}`.padStart(15, "0") +
             " ".repeat(20) +
             " ".repeat(40) +
             "00" +
@@ -783,9 +783,9 @@ export const payrollRouter = createTRPCRouter({
 
       const totals = payrolls.reduce(
         (acc, p) => ({
-          gross: acc.gross + p.totalGross,
-          net: acc.net + p.totalNet,
-          deductions: acc.deductions + p.totalDeductions,
+          gross: Number(acc.gross) + Number(p.totalGross),
+          net: Number(acc.net) + Number(p.totalNet),
+          deductions: acc.deductions + Number(p.totalDeductions),
         }),
         { gross: 0, net: 0, deductions: 0 }
       );

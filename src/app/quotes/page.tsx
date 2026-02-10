@@ -95,7 +95,8 @@ export default function QuotesPage() {
       id: status,
       title: statusConfig[status]?.label || status,
       color: statusColors[status] || "#6B7280",
-      items: data.quotes.filter((q) => q.status === status) as Quote[],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      items: data.quotes.filter((q: any) => q.status === status) as unknown as Quote[],
     }));
   }, [data]);
 

@@ -309,8 +309,8 @@ export const bomRouter = createTRPCRouter({
         });
 
         for (const item of items) {
-          const scrapMultiplier = 1 + item.scrapPercentage / 100;
-          const totalQty = parentQty * item.quantity * scrapMultiplier;
+          const scrapMultiplier = 1 + Number(item.scrapPercentage) / 100;
+          const totalQty = parentQty * Number(item.quantity) * scrapMultiplier;
 
           // Verificar se tem filhos
           const childCount = await ctx.prisma.bomItem.count({
@@ -323,9 +323,9 @@ export const bomRouter = createTRPCRouter({
             materialCode: item.childMaterial.code,
             materialDescription: item.childMaterial.description,
             unit: item.unit,
-            quantityPerUnit: item.quantity,
+            quantityPerUnit: Number(item.quantity),
             totalQuantity: totalQty,
-            scrapPercentage: item.scrapPercentage,
+            scrapPercentage: Number(item.scrapPercentage),
             hasChildren: childCount > 0,
           });
 
@@ -393,8 +393,8 @@ export const bomRouter = createTRPCRouter({
         let totalCost = 0;
 
         for (const item of items) {
-          const scrapMultiplier = 1 + item.scrapPercentage / 100;
-          const qty = parentQty * item.quantity * scrapMultiplier;
+          const scrapMultiplier = 1 + Number(item.scrapPercentage) / 100;
+          const qty = parentQty * Number(item.quantity) * scrapMultiplier;
 
           // Verificar se tem filhos (é um semi-acabado)
           const childCount = await ctx.prisma.bomItem.count({
@@ -407,7 +407,7 @@ export const bomRouter = createTRPCRouter({
             itemCost = await calculateLevel(item.childMaterialId, qty);
           } else {
             // Usar preço de compra
-            const unitCost = item.childMaterial.lastPurchasePrice || 0;
+            const unitCost = Number(item.childMaterial.lastPurchasePrice || 0);
             itemCost = qty * unitCost;
 
             costItems.push({

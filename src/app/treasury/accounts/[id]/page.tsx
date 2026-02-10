@@ -196,7 +196,7 @@ export default function AccountDetailPage() {
       {showTransferModal && (
         <TransferModal
           fromAccountId={id}
-          currentBalance={account.currentBalance}
+          currentBalance={Number(account.currentBalance)}
           onClose={() => setShowTransferModal(false)}
           onSuccess={() => {
             setShowTransferModal(false);

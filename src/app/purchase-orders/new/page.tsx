@@ -87,7 +87,8 @@ export default function NewPurchaseOrderPage() {
     id: string;
     code: number;
     description: string;
-    lastPurchasePrice: number | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lastPurchasePrice: any;
   }) => {
     // Verificar se já existe
     if (items.some((item) => item.materialId === material.id)) {

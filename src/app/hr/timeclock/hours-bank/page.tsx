@@ -209,23 +209,23 @@ export default function HoursBankPage() {
                     <td className="px-4 py-3 text-right">
                       <span
                         className={`font-medium ${
-                          entry.hours >= 0
+                          Number(entry.hours) >= 0
                             ? "text-green-600 dark:text-green-400"
                             : "text-red-600 dark:text-red-400"
                         }`}
                       >
-                        {formatHours(entry.hours)}
+                        {formatHours(Number(entry.hours))}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <span
                         className={`font-bold ${
-                          entry.balance >= 0
+                          Number(entry.balance) >= 0
                             ? "text-theme"
                             : "text-red-600 dark:text-red-400"
                         }`}
                       >
-                        {formatBalance(entry.balance)}
+                        {formatBalance(Number(entry.balance))}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-theme-muted">

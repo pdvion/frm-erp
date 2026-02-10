@@ -531,7 +531,7 @@ export const collectionRulesRouter = createTRPCRouter({
     };
 
     for (const r of overdueReceivables) {
-      const remaining = r.netValue - r.paidValue;
+      const remaining = Number(r.netValue) - Number(r.paidValue);
       const daysOverdue = Math.floor(
         (today.getTime() - new Date(r.dueDate).getTime()) / (1000 * 60 * 60 * 24)
       );
@@ -583,7 +583,7 @@ export const collectionRulesRouter = createTRPCRouter({
       totalOverdue: {
         count: overdueReceivables.length,
         value: overdueReceivables.reduce(
-          (sum, r) => sum + (r.netValue - r.paidValue),
+          (sum, r) => sum + (Number(r.netValue) - Number(r.paidValue)),
           0
         ),
       },
@@ -651,7 +651,7 @@ export const collectionRulesRouter = createTRPCRouter({
           daysOverdue: Math.floor(
             (today.getTime() - new Date(r.dueDate).getTime()) / (1000 * 60 * 60 * 24)
           ),
-          remainingValue: r.netValue - r.paidValue,
+          remainingValue: Number(r.netValue) - Number(r.paidValue),
         })),
         total,
         pages: Math.ceil(total / limit),

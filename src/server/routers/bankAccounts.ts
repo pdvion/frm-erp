@@ -145,7 +145,7 @@ export const bankAccountsRouter = createTRPCRouter({
         select: { id: true, code: true, name: true, currentBalance: true, accountType: true },
       });
 
-      const total = accounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
+      const total = accounts.reduce((sum, acc) => Number(sum) + Number(acc.currentBalance), 0);
 
       return { accounts, total };
     }),
@@ -208,7 +208,7 @@ export const bankAccountsRouter = createTRPCRouter({
       // Calcular novo saldo
       const isCredit = ["CREDIT", "TRANSFER_IN", "INTEREST"].includes(input.type);
       const valueChange = isCredit ? input.value : -input.value;
-      const newBalance = account.currentBalance + valueChange;
+      const newBalance = Number(account.currentBalance) + valueChange;
 
       // Criar transação e atualizar saldo
       const [transaction] = await ctx.prisma.$transaction([
@@ -259,16 +259,16 @@ export const bankAccountsRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const [fromAccount, toAccount] = await Promise.all([
-        ctx.prisma.bankAccount.findUnique({ where: { id: input.fromAccountId } }),
-        ctx.prisma.bankAccount.findUnique({ where: { id: input.toAccountId } }),
+        ctx.prisma.bankAccount.findFirst({ where: { id: input.fromAccountId, ...tenantFilter(ctx.companyId) } }),
+        ctx.prisma.bankAccount.findFirst({ where: { id: input.toAccountId, ...tenantFilter(ctx.companyId) } }),
       ]);
 
       if (!fromAccount || !toAccount) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Conta não encontrada" });
       }
 
-      const newFromBalance = fromAccount.currentBalance - input.value;
-      const newToBalance = toAccount.currentBalance + input.value;
+      const newFromBalance = Number(fromAccount.currentBalance) - Number(input.value);
+      const newToBalance = Number(toAccount.currentBalance) + Number(input.value);
       const desc = input.description || `Transferência para ${toAccount.name}`;
 
       const [outTransaction] = await ctx.prisma.$transaction([
@@ -322,7 +322,7 @@ export const bankAccountsRouter = createTRPCRouter({
         where: { ...tenantFilter(ctx.companyId, false), isActive: true },
         select: { currentBalance: true },
       });
-      const currentBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
+      const currentBalance = accounts.reduce((sum, a) => Number(sum) + Number(a.currentBalance), 0);
 
       // Contas a pagar no período
       const payables = await ctx.prisma.accountsPayable.findMany({
@@ -360,7 +360,7 @@ export const bankAccountsRouter = createTRPCRouter({
         const dateKey = new Date(r.dueDate).toISOString().split("T")[0];
         const entry = flowByDate.get(dateKey);
         if (entry) {
-          entry.inflow += r.netValue - r.paidValue;
+          entry.inflow += Number(r.netValue) - Number(r.paidValue);
         }
       }
 
@@ -369,7 +369,7 @@ export const bankAccountsRouter = createTRPCRouter({
         const dateKey = new Date(p.dueDate).toISOString().split("T")[0];
         const entry = flowByDate.get(dateKey);
         if (entry) {
-          entry.outflow += p.netValue - p.paidValue;
+          entry.outflow += Number(p.netValue) - Number(p.paidValue);
         }
       }
 
@@ -414,7 +414,7 @@ export const bankAccountsRouter = createTRPCRouter({
       where: { ...tenantFilter(ctx.companyId, false), isActive: true },
       select: { id: true, code: true, name: true, currentBalance: true, accountType: true },
     });
-    const totalBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
+    const totalBalance = accounts.reduce((sum, a) => Number(sum) + Number(a.currentBalance), 0);
 
     // Contas a pagar próximos 7 dias
     const payablesWeek = await ctx.prisma.accountsPayable.aggregate({
@@ -465,9 +465,9 @@ export const bankAccountsRouter = createTRPCRouter({
       _sum: { netValue: true },
     });
 
-    const projectedBalance = totalBalance 
-      + (receivablesMonth._sum.netValue || 0) 
-      - (payablesMonth._sum.netValue || 0);
+    const projectedBalance = Number(totalBalance) 
+      + (Number(receivablesMonth._sum.netValue) || 0) 
+      - (Number(payablesMonth._sum.netValue) || 0);
 
     return {
       accounts,
@@ -482,7 +482,7 @@ export const bankAccountsRouter = createTRPCRouter({
       },
       pendingReconciliation,
       projectedBalance,
-      netFlowWeek: (receivablesWeek._sum.netValue || 0) - (payablesWeek._sum.netValue || 0),
+      netFlowWeek: (Number(receivablesWeek._sum.netValue) || 0) - (Number(payablesWeek._sum.netValue) || 0),
     };
   }),
 

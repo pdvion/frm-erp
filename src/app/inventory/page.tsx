@@ -79,7 +79,7 @@ export default function InventoryPage() {
     limit: 15,
   });
 
-  const inventory = (data?.inventory ?? []) as InventoryItem[];
+  const inventory = (data?.inventory ?? []) as unknown as InventoryItem[];
   const pagination = data?.pagination;
 
   const getStockStatus = (item: InventoryItem) => {

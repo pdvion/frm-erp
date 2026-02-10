@@ -156,11 +156,11 @@ export const productionCostsRouter = createTRPCRouter({
       }> = [];
 
       for (const mat of order.materials) {
-        const unitCost = mat.unitCost || 0;
-        const qtyStd = mat.requiredQty;
-        const qtyActual = mat.consumedQty;
-        const costStd = qtyStd * unitCost;
-        const costActual = qtyActual * unitCost;
+        const unitCost = Number(mat.unitCost || 0);
+        const qtyStd = Number(mat.requiredQty);
+        const qtyActual = Number(mat.consumedQty);
+        const costStd = Number(qtyStd) * Number(unitCost);
+        const costActual = Number(qtyActual) * Number(unitCost);
 
         materialCost += costActual;
         materialCostStd += costStd;
@@ -203,7 +203,7 @@ export const productionCostsRouter = createTRPCRouter({
 
       for (const [wcId, logs] of logsByWorkCenter) {
         const workCenter = logs[0]?.workCenter;
-        const hourlyRate = workCenter?.costPerHour || 0;
+        const hourlyRate = Number(workCenter?.costPerHour || 0);
 
         // Somar horas trabalhadas
         const hoursActual = logs.reduce((sum, log) => {
@@ -213,11 +213,11 @@ export const productionCostsRouter = createTRPCRouter({
 
         // Horas padrão (estimativa baseada na quantidade produzida e capacidade)
         const hoursStd = workCenter?.capacityPerHour
-          ? order.producedQty / workCenter.capacityPerHour
+          ? Number(order.producedQty) / Number(workCenter.capacityPerHour)
           : hoursActual;
 
-        const costStd = hoursStd * hourlyRate;
-        const costActual = hoursActual * hourlyRate;
+        const costStd = hoursStd * Number(hourlyRate);
+        const costActual = hoursActual * Number(hourlyRate);
 
         laborCost += costActual;
         laborCostStd += costStd;
@@ -244,8 +244,8 @@ export const productionCostsRouter = createTRPCRouter({
       const totalCost = materialCost + laborCost + overheadCost;
       const totalCostStd = materialCostStd + laborCostStd + overheadCostStd;
       const quantityProduced = order.producedQty || 1;
-      const unitCost = totalCost / quantityProduced;
-      const unitCostStd = totalCostStd / quantityProduced;
+      const unitCost = totalCost / Number(quantityProduced);
+      const unitCostStd = totalCostStd / Number(quantityProduced);
 
       // Criar ou atualizar custo
       if (existingCost) {
@@ -434,7 +434,8 @@ export const productionCostsRouter = createTRPCRouter({
         total: monthlyCosts._sum?.totalCost ?? 0,
       },
       avgVariance: avgVariance._avg?.totalVariance ?? 0,
-      byStatus: byStatus.map((s: { status: string; _count: number; _sum: { totalCost: number | null } }) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      byStatus: byStatus.map((s: { status: string; _count: number; _sum: { totalCost: any } }) => ({
         status: s.status,
         count: s._count,
         total: s._sum?.totalCost ?? 0,

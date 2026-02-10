@@ -59,7 +59,7 @@ export default function TimeclockSchedulesPage() {
     name: s.name,
     code: s.code,
     type: s.type,
-    weeklyHours: s.weeklyHours,
+    weeklyHours: Number(s.weeklyHours),
     isActive: s.isActive,
     shifts: s.shifts,
     _count: s._count,

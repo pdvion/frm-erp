@@ -172,7 +172,7 @@ export default function EditSupplierPage() {
       paymentTerms: supplier.paymentTerms ?? "",
       notes: supplier.notes ?? "",
       status: supplier.status as "ACTIVE" | "INACTIVE" | "BLOCKED",
-      qualityIndex: supplier.qualityIndex ?? 0,
+      qualityIndex: Number(supplier.qualityIndex ?? 0),
       isShared: supplier.isShared ?? false,
       // Categorias
       cat01Embalagens: supplier.cat01Embalagens ?? false,
@@ -191,7 +191,7 @@ export default function EditSupplierPage() {
       cnae: supplier.cnae ?? "",
       // IQF
       certificationType: supplier.certificationType ?? "",
-      iqfPercent: supplier.iqfPercent ?? 0,
+      iqfPercent: Number(supplier.iqfPercent ?? 0),
       iqfStatus: supplier.iqfStatus ?? "",
       // Outros
       taxRegime: supplier.taxRegime ?? "",

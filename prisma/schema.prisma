@@ -97,7 +97,9 @@ model Company {
   workSchedules        WorkSchedule[]
   workflowDefinitions  WorkflowDefinition[]
   workflowInstances    WorkflowInstance[]
-  onboarding           CompanyOnboarding?
+  onboarding                    CompanyOnboarding?
+  intercompanyTransfersSource   IntercompanyTransfer[] @relation("IntercompanyTransferSource")
+  intercompanyTransfersTarget   IntercompanyTransfer[] @relation("IntercompanyTransferTarget")
 
   @@map("companies")
 }
@@ -331,38 +333,38 @@ model Material {
   categoryId                  String?                   @db.Uuid
   unit                        String                    @default("UN")
   location                    String?
-  minQuantity                 Float                     @default(0)
-  maxQuantity                 Float?
-  monthlyAverage              Float                     @default(0)
-  lastPurchasePrice           Float?
+  minQuantity                 Decimal                     @db.Decimal(15, 4) @default(0)
+  maxQuantity                 Decimal?  @db.Decimal(15, 4)
+  monthlyAverage              Decimal                     @db.Decimal(15, 4) @default(0)
+  lastPurchasePrice           Decimal?  @db.Decimal(15, 2)
   lastPurchaseDate            DateTime?
   ncm                         String?
   status                      MaterialStatus            @default(ACTIVE)
   requiresQualityCheck        Boolean                   @default(false)
-  companyId                   String?                   @db.Uuid
+  companyId                   String                    @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @default(now()) @updatedAt
   isShared                    Boolean                   @default(false)
   purchaseUnit                String?                   @map("purchase_unit")
-  unitConversionFactor        Float?                    @default(1) @map("unit_conversion_factor")
+  unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
   subCategoryId               String?                   @map("sub_category_id") @db.Uuid
   writeOffCode                String?                   @map("write_off_code")
   isEpi                       Boolean?                  @default(false) @map("is_epi")
   isOfficeSupply              Boolean?                  @default(false) @map("is_office_supply")
   notes                       String?
-  ipiRate                     Float?                    @default(0) @map("ipi_rate")
-  icmsRate                    Float?                    @default(0) @map("icms_rate")
-  avgDeliveryDays             Float?                    @default(0) @map("avg_delivery_days")
-  calculatedMinQuantity       Float?                    @default(0) @map("calculated_min_quantity")
+  ipiRate                     Decimal?                    @db.Decimal(10, 4) @default(0) @map("ipi_rate")
+  icmsRate                    Decimal?                    @db.Decimal(10, 4) @default(0) @map("icms_rate")
+  avgDeliveryDays             Decimal?                    @db.Decimal(15, 4) @default(0) @map("avg_delivery_days")
+  calculatedMinQuantity       Decimal?                    @db.Decimal(15, 4) @default(0) @map("calculated_min_quantity")
   minQuantityCalcType         String?                   @default("MANUAL") @map("min_quantity_calc_type")
   minQuantityAlarmDate        DateTime?                 @map("min_quantity_alarm_date") @db.Timestamp(6)
   minQuantityCalcDate         DateTime?                 @map("min_quantity_calc_date") @db.Timestamp(6)
   adjustMaxConsumptionManual  Boolean?                  @default(false) @map("adjust_max_consumption_manual")
-  maxMonthlyConsumption       Float?                    @default(0) @map("max_monthly_consumption")
-  reservedQuantity            Float?                    @default(0) @map("reserved_quantity")
-  peak12Months                Float?                    @default(0) @map("peak_12_months")
-  lastPurchasePriceAvg        Float?                    @default(0) @map("last_purchase_unit_price_avg")
-  lastPurchaseQuantity        Float?                    @default(0) @map("last_purchase_quantity")
+  maxMonthlyConsumption       Decimal?                    @db.Decimal(15, 4) @default(0) @map("max_monthly_consumption")
+  reservedQuantity            Decimal?                    @db.Decimal(15, 4) @default(0) @map("reserved_quantity")
+  peak12Months                Decimal?                    @db.Decimal(15, 4) @default(0) @map("peak_12_months")
+  lastPurchasePriceAvg        Decimal?                    @db.Decimal(15, 2) @default(0) @map("last_purchase_unit_price_avg")
+  lastPurchaseQuantity        Decimal?                    @db.Decimal(15, 4) @default(0) @map("last_purchase_quantity")
   lastSupplierId              String?                   @map("last_supplier_id") @db.Uuid
   costCenterFrm               String?                   @map("cost_center_frm")
   costCenterFnd               String?                   @map("cost_center_fnd")
@@ -377,7 +379,7 @@ model Material {
   requiresFiscalEntry         Boolean?                  @default(false) @map("requires_fiscal_entry")
   parentProductId             String?                   @map("parent_product_id") @db.Uuid
   assetId                     String?                   @map("asset_id") @db.Uuid
-  weight                      Float?                    @default(0)
+  weight                      Decimal?                    @db.Decimal(15, 4) @default(0)
   weightUnit                  String?                   @default("KG") @map("weight_unit")
   barcode                     String?
   manufacturer                String?
@@ -395,7 +397,7 @@ model Material {
   receivingItems              MaterialReceivingItem[]
   requisitionItems            MaterialRequisitionItem[]
   category                    Category?                 @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  company                     Company?                  @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company                     Company                   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   mrpParameter                MrpParameter?
   mrpSuggestions              MrpSuggestion[]
   non_conformities            NonConformity[]
@@ -413,6 +415,8 @@ model Material {
   stockTransferItems          StockTransferItem[]
   supplierMaterials           SupplierMaterial[]
   supplierReturnItems         SupplierReturnItem[]
+  lots                        Lot[]
+  intercompanyTransferItems   IntercompanyTransferItem[]
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
@@ -444,8 +448,8 @@ model Supplier {
   paymentTerms            String?
   notes                   String?
   status                  SupplierStatus               @default(ACTIVE)
-  qualityIndex            Float?
-  companyId               String?                      @db.Uuid
+  qualityIndex            Decimal?  @db.Decimal(10, 4)
+  companyId               String                       @db.Uuid
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @default(now()) @updatedAt
   isShared                Boolean                      @default(false)
@@ -466,8 +470,8 @@ model Supplier {
   certificationType       supplier_certification_type? @map("certification_type")
   certificationExpiryDate DateTime?                    @map("certification_expiry_date") @db.Timestamptz(6)
   certificationFileName   String?                      @map("certification_file_name")
-  overallQualityPercent   Float?                       @map("overall_quality_percent")
-  iqfPercent              Float?                       @map("iqf_percent")
+  overallQualityPercent   Decimal?                       @db.Decimal(10, 4) @map("overall_quality_percent")
+  iqfPercent              Decimal?                       @db.Decimal(10, 4) @map("iqf_percent")
   qualityCalcDate         DateTime?                    @map("quality_calc_date") @db.Timestamptz(6)
   iqfStatus               supplier_iqf_status?         @map("iqf_status")
   taxRegime               String?                      @map("tax_regime")
@@ -483,7 +487,7 @@ model Supplier {
   receivedInvoices        ReceivedInvoice[]
   supplierMaterials       SupplierMaterial[]
   supplierReturns         SupplierReturn[]
-  company                 Company?                     @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company                 Company                      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([companyId], map: "idx_suppliers_companyId")
   @@map("suppliers")
@@ -494,10 +498,10 @@ model SupplierMaterial {
   supplierId    String    @db.Uuid
   materialId    String    @db.Uuid
   supplierCode  String?
-  lastPrice     Float?
+  lastPrice     Decimal?  @db.Decimal(15, 2)
   lastPriceDate DateTime?
   leadTimeDays  Int?
-  minOrderQty   Float?
+  minOrderQty   Decimal?  @db.Decimal(15, 4)
   isPreferred   Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -512,31 +516,31 @@ model SupplierMaterial {
 model Inventory {
   id                       String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   materialId               String              @db.Uuid
-  companyId                String?             @db.Uuid
+  companyId                String              @db.Uuid
   inventoryType            InventoryType       @default(RAW_MATERIAL)
-  quantity                 Float               @default(0)
-  reservedQty              Float               @default(0)
-  availableQty             Float               @default(0)
-  unitCost                 Float               @default(0)
-  totalCost                Float               @default(0)
+  quantity                 Decimal               @db.Decimal(15, 4) @default(0)
+  reservedQty              Decimal               @db.Decimal(15, 4) @default(0)
+  availableQty             Decimal               @db.Decimal(15, 4) @default(0)
+  unitCost                 Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost                Decimal               @db.Decimal(15, 2) @default(0)
   lastMovementAt           DateTime?
   createdAt                DateTime            @default(now())
   updatedAt                DateTime            @default(now()) @updatedAt
   location                 String?
-  quantitySemiFinished     Float?              @default(0) @map("quantity_semi_finished")
-  quantityFinished         Float?              @default(0) @map("quantity_finished")
-  quantityCritical         Float?              @default(0) @map("quantity_critical")
-  quantityScrap            Float?              @default(0) @map("quantity_scrap")
-  quantityDead             Float?              @default(0) @map("quantity_dead")
-  quantityAccountingInd    Float?              @default(0) @map("quantity_accounting_ind")
-  quantityAccountingResale Float?              @default(0) @map("quantity_accounting_resale")
-  quantityOnOrder          Float?              @default(0) @map("quantity_on_order")
+  quantitySemiFinished     Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_semi_finished")
+  quantityFinished         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_finished")
+  quantityCritical         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_critical")
+  quantityScrap            Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_scrap")
+  quantityDead             Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_dead")
+  quantityAccountingInd    Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_ind")
+  quantityAccountingResale Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_resale")
+  quantityOnOrder          Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_on_order")
   expectedDeliveryDate     DateTime?           @map("expected_delivery_date") @db.Timestamptz(6)
   consumptionRuleId        String?             @map("consumption_rule_id")
   consumeByFormula         Boolean?            @default(false) @map("consume_by_formula")
   legacyProductCode        Int?                @map("legacy_product_code")
   version                  Int                 @default(1)
-  company                  Company?            @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company                  Company             @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   material                 Material            @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   movements                InventoryMovement[]
   reservations             StockReservation[]
@@ -551,10 +555,10 @@ model InventoryMovement {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   inventoryId    String       @db.Uuid
   movementType   MovementType
-  quantity       Float
-  unitCost       Float        @default(0)
-  totalCost      Float        @default(0)
-  balanceAfter   Float        @default(0)
+  quantity       Decimal  @db.Decimal(15, 4)
+  unitCost       Decimal        @db.Decimal(15, 2) @default(0)
+  totalCost      Decimal        @db.Decimal(15, 2) @default(0)
+  balanceAfter   Decimal        @db.Decimal(15, 2) @default(0)
   documentType   String?
   documentNumber String?
   documentId     String?
@@ -576,11 +580,11 @@ model InventoryMovement {
 model StockReservation {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code           Int
-  companyId      String?   @db.Uuid
+  companyId      String    @db.Uuid
   inventoryId    String    @db.Uuid
   materialId     String    @db.Uuid
-  quantity       Float
-  consumedQty    Float     @default(0)
+  quantity       Decimal  @db.Decimal(15, 4)
+  consumedQty    Decimal     @db.Decimal(15, 4) @default(0)
   documentType   String
   documentId     String
   documentNumber String?
@@ -593,7 +597,7 @@ model StockReservation {
   releasedBy     String?
   releaseReason  String?
   consumedAt     DateTime?
-  company        Company?  @relation(fields: [companyId], references: [id])
+  company        Company   @relation(fields: [companyId], references: [id])
   inventory      Inventory @relation(fields: [inventoryId], references: [id])
   material       Material  @relation(fields: [materialId], references: [id])
 
@@ -614,9 +618,9 @@ model Quote {
   validUntil            DateTime?
   paymentTerms          String?
   deliveryTerms         String?
-  freightValue          Float           @default(0)
-  discountPercent       Float           @default(0)
-  totalValue            Float           @default(0)
+  freightValue          Decimal           @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal           @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal           @db.Decimal(15, 2) @default(0)
   notes                 String?
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @default(now()) @updatedAt
@@ -654,9 +658,9 @@ model QuoteItem {
   id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   quoteId            String              @db.Uuid
   materialId         String              @db.Uuid
-  quantity           Float
-  unitPrice          Float               @default(0)
-  totalPrice         Float               @default(0)
+  quantity           Decimal  @db.Decimal(15, 4)
+  unitPrice          Decimal               @db.Decimal(15, 2) @default(0)
+  totalPrice         Decimal               @db.Decimal(15, 2) @default(0)
   deliveryDays       Int?
   notes              String?
   createdAt          DateTime            @default(now())
@@ -681,11 +685,11 @@ model PurchaseOrder {
   actualDeliveryDate    DateTime?
   paymentTerms          String?
   deliveryTerms         String?
-  freightValue          Float               @default(0)
-  discountPercent       Float               @default(0)
-  totalValue            Float               @default(0)
+  freightValue          Decimal               @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal               @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal               @db.Decimal(15, 2) @default(0)
   notes                 String?
-  companyId             String?             @db.Uuid
+  companyId             String              @db.Uuid
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @default(now()) @updatedAt
   application           String?
@@ -699,9 +703,9 @@ model PurchaseOrder {
   paymentConditionId    String?             @map("payment_condition_id")
   paymentConditionDesc  String?             @map("payment_condition_desc")
   freightType           freight_type?       @map("freight_type")
-  fobFreightValue       Float?              @default(0) @map("fob_freight_value")
+  fobFreightValue       Decimal?              @db.Decimal(15, 2) @default(0) @map("fob_freight_value")
   pickupKm              Float?              @map("pickup_km")
-  pickupValue           Float?              @map("pickup_value")
+  pickupValue           Decimal?              @db.Decimal(15, 2) @map("pickup_value")
   cancellationReason    String?             @map("cancellation_reason")
   financialApproved     Boolean?            @default(false) @map("financial_approved")
   financialApprovedById String?             @map("financial_approved_by_id")
@@ -711,7 +715,7 @@ model PurchaseOrder {
   import_process_items  ImportProcessItem[]
   materialReceivings    MaterialReceiving[]
   items                 PurchaseOrderItem[]
-  company               Company?            @relation(fields: [companyId], references: [id])
+  company               Company             @relation(fields: [companyId], references: [id])
   quote                 Quote?              @relation(fields: [quoteId], references: [id])
   supplier              Supplier            @relation(fields: [supplierId], references: [id])
   receivedInvoices      ReceivedInvoice[]
@@ -728,10 +732,10 @@ model PurchaseOrderItem {
   purchaseOrderId        String                  @db.Uuid
   materialId             String                  @db.Uuid
   quoteItemId            String?                 @db.Uuid
-  quantity               Float
-  unitPrice              Float                   @default(0)
-  totalPrice             Float                   @default(0)
-  receivedQty            Float                   @default(0)
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal                   @db.Decimal(15, 2) @default(0)
+  totalPrice             Decimal                   @db.Decimal(15, 2) @default(0)
+  receivedQty            Decimal                   @db.Decimal(15, 4) @default(0)
   deliveryDays           Int?
   notes                  String?
   createdAt              DateTime                @default(now())
@@ -784,15 +788,15 @@ model ReceivedInvoice {
   supplierId                  String?               @db.Uuid
   supplierCnpj                String                @db.VarChar(18)
   supplierName                String                @db.VarChar(255)
-  totalProducts               Float                 @default(0)
-  totalInvoice                Float                 @default(0)
-  freightValue                Float                 @default(0)
-  discountValue               Float                 @default(0)
-  icmsBase                    Float                 @default(0)
-  icmsValue                   Float                 @default(0)
-  ipiValue                    Float                 @default(0)
-  pisValue                    Float                 @default(0)
-  cofinsValue                 Float                 @default(0)
+  totalProducts               Decimal                 @db.Decimal(15, 2) @default(0)
+  totalInvoice                Decimal                 @db.Decimal(15, 2) @default(0)
+  freightValue                Decimal                 @db.Decimal(15, 2) @default(0)
+  discountValue               Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsBase                    Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue                   Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  pisValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  cofinsValue                 Decimal                 @db.Decimal(15, 2) @default(0)
   status                      String                @default("PENDING") @db.VarChar(20)
   purchaseOrderId             String?               @db.Uuid
   receivedAt                  DateTime?
@@ -802,20 +806,20 @@ model ReceivedInvoice {
   rejectedAt                  DateTime?
   rejectedBy                  String?               @db.Uuid
   rejectionReason             String?
-  companyId                   String?               @db.Uuid
+  companyId                   String                @db.Uuid
   xmlContent                  String?
   createdAt                   DateTime              @default(now())
   updatedAt                   DateTime              @default(now()) @updatedAt
-  icms_st_base                Float?                @default(0)
-  icms_st_value               Float?                @default(0)
-  insurance_value             Float?                @default(0)
-  other_expenses              Float?                @default(0)
-  icms_credit                 Float?                @default(0)
-  icms_st_credit              Float?                @default(0)
-  icms_sn_credit              Float?                @default(0)
-  ipi_credit                  Float?                @default(0)
-  pis_credit                  Float?                @default(0)
-  cofins_credit               Float?                @default(0)
+  icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
+  insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
+  other_expenses              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_credit                 Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_sn_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  ipi_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  pis_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  cofins_credit               Decimal?                @db.Decimal(15, 2) @default(0)
   cost_center_group           Int?
   cost_center_confirmed_by_id String?
   payment_condition_id        String?
@@ -826,7 +830,7 @@ model ReceivedInvoice {
   accountsPayable             AccountsPayable[]
   materialReceivings          MaterialReceiving[]
   items                       ReceivedInvoiceItem[]
-  company                     Company?              @relation(fields: [companyId], references: [id], onUpdate: NoAction)
+  company                     Company               @relation(fields: [companyId], references: [id], onUpdate: NoAction)
   purchaseOrder               PurchaseOrder?        @relation(fields: [purchaseOrderId], references: [id], onUpdate: NoAction)
   supplier                    Supplier?             @relation(fields: [supplierId], references: [id], onUpdate: NoAction)
   sefazPendingNfes            SefazPendingNfe[]
@@ -846,20 +850,20 @@ model ReceivedInvoiceItem {
   productName           String               @db.VarChar(255)
   ncm                   String?              @db.VarChar(10)
   cfop                  Int
-  quantity              Float
+  quantity              Decimal  @db.Decimal(15, 4)
   unit                  String               @db.VarChar(10)
-  unitPrice             Float
-  totalPrice            Float
-  icmsRate              Float                @default(0)
-  icmsValue             Float                @default(0)
-  ipiRate               Float                @default(0)
-  ipiValue              Float                @default(0)
+  unitPrice             Decimal  @db.Decimal(15, 2)
+  totalPrice            Decimal  @db.Decimal(15, 2)
+  icmsRate              Decimal                @db.Decimal(10, 4) @default(0)
+  icmsValue             Decimal                @db.Decimal(15, 2) @default(0)
+  ipiRate               Decimal                @db.Decimal(10, 4) @default(0)
+  ipiValue              Decimal                @db.Decimal(15, 2) @default(0)
   materialId            String?              @db.Uuid
   purchaseOrderItemId   String?              @db.Uuid
   matchStatus           String               @default("PENDING") @db.VarChar(20)
   divergenceType        String?              @db.VarChar(20)
   divergenceNote        String?
-  receivedQty           Float                @default(0)
+  receivedQty           Decimal                @db.Decimal(15, 4) @default(0)
   createdAt             DateTime             @default(now())
   invoice               ReceivedInvoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   material              Material?            @relation(fields: [materialId], references: [id], onUpdate: NoAction)
@@ -875,7 +879,7 @@ model ReceivedInvoiceItem {
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                 Int
-  companyId            String?                 @db.Uuid
+  companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
   documentType         PayableType             @default(INVOICE)
   documentNumber       String?                 @db.VarChar(50)
@@ -884,12 +888,12 @@ model AccountsPayable {
   description          String
   dueDate              DateTime
   issueDate            DateTime                @default(now())
-  originalValue        Float
-  discountValue        Float                   @default(0)
-  interestValue        Float                   @default(0)
-  fineValue            Float                   @default(0)
-  paidValue            Float                   @default(0)
-  netValue             Float
+  originalValue        Decimal  @db.Decimal(15, 2)
+  discountValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  interestValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  fineValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  paidValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  netValue             Decimal  @db.Decimal(15, 2)
   status               PayableStatus           @default(PENDING)
   paidAt               DateTime?
   installmentNumber    Int                     @default(1)
@@ -906,12 +910,12 @@ model AccountsPayable {
   scheduledPaymentDate DateTime?
   additionalInfo       String?                 @map("additional_info")
   hasWithholding       Boolean?                @default(false) @map("has_withholding")
-  withholdingIr        Float?                  @default(0) @map("withholding_ir")
-  withholdingIss       Float?                  @default(0) @map("withholding_iss")
-  withholdingInss      Float?                  @default(0) @map("withholding_inss")
-  withholdingPis       Float?                  @default(0) @map("withholding_pis")
-  withholdingCofins    Float?                  @default(0) @map("withholding_cofins")
-  withholdingCsll      Float?                  @default(0) @map("withholding_csll")
+  withholdingIr        Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_ir")
+  withholdingIss       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_iss")
+  withholdingInss      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_inss")
+  withholdingPis       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_pis")
+  withholdingCofins    Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_cofins")
+  withholdingCsll      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_csll")
   supplierAlphaCode    String?                 @map("supplier_alpha_code")
   supplierCnpj         String?                 @map("supplier_cnpj")
   supplierIe           String?                 @map("supplier_ie")
@@ -929,7 +933,7 @@ model AccountsPayable {
   pdfFileName          String?                 @map("pdf_file_name")
   contractType         payable_contract_type?  @map("contract_type")
   bankAccount          BankAccount?            @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_payable_bankaccount_fkey")
-  company              Company?                @relation(fields: [companyId], references: [id])
+  company              Company                 @relation(fields: [companyId], references: [id])
   costCenter           CostCenter?             @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_payable_costcenter_fkey")
   invoice              ReceivedInvoice?        @relation(fields: [invoiceId], references: [id])
   supplier             Supplier                @relation(fields: [supplierId], references: [id])
@@ -954,10 +958,10 @@ model PayablePayment {
   id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payableId         String          @db.Uuid
   paymentDate       DateTime
-  value             Float
-  discountValue     Float           @default(0)
-  interestValue     Float           @default(0)
-  fineValue         Float           @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal           @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal           @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal           @db.Decimal(15, 2) @default(0)
   paymentMethod     String?         @db.VarChar(50)
   bankAccountId     String?         @db.Uuid
   notes             String?
@@ -974,7 +978,7 @@ model PayablePayment {
 model MaterialRequisition {
   id          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code        Int
-  companyId   String?                   @db.Uuid
+  companyId   String                    @db.Uuid
   type        RequisitionType           @default(PRODUCTION)
   costCenter  String?                   @db.VarChar(50)
   projectCode String?                   @db.VarChar(50)
@@ -993,7 +997,7 @@ model MaterialRequisition {
   createdAt   DateTime                  @default(now())
   updatedAt   DateTime                  @default(now()) @updatedAt
   items       MaterialRequisitionItem[]
-  company     Company?                  @relation(fields: [companyId], references: [id])
+  company     Company                   @relation(fields: [companyId], references: [id])
   approvals   RequisitionApproval[]
 
   @@unique([companyId, code])
@@ -1008,11 +1012,11 @@ model MaterialRequisitionItem {
   id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   requisitionId String              @db.Uuid
   materialId    String              @db.Uuid
-  requestedQty  Float
-  approvedQty   Float?
-  separatedQty  Float               @default(0)
-  unitCost      Float               @default(0)
-  totalCost     Float               @default(0)
+  requestedQty  Decimal  @db.Decimal(15, 4)
+  approvedQty   Decimal?  @db.Decimal(15, 4)
+  separatedQty  Decimal               @db.Decimal(10, 4) @default(0)
+  unitCost      Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost     Decimal               @db.Decimal(15, 2) @default(0)
   notes         String?
   createdAt     DateTime            @default(now())
   material      Material            @relation(fields: [materialId], references: [id])
@@ -1026,10 +1030,10 @@ model MaterialRequisitionItem {
 model ProductionOrder {
   id                      String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                    Int
-  companyId               String?                    @db.Uuid
+  companyId               String                     @db.Uuid
   productId               String                     @db.Uuid
-  quantity                Float
-  producedQty             Float                      @default(0)
+  quantity                Decimal  @db.Decimal(15, 4)
+  producedQty             Decimal                      @db.Decimal(15, 4) @default(0)
   plannedStart            DateTime?
   plannedEnd              DateTime?
   actualStart             DateTime?
@@ -1065,7 +1069,7 @@ model ProductionOrder {
   productionLogs          ProductionLog[]
   materials               ProductionOrderMaterial[]
   operations              ProductionOrderOperation[]
-  company                 Company?                   @relation(fields: [companyId], references: [id])
+  company                 Company                    @relation(fields: [companyId], references: [id])
   product                 Material                   @relation("ProductionProduct", fields: [productId], references: [id])
   quality_inspections     QualityInspection[]
   salesOrderItems         SalesOrderItem[]
@@ -1081,10 +1085,10 @@ model ProductionOrderMaterial {
   id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId     String          @db.Uuid
   materialId  String          @db.Uuid
-  requiredQty Float
-  consumedQty Float           @default(0)
-  unitCost    Float           @default(0)
-  totalCost   Float           @default(0)
+  requiredQty Decimal  @db.Decimal(15, 4)
+  consumedQty Decimal           @db.Decimal(15, 4) @default(0)
+  unitCost    Decimal           @db.Decimal(15, 2) @default(0)
+  totalCost   Decimal           @db.Decimal(15, 2) @default(0)
   notes       String?
   createdAt   DateTime        @default(now())
   material    Material        @relation("ProductionMaterial", fields: [materialId], references: [id])
@@ -1103,13 +1107,13 @@ model ProductionOrderOperation {
   sequence        Int
   name            String          @db.VarChar(200)
   workCenter      String?         @db.VarChar(100)
-  setupTime       Float           @default(0)
-  runTime         Float           @default(0)
-  actualSetupTime Float           @default(0)
-  actualRunTime   Float           @default(0)
-  plannedQty      Float
-  completedQty    Float           @default(0)
-  scrapQty        Float           @default(0)
+  setupTime       Decimal           @db.Decimal(15, 2) @default(0)
+  runTime         Decimal           @db.Decimal(15, 2) @default(0)
+  actualSetupTime Decimal           @db.Decimal(15, 2) @default(0)
+  actualRunTime   Decimal           @db.Decimal(15, 2) @default(0)
+  plannedQty      Decimal  @db.Decimal(15, 4)
+  completedQty    Decimal           @db.Decimal(15, 4) @default(0)
+  scrapQty        Decimal           @db.Decimal(15, 4) @default(0)
   startedAt       DateTime?
   completedAt     DateTime?
   notes           String?
@@ -1126,9 +1130,9 @@ model CostCenter {
   name               String
   description        String?
   parentId           String?                 @db.Uuid
-  companyId          String?                 @db.Uuid
+  companyId          String                  @db.Uuid
   isActive           Boolean                 @default(true)
-  budget             Float?                  @default(0)
+  budget             Decimal?                  @db.Decimal(15, 2) @default(0)
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @default(now()) @updatedAt
   accounts_payable   AccountsPayable[]
@@ -1136,7 +1140,7 @@ model CostCenter {
   budgetActuals      BudgetActual[]
   budgetAlerts       BudgetAlert[]
   budgetEntries      BudgetEntry[]
-  company            Company?                @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "cost_centers_company_fkey")
+  company            Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "cost_centers_company_fkey")
   parent             CostCenter?             @relation("CostCenterHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "cost_centers_parent_fkey")
   children           CostCenter[]            @relation("CostCenterHierarchy")
   departments        Department[]
@@ -1159,10 +1163,10 @@ model BankAccount {
   accountNumber                                                          String?
   accountDigit                                                           String?
   accountType                                                            BankAccountType      @default(CHECKING)
-  companyId                                                              String?              @db.Uuid
-  initialBalance                                                         Float                @default(0)
-  currentBalance                                                         Float                @default(0)
-  creditLimit                                                            Float?               @default(0)
+  companyId                                                              String               @db.Uuid
+  initialBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  currentBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  creditLimit                                                            Decimal?               @db.Decimal(15, 2) @default(0)
   isActive                                                               Boolean              @default(true)
   isDefault                                                              Boolean              @default(false)
   notes                                                                  String?
@@ -1170,7 +1174,7 @@ model BankAccount {
   updatedAt                                                              DateTime             @default(now()) @updatedAt
   accounts_payable                                                       AccountsPayable[]
   receivables                                                            AccountsReceivable[]
-  company                                                                Company?             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
+  company                                                                Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
   transactions                                                           BankTransaction[]
   bank_transactions_bank_transactions_transferToAccountIdTobank_accounts BankTransaction[]    @relation("bank_transactions_transferToAccountIdTobank_accounts")
   exchange_contracts                                                     ExchangeContract[]
@@ -1188,8 +1192,8 @@ model BankTransaction {
   transactionDate                                                    DateTime
   type                                                               BankTransactionType
   description                                                        String
-  value                                                              Float
-  balanceAfter                                                       Float
+  value                                                              Decimal  @db.Decimal(15, 2)
+  balanceAfter                                                       Decimal  @db.Decimal(15, 2)
   documentNumber                                                     String?
   payableId                                                          String?             @db.Uuid
   receivableId                                                       String?             @db.Uuid
@@ -1223,8 +1227,8 @@ model PixTransaction {
   status            String       @default("PENDING")
   pixKeyType        String
   pixKey            String
-  value             Float
-  fee               Float        @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  fee               Decimal        @db.Decimal(15, 2) @default(0)
   recipientName     String
   recipientDocument String?
   recipientBank     String?
@@ -1238,12 +1242,12 @@ model PixTransaction {
   cancelledAt       DateTime?
   errorCode         String?
   errorMessage      String?
-  companyId         String?      @db.Uuid
+  companyId         String       @db.Uuid
   createdBy         String?      @db.Uuid
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @default(now()) @updatedAt
   bankAccount       BankAccount? @relation(fields: [bankAccountId], references: [id])
-  company           Company?     @relation(fields: [companyId], references: [id])
+  company           Company      @relation(fields: [companyId], references: [id])
 
   @@index([companyId])
   @@index([status])
@@ -1256,7 +1260,7 @@ model PixTransaction {
 model Customer {
   id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                    String
-  companyId               String?              @db.Uuid
+  companyId               String               @db.Uuid
   type                    String               @default("COMPANY")
   companyName             String
   tradeName               String?
@@ -1276,7 +1280,7 @@ model Customer {
   addressCity             String?
   addressState            String?
   addressZipCode          String?
-  creditLimit             Float?               @default(0)
+  creditLimit             Decimal?               @db.Decimal(15, 2) @default(0)
   paymentTermDays         Int?                 @default(30)
   status                  String               @default("ACTIVE")
   notes                   String?
@@ -1294,13 +1298,13 @@ model Customer {
   relationshipStartDate   DateTime?            @map("relationship_start_date") @db.Timestamptz(6)
   visitFrequency          Int?                 @map("visit_frequency")
   generatePeriodicVisit   Boolean?             @default(false) @map("generate_periodic_visit")
-  minInvoiceValue         Float?               @map("min_invoice_value")
+  minInvoiceValue         Decimal?               @db.Decimal(15, 4) @map("min_invoice_value")
   defaultMessage          String?              @map("default_message")
   defaultPaymentCondition String?              @map("default_payment_condition")
   applySt                 Boolean?             @default(false) @map("apply_st")
   defaultOrderNotes       String?              @map("default_order_notes")
   receivables             AccountsReceivable[]
-  company                 Company?             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "customers_company_fkey")
+  company                 Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "customers_company_fkey")
   issuedInvoices          IssuedInvoice[]
   leads                   Lead[]
   salesOrders             SalesOrder[]
@@ -1316,7 +1320,7 @@ model Customer {
 model AccountsReceivable {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code              Int
-  companyId         String?             @db.Uuid
+  companyId         String              @db.Uuid
   customerId        String              @db.Uuid
   documentType      ReceivableType      @default(INVOICE)
   documentNumber    String?
@@ -1324,12 +1328,12 @@ model AccountsReceivable {
   description       String
   dueDate           DateTime
   issueDate         DateTime            @default(now())
-  originalValue     Float
-  discountValue     Float               @default(0)
-  interestValue     Float               @default(0)
-  fineValue         Float               @default(0)
-  paidValue         Float               @default(0)
-  netValue          Float
+  originalValue     Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal               @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal               @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal               @db.Decimal(15, 2) @default(0)
+  paidValue         Decimal               @db.Decimal(15, 2) @default(0)
+  netValue          Decimal  @db.Decimal(15, 2)
   status            ReceivableStatus    @default(PENDING)
   paidAt            DateTime?
   installmentNumber Int                 @default(1)
@@ -1347,7 +1351,7 @@ model AccountsReceivable {
   updatedAt         DateTime            @default(now()) @updatedAt
   issuedInvoiceId   String?             @db.Uuid
   bankAccount       BankAccount?        @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_receivable_bankaccount_fkey")
-  company           Company?            @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
+  company           Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
   costCenter        CostCenter?         @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "accounts_receivable_costcenter_fkey")
   customer          Customer            @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "accounts_receivable_customer_fkey")
   issuedInvoice     IssuedInvoice?      @relation(fields: [issuedInvoiceId], references: [id])
@@ -1368,10 +1372,10 @@ model ReceivablePayment {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   receivableId      String             @db.Uuid
   paymentDate       DateTime
-  value             Float
-  discountValue     Float              @default(0)
-  interestValue     Float              @default(0)
-  fineValue         Float              @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal              @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal              @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal              @db.Decimal(15, 2) @default(0)
   paymentMethod     String?
   bankAccountId     String?            @db.Uuid
   bankTransactionId String?            @db.Uuid
@@ -1427,8 +1431,8 @@ model PayableCostAllocation {
   id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payableId    String          @db.Uuid
   costCenterId String          @db.Uuid
-  percentage   Float
-  value        Float
+  percentage   Decimal  @db.Decimal(10, 4)
+  value        Decimal  @db.Decimal(15, 2)
   createdAt    DateTime        @default(now())
   costCenter   CostCenter      @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "payable_cost_allocations_costcenter_fkey")
   payable      AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payable_cost_allocations_payable_fkey")
@@ -1440,16 +1444,16 @@ model PayableCostAllocation {
 
 model ApprovalThreshold {
   id                String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId         String?                     @db.Uuid
+  companyId         String                      @db.Uuid
   name              String
-  minValue          Float                       @default(0)
-  maxValue          Float?
+  minValue          Decimal                       @db.Decimal(15, 4) @default(0)
+  maxValue          Decimal?  @db.Decimal(15, 4)
   requiredApprovers Int                         @default(1)
   isActive          Boolean                     @default(true)
   createdAt         DateTime                    @default(now())
   updatedAt         DateTime                    @default(now()) @updatedAt
   approvers         ApprovalThresholdApprover[]
-  company           Company?                    @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "approval_thresholds_company_fkey")
+  company           Company                     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "approval_thresholds_company_fkey")
 
   @@index([companyId])
   @@map("approval_thresholds")
@@ -1473,9 +1477,9 @@ model BomItem {
   id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   parentMaterialId String   @db.Uuid
   childMaterialId  String   @db.Uuid
-  quantity         Float
+  quantity         Decimal  @db.Decimal(15, 4)
   unit             String   @default("UN")
-  scrapPercentage  Float    @default(0)
+  scrapPercentage  Decimal    @db.Decimal(10, 4) @default(0)
   leadTimeDays     Int      @default(0)
   sequence         Int      @default(0)
   notes            String?
@@ -1494,9 +1498,9 @@ model BomItem {
 model MrpParameter {
   id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   materialId             String   @unique @db.Uuid
-  minLotSize             Float    @default(1)
-  lotMultiple            Float    @default(1)
-  safetyStock            Float    @default(0)
+  minLotSize             Decimal    @db.Decimal(15, 4) @default(1)
+  lotMultiple            Decimal    @db.Decimal(15, 2) @default(1)
+  safetyStock            Decimal    @db.Decimal(15, 2) @default(0)
   productionLeadTimeDays Int      @default(1)
   purchaseLeadTimeDays   Int      @default(7)
   orderPolicy            String   @default("LOT_FOR_LOT")
@@ -1511,7 +1515,7 @@ model MrpParameter {
 
 model MrpRun {
   id                    String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId             String?         @db.Uuid
+  companyId             String          @db.Uuid
   runDate               DateTime        @default(now())
   horizonDays           Int             @default(30)
   status                String          @default("RUNNING")
@@ -1521,7 +1525,7 @@ model MrpRun {
   completedAt           DateTime?
   createdBy             String?         @db.Uuid
   notes                 String?
-  company               Company?        @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "mrp_runs_company_fkey")
+  company               Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "mrp_runs_company_fkey")
   suggestions           MrpSuggestion[]
 
   @@index([companyId])
@@ -1537,7 +1541,7 @@ model MrpSuggestion {
   status           MrpSuggestionStatus @default(PENDING)
   suggestedDate    DateTime
   requiredDate     DateTime
-  quantity         Float
+  quantity         Decimal  @db.Decimal(15, 4)
   sourceOrderId    String?             @db.Uuid
   sourceOrderType  String?
   reason           String?
@@ -1566,20 +1570,20 @@ model WorkCenter {
   code             String
   name             String
   description      String?
-  companyId        String?         @db.Uuid
-  capacityPerHour  Float           @default(1)
-  hoursPerDay      Float           @default(8)
+  companyId        String          @db.Uuid
+  capacityPerHour  Decimal           @db.Decimal(15, 4) @default(1)
+  hoursPerDay      Decimal           @db.Decimal(15, 4) @default(8)
   daysPerWeek      Int             @default(5)
-  efficiencyTarget Float           @default(85)
+  efficiencyTarget Decimal           @db.Decimal(15, 2) @default(85)
   setupTimeMinutes Int             @default(0)
-  costPerHour      Float           @default(0)
+  costPerHour      Decimal           @db.Decimal(15, 4) @default(0)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @default(now()) @updatedAt
   machineStops     MachineStop[]
   oeeTargets       OeeTarget[]
   productionLogs   ProductionLog[]
-  company          Company?        @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "work_centers_company_fkey")
+  company          Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "work_centers_company_fkey")
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_work_centers_companyId")
@@ -1593,18 +1597,18 @@ model ProductionLog {
   operatorId            String?          @db.Uuid
   shiftDate             DateTime         @db.Date
   shiftNumber           Int              @default(1)
-  plannedQuantity       Float            @default(0)
-  producedQuantity      Float            @default(0)
-  goodQuantity          Float            @default(0)
-  scrapQuantity         Float            @default(0)
-  reworkQuantity        Float            @default(0)
+  plannedQuantity       Decimal            @db.Decimal(15, 4) @default(0)
+  producedQuantity      Decimal            @db.Decimal(15, 4) @default(0)
+  goodQuantity          Decimal            @db.Decimal(15, 4) @default(0)
+  scrapQuantity         Decimal            @db.Decimal(15, 4) @default(0)
+  reworkQuantity        Decimal            @db.Decimal(15, 4) @default(0)
   plannedTimeMinutes    Int              @default(0)
   actualTimeMinutes     Int              @default(0)
   setupTimeMinutes      Int              @default(0)
   runTimeMinutes        Int              @default(0)
   stopTimeMinutes       Int              @default(0)
-  cycleTimeSeconds      Float?
-  idealCycleTimeSeconds Float?
+  cycleTimeSeconds      Decimal?  @db.Decimal(15, 2)
+  idealCycleTimeSeconds Decimal?  @db.Decimal(15, 2)
   notes                 String?
   createdBy             String?          @db.Uuid
   createdAt             DateTime         @default(now())
@@ -1645,7 +1649,7 @@ model MachineStop {
 
 model OeeTarget {
   id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId          String?     @db.Uuid
+  companyId          String      @db.Uuid
   workCenterId       String?     @db.Uuid
   year               Int
   month              Int?
@@ -1655,7 +1659,7 @@ model OeeTarget {
   oeeTarget          Float       @default(85)
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @default(now()) @updatedAt
-  company            Company?    @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "oee_targets_company_fkey")
+  company            Company     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "oee_targets_company_fkey")
   workCenter         WorkCenter? @relation(fields: [workCenterId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "oee_targets_workcenter_fkey")
 
   @@index([companyId])
@@ -1668,7 +1672,7 @@ model OeeTarget {
 model Lead {
   id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code              String
-  companyId         String?        @db.Uuid
+  companyId         String         @db.Uuid
   customerId        String?        @db.Uuid
   companyName       String
   contactName       String?
@@ -1676,7 +1680,7 @@ model Lead {
   phone             String?
   source            LeadSource     @default(OTHER)
   status            LeadStatus     @default(NEW)
-  estimatedValue    Float?
+  estimatedValue    Decimal?  @db.Decimal(15, 2)
   probability       Int?           @default(50)
   expectedCloseDate DateTime?
   description       String?
@@ -1691,7 +1695,7 @@ model Lead {
   updatedAt         DateTime       @default(now()) @updatedAt
   activities        LeadActivity[]
   assignedUser      User?          @relation(fields: [assignedTo], references: [id], onUpdate: NoAction, map: "leads_assigned_fkey")
-  company           Company?       @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "leads_company_fkey")
+  company           Company        @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "leads_company_fkey")
   customer          Customer?      @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "leads_customer_fkey")
   salesQuotes       SalesQuote[]
 
@@ -1724,7 +1728,7 @@ model LeadActivity {
 model SalesQuote {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                                            Int
-  companyId                                       String?          @db.Uuid
+  companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
   leadId                                          String?          @db.Uuid
   status                                          SalesQuoteStatus @default(DRAFT)
@@ -1733,12 +1737,12 @@ model SalesQuote {
   deliveryDays                                    Int?
   paymentTerms                                    String?
   shippingMethod                                  String?
-  subtotal                                        Float            @default(0)
-  discountPercent                                 Float            @default(0)
-  discountValue                                   Float            @default(0)
-  shippingValue                                   Float            @default(0)
-  taxValue                                        Float            @default(0)
-  totalValue                                      Float            @default(0)
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
   notes                                           String?
   internalNotes                                   String?
   sentAt                                          DateTime?
@@ -1752,7 +1756,7 @@ model SalesQuote {
   updatedAt                                       DateTime         @default(now()) @updatedAt
   sales_orders_sales_orders_quoteIdTosales_quotes SalesOrder[]     @relation("sales_orders_quoteIdTosales_quotes")
   items                                           SalesQuoteItem[]
-  company                                         Company?         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
+  company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
   customer                                        Customer         @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "sales_quotes_customer_fkey")
   lead                                            Lead?            @relation(fields: [leadId], references: [id], onUpdate: NoAction, map: "sales_quotes_lead_fkey")
   convertedToOrder                                SalesOrder?      @relation("QuoteToOrder", fields: [convertedToOrderId], references: [id], onUpdate: NoAction, map: "sales_quotes_order_fkey")
@@ -1771,11 +1775,11 @@ model SalesQuoteItem {
   quoteId         String     @db.Uuid
   materialId      String     @db.Uuid
   description     String?
-  quantity        Float
+  quantity        Decimal  @db.Decimal(15, 4)
   unit            String     @default("UN")
-  unitPrice       Float
-  discountPercent Float      @default(0)
-  totalPrice      Float
+  unitPrice       Decimal  @db.Decimal(15, 2)
+  discountPercent Decimal      @db.Decimal(10, 4) @default(0)
+  totalPrice      Decimal  @db.Decimal(15, 2)
   sequence        Int        @default(0)
   notes           String?
   createdAt       DateTime   @default(now())
@@ -1790,7 +1794,7 @@ model SalesQuoteItem {
 model SalesOrder {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                                            Int
-  companyId                                       String?          @db.Uuid
+  companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
   quoteId                                         String?          @db.Uuid
   status                                          SalesOrderStatus @default(PENDING)
@@ -1801,12 +1805,12 @@ model SalesOrder {
   paymentTerms                                    String?
   shippingMethod                                  String?
   shippingAddress                                 String?
-  subtotal                                        Float            @default(0)
-  discountPercent                                 Float            @default(0)
-  discountValue                                   Float            @default(0)
-  shippingValue                                   Float            @default(0)
-  taxValue                                        Float            @default(0)
-  totalValue                                      Float            @default(0)
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
   notes                                           String?
   internalNotes                                   String?
   invoiceNumber                                   String?
@@ -1819,7 +1823,7 @@ model SalesOrder {
   updatedAt                                       DateTime         @default(now()) @updatedAt
   issuedInvoices                                  IssuedInvoice[]  @relation("IssuedInvoiceOrder")
   items                                           SalesOrderItem[]
-  company                                         Company?         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")
+  company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")
   customer                                        Customer         @relation(fields: [customerId], references: [id], onUpdate: NoAction, map: "sales_orders_customer_fkey")
   sales_quotes_sales_orders_quoteIdTosales_quotes SalesQuote?      @relation("sales_orders_quoteIdTosales_quotes", fields: [quoteId], references: [id], onUpdate: NoAction, map: "sales_orders_quote_fkey")
   sourceQuote                                     SalesQuote[]     @relation("QuoteToOrder")
@@ -1837,12 +1841,12 @@ model SalesOrderItem {
   orderId           String           @db.Uuid
   materialId        String           @db.Uuid
   description       String?
-  quantity          Float
-  deliveredQty      Float            @default(0)
+  quantity          Decimal  @db.Decimal(15, 4)
+  deliveredQty      Decimal            @db.Decimal(15, 4) @default(0)
   unit              String           @default("UN")
-  unitPrice         Float
-  discountPercent   Float            @default(0)
-  totalPrice        Float
+  unitPrice         Decimal  @db.Decimal(15, 2)
+  discountPercent   Decimal            @db.Decimal(10, 4) @default(0)
+  totalPrice        Decimal  @db.Decimal(15, 2)
   sequence          Int              @default(0)
   productionOrderId String?          @db.Uuid
   notes             String?
@@ -1864,7 +1868,7 @@ model StockLocation {
   description         String?
   type                LocationType            @default(WAREHOUSE)
   parentId            String?                 @db.Uuid
-  companyId           String?                 @db.Uuid
+  companyId           String                  @db.Uuid
   address             String?
   isActive            Boolean                 @default(true)
   isDefault           Boolean                 @default(false)
@@ -1876,7 +1880,7 @@ model StockLocation {
   materialReceivings  MaterialReceiving[]
   physicalInventories PhysicalInventory[]
   pickingListItems    PickingListItem[]
-  company             Company?                @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_locations_company_fkey")
+  company             Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_locations_company_fkey")
   parent              StockLocation?          @relation("LocationHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "stock_locations_parent_fkey")
   children            StockLocation[]         @relation("LocationHierarchy")
   transfersFrom       StockTransfer[]         @relation("TransferFrom")
@@ -1894,10 +1898,10 @@ model LocationInventory {
   id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   locationId     String        @db.Uuid
   materialId     String        @db.Uuid
-  quantity       Float         @default(0)
-  reservedQty    Float         @default(0)
-  minQuantity    Float         @default(0)
-  maxQuantity    Float?
+  quantity       Decimal         @db.Decimal(15, 4) @default(0)
+  reservedQty    Decimal         @db.Decimal(15, 4) @default(0)
+  minQuantity    Decimal         @db.Decimal(15, 4) @default(0)
+  maxQuantity    Decimal?  @db.Decimal(15, 4)
   lastMovementAt DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @default(now()) @updatedAt
@@ -1915,7 +1919,7 @@ model LocationInventory {
 model StockTransfer {
   id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code               Int
-  companyId          String?             @db.Uuid
+  companyId          String              @db.Uuid
   fromLocationId     String              @db.Uuid
   toLocationId       String              @db.Uuid
   status             TransferStatus      @default(PENDING)
@@ -1935,7 +1939,7 @@ model StockTransfer {
   updatedAt          DateTime            @default(now()) @updatedAt
   items              StockTransferItem[]
   approvedByUser     User?               @relation("TransferApproved", fields: [approvedBy], references: [id], onUpdate: NoAction)
-  company            Company?            @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_transfers_company_fkey")
+  company            Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_transfers_company_fkey")
   fromLocation       StockLocation       @relation("TransferFrom", fields: [fromLocationId], references: [id], onUpdate: NoAction, map: "stock_transfers_from_fkey")
   receivedByUser     User?               @relation("TransferReceived", fields: [receivedBy], references: [id], onUpdate: NoAction)
   requestedByUser    User?               @relation("TransferRequested", fields: [requestedBy], references: [id], onUpdate: NoAction)
@@ -1960,9 +1964,9 @@ model StockTransferItem {
   id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   transferId   String        @db.Uuid
   materialId   String        @db.Uuid
-  requestedQty Float
-  shippedQty   Float         @default(0)
-  receivedQty  Float         @default(0)
+  requestedQty Decimal  @db.Decimal(15, 4)
+  shippedQty   Decimal         @db.Decimal(15, 4) @default(0)
+  receivedQty  Decimal         @db.Decimal(15, 4) @default(0)
   unit         String        @default("UN")
   notes        String?
   createdAt    DateTime      @default(now())
@@ -1996,7 +2000,7 @@ model RequisitionApproval {
 model PhysicalInventory {
   id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code        Int
-  companyId   String?          @db.Uuid
+  companyId   String           @db.Uuid
   locationId  String?          @db.Uuid
   name        String
   description String?
@@ -2009,7 +2013,7 @@ model PhysicalInventory {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @default(now()) @updatedAt
   counts      InventoryCount[]
-  company     Company?         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "physical_inventories_company_fkey")
+  company     Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "physical_inventories_company_fkey")
   location    StockLocation?   @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "physical_inventories_location_fkey")
 
   @@unique([code, companyId])
@@ -2024,9 +2028,9 @@ model InventoryCount {
   inventoryId String            @db.Uuid
   materialId  String            @db.Uuid
   locationId  String?           @db.Uuid
-  systemQty   Float             @default(0)
-  countedQty  Float?
-  difference  Float?
+  systemQty   Decimal             @db.Decimal(15, 4) @default(0)
+  countedQty  Decimal?  @db.Decimal(15, 4)
+  difference  Decimal?  @db.Decimal(15, 2)
   countedBy   String?           @db.Uuid
   countedAt   DateTime?
   verified    Boolean           @default(false)
@@ -2051,12 +2055,12 @@ model Department {
   description    String?
   managerId      String?         @db.Uuid
   parentId       String?         @db.Uuid
-  companyId      String?         @db.Uuid
+  companyId      String          @db.Uuid
   costCenterId   String?         @db.Uuid
   isActive       Boolean         @default(true)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @default(now()) @updatedAt
-  company        Company?        @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "departments_company_fkey")
+  company        Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "departments_company_fkey")
   costCenter     CostCenter?     @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "departments_costCenter_fkey")
   parent         Department?     @relation("DepartmentHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "departments_parent_fkey")
   children       Department[]    @relation("DepartmentHierarchy")
@@ -2079,14 +2083,14 @@ model JobPosition {
   name         String
   description  String?
   departmentId String?     @db.Uuid
-  companyId    String?     @db.Uuid
-  baseSalary   Float?
+  companyId    String      @db.Uuid
+  baseSalary   Decimal?  @db.Decimal(15, 2)
   level        Int?        @default(1)
   isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now()) @updatedAt
   employees    Employee[]
-  company      Company?    @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "job_positions_company_fkey")
+  company      Company     @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "job_positions_company_fkey")
   department   Department? @relation(fields: [departmentId], references: [id], onUpdate: NoAction, map: "job_positions_department_fkey")
 
   @@unique([code, companyId])
@@ -2099,7 +2103,7 @@ model JobPosition {
 model Employee {
   id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                Int
-  companyId           String?            @db.Uuid
+  companyId           String             @db.Uuid
   userId              String?            @db.Uuid
   name                String
   cpf                 String?
@@ -2124,8 +2128,8 @@ model Employee {
   status              EmployeeStatus     @default(ACTIVE)
   hireDate            DateTime           @db.Date
   terminationDate     DateTime?          @db.Date
-  salary              Float              @default(0)
-  workHoursPerDay     Float              @default(8)
+  salary              Decimal              @db.Decimal(15, 2) @default(0)
+  workHoursPerDay     Decimal              @db.Decimal(15, 4) @default(8)
   workDaysPerWeek     Int                @default(5)
   bankName            String?
   bankBranch          String?
@@ -2149,7 +2153,7 @@ model Employee {
   bankAccountDigit    String?            @map("bank_account_digit")
   employee_benefits   EmployeeBenefit[]
   employee_trainings  EmployeeTraining[]
-  company             Company?           @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "employees_company_fkey")
+  company             Company            @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "employees_company_fkey")
   department          Department?        @relation(fields: [departmentId], references: [id], onUpdate: NoAction, map: "employees_department_fkey")
   manager             Employee?          @relation("EmployeeManager", fields: [managerId], references: [id], onUpdate: NoAction, map: "employees_manager_fkey")
   subordinates        Employee[]         @relation("EmployeeManager")
@@ -2163,6 +2167,8 @@ model Employee {
   timesheetDays       TimesheetDay[]
   transport_vouchers  TransportVoucher[]
   vacations           Vacation[]
+  dependents          EmployeeDependent[]
+  leaveRecords        LeaveRecord[]
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_employees_companyId")
@@ -2202,11 +2208,11 @@ model TimesheetDay {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId     String    @db.Uuid
   date           DateTime  @db.Date
-  scheduledHours Float     @default(8)
-  workedHours    Float     @default(0)
-  overtimeHours  Float     @default(0)
-  nightHours     Float     @default(0)
-  absenceHours   Float     @default(0)
+  scheduledHours Decimal     @db.Decimal(15, 4) @default(8)
+  workedHours    Decimal     @db.Decimal(15, 4) @default(0)
+  overtimeHours  Decimal     @db.Decimal(15, 4) @default(0)
+  nightHours     Decimal     @db.Decimal(15, 4) @default(0)
+  absenceHours   Decimal     @db.Decimal(15, 4) @default(0)
   isHoliday      Boolean   @default(false)
   isWeekend      Boolean   @default(false)
   status         String    @default("PENDING")
@@ -2215,8 +2221,8 @@ model TimesheetDay {
   approvedAt     DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
-  overtime50     Float?    @default(0) @map("overtime_50")
-  overtime100    Float?    @default(0) @map("overtime_100")
+  overtime50     Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_50")
+  overtime100    Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_100")
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "timesheet_days_employee_fkey")
 
   @@unique([employeeId, date], map: "timesheet_days_employee_date_key")
@@ -2228,19 +2234,19 @@ model TimesheetDay {
 
 model WorkSchedule {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId        String?            @db.Uuid
+  companyId        String             @db.Uuid
   name             String
   code             String?
   type             WorkScheduleType   @default(FIXED)
   description      String?
-  weeklyHours      Float              @default(44)
-  dailyHours       Float              @default(8)
+  weeklyHours      Decimal              @db.Decimal(15, 4) @default(44)
+  dailyHours       Decimal              @db.Decimal(15, 4) @default(8)
   toleranceMinutes Int                @default(10)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @default(now()) @updatedAt
   employees        EmployeeSchedule[]
-  company          Company?           @relation(fields: [companyId], references: [id])
+  company          Company            @relation(fields: [companyId], references: [id])
   shifts           WorkShift[]
 
   @@unique([companyId, code])
@@ -2280,12 +2286,12 @@ model EmployeeSchedule {
 
 model HoursBank {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId   String?       @db.Uuid
+  companyId   String        @db.Uuid
   employeeId  String        @db.Uuid
   type        HoursBankType
   date        DateTime      @db.Date
-  hours       Float
-  balance     Float
+  hours       Decimal  @db.Decimal(15, 4)
+  balance     Decimal  @db.Decimal(15, 2)
   referenceId String?       @db.Uuid
   description String?
   expiresAt   DateTime?     @db.Date
@@ -2300,7 +2306,7 @@ model HoursBank {
 
 model TimeClockAdjustment {
   id              String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId       String?                   @db.Uuid
+  companyId       String                    @db.Uuid
   employeeId      String                    @db.Uuid
   date            DateTime                  @db.Date
   originalEntryId String?                   @db.Uuid
@@ -2339,13 +2345,13 @@ model Holiday {
 model Payroll {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code            Int
-  companyId       String?       @db.Uuid
+  companyId       String        @db.Uuid
   referenceMonth  Int
   referenceYear   Int
   status          String        @default("DRAFT")
-  totalGross      Float         @default(0)
-  totalDeductions Float         @default(0)
-  totalNet        Float         @default(0)
+  totalGross      Decimal         @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal         @db.Decimal(15, 2) @default(0)
+  totalNet        Decimal         @db.Decimal(15, 2) @default(0)
   employeeCount   Int           @default(0)
   processedAt     DateTime?
   processedBy     String?       @db.Uuid
@@ -2356,7 +2362,7 @@ model Payroll {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
   items           PayrollItem[]
-  company         Company?      @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "payrolls_company_fkey")
+  company         Company       @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "payrolls_company_fkey")
 
   @@unique([code, companyId])
   @@unique([companyId, referenceMonth, referenceYear], map: "payrolls_company_month_year_key")
@@ -2368,18 +2374,18 @@ model PayrollItem {
   id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payrollId       String         @db.Uuid
   employeeId      String         @db.Uuid
-  baseSalary      Float          @default(0)
+  baseSalary      Decimal          @db.Decimal(15, 2) @default(0)
   workedDays      Int            @default(0)
-  workedHours     Float          @default(0)
-  overtimeHours   Float          @default(0)
-  nightHours      Float          @default(0)
+  workedHours     Decimal          @db.Decimal(15, 4) @default(0)
+  overtimeHours   Decimal          @db.Decimal(15, 4) @default(0)
+  nightHours      Decimal          @db.Decimal(15, 4) @default(0)
   absenceDays     Int            @default(0)
-  grossSalary     Float          @default(0)
-  totalDeductions Float          @default(0)
-  netSalary       Float          @default(0)
-  inss            Float          @default(0)
-  irrf            Float          @default(0)
-  fgts            Float          @default(0)
+  grossSalary     Decimal          @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal          @db.Decimal(15, 2) @default(0)
+  netSalary       Decimal          @db.Decimal(15, 2) @default(0)
+  inss            Decimal          @db.Decimal(15, 2) @default(0)
+  irrf            Decimal          @db.Decimal(15, 2) @default(0)
+  fgts            Decimal          @db.Decimal(15, 2) @default(0)
   notes           String?
   createdAt       DateTime       @default(now())
   events          PayrollEvent[]
@@ -2398,8 +2404,8 @@ model PayrollEvent {
   type          PayrollEventType
   code          String
   description   String
-  reference     Float?
-  value         Float
+  reference     Decimal?  @db.Decimal(15, 2)
+  value         Decimal  @db.Decimal(15, 2)
   isDeduction   Boolean          @default(false)
   createdAt     DateTime         @default(now())
   payrollItem   PayrollItem      @relation(fields: [payrollItemId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payroll_events_item_fkey")
@@ -2410,7 +2416,7 @@ model PayrollEvent {
 
 model Vacation {
   id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId         String?         @db.Uuid
+  companyId         String          @db.Uuid
   employeeId        String          @db.Uuid
   acquisitionStart  DateTime        @db.Date
   acquisitionEnd    DateTime        @db.Date
@@ -2420,15 +2426,15 @@ model Vacation {
   soldDays          Int?            @default(0)
   enjoyedDays       Int?            @default(30)
   status            VacationStatus? @default(SCHEDULED)
-  baseSalary        Float?          @default(0)
-  vacationPay       Float?          @default(0)
-  oneThirdBonus     Float?          @default(0)
-  soldDaysValue     Float?          @default(0)
-  totalGross        Float?          @default(0)
-  inssDeduction     Float?          @default(0)
-  irrfDeduction     Float?          @default(0)
-  otherDeductions   Float?          @default(0)
-  totalNet          Float?          @default(0)
+  baseSalary        Decimal?          @db.Decimal(15, 2) @default(0)
+  vacationPay       Decimal?          @db.Decimal(15, 2) @default(0)
+  oneThirdBonus     Decimal?          @db.Decimal(15, 2) @default(0)
+  soldDaysValue     Decimal?          @db.Decimal(15, 2) @default(0)
+  totalGross        Decimal?          @db.Decimal(15, 2) @default(0)
+  inssDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  irrfDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  otherDeductions   Decimal?          @db.Decimal(15, 2) @default(0)
+  totalNet          Decimal?          @db.Decimal(15, 2) @default(0)
   paymentDate       DateTime?       @db.Date
   noticeDate        DateTime?       @db.Date
   isCollective      Boolean?        @default(false)
@@ -2439,7 +2445,7 @@ model Vacation {
   createdBy         String?         @db.Uuid
   createdAt         DateTime?       @default(now())
   updatedAt         DateTime?       @default(now()) @updatedAt
-  company           Company?        @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company           Company         @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee          Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([startDate])
@@ -2450,25 +2456,25 @@ model Vacation {
 
 model ThirteenthSalary {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId       String?           @db.Uuid
+  companyId       String            @db.Uuid
   employeeId      String            @db.Uuid
   year            Int
   type            ThirteenthType
   status          ThirteenthStatus? @default(PENDING)
   monthsWorked    Int?              @default(12)
-  baseSalary      Float?            @default(0)
-  averageVariable Float?            @default(0)
-  grossValue      Float?            @default(0)
-  inssDeduction   Float?            @default(0)
-  irrfDeduction   Float?            @default(0)
-  otherDeductions Float?            @default(0)
-  netValue        Float?            @default(0)
+  baseSalary      Decimal?            @db.Decimal(15, 2) @default(0)
+  averageVariable Decimal?            @db.Decimal(15, 2) @default(0)
+  grossValue      Decimal?            @db.Decimal(15, 2) @default(0)
+  inssDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  irrfDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  otherDeductions Decimal?            @db.Decimal(15, 2) @default(0)
+  netValue        Decimal?            @db.Decimal(15, 2) @default(0)
   paymentDate     DateTime?         @db.Date
   notes           String?
   createdBy       String?           @db.Uuid
   createdAt       DateTime?         @default(now())
   updatedAt       DateTime?         @default(now()) @updatedAt
-  company         Company?          @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee        Employee          @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([employeeId, year, type])
@@ -2479,7 +2485,7 @@ model ThirteenthSalary {
 
 model Termination {
   id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId               String?            @db.Uuid
+  companyId               String             @db.Uuid
   employeeId              String             @db.Uuid
   type                    TerminationType
   status                  TerminationStatus? @default(DRAFT)
@@ -2489,23 +2495,23 @@ model Termination {
   noticePeriodDays        Int?               @default(30)
   noticePeriodWorked      Boolean?           @default(false)
   noticePeriodIndemnity   Boolean?           @default(false)
-  baseSalary              Float?             @default(0)
-  salaryBalance           Float?             @default(0)
-  noticePeriodValue       Float?             @default(0)
-  vacationBalance         Float?             @default(0)
-  vacationProportional    Float?             @default(0)
-  vacationOneThird        Float?             @default(0)
-  thirteenthProportional  Float?             @default(0)
-  fgtsBalance             Float?             @default(0)
-  fgtsFine                Float?             @default(0)
-  otherEarnings           Float?             @default(0)
-  totalGross              Float?             @default(0)
-  inssDeduction           Float?             @default(0)
-  irrfDeduction           Float?             @default(0)
-  advanceDeduction        Float?             @default(0)
-  otherDeductions         Float?             @default(0)
-  totalDeductions         Float?             @default(0)
-  totalNet                Float?             @default(0)
+  baseSalary              Decimal?             @db.Decimal(15, 2) @default(0)
+  salaryBalance           Decimal?             @db.Decimal(15, 2) @default(0)
+  noticePeriodValue       Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationBalance         Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationProportional    Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationOneThird        Decimal?             @db.Decimal(15, 2) @default(0)
+  thirteenthProportional  Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsBalance             Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsFine                Decimal?             @db.Decimal(15, 2) @default(0)
+  otherEarnings           Decimal?             @db.Decimal(15, 2) @default(0)
+  totalGross              Decimal?             @db.Decimal(15, 2) @default(0)
+  inssDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  irrfDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  advanceDeduction        Decimal?             @db.Decimal(15, 2) @default(0)
+  otherDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalNet                Decimal?             @db.Decimal(15, 2) @default(0)
   paymentDate             DateTime?          @db.Date
   homologationDate        DateTime?          @db.Date
   trctNumber              String?            @db.VarChar(50)
@@ -2520,7 +2526,7 @@ model Termination {
   createdBy               String?            @db.Uuid
   createdAt               DateTime?          @default(now())
   updatedAt               DateTime?          @default(now()) @updatedAt
-  company                 Company?           @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company                 Company            @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   employee                Employee           @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([companyId], map: "idx_terminations_companyId")
@@ -2531,7 +2537,7 @@ model Termination {
 model MaterialReceiving {
   id              String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code            Int
-  companyId       String?                 @db.Uuid
+  companyId       String                  @db.Uuid
   supplierId      String                  @db.Uuid
   purchaseOrderId String?                 @db.Uuid
   invoiceId       String?                 @db.Uuid
@@ -2543,11 +2549,11 @@ model MaterialReceiving {
   nfeKey          String?
   nfeXml          String?
   nfeIssueDate    DateTime?
-  totalValue      Float                   @default(0)
-  freightValue    Float                   @default(0)
-  insuranceValue  Float                   @default(0)
-  discountValue   Float                   @default(0)
-  otherExpenses   Float                   @default(0)
+  totalValue      Decimal                   @db.Decimal(15, 2) @default(0)
+  freightValue    Decimal                   @db.Decimal(15, 2) @default(0)
+  insuranceValue  Decimal                   @db.Decimal(15, 2) @default(0)
+  discountValue   Decimal                   @db.Decimal(15, 2) @default(0)
+  otherExpenses   Decimal                   @db.Decimal(15, 2) @default(0)
   locationId      String?                 @db.Uuid
   notes           String?
   internalNotes   String?
@@ -2562,7 +2568,7 @@ model MaterialReceiving {
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @default(now()) @updatedAt
   items           MaterialReceivingItem[]
-  company         Company?                @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "material_receivings_company_fkey")
+  company         Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "material_receivings_company_fkey")
   invoice         ReceivedInvoice?        @relation(fields: [invoiceId], references: [id], onUpdate: NoAction, map: "material_receivings_invoice_fkey")
   location        StockLocation?          @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "material_receivings_location_fkey")
   purchaseOrder   PurchaseOrder?          @relation(fields: [purchaseOrderId], references: [id], onUpdate: NoAction, map: "material_receivings_po_fkey")
@@ -2588,16 +2594,16 @@ model MaterialReceivingItem {
   nfeItemNumber       Int?
   description         String?
   unit                String                @default("UN")
-  nfeQuantity         Float
-  receivedQuantity    Float                 @default(0)
-  approvedQuantity    Float                 @default(0)
-  rejectedQuantity    Float                 @default(0)
-  unitPrice           Float
-  totalPrice          Float
-  icmsBase            Float                 @default(0)
-  icmsValue           Float                 @default(0)
-  ipiBase             Float                 @default(0)
-  ipiValue            Float                 @default(0)
+  nfeQuantity         Decimal  @db.Decimal(15, 4)
+  receivedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  approvedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  rejectedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  unitPrice           Decimal  @db.Decimal(15, 2)
+  totalPrice          Decimal  @db.Decimal(15, 2)
+  icmsBase            Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue           Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiBase             Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue            Decimal                 @db.Decimal(15, 2) @default(0)
   status              ReceivingItemStatus   @default(PENDING)
   rejectionReason     String?
   batchNumber         String?
@@ -2894,7 +2900,7 @@ model IssuedInvoice {
   model              String               @default("55") @db.VarChar(5)
   accessKey          String?              @db.VarChar(50)
   protocolNumber     String?              @db.VarChar(20)
-  companyId          String?              @db.Uuid
+  companyId          String               @db.Uuid
   customerId         String               @db.Uuid
   salesOrderId       String?              @db.Uuid
   issueDate          DateTime             @default(now())
@@ -3841,7 +3847,7 @@ model SavedReport {
 
 model CollectionRule {
   id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId   String?              @map("company_id") @db.Uuid
+  companyId   String               @map("company_id") @db.Uuid
   name        String               @db.VarChar(100)
   description String?
   isActive    Boolean?             @default(true) @map("is_active")
@@ -3851,7 +3857,7 @@ model CollectionRule {
   updatedAt   DateTime?            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   actions     CollectionAction[]
   steps       CollectionRuleStep[]
-  company     Company?             @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company     Company              @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([isActive], map: "idx_collection_rules_active")
   @@index([companyId], map: "idx_collection_rules_company")
@@ -3912,7 +3918,7 @@ model SupplierReturn {
   status              SupplierReturnStatus @default(DRAFT)
   supplierId          String               @db.Uuid
   receivedInvoiceId   String?              @db.Uuid
-  totalValue          Float                @default(0)
+  totalValue          Decimal                @db.Decimal(15, 2) @default(0)
   returnDate          DateTime             @default(now())
   approvedAt          DateTime?
   approvedBy          String?              @db.Uuid
@@ -3925,12 +3931,12 @@ model SupplierReturn {
   returnInvoiceNumber Int?
   returnInvoiceKey    String?              @db.VarChar(44)
   notes               String?
-  companyId           String?              @db.Uuid
+  companyId           String               @db.Uuid
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now()) @updatedAt
   createdBy           String?              @db.Uuid
   items               SupplierReturnItem[]
-  company             Company?             @relation(fields: [companyId], references: [id], onUpdate: NoAction)
+  company             Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction)
   receivedInvoice     ReceivedInvoice?     @relation(fields: [receivedInvoiceId], references: [id], onUpdate: NoAction)
   supplier            Supplier             @relation(fields: [supplierId], references: [id], onUpdate: NoAction)
 
@@ -3947,9 +3953,9 @@ model SupplierReturnItem {
   returnId               String               @db.Uuid
   materialId             String               @db.Uuid
   receivedInvoiceItemId  String?              @db.Uuid
-  quantity               Float
-  unitPrice              Float
-  totalPrice             Float
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal  @db.Decimal(15, 2)
+  totalPrice             Decimal  @db.Decimal(15, 2)
   reason                 ReturnReason         @default(OTHER)
   reasonNotes            String?
   stockLocationId        String?              @db.Uuid
@@ -3970,17 +3976,17 @@ model SupplierReturnItem {
 model QualityInspection {
   id                String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code              Int
-  companyId         String?                 @map("company_id") @db.Uuid
+  companyId         String                  @map("company_id") @db.Uuid
   type              String                  @default("RECEIVING")
   status            String                  @default("PENDING")
   materialId        String?                 @map("material_id") @db.Uuid
   productionOrderId String?                 @map("production_order_id") @db.Uuid
   receivedInvoiceId String?                 @map("received_invoice_id") @db.Uuid
   lotNumber         String?                 @map("lot_number")
-  quantity          Float                   @default(0)
+  quantity          Decimal                   @db.Decimal(15, 4) @default(0)
   sampleSize        Int?                    @map("sample_size")
-  approvedQty       Float?                  @default(0) @map("approved_qty")
-  rejectedQty       Float?                  @default(0) @map("rejected_qty")
+  approvedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("approved_qty")
+  rejectedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("rejected_qty")
   inspectionDate    DateTime                @default(now()) @map("inspection_date")
   completedAt       DateTime?               @map("completed_at")
   inspectorId       String?                 @map("inspector_id") @db.Uuid
@@ -3989,7 +3995,7 @@ model QualityInspection {
   updatedAt         DateTime                @default(now()) @map("updated_at")
   non_conformities  NonConformity[]
   items             QualityInspectionItem[]
-  company           Company?                @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_quality_inspections_company")
+  company           Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_quality_inspections_company")
   inspector         User?                   @relation(fields: [inspectorId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_inspector")
   material          Material?               @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_material")
   productionOrder   ProductionOrder?        @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_quality_inspections_production_order")
@@ -4007,9 +4013,9 @@ model QualityInspectionItem {
   inspectionId   String            @map("inspection_id") @db.Uuid
   characteristic String
   specification  String?
-  toleranceMin   Float?            @map("tolerance_min")
-  toleranceMax   Float?            @map("tolerance_max")
-  measuredValue  Float?            @map("measured_value")
+  toleranceMin   Decimal?            @db.Decimal(10, 4) @map("tolerance_min")
+  toleranceMax   Decimal?            @db.Decimal(10, 4) @map("tolerance_max")
+  measuredValue  Decimal?            @db.Decimal(15, 6) @map("measured_value")
   result         String?           @default("PENDING")
   notes          String?
   createdAt      DateTime          @default(now()) @map("created_at")
@@ -4022,7 +4028,7 @@ model QualityInspectionItem {
 model NonConformity {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code              Int
-  companyId         String?            @map("company_id") @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
   type              String             @default("INTERNAL")
   status            String             @default("OPEN")
   severity          String             @default("MINOR")
@@ -4030,7 +4036,7 @@ model NonConformity {
   productionOrderId String?            @map("production_order_id") @db.Uuid
   materialId        String?            @map("material_id") @db.Uuid
   lotNumber         String?            @map("lot_number")
-  quantity          Float?             @default(0)
+  quantity          Decimal?             @db.Decimal(15, 4) @default(0)
   description       String
   rootCause         String?            @map("root_cause")
   immediateAction   String?            @map("immediate_action")
@@ -4043,7 +4049,7 @@ model NonConformity {
   createdBy         String?            @map("created_by") @db.Uuid
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @default(now()) @map("updated_at")
-  company           Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_non_conformities_company")
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_non_conformities_company")
   inspection        QualityInspection? @relation(fields: [inspectionId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_inspection")
   material          Material?          @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_material")
   productionOrder   ProductionOrder?   @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "fk_non_conformities_production_order")
@@ -4059,25 +4065,25 @@ model NonConformity {
 model ProductionCost {
   id                String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productionOrderId String                   @map("production_order_id") @db.Uuid
-  companyId         String?                  @map("company_id") @db.Uuid
+  companyId         String                   @map("company_id") @db.Uuid
   status            String                   @default("DRAFT")
-  materialCost      Float                    @default(0) @map("material_cost")
-  materialCostStd   Float?                   @default(0) @map("material_cost_std")
-  materialVariance  Float?                   @default(0) @map("material_variance")
-  laborCost         Float                    @default(0) @map("labor_cost")
-  laborCostStd      Float?                   @default(0) @map("labor_cost_std")
-  laborVariance     Float?                   @default(0) @map("labor_variance")
-  laborHours        Float?                   @default(0) @map("labor_hours")
-  laborHoursStd     Float?                   @default(0) @map("labor_hours_std")
-  overheadCost      Float                    @default(0) @map("overhead_cost")
-  overheadCostStd   Float?                   @default(0) @map("overhead_cost_std")
-  overheadVariance  Float?                   @default(0) @map("overhead_variance")
-  totalCost         Float                    @default(0) @map("total_cost")
-  totalCostStd      Float?                   @default(0) @map("total_cost_std")
-  totalVariance     Float?                   @default(0) @map("total_variance")
-  unitCost          Float?                   @default(0) @map("unit_cost")
-  unitCostStd       Float?                   @default(0) @map("unit_cost_std")
-  quantityProduced  Float?                   @default(0) @map("quantity_produced")
+  materialCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  materialCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_cost_std")
+  materialVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_variance")
+  laborCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  laborCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_cost_std")
+  laborVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_variance")
+  laborHours        Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours")
+  laborHoursStd     Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours_std")
+  overheadCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  overheadCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_cost_std")
+  overheadVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_variance")
+  totalCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("total_cost")
+  totalCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_variance")
+  unitCost          Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  unitCostStd       Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost_std")
+  quantityProduced  Decimal?                   @db.Decimal(15, 4) @default(0) @map("quantity_produced")
   calculatedAt      DateTime?                @map("calculated_at")
   closedAt          DateTime?                @map("closed_at")
   createdAt         DateTime                 @default(now()) @map("created_at")
@@ -4096,12 +4102,12 @@ model ProductionCostMaterial {
   id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productionCostId String         @map("production_cost_id") @db.Uuid
   materialId       String         @map("material_id") @db.Uuid
-  quantityStd      Float?         @default(0) @map("quantity_std")
-  quantityActual   Float?         @default(0) @map("quantity_actual")
-  unitCost         Float?         @default(0) @map("unit_cost")
-  totalCostStd     Float?         @default(0) @map("total_cost_std")
-  totalCostActual  Float?         @default(0) @map("total_cost_actual")
-  variance         Float?         @default(0)
+  quantityStd      Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_std")
+  quantityActual   Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_actual")
+  unitCost         Decimal?         @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
   createdAt        DateTime       @default(now()) @map("created_at")
   productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -4114,12 +4120,12 @@ model ProductionCostLabor {
   productionCostId String         @map("production_cost_id") @db.Uuid
   workCenterId     String?        @map("work_center_id") @db.Uuid
   operationId      String?        @map("operation_id") @db.Uuid
-  hoursStd         Float?         @default(0) @map("hours_std")
-  hoursActual      Float?         @default(0) @map("hours_actual")
-  hourlyRate       Float?         @default(0) @map("hourly_rate")
-  totalCostStd     Float?         @default(0) @map("total_cost_std")
-  totalCostActual  Float?         @default(0) @map("total_cost_actual")
-  variance         Float?         @default(0)
+  hoursStd         Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_std")
+  hoursActual      Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_actual")
+  hourlyRate       Decimal?         @db.Decimal(10, 4) @default(0) @map("hourly_rate")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
   createdAt        DateTime       @default(now()) @map("created_at")
   productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -4130,12 +4136,12 @@ model ProductionCostLabor {
 model MaterialStandardCost {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   materialId    String   @map("material_id") @db.Uuid
-  companyId     String?  @map("company_id") @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
   effectiveDate DateTime @default(now()) @map("effective_date")
-  materialCost  Float    @default(0) @map("material_cost")
-  laborCost     Float?   @default(0) @map("labor_cost")
-  overheadCost  Float?   @default(0) @map("overhead_cost")
-  totalCost     Float    @default(0) @map("total_cost")
+  materialCost  Decimal    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  laborCost     Decimal?   @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  overheadCost  Decimal?   @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  totalCost     Decimal    @db.Decimal(15, 2) @default(0) @map("total_cost")
   notes         String?
   createdBy     String?  @map("created_by") @db.Uuid
   createdAt     DateTime @default(now()) @map("created_at")
@@ -4150,12 +4156,12 @@ model BenefitType {
   code                    String
   name                    String
   description             String?
-  companyId               String?           @map("company_id") @db.Uuid
+  companyId               String            @map("company_id") @db.Uuid
   category                String            @default("OTHER")
   calculationType         String            @default("FIXED") @map("calculation_type")
-  defaultValue            Float?            @default(0) @map("default_value")
-  defaultPercentage       Float?            @default(0) @map("default_percentage")
-  employeeDiscountPercent Float?            @default(0) @map("employee_discount_percent")
+  defaultValue            Decimal?            @db.Decimal(15, 2) @default(0) @map("default_value")
+  defaultPercentage       Decimal?            @db.Decimal(10, 4) @default(0) @map("default_percentage")
+  employeeDiscountPercent Decimal?            @db.Decimal(10, 4) @default(0) @map("employee_discount_percent")
   isTaxable               Boolean?          @default(false) @map("is_taxable")
   affectsInss             Boolean?          @default(false) @map("affects_inss")
   affectsIrrf             Boolean?          @default(false) @map("affects_irrf")
@@ -4173,14 +4179,14 @@ model EmployeeBenefit {
   id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId          String      @map("employee_id") @db.Uuid
   benefitTypeId       String      @map("benefit_type_id") @db.Uuid
-  companyId           String?     @map("company_id") @db.Uuid
+  companyId           String      @map("company_id") @db.Uuid
   status              String      @default("ACTIVE")
   startDate           DateTime    @default(now()) @map("start_date")
   endDate             DateTime?   @map("end_date")
-  value               Float?      @default(0)
-  employeeDiscount    Float?      @default(0) @map("employee_discount")
-  companyContribution Float?      @default(0) @map("company_contribution")
-  quantity            Float?      @default(1)
+  value               Decimal?      @db.Decimal(15, 2) @default(0)
+  employeeDiscount    Decimal?      @db.Decimal(15, 2) @default(0) @map("employee_discount")
+  companyContribution Decimal?      @db.Decimal(15, 2) @default(0) @map("company_contribution")
+  quantity            Decimal?      @db.Decimal(15, 4) @default(1)
   notes               String?
   createdAt           DateTime    @default(now()) @map("created_at")
   updatedAt           DateTime    @default(now()) @map("updated_at")
@@ -4189,16 +4195,17 @@ model EmployeeBenefit {
 
   @@index([benefitTypeId], map: "idx_employee_benefits_benefit_type_id")
   @@index([employeeId], map: "idx_employee_benefits_employee_id")
+  @@index([companyId], map: "idx_employee_benefits_company_id")
   @@map("employee_benefits")
 }
 
 model TransportVoucher {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId     String   @map("employee_id") @db.Uuid
-  companyId      String?  @map("company_id") @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
   lineType       String   @default("BUS") @map("line_type")
   lineName       String   @map("line_name")
-  fareValue      Float    @default(0) @map("fare_value")
+  fareValue      Decimal    @db.Decimal(15, 2) @default(0) @map("fare_value")
   quantityPerDay Int?     @default(2) @map("quantity_per_day")
   workingDays    Int?     @default(22) @map("working_days")
   isActive       Boolean? @default(true) @map("is_active")
@@ -4207,6 +4214,7 @@ model TransportVoucher {
   employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([employeeId], map: "idx_transport_vouchers_employee_id")
+  @@index([companyId], map: "idx_transport_vouchers_company_id")
   @@map("transport_vouchers")
 }
 
@@ -4215,12 +4223,12 @@ model Training {
   code              String
   name              String
   description       String?
-  companyId         String?            @map("company_id") @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
   category          String?
   durationHours     Int?               @default(0) @map("duration_hours")
   instructor        String?
   provider          String?
-  cost              Float?             @default(0)
+  cost              Decimal?             @db.Decimal(15, 2) @default(0)
   isMandatory       Boolean?           @default(false) @map("is_mandatory")
   validityMonths    Int?               @map("validity_months")
   isActive          Boolean?           @default(true) @map("is_active")
@@ -4236,7 +4244,7 @@ model EmployeeTraining {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId     String    @map("employee_id") @db.Uuid
   trainingId     String    @map("training_id") @db.Uuid
-  companyId      String?   @map("company_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
   status         String    @default("SCHEDULED")
   scheduledDate  DateTime? @map("scheduled_date")
   completionDate DateTime? @map("completion_date")
@@ -4251,6 +4259,7 @@ model EmployeeTraining {
 
   @@index([employeeId], map: "idx_employee_trainings_employee_id")
   @@index([trainingId], map: "idx_employee_trainings_training_id")
+  @@index([companyId], map: "idx_employee_trainings_company_id")
   @@map("employee_trainings")
 }
 
@@ -4258,7 +4267,7 @@ model SkillMatrix {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId     String    @map("employee_id") @db.Uuid
   skillName      String    @map("skill_name")
-  companyId      String?   @map("company_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
   category       String?
   level          Int       @default(0)
   maxLevel       Int?      @default(4) @map("max_level")
@@ -4271,20 +4280,21 @@ model SkillMatrix {
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([employeeId], map: "idx_skill_matrix_employee_id")
+  @@index([companyId], map: "idx_skill_matrix_company_id")
   @@map("skill_matrix")
 }
 
 model AdmissionProcess {
   id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code                Int                 @default(autoincrement())
-  companyId           String?             @map("company_id") @db.Uuid
+  companyId           String              @map("company_id") @db.Uuid
   candidateName       String              @map("candidate_name")
   candidateEmail      String?             @map("candidate_email")
   candidatePhone      String?             @map("candidate_phone")
   candidateCpf        String?             @map("candidate_cpf")
   positionId          String?             @map("position_id") @db.Uuid
   departmentId        String?             @map("department_id") @db.Uuid
-  proposedSalary      Float?              @map("proposed_salary")
+  proposedSalary      Decimal?              @db.Decimal(15, 2) @map("proposed_salary")
   proposedStartDate   DateTime?           @map("proposed_start_date")
   status              String              @default("DRAFT")
   currentStep         Int?                @default(1) @map("current_step")
@@ -4364,7 +4374,7 @@ model AdmissionExam {
 model GedDocument {
   id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code              Int               @default(autoincrement())
-  companyId         String?           @db.Uuid
+  companyId         String            @db.Uuid
   title             String
   description       String?
   fileName          String
@@ -4406,7 +4416,7 @@ model GedDocument {
 
 model GedCategory {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId   String?       @db.Uuid
+  companyId   String        @db.Uuid
   name        String
   description String?
   color       String?
@@ -4473,7 +4483,7 @@ model CustomsBroker {
   address          String?
   city             String?
   state            String?
-  companyId        String?         @db.Uuid
+  companyId        String          @db.Uuid
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now()) @db.Timestamptz(6)
   updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
@@ -4545,7 +4555,7 @@ model ImportProcess {
   diNumber            String?              @map("di_number") @db.VarChar(50)
   diDate              DateTime?            @map("di_date") @db.Date
   notes               String?
-  companyId           String?              @map("company_id") @db.Uuid
+  companyId           String               @map("company_id") @db.Uuid
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
   exchangeContracts   ExchangeContract[]
@@ -4817,7 +4827,7 @@ model AiUsageLog {
   outputTokens  Int      @default(0) @map("output_tokens")
   totalTokens   Int      @default(0) @map("total_tokens")
   latencyMs     Int      @default(0) @map("latency_ms")
-  estimatedCost Float    @default(0) @map("estimated_cost")
+  estimatedCost Decimal    @db.Decimal(15, 2) @default(0) @map("estimated_cost")
   success       Boolean  @default(true)
   errorMessage  String?  @map("error_message")
   wasFallback   Boolean  @default(false) @map("was_fallback")
@@ -5115,6 +5125,7 @@ enum SalesOrderStatus {
 }
 
 enum TransferStatus {
+  DRAFT
   PENDING
   IN_TRANSIT
   RECEIVED
@@ -5535,4 +5546,214 @@ enum supplier_iqf_status {
   NEW
   APPROVED
   REJECTED
+}
+
+// ============================================================================
+// FASE 4 — NOVOS MODELS
+// ============================================================================
+
+enum DependentType {
+  SPOUSE
+  CHILD
+  STEPCHILD
+  PARENT
+  LEGAL_GUARDIAN
+  OTHER
+}
+
+enum LeaveType {
+  MEDICAL
+  MATERNITY
+  PATERNITY
+  BEREAVEMENT
+  MARRIAGE
+  MILITARY
+  JURY_DUTY
+  BLOOD_DONATION
+  UNION
+  OTHER
+}
+
+enum LotStatus {
+  AVAILABLE
+  RESERVED
+  QUARANTINE
+  EXPIRED
+  CONSUMED
+  BLOCKED
+}
+
+model EmployeeDependent {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String        @map("employee_id") @db.Uuid
+  companyId      String        @map("company_id") @db.Uuid
+  name           String
+  cpf            String?       @db.VarChar(14)
+  birthDate      DateTime?     @map("birth_date") @db.Date
+  type           DependentType
+  isIRDeductible Boolean       @default(false) @map("is_ir_deductible")
+  isSalarioFamilia Boolean     @default(false) @map("is_salario_familia")
+  isActive       Boolean       @default(true) @map("is_active")
+  notes          String?
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+  employee       Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_employee_dependents_employee_id")
+  @@index([companyId], map: "idx_employee_dependents_company_id")
+  @@map("employee_dependents")
+}
+
+model LeaveRecord {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId     String    @map("employee_id") @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
+  type           LeaveType
+  startDate      DateTime  @map("start_date") @db.Date
+  endDate        DateTime? @map("end_date") @db.Date
+  days           Int?
+  cid            String?   @db.VarChar(10)
+  documentNumber String?   @map("document_number")
+  notes          String?
+  approvedBy     String?   @map("approved_by") @db.Uuid
+  approvedAt     DateTime? @map("approved_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at")
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId], map: "idx_leave_records_employee_id")
+  @@index([companyId], map: "idx_leave_records_company_id")
+  @@index([startDate], map: "idx_leave_records_start_date")
+  @@map("leave_records")
+}
+
+model IncomeTaxTable {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year          Int
+  month         Int?
+  minValue      Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue      Decimal? @map("max_value") @db.Decimal(15, 2)
+  rate          Decimal  @db.Decimal(5, 2)
+  deduction     Decimal  @db.Decimal(15, 2)
+  dependentDeduction Decimal @default(0) @map("dependent_deduction") @db.Decimal(15, 2)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_income_tax_table_range")
+  @@index([year], map: "idx_income_tax_table_year")
+  @@map("income_tax_tables")
+}
+
+model INSSTable {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year      Int
+  month     Int?
+  minValue  Decimal  @map("min_value") @db.Decimal(15, 2)
+  maxValue  Decimal  @map("max_value") @db.Decimal(15, 2)
+  rate      Decimal  @db.Decimal(5, 2)
+  ceiling   Decimal? @db.Decimal(15, 2)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([year, month, minValue], map: "uq_inss_table_range")
+  @@index([year], map: "idx_inss_table_year")
+  @@map("inss_tables")
+}
+
+model Lot {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String
+  materialId   String      @map("material_id") @db.Uuid
+  companyId    String      @map("company_id") @db.Uuid
+  status       LotStatus   @default(AVAILABLE)
+  quantity     Decimal     @db.Decimal(15, 4)
+  reservedQty  Decimal     @default(0) @map("reserved_qty") @db.Decimal(15, 4)
+  unitCost     Decimal?    @map("unit_cost") @db.Decimal(15, 4)
+  manufactureDate DateTime? @map("manufacture_date") @db.Date
+  expirationDate  DateTime? @map("expiration_date") @db.Date
+  supplierId   String?     @map("supplier_id") @db.Uuid
+  locationId   String?     @map("location_id") @db.Uuid
+  notes        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
+  material     Material    @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  movements    LotMovement[]
+
+  @@unique([code, companyId], map: "uq_lots_code_company")
+  @@index([materialId], map: "idx_lots_material_id")
+  @@index([companyId], map: "idx_lots_company_id")
+  @@index([status], map: "idx_lots_status")
+  @@index([expirationDate], map: "idx_lots_expiration_date")
+  @@map("lots")
+}
+
+model LotMovement {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lotId         String   @map("lot_id") @db.Uuid
+  type          String
+  quantity      Decimal  @db.Decimal(15, 4)
+  documentType  String?  @map("document_type")
+  documentId    String?  @map("document_id") @db.Uuid
+  notes         String?
+  userId        String?  @map("user_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  lot           Lot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId], map: "idx_lot_movements_lot_id")
+  @@index([createdAt], map: "idx_lot_movements_created_at")
+  @@map("lot_movements")
+}
+
+model TaxRegime {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tax_regimes")
+}
+
+model IntercompanyTransfer {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int            @default(autoincrement())
+  sourceCompanyId   String         @map("source_company_id") @db.Uuid
+  targetCompanyId   String         @map("target_company_id") @db.Uuid
+  status            TransferStatus @default(DRAFT)
+  transferDate      DateTime?      @map("transfer_date")
+  shippedAt         DateTime?      @map("shipped_at")
+  receivedAt        DateTime?      @map("received_at")
+  notes             String?
+  createdBy         String?        @map("created_by") @db.Uuid
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+  sourceCompany     Company        @relation("IntercompanyTransferSource", fields: [sourceCompanyId], references: [id], onDelete: NoAction)
+  targetCompany     Company        @relation("IntercompanyTransferTarget", fields: [targetCompanyId], references: [id], onDelete: NoAction)
+  items             IntercompanyTransferItem[]
+
+  @@index([sourceCompanyId], map: "idx_intercompany_transfers_source")
+  @@index([targetCompanyId], map: "idx_intercompany_transfers_target")
+  @@index([status], map: "idx_intercompany_transfers_status")
+  @@map("intercompany_transfers")
+}
+
+model IntercompanyTransferItem {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transferId  String               @map("transfer_id") @db.Uuid
+  materialId  String               @map("material_id") @db.Uuid
+  quantity    Decimal              @db.Decimal(15, 4)
+  unitCost    Decimal?             @map("unit_cost") @db.Decimal(15, 4)
+  lotId       String?              @map("lot_id") @db.Uuid
+  notes       String?
+  createdAt   DateTime             @default(now()) @map("created_at")
+  transfer    IntercompanyTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  material    Material             @relation(fields: [materialId], references: [id], onDelete: NoAction)
+
+  @@index([transferId], map: "idx_intercompany_transfer_items_transfer")
+  @@index([materialId], map: "idx_intercompany_transfer_items_material")
+  @@map("intercompany_transfer_items")
 }

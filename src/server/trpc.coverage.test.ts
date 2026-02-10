@@ -14,7 +14,7 @@ vi.mock("./context", async () => {
   };
 });
 
-import { createTRPCContext, tenantFilter } from "./trpc";
+import { createTRPCContext, tenantFilter, tenantFilterShared } from "./trpc";
 import { prisma } from "@/lib/prisma";
 import { createServerClient } from "@supabase/ssr";
 
@@ -25,14 +25,14 @@ describe("trpc coverage", () => {
     expect(tenantFilter(null)).toEqual({});
   });
 
-  it("tenantFilter includes shared data by default", () => {
-    expect(tenantFilter("company-1")).toEqual({
-      OR: [{ companyId: "company-1" }, { companyId: null }, { isShared: true }],
-    });
+  it("tenantFilter returns simple companyId filter", () => {
+    expect(tenantFilter("company-1")).toEqual({ companyId: "company-1" });
   });
 
-  it("tenantFilter can disable shared data", () => {
-    expect(tenantFilter("company-1", false)).toEqual({ companyId: "company-1" });
+  it("tenantFilterShared includes shared data", () => {
+    expect(tenantFilterShared("company-1")).toEqual({
+      OR: [{ companyId: "company-1" }, { companyId: null }, { isShared: true }],
+    });
   });
 
   it("createTRPCContext returns empty tenant when no supabase user email", async () => {

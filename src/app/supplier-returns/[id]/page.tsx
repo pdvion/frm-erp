@@ -335,7 +335,7 @@ export default function SupplierReturnDetailPage({ params }: { params: Promise<{
                       </div>
                       <div className="text-theme-muted text-xs">{item.material.unit}</div>
                     </td>
-                    <td className="text-theme px-4 py-3 text-center">{item.quantity}</td>
+                    <td className="text-theme px-4 py-3 text-center">{Number(item.quantity)}</td>
                     <td className="text-theme px-4 py-3 text-right">
                       {formatCurrency(item.unitPrice)}
                     </td>

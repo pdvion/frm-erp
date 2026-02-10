@@ -81,12 +81,13 @@ export function exportToPdf({ filename, title, columns, data }: ExportOptions): 
   doc.save(`${filename}.pdf`);
 }
 
-export function formatCurrency(value: number | null | undefined): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatCurrency(value: any): string {
   if (value === null || value === undefined) return "R$ 0,00";
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(value);
+  }).format(Number(value));
 }
 
 export function formatDate(date: Date | string | null | undefined): string {

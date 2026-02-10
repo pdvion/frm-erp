@@ -249,7 +249,7 @@ export default function CustomerDetailPage() {
             <dl className="space-y-3">
               <div>
                 <dt className="text-xs text-theme-muted">Limite de Crédito</dt>
-                <dd className="text-lg font-bold text-theme">{formatCurrency(customer.creditLimit)}</dd>
+                <dd className="text-lg font-bold text-theme">{formatCurrency(Number(customer.creditLimit))}</dd>
               </div>
               <div>
                 <dt className="text-xs text-theme-muted">Prazo de Pagamento</dt>
@@ -258,7 +258,7 @@ export default function CustomerDetailPage() {
               {customer.minInvoiceValue && (
                 <div>
                   <dt className="text-xs text-theme-muted">Valor Mínimo Fatura</dt>
-                  <dd className="text-sm font-medium text-theme">{formatCurrency(customer.minInvoiceValue)}</dd>
+                  <dd className="text-sm font-medium text-theme">{formatCurrency(Number(customer.minInvoiceValue))}</dd>
                 </div>
               )}
               {customer.defaultPaymentCondition && (

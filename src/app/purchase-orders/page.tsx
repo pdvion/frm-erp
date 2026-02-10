@@ -94,7 +94,8 @@ export default function PurchaseOrdersPage() {
       id: status,
       title: statusConfig[status]?.label || status,
       color: statusColors[status] || "#6B7280",
-      items: data.orders.filter((o) => o.status === status) as PurchaseOrder[],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      items: data.orders.filter((o: any) => o.status === status) as unknown as PurchaseOrder[],
     }));
   }, [data]);
 

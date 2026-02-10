@@ -235,7 +235,7 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
               <div>
                 <p className="text-sm text-theme-muted">Jornada</p>
                 <p className="text-theme">
-                  {employee.workHoursPerDay || 8}h/dia - {employee.workDaysPerWeek || 5} dias/semana
+                  {Number(employee.workHoursPerDay) || 8}h/dia - {Number(employee.workDaysPerWeek) || 5} dias/semana
                 </p>
               </div>
             </div>

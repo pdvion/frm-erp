@@ -122,7 +122,9 @@ export const receivingRouter = createTRPCRouter({
   startConference: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const receiving = await ctx.prisma.materialReceiving.findUnique({ where: { id: input.id } });
+      const receiving = await ctx.prisma.materialReceiving.findFirst({
+        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
+      });
       if (!receiving) throw new TRPCError({ code: "NOT_FOUND" });
       if (receiving.status !== "PENDING") {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Recebimento não está pendente" });
@@ -218,7 +220,7 @@ export const receivingRouter = createTRPCRouter({
 
       // Dar entrada no estoque para cada item aprovado
       for (const item of receiving.items) {
-        if (item.approvedQuantity > 0) {
+        if (Number(item.approvedQuantity) > 0) {
           // Atualizar estoque geral
           await ctx.prisma.inventory.upsert({
             where: {
@@ -263,7 +265,7 @@ export const receivingRouter = createTRPCRouter({
                 movementType: "ENTRY",
                 quantity: item.approvedQuantity,
                 unitCost: item.unitPrice,
-                totalCost: item.approvedQuantity * item.unitPrice,
+                totalCost: Number(item.approvedQuantity) * Number(item.unitPrice),
                 supplierId: receiving.supplierId,
                 documentType: "NFE",
                 documentNumber: receiving.nfeNumber,
@@ -283,7 +285,7 @@ export const receivingRouter = createTRPCRouter({
       }
 
       // Verificar se houve rejeições
-      const hasRejections = receiving.items.some(i => i.rejectedQuantity > 0);
+      const hasRejections = receiving.items.some(i => Number(i.rejectedQuantity) > 0);
       const allRejected = receiving.items.every(i => i.status === "REJECTED");
 
       return ctx.prisma.materialReceiving.update({

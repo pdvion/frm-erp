@@ -73,7 +73,7 @@ export const aiUsageRouter = createTRPCRouter({
         successRate,
         callsChange: calcChange(totalCalls, previous._count),
         tokensChange: calcChange(current._sum.totalTokens ?? 0, previous._sum.totalTokens ?? 0),
-        costChange: calcChange(current._sum.estimatedCost ?? 0, previous._sum.estimatedCost ?? 0),
+        costChange: calcChange(Number(current._sum.estimatedCost ?? 0), Number(previous._sum.estimatedCost ?? 0)),
       };
     }),
 
@@ -107,7 +107,7 @@ export const aiUsageRouter = createTRPCRouter({
         dailyMap.set(dateKey, {
           calls: existing.calls + 1,
           tokens: existing.tokens + log.totalTokens,
-          cost: existing.cost + log.estimatedCost,
+          cost: Number(existing.cost) + Number(log.estimatedCost),
         });
       }
 

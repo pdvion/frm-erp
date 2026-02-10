@@ -78,7 +78,7 @@ export default function ReceivingDetailPage() {
       receiving.items.forEach((item) => {
         initial[item.id] = {
           itemId: item.id,
-          receivedQuantity: item.nfeQuantity,
+          receivedQuantity: Number(item.nfeQuantity),
           notes: "",
         };
       });
@@ -270,7 +270,7 @@ export default function ReceivingDetailPage() {
                         </td>
                         <td className="px-4 py-3 text-sm text-center text-theme-muted">{item.unit}</td>
                         <td className="px-4 py-3 text-sm text-right text-theme">
-                          {item.nfeQuantity.toLocaleString("pt-BR")}
+                          {Number(item.nfeQuantity).toLocaleString("pt-BR")}
                         </td>
                         {isConferencing && (
                           <td className="px-4 py-3">
@@ -308,8 +308,8 @@ export default function ReceivingDetailPage() {
                         )}
                         {receiving.status === "COMPLETED" && (
                           <td className="px-4 py-3 text-sm text-right">
-                            <span className={item.receivedQuantity !== item.nfeQuantity ? "text-orange-600 font-medium" : "text-green-600"}>
-                              {item.receivedQuantity?.toLocaleString("pt-BR") || "-"}
+                            <span className={Number(item.receivedQuantity) !== Number(item.nfeQuantity) ? "text-orange-600 font-medium" : "text-green-600"}>
+                              {item.receivedQuantity ? Number(item.receivedQuantity).toLocaleString("pt-BR") : "-"}
                             </span>
                           </td>
                         )}
@@ -355,9 +355,9 @@ export default function ReceivingDetailPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-theme-muted">Produtos</span>
-                  <span className="text-sm text-theme">{formatCurrency(receiving.totalValue - (receiving.freightValue || 0))}</span>
+                  <span className="text-sm text-theme">{formatCurrency(Number(receiving.totalValue) - (Number(receiving.freightValue) || 0))}</span>
                 </div>
-                {receiving.freightValue && receiving.freightValue > 0 && (
+                {Number(receiving.freightValue) && Number(receiving.freightValue) > 0 && (
                   <div className="flex justify-between">
                     <span className="text-sm text-theme-muted">Frete</span>
                     <span className="text-sm text-theme">{formatCurrency(receiving.freightValue)}</span>

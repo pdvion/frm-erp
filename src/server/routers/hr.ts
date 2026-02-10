@@ -414,14 +414,14 @@ export const hrRouter = createTRPCRouter({
         // Calcular proventos
         const earnings = item.events
           .filter((e) => !e.isDeduction)
-          .reduce((sum, e) => sum + e.value, 0);
+          .reduce((sum, e) => sum + Number(e.value), 0);
         
         // Calcular descontos (exceto INSS e IRRF)
         const otherDeductions = item.events
           .filter((e) => e.isDeduction && !["INSS", "IRRF"].includes(e.code))
-          .reduce((sum, e) => sum + e.value, 0);
+          .reduce((sum, e) => sum + Number(e.value), 0);
 
-        const grossSalary = baseSalary + earnings;
+        const grossSalary = Number(baseSalary) + earnings;
         
         // Calcular INSS (tabela simplificada 2024)
         const inss = calculateINSS(grossSalary);
@@ -553,8 +553,8 @@ export const hrRouter = createTRPCRouter({
           acc[dept] = { count: 0, gross: 0, net: 0 };
         }
         acc[dept].count++;
-        acc[dept].gross += item.grossSalary;
-        acc[dept].net += item.netSalary;
+        acc[dept].gross += Number(item.grossSalary);
+        acc[dept].net += Number(item.netSalary);
         return acc;
       }, {} as Record<string, { count: number; gross: number; net: number }>);
 
@@ -564,16 +564,16 @@ export const hrRouter = createTRPCRouter({
         if (!acc[event.code]) {
           acc[event.code] = { description: event.description, isDeduction: event.isDeduction, total: 0, count: 0 };
         }
-        acc[event.code].total += event.value;
+        acc[event.code].total += Number(event.value);
         acc[event.code].count++;
         return acc;
       }, {} as Record<string, { description: string; isDeduction: boolean; total: number; count: number }>);
 
       // Totais de INSS, IRRF e FGTS
       const totals = payroll.items.reduce((acc, item) => {
-        acc.inss += item.inss;
-        acc.irrf += item.irrf;
-        acc.fgts += item.fgts;
+        acc.inss += Number(item.inss);
+        acc.irrf += Number(item.irrf);
+        acc.fgts += Number(item.fgts);
         return acc;
       }, { inss: 0, irrf: 0, fgts: 0 });
 

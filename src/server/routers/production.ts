@@ -385,8 +385,8 @@ export const productionRouter = createTRPCRouter({
         });
       }
 
-      const newProducedQty = order.producedQty + input.quantity;
-      const isComplete = newProducedQty >= order.quantity;
+      const newProducedQty = Number(order.producedQty) + Number(input.quantity);
+      const isComplete = newProducedQty >= Number(order.quantity);
 
       // Atualizar OP
       await prisma.productionOrder.update({
@@ -438,13 +438,13 @@ export const productionRouter = createTRPCRouter({
         let totalMaterialCost = 0;
         for (const mat of consumedMaterials) {
           const materialCost = mat.material.lastPurchasePrice || 0;
-          totalMaterialCost += materialCost * mat.consumedQty;
+          totalMaterialCost += Number(materialCost) * Number(mat.consumedQty);
         }
         
         // Custo unitário = custo total dos materiais / quantidade produzida
-        const unitCost = order.producedQty > 0 
-          ? totalMaterialCost / order.producedQty 
-          : totalMaterialCost / order.quantity;
+        const unitCost = newProducedQty > 0 
+          ? totalMaterialCost / newProducedQty 
+          : totalMaterialCost / Number(order.quantity);
         const totalCost = unitCost * input.quantity;
 
         // Criar movimentação de entrada
@@ -455,7 +455,7 @@ export const productionRouter = createTRPCRouter({
             quantity: input.quantity,
             unitCost,
             totalCost,
-            balanceAfter: inventory.quantity + input.quantity,
+            balanceAfter: Number(inventory.quantity) + Number(input.quantity),
             documentType: "OP",
             documentNumber: String(order.code),
             documentId: order.id,
@@ -521,7 +521,7 @@ export const productionRouter = createTRPCRouter({
       }
 
       const inventory = orderMaterial.material.inventory[0];
-      if (!inventory || inventory.availableQty < input.quantity) {
+      if (!inventory || Number(inventory.availableQty) < Number(input.quantity)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Estoque insuficiente. Disponível: ${inventory?.availableQty || 0}`,
@@ -529,7 +529,7 @@ export const productionRouter = createTRPCRouter({
       }
 
       const unitCost = inventory.unitCost;
-      const totalCost = unitCost * input.quantity;
+      const totalCost = Number(unitCost) * Number(input.quantity);
 
       // Atualizar material da OP
       await prisma.productionOrderMaterial.update({
@@ -549,7 +549,7 @@ export const productionRouter = createTRPCRouter({
           quantity: input.quantity,
           unitCost,
           totalCost,
-          balanceAfter: inventory.quantity - input.quantity,
+          balanceAfter: Number(inventory.quantity) - Number(input.quantity),
           documentType: "OP",
           documentNumber: String(orderMaterial.order.code),
           documentId: orderMaterial.order.id,
@@ -602,7 +602,7 @@ export const productionRouter = createTRPCRouter({
       }
 
       // Verificar se houve consumo
-      const hasConsumption = order.materials.some((m) => m.consumedQty > 0);
+      const hasConsumption = order.materials.some((m) => Number(m.consumedQty) > 0);
       if (hasConsumption) {
         throw new TRPCError({
           code: "BAD_REQUEST",

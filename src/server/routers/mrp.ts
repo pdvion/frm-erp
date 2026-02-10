@@ -73,6 +73,13 @@ export const mrpRouter = createTRPCRouter({
   removeBomItem: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      const item = await ctx.prisma.bomItem.findFirst({
+        where: { id: input.id },
+        include: { parentMaterial: { select: { companyId: true } } },
+      });
+      if (!item || item.parentMaterial.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
+      }
       await ctx.prisma.bomItem.delete({ where: { id: input.id } });
       return { success: true };
     }),
@@ -154,7 +161,7 @@ export const mrpRouter = createTRPCRouter({
         for (const order of productionOrders) {
           // Explodir BOM
           for (const bomItem of order.product.bomAsParent) {
-            const requiredQty = order.quantity * bomItem.quantity * (1 + bomItem.scrapPercentage / 100);
+            const requiredQty = Number(order.quantity) * Number(bomItem.quantity) * (1 + Number(bomItem.scrapPercentage) / 100);
 
             // Buscar estoque disponível
             const inventory = await ctx.prisma.inventory.findFirst({
@@ -168,8 +175,8 @@ export const mrpRouter = createTRPCRouter({
               where: { materialId: bomItem.childMaterialId },
             });
 
-            const safetyStock = params?.safetyStock || 0;
-            const netRequirement = requiredQty - availableQty + safetyStock;
+            const safetyStock = Number(params?.safetyStock || 0);
+            const netRequirement = Number(requiredQty) - Number(availableQty) + safetyStock;
 
             if (netRequirement > 0) {
               // Determinar tipo de sugestão baseado no tipo de material
@@ -190,11 +197,11 @@ export const mrpRouter = createTRPCRouter({
               // Aplicar lote mínimo e múltiplo
               let orderQty = netRequirement;
               if (params) {
-                if (orderQty < params.minLotSize) {
-                  orderQty = params.minLotSize;
+                if (orderQty < Number(params.minLotSize)) {
+                  orderQty = Number(params.minLotSize);
                 }
-                if (params.lotMultiple > 1) {
-                  orderQty = Math.ceil(orderQty / params.lotMultiple) * params.lotMultiple;
+                if (Number(params.lotMultiple) > 1) {
+                  orderQty = Math.ceil(orderQty / Number(params.lotMultiple)) * Number(params.lotMultiple);
                 }
               }
 

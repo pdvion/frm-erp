@@ -458,7 +458,7 @@ export const requisitionsRouter = createTRPCRouter({
       }
 
       const approvedQty = item.approvedQty ?? item.requestedQty;
-      const remainingQty = approvedQty - item.separatedQty;
+      const remainingQty = Number(approvedQty) - Number(item.separatedQty);
 
       if (input.quantity > remainingQty) {
         throw new TRPCError({
@@ -469,7 +469,7 @@ export const requisitionsRouter = createTRPCRouter({
 
       // Verificar estoque disponível
       const inventory = item.material.inventory[0];
-      if (!inventory || inventory.availableQty < input.quantity) {
+      if (!inventory || Number(inventory.availableQty) < input.quantity) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Estoque insuficiente. Disponível: ${inventory?.availableQty || 0}`,
@@ -478,16 +478,16 @@ export const requisitionsRouter = createTRPCRouter({
 
       // Calcular custo
       const unitCost = inventory.unitCost;
-      const totalCost = unitCost * input.quantity;
+      const totalCost = Number(unitCost) * Number(input.quantity);
 
       // Atualizar item
-      const newSeparatedQty = item.separatedQty + input.quantity;
+      const newSeparatedQty = Number(item.separatedQty) + Number(input.quantity);
       await prisma.materialRequisitionItem.update({
         where: { id: input.itemId },
         data: {
           separatedQty: newSeparatedQty,
           unitCost,
-          totalCost: item.totalCost + totalCost,
+          totalCost: Number(item.totalCost) + totalCost,
         },
       });
 
@@ -499,7 +499,7 @@ export const requisitionsRouter = createTRPCRouter({
           quantity: input.quantity,
           unitCost,
           totalCost,
-          balanceAfter: inventory.quantity - input.quantity,
+          balanceAfter: Number(inventory.quantity) - Number(input.quantity),
           documentType: "REQ",
           documentNumber: String(item.requisition.code),
           documentId: item.requisition.id,
@@ -529,7 +529,7 @@ export const requisitionsRouter = createTRPCRouter({
         return i.separatedQty >= approved;
       });
 
-      const anyCompleted = allItems.some((i) => i.separatedQty > 0);
+      const anyCompleted = allItems.some((i) => Number(i.separatedQty) > 0);
 
       let newStatus = item.requisition.status;
       if (allCompleted) {
@@ -574,7 +574,7 @@ export const requisitionsRouter = createTRPCRouter({
       }
 
       // Verificar se já houve separação
-      const hasSeparation = requisition.items.some((i) => i.separatedQty > 0);
+      const hasSeparation = requisition.items.some((i) => Number(i.separatedQty) > 0);
       if (hasSeparation) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -655,7 +655,7 @@ export const requisitionsRouter = createTRPCRouter({
 
       // Calcular valor total da requisição (usando lastPurchasePrice como aproximação)
       const totalValue = requisition.items.reduce(
-        (sum: number, item) => sum + (item.material.lastPurchasePrice || 0) * item.requestedQty, 
+        (sum: number, item) => sum + (Number(item.material.lastPurchasePrice) || 0) * Number(item.requestedQty), 
         0
       );
 
@@ -793,7 +793,7 @@ export const requisitionsRouter = createTRPCRouter({
             break;
         }
 
-        const itemValue = (item.material.lastPurchasePrice || 0) * item.separatedQty;
+        const itemValue = (Number(item.material.lastPurchasePrice) || 0) * Number(item.separatedQty);
 
         if (!grouped.has(key)) {
           grouped.set(key, {
@@ -807,7 +807,7 @@ export const requisitionsRouter = createTRPCRouter({
         }
 
         const group = grouped.get(key)!;
-        group.totalQty += item.separatedQty;
+        group.totalQty += Number(item.separatedQty);
         group.totalValue += itemValue;
         group.items += 1;
         
@@ -816,7 +816,7 @@ export const requisitionsRouter = createTRPCRouter({
             materialCode: item.material.code,
             materialDescription: item.material.description,
             unit: item.material.unit,
-            qty: item.separatedQty,
+            qty: Number(item.separatedQty),
             value: itemValue,
           });
         }

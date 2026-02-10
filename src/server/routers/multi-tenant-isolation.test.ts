@@ -486,10 +486,10 @@ describe("Multi-tenant Isolation Tests (VIO-704)", () => {
       expect(filter).toEqual({ companyId: COMPANY_A_ID });
     });
 
-    it("returns OR filter with shared when includeShared is true", async () => {
-      const { tenantFilter } = await import("../trpc");
+    it("returns OR filter with shared when using tenantFilterShared", async () => {
+      const { tenantFilterShared } = await import("../trpc");
       
-      const filter = tenantFilter(COMPANY_A_ID, true);
+      const filter = tenantFilterShared(COMPANY_A_ID);
       expect(filter).toHaveProperty("OR");
       expect(filter.OR).toContainEqual({ companyId: COMPANY_A_ID });
       expect(filter.OR).toContainEqual({ isShared: true });

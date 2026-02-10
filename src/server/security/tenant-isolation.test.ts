@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { tenantFilter } from "../trpc";
+import { tenantFilter, tenantFilterShared } from "../trpc";
 
 describe("Tenant Isolation Security", () => {
   describe("tenantFilter", () => {
@@ -8,15 +8,9 @@ describe("Tenant Isolation Security", () => {
       expect(filter).toEqual({});
     });
 
-    it("should filter by companyId and include shared data by default", () => {
+    it("should filter by companyId", () => {
       const filter = tenantFilter("company-123");
-      expect(filter).toEqual({
-        OR: [
-          { companyId: "company-123" },
-          { companyId: null },
-          { isShared: true },
-        ],
-      });
+      expect(filter).toEqual({ companyId: "company-123" });
     });
 
     it("should filter only by companyId when includeShared is false", () => {
@@ -30,13 +24,8 @@ describe("Tenant Isolation Security", () => {
 
       // Filters should be different for different companies
       expect(companyAFilter).not.toEqual(companyBFilter);
-
-      // Company A filter should not include Company B
-      const filterConditions = companyAFilter.OR as Array<{ companyId?: string }>;
-      const hasCompanyB = filterConditions.some(
-        (cond) => cond.companyId === "company-B"
-      );
-      expect(hasCompanyB).toBe(false);
+      expect(companyAFilter).toEqual({ companyId: "company-A" });
+      expect(companyBFilter).toEqual({ companyId: "company-B" });
     });
   });
 
@@ -110,9 +99,9 @@ describe("Tenant Isolation Security", () => {
       expect(wouldMatch).toBe(false);
     });
 
-    it("should allow shared data access across tenants", () => {
+    it("should allow shared data access across tenants via tenantFilterShared", () => {
       const companyAId = "company-A";
-      const filter = tenantFilter(companyAId, true);
+      const filter = tenantFilterShared(companyAId);
 
       // Shared data (isShared: true) should be accessible
       const filterConditions = filter.OR as Array<{ companyId?: string | null; isShared?: boolean }>;
