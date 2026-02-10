@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { PayrollService } from "../services/payroll";
 
 export const vacationsRouter = createTRPCRouter({
   // Listar férias
@@ -87,33 +88,13 @@ export const vacationsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Funcionário não encontrado" });
       }
 
-      // Calcular valores
-      const baseSalary = employee.salary;
-      const enjoyedDays = input.totalDays - input.soldDays;
-      const dailySalary = Number(baseSalary) / 30;
-      
-      const vacationPay = dailySalary * enjoyedDays;
-      const oneThirdBonus = vacationPay / 3;
-      const soldDaysValue = dailySalary * input.soldDays * (4 / 3); // Abono = dias + 1/3
-      const totalGross = vacationPay + oneThirdBonus + soldDaysValue;
-
-      // Calcular INSS (simplificado - usar tabela real em produção)
-      const inssDeduction = Math.min(totalGross * 0.14, 908.85);
-      
-      // Calcular IRRF (simplificado - usar tabela real em produção)
-      const baseIrrf = totalGross - inssDeduction;
-      let irrfDeduction = 0;
-      if (baseIrrf > 4664.68) {
-        irrfDeduction = baseIrrf * 0.275 - 896.00;
-      } else if (baseIrrf > 3751.05) {
-        irrfDeduction = baseIrrf * 0.225 - 662.77;
-      } else if (baseIrrf > 2826.65) {
-        irrfDeduction = baseIrrf * 0.15 - 381.44;
-      } else if (baseIrrf > 2259.20) {
-        irrfDeduction = baseIrrf * 0.075 - 169.44;
-      }
-
-      const totalNet = totalGross - inssDeduction - irrfDeduction;
+      // Delegar cálculo ao PayrollService
+      const payrollService = new PayrollService(ctx.prisma);
+      const calc = payrollService.calculateVacation({
+        baseSalary: employee.salary,
+        totalDays: input.totalDays,
+        soldDays: input.soldDays,
+      });
 
       return ctx.prisma.vacation.create({
         data: {
@@ -125,15 +106,15 @@ export const vacationsRouter = createTRPCRouter({
           endDate: input.endDate,
           totalDays: input.totalDays,
           soldDays: input.soldDays,
-          enjoyedDays,
-          baseSalary,
-          vacationPay,
-          oneThirdBonus,
-          soldDaysValue,
-          totalGross,
-          inssDeduction,
-          irrfDeduction,
-          totalNet,
+          enjoyedDays: calc.enjoyedDays,
+          baseSalary: employee.salary,
+          vacationPay: calc.vacationPay,
+          oneThirdBonus: calc.oneThirdBonus,
+          soldDaysValue: calc.soldDaysValue,
+          totalGross: calc.totalGross,
+          inssDeduction: calc.inssDeduction,
+          irrfDeduction: calc.irrfDeduction,
+          totalNet: calc.totalNet,
           isCollective: input.isCollective,
           collectiveGroupId: input.collectiveGroupId,
           notes: input.notes,
