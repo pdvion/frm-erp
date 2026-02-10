@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { fetchCompanyByCnpj, mapCnpjToCompanyForm, isValidCnpjFormat, formatCnpj } from "@/lib/address/cnpj";
+import { fetchAddressByCep, isValidCep, formatCep } from "@/lib/address/viacep";
 import {
   Building2,
   Plus,
@@ -25,6 +28,8 @@ export default function CompaniesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [isLoadingCnpj, setIsLoadingCnpj] = useState(false);
+  const [isLoadingCep, setIsLoadingCep] = useState(false);
 
   const { data: companies, isLoading, refetch } = trpc.companies.list.useQuery();
 
@@ -50,6 +55,9 @@ export default function CompaniesPage() {
     cnpj: "",
     ie: "",
     address: "",
+    addressNumber: "",
+    addressComplement: "",
+    neighborhood: "",
     city: "",
     state: "",
     zipCode: "",
@@ -64,6 +72,9 @@ export default function CompaniesPage() {
       cnpj: "",
       ie: "",
       address: "",
+      addressNumber: "",
+      addressComplement: "",
+      neighborhood: "",
       city: "",
       state: "",
       zipCode: "",
@@ -80,6 +91,9 @@ export default function CompaniesPage() {
       cnpj: company.cnpj || "",
       ie: company.ie || "",
       address: company.address || "",
+      addressNumber: company.addressNumber || "",
+      addressComplement: company.addressComplement || "",
+      neighborhood: company.neighborhood || "",
       city: company.city || "",
       state: company.state || "",
       zipCode: company.zipCode || "",
@@ -97,6 +111,63 @@ export default function CompaniesPage() {
       createMutation.mutate(formData);
     }
   };
+
+  const handleCnpjLookup = useCallback(async () => {
+    const cleanCnpj = formatCnpj(formData.cnpj);
+    if (!isValidCnpjFormat(cleanCnpj)) {
+      toast.error("CNPJ inválido", { description: "Digite um CNPJ com 14 dígitos." });
+      return;
+    }
+    setIsLoadingCnpj(true);
+    try {
+      const result = await fetchCompanyByCnpj(cleanCnpj);
+      if (result.success && result.data) {
+        const mapped = mapCnpjToCompanyForm(result.data);
+        setFormData((prev) => ({
+          ...prev,
+          ...Object.fromEntries(
+            Object.entries(mapped).filter(([, v]) => v !== "" && v !== 0)
+          ),
+        }));
+        toast.success("Dados preenchidos pelo CNPJ");
+      } else {
+        toast.error("Erro ao consultar CNPJ", { description: result.error });
+      }
+    } catch {
+      toast.error("Erro ao consultar CNPJ");
+    } finally {
+      setIsLoadingCnpj(false);
+    }
+  }, [formData.cnpj]);
+
+  const handleCepLookup = useCallback(async () => {
+    const cleanCep = formatCep(formData.zipCode);
+    if (!isValidCep(cleanCep)) {
+      toast.error("CEP inválido", { description: "Digite um CEP com 8 dígitos." });
+      return;
+    }
+    setIsLoadingCep(true);
+    try {
+      const result = await fetchAddressByCep(cleanCep);
+      if (result.success && result.data) {
+        setFormData((prev) => ({
+          ...prev,
+          address: result.data!.street || prev.address,
+          neighborhood: result.data!.neighborhood || prev.neighborhood,
+          city: result.data!.city || prev.city,
+          state: result.data!.state || prev.state,
+          zipCode: result.data!.zipCode || prev.zipCode,
+        }));
+        toast.success("Endereço preenchido pelo CEP");
+      } else {
+        toast.error("Erro ao consultar CEP", { description: result.error });
+      }
+    } catch {
+      toast.error("Erro ao consultar CEP");
+    } finally {
+      setIsLoadingCep(false);
+    }
+  }, [formData.zipCode]);
 
   const filteredCompanies = companies?.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -142,74 +213,116 @@ export default function CompaniesPage() {
                   value={formData.tradeName}
                   onChange={(e) => setFormData({ ...formData, tradeName: e.target.value })}
                 />
-                <Input
-                  label="CNPJ"
-                  value={formData.cnpj}
-                  onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
-                  placeholder="00.000.000/0000-00"
-                />
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Input
+                      label="CNPJ"
+                      value={formData.cnpj}
+                      onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                      placeholder="00.000.000/0000-00"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCnpjLookup}
+                    isLoading={isLoadingCnpj}
+                    className="mb-0.5"
+                  >
+                    Buscar
+                  </Button>
+                </div>
                 <Input
                   label="Inscrição Estadual"
                   value={formData.ie}
                   onChange={(e) => setFormData({ ...formData, ie: e.target.value })}
                 />
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Input
+                      label="CEP"
+                      value={formData.zipCode}
+                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value.replace(/\D/g, "") })}
+                      placeholder="00000-000"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCepLookup}
+                    isLoading={isLoadingCep}
+                    className="mb-0.5"
+                  >
+                    Buscar
+                  </Button>
+                </div>
                 <div className="md:col-span-2">
                   <Input
-                    label="Endereço"
+                    label="Logradouro"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   />
                 </div>
                 <Input
+                  label="Número"
+                  value={formData.addressNumber}
+                  onChange={(e) => setFormData({ ...formData, addressNumber: e.target.value })}
+                />
+                <Input
+                  label="Complemento"
+                  value={formData.addressComplement}
+                  onChange={(e) => setFormData({ ...formData, addressComplement: e.target.value })}
+                />
+                <Input
+                  label="Bairro"
+                  value={formData.neighborhood}
+                  onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+                />
+                <Input
                   label="Cidade"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1">
-                      UF
-                    </label>
-                    <NativeSelect
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="w-full border border-theme-input rounded-lg px-3 py-2 bg-theme-card text-theme"
-                    >
-                      <option value="">Selecione...</option>
-                      <option value="AC">AC - Acre</option>
-                      <option value="AL">AL - Alagoas</option>
-                      <option value="AP">AP - Amapá</option>
-                      <option value="AM">AM - Amazonas</option>
-                      <option value="BA">BA - Bahia</option>
-                      <option value="CE">CE - Ceará</option>
-                      <option value="DF">DF - Distrito Federal</option>
-                      <option value="ES">ES - Espírito Santo</option>
-                      <option value="GO">GO - Goiás</option>
-                      <option value="MA">MA - Maranhão</option>
-                      <option value="MT">MT - Mato Grosso</option>
-                      <option value="MS">MS - Mato Grosso do Sul</option>
-                      <option value="MG">MG - Minas Gerais</option>
-                      <option value="PA">PA - Pará</option>
-                      <option value="PB">PB - Paraíba</option>
-                      <option value="PR">PR - Paraná</option>
-                      <option value="PE">PE - Pernambuco</option>
-                      <option value="PI">PI - Piauí</option>
-                      <option value="RJ">RJ - Rio de Janeiro</option>
-                      <option value="RN">RN - Rio Grande do Norte</option>
-                      <option value="RS">RS - Rio Grande do Sul</option>
-                      <option value="RO">RO - Rondônia</option>
-                      <option value="RR">RR - Roraima</option>
-                      <option value="SC">SC - Santa Catarina</option>
-                      <option value="SP">SP - São Paulo</option>
-                      <option value="SE">SE - Sergipe</option>
-                      <option value="TO">TO - Tocantins</option>
-                    </NativeSelect>
-                  </div>
-                  <Input
-                    label="CEP"
-                    value={formData.zipCode}
-                    onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
+                    UF
+                  </label>
+                  <NativeSelect
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    className="w-full border border-theme-input rounded-lg px-3 py-2 bg-theme-card text-theme"
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="AC">AC - Acre</option>
+                    <option value="AL">AL - Alagoas</option>
+                    <option value="AP">AP - Amapá</option>
+                    <option value="AM">AM - Amazonas</option>
+                    <option value="BA">BA - Bahia</option>
+                    <option value="CE">CE - Ceará</option>
+                    <option value="DF">DF - Distrito Federal</option>
+                    <option value="ES">ES - Espírito Santo</option>
+                    <option value="GO">GO - Goiás</option>
+                    <option value="MA">MA - Maranhão</option>
+                    <option value="MT">MT - Mato Grosso</option>
+                    <option value="MS">MS - Mato Grosso do Sul</option>
+                    <option value="MG">MG - Minas Gerais</option>
+                    <option value="PA">PA - Pará</option>
+                    <option value="PB">PB - Paraíba</option>
+                    <option value="PR">PR - Paraná</option>
+                    <option value="PE">PE - Pernambuco</option>
+                    <option value="PI">PI - Piauí</option>
+                    <option value="RJ">RJ - Rio de Janeiro</option>
+                    <option value="RN">RN - Rio Grande do Norte</option>
+                    <option value="RS">RS - Rio Grande do Sul</option>
+                    <option value="RO">RO - Rondônia</option>
+                    <option value="RR">RR - Roraima</option>
+                    <option value="SC">SC - Santa Catarina</option>
+                    <option value="SP">SP - São Paulo</option>
+                    <option value="SE">SE - Sergipe</option>
+                    <option value="TO">TO - Tocantins</option>
+                  </NativeSelect>
                 </div>
                 <Input
                   label="Telefone"

@@ -176,7 +176,10 @@ describe("CNPJ Utils", () => {
       expect(result.cnpj).toBe("12.345.678/0001-90");
       expect(result.name).toBe("Empresa Teste LTDA");
       expect(result.tradeName).toBe("Empresa Teste");
-      expect(result.address).toBe("Avenida Brasil, 456");
+      expect(result.address).toBe("Avenida Brasil");
+      expect(result.addressNumber).toBe("456");
+      expect(result.addressComplement).toBe("");
+      expect(result.neighborhood).toBe("Centro");
       expect(result.city).toBe("Rio de Janeiro");
       expect(result.state).toBe("RJ");
       expect(result.zipCode).toBe("20040020");
