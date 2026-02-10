@@ -435,16 +435,16 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Só é possível remover itens de pedidos pendentes" });
       }
 
-      await prisma.salesOrderItem.delete({ where: { id: input.itemId } });
-
-      // Atualizar subtotal do pedido
       const newSubtotal = Number(order.subtotal) - Number(item.totalPrice);
       const newTotal = Number(newSubtotal) * (1 - Number(order.discountPercent) / 100) - Number(order.discountValue) + Number(order.shippingValue);
 
-      await prisma.salesOrder.update({
-        where: { id: order.id },
-        data: { subtotal: newSubtotal, totalValue: newTotal },
-      });
+      await prisma.$transaction([
+        prisma.salesOrderItem.delete({ where: { id: input.itemId } }),
+        prisma.salesOrder.update({
+          where: { id: order.id },
+          data: { subtotal: newSubtotal, totalValue: newTotal },
+        }),
+      ]);
 
       return { success: true };
     }),
