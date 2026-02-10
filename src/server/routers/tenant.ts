@@ -1,13 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, authProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, authProcedure, supabaseAuthProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import type { SystemModule } from "../context";
 
 export const tenantRouter = createTRPCRouter({
   // Garantir que o usuário existe no banco local (auto-provisioning)
-  // ensureUser precisa ser público pois é chamado antes do usuário existir no banco local
-  ensureUser: publicProcedure.mutation(async ({ ctx }) => {
+  // Requer sessão Supabase válida, mas não exige usuário local (pois é o que cria)
+  ensureUser: supabaseAuthProcedure.mutation(async ({ ctx }) => {
     if (!ctx.supabaseUser?.email) {
       return { created: false, userId: null };
     }

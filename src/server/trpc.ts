@@ -114,6 +114,23 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
+// Procedure que requer sessão Supabase válida (email), mas NÃO exige usuário local
+// Útil para endpoints como ensureUser que rodam antes do usuário existir no banco local
+export const supabaseAuthProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.supabaseUser?.email) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Sessão Supabase inválida.",
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      supabaseUser: ctx.supabaseUser,
+    },
+  });
+});
+
 // Procedure que requer apenas autenticação (userId), sem exigir empresa ativa
 // Útil para endpoints como notificações que funcionam independente da empresa
 export const authProcedure = t.procedure.use(async ({ ctx, next }) => {
@@ -131,8 +148,27 @@ export const authProcedure = t.procedure.use(async ({ ctx, next }) => {
   });
 });
 
+// Middleware de validação de Origin para proteção CSRF em mutations
+// Stateless — funciona em serverless (diferente de src/lib/csrf.ts que usa Map em memória)
+const csrfProtection = t.middleware(async ({ ctx, type, next }) => {
+  if (type === "mutation") {
+    const origin = ctx.headers.get("origin");
+    const host = ctx.headers.get("host");
+    if (origin && host) {
+      const originHost = new URL(origin).host;
+      if (originHost !== host) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Requisição cross-origin bloqueada.",
+        });
+      }
+    }
+  }
+  return next();
+});
+
 // Procedure que requer empresa ativa
-export const tenantProcedure = t.procedure.use(async ({ ctx, next }) => {
+export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx, next }) => {
   if (!ctx.tenant.companyId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

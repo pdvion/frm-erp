@@ -112,8 +112,8 @@ export const deployAgentRouter = createTRPCRouter({
       if (invoice.xmlContent) {
         try {
           parsedData = parseNFeXml(invoice.xmlContent);
-        } catch {
-          // Ignore parse errors
+        } catch (e: unknown) {
+          console.warn("[deploy-agent] Failed to parse NFe XML:", e);
         }
       }
 
@@ -345,7 +345,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -428,7 +429,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -463,7 +465,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -498,7 +501,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -568,7 +572,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -603,7 +608,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((inv) => {
           try {
             return parseNFeXml(inv.xmlContent!);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -658,7 +664,8 @@ export const deployAgentRouter = createTRPCRouter({
         .map((xml) => {
           try {
             return parseNFeXml(xml);
-          } catch {
+          } catch (e) {
+            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             return null;
           }
         })
@@ -745,8 +752,8 @@ export const deployAgentRouter = createTRPCRouter({
               if (nfe.emitente?.cnpj) {
                 supplierCnpjs.add(nfe.emitente.cnpj);
               }
-            } catch {
-              // Skip invalid XMLs
+            } catch (e) {
+              console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             }
           }
         }
@@ -782,8 +789,8 @@ export const deployAgentRouter = createTRPCRouter({
                   materialCodes.add(item.codigo);
                 }
               }
-            } catch {
-              // Skip invalid XMLs
+            } catch (e) {
+              console.warn("[deploy-agent] Failed to parse NFe XML:", e);
             }
           }
         }

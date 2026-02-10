@@ -1,6 +1,13 @@
 /**
- * CSRF Protection
- * Gera e valida tokens CSRF para proteger mutations
+ * @deprecated NÃO USAR — Este módulo usa Map em memória para armazenar tokens,
+ * o que é incompatível com ambientes serverless (Vercel). Cada invocação cria
+ * um novo processo, então tokens gerados nunca serão encontrados na validação.
+ *
+ * A proteção CSRF ativa está em src/server/trpc.ts via middleware de validação
+ * de Origin header (stateless, funciona em serverless).
+ *
+ * Este arquivo é mantido apenas como referência. Remover em cleanup futuro.
+ * Ver: VIO-1057
  */
 
 import { randomBytes, createHmac } from "crypto";

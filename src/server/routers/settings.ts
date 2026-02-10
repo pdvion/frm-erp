@@ -228,7 +228,8 @@ export const settingsRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Buscar configurações da landing page (público)
+  // Buscar configurações da landing page (público — intencionalmente sem auth)
+  // Retorna apenas dados de UI (hero, features, trust indicators), sem dados sensíveis
   getLandingConfig: publicProcedure
     .input(z.object({
       companyId: z.string().uuid().optional(),

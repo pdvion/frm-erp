@@ -251,35 +251,36 @@ export const supplierReturnsRouter = createTRPCRouter({
 
       // Atualizar itens se fornecidos
       if (items) {
-        // Remover itens existentes
-        await prisma.supplierReturnItem.deleteMany({ where: { returnId: id } });
-
-        // Calcular novo total
         const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
-        // Atualizar devolução com novos itens
-        const updated = await prisma.supplierReturn.update({
-          where: { id },
-          data: {
-            ...data,
-            totalValue,
-            items: {
-              create: items.map((item) => ({
-                materialId: item.materialId,
-                receivedInvoiceItemId: item.receivedInvoiceItemId,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalPrice: item.quantity * item.unitPrice,
-                reason: item.reason,
-                reasonNotes: item.reasonNotes,
-                stockLocationId: item.stockLocationId,
-              })),
+        const updated = await prisma.$transaction(async (tx) => {
+          // Remover itens existentes
+          await tx.supplierReturnItem.deleteMany({ where: { returnId: id } });
+
+          // Atualizar devolução com novos itens
+          return tx.supplierReturn.update({
+            where: { id },
+            data: {
+              ...data,
+              totalValue,
+              items: {
+                create: items.map((item) => ({
+                  materialId: item.materialId,
+                  receivedInvoiceItemId: item.receivedInvoiceItemId,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  totalPrice: item.quantity * item.unitPrice,
+                  reason: item.reason,
+                  reasonNotes: item.reasonNotes,
+                  stockLocationId: item.stockLocationId,
+                })),
+              },
             },
-          },
-          include: {
-            supplier: { select: { companyName: true } },
-            items: { include: { material: { select: { description: true } } } },
-          },
+            include: {
+              supplier: { select: { companyName: true } },
+              items: { include: { material: { select: { description: true } } } },
+            },
+          });
         });
 
         await auditUpdate("SupplierReturn", existing.id, String(updated.returnNumber), existing, updated, {

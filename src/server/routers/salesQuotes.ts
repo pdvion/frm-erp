@@ -584,16 +584,16 @@ export const salesQuotesRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Orçamento não pode ser editado neste status" });
       }
 
-      await prisma.salesQuoteItem.delete({ where: { id: input.itemId } });
-
-      // Atualizar subtotal do orçamento
       const newSubtotal = Number(quote.subtotal) - Number(item.totalPrice);
       const newTotal = Number(newSubtotal) * (1 - Number(quote.discountPercent) / 100) - Number(quote.discountValue) + Number(quote.shippingValue);
 
-      await prisma.salesQuote.update({
-        where: { id: quote.id },
-        data: { subtotal: newSubtotal, totalValue: newTotal },
-      });
+      await prisma.$transaction([
+        prisma.salesQuoteItem.delete({ where: { id: input.itemId } }),
+        prisma.salesQuote.update({
+          where: { id: quote.id },
+          data: { subtotal: newSubtotal, totalValue: newTotal },
+        }),
+      ]);
 
       return { success: true };
     }),
