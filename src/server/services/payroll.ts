@@ -1,5 +1,4 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
 
 type Decimal = Prisma.Decimal;
 
