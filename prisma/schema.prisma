@@ -120,6 +120,7 @@ model CompanyOnboarding {
   updatedAt      DateTime  @default(now()) @updatedAt
 
   @@map("company_onboarding")
+  @@index([companyId])
 }
 
 model User {
@@ -211,6 +212,7 @@ model UserCompany {
   @@index([userId], map: "idx_user_companies_user")
   @@index([userId])
   @@map("user_companies")
+  @@index([companyId])
 }
 
 model UserCompanyPermission {
@@ -230,6 +232,7 @@ model UserCompanyPermission {
   @@index([companyId], map: "idx_user_company_permissions_companyId")
   @@index([userId])
   @@map("user_company_permissions")
+  @@index([companyId])
 }
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
@@ -267,6 +270,7 @@ model UserGroup {
 
   @@index([companyId], map: "idx_user_groups_companyId")
   @@map("user_groups")
+  @@index([companyId])
 }
 
 model UserGroupMember {
@@ -421,6 +425,7 @@ model Material {
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])
   @@map("materials")
+  @@index([companyId])
 }
 
 model Supplier {
@@ -491,6 +496,7 @@ model Supplier {
 
   @@index([companyId], map: "idx_suppliers_companyId")
   @@map("suppliers")
+  @@index([companyId])
 }
 
 model SupplierMaterial {
@@ -549,6 +555,7 @@ model Inventory {
   @@index([companyId], map: "idx_inventory_companyId")
   @@index([id, version], map: "idx_inventory_version")
   @@map("inventory")
+  @@index([companyId])
 }
 
 model InventoryMovement {
@@ -606,6 +613,7 @@ model StockReservation {
   @@index([documentType, documentId])
   @@index([inventoryId], map: "idx_stock_reservations_inventory")
   @@map("stock_reservations")
+  @@index([companyId])
 }
 
 model Quote {
@@ -725,6 +733,7 @@ model PurchaseOrder {
   @@index([supplierId], map: "idx_purchase_orders_supplierId")
   @@index([quoteId])
   @@map("purchase_orders")
+  @@index([companyId])
 }
 
 model PurchaseOrderItem {
@@ -840,6 +849,7 @@ model ReceivedInvoice {
   @@index([supplierId], map: "idx_received_invoices_supplierId")
   @@index([purchaseOrderId])
   @@map("received_invoices")
+  @@index([companyId])
 }
 
 model ReceivedInvoiceItem {
@@ -952,6 +962,7 @@ model AccountsPayable {
   @@index([costCenterId], map: "idx_accounts_payable_costcenter")
   @@index([supplierId], map: "idx_accounts_payable_supplierId")
   @@map("accounts_payable")
+  @@index([companyId])
 }
 
 model PayablePayment {
@@ -1079,6 +1090,7 @@ model ProductionOrder {
   @@index([companyId], map: "idx_production_orders_companyId")
   @@index([productId], map: "idx_production_orders_product")
   @@map("production_orders")
+  @@index([companyId])
 }
 
 model ProductionOrderMaterial {
@@ -1184,6 +1196,7 @@ model BankAccount {
   @@unique([code, companyId])
   @@index([companyId], map: "idx_bank_accounts_companyId")
   @@map("bank_accounts")
+  @@index([companyId])
 }
 
 model BankTransaction {
@@ -1315,6 +1328,7 @@ model Customer {
   @@index([status])
   @@index([companyId], map: "idx_customers_companyId")
   @@map("customers")
+  @@index([companyId])
 }
 
 model AccountsReceivable {
@@ -1366,6 +1380,7 @@ model AccountsReceivable {
   @@index([customerId], map: "idx_accounts_receivable_customerId")
   @@index([issuedInvoiceId], map: "idx_accounts_receivable_issuedinvoice")
   @@map("accounts_receivable")
+  @@index([companyId])
 }
 
 model ReceivablePayment {
@@ -1588,6 +1603,7 @@ model WorkCenter {
   @@unique([code, companyId])
   @@index([companyId], map: "idx_work_centers_companyId")
   @@map("work_centers")
+  @@index([companyId])
 }
 
 model ProductionLog {
@@ -2075,6 +2091,7 @@ model Department {
   @@index([costCenterId], map: "idx_departments_costcenter")
   @@index([parentId], map: "idx_departments_parent")
   @@map("departments")
+  @@index([companyId])
 }
 
 model JobPosition {
@@ -2098,6 +2115,7 @@ model JobPosition {
   @@index([departmentId], map: "idx_job_positions_department")
   @@index([departmentId], map: "idx_job_positions_departmentId")
   @@map("job_positions")
+  @@index([companyId])
 }
 
 model Employee {
@@ -2177,6 +2195,7 @@ model Employee {
   @@index([positionId], map: "idx_employees_position")
   @@index([userId], map: "idx_employees_user")
   @@map("employees")
+  @@index([companyId])
 }
 
 model TimeClockEntry {
@@ -2252,6 +2271,7 @@ model WorkSchedule {
   @@unique([companyId, code])
   @@index([companyId], map: "idx_work_schedules_companyId")
   @@map("work_schedules")
+  @@index([companyId])
 }
 
 model WorkShift {
@@ -2302,6 +2322,7 @@ model HoursBank {
   @@index([companyId], map: "idx_hours_bank_companyId")
   @@index([employeeId], map: "idx_hours_bank_employeeId")
   @@map("hours_bank")
+  @@index([companyId])
 }
 
 model TimeClockAdjustment {
@@ -2325,6 +2346,7 @@ model TimeClockAdjustment {
   @@index([companyId], map: "idx_time_clock_adjustments_companyId")
   @@index([employeeId], map: "idx_time_clock_adjustments_employeeId")
   @@map("time_clock_adjustments")
+  @@index([companyId])
 }
 
 model Holiday {
@@ -2340,6 +2362,7 @@ model Holiday {
   @@unique([companyId, date])
   @@index([companyId], map: "idx_holidays_companyId")
   @@map("holidays")
+  @@index([companyId])
 }
 
 model Payroll {
@@ -2452,6 +2475,7 @@ model Vacation {
   @@index([companyId], map: "idx_vacations_companyId")
   @@index([employeeId], map: "idx_vacations_employeeId")
   @@map("vacations")
+  @@index([companyId])
 }
 
 model ThirteenthSalary {
@@ -2481,6 +2505,7 @@ model ThirteenthSalary {
   @@index([companyId], map: "idx_thirteenth_salaries_companyId")
   @@index([employeeId], map: "idx_thirteenth_salaries_employeeId")
   @@map("thirteenth_salaries")
+  @@index([companyId])
 }
 
 model Termination {
@@ -2532,6 +2557,7 @@ model Termination {
   @@index([companyId], map: "idx_terminations_companyId")
   @@index([employeeId], map: "idx_terminations_employeeId")
   @@map("terminations")
+  @@index([companyId])
 }
 
 model MaterialReceiving {
@@ -2584,6 +2610,7 @@ model MaterialReceiving {
   @@index([purchaseOrderId], map: "idx_material_receivings_purchaseorder")
   @@index([supplierId], map: "idx_material_receivings_supplier")
   @@map("material_receivings")
+  @@index([companyId])
 }
 
 model MaterialReceivingItem {
@@ -2724,6 +2751,7 @@ model Notification {
   @@index([type], map: "idx_notifications_type")
   @@index([userId], map: "idx_notifications_user_id")
   @@map("notifications")
+  @@index([companyId])
 }
 
 model NotificationPreference {
@@ -2763,6 +2791,7 @@ model SystemLog {
   @@index([source], map: "idx_system_logs_source")
   @@index([userId], map: "idx_system_logs_user_id")
   @@map("system_logs")
+  @@index([companyId])
 }
 
 model NotificationGroup {
@@ -2782,6 +2811,7 @@ model NotificationGroup {
   @@unique([code, companyId])
   @@index([companyId], map: "idx_notification_groups_company")
   @@map("notification_groups")
+  @@index([companyId])
 }
 
 model NotificationGroupMember {
@@ -2850,6 +2880,7 @@ model Task {
   @@index([targetGroupId], map: "idx_tasks_target_group")
   @@index([targetUserId], map: "idx_tasks_target_user")
   @@map("tasks")
+  @@index([companyId])
 }
 
 model TaskHistory {
@@ -2938,6 +2969,7 @@ model IssuedInvoice {
   @@index([companyId], map: "idx_issued_invoices_companyId")
   @@index([customerId], map: "idx_issued_invoices_customerId")
   @@map("issued_invoices")
+  @@index([companyId])
 }
 
 model IssuedInvoiceItem {
@@ -3236,6 +3268,7 @@ model BudgetVersion {
   @@index([approvedBy])
   @@index([createdBy])
   @@map("budget_versions")
+  @@index([companyId])
 }
 
 model BudgetEntry {
@@ -3278,6 +3311,7 @@ model BudgetActual {
   @@index([accountId])
   @@index([costCenterId])
   @@map("budget_actuals")
+  @@index([companyId])
 }
 
 model BudgetAlert {
@@ -3700,6 +3734,7 @@ model SefazPendingNfe {
   @@index([companyId], map: "idx_sefaz_pending_nfes_companyId")
   @@index([receivedInvoiceId])
   @@map("sefaz_pending_nfes")
+  @@index([companyId])
 }
 
 model SefazManifestacaoLog {
@@ -3723,6 +3758,7 @@ model SefazManifestacaoLog {
   @@index([pendingNfeId], map: "idx_sefaz_manifestacao_logs_pendingNfeId")
   @@index([tipo], map: "idx_sefaz_manifestacao_logs_tipo")
   @@map("sefaz_manifestacao_logs")
+  @@index([companyId])
 }
 
 model DdaBoleto {
@@ -3775,6 +3811,7 @@ model DdaBoleto {
   @@index([supplierId], map: "idx_dda_boletos_supplier_id")
   @@index([dataVencimento], map: "idx_dda_boletos_vencimento")
   @@map("dda_boletos")
+  @@index([companyId])
 }
 
 model DdaConfig {
@@ -3801,6 +3838,7 @@ model DdaConfig {
 
   @@unique([companyId, bancoCodigo])
   @@map("dda_config")
+  @@index([companyId])
 }
 
 model DdaSyncLog {
@@ -3821,6 +3859,7 @@ model DdaSyncLog {
   @@index([companyId], map: "idx_dda_sync_log_company_id")
   @@index([configId], map: "idx_dda_sync_log_config_id")
   @@map("dda_sync_log")
+  @@index([companyId])
 }
 
 model SavedReport {
@@ -3843,6 +3882,7 @@ model SavedReport {
   @@index([reportType], map: "idx_saved_reports_reportType")
   @@index([userId], map: "idx_saved_reports_userId")
   @@map("saved_reports")
+  @@index([companyId])
 }
 
 model CollectionRule {
@@ -3862,6 +3902,7 @@ model CollectionRule {
   @@index([isActive], map: "idx_collection_rules_active")
   @@index([companyId], map: "idx_collection_rules_company")
   @@map("collection_rules")
+  @@index([companyId])
 }
 
 model CollectionRuleStep {
@@ -3946,6 +3987,7 @@ model SupplierReturn {
   @@index([status], map: "idx_supplier_returns_status")
   @@index([supplierId], map: "idx_supplier_returns_supplier")
   @@map("supplier_returns")
+  @@index([companyId])
 }
 
 model SupplierReturnItem {
@@ -4006,6 +4048,7 @@ model QualityInspection {
   @@index([inspectorId], map: "idx_quality_inspections_inspector_id")
   @@index([status], map: "idx_quality_inspections_status")
   @@map("quality_inspections")
+  @@index([companyId])
 }
 
 model QualityInspectionItem {
@@ -4060,6 +4103,7 @@ model NonConformity {
   @@index([productionOrderId], map: "idx_non_conformities_production_order_id")
   @@index([status], map: "idx_non_conformities_status")
   @@map("non_conformities")
+  @@index([companyId])
 }
 
 model ProductionCost {
@@ -4096,6 +4140,7 @@ model ProductionCost {
   @@index([productionOrderId], map: "idx_production_costs_production_order_id")
   @@index([status], map: "idx_production_costs_status")
   @@map("production_costs")
+  @@index([companyId])
 }
 
 model ProductionCostMaterial {
@@ -4149,6 +4194,7 @@ model MaterialStandardCost {
   @@index([companyId], map: "idx_material_standard_costs_company_id")
   @@index([materialId], map: "idx_material_standard_costs_material_id")
   @@map("material_standard_costs")
+  @@index([companyId])
 }
 
 model BenefitType {
@@ -4173,6 +4219,7 @@ model BenefitType {
 
   @@index([companyId], map: "idx_benefit_types_company_id")
   @@map("benefit_types")
+  @@index([companyId])
 }
 
 model EmployeeBenefit {
@@ -4197,6 +4244,7 @@ model EmployeeBenefit {
   @@index([employeeId], map: "idx_employee_benefits_employee_id")
   @@index([companyId], map: "idx_employee_benefits_company_id")
   @@map("employee_benefits")
+  @@index([companyId])
 }
 
 model TransportVoucher {
@@ -4216,6 +4264,7 @@ model TransportVoucher {
   @@index([employeeId], map: "idx_transport_vouchers_employee_id")
   @@index([companyId], map: "idx_transport_vouchers_company_id")
   @@map("transport_vouchers")
+  @@index([companyId])
 }
 
 model Training {
@@ -4238,6 +4287,7 @@ model Training {
 
   @@index([companyId], map: "idx_trainings_company_id")
   @@map("trainings")
+  @@index([companyId])
 }
 
 model EmployeeTraining {
@@ -4261,6 +4311,7 @@ model EmployeeTraining {
   @@index([trainingId], map: "idx_employee_trainings_training_id")
   @@index([companyId], map: "idx_employee_trainings_company_id")
   @@map("employee_trainings")
+  @@index([companyId])
 }
 
 model SkillMatrix {
@@ -4282,6 +4333,7 @@ model SkillMatrix {
   @@index([employeeId], map: "idx_skill_matrix_employee_id")
   @@index([companyId], map: "idx_skill_matrix_company_id")
   @@map("skill_matrix")
+  @@index([companyId])
 }
 
 model AdmissionProcess {
@@ -4312,6 +4364,7 @@ model AdmissionProcess {
   @@index([companyId], map: "idx_admission_processes_company_id")
   @@index([status], map: "idx_admission_processes_status")
   @@map("admission_processes")
+  @@index([companyId])
 }
 
 model AdmissionStep {
@@ -4471,6 +4524,7 @@ model Port {
   @@index([country], map: "idx_ports_country")
   @@index([type], map: "idx_ports_type")
   @@map("ports")
+  @@index([companyId])
 }
 
 model CustomsBroker {
@@ -4491,6 +4545,7 @@ model CustomsBroker {
 
   @@index([companyId], map: "idx_customs_brokers_company")
   @@map("customs_brokers")
+  @@index([companyId])
 }
 
 model CargoType {
@@ -4581,6 +4636,7 @@ model ImportProcess {
   @@index([status], map: "idx_import_processes_status")
   @@index([supplierId], map: "idx_import_processes_supplier")
   @@map("import_processes")
+  @@index([companyId])
 }
 
 model ImportProcessItem {
@@ -4680,6 +4736,7 @@ model ExchangeContract {
   @@index([processId], map: "idx_exchange_contracts_process")
   @@index([status], map: "idx_exchange_contracts_status")
   @@map("exchange_contracts")
+  @@index([companyId])
 }
 
 model ExchangeLiquidation {
@@ -4721,6 +4778,7 @@ model ProductCategory {
   @@index([parentId], map: "idx_product_categories_parent")
   @@index([slug], map: "idx_product_categories_slug")
   @@map("product_categories")
+  @@index([companyId])
 }
 
 model Product {
@@ -4760,6 +4818,7 @@ model Product {
   @@index([slug], map: "idx_products_slug")
   @@index([status], map: "idx_products_status")
   @@map("products")
+  @@index([companyId])
 }
 
 model ProductImage {
@@ -4841,6 +4900,7 @@ model AiUsageLog {
   @@index([provider, model], map: "idx_ai_usage_logs_provider_model")
   @@index([taskType], map: "idx_ai_usage_logs_task_type")
   @@map("ai_usage_logs")
+  @@index([companyId])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -4898,6 +4958,7 @@ model Embedding {
   @@unique([entityType, entityId])
   @@index([entityType, companyId])
   @@map("embeddings")
+  @@index([companyId])
 }
 
 enum MaterialStatus {
@@ -5602,6 +5663,7 @@ model EmployeeDependent {
   @@index([employeeId], map: "idx_employee_dependents_employee_id")
   @@index([companyId], map: "idx_employee_dependents_company_id")
   @@map("employee_dependents")
+  @@index([companyId])
 }
 
 model LeaveRecord {
@@ -5625,6 +5687,7 @@ model LeaveRecord {
   @@index([companyId], map: "idx_leave_records_company_id")
   @@index([startDate], map: "idx_leave_records_start_date")
   @@map("leave_records")
+  @@index([companyId])
 }
 
 model IncomeTaxTable {
@@ -5687,6 +5750,7 @@ model Lot {
   @@index([status], map: "idx_lots_status")
   @@index([expirationDate], map: "idx_lots_expiration_date")
   @@map("lots")
+  @@index([companyId])
 }
 
 model LotMovement {
