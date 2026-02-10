@@ -16,6 +16,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { formatCostUSD } from "@/lib/ai/costs";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge } from "@/components/ui/Badge";
 
 function formatNumber(num: number): string {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
@@ -393,13 +394,13 @@ export default function AiUsagePage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {log.success ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <Badge variant="success">
                           OK
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <Badge variant="error">
                           Erro
-                        </span>
+                        </Badge>
                       )}
                     </td>
                   </tr>

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
@@ -161,9 +162,9 @@ export default function EmployeesPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                            <Badge variant={colorToVariant(config.color)}>
                               {config.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <Link

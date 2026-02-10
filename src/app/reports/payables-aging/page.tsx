@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 
 export default function PayablesAgingReportPage() {
   const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split("T")[0]);
@@ -170,18 +171,13 @@ export default function PayablesAgingReportPage() {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-center">
                           {item.daysOverdue > 0 ? (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              item.daysOverdue > 90 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" :
-                                item.daysOverdue > 60 ? "bg-red-50 text-red-700" :
-                                  item.daysOverdue > 30 ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
-                                    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
-                            }`}>
+                            <Badge variant={item.daysOverdue > 60 ? "error" : item.daysOverdue > 30 ? "orange" : "warning"}>
                               {item.daysOverdue} dias
-                            </span>
+                            </Badge>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <Badge variant="success">
                               A vencer
-                            </span>
+                            </Badge>
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right">

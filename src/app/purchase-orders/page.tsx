@@ -29,6 +29,7 @@ import {
   FileText,
   Calendar,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-secondary text-theme-muted", icon: <FileText className="w-4 h-4" /> },
@@ -333,12 +334,10 @@ export default function PurchaseOrdersPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
-                          >
+                          <Badge variant={colorToVariant(config.color)}>
                             {config.icon}
                             {config.label}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <Link

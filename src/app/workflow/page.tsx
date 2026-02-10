@@ -16,6 +16,7 @@ import {
   Settings,
   ClipboardList,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: string;
@@ -33,10 +34,10 @@ function StatusBadge({ status }: StatusBadgeProps) {
   const { color, label, icon } = config[status] || config.PENDING;
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {icon}
       {label}
-    </span>
+    </Badge>
   );
 }
 
@@ -53,9 +54,9 @@ function CategoryBadge({ category }: { category: string }) {
   const { color, label } = config[category] || config.GENERAL;
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {label}
-    </span>
+    </Badge>
   );
 }
 

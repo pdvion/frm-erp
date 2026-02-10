@@ -23,6 +23,7 @@ import {
   Package,
 } from "lucide-react";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
@@ -131,10 +132,10 @@ export default function TransfersPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                            <Badge variant={colorToVariant(config.color)}>
                               {config.icon}
                               {config.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <Link

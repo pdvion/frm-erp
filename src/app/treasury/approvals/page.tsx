@@ -18,6 +18,7 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 function UrgencyBadge({ urgency }: { urgency: string }) {
   const config: Record<string, { color: string; label: string }> = {
@@ -30,9 +31,9 @@ function UrgencyBadge({ urgency }: { urgency: string }) {
   const { color, label } = config[urgency] || config.NORMAL;
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {label}
-    </span>
+    </Badge>
   );
 }
 

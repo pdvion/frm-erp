@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 
 interface ParsedNFe {
   chaveAcesso: string;
@@ -213,10 +214,10 @@ export default function NewReceivingPage() {
                   <FileText className="w-5 h-5 text-blue-600" />
                   NFe {parsedNfe.numero} - Série {parsedNfe.serie}
                 </h2>
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                <Badge variant="success">
                   <CheckCircle className="w-4 h-4" />
                   XML Válido
-                </span>
+                </Badge>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

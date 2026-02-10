@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge } from "@/components/ui/Badge";
 
 export default function TimesheetPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
@@ -185,19 +186,19 @@ export default function TimesheetPage() {
                     </td>
                     <td className="px-6 py-4">
                       {entry.status === "APPROVED" ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                        <Badge variant="success">
                           <CheckCircle className="w-3 h-3" />
                           Aprovado
-                        </span>
+                        </Badge>
                       ) : entry.status === "PENDING" ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
+                        <Badge variant="warning">
                           <Clock className="w-3 h-3" />
                           Pendente
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-theme-tertiary text-theme-secondary text-xs rounded-full">
+                        <Badge variant="default">
                           {entry.status}
-                        </span>
+                        </Badge>
                       )}
                     </td>
                   </tr>

@@ -22,6 +22,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Badge } from "@/components/ui/Badge";
 
 type AnalysisTab = "overview" | "fiscal" | "tax" | "financial";
 
@@ -266,9 +267,9 @@ export default function DeployAgentAnalysisPage() {
                             <td className="py-2 px-3 text-theme-secondary">{item.description}</td>
                             <td className="py-2 px-3 text-right text-theme">{item.count}</td>
                             <td className="py-2 px-3 text-right">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">
+                              <Badge variant="info">
                                 {percentage}%
-                              </span>
+                              </Badge>
                             </td>
                           </tr>
                         );

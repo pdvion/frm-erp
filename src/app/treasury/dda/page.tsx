@@ -27,6 +27,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type BoletoStatus = "PENDENTE" | "APROVADO" | "REJEITADO" | "PAGO" | "VENCIDO" | "CANCELADO";
 
@@ -270,10 +271,10 @@ export default function DdaPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${status.bgColor} ${status.color}`}>
+                        <Badge variant={colorToVariant(status.color)}>
                           <StatusIcon className="h-3 w-3" />
                           {status.label}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="py-3 px-4 text-center">
                         {boleto.accountsPayable ? (

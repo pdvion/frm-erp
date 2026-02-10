@@ -23,6 +23,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type BoletoStatus = "PENDING" | "REGISTERED" | "PAID" | "CANCELLED" | "OVERDUE";
 
@@ -266,10 +267,10 @@ export default function BoletosPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-center">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
+                            <Badge variant={colorToVariant(statusInfo.color)}>
                               <StatusIcon className="w-3 h-3" />
                               {statusInfo.label}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-right">
                             <div className="flex items-center justify-end gap-1">

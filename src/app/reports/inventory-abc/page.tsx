@@ -6,6 +6,7 @@ import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Package, Download, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 
 const classColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -160,9 +161,9 @@ export default function InventoryAbcReportPage() {
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm text-theme-secondary">{item.percentOfTotal.toFixed(2)}%</td>
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm text-theme-secondary">{item.cumulativePercent.toFixed(2)}%</td>
                         <td className="px-4 py-3 whitespace-nowrap text-center">
-                          <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${cls.bg} ${cls.text}`}>
+                          <Badge variant={colorToVariant(`${cls.bg} ${cls.text}`)}>
                             {item.classification}
-                          </span>
+                          </Badge>
                         </td>
                       </tr>
                     );

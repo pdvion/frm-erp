@@ -31,6 +31,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/Textarea";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
@@ -145,10 +146,10 @@ export default function InvoiceDetailPage() {
         backHref="/invoices"
         module="fiscal"
         actions={
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
+          <Badge variant={colorToVariant(config.color)}>
             {config.icon}
             {config.label}
-          </span>
+          </Badge>
         }
       />
 
@@ -403,10 +404,10 @@ export default function InvoiceDetailPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${matchConfig.color}`}>
+                          <Badge variant={colorToVariant(matchConfig.color)}>
                             {matchConfig.icon}
                             {matchConfig.label}
-                          </span>
+                          </Badge>
                           {item.divergenceNote && (
                             <span className="text-xs text-yellow-600 max-w-[200px] truncate" title={item.divergenceNote}>
                               {item.divergenceNote}

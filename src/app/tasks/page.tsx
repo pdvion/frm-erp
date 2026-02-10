@@ -31,6 +31,7 @@ import {
   Shield,
   Calendar,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
@@ -389,12 +390,10 @@ export default function TasksPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}
-                        >
+                        <Badge variant={colorToVariant(status.color)}>
                           {status.icon}
                           {status.label}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <LinkButton

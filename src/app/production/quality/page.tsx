@@ -25,6 +25,7 @@ import {
   AlertCircle,
   Package,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const inspectionStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
@@ -260,9 +261,9 @@ export default function QualityPage() {
                           <tr key={inspection.id} className="hover:bg-theme-hover">
                             <td className="px-4 py-3 font-medium text-theme">#{inspection.code}</td>
                             <td className="px-4 py-3">
-                              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${typeCfg.color}`}>
+                              <Badge variant={colorToVariant(typeCfg.color)}>
                                 {typeCfg.label}
-                              </span>
+                              </Badge>
                             </td>
                             <td className="px-4 py-3">
                               {inspection.material ? (
@@ -284,10 +285,10 @@ export default function QualityPage() {
                               {formatDate(inspection.inspectionDate)}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusCfg.color}`}>
+                              <Badge variant={colorToVariant(statusCfg.color)}>
                                 {statusCfg.icon}
                                 {statusCfg.label}
-                              </span>
+                              </Badge>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <Link
@@ -360,9 +361,9 @@ export default function QualityPage() {
                               {nc.description}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${severityCfg.color}`}>
+                              <Badge variant={colorToVariant(severityCfg.color)}>
                                 {severityCfg.label}
-                              </span>
+                              </Badge>
                             </td>
                             <td className="px-4 py-3 text-center text-sm text-theme-secondary">
                               {nc.material?.description || "-"}
@@ -371,9 +372,9 @@ export default function QualityPage() {
                               {formatDate(nc.createdAt)}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${statusCfg.color}`}>
+                              <Badge variant={colorToVariant(statusCfg.color)}>
                                 {statusCfg.label}
-                              </span>
+                              </Badge>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <Link

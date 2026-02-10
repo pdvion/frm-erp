@@ -1,9 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import type { ReactNode } from "react";
-
-type StatusVariant = "success" | "warning" | "error" | "info" | "default" | "purple" | "orange" | "cyan" | "pink";
 
 interface StatusBadgeProps {
   status: string;
@@ -12,7 +10,7 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const STATUS_MAP: Record<string, { variant: StatusVariant; label: string }> = {
+const STATUS_MAP: Record<string, { variant: BadgeVariant; label: string }> = {
   // Common entity statuses
   ACTIVE: { variant: "success", label: "Ativo" },
   INACTIVE: { variant: "default", label: "Inativo" },
@@ -22,7 +20,7 @@ const STATUS_MAP: Record<string, { variant: StatusVariant; label: string }> = {
   PENDING: { variant: "warning", label: "Pendente" },
   IN_PROGRESS: { variant: "info", label: "Em Andamento" },
   COMPLETED: { variant: "success", label: "Concluído" },
-  CANCELLED: { variant: "error", label: "Cancelado" },
+  CANCELLED: { variant: "default", label: "Cancelado" },
   REJECTED: { variant: "error", label: "Rejeitado" },
 
   // Approval statuses
@@ -60,7 +58,7 @@ const STATUS_MAP: Record<string, { variant: StatusVariant; label: string }> = {
  * Falls back to "default" variant for unknown statuses.
  */
 export function StatusBadge({ status, children, icon, className }: StatusBadgeProps) {
-  const config = STATUS_MAP[status] ?? { variant: "default" as StatusVariant, label: status };
+  const config = STATUS_MAP[status] ?? { variant: "default" as BadgeVariant, label: status };
 
   return (
     <Badge variant={config.variant} className={className}>

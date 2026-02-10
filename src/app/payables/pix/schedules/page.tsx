@@ -22,6 +22,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type ScheduleStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FAILED";
 
@@ -240,10 +241,10 @@ export default function PixSchedulesPage() {
                           <p className="font-medium text-theme">{formatCurrency(schedule.value)}</p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
+                          <Badge variant={colorToVariant(status.color)}>
                             <StatusIcon className="w-3 h-3" />
                             {status.label}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <div className="relative">

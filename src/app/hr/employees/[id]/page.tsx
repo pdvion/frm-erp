@@ -22,6 +22,7 @@ import {
   User,
   FileText,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
@@ -110,17 +111,17 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
 
       {/* Status Badge and Company */}
       <div className="flex items-center gap-4 flex-wrap">
-        <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
+        <Badge variant={colorToVariant(config.color)}>
           {config.label}
-        </span>
+        </Badge>
         <span className="text-theme-muted">
           {contractLabels[employee.contractType] || employee.contractType}
         </span>
         {employee.company && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+          <Badge variant="info">
             <Building2 className="w-3.5 h-3.5" />
             {employee.company.tradeName || employee.company.name}
-          </span>
+          </Badge>
         )}
       </div>
 

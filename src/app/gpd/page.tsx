@@ -20,6 +20,7 @@ import {
   Flag,
   Activity,
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: "BELOW" | "ON_TARGET" | "ABOVE";
@@ -35,10 +36,10 @@ function StatusBadge({ status }: StatusBadgeProps) {
   const { color, icon: Icon, label } = config[status];
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       <Icon className="h-3 w-3" />
       {label}
-    </span>
+    </Badge>
   );
 }
 
@@ -53,9 +54,9 @@ function PriorityBadge({ priority }: { priority: number }) {
   const { color, label } = config[priority] || config[3];
 
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color}`}>
+    <Badge variant={colorToVariant(color)}>
       {label}
-    </span>
+    </Badge>
   );
 }
 

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
@@ -131,7 +132,7 @@ export default function SalesQuotesPage() {
                           <td className="px-4 py-3 text-center text-sm text-theme-secondary">{quote._count.items}</td>
                           <td className="px-4 py-3 text-right text-sm font-medium text-theme">{formatCurrency(quote.totalValue)}</td>
                           <td className="px-4 py-3 text-center">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>
+                            <Badge variant={colorToVariant(config.color)}>{config.label}</Badge>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <LinkButton

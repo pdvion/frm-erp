@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type ManifestacaoTipo = "CIENCIA" | "CONFIRMACAO" | "DESCONHECIMENTO" | "NAO_REALIZADA";
 
@@ -161,19 +162,17 @@ export default function ManifestacaoHistoryPage() {
                             : "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}
-                          >
+                          <Badge variant={colorToVariant(config.color)}>
                             {config.icon}
                             {config.label}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-4 py-3 text-center">
                           {manifestacao.status === "SUCESSO" ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <Badge variant="success">
                               <CheckCircle className="w-3 h-3" />
                               Sucesso
-                            </span>
+                            </Badge>
                           ) : (
                             <span
                               className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"

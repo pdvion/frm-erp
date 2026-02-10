@@ -13,6 +13,7 @@ import {
   TrendingUp,
   TrendingDown
 } from "lucide-react";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -249,9 +250,9 @@ export default function InventoryPage() {
                             </div>
                           </td>
                           <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${inventoryTypeColors[item.inventoryType]}`}>
+                            <Badge variant={colorToVariant(inventoryTypeColors[item.inventoryType] || "")}>
                               {inventoryTypeLabels[item.inventoryType]}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-right">
                             <div className={`text-sm font-medium ${stockStatus.color}`}>

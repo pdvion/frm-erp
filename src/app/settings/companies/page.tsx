@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 import {
   Building2,
   Plus,
@@ -318,13 +319,9 @@ export default function CompaniesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          company.isActive
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
-                            : "bg-theme-tertiary text-theme"
-                        }`}>
+                        <Badge variant={company.isActive ? "success" : "default"}>
                           {company.isActive ? "Ativa" : "Inativa"}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-2">

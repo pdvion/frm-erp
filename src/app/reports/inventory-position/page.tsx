@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Badge } from "@/components/ui/Badge";
 
 const inventoryTypeLabels: Record<string, string> = {
   RAW_MATERIAL: "Matéria-Prima",
@@ -216,14 +217,14 @@ export default function InventoryPositionReportPage() {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center">
                         {item.isBelowMinimum ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <Badge variant="error">
                             <AlertTriangle className="w-3 h-3" />
                             Baixo
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <Badge variant="success">
                             OK
-                          </span>
+                          </Badge>
                         )}
                       </td>
                     </tr>

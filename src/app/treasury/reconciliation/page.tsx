@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -241,11 +242,7 @@ export default function ReconciliationPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            isCredit 
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" 
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                          }`}>
+                          <Badge variant={isCredit ? "success" : "error"}>
                             {isCredit ? (
                               <ArrowUpCircle className="w-3 h-3" />
                             ) : (
@@ -258,7 +255,7 @@ export default function ReconciliationPage() {
                             {transaction.type === "FEE" && "Taxa"}
                             {transaction.type === "INTEREST" && "Juros"}
                             {transaction.type === "ADJUSTMENT" && "Ajuste"}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
                           <span className={`font-medium ${isCredit ? "text-green-600" : "text-red-600"}`}>

@@ -20,6 +20,7 @@ import {
   RefreshCw,
   Target,
 } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 
 const getOeeColor = (value: number) => {
   if (value >= 85) return "text-green-500";
@@ -354,20 +355,20 @@ export default function OeeDashboardPage() {
                       </td>
                       <td className="py-3 px-4 text-center">
                         {wc.oee >= oeeTarget ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                          <Badge variant="success">
                             <CheckCircle className="w-3 h-3" />
                             Na meta
-                          </span>
+                          </Badge>
                         ) : wc.oee >= oeeTarget * 0.8 ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                          <Badge variant="warning">
                             <AlertTriangle className="w-3 h-3" />
                             Atenção
-                          </span>
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+                          <Badge variant="error">
                             <TrendingDown className="w-3 h-3" />
                             Abaixo
-                          </span>
+                          </Badge>
                         )}
                       </td>
                     </tr>

@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Badge } from "@/components/ui/Badge";
 
 type StatusFilter = "all" | "active" | "inactive";
 
@@ -56,17 +57,17 @@ export default function UsersPage() {
   const getStatusBadge = (isActive: boolean) => {
     if (isActive) {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+        <Badge variant="success">
           <UserCheck className="w-3 h-3" />
           Ativo
-        </span>
+        </Badge>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+      <Badge variant="error">
         <UserX className="w-3 h-3" />
         Inativo
-      </span>
+      </Badge>
     );
   };
 

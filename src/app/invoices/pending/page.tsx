@@ -31,6 +31,7 @@ import {
   History,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 type SituacaoNfe = "PENDENTE" | "PROCESSANDO" | "IMPORTADA" | "IGNORADA" | "ERRO";
 
@@ -436,12 +437,10 @@ export default function PendingInvoicesPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${sitConfig.color}`}
-                          >
+                          <Badge variant={colorToVariant(sitConfig.color)}>
                             {sitConfig.icon}
                             {sitConfig.label}
-                          </span>
+                          </Badge>
                           {nfe.situacao === "ERRO" && nfe.errorMessage && (
                             <div className="text-xs text-red-600 mt-1" title={nfe.errorMessage}>
                               {nfe.errorMessage.substring(0, 30)}...
@@ -612,10 +611,10 @@ export default function PendingInvoicesPage() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+                        <Badge variant={colorToVariant(config.color)}>
                           {config.icon}
                           {config.label}
-                        </span>
+                        </Badge>
                       </div>
                       <p className="text-xs text-theme-muted mt-1">{config.description}</p>
                     </div>
@@ -707,10 +706,10 @@ export default function PendingInvoicesPage() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+                        <Badge variant={colorToVariant(config.color)}>
                           {config.icon}
                           {config.label}
-                        </span>
+                        </Badge>
                       </div>
                       <p className="text-xs text-theme-muted mt-1">{config.description}</p>
                     </div>
