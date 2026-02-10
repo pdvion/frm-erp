@@ -43,7 +43,7 @@ export default function InventoryCountPage() {
       materialId: inv.materialId,
       materialCode: inv.material.code,
       materialDescription: inv.material.description,
-      systemQty: inv.quantity,
+      systemQty: Number(inv.quantity),
       countedQty: null,
       difference: 0,
       status: "pending" as const,
@@ -158,7 +158,7 @@ export default function InventoryCountPage() {
                     <tr key={inv.id} className="hover:bg-theme-table-hover">
                       <td className="px-4 py-3 text-sm font-mono text-theme">{inv.material.code}</td>
                       <td className="px-4 py-3 text-sm text-theme">{inv.material.description}</td>
-                      <td className="px-4 py-3 text-sm text-right text-theme">{inv.quantity}</td>
+                      <td className="px-4 py-3 text-sm text-right text-theme">{Number(inv.quantity)}</td>
                     </tr>
                   ))
                 )}

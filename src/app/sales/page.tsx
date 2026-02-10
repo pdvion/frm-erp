@@ -136,7 +136,7 @@ export default function SalesDashboardPage() {
                         <div className="text-2xl font-bold">{count}</div>
                         <div className="text-xs">{leadStatusLabels[status]}</div>
                       </div>
-                      {value > 0 && (
+                      {Number(value) > 0 && (
                         <div className="text-xs text-theme-muted mt-1">
                           {formatCurrency(value)}
                         </div>

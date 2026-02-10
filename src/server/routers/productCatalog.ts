@@ -883,7 +883,7 @@ export const productCatalogRouter = createTRPCRouter({
         };
 
         const suggestedCategory = categoryMap[ncmChapter] || "Geral";
-        const suggestedPrice = (material.lastPurchasePrice || 0) * (1 + markup / 100);
+        const suggestedPrice = (Number(material.lastPurchasePrice) || 0) * (1 + markup / 100);
 
         return {
           id: material.id,

@@ -396,7 +396,7 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
               { value: "", label: "Selecione..." },
               ...(orders?.orders?.map((order) => ({
                 value: order.id,
-                label: `Pedido #${order.code} - ${order.customer?.companyName} - ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(order.totalValue)}`,
+                label: `Pedido #${order.code} - ${order.customer?.companyName} - ${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(order.totalValue))}`,
               })) || []),
             ]}
           />

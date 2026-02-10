@@ -46,6 +46,7 @@ export function generatePdfFromHtml(content: string, options: PdfOptions): void 
   setTimeout(() => printWindow.print(), 250);
 }
 
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function formatCurrency(value: any): string {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value));
 }

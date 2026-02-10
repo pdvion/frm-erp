@@ -189,7 +189,7 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Calcular valor restante
-      const remainingValue = payable.netValue - payable.paidValue;
+      const remainingValue = Number(payable.netValue) - Number(payable.paidValue);
       const totalPayment = input.value + input.interestValue + input.fineValue - input.discountValue;
 
       if (totalPayment > remainingValue + 0.01) { // tolerância de 1 centavo
@@ -215,16 +215,16 @@ export const payablesRouter = createTRPCRouter({
       });
 
       // Atualizar título
-      const newPaidValue = payable.paidValue + input.value;
-      const isPaid = Math.abs(newPaidValue - payable.netValue) < 0.01;
+      const newPaidValue = Number(payable.paidValue) + Number(input.value);
+      const isPaid = Math.abs(newPaidValue - Number(payable.netValue)) < 0.01;
 
       const updatedPayable = await prisma.accountsPayable.update({
         where: { id: input.payableId },
         data: {
           paidValue: newPaidValue,
-          discountValue: payable.discountValue + input.discountValue,
-          interestValue: payable.interestValue + input.interestValue,
-          fineValue: payable.fineValue + input.fineValue,
+          discountValue: Number(payable.discountValue) + Number(input.discountValue),
+          interestValue: Number(payable.interestValue) + input.interestValue,
+          fineValue: Number(payable.fineValue) + input.fineValue,
           status: isPaid ? "PAID" : "PARTIAL",
           paidAt: isPaid ? input.paymentDate : null,
         },
@@ -274,7 +274,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      if (payable.paidValue > 0) {
+      if (Number(payable.paidValue) > 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Não é possível cancelar um título com pagamentos parciais",
@@ -455,7 +455,7 @@ export const payablesRouter = createTRPCRouter({
       return {
         label: range.label,
         count: filtered.length,
-        value: filtered.reduce((sum, p) => sum + (p.netValue - p.paidValue), 0),
+        value: filtered.reduce((sum, p) => sum + (Number(p.netValue) - Number(p.paidValue)), 0),
       };
     });
 
@@ -496,7 +496,7 @@ export const payablesRouter = createTRPCRouter({
           supplierName: supplier?.tradeName || supplier?.companyName || "Desconhecido",
           totalValue: r._sum.netValue || 0,
           paidValue: r._sum.paidValue || 0,
-          remainingValue: (r._sum.netValue || 0) - (r._sum.paidValue || 0),
+          remainingValue: (Number(r._sum.netValue) || 0) - (Number(r._sum.paidValue) || 0),
           count: r._count,
         };
       });
@@ -740,7 +740,7 @@ export const payablesRouter = createTRPCRouter({
               payableId: input.payableId,
               costCenterId: a.costCenterId,
               percentage: a.percentage,
-              value: (payable.netValue * a.percentage) / 100,
+              value: (Number(payable.netValue) * a.percentage) / 100,
             },
           })
         )
@@ -910,16 +910,16 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Atualizar título
-      const newPaidValue = payable.paidValue - payment.value;
+      const newPaidValue = Number(payable.paidValue) - Number(payment.value);
       const newStatus = newPaidValue <= 0 ? "PENDING" : "PARTIAL";
 
       await prisma.accountsPayable.update({
         where: { id: payment.payableId },
         data: {
           paidValue: Math.max(0, newPaidValue),
-          discountValue: payable.discountValue - payment.discountValue,
-          interestValue: payable.interestValue - payment.interestValue,
-          fineValue: payable.fineValue - payment.fineValue,
+          discountValue: Number(payable.discountValue) - Number(payment.discountValue),
+          interestValue: Number(payable.interestValue) - Number(payment.interestValue),
+          fineValue: Number(payable.fineValue) - Number(payment.fineValue),
           status: newStatus,
           paidAt: null,
           notes: `${payable.notes || ""}\n[ESTORNO] ${input.reason} - Valor: R$ ${payment.value.toFixed(2)}`.trim(),
@@ -1678,7 +1678,7 @@ export const payablesRouter = createTRPCRouter({
 
       return payables.map((p) => ({
         ...p,
-        remainingValue: p.netValue - p.paidValue,
+        remainingValue: Number(p.netValue) - Number(p.paidValue),
         isOverdue: new Date(p.dueDate) < today,
         daysOverdue: new Date(p.dueDate) < today
           ? Math.floor((today.getTime() - new Date(p.dueDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -1723,7 +1723,7 @@ export const payablesRouter = createTRPCRouter({
 
       for (const payable of payables) {
         try {
-          const remainingValue = payable.netValue - payable.paidValue;
+          const remainingValue = Number(payable.netValue) - Number(payable.paidValue);
 
           // Criar pagamento
           await prisma.payablePayment.create({

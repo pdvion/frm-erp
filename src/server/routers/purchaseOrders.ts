@@ -340,7 +340,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Item não encontrado" });
       }
 
-      const newReceivedQty = item.receivedQty + input.receivedQty;
+      const newReceivedQty = Number(item.receivedQty) + Number(input.receivedQty);
 
       // Atualizar quantidade recebida do item
       const updatedItem = await ctx.prisma.purchaseOrderItem.update({
@@ -373,8 +373,8 @@ export const purchaseOrdersRouter = createTRPCRouter({
       }
 
       // Calcular novo saldo
-      const newQuantity = inventory.quantity + input.receivedQty;
-      const totalCost = input.receivedQty * item.unitPrice;
+      const newQuantity = Number(inventory.quantity) + Number(input.receivedQty);
+      const totalCost = Number(input.receivedQty) * Number(item.unitPrice);
 
       // Criar movimento de entrada
       await ctx.prisma.inventoryMovement.create({
@@ -399,7 +399,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
           quantity: newQuantity,
           availableQty: newQuantity,
           unitCost: item.unitPrice,
-          totalCost: newQuantity * item.unitPrice,
+          totalCost: newQuantity * Number(item.unitPrice),
           lastMovementAt: new Date(),
         },
       });
@@ -418,16 +418,16 @@ export const purchaseOrdersRouter = createTRPCRouter({
         where: { purchaseOrderId: item.purchaseOrderId },
       });
 
-      const allReceived = allItems.every((i: { id: string; quantity: number; receivedQty: number }) => 
+      const allReceived = allItems.every((i) => 
         i.id === input.itemId 
-          ? newReceivedQty >= i.quantity 
-          : i.receivedQty >= i.quantity
+          ? newReceivedQty >= Number(i.quantity) 
+          : Number(i.receivedQty) >= Number(i.quantity)
       );
 
-      const anyReceived = allItems.some((i: { id: string; receivedQty: number }) => 
+      const anyReceived = allItems.some((i) => 
         i.id === input.itemId 
           ? newReceivedQty > 0 
-          : i.receivedQty > 0
+          : Number(i.receivedQty) > 0
       );
 
       // Atualizar status do pedido
@@ -536,7 +536,7 @@ export const purchaseOrdersRouter = createTRPCRouter({
       }
 
       // Verificar se requer aprovação baseado no valor
-      const approval = await requiresApproval(ctx.companyId!, "PURCHASE_ORDER", order.totalValue);
+      const approval = await requiresApproval(ctx.companyId!, "PURCHASE_ORDER", Number(order.totalValue));
 
       if (!approval.required) {
         // Não requer aprovação - aprovar diretamente

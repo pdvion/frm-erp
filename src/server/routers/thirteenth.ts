@@ -89,7 +89,7 @@ export const thirteenthRouter = createTRPCRouter({
           : 12;
 
         // 1ª parcela = 50% do salário proporcional (sem descontos)
-        const grossValue = (employee.salary / 12) * monthsWorked * 0.5;
+        const grossValue = (Number(employee.salary) / 12) * monthsWorked * 0.5;
 
         const thirteenth = await ctx.prisma.thirteenthSalary.create({
           data: {
@@ -158,11 +158,11 @@ export const thirteenthRouter = createTRPCRouter({
           : 12;
 
         // Total do 13º
-        const totalThirteenth = (employee.salary / 12) * monthsWorked;
+        const totalThirteenth = (Number(employee.salary) / 12) * monthsWorked;
         
         // 2ª parcela = Total - 1ª parcela
         const firstValue = firstInstallment?.grossValue || 0;
-        const grossValue = totalThirteenth - firstValue;
+        const grossValue = totalThirteenth - Number(firstValue);
 
         // Calcular INSS sobre o total
         const inssDeduction = Math.min(totalThirteenth * 0.14, 908.85);

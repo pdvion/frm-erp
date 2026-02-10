@@ -158,7 +158,7 @@ export default function BiDashboardPage() {
                 <KpiCard
                   title="Contas a Receber (Mês)"
                   value={formatCurrency(financial?.receivables.thisMonth || 0)}
-                  trend={calculateTrend(financial?.receivables.thisMonth || 0, financial?.receivables.lastMonth || 0)}
+                  trend={calculateTrend(Number(financial?.receivables.thisMonth) || 0, Number(financial?.receivables.lastMonth) || 0)}
                   trendLabel="vs mês anterior"
                   status="success"
                   icon={<TrendingUp className="h-6 w-6" />}
@@ -166,7 +166,7 @@ export default function BiDashboardPage() {
                 <KpiCard
                   title="Contas a Pagar (Mês)"
                   value={formatCurrency(financial?.payables.thisMonth || 0)}
-                  trend={calculateTrend(financial?.payables.thisMonth || 0, financial?.payables.lastMonth || 0)}
+                  trend={calculateTrend(Number(financial?.payables.thisMonth) || 0, Number(financial?.payables.lastMonth) || 0)}
                   trendLabel="vs mês anterior"
                   status="neutral"
                   icon={<TrendingDown className="h-6 w-6" />}
@@ -312,7 +312,7 @@ export default function BiDashboardPage() {
                 <KpiCard
                   title="Faturamento (Mês)"
                   value={formatCurrency(sales?.revenueThisMonth || 0)}
-                  trend={calculateTrend(sales?.revenueThisMonth || 0, sales?.revenueLastMonth || 0)}
+                  trend={calculateTrend(Number(sales?.revenueThisMonth) || 0, Number(sales?.revenueLastMonth) || 0)}
                   trendLabel="vs mês anterior"
                   status={(sales?.revenueThisMonth || 0) >= (sales?.revenueLastMonth || 0) ? "success" : "warning"}
                   icon={<TrendingUp className="h-6 w-6" />}

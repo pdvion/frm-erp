@@ -90,7 +90,7 @@ export const vacationsRouter = createTRPCRouter({
       // Calcular valores
       const baseSalary = employee.salary;
       const enjoyedDays = input.totalDays - input.soldDays;
-      const dailySalary = baseSalary / 30;
+      const dailySalary = Number(baseSalary) / 30;
       
       const vacationPay = dailySalary * enjoyedDays;
       const oneThirdBonus = vacationPay / 3;

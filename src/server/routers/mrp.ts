@@ -154,7 +154,7 @@ export const mrpRouter = createTRPCRouter({
         for (const order of productionOrders) {
           // Explodir BOM
           for (const bomItem of order.product.bomAsParent) {
-            const requiredQty = order.quantity * bomItem.quantity * (1 + bomItem.scrapPercentage / 100);
+            const requiredQty = Number(order.quantity) * Number(bomItem.quantity) * (1 + Number(bomItem.scrapPercentage) / 100);
 
             // Buscar estoque disponível
             const inventory = await ctx.prisma.inventory.findFirst({
@@ -168,8 +168,8 @@ export const mrpRouter = createTRPCRouter({
               where: { materialId: bomItem.childMaterialId },
             });
 
-            const safetyStock = params?.safetyStock || 0;
-            const netRequirement = requiredQty - availableQty + safetyStock;
+            const safetyStock = Number(params?.safetyStock || 0);
+            const netRequirement = Number(requiredQty) - Number(availableQty) + safetyStock;
 
             if (netRequirement > 0) {
               // Determinar tipo de sugestão baseado no tipo de material
@@ -190,11 +190,11 @@ export const mrpRouter = createTRPCRouter({
               // Aplicar lote mínimo e múltiplo
               let orderQty = netRequirement;
               if (params) {
-                if (orderQty < params.minLotSize) {
-                  orderQty = params.minLotSize;
+                if (orderQty < Number(params.minLotSize)) {
+                  orderQty = Number(params.minLotSize);
                 }
-                if (params.lotMultiple > 1) {
-                  orderQty = Math.ceil(orderQty / params.lotMultiple) * params.lotMultiple;
+                if (Number(params.lotMultiple) > 1) {
+                  orderQty = Math.ceil(orderQty / Number(params.lotMultiple)) * Number(params.lotMultiple);
                 }
               }
 

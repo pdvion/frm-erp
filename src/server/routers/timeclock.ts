@@ -313,7 +313,7 @@ export const timeclockRouter = createTRPCRouter({
       });
 
       const currentBalance = lastEntry?.balance || 0;
-      const newBalance = currentBalance + input.hours;
+      const newBalance = Number(currentBalance) + Number(input.hours);
 
       return ctx.prisma.hoursBank.create({
         data: {
@@ -522,11 +522,11 @@ export const timeclockRouter = createTRPCRouter({
       // Calcular totais
       const totals = days.reduce(
         (acc, day) => ({
-          scheduledHours: acc.scheduledHours + day.scheduledHours,
-          workedHours: acc.workedHours + day.workedHours,
-          overtimeHours: acc.overtimeHours + day.overtimeHours,
-          nightHours: acc.nightHours + day.nightHours,
-          absenceHours: acc.absenceHours + day.absenceHours,
+          scheduledHours: Number(acc.scheduledHours) + Number(day.scheduledHours),
+          workedHours: Number(acc.workedHours) + Number(day.workedHours),
+          overtimeHours: Number(acc.overtimeHours) + Number(day.overtimeHours),
+          nightHours: Number(acc.nightHours) + Number(day.nightHours),
+          absenceHours: Number(acc.absenceHours) + Number(day.absenceHours),
         }),
         { scheduledHours: 0, workedHours: 0, overtimeHours: 0, nightHours: 0, absenceHours: 0 }
       );

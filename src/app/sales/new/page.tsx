@@ -46,7 +46,8 @@ export default function NewSalePage() {
     },
   });
 
-  const addMaterial = (material: { id: string; code: number; description: string; lastPurchasePrice: number | null }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const addMaterial = (material: { id: string; code: number; description: string; lastPurchasePrice: any }) => {
     if (items.find((i) => i.materialId === material.id)) return;
     
     const unitPrice = material.lastPurchasePrice || 0;

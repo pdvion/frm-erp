@@ -66,7 +66,8 @@ export default function NewSupplierReturnPage() {
     code: number;
     description: string;
     unit: string;
-    lastPurchasePrice?: number | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lastPurchasePrice?: any;
   }) => {
     if (items.some((i) => i.materialId === material.id)) {
       setError("Material já adicionado");

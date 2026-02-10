@@ -105,7 +105,7 @@ export default function TimesheetPage() {
               <span className="text-sm">Presentes</span>
             </div>
             <p className="text-2xl font-bold text-green-600">
-              {timeEntries?.filter((e) => e.workedHours > 0).length || 0}
+              {timeEntries?.filter((e) => Number(e.workedHours) > 0).length || 0}
             </p>
           </div>
           <div className="bg-theme-card rounded-xl shadow-sm border border-theme p-4">
@@ -176,13 +176,13 @@ export default function TimesheetPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-theme text-right">{formatHours(entry.scheduledHours)}</td>
-                    <td className="px-6 py-4 text-sm text-theme text-right">{formatHours(entry.workedHours)}</td>
+                    <td className="px-6 py-4 text-sm text-theme text-right">{formatHours(Number(entry.scheduledHours))}</td>
+                    <td className="px-6 py-4 text-sm text-theme text-right">{formatHours(Number(entry.workedHours))}</td>
                     <td className="px-6 py-4 text-sm text-green-600 text-right">
-                      {entry.overtimeHours > 0 ? `+${formatHours(entry.overtimeHours)}` : "-"}
+                      {Number(entry.overtimeHours) > 0 ? `+${formatHours(Number(entry.overtimeHours))}` : "-"}
                     </td>
                     <td className="px-6 py-4 text-sm text-red-600 text-right">
-                      {entry.absenceHours > 0 ? `-${formatHours(entry.absenceHours)}` : "-"}
+                      {Number(entry.absenceHours) > 0 ? `-${formatHours(Number(entry.absenceHours))}` : "-"}
                     </td>
                     <td className="px-6 py-4">
                       {entry.status === "APPROVED" ? (

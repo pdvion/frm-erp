@@ -314,10 +314,10 @@ export const mesRouter = createTRPCRouter({
           ? ((todayLog.plannedTimeMinutes - todayLog.stopTimeMinutes) / todayLog.plannedTimeMinutes) * 100
           : 0;
         const performance = todayLog.actualTimeMinutes > 0 && todayLog.idealCycleTimeSeconds
-          ? ((todayLog.producedQuantity * todayLog.idealCycleTimeSeconds / 60) / todayLog.actualTimeMinutes) * 100
+          ? ((Number(todayLog.producedQuantity) * Number(todayLog.idealCycleTimeSeconds) / 60) / todayLog.actualTimeMinutes) * 100
           : 0;
-        const quality = todayLog.producedQuantity > 0
-          ? (todayLog.goodQuantity / todayLog.producedQuantity) * 100
+        const quality = Number(todayLog.producedQuantity) > 0
+          ? (Number(todayLog.goodQuantity) / Number(todayLog.producedQuantity)) * 100
           : 0;
         oee = (availability * performance * quality) / 10000;
       }
@@ -394,8 +394,8 @@ export const mesRouter = createTRPCRouter({
       });
 
       // Atualizar OP
-      const newProducedQty = order.producedQty + input.quantity;
-      const isComplete = newProducedQty >= order.quantity;
+      const newProducedQty = Number(order.producedQty) + Number(input.quantity);
+      const isComplete = newProducedQty >= Number(order.quantity);
 
       await ctx.prisma.productionOrder.update({
         where: { id: order.id },
@@ -410,7 +410,7 @@ export const mesRouter = createTRPCRouter({
         success: true,
         newProducedQty,
         isComplete,
-        remaining: Math.max(0, order.quantity - newProducedQty),
+        remaining: Math.max(0, Number(order.quantity) - newProducedQty),
       };
     }),
 
@@ -467,7 +467,7 @@ export const mesRouter = createTRPCRouter({
 
     // Calcular taxa de qualidade do dia
     const qualityRate = todayProduction._sum.producedQuantity
-      ? ((todayProduction._sum.goodQuantity || 0) / todayProduction._sum.producedQuantity) * 100
+      ? ((Number(todayProduction._sum.goodQuantity) || 0) / Number(todayProduction._sum.producedQuantity)) * 100
       : 100;
 
     return {

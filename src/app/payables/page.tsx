@@ -286,7 +286,7 @@ export default function PayablesPage() {
                     {data.payables.map((payable) => {
                       const displayStatus = payable.isOverdue ? "OVERDUE" : payable.status;
                       const config = statusConfig[displayStatus];
-                      const balance = payable.netValue - payable.paidValue;
+                      const balance = Number(payable.netValue) - Number(payable.paidValue);
 
                       return (
                         <tr key={payable.id} className="hover:bg-theme-hover">
@@ -334,7 +334,7 @@ export default function PayablesPage() {
                             {formatCurrency(payable.netValue)}
                           </td>
                           <td className="px-4 py-3 text-right text-green-600">
-                            {payable.paidValue > 0 ? formatCurrency(payable.paidValue) : "-"}
+                            {Number(payable.paidValue) > 0 ? formatCurrency(payable.paidValue) : "-"}
                           </td>
                           <td className="px-4 py-3 text-right font-medium text-theme">
                             {formatCurrency(balance)}

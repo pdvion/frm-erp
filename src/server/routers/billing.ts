@@ -121,7 +121,7 @@ export const billingRouter = createTRPCRouter({
       let subtotal = 0;
       const invoiceItems = itemsToInvoice.map((item, index) => {
         const qty = input.items?.find((ii) => ii.itemId === item.id)?.quantity || item.quantity;
-        const total = qty * item.unitPrice * (1 - (item.discountPercent || 0) / 100);
+        const total = Number(qty) * Number(item.unitPrice) * (1 - (Number(item.discountPercent) || 0) / 100);
         subtotal += total;
         return {
           materialId: item.materialId,
@@ -152,7 +152,7 @@ export const billingRouter = createTRPCRouter({
           subtotal,
           discountValue: order.discountValue || 0,
           shippingValue: order.shippingValue || 0,
-          totalValue: subtotal - (order.discountValue || 0) + (order.shippingValue || 0),
+          totalValue: Number(subtotal) - (Number(order.discountValue) || 0) + (Number(order.shippingValue) || 0),
           paymentTerms: input.paymentTerms || order.paymentTerms,
           notes: input.notes,
           status: "DRAFT",

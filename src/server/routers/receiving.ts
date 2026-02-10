@@ -218,7 +218,7 @@ export const receivingRouter = createTRPCRouter({
 
       // Dar entrada no estoque para cada item aprovado
       for (const item of receiving.items) {
-        if (item.approvedQuantity > 0) {
+        if (Number(item.approvedQuantity) > 0) {
           // Atualizar estoque geral
           await ctx.prisma.inventory.upsert({
             where: {
@@ -263,7 +263,7 @@ export const receivingRouter = createTRPCRouter({
                 movementType: "ENTRY",
                 quantity: item.approvedQuantity,
                 unitCost: item.unitPrice,
-                totalCost: item.approvedQuantity * item.unitPrice,
+                totalCost: Number(item.approvedQuantity) * Number(item.unitPrice),
                 supplierId: receiving.supplierId,
                 documentType: "NFE",
                 documentNumber: receiving.nfeNumber,
@@ -283,7 +283,7 @@ export const receivingRouter = createTRPCRouter({
       }
 
       // Verificar se houve rejeições
-      const hasRejections = receiving.items.some(i => i.rejectedQuantity > 0);
+      const hasRejections = receiving.items.some(i => Number(i.rejectedQuantity) > 0);
       const allRejected = receiving.items.every(i => i.status === "REJECTED");
 
       return ctx.prisma.materialReceiving.update({

@@ -65,10 +65,10 @@ export default function OEEWorkCentersPage() {
       code: wc.code,
       name: wc.name,
       description: wc.description || "",
-      capacityPerHour: wc.capacityPerHour,
-      hoursPerDay: wc.hoursPerDay,
+      capacityPerHour: Number(wc.capacityPerHour),
+      hoursPerDay: Number(wc.hoursPerDay),
       daysPerWeek: wc.daysPerWeek,
-      efficiencyTarget: wc.efficiencyTarget,
+      efficiencyTarget: Number(wc.efficiencyTarget),
       setupTimeMinutes: wc.setupTimeMinutes,
       costPerHour: Number(wc.costPerHour),
     });
@@ -151,8 +151,8 @@ export default function OEEWorkCentersPage() {
                 <tr key={wc.id} className="hover:bg-theme-table-hover">
                   <td className="px-4 py-3 text-sm font-medium text-theme">{wc.code}</td>
                   <td className="px-4 py-3 text-sm text-theme">{wc.name}</td>
-                  <td className="px-4 py-3 text-sm text-theme">{wc.capacityPerHour}</td>
-                  <td className="px-4 py-3 text-sm text-theme">{wc.efficiencyTarget}%</td>
+                  <td className="px-4 py-3 text-sm text-theme">{Number(wc.capacityPerHour)}</td>
+                  <td className="px-4 py-3 text-sm text-theme">{Number(wc.efficiencyTarget)}%</td>
                   <td className="px-4 py-3 text-sm text-theme">{wc.setupTimeMinutes}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${

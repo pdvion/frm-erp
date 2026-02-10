@@ -213,12 +213,11 @@ export const salesQuotesRouter = createTRPCRouter({
       }
 
       // Recalcular total se desconto ou frete mudou
-      let totalValue = existing.subtotal;
       const discountPercent = data.discountPercent ?? existing.discountPercent;
       const discountValue = data.discountValue ?? existing.discountValue;
       const shippingValue = data.shippingValue ?? existing.shippingValue;
 
-      totalValue = existing.subtotal * (1 - discountPercent / 100) - discountValue + shippingValue;
+      const totalValue = Number(existing.subtotal) * (1 - Number(discountPercent) / 100) - Number(discountValue) + Number(shippingValue);
 
       const quote = await prisma.salesQuote.update({
         where: { id },
@@ -548,8 +547,8 @@ export const salesQuotesRouter = createTRPCRouter({
       });
 
       // Atualizar subtotal do orçamento
-      const newSubtotal = quote.subtotal + itemTotal;
-      const newTotal = newSubtotal * (1 - quote.discountPercent / 100) - quote.discountValue + quote.shippingValue;
+      const newSubtotal = Number(quote.subtotal) + itemTotal;
+      const newTotal = Number(newSubtotal) * (1 - Number(quote.discountPercent) / 100) - Number(quote.discountValue) + Number(quote.shippingValue);
 
       await prisma.salesQuote.update({
         where: { id: input.quoteId },
@@ -588,8 +587,8 @@ export const salesQuotesRouter = createTRPCRouter({
       await prisma.salesQuoteItem.delete({ where: { id: input.itemId } });
 
       // Atualizar subtotal do orçamento
-      const newSubtotal = quote.subtotal - item.totalPrice;
-      const newTotal = newSubtotal * (1 - quote.discountPercent / 100) - quote.discountValue + quote.shippingValue;
+      const newSubtotal = Number(quote.subtotal) - Number(item.totalPrice);
+      const newTotal = Number(newSubtotal) * (1 - Number(quote.discountPercent) / 100) - Number(quote.discountValue) + Number(quote.shippingValue);
 
       await prisma.salesQuote.update({
         where: { id: quote.id },

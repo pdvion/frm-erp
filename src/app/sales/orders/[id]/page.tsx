@@ -234,13 +234,13 @@ export default function SalesOrderDetailPage() {
                           <div className="text-xs text-theme-muted">Cód: {item.material.code}</div>
                         </td>
                         <td className="px-3 py-2 text-right text-theme">
-                          {item.quantity} {item.unit}
+                          {Number(item.quantity)} {item.unit}
                         </td>
                         <td className="px-3 py-2 text-right text-theme">
                           {formatCurrency(item.unitPrice)}
                         </td>
                         <td className="px-3 py-2 text-right text-theme-muted">
-                          {item.discountPercent > 0 ? `${item.discountPercent}%` : "-"}
+                          {Number(item.discountPercent) > 0 ? `${Number(item.discountPercent)}%` : "-"}
                         </td>
                         <td className="px-3 py-2 text-right font-medium text-theme">
                           {formatCurrency(item.totalPrice)}
@@ -285,19 +285,19 @@ export default function SalesOrderDetailPage() {
                   <span className="text-theme-muted">Subtotal</span>
                   <span className="text-theme">{formatCurrency(order.subtotal)}</span>
                 </div>
-                {order.discountPercent > 0 && (
+                {Number(order.discountPercent) > 0 && (
                   <div className="flex justify-between text-red-600">
-                    <span>Desconto ({order.discountPercent}%)</span>
-                    <span>-{formatCurrency(order.subtotal * order.discountPercent / 100)}</span>
+                    <span>Desconto ({Number(order.discountPercent)}%)</span>
+                    <span>-{formatCurrency(Number(order.subtotal) * Number(order.discountPercent) / 100)}</span>
                   </div>
                 )}
-                {order.discountValue > 0 && (
+                {Number(order.discountValue) > 0 && (
                   <div className="flex justify-between text-red-600">
                     <span>Desconto</span>
                     <span>-{formatCurrency(order.discountValue)}</span>
                   </div>
                 )}
-                {order.shippingValue > 0 && (
+                {Number(order.shippingValue) > 0 && (
                   <div className="flex justify-between">
                     <span className="text-theme-muted">Frete</span>
                     <span className="text-theme">{formatCurrency(order.shippingValue)}</span>

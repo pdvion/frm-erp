@@ -151,11 +151,11 @@ export default function BIAnalyticsPage() {
                 data={[
                   {
                     name: "A Pagar (semana)",
-                    valor: dashboard?.financial?.dueThisWeek?.value || 0,
+                    valor: Number(dashboard?.financial?.dueThisWeek?.value) || 0,
                   },
                   {
                     name: "Vencidas",
-                    valor: dashboard?.financial?.overdue?.value || 0,
+                    valor: Number(dashboard?.financial?.overdue?.value) || 0,
                   },
                   {
                     name: "Estoque (valor)",
@@ -179,12 +179,12 @@ export default function BIAnalyticsPage() {
                   { label: "Quantidade Total", value: dashboard?.inventory?.totalQuantity || 0, color: "bg-green-500", textColor: "text-green-600" },
                 ].map((item) => {
                   const total = dashboard?.inventory?.totalItems || 1;
-                  const pct = Math.min((item.value / total) * 100, 100);
+                  const pct = Math.min((Number(item.value) / total) * 100, 100);
                   return (
                     <div key={item.label}>
                       <div className="flex justify-between mb-1">
                         <span className="text-sm text-theme-muted">{item.label}</span>
-                        <span className={`font-semibold ${item.textColor}`}>{item.value}</span>
+                        <span className={`font-semibold ${item.textColor}`}>{Number(item.value)}</span>
                       </div>
                       <div className="w-full bg-theme-tertiary rounded-full h-2.5">
                         <div className={`h-2.5 rounded-full ${item.color}`} style={{ width: `${pct}%` }} />

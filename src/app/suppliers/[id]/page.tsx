@@ -225,7 +225,7 @@ export default function SupplierDetailPage() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium text-theme">
-                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(sm.lastPrice ?? 0)}
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(sm.lastPrice ?? 0))}
                       </div>
                       <div className="text-xs text-theme-muted">
                         Lead time: {sm.leadTimeDays ?? "-"} dias

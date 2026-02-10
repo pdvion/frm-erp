@@ -439,10 +439,10 @@ export const receivedInvoicesRouter = createTRPCRouter({
           let divergenceNote: string | null = null;
 
           if (poItem) {
-            const pendingQty = poItem.quantity - poItem.receivedQty;
-            const priceDiff = Math.abs(item.unitPrice - poItem.unitPrice) / poItem.unitPrice;
+            const pendingQty = Number(poItem.quantity) - Number(poItem.receivedQty);
+            const priceDiff = Math.abs(Number(item.unitPrice) - Number(poItem.unitPrice)) / Number(poItem.unitPrice);
 
-            if (item.quantity > pendingQty) {
+            if (Number(item.quantity) > pendingQty) {
               matchStatus = "DIVERGENT";
               divergenceType = "QTY";
               divergenceNote = `Qtd NFe (${item.quantity}) > Qtd pendente OC (${pendingQty})`;
@@ -595,7 +595,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
           });
         }
 
-        const newQuantity = inventory.quantity + item.quantity;
+        const newQuantity = Number(inventory.quantity) + Number(item.quantity);
 
         // Criar movimento de entrada
         await ctx.prisma.inventoryMovement.create({
@@ -620,7 +620,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
             quantity: newQuantity,
             availableQty: newQuantity,
             unitCost: item.unitPrice,
-            totalCost: newQuantity * item.unitPrice,
+            totalCost: newQuantity * Number(item.unitPrice),
             lastMovementAt: new Date(),
           },
         });
@@ -649,7 +649,7 @@ export const receivedInvoicesRouter = createTRPCRouter({
           if (poItem) {
             await ctx.prisma.purchaseOrderItem.update({
               where: { id: item.purchaseOrderItemId },
-              data: { receivedQty: poItem.receivedQty + item.quantity },
+              data: { receivedQty: Number(poItem.receivedQty) + Number(item.quantity) },
             });
           }
         }

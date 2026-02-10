@@ -123,7 +123,7 @@ export default function MaterialDetailPage() {
               {material.purchaseUnit && material.purchaseUnit !== material.unit && (
                 <div>
                   <dt className="text-sm text-theme-muted">Fator Conversão</dt>
-                  <dd className="text-sm font-medium text-theme">{material.unitConversionFactor || 1}</dd>
+                  <dd className="text-sm font-medium text-theme">{Number(material.unitConversionFactor) || 1}</dd>
                 </div>
               )}
               <div>
@@ -145,7 +145,7 @@ export default function MaterialDetailPage() {
                   <dt className="text-sm text-theme-muted flex items-center gap-1">
                     <Scale className="w-3 h-3" /> Peso
                   </dt>
-                  <dd className="text-sm font-medium text-theme">{material.weight} {material.weightUnit || "KG"}</dd>
+                  <dd className="text-sm font-medium text-theme">{Number(material.weight)} {material.weightUnit || "KG"}</dd>
                 </div>
               )}
             </dl>
@@ -169,11 +169,11 @@ export default function MaterialDetailPage() {
               </div>
               <div>
                 <dt className="text-sm text-theme-muted">% IPI</dt>
-                <dd className="text-sm font-medium text-theme">{material.ipiRate || 0}%</dd>
+                <dd className="text-sm font-medium text-theme">{Number(material.ipiRate) || 0}%</dd>
               </div>
               <div>
                 <dt className="text-sm text-theme-muted">% ICMS</dt>
-                <dd className="text-sm font-medium text-theme">{material.icmsRate || 0}%</dd>
+                <dd className="text-sm font-medium text-theme">{Number(material.icmsRate) || 0}%</dd>
               </div>
             </dl>
           </div>
@@ -222,16 +222,16 @@ export default function MaterialDetailPage() {
                               inv.inventoryType === "FINISHED" ? "Acabado" : inv.inventoryType}
                         </div>
                         <div className="text-xs text-theme-muted">
-                          Disponível: {inv.availableQty} {material.unit}
+                          Disponível: {Number(inv.availableQty)} {material.unit}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-semibold text-theme">
-                        {inv.quantity} {material.unit}
+                        {Number(inv.quantity)} {material.unit}
                       </div>
                       <div className="text-xs text-theme-muted">
-                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(inv.totalCost)}
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(inv.totalCost))}
                       </div>
                     </div>
                   </div>
@@ -267,7 +267,7 @@ export default function MaterialDetailPage() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium text-theme">
-                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(sm.lastPrice ?? 0)}
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(sm.lastPrice ?? 0))}
                       </div>
                       <div className="text-xs text-theme-muted">
                         Lead time: {sm.leadTimeDays ?? "-"} dias
@@ -300,13 +300,13 @@ export default function MaterialDetailPage() {
               <div className="flex justify-between">
                 <dt className="text-sm text-theme-secondary">Mínimo</dt>
                 <dd className="text-sm font-medium text-theme">
-                  {material.minQuantity ?? 0} {material.unit}
+                  {Number(material.minQuantity) ?? 0} {material.unit}
                 </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-theme-secondary">Máximo</dt>
                 <dd className="text-sm font-medium text-theme">
-                  {material.maxQuantity ?? "-"} {material.unit}
+                  {Number(material.maxQuantity) ?? "-"} {material.unit}
                 </dd>
               </div>
             </dl>
@@ -420,7 +420,7 @@ export default function MaterialDetailPage() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-theme-secondary">Lead Time</dt>
-                <dd className="text-theme font-medium">{material.avgDeliveryDays || 0} dias</dd>
+                <dd className="text-theme font-medium">{Number(material.avgDeliveryDays) || 0} dias</dd>
               </div>
             </dl>
           </div>

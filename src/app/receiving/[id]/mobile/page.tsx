@@ -61,7 +61,7 @@ export default function MobileReceivingPage() {
         receiving.items.forEach((item) => {
           initial[item.id] = {
             itemId: item.id,
-            receivedQuantity: item.nfeQuantity,
+            receivedQuantity: Number(item.nfeQuantity),
             notes: "",
             hasIssue: false,
           };
@@ -288,7 +288,7 @@ export default function MobileReceivingPage() {
                         {conf?.receivedQuantity ?? item.nfeQuantity}
                       </p>
                       <p className="text-xs text-theme-muted">
-                        de {item.nfeQuantity} {item.material?.unit || "UN"}
+                        de {Number(item.nfeQuantity)} {item.material?.unit || "UN"}
                       </p>
                     </div>
                     {isExpanded ? (
@@ -331,7 +331,7 @@ export default function MobileReceivingPage() {
                   <div className="flex justify-between text-sm text-theme-secondary mb-4">
                     <span>Valor unitário: {formatCurrency(item.unitPrice)}</span>
                     <span className="font-medium">
-                      Total: {formatCurrency((conf?.receivedQuantity ?? item.nfeQuantity) * item.unitPrice)}
+                      Total: {formatCurrency((conf?.receivedQuantity ?? Number(item.nfeQuantity)) * Number(item.unitPrice))}
                     </span>
                   </div>
 

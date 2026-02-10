@@ -331,12 +331,12 @@ export default function PayrollDetailPage({ params }: PayrollDetailPageProps) {
                   </td>
                   <td className="px-4 py-3 text-right text-theme-muted">
                     {formatCurrency(
-                      payroll.items?.reduce((sum, i) => sum + i.inss, 0) || 0
+                      payroll.items?.reduce((sum, i) => sum + Number(i.inss), 0) || 0
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-theme-muted">
                     {formatCurrency(
-                      payroll.items?.reduce((sum, i) => sum + i.irrf, 0) || 0
+                      payroll.items?.reduce((sum, i) => sum + Number(i.irrf), 0) || 0
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-red-600">

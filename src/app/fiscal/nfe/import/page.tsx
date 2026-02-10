@@ -47,7 +47,7 @@ export default function NFeImportPage() {
           invoiceId: data.invoice.id,
           invoiceNumber: data.invoice.invoiceNumber,
           supplierName: data.invoice.supplierName,
-          totalValue: data.invoice.totalInvoice,
+          totalValue: Number(data.invoice.totalInvoice),
           itemsCount: data.itemsCount,
           linkedItemsCount: data.linkedItemsCount,
         },

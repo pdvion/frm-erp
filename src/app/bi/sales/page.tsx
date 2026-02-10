@@ -72,13 +72,13 @@ export default function BISalesPage() {
     salesTarget: defaultKPIs.salesTarget,
     ordersCount: kpisData?.ordersThisMonth || defaultKPIs.ordersCount,
     avgTicket: kpisData?.ordersThisMonth && kpisData?.revenueThisMonth 
-      ? kpisData.revenueThisMonth / kpisData.ordersThisMonth 
+      ? Number(kpisData.revenueThisMonth) / kpisData.ordersThisMonth 
       : defaultKPIs.avgTicket,
     conversionRate: kpisData?.conversionRate || defaultKPIs.conversionRate,
     newCustomers: kpisData?.leadsThisMonth || defaultKPIs.newCustomers,
     returningCustomers: defaultKPIs.returningCustomers,
     growthVsLastMonth: kpisData?.revenueLastMonth && kpisData?.revenueThisMonth
-      ? ((kpisData.revenueThisMonth - kpisData.revenueLastMonth) / (kpisData.revenueLastMonth || 1)) * 100
+      ? ((Number(kpisData.revenueThisMonth) - Number(kpisData.revenueLastMonth)) / (Number(kpisData.revenueLastMonth) || 1)) * 100
       : defaultKPIs.growthVsLastMonth,
   };
 
@@ -147,12 +147,12 @@ export default function BISalesPage() {
               <span>+{salesKPIs.growthVsLastMonth}%</span>
             </div>
           </div>
-          <div className="text-2xl font-bold text-theme">{formatCurrency(salesKPIs.totalSales)}</div>
+          <div className="text-2xl font-bold text-theme">{formatCurrency(Number(salesKPIs.totalSales))}</div>
           <div className="text-sm text-theme-muted">Vendas no Período</div>
           <div className="mt-3 h-1.5 bg-theme-secondary rounded-full overflow-hidden">
             <div
               className="h-full bg-green-500"
-              style={{ width: `${getProgressPct(salesKPIs.totalSales, salesKPIs.salesTarget)}%` }}
+              style={{ width: `${getProgressPct(Number(salesKPIs.totalSales), salesKPIs.salesTarget)}%` }}
             />
           </div>
           <div className="text-xs text-theme-muted mt-1">

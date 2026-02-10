@@ -310,21 +310,21 @@ export const employeePortalRouter = createTRPCRouter({
           exitTime: exitTime
             ? exitTime.timestamp.toTimeString().slice(0, 5)
             : null,
-          workedHours: Math.floor(day.workedHours),
-          workedMinutes: Math.round((day.workedHours % 1) * 60),
-          overtimeHours: Math.floor(day.overtimeHours),
-          overtimeMinutes: Math.round((day.overtimeHours % 1) * 60),
+          workedHours: Math.floor(Number(day.workedHours)),
+          workedMinutes: Math.round((Number(day.workedHours) % 1) * 60),
+          overtimeHours: Math.floor(Number(day.overtimeHours)),
+          overtimeMinutes: Math.round((Number(day.overtimeHours) % 1) * 60),
           status: day.status,
         };
       });
 
       // Calculate summary
       const totalWorkedHours = timesheetDays.reduce(
-        (sum, d) => sum + d.workedHours,
+        (sum, d) => sum + Number(d.workedHours),
         0
       );
       const totalOvertimeHours = timesheetDays.reduce(
-        (sum, d) => sum + d.overtimeHours,
+        (sum, d) => sum + Number(d.overtimeHours),
         0
       );
       const absences = timesheetDays.filter(
@@ -334,7 +334,7 @@ export const employeePortalRouter = createTRPCRouter({
         (d) => d.status === "LATE"
       ).length;
       const workDays = timesheetDays.filter(
-        (d) => d.workedHours > 0
+        (d) => Number(d.workedHours) > 0
       ).length;
 
       return {
@@ -510,12 +510,12 @@ export const employeePortalRouter = createTRPCRouter({
       // Calculate totals
       const totals = payrollItems.reduce(
         (acc, item) => ({
-          grossSalary: acc.grossSalary + (item.grossSalary || 0),
-          inss: acc.inss + (item.inss || 0),
-          irrf: acc.irrf + (item.irrf || 0),
-          fgts: acc.fgts + (item.fgts || 0),
-          netSalary: acc.netSalary + (item.netSalary || 0),
-          totalDeductions: acc.totalDeductions + (item.totalDeductions || 0),
+          grossSalary: Number(acc.grossSalary) + (Number(item.grossSalary) || 0),
+          inss: Number(acc.inss) + (Number(item.inss) || 0),
+          irrf: Number(acc.irrf) + (Number(item.irrf) || 0),
+          fgts: Number(acc.fgts) + (Number(item.fgts) || 0),
+          netSalary: Number(acc.netSalary) + (Number(item.netSalary) || 0),
+          totalDeductions: Number(acc.totalDeductions) + (Number(item.totalDeductions) || 0),
         }),
         {
           grossSalary: 0,

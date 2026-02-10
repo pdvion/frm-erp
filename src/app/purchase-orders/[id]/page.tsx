@@ -229,7 +229,7 @@ export default function PurchaseOrderDetailPage() {
                 </thead>
                 <tbody className="divide-y divide-theme-table">
                   {order.items.map((item) => {
-                    const pendingQty = item.quantity - item.receivedQty;
+                    const pendingQty = Number(item.quantity) - Number(item.receivedQty);
                     const isComplete = pendingQty <= 0;
 
                     return (
@@ -249,11 +249,11 @@ export default function PurchaseOrderDetailPage() {
                           )}
                         </td>
                         <td className="px-4 py-4 text-right text-theme">
-                          {item.quantity}
+                          {Number(item.quantity)}
                         </td>
                         <td className="px-4 py-4 text-right">
                           <span className={`font-medium ${isComplete ? "text-green-600 dark:text-green-400" : "text-orange-600 dark:text-orange-400"}`}>
-                            {item.receivedQty}
+                            {Number(item.receivedQty)}
                           </span>
                           {!isComplete && (
                             <span className="text-theme-muted text-sm ml-1">
@@ -299,7 +299,7 @@ export default function PurchaseOrderDetailPage() {
                     </td>
                     {canReceive && <td></td>}
                   </tr>
-                  {order.freightValue > 0 && (
+                  {Number(order.freightValue) > 0 && (
                     <tr>
                       <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-theme-secondary">
                         Frete:
@@ -310,13 +310,13 @@ export default function PurchaseOrderDetailPage() {
                       {canReceive && <td></td>}
                     </tr>
                   )}
-                  {order.discountPercent > 0 && (
+                  {Number(order.discountPercent) > 0 && (
                     <tr>
                       <td colSpan={canReceive ? 4 : 3} className="px-4 py-2 text-right text-sm text-theme-secondary">
-                        Desconto ({order.discountPercent}%):
+                        Desconto ({Number(order.discountPercent)}%):
                       </td>
                       <td className="px-4 py-2 text-right text-green-600 dark:text-green-400">
-                        -{formatCurrency(order.totalValue * (order.discountPercent / 100))}
+                        -{formatCurrency(Number(order.totalValue) * (Number(order.discountPercent) / 100))}
                       </td>
                       {canReceive && <td></td>}
                     </tr>

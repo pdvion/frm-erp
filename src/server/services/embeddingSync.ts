@@ -218,7 +218,7 @@ async function fetchEntityForSync(
       const data: SalesOrderEmbeddingData = {
         id: so.id, code: so.code, customerName: so.customer.companyName,
         customerTradeName: so.customer.tradeName, status: so.status,
-        totalValue: so.totalValue, notes: so.notes,
+        totalValue: Number(so.totalValue), notes: so.notes,
         itemDescriptions: so.items.map((i) => i.description).filter(Boolean) as string[],
       };
       return { type: "sales_order", data };

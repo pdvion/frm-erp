@@ -130,7 +130,7 @@ export default function PayslipsPage() {
                           Bruto
                         </p>
                         <p className="font-medium text-theme">
-                          {formatCurrency(payslip.grossSalary)}
+                          {formatCurrency(Number(payslip.grossSalary))}
                         </p>
                       </div>
                       <div>
@@ -139,9 +139,9 @@ export default function PayslipsPage() {
                         </p>
                         <p className="font-medium text-red-600">
                           {formatCurrency(
-                            (payslip.inss || 0) +
-                              (payslip.irrf || 0) +
-                              (payslip.totalDeductions || 0)
+                            (Number(payslip.inss) || 0) +
+                              (Number(payslip.irrf) || 0) +
+                              (Number(payslip.totalDeductions) || 0)
                           )}
                         </p>
                       </div>
@@ -150,7 +150,7 @@ export default function PayslipsPage() {
                           Líquido
                         </p>
                         <p className="font-semibold text-green-600">
-                          {formatCurrency(payslip.netSalary)}
+                          {formatCurrency(Number(payslip.netSalary))}
                         </p>
                       </div>
                     </div>

@@ -217,7 +217,7 @@ export default function BenefitsPage() {
                             <span className="text-theme-muted">Categoria:</span>
                             <span className={`px-2 py-0.5 rounded text-xs ${cfg.color}`}>{cfg.label}</span>
                           </div>
-                          {type.defaultValue && type.defaultValue > 0 && (
+                          {Number(type.defaultValue) && Number(type.defaultValue) > 0 && (
                             <div className="flex justify-between">
                               <span className="text-theme-muted">Valor Padrão:</span>
                               <span className="font-medium">{formatCurrency(type.defaultValue)}</span>

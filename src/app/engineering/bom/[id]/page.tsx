@@ -185,7 +185,7 @@ export default function BomDetailPage() {
                         <span className="text-theme-muted ml-1">{item.unit}</span>
                       </td>
                       <td className="px-6 py-4 text-right text-theme-secondary">
-                        {item.scrapPercentage > 0 ? `${item.scrapPercentage}%` : "-"}
+                        {Number(item.scrapPercentage) > 0 ? `${Number(item.scrapPercentage)}%` : "-"}
                       </td>
                       <td className="px-6 py-4 text-right text-theme-secondary">
                         {item.leadTimeDays > 0 ? `${item.leadTimeDays} dias` : "-"}

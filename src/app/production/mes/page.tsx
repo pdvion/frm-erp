@@ -283,14 +283,14 @@ export default function MesPage() {
                           Produzido: {formatNumber(workCenterStatus.activeOrder.producedQty)}
                         </span>
                         <span className="text-yellow-600 dark:text-yellow-400">
-                          Falta: {formatNumber(workCenterStatus.activeOrder.quantity - workCenterStatus.activeOrder.producedQty)}
+                          Falta: {formatNumber(Number(workCenterStatus.activeOrder.quantity) - Number(workCenterStatus.activeOrder.producedQty))}
                         </span>
                       </div>
                       {/* Barra de progresso */}
                       <div className="mt-2 h-2 bg-theme-tertiary rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-green-500 transition-all"
-                          style={{ width: `${Math.min(100, (workCenterStatus.activeOrder.producedQty / workCenterStatus.activeOrder.quantity) * 100)}%` }}
+                          style={{ width: `${Math.min(100, (Number(workCenterStatus.activeOrder.producedQty) / Number(workCenterStatus.activeOrder.quantity)) * 100)}%` }}
                         />
                       </div>
                     </div>

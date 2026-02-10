@@ -134,7 +134,7 @@ export const inventoryRouter = createTRPCRouter({
 
         // Calcular novo saldo
         const quantityChange = isEntry ? quantity : -quantity;
-        const newQuantity = inventory.quantity + quantityChange;
+        const newQuantity = Number(inventory.quantity) + quantityChange;
         const totalCost = quantity * unitCost;
 
         // Verificar saldo disponível para saídas
@@ -169,13 +169,13 @@ export const inventoryRouter = createTRPCRouter({
           },
           data: {
             quantity: newQuantity,
-            availableQty: newQuantity - inventory.reservedQty,
+            availableQty: newQuantity - Number(inventory.reservedQty),
             lastMovementAt: new Date(),
             version: currentVersion + 1, // Increment version
             // Recalcular custo médio para entradas
             ...(isEntry && unitCost > 0 && {
-              unitCost: (inventory.totalCost + totalCost) / (inventory.quantity + quantity),
-              totalCost: inventory.totalCost + totalCost,
+              unitCost: (Number(inventory.totalCost) + totalCost) / (Number(inventory.quantity) + quantity),
+              totalCost: Number(inventory.totalCost) + totalCost,
             }),
           },
         });
@@ -283,13 +283,13 @@ export const inventoryRouter = createTRPCRouter({
         category: inv.material.category?.name || "Sem categoria",
         currentStock: inv.quantity,
         minStock: inv.material.minQuantity || 0,
-        deficit: (inv.material.minQuantity || 0) - inv.quantity,
+        deficit: (Number(inv.material.minQuantity) || 0) - Number(inv.quantity),
         percentOfMin: inv.material.minQuantity 
-          ? Math.round((inv.quantity / inv.material.minQuantity) * 100) 
+          ? Math.round((Number(inv.quantity) / Number(inv.material.minQuantity)) * 100) 
           : 0,
-        severity: inv.quantity <= 0 
+        severity: Number(inv.quantity) <= 0 
           ? "critical" as const
-          : inv.quantity < (inv.material.minQuantity || 0) * 0.5 
+          : Number(inv.quantity) < (Number(inv.material.minQuantity) || 0) * 0.5 
             ? "high" as const 
             : "medium" as const,
       }))
@@ -333,7 +333,7 @@ export const inventoryRouter = createTRPCRouter({
 
     // Emitir eventos de estoque baixo para cada item
     for (const item of itemsToNotify) {
-      const isCritical = item.quantity <= (item.material.minQuantity || 0) * 0.5;
+      const isCritical = Number(item.quantity) <= (Number(item.material.minQuantity) || 0) * 0.5;
       emitEvent(isCritical ? "inventory.criticalStock" : "inventory.lowStock", {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId ?? undefined,
@@ -380,7 +380,7 @@ export const inventoryRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado no estoque" });
       }
 
-      if (inventory.availableQty < input.quantity) {
+      if (Number(inventory.availableQty) < Number(input.quantity)) {
         throw new TRPCError({ code: "BAD_REQUEST", message: `Quantidade disponível insuficiente. Disponível: ${inventory.availableQty}` });
       }
 
@@ -417,8 +417,8 @@ export const inventoryRouter = createTRPCRouter({
       await ctx.prisma.inventory.update({
         where: { id: inventory.id },
         data: {
-          reservedQty: inventory.reservedQty + input.quantity,
-          availableQty: inventory.availableQty - input.quantity,
+          reservedQty: Number(inventory.reservedQty) + Number(input.quantity),
+          availableQty: Number(inventory.availableQty) - Number(input.quantity),
         },
       });
 
@@ -465,8 +465,8 @@ export const inventoryRouter = createTRPCRouter({
       await ctx.prisma.inventory.update({
         where: { id: reservation.inventoryId },
         data: {
-          reservedQty: reservation.inventory.reservedQty - reservation.quantity,
-          availableQty: reservation.inventory.availableQty + reservation.quantity,
+          reservedQty: Number(reservation.inventory.reservedQty) - Number(reservation.quantity),
+          availableQty: Number(reservation.inventory.availableQty) + Number(reservation.quantity),
         },
       });
 
@@ -505,8 +505,8 @@ export const inventoryRouter = createTRPCRouter({
           movementType: "EXIT",
           quantity: quantityToConsume,
           unitCost: reservation.inventory.unitCost,
-          totalCost: quantityToConsume * reservation.inventory.unitCost,
-          balanceAfter: reservation.inventory.quantity - quantityToConsume,
+          totalCost: Number(quantityToConsume) * Number(reservation.inventory.unitCost),
+          balanceAfter: Number(reservation.inventory.quantity) - Number(quantityToConsume),
           documentType: reservation.documentType,
           documentNumber: reservation.documentNumber,
           notes: `Consumo de reserva #${reservation.code}`,
@@ -518,20 +518,20 @@ export const inventoryRouter = createTRPCRouter({
       await ctx.prisma.inventory.update({
         where: { id: reservation.inventoryId },
         data: {
-          quantity: reservation.inventory.quantity - quantityToConsume,
-          reservedQty: reservation.inventory.reservedQty - quantityToConsume,
-          totalCost: (reservation.inventory.quantity - quantityToConsume) * reservation.inventory.unitCost,
+          quantity: Number(reservation.inventory.quantity) - Number(quantityToConsume),
+          reservedQty: Number(reservation.inventory.reservedQty) - Number(quantityToConsume),
+          totalCost: (Number(reservation.inventory.quantity) - Number(quantityToConsume)) * Number(reservation.inventory.unitCost),
           lastMovementAt: new Date(),
         },
       });
 
       // Atualizar ou finalizar reserva
-      const remainingQty = reservation.quantity - quantityToConsume;
+      const remainingQty = Number(reservation.quantity) - Number(quantityToConsume);
       const updated = await ctx.prisma.stockReservation.update({
         where: { id: input.reservationId },
         data: {
           quantity: remainingQty,
-          consumedQty: (reservation.consumedQty || 0) + quantityToConsume,
+          consumedQty: (Number(reservation.consumedQty) || 0) + Number(quantityToConsume),
           status: remainingQty <= 0 ? "CONSUMED" : "ACTIVE",
           ...(remainingQty <= 0 && { consumedAt: new Date() }),
         },

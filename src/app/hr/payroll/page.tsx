@@ -51,10 +51,10 @@ export default function PayrollPage() {
     () =>
       payrolls?.reduce(
         (acc, p) => ({
-          grossSalary: acc.grossSalary + (p.grossSalary || 0),
-          netSalary: acc.netSalary + (p.netSalary || 0),
-          inss: acc.inss + (p.inssValue || 0),
-          irrf: acc.irrf + (p.irrfValue || 0),
+          grossSalary: Number(acc.grossSalary) + (Number(p.grossSalary) || 0),
+          netSalary: Number(acc.netSalary) + (Number(p.netSalary) || 0),
+          inss: acc.inss + (Number(p.inssValue) || 0),
+          irrf: acc.irrf + (Number(p.irrfValue) || 0),
         }),
         { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 }
       ) ?? { grossSalary: 0, netSalary: 0, inss: 0, irrf: 0 },

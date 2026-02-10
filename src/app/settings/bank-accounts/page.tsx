@@ -97,8 +97,8 @@ export default function BankAccountsPage() {
       accountNumber: account.accountNumber || "",
       accountDigit: account.accountDigit || "",
       accountType: account.accountType,
-      initialBalance: account.initialBalance,
-      creditLimit: account.creditLimit || 0,
+      initialBalance: Number(account.initialBalance),
+      creditLimit: Number(account.creditLimit) || 0,
       isDefault: account.isDefault,
       notes: account.notes || "",
     });
@@ -355,7 +355,7 @@ export default function BankAccountsPage() {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className={`font-medium ${account.currentBalance < 0 ? "text-red-600" : "text-theme"}`}>
+                        <span className={`font-medium ${Number(account.currentBalance) < 0 ? "text-red-600" : "text-theme"}`}>
                           {formatCurrency(account.currentBalance)}
                         </span>
                       </td>

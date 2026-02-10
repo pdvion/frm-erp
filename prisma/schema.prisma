@@ -331,10 +331,10 @@ model Material {
   categoryId                  String?                   @db.Uuid
   unit                        String                    @default("UN")
   location                    String?
-  minQuantity                 Float                     @default(0)
-  maxQuantity                 Float?
-  monthlyAverage              Float                     @default(0)
-  lastPurchasePrice           Float?
+  minQuantity                 Decimal                     @db.Decimal(15, 4) @default(0)
+  maxQuantity                 Decimal?  @db.Decimal(15, 4)
+  monthlyAverage              Decimal                     @db.Decimal(15, 4) @default(0)
+  lastPurchasePrice           Decimal?  @db.Decimal(15, 2)
   lastPurchaseDate            DateTime?
   ncm                         String?
   status                      MaterialStatus            @default(ACTIVE)
@@ -344,25 +344,25 @@ model Material {
   updatedAt                   DateTime                  @default(now()) @updatedAt
   isShared                    Boolean                   @default(false)
   purchaseUnit                String?                   @map("purchase_unit")
-  unitConversionFactor        Float?                    @default(1) @map("unit_conversion_factor")
+  unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
   subCategoryId               String?                   @map("sub_category_id") @db.Uuid
   writeOffCode                String?                   @map("write_off_code")
   isEpi                       Boolean?                  @default(false) @map("is_epi")
   isOfficeSupply              Boolean?                  @default(false) @map("is_office_supply")
   notes                       String?
-  ipiRate                     Float?                    @default(0) @map("ipi_rate")
-  icmsRate                    Float?                    @default(0) @map("icms_rate")
-  avgDeliveryDays             Float?                    @default(0) @map("avg_delivery_days")
-  calculatedMinQuantity       Float?                    @default(0) @map("calculated_min_quantity")
+  ipiRate                     Decimal?                    @db.Decimal(10, 4) @default(0) @map("ipi_rate")
+  icmsRate                    Decimal?                    @db.Decimal(10, 4) @default(0) @map("icms_rate")
+  avgDeliveryDays             Decimal?                    @db.Decimal(15, 4) @default(0) @map("avg_delivery_days")
+  calculatedMinQuantity       Decimal?                    @db.Decimal(15, 4) @default(0) @map("calculated_min_quantity")
   minQuantityCalcType         String?                   @default("MANUAL") @map("min_quantity_calc_type")
   minQuantityAlarmDate        DateTime?                 @map("min_quantity_alarm_date") @db.Timestamp(6)
   minQuantityCalcDate         DateTime?                 @map("min_quantity_calc_date") @db.Timestamp(6)
   adjustMaxConsumptionManual  Boolean?                  @default(false) @map("adjust_max_consumption_manual")
-  maxMonthlyConsumption       Float?                    @default(0) @map("max_monthly_consumption")
-  reservedQuantity            Float?                    @default(0) @map("reserved_quantity")
-  peak12Months                Float?                    @default(0) @map("peak_12_months")
-  lastPurchasePriceAvg        Float?                    @default(0) @map("last_purchase_unit_price_avg")
-  lastPurchaseQuantity        Float?                    @default(0) @map("last_purchase_quantity")
+  maxMonthlyConsumption       Decimal?                    @db.Decimal(15, 4) @default(0) @map("max_monthly_consumption")
+  reservedQuantity            Decimal?                    @db.Decimal(15, 4) @default(0) @map("reserved_quantity")
+  peak12Months                Decimal?                    @db.Decimal(15, 4) @default(0) @map("peak_12_months")
+  lastPurchasePriceAvg        Decimal?                    @db.Decimal(15, 2) @default(0) @map("last_purchase_unit_price_avg")
+  lastPurchaseQuantity        Decimal?                    @db.Decimal(15, 4) @default(0) @map("last_purchase_quantity")
   lastSupplierId              String?                   @map("last_supplier_id") @db.Uuid
   costCenterFrm               String?                   @map("cost_center_frm")
   costCenterFnd               String?                   @map("cost_center_fnd")
@@ -377,7 +377,7 @@ model Material {
   requiresFiscalEntry         Boolean?                  @default(false) @map("requires_fiscal_entry")
   parentProductId             String?                   @map("parent_product_id") @db.Uuid
   assetId                     String?                   @map("asset_id") @db.Uuid
-  weight                      Float?                    @default(0)
+  weight                      Decimal?                    @db.Decimal(15, 4) @default(0)
   weightUnit                  String?                   @default("KG") @map("weight_unit")
   barcode                     String?
   manufacturer                String?
@@ -444,7 +444,7 @@ model Supplier {
   paymentTerms            String?
   notes                   String?
   status                  SupplierStatus               @default(ACTIVE)
-  qualityIndex            Float?
+  qualityIndex            Decimal?  @db.Decimal(10, 4)
   companyId               String?                      @db.Uuid
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @default(now()) @updatedAt
@@ -466,8 +466,8 @@ model Supplier {
   certificationType       supplier_certification_type? @map("certification_type")
   certificationExpiryDate DateTime?                    @map("certification_expiry_date") @db.Timestamptz(6)
   certificationFileName   String?                      @map("certification_file_name")
-  overallQualityPercent   Float?                       @map("overall_quality_percent")
-  iqfPercent              Float?                       @map("iqf_percent")
+  overallQualityPercent   Decimal?                       @db.Decimal(10, 4) @map("overall_quality_percent")
+  iqfPercent              Decimal?                       @db.Decimal(10, 4) @map("iqf_percent")
   qualityCalcDate         DateTime?                    @map("quality_calc_date") @db.Timestamptz(6)
   iqfStatus               supplier_iqf_status?         @map("iqf_status")
   taxRegime               String?                      @map("tax_regime")
@@ -494,10 +494,10 @@ model SupplierMaterial {
   supplierId    String    @db.Uuid
   materialId    String    @db.Uuid
   supplierCode  String?
-  lastPrice     Float?
+  lastPrice     Decimal?  @db.Decimal(15, 2)
   lastPriceDate DateTime?
   leadTimeDays  Int?
-  minOrderQty   Float?
+  minOrderQty   Decimal?  @db.Decimal(15, 4)
   isPreferred   Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -514,23 +514,23 @@ model Inventory {
   materialId               String              @db.Uuid
   companyId                String?             @db.Uuid
   inventoryType            InventoryType       @default(RAW_MATERIAL)
-  quantity                 Float               @default(0)
-  reservedQty              Float               @default(0)
-  availableQty             Float               @default(0)
-  unitCost                 Float               @default(0)
-  totalCost                Float               @default(0)
+  quantity                 Decimal               @db.Decimal(15, 4) @default(0)
+  reservedQty              Decimal               @db.Decimal(15, 4) @default(0)
+  availableQty             Decimal               @db.Decimal(15, 4) @default(0)
+  unitCost                 Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost                Decimal               @db.Decimal(15, 2) @default(0)
   lastMovementAt           DateTime?
   createdAt                DateTime            @default(now())
   updatedAt                DateTime            @default(now()) @updatedAt
   location                 String?
-  quantitySemiFinished     Float?              @default(0) @map("quantity_semi_finished")
-  quantityFinished         Float?              @default(0) @map("quantity_finished")
-  quantityCritical         Float?              @default(0) @map("quantity_critical")
-  quantityScrap            Float?              @default(0) @map("quantity_scrap")
-  quantityDead             Float?              @default(0) @map("quantity_dead")
-  quantityAccountingInd    Float?              @default(0) @map("quantity_accounting_ind")
-  quantityAccountingResale Float?              @default(0) @map("quantity_accounting_resale")
-  quantityOnOrder          Float?              @default(0) @map("quantity_on_order")
+  quantitySemiFinished     Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_semi_finished")
+  quantityFinished         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_finished")
+  quantityCritical         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_critical")
+  quantityScrap            Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_scrap")
+  quantityDead             Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_dead")
+  quantityAccountingInd    Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_ind")
+  quantityAccountingResale Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_resale")
+  quantityOnOrder          Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_on_order")
   expectedDeliveryDate     DateTime?           @map("expected_delivery_date") @db.Timestamptz(6)
   consumptionRuleId        String?             @map("consumption_rule_id")
   consumeByFormula         Boolean?            @default(false) @map("consume_by_formula")
@@ -551,10 +551,10 @@ model InventoryMovement {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   inventoryId    String       @db.Uuid
   movementType   MovementType
-  quantity       Float
-  unitCost       Float        @default(0)
-  totalCost      Float        @default(0)
-  balanceAfter   Float        @default(0)
+  quantity       Decimal  @db.Decimal(15, 4)
+  unitCost       Decimal        @db.Decimal(15, 2) @default(0)
+  totalCost      Decimal        @db.Decimal(15, 2) @default(0)
+  balanceAfter   Decimal        @db.Decimal(15, 2) @default(0)
   documentType   String?
   documentNumber String?
   documentId     String?
@@ -579,8 +579,8 @@ model StockReservation {
   companyId      String?   @db.Uuid
   inventoryId    String    @db.Uuid
   materialId     String    @db.Uuid
-  quantity       Float
-  consumedQty    Float     @default(0)
+  quantity       Decimal  @db.Decimal(15, 4)
+  consumedQty    Decimal     @db.Decimal(15, 4) @default(0)
   documentType   String
   documentId     String
   documentNumber String?
@@ -614,9 +614,9 @@ model Quote {
   validUntil            DateTime?
   paymentTerms          String?
   deliveryTerms         String?
-  freightValue          Float           @default(0)
-  discountPercent       Float           @default(0)
-  totalValue            Float           @default(0)
+  freightValue          Decimal           @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal           @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal           @db.Decimal(15, 2) @default(0)
   notes                 String?
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @default(now()) @updatedAt
@@ -654,9 +654,9 @@ model QuoteItem {
   id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   quoteId            String              @db.Uuid
   materialId         String              @db.Uuid
-  quantity           Float
-  unitPrice          Float               @default(0)
-  totalPrice         Float               @default(0)
+  quantity           Decimal  @db.Decimal(15, 4)
+  unitPrice          Decimal               @db.Decimal(15, 2) @default(0)
+  totalPrice         Decimal               @db.Decimal(15, 2) @default(0)
   deliveryDays       Int?
   notes              String?
   createdAt          DateTime            @default(now())
@@ -681,9 +681,9 @@ model PurchaseOrder {
   actualDeliveryDate    DateTime?
   paymentTerms          String?
   deliveryTerms         String?
-  freightValue          Float               @default(0)
-  discountPercent       Float               @default(0)
-  totalValue            Float               @default(0)
+  freightValue          Decimal               @db.Decimal(15, 2) @default(0)
+  discountPercent       Decimal               @db.Decimal(10, 4) @default(0)
+  totalValue            Decimal               @db.Decimal(15, 2) @default(0)
   notes                 String?
   companyId             String?             @db.Uuid
   createdAt             DateTime            @default(now())
@@ -699,9 +699,9 @@ model PurchaseOrder {
   paymentConditionId    String?             @map("payment_condition_id")
   paymentConditionDesc  String?             @map("payment_condition_desc")
   freightType           freight_type?       @map("freight_type")
-  fobFreightValue       Float?              @default(0) @map("fob_freight_value")
+  fobFreightValue       Decimal?              @db.Decimal(15, 2) @default(0) @map("fob_freight_value")
   pickupKm              Float?              @map("pickup_km")
-  pickupValue           Float?              @map("pickup_value")
+  pickupValue           Decimal?              @db.Decimal(15, 2) @map("pickup_value")
   cancellationReason    String?             @map("cancellation_reason")
   financialApproved     Boolean?            @default(false) @map("financial_approved")
   financialApprovedById String?             @map("financial_approved_by_id")
@@ -728,10 +728,10 @@ model PurchaseOrderItem {
   purchaseOrderId        String                  @db.Uuid
   materialId             String                  @db.Uuid
   quoteItemId            String?                 @db.Uuid
-  quantity               Float
-  unitPrice              Float                   @default(0)
-  totalPrice             Float                   @default(0)
-  receivedQty            Float                   @default(0)
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal                   @db.Decimal(15, 2) @default(0)
+  totalPrice             Decimal                   @db.Decimal(15, 2) @default(0)
+  receivedQty            Decimal                   @db.Decimal(15, 4) @default(0)
   deliveryDays           Int?
   notes                  String?
   createdAt              DateTime                @default(now())
@@ -784,15 +784,15 @@ model ReceivedInvoice {
   supplierId                  String?               @db.Uuid
   supplierCnpj                String                @db.VarChar(18)
   supplierName                String                @db.VarChar(255)
-  totalProducts               Float                 @default(0)
-  totalInvoice                Float                 @default(0)
-  freightValue                Float                 @default(0)
-  discountValue               Float                 @default(0)
-  icmsBase                    Float                 @default(0)
-  icmsValue                   Float                 @default(0)
-  ipiValue                    Float                 @default(0)
-  pisValue                    Float                 @default(0)
-  cofinsValue                 Float                 @default(0)
+  totalProducts               Decimal                 @db.Decimal(15, 2) @default(0)
+  totalInvoice                Decimal                 @db.Decimal(15, 2) @default(0)
+  freightValue                Decimal                 @db.Decimal(15, 2) @default(0)
+  discountValue               Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsBase                    Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue                   Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  pisValue                    Decimal                 @db.Decimal(15, 2) @default(0)
+  cofinsValue                 Decimal                 @db.Decimal(15, 2) @default(0)
   status                      String                @default("PENDING") @db.VarChar(20)
   purchaseOrderId             String?               @db.Uuid
   receivedAt                  DateTime?
@@ -806,16 +806,16 @@ model ReceivedInvoice {
   xmlContent                  String?
   createdAt                   DateTime              @default(now())
   updatedAt                   DateTime              @default(now()) @updatedAt
-  icms_st_base                Float?                @default(0)
-  icms_st_value               Float?                @default(0)
-  insurance_value             Float?                @default(0)
-  other_expenses              Float?                @default(0)
-  icms_credit                 Float?                @default(0)
-  icms_st_credit              Float?                @default(0)
-  icms_sn_credit              Float?                @default(0)
-  ipi_credit                  Float?                @default(0)
-  pis_credit                  Float?                @default(0)
-  cofins_credit               Float?                @default(0)
+  icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
+  insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
+  other_expenses              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_credit                 Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_st_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  icms_sn_credit              Decimal?                @db.Decimal(15, 2) @default(0)
+  ipi_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  pis_credit                  Decimal?                @db.Decimal(15, 2) @default(0)
+  cofins_credit               Decimal?                @db.Decimal(15, 2) @default(0)
   cost_center_group           Int?
   cost_center_confirmed_by_id String?
   payment_condition_id        String?
@@ -846,20 +846,20 @@ model ReceivedInvoiceItem {
   productName           String               @db.VarChar(255)
   ncm                   String?              @db.VarChar(10)
   cfop                  Int
-  quantity              Float
+  quantity              Decimal  @db.Decimal(15, 4)
   unit                  String               @db.VarChar(10)
-  unitPrice             Float
-  totalPrice            Float
-  icmsRate              Float                @default(0)
-  icmsValue             Float                @default(0)
-  ipiRate               Float                @default(0)
-  ipiValue              Float                @default(0)
+  unitPrice             Decimal  @db.Decimal(15, 2)
+  totalPrice            Decimal  @db.Decimal(15, 2)
+  icmsRate              Decimal                @db.Decimal(10, 4) @default(0)
+  icmsValue             Decimal                @db.Decimal(15, 2) @default(0)
+  ipiRate               Decimal                @db.Decimal(10, 4) @default(0)
+  ipiValue              Decimal                @db.Decimal(15, 2) @default(0)
   materialId            String?              @db.Uuid
   purchaseOrderItemId   String?              @db.Uuid
   matchStatus           String               @default("PENDING") @db.VarChar(20)
   divergenceType        String?              @db.VarChar(20)
   divergenceNote        String?
-  receivedQty           Float                @default(0)
+  receivedQty           Decimal                @db.Decimal(15, 4) @default(0)
   createdAt             DateTime             @default(now())
   invoice               ReceivedInvoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   material              Material?            @relation(fields: [materialId], references: [id], onUpdate: NoAction)
@@ -884,12 +884,12 @@ model AccountsPayable {
   description          String
   dueDate              DateTime
   issueDate            DateTime                @default(now())
-  originalValue        Float
-  discountValue        Float                   @default(0)
-  interestValue        Float                   @default(0)
-  fineValue            Float                   @default(0)
-  paidValue            Float                   @default(0)
-  netValue             Float
+  originalValue        Decimal  @db.Decimal(15, 2)
+  discountValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  interestValue        Decimal                   @db.Decimal(15, 2) @default(0)
+  fineValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  paidValue            Decimal                   @db.Decimal(15, 2) @default(0)
+  netValue             Decimal  @db.Decimal(15, 2)
   status               PayableStatus           @default(PENDING)
   paidAt               DateTime?
   installmentNumber    Int                     @default(1)
@@ -906,12 +906,12 @@ model AccountsPayable {
   scheduledPaymentDate DateTime?
   additionalInfo       String?                 @map("additional_info")
   hasWithholding       Boolean?                @default(false) @map("has_withholding")
-  withholdingIr        Float?                  @default(0) @map("withholding_ir")
-  withholdingIss       Float?                  @default(0) @map("withholding_iss")
-  withholdingInss      Float?                  @default(0) @map("withholding_inss")
-  withholdingPis       Float?                  @default(0) @map("withholding_pis")
-  withholdingCofins    Float?                  @default(0) @map("withholding_cofins")
-  withholdingCsll      Float?                  @default(0) @map("withholding_csll")
+  withholdingIr        Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_ir")
+  withholdingIss       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_iss")
+  withholdingInss      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_inss")
+  withholdingPis       Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_pis")
+  withholdingCofins    Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_cofins")
+  withholdingCsll      Decimal?                  @db.Decimal(15, 2) @default(0) @map("withholding_csll")
   supplierAlphaCode    String?                 @map("supplier_alpha_code")
   supplierCnpj         String?                 @map("supplier_cnpj")
   supplierIe           String?                 @map("supplier_ie")
@@ -954,10 +954,10 @@ model PayablePayment {
   id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payableId         String          @db.Uuid
   paymentDate       DateTime
-  value             Float
-  discountValue     Float           @default(0)
-  interestValue     Float           @default(0)
-  fineValue         Float           @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal           @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal           @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal           @db.Decimal(15, 2) @default(0)
   paymentMethod     String?         @db.VarChar(50)
   bankAccountId     String?         @db.Uuid
   notes             String?
@@ -1008,11 +1008,11 @@ model MaterialRequisitionItem {
   id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   requisitionId String              @db.Uuid
   materialId    String              @db.Uuid
-  requestedQty  Float
-  approvedQty   Float?
-  separatedQty  Float               @default(0)
-  unitCost      Float               @default(0)
-  totalCost     Float               @default(0)
+  requestedQty  Decimal  @db.Decimal(15, 4)
+  approvedQty   Decimal?  @db.Decimal(15, 4)
+  separatedQty  Decimal               @db.Decimal(10, 4) @default(0)
+  unitCost      Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost     Decimal               @db.Decimal(15, 2) @default(0)
   notes         String?
   createdAt     DateTime            @default(now())
   material      Material            @relation(fields: [materialId], references: [id])
@@ -1028,8 +1028,8 @@ model ProductionOrder {
   code                    Int
   companyId               String?                    @db.Uuid
   productId               String                     @db.Uuid
-  quantity                Float
-  producedQty             Float                      @default(0)
+  quantity                Decimal  @db.Decimal(15, 4)
+  producedQty             Decimal                      @db.Decimal(15, 4) @default(0)
   plannedStart            DateTime?
   plannedEnd              DateTime?
   actualStart             DateTime?
@@ -1081,10 +1081,10 @@ model ProductionOrderMaterial {
   id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId     String          @db.Uuid
   materialId  String          @db.Uuid
-  requiredQty Float
-  consumedQty Float           @default(0)
-  unitCost    Float           @default(0)
-  totalCost   Float           @default(0)
+  requiredQty Decimal  @db.Decimal(15, 4)
+  consumedQty Decimal           @db.Decimal(15, 4) @default(0)
+  unitCost    Decimal           @db.Decimal(15, 2) @default(0)
+  totalCost   Decimal           @db.Decimal(15, 2) @default(0)
   notes       String?
   createdAt   DateTime        @default(now())
   material    Material        @relation("ProductionMaterial", fields: [materialId], references: [id])
@@ -1103,13 +1103,13 @@ model ProductionOrderOperation {
   sequence        Int
   name            String          @db.VarChar(200)
   workCenter      String?         @db.VarChar(100)
-  setupTime       Float           @default(0)
-  runTime         Float           @default(0)
-  actualSetupTime Float           @default(0)
-  actualRunTime   Float           @default(0)
-  plannedQty      Float
-  completedQty    Float           @default(0)
-  scrapQty        Float           @default(0)
+  setupTime       Decimal           @db.Decimal(15, 2) @default(0)
+  runTime         Decimal           @db.Decimal(15, 2) @default(0)
+  actualSetupTime Decimal           @db.Decimal(15, 2) @default(0)
+  actualRunTime   Decimal           @db.Decimal(15, 2) @default(0)
+  plannedQty      Decimal  @db.Decimal(15, 4)
+  completedQty    Decimal           @db.Decimal(15, 4) @default(0)
+  scrapQty        Decimal           @db.Decimal(15, 4) @default(0)
   startedAt       DateTime?
   completedAt     DateTime?
   notes           String?
@@ -1128,7 +1128,7 @@ model CostCenter {
   parentId           String?                 @db.Uuid
   companyId          String?                 @db.Uuid
   isActive           Boolean                 @default(true)
-  budget             Float?                  @default(0)
+  budget             Decimal?                  @db.Decimal(15, 2) @default(0)
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @default(now()) @updatedAt
   accounts_payable   AccountsPayable[]
@@ -1160,9 +1160,9 @@ model BankAccount {
   accountDigit                                                           String?
   accountType                                                            BankAccountType      @default(CHECKING)
   companyId                                                              String?              @db.Uuid
-  initialBalance                                                         Float                @default(0)
-  currentBalance                                                         Float                @default(0)
-  creditLimit                                                            Float?               @default(0)
+  initialBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  currentBalance                                                         Decimal                @db.Decimal(15, 2) @default(0)
+  creditLimit                                                            Decimal?               @db.Decimal(15, 2) @default(0)
   isActive                                                               Boolean              @default(true)
   isDefault                                                              Boolean              @default(false)
   notes                                                                  String?
@@ -1188,8 +1188,8 @@ model BankTransaction {
   transactionDate                                                    DateTime
   type                                                               BankTransactionType
   description                                                        String
-  value                                                              Float
-  balanceAfter                                                       Float
+  value                                                              Decimal  @db.Decimal(15, 2)
+  balanceAfter                                                       Decimal  @db.Decimal(15, 2)
   documentNumber                                                     String?
   payableId                                                          String?             @db.Uuid
   receivableId                                                       String?             @db.Uuid
@@ -1223,8 +1223,8 @@ model PixTransaction {
   status            String       @default("PENDING")
   pixKeyType        String
   pixKey            String
-  value             Float
-  fee               Float        @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  fee               Decimal        @db.Decimal(15, 2) @default(0)
   recipientName     String
   recipientDocument String?
   recipientBank     String?
@@ -1276,7 +1276,7 @@ model Customer {
   addressCity             String?
   addressState            String?
   addressZipCode          String?
-  creditLimit             Float?               @default(0)
+  creditLimit             Decimal?               @db.Decimal(15, 2) @default(0)
   paymentTermDays         Int?                 @default(30)
   status                  String               @default("ACTIVE")
   notes                   String?
@@ -1294,7 +1294,7 @@ model Customer {
   relationshipStartDate   DateTime?            @map("relationship_start_date") @db.Timestamptz(6)
   visitFrequency          Int?                 @map("visit_frequency")
   generatePeriodicVisit   Boolean?             @default(false) @map("generate_periodic_visit")
-  minInvoiceValue         Float?               @map("min_invoice_value")
+  minInvoiceValue         Decimal?               @db.Decimal(15, 4) @map("min_invoice_value")
   defaultMessage          String?              @map("default_message")
   defaultPaymentCondition String?              @map("default_payment_condition")
   applySt                 Boolean?             @default(false) @map("apply_st")
@@ -1324,12 +1324,12 @@ model AccountsReceivable {
   description       String
   dueDate           DateTime
   issueDate         DateTime            @default(now())
-  originalValue     Float
-  discountValue     Float               @default(0)
-  interestValue     Float               @default(0)
-  fineValue         Float               @default(0)
-  paidValue         Float               @default(0)
-  netValue          Float
+  originalValue     Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal               @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal               @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal               @db.Decimal(15, 2) @default(0)
+  paidValue         Decimal               @db.Decimal(15, 2) @default(0)
+  netValue          Decimal  @db.Decimal(15, 2)
   status            ReceivableStatus    @default(PENDING)
   paidAt            DateTime?
   installmentNumber Int                 @default(1)
@@ -1368,10 +1368,10 @@ model ReceivablePayment {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   receivableId      String             @db.Uuid
   paymentDate       DateTime
-  value             Float
-  discountValue     Float              @default(0)
-  interestValue     Float              @default(0)
-  fineValue         Float              @default(0)
+  value             Decimal  @db.Decimal(15, 2)
+  discountValue     Decimal              @db.Decimal(15, 2) @default(0)
+  interestValue     Decimal              @db.Decimal(15, 2) @default(0)
+  fineValue         Decimal              @db.Decimal(15, 2) @default(0)
   paymentMethod     String?
   bankAccountId     String?            @db.Uuid
   bankTransactionId String?            @db.Uuid
@@ -1427,8 +1427,8 @@ model PayableCostAllocation {
   id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payableId    String          @db.Uuid
   costCenterId String          @db.Uuid
-  percentage   Float
-  value        Float
+  percentage   Decimal  @db.Decimal(10, 4)
+  value        Decimal  @db.Decimal(15, 2)
   createdAt    DateTime        @default(now())
   costCenter   CostCenter      @relation(fields: [costCenterId], references: [id], onUpdate: NoAction, map: "payable_cost_allocations_costcenter_fkey")
   payable      AccountsPayable @relation(fields: [payableId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payable_cost_allocations_payable_fkey")
@@ -1442,8 +1442,8 @@ model ApprovalThreshold {
   id                String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   companyId         String?                     @db.Uuid
   name              String
-  minValue          Float                       @default(0)
-  maxValue          Float?
+  minValue          Decimal                       @db.Decimal(15, 4) @default(0)
+  maxValue          Decimal?  @db.Decimal(15, 4)
   requiredApprovers Int                         @default(1)
   isActive          Boolean                     @default(true)
   createdAt         DateTime                    @default(now())
@@ -1473,9 +1473,9 @@ model BomItem {
   id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   parentMaterialId String   @db.Uuid
   childMaterialId  String   @db.Uuid
-  quantity         Float
+  quantity         Decimal  @db.Decimal(15, 4)
   unit             String   @default("UN")
-  scrapPercentage  Float    @default(0)
+  scrapPercentage  Decimal    @db.Decimal(10, 4) @default(0)
   leadTimeDays     Int      @default(0)
   sequence         Int      @default(0)
   notes            String?
@@ -1494,9 +1494,9 @@ model BomItem {
 model MrpParameter {
   id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   materialId             String   @unique @db.Uuid
-  minLotSize             Float    @default(1)
-  lotMultiple            Float    @default(1)
-  safetyStock            Float    @default(0)
+  minLotSize             Decimal    @db.Decimal(15, 4) @default(1)
+  lotMultiple            Decimal    @db.Decimal(15, 2) @default(1)
+  safetyStock            Decimal    @db.Decimal(15, 2) @default(0)
   productionLeadTimeDays Int      @default(1)
   purchaseLeadTimeDays   Int      @default(7)
   orderPolicy            String   @default("LOT_FOR_LOT")
@@ -1537,7 +1537,7 @@ model MrpSuggestion {
   status           MrpSuggestionStatus @default(PENDING)
   suggestedDate    DateTime
   requiredDate     DateTime
-  quantity         Float
+  quantity         Decimal  @db.Decimal(15, 4)
   sourceOrderId    String?             @db.Uuid
   sourceOrderType  String?
   reason           String?
@@ -1567,12 +1567,12 @@ model WorkCenter {
   name             String
   description      String?
   companyId        String?         @db.Uuid
-  capacityPerHour  Float           @default(1)
-  hoursPerDay      Float           @default(8)
+  capacityPerHour  Decimal           @db.Decimal(15, 4) @default(1)
+  hoursPerDay      Decimal           @db.Decimal(15, 4) @default(8)
   daysPerWeek      Int             @default(5)
-  efficiencyTarget Float           @default(85)
+  efficiencyTarget Decimal           @db.Decimal(15, 2) @default(85)
   setupTimeMinutes Int             @default(0)
-  costPerHour      Float           @default(0)
+  costPerHour      Decimal           @db.Decimal(15, 4) @default(0)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @default(now()) @updatedAt
@@ -1593,18 +1593,18 @@ model ProductionLog {
   operatorId            String?          @db.Uuid
   shiftDate             DateTime         @db.Date
   shiftNumber           Int              @default(1)
-  plannedQuantity       Float            @default(0)
-  producedQuantity      Float            @default(0)
-  goodQuantity          Float            @default(0)
-  scrapQuantity         Float            @default(0)
-  reworkQuantity        Float            @default(0)
+  plannedQuantity       Decimal            @db.Decimal(15, 4) @default(0)
+  producedQuantity      Decimal            @db.Decimal(15, 4) @default(0)
+  goodQuantity          Decimal            @db.Decimal(15, 4) @default(0)
+  scrapQuantity         Decimal            @db.Decimal(15, 4) @default(0)
+  reworkQuantity        Decimal            @db.Decimal(15, 4) @default(0)
   plannedTimeMinutes    Int              @default(0)
   actualTimeMinutes     Int              @default(0)
   setupTimeMinutes      Int              @default(0)
   runTimeMinutes        Int              @default(0)
   stopTimeMinutes       Int              @default(0)
-  cycleTimeSeconds      Float?
-  idealCycleTimeSeconds Float?
+  cycleTimeSeconds      Decimal?  @db.Decimal(15, 2)
+  idealCycleTimeSeconds Decimal?  @db.Decimal(15, 2)
   notes                 String?
   createdBy             String?          @db.Uuid
   createdAt             DateTime         @default(now())
@@ -1676,7 +1676,7 @@ model Lead {
   phone             String?
   source            LeadSource     @default(OTHER)
   status            LeadStatus     @default(NEW)
-  estimatedValue    Float?
+  estimatedValue    Decimal?  @db.Decimal(15, 2)
   probability       Int?           @default(50)
   expectedCloseDate DateTime?
   description       String?
@@ -1733,12 +1733,12 @@ model SalesQuote {
   deliveryDays                                    Int?
   paymentTerms                                    String?
   shippingMethod                                  String?
-  subtotal                                        Float            @default(0)
-  discountPercent                                 Float            @default(0)
-  discountValue                                   Float            @default(0)
-  shippingValue                                   Float            @default(0)
-  taxValue                                        Float            @default(0)
-  totalValue                                      Float            @default(0)
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
   notes                                           String?
   internalNotes                                   String?
   sentAt                                          DateTime?
@@ -1771,11 +1771,11 @@ model SalesQuoteItem {
   quoteId         String     @db.Uuid
   materialId      String     @db.Uuid
   description     String?
-  quantity        Float
+  quantity        Decimal  @db.Decimal(15, 4)
   unit            String     @default("UN")
-  unitPrice       Float
-  discountPercent Float      @default(0)
-  totalPrice      Float
+  unitPrice       Decimal  @db.Decimal(15, 2)
+  discountPercent Decimal      @db.Decimal(10, 4) @default(0)
+  totalPrice      Decimal  @db.Decimal(15, 2)
   sequence        Int        @default(0)
   notes           String?
   createdAt       DateTime   @default(now())
@@ -1801,12 +1801,12 @@ model SalesOrder {
   paymentTerms                                    String?
   shippingMethod                                  String?
   shippingAddress                                 String?
-  subtotal                                        Float            @default(0)
-  discountPercent                                 Float            @default(0)
-  discountValue                                   Float            @default(0)
-  shippingValue                                   Float            @default(0)
-  taxValue                                        Float            @default(0)
-  totalValue                                      Float            @default(0)
+  subtotal                                        Decimal            @db.Decimal(15, 2) @default(0)
+  discountPercent                                 Decimal            @db.Decimal(10, 4) @default(0)
+  discountValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  shippingValue                                   Decimal            @db.Decimal(15, 2) @default(0)
+  taxValue                                        Decimal            @db.Decimal(15, 2) @default(0)
+  totalValue                                      Decimal            @db.Decimal(15, 2) @default(0)
   notes                                           String?
   internalNotes                                   String?
   invoiceNumber                                   String?
@@ -1837,12 +1837,12 @@ model SalesOrderItem {
   orderId           String           @db.Uuid
   materialId        String           @db.Uuid
   description       String?
-  quantity          Float
-  deliveredQty      Float            @default(0)
+  quantity          Decimal  @db.Decimal(15, 4)
+  deliveredQty      Decimal            @db.Decimal(15, 4) @default(0)
   unit              String           @default("UN")
-  unitPrice         Float
-  discountPercent   Float            @default(0)
-  totalPrice        Float
+  unitPrice         Decimal  @db.Decimal(15, 2)
+  discountPercent   Decimal            @db.Decimal(10, 4) @default(0)
+  totalPrice        Decimal  @db.Decimal(15, 2)
   sequence          Int              @default(0)
   productionOrderId String?          @db.Uuid
   notes             String?
@@ -1894,10 +1894,10 @@ model LocationInventory {
   id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   locationId     String        @db.Uuid
   materialId     String        @db.Uuid
-  quantity       Float         @default(0)
-  reservedQty    Float         @default(0)
-  minQuantity    Float         @default(0)
-  maxQuantity    Float?
+  quantity       Decimal         @db.Decimal(15, 4) @default(0)
+  reservedQty    Decimal         @db.Decimal(15, 4) @default(0)
+  minQuantity    Decimal         @db.Decimal(15, 4) @default(0)
+  maxQuantity    Decimal?  @db.Decimal(15, 4)
   lastMovementAt DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @default(now()) @updatedAt
@@ -1960,9 +1960,9 @@ model StockTransferItem {
   id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   transferId   String        @db.Uuid
   materialId   String        @db.Uuid
-  requestedQty Float
-  shippedQty   Float         @default(0)
-  receivedQty  Float         @default(0)
+  requestedQty Decimal  @db.Decimal(15, 4)
+  shippedQty   Decimal         @db.Decimal(15, 4) @default(0)
+  receivedQty  Decimal         @db.Decimal(15, 4) @default(0)
   unit         String        @default("UN")
   notes        String?
   createdAt    DateTime      @default(now())
@@ -2024,9 +2024,9 @@ model InventoryCount {
   inventoryId String            @db.Uuid
   materialId  String            @db.Uuid
   locationId  String?           @db.Uuid
-  systemQty   Float             @default(0)
-  countedQty  Float?
-  difference  Float?
+  systemQty   Decimal             @db.Decimal(15, 4) @default(0)
+  countedQty  Decimal?  @db.Decimal(15, 4)
+  difference  Decimal?  @db.Decimal(15, 2)
   countedBy   String?           @db.Uuid
   countedAt   DateTime?
   verified    Boolean           @default(false)
@@ -2080,7 +2080,7 @@ model JobPosition {
   description  String?
   departmentId String?     @db.Uuid
   companyId    String?     @db.Uuid
-  baseSalary   Float?
+  baseSalary   Decimal?  @db.Decimal(15, 2)
   level        Int?        @default(1)
   isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
@@ -2124,8 +2124,8 @@ model Employee {
   status              EmployeeStatus     @default(ACTIVE)
   hireDate            DateTime           @db.Date
   terminationDate     DateTime?          @db.Date
-  salary              Float              @default(0)
-  workHoursPerDay     Float              @default(8)
+  salary              Decimal              @db.Decimal(15, 2) @default(0)
+  workHoursPerDay     Decimal              @db.Decimal(15, 4) @default(8)
   workDaysPerWeek     Int                @default(5)
   bankName            String?
   bankBranch          String?
@@ -2202,11 +2202,11 @@ model TimesheetDay {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId     String    @db.Uuid
   date           DateTime  @db.Date
-  scheduledHours Float     @default(8)
-  workedHours    Float     @default(0)
-  overtimeHours  Float     @default(0)
-  nightHours     Float     @default(0)
-  absenceHours   Float     @default(0)
+  scheduledHours Decimal     @db.Decimal(15, 4) @default(8)
+  workedHours    Decimal     @db.Decimal(15, 4) @default(0)
+  overtimeHours  Decimal     @db.Decimal(15, 4) @default(0)
+  nightHours     Decimal     @db.Decimal(15, 4) @default(0)
+  absenceHours   Decimal     @db.Decimal(15, 4) @default(0)
   isHoliday      Boolean   @default(false)
   isWeekend      Boolean   @default(false)
   status         String    @default("PENDING")
@@ -2215,8 +2215,8 @@ model TimesheetDay {
   approvedAt     DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
-  overtime50     Float?    @default(0) @map("overtime_50")
-  overtime100    Float?    @default(0) @map("overtime_100")
+  overtime50     Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_50")
+  overtime100    Decimal?    @db.Decimal(15, 4) @default(0) @map("overtime_100")
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "timesheet_days_employee_fkey")
 
   @@unique([employeeId, date], map: "timesheet_days_employee_date_key")
@@ -2233,8 +2233,8 @@ model WorkSchedule {
   code             String?
   type             WorkScheduleType   @default(FIXED)
   description      String?
-  weeklyHours      Float              @default(44)
-  dailyHours       Float              @default(8)
+  weeklyHours      Decimal              @db.Decimal(15, 4) @default(44)
+  dailyHours       Decimal              @db.Decimal(15, 4) @default(8)
   toleranceMinutes Int                @default(10)
   isActive         Boolean            @default(true)
   createdAt        DateTime           @default(now())
@@ -2284,8 +2284,8 @@ model HoursBank {
   employeeId  String        @db.Uuid
   type        HoursBankType
   date        DateTime      @db.Date
-  hours       Float
-  balance     Float
+  hours       Decimal  @db.Decimal(15, 4)
+  balance     Decimal  @db.Decimal(15, 2)
   referenceId String?       @db.Uuid
   description String?
   expiresAt   DateTime?     @db.Date
@@ -2343,9 +2343,9 @@ model Payroll {
   referenceMonth  Int
   referenceYear   Int
   status          String        @default("DRAFT")
-  totalGross      Float         @default(0)
-  totalDeductions Float         @default(0)
-  totalNet        Float         @default(0)
+  totalGross      Decimal         @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal         @db.Decimal(15, 2) @default(0)
+  totalNet        Decimal         @db.Decimal(15, 2) @default(0)
   employeeCount   Int           @default(0)
   processedAt     DateTime?
   processedBy     String?       @db.Uuid
@@ -2368,18 +2368,18 @@ model PayrollItem {
   id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   payrollId       String         @db.Uuid
   employeeId      String         @db.Uuid
-  baseSalary      Float          @default(0)
+  baseSalary      Decimal          @db.Decimal(15, 2) @default(0)
   workedDays      Int            @default(0)
-  workedHours     Float          @default(0)
-  overtimeHours   Float          @default(0)
-  nightHours      Float          @default(0)
+  workedHours     Decimal          @db.Decimal(15, 4) @default(0)
+  overtimeHours   Decimal          @db.Decimal(15, 4) @default(0)
+  nightHours      Decimal          @db.Decimal(15, 4) @default(0)
   absenceDays     Int            @default(0)
-  grossSalary     Float          @default(0)
-  totalDeductions Float          @default(0)
-  netSalary       Float          @default(0)
-  inss            Float          @default(0)
-  irrf            Float          @default(0)
-  fgts            Float          @default(0)
+  grossSalary     Decimal          @db.Decimal(15, 2) @default(0)
+  totalDeductions Decimal          @db.Decimal(15, 2) @default(0)
+  netSalary       Decimal          @db.Decimal(15, 2) @default(0)
+  inss            Decimal          @db.Decimal(15, 2) @default(0)
+  irrf            Decimal          @db.Decimal(15, 2) @default(0)
+  fgts            Decimal          @db.Decimal(15, 2) @default(0)
   notes           String?
   createdAt       DateTime       @default(now())
   events          PayrollEvent[]
@@ -2398,8 +2398,8 @@ model PayrollEvent {
   type          PayrollEventType
   code          String
   description   String
-  reference     Float?
-  value         Float
+  reference     Decimal?  @db.Decimal(15, 2)
+  value         Decimal  @db.Decimal(15, 2)
   isDeduction   Boolean          @default(false)
   createdAt     DateTime         @default(now())
   payrollItem   PayrollItem      @relation(fields: [payrollItemId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payroll_events_item_fkey")
@@ -2420,15 +2420,15 @@ model Vacation {
   soldDays          Int?            @default(0)
   enjoyedDays       Int?            @default(30)
   status            VacationStatus? @default(SCHEDULED)
-  baseSalary        Float?          @default(0)
-  vacationPay       Float?          @default(0)
-  oneThirdBonus     Float?          @default(0)
-  soldDaysValue     Float?          @default(0)
-  totalGross        Float?          @default(0)
-  inssDeduction     Float?          @default(0)
-  irrfDeduction     Float?          @default(0)
-  otherDeductions   Float?          @default(0)
-  totalNet          Float?          @default(0)
+  baseSalary        Decimal?          @db.Decimal(15, 2) @default(0)
+  vacationPay       Decimal?          @db.Decimal(15, 2) @default(0)
+  oneThirdBonus     Decimal?          @db.Decimal(15, 2) @default(0)
+  soldDaysValue     Decimal?          @db.Decimal(15, 2) @default(0)
+  totalGross        Decimal?          @db.Decimal(15, 2) @default(0)
+  inssDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  irrfDeduction     Decimal?          @db.Decimal(15, 2) @default(0)
+  otherDeductions   Decimal?          @db.Decimal(15, 2) @default(0)
+  totalNet          Decimal?          @db.Decimal(15, 2) @default(0)
   paymentDate       DateTime?       @db.Date
   noticeDate        DateTime?       @db.Date
   isCollective      Boolean?        @default(false)
@@ -2456,13 +2456,13 @@ model ThirteenthSalary {
   type            ThirteenthType
   status          ThirteenthStatus? @default(PENDING)
   monthsWorked    Int?              @default(12)
-  baseSalary      Float?            @default(0)
-  averageVariable Float?            @default(0)
-  grossValue      Float?            @default(0)
-  inssDeduction   Float?            @default(0)
-  irrfDeduction   Float?            @default(0)
-  otherDeductions Float?            @default(0)
-  netValue        Float?            @default(0)
+  baseSalary      Decimal?            @db.Decimal(15, 2) @default(0)
+  averageVariable Decimal?            @db.Decimal(15, 2) @default(0)
+  grossValue      Decimal?            @db.Decimal(15, 2) @default(0)
+  inssDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  irrfDeduction   Decimal?            @db.Decimal(15, 2) @default(0)
+  otherDeductions Decimal?            @db.Decimal(15, 2) @default(0)
+  netValue        Decimal?            @db.Decimal(15, 2) @default(0)
   paymentDate     DateTime?         @db.Date
   notes           String?
   createdBy       String?           @db.Uuid
@@ -2489,23 +2489,23 @@ model Termination {
   noticePeriodDays        Int?               @default(30)
   noticePeriodWorked      Boolean?           @default(false)
   noticePeriodIndemnity   Boolean?           @default(false)
-  baseSalary              Float?             @default(0)
-  salaryBalance           Float?             @default(0)
-  noticePeriodValue       Float?             @default(0)
-  vacationBalance         Float?             @default(0)
-  vacationProportional    Float?             @default(0)
-  vacationOneThird        Float?             @default(0)
-  thirteenthProportional  Float?             @default(0)
-  fgtsBalance             Float?             @default(0)
-  fgtsFine                Float?             @default(0)
-  otherEarnings           Float?             @default(0)
-  totalGross              Float?             @default(0)
-  inssDeduction           Float?             @default(0)
-  irrfDeduction           Float?             @default(0)
-  advanceDeduction        Float?             @default(0)
-  otherDeductions         Float?             @default(0)
-  totalDeductions         Float?             @default(0)
-  totalNet                Float?             @default(0)
+  baseSalary              Decimal?             @db.Decimal(15, 2) @default(0)
+  salaryBalance           Decimal?             @db.Decimal(15, 2) @default(0)
+  noticePeriodValue       Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationBalance         Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationProportional    Decimal?             @db.Decimal(15, 2) @default(0)
+  vacationOneThird        Decimal?             @db.Decimal(15, 2) @default(0)
+  thirteenthProportional  Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsBalance             Decimal?             @db.Decimal(15, 2) @default(0)
+  fgtsFine                Decimal?             @db.Decimal(15, 2) @default(0)
+  otherEarnings           Decimal?             @db.Decimal(15, 2) @default(0)
+  totalGross              Decimal?             @db.Decimal(15, 2) @default(0)
+  inssDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  irrfDeduction           Decimal?             @db.Decimal(15, 2) @default(0)
+  advanceDeduction        Decimal?             @db.Decimal(15, 2) @default(0)
+  otherDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalDeductions         Decimal?             @db.Decimal(15, 2) @default(0)
+  totalNet                Decimal?             @db.Decimal(15, 2) @default(0)
   paymentDate             DateTime?          @db.Date
   homologationDate        DateTime?          @db.Date
   trctNumber              String?            @db.VarChar(50)
@@ -2543,11 +2543,11 @@ model MaterialReceiving {
   nfeKey          String?
   nfeXml          String?
   nfeIssueDate    DateTime?
-  totalValue      Float                   @default(0)
-  freightValue    Float                   @default(0)
-  insuranceValue  Float                   @default(0)
-  discountValue   Float                   @default(0)
-  otherExpenses   Float                   @default(0)
+  totalValue      Decimal                   @db.Decimal(15, 2) @default(0)
+  freightValue    Decimal                   @db.Decimal(15, 2) @default(0)
+  insuranceValue  Decimal                   @db.Decimal(15, 2) @default(0)
+  discountValue   Decimal                   @db.Decimal(15, 2) @default(0)
+  otherExpenses   Decimal                   @db.Decimal(15, 2) @default(0)
   locationId      String?                 @db.Uuid
   notes           String?
   internalNotes   String?
@@ -2588,16 +2588,16 @@ model MaterialReceivingItem {
   nfeItemNumber       Int?
   description         String?
   unit                String                @default("UN")
-  nfeQuantity         Float
-  receivedQuantity    Float                 @default(0)
-  approvedQuantity    Float                 @default(0)
-  rejectedQuantity    Float                 @default(0)
-  unitPrice           Float
-  totalPrice          Float
-  icmsBase            Float                 @default(0)
-  icmsValue           Float                 @default(0)
-  ipiBase             Float                 @default(0)
-  ipiValue            Float                 @default(0)
+  nfeQuantity         Decimal  @db.Decimal(15, 4)
+  receivedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  approvedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  rejectedQuantity    Decimal                 @db.Decimal(15, 4) @default(0)
+  unitPrice           Decimal  @db.Decimal(15, 2)
+  totalPrice          Decimal  @db.Decimal(15, 2)
+  icmsBase            Decimal                 @db.Decimal(15, 2) @default(0)
+  icmsValue           Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiBase             Decimal                 @db.Decimal(15, 2) @default(0)
+  ipiValue            Decimal                 @db.Decimal(15, 2) @default(0)
   status              ReceivingItemStatus   @default(PENDING)
   rejectionReason     String?
   batchNumber         String?
@@ -3912,7 +3912,7 @@ model SupplierReturn {
   status              SupplierReturnStatus @default(DRAFT)
   supplierId          String               @db.Uuid
   receivedInvoiceId   String?              @db.Uuid
-  totalValue          Float                @default(0)
+  totalValue          Decimal                @db.Decimal(15, 2) @default(0)
   returnDate          DateTime             @default(now())
   approvedAt          DateTime?
   approvedBy          String?              @db.Uuid
@@ -3947,9 +3947,9 @@ model SupplierReturnItem {
   returnId               String               @db.Uuid
   materialId             String               @db.Uuid
   receivedInvoiceItemId  String?              @db.Uuid
-  quantity               Float
-  unitPrice              Float
-  totalPrice             Float
+  quantity               Decimal  @db.Decimal(15, 4)
+  unitPrice              Decimal  @db.Decimal(15, 2)
+  totalPrice             Decimal  @db.Decimal(15, 2)
   reason                 ReturnReason         @default(OTHER)
   reasonNotes            String?
   stockLocationId        String?              @db.Uuid
@@ -3977,10 +3977,10 @@ model QualityInspection {
   productionOrderId String?                 @map("production_order_id") @db.Uuid
   receivedInvoiceId String?                 @map("received_invoice_id") @db.Uuid
   lotNumber         String?                 @map("lot_number")
-  quantity          Float                   @default(0)
+  quantity          Decimal                   @db.Decimal(15, 4) @default(0)
   sampleSize        Int?                    @map("sample_size")
-  approvedQty       Float?                  @default(0) @map("approved_qty")
-  rejectedQty       Float?                  @default(0) @map("rejected_qty")
+  approvedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("approved_qty")
+  rejectedQty       Decimal?                  @db.Decimal(15, 4) @default(0) @map("rejected_qty")
   inspectionDate    DateTime                @default(now()) @map("inspection_date")
   completedAt       DateTime?               @map("completed_at")
   inspectorId       String?                 @map("inspector_id") @db.Uuid
@@ -4007,9 +4007,9 @@ model QualityInspectionItem {
   inspectionId   String            @map("inspection_id") @db.Uuid
   characteristic String
   specification  String?
-  toleranceMin   Float?            @map("tolerance_min")
-  toleranceMax   Float?            @map("tolerance_max")
-  measuredValue  Float?            @map("measured_value")
+  toleranceMin   Decimal?            @db.Decimal(10, 4) @map("tolerance_min")
+  toleranceMax   Decimal?            @db.Decimal(10, 4) @map("tolerance_max")
+  measuredValue  Decimal?            @db.Decimal(15, 6) @map("measured_value")
   result         String?           @default("PENDING")
   notes          String?
   createdAt      DateTime          @default(now()) @map("created_at")
@@ -4030,7 +4030,7 @@ model NonConformity {
   productionOrderId String?            @map("production_order_id") @db.Uuid
   materialId        String?            @map("material_id") @db.Uuid
   lotNumber         String?            @map("lot_number")
-  quantity          Float?             @default(0)
+  quantity          Decimal?             @db.Decimal(15, 4) @default(0)
   description       String
   rootCause         String?            @map("root_cause")
   immediateAction   String?            @map("immediate_action")
@@ -4061,23 +4061,23 @@ model ProductionCost {
   productionOrderId String                   @map("production_order_id") @db.Uuid
   companyId         String?                  @map("company_id") @db.Uuid
   status            String                   @default("DRAFT")
-  materialCost      Float                    @default(0) @map("material_cost")
-  materialCostStd   Float?                   @default(0) @map("material_cost_std")
-  materialVariance  Float?                   @default(0) @map("material_variance")
-  laborCost         Float                    @default(0) @map("labor_cost")
-  laborCostStd      Float?                   @default(0) @map("labor_cost_std")
-  laborVariance     Float?                   @default(0) @map("labor_variance")
-  laborHours        Float?                   @default(0) @map("labor_hours")
-  laborHoursStd     Float?                   @default(0) @map("labor_hours_std")
-  overheadCost      Float                    @default(0) @map("overhead_cost")
-  overheadCostStd   Float?                   @default(0) @map("overhead_cost_std")
-  overheadVariance  Float?                   @default(0) @map("overhead_variance")
-  totalCost         Float                    @default(0) @map("total_cost")
-  totalCostStd      Float?                   @default(0) @map("total_cost_std")
-  totalVariance     Float?                   @default(0) @map("total_variance")
-  unitCost          Float?                   @default(0) @map("unit_cost")
-  unitCostStd       Float?                   @default(0) @map("unit_cost_std")
-  quantityProduced  Float?                   @default(0) @map("quantity_produced")
+  materialCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  materialCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_cost_std")
+  materialVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("material_variance")
+  laborCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  laborCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_cost_std")
+  laborVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("labor_variance")
+  laborHours        Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours")
+  laborHoursStd     Decimal?                   @db.Decimal(15, 4) @default(0) @map("labor_hours_std")
+  overheadCost      Decimal                    @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  overheadCostStd   Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_cost_std")
+  overheadVariance  Decimal?                   @db.Decimal(15, 2) @default(0) @map("overhead_variance")
+  totalCost         Decimal                    @db.Decimal(15, 2) @default(0) @map("total_cost")
+  totalCostStd      Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalVariance     Decimal?                   @db.Decimal(15, 2) @default(0) @map("total_variance")
+  unitCost          Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  unitCostStd       Decimal?                   @db.Decimal(15, 2) @default(0) @map("unit_cost_std")
+  quantityProduced  Decimal?                   @db.Decimal(15, 4) @default(0) @map("quantity_produced")
   calculatedAt      DateTime?                @map("calculated_at")
   closedAt          DateTime?                @map("closed_at")
   createdAt         DateTime                 @default(now()) @map("created_at")
@@ -4096,12 +4096,12 @@ model ProductionCostMaterial {
   id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   productionCostId String         @map("production_cost_id") @db.Uuid
   materialId       String         @map("material_id") @db.Uuid
-  quantityStd      Float?         @default(0) @map("quantity_std")
-  quantityActual   Float?         @default(0) @map("quantity_actual")
-  unitCost         Float?         @default(0) @map("unit_cost")
-  totalCostStd     Float?         @default(0) @map("total_cost_std")
-  totalCostActual  Float?         @default(0) @map("total_cost_actual")
-  variance         Float?         @default(0)
+  quantityStd      Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_std")
+  quantityActual   Decimal?         @db.Decimal(15, 4) @default(0) @map("quantity_actual")
+  unitCost         Decimal?         @db.Decimal(15, 2) @default(0) @map("unit_cost")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
   createdAt        DateTime       @default(now()) @map("created_at")
   productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -4114,12 +4114,12 @@ model ProductionCostLabor {
   productionCostId String         @map("production_cost_id") @db.Uuid
   workCenterId     String?        @map("work_center_id") @db.Uuid
   operationId      String?        @map("operation_id") @db.Uuid
-  hoursStd         Float?         @default(0) @map("hours_std")
-  hoursActual      Float?         @default(0) @map("hours_actual")
-  hourlyRate       Float?         @default(0) @map("hourly_rate")
-  totalCostStd     Float?         @default(0) @map("total_cost_std")
-  totalCostActual  Float?         @default(0) @map("total_cost_actual")
-  variance         Float?         @default(0)
+  hoursStd         Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_std")
+  hoursActual      Decimal?         @db.Decimal(15, 4) @default(0) @map("hours_actual")
+  hourlyRate       Decimal?         @db.Decimal(10, 4) @default(0) @map("hourly_rate")
+  totalCostStd     Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_std")
+  totalCostActual  Decimal?         @db.Decimal(15, 2) @default(0) @map("total_cost_actual")
+  variance         Decimal?         @db.Decimal(15, 2) @default(0)
   createdAt        DateTime       @default(now()) @map("created_at")
   productionCost   ProductionCost @relation(fields: [productionCostId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -4132,10 +4132,10 @@ model MaterialStandardCost {
   materialId    String   @map("material_id") @db.Uuid
   companyId     String?  @map("company_id") @db.Uuid
   effectiveDate DateTime @default(now()) @map("effective_date")
-  materialCost  Float    @default(0) @map("material_cost")
-  laborCost     Float?   @default(0) @map("labor_cost")
-  overheadCost  Float?   @default(0) @map("overhead_cost")
-  totalCost     Float    @default(0) @map("total_cost")
+  materialCost  Decimal    @db.Decimal(15, 2) @default(0) @map("material_cost")
+  laborCost     Decimal?   @db.Decimal(15, 2) @default(0) @map("labor_cost")
+  overheadCost  Decimal?   @db.Decimal(15, 2) @default(0) @map("overhead_cost")
+  totalCost     Decimal    @db.Decimal(15, 2) @default(0) @map("total_cost")
   notes         String?
   createdBy     String?  @map("created_by") @db.Uuid
   createdAt     DateTime @default(now()) @map("created_at")
@@ -4153,9 +4153,9 @@ model BenefitType {
   companyId               String?           @map("company_id") @db.Uuid
   category                String            @default("OTHER")
   calculationType         String            @default("FIXED") @map("calculation_type")
-  defaultValue            Float?            @default(0) @map("default_value")
-  defaultPercentage       Float?            @default(0) @map("default_percentage")
-  employeeDiscountPercent Float?            @default(0) @map("employee_discount_percent")
+  defaultValue            Decimal?            @db.Decimal(15, 2) @default(0) @map("default_value")
+  defaultPercentage       Decimal?            @db.Decimal(10, 4) @default(0) @map("default_percentage")
+  employeeDiscountPercent Decimal?            @db.Decimal(10, 4) @default(0) @map("employee_discount_percent")
   isTaxable               Boolean?          @default(false) @map("is_taxable")
   affectsInss             Boolean?          @default(false) @map("affects_inss")
   affectsIrrf             Boolean?          @default(false) @map("affects_irrf")
@@ -4177,10 +4177,10 @@ model EmployeeBenefit {
   status              String      @default("ACTIVE")
   startDate           DateTime    @default(now()) @map("start_date")
   endDate             DateTime?   @map("end_date")
-  value               Float?      @default(0)
-  employeeDiscount    Float?      @default(0) @map("employee_discount")
-  companyContribution Float?      @default(0) @map("company_contribution")
-  quantity            Float?      @default(1)
+  value               Decimal?      @db.Decimal(15, 2) @default(0)
+  employeeDiscount    Decimal?      @db.Decimal(15, 2) @default(0) @map("employee_discount")
+  companyContribution Decimal?      @db.Decimal(15, 2) @default(0) @map("company_contribution")
+  quantity            Decimal?      @db.Decimal(15, 4) @default(1)
   notes               String?
   createdAt           DateTime    @default(now()) @map("created_at")
   updatedAt           DateTime    @default(now()) @map("updated_at")
@@ -4198,7 +4198,7 @@ model TransportVoucher {
   companyId      String?  @map("company_id") @db.Uuid
   lineType       String   @default("BUS") @map("line_type")
   lineName       String   @map("line_name")
-  fareValue      Float    @default(0) @map("fare_value")
+  fareValue      Decimal    @db.Decimal(15, 2) @default(0) @map("fare_value")
   quantityPerDay Int?     @default(2) @map("quantity_per_day")
   workingDays    Int?     @default(22) @map("working_days")
   isActive       Boolean? @default(true) @map("is_active")
@@ -4220,7 +4220,7 @@ model Training {
   durationHours     Int?               @default(0) @map("duration_hours")
   instructor        String?
   provider          String?
-  cost              Float?             @default(0)
+  cost              Decimal?             @db.Decimal(15, 2) @default(0)
   isMandatory       Boolean?           @default(false) @map("is_mandatory")
   validityMonths    Int?               @map("validity_months")
   isActive          Boolean?           @default(true) @map("is_active")
@@ -4284,7 +4284,7 @@ model AdmissionProcess {
   candidateCpf        String?             @map("candidate_cpf")
   positionId          String?             @map("position_id") @db.Uuid
   departmentId        String?             @map("department_id") @db.Uuid
-  proposedSalary      Float?              @map("proposed_salary")
+  proposedSalary      Decimal?              @db.Decimal(15, 2) @map("proposed_salary")
   proposedStartDate   DateTime?           @map("proposed_start_date")
   status              String              @default("DRAFT")
   currentStep         Int?                @default(1) @map("current_step")
@@ -4817,7 +4817,7 @@ model AiUsageLog {
   outputTokens  Int      @default(0) @map("output_tokens")
   totalTokens   Int      @default(0) @map("total_tokens")
   latencyMs     Int      @default(0) @map("latency_ms")
-  estimatedCost Float    @default(0) @map("estimated_cost")
+  estimatedCost Decimal    @db.Decimal(15, 2) @default(0) @map("estimated_cost")
   success       Boolean  @default(true)
   errorMessage  String?  @map("error_message")
   wasFallback   Boolean  @default(false) @map("was_fallback")

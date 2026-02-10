@@ -199,7 +199,7 @@ export default function BatchPaymentPage() {
                   {stats.overdue.count} títulos
                 </p>
                 <p className="text-sm text-theme-muted">
-                  {formatCurrency(stats.overdue.value)}
+                  {formatCurrency(Number(stats.overdue.value))}
                 </p>
               </div>
             </div>
@@ -224,7 +224,7 @@ export default function BatchPaymentPage() {
                   {stats.thisWeek.count} títulos
                 </p>
                 <p className="text-sm text-theme-muted">
-                  {formatCurrency(stats.thisWeek.value)}
+                  {formatCurrency(Number(stats.thisWeek.value))}
                 </p>
               </div>
             </div>
@@ -249,7 +249,7 @@ export default function BatchPaymentPage() {
                   {stats.thisMonth.count} títulos
                 </p>
                 <p className="text-sm text-theme-muted">
-                  {formatCurrency(stats.thisMonth.value)}
+                  {formatCurrency(Number(stats.thisMonth.value))}
                 </p>
               </div>
             </div>
@@ -419,7 +419,7 @@ export default function BatchPaymentPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right text-theme">
-                      {formatCurrency(payable.netValue)}
+                      {formatCurrency(Number(payable.netValue))}
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-theme">
                       {formatCurrency(payable.remainingValue)}

@@ -92,14 +92,14 @@ export default function ProductionCostsPage() {
 
             <div className="bg-theme-card rounded-lg border border-theme p-4">
               <div className="flex items-center gap-2 text-theme-muted mb-2">
-                {(dashboard?.avgVariance || 0) >= 0 ? (
+                {(Number(dashboard?.avgVariance) || 0) >= 0 ? (
                   <TrendingUp className="w-4 h-4 text-red-500" />
                 ) : (
                   <TrendingDown className="w-4 h-4 text-green-500" />
                 )}
                 <span className="text-sm">Variação Média</span>
               </div>
-              <p className={`text-2xl font-bold ${(dashboard?.avgVariance || 0) >= 0 ? "text-red-600" : "text-green-600"}`}>
+              <p className={`text-2xl font-bold ${(Number(dashboard?.avgVariance) || 0) >= 0 ? "text-red-600" : "text-green-600"}`}>
                 {formatCurrency(dashboard?.avgVariance || 0)}
               </p>
             </div>
@@ -194,8 +194,8 @@ export default function ProductionCostsPage() {
                             {formatCurrency(cost.totalCost)}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className={`text-sm font-medium ${variance > 0 ? "text-red-600" : variance < 0 ? "text-green-600" : "text-theme-muted"}`}>
-                              {variance > 0 ? "+" : ""}{formatCurrency(variance)}
+                            <span className={`text-sm font-medium ${Number(variance) > 0 ? "text-red-600" : Number(variance) < 0 ? "text-green-600" : "text-theme-muted"}`}>
+                              {Number(variance) > 0 ? "+" : ""}{formatCurrency(variance)}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">

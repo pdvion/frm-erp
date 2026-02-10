@@ -287,7 +287,7 @@ export const quotesRouter = createTRPCRouter({
       // Calcular novo total
       const quantity = data.quantity ?? item.quantity;
       const unitPrice = data.unitPrice ?? item.unitPrice;
-      const totalPrice = quantity * unitPrice;
+      const totalPrice = Number(quantity) * Number(unitPrice);
 
       const updatedItem = await ctx.prisma.quoteItem.update({
         where: { id },
@@ -303,7 +303,7 @@ export const quotesRouter = createTRPCRouter({
       });
 
       const newTotal = allItems.reduce((sum, i) => 
-        sum + (i.id === id ? totalPrice : i.totalPrice), 0
+        sum + (i.id === id ? totalPrice : Number(i.totalPrice)), 0
       );
 
       await ctx.prisma.quote.update({
@@ -356,7 +356,7 @@ export const quotesRouter = createTRPCRouter({
       // Atualizar total da cotação
       await ctx.prisma.quote.update({
         where: { id: quoteId },
-        data: { totalValue: quote.totalValue + totalPrice },
+        data: { totalValue: Number(quote.totalValue) + totalPrice },
       });
 
       return item;
@@ -386,7 +386,7 @@ export const quotesRouter = createTRPCRouter({
       // Atualizar total da cotação
       await ctx.prisma.quote.update({
         where: { id: item.quoteId },
-        data: { totalValue: item.quote.totalValue - item.totalPrice },
+        data: { totalValue: Number(item.quote.totalValue) - Number(item.totalPrice) },
       });
 
       return { success: true };
@@ -580,9 +580,9 @@ export const quotesRouter = createTRPCRouter({
           quoteCode: item.quote.code,
           quoteStatus: item.quote.status,
           supplier: item.quote.supplier,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          totalPrice: item.totalPrice,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          totalPrice: Number(item.totalPrice),
           deliveryDays: item.deliveryDays,
           requestDate: item.quote.requestDate,
           validUntil: item.quote.validUntil,

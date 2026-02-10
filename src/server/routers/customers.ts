@@ -202,8 +202,8 @@ export const customersRouter = createTRPCRouter({
       });
 
       const totalReceivables = receivables.length;
-      const totalValue = receivables.reduce((sum, r) => sum + r.netValue, 0);
-      const paidValue = receivables.reduce((sum, r) => sum + r.paidValue, 0);
+      const totalValue = receivables.reduce((sum, r) => sum + Number(r.netValue), 0);
+      const paidValue = receivables.reduce((sum, r) => Number(sum) + Number(r.paidValue), 0);
       const pendingValue = totalValue - paidValue;
       const overdueCount = receivables.filter(r => r.status === "PENDING").length;
 

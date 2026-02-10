@@ -106,15 +106,15 @@ export default function ProductionLogsPage() {
           </div>
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <p className="text-sm text-theme-muted">Total Produzido</p>
-            <p className="text-2xl font-bold text-theme">{dashboard.productionSummary.totalProduced}</p>
+            <p className="text-2xl font-bold text-theme">{Number(dashboard.productionSummary.totalProduced)}</p>
           </div>
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <p className="text-sm text-theme-muted">Peças Boas</p>
-            <p className="text-2xl font-bold text-green-600">{dashboard.productionSummary.totalGood}</p>
+            <p className="text-2xl font-bold text-green-600">{Number(dashboard.productionSummary.totalGood)}</p>
           </div>
           <div className="bg-theme-card border border-theme rounded-lg p-4">
             <p className="text-sm text-theme-muted">Refugo</p>
-            <p className="text-2xl font-bold text-red-600">{dashboard.productionSummary.totalScrap}</p>
+            <p className="text-2xl font-bold text-red-600">{Number(dashboard.productionSummary.totalScrap)}</p>
           </div>
         </div>
       )}

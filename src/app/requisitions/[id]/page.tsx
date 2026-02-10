@@ -107,7 +107,7 @@ export default function RequisitionDetailPage() {
   const canStartSeparation = requisition.status === "APPROVED";
   const canSeparate = ["APPROVED", "IN_SEPARATION", "PARTIAL"].includes(requisition.status);
   const canCancel = !["COMPLETED", "CANCELLED"].includes(requisition.status) && 
-    !requisition.items.some((i) => i.separatedQty > 0);
+    !requisition.items.some((i) => Number(i.separatedQty) > 0);
 
   return (
     <div className="space-y-6">
@@ -202,7 +202,7 @@ export default function RequisitionDetailPage() {
                   <tbody className="divide-y divide-theme-table">
                     {requisition.items.map((item) => {
                       const approved = item.approvedQty ?? item.requestedQty;
-                      const remaining = approved - item.separatedQty;
+                      const remaining = Number(approved) - Number(item.separatedQty);
                       const inventory = item.material.inventory[0];
                       const available = inventory?.availableQty || 0;
                       const isComplete = item.separatedQty >= approved;
@@ -218,14 +218,14 @@ export default function RequisitionDetailPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-right font-medium text-theme">
-                            {item.requestedQty}
+                            {Number(item.requestedQty)}
                           </td>
                           <td className="px-4 py-3 text-right text-theme-secondary">
-                            {item.approvedQty ?? "-"}
+                            {Number(item.approvedQty) ?? "-"}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
-                              {item.separatedQty}
+                              {Number(item.separatedQty)}
                             </span>
                             {!isComplete && remaining > 0 && (
                               <span className="text-theme-muted text-sm ml-1">
@@ -234,8 +234,8 @@ export default function RequisitionDetailPage() {
                             )}
                           </td>
                           <td className="px-4 py-3 text-right">
-                            <span className={available < remaining ? "text-red-600" : "text-theme-secondary"}>
-                              {available}
+                            <span className={Number(available) < remaining ? "text-red-600" : "text-theme-secondary"}>
+                              {Number(available)}
                             </span>
                           </td>
                           {canSeparate && (
@@ -247,16 +247,16 @@ export default function RequisitionDetailPage() {
                                       type="number"
                                       value={separateQty}
                                       onChange={(e) => setSeparateQty(e.target.value)}
-                                      placeholder={String(Math.min(remaining, available))}
+                                      placeholder={String(Math.min(remaining, Number(available)))}
                                       className="w-20 px-2 py-1 border border-theme-input rounded text-sm"
-                                      max={Math.min(remaining, available)}
+                                      max={Math.min(remaining, Number(available))}
                                       min={0}
                                     />
                                     <Button
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => {
-                                        const qty = parseFloat(separateQty) || Math.min(remaining, available);
+                                        const qty = parseFloat(separateQty) || Math.min(remaining, Number(available));
                                         if (qty > 0) {
                                           separateItemMutation.mutate({
                                             itemId: item.id,
@@ -286,7 +286,7 @@ export default function RequisitionDetailPage() {
                                     variant="secondary"
                                     size="sm"
                                     onClick={() => setSeparatingItem(item.id)}
-                                    disabled={available <= 0}
+                                    disabled={Number(available) <= 0}
                                   >
                                     Separar
                                   </Button>

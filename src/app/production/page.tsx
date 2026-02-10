@@ -138,7 +138,7 @@ export default function ProductionPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {stats.byStatus.filter(s => s.count > 0).map((s) => {
               const config = statusConfig[s.status];
-              const progress = s.totalQty > 0 ? Math.round((s.producedQty / s.totalQty) * 100) : 0;
+              const progress = Number(s.totalQty) > 0 ? Math.round((Number(s.producedQty) / Number(s.totalQty)) * 100) : 0;
               return (
                 <div key={s.status} className="bg-theme-card rounded-lg border border-theme p-4">
                   <div className="flex items-center gap-2 mb-2">
@@ -277,8 +277,8 @@ export default function ProductionPage() {
                     {data.orders.map((order) => {
                       const statusCfg = statusConfig[order.status];
                       const priorityCfg = priorityConfig[order.priority];
-                      const progress = order.quantity > 0 
-                        ? Math.round((order.producedQty / order.quantity) * 100) 
+                      const progress = Number(order.quantity) > 0 
+                        ? Math.round((Number(order.producedQty) / Number(order.quantity)) * 100) 
                         : 0;
                       const late = isLate(order.dueDate, order.status);
 
@@ -298,7 +298,7 @@ export default function ProductionPage() {
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className="font-medium text-theme">{order.quantity}</span>
+                            <span className="font-medium text-theme">{Number(order.quantity)}</span>
                             <span className="text-theme-muted text-sm ml-1">{order.product.unit}</span>
                           </td>
                           <td className="px-4 py-3">
@@ -314,7 +314,7 @@ export default function ProductionPage() {
                               <span className="text-sm text-theme-secondary w-12 text-right">{progress}%</span>
                             </div>
                             <div className="text-xs text-theme-muted text-center mt-1">
-                              {order.producedQty} / {order.quantity}
+                              {Number(order.producedQty)} / {Number(order.quantity)}
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
