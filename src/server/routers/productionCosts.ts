@@ -137,7 +137,7 @@ export const productionCostsRouter = createTRPCRouter({
       }
 
       // Verificar se já existe custo para esta OP
-      let existingCost = await ctx.prisma.productionCost.findFirst({
+      const existingCost = await ctx.prisma.productionCost.findFirst({
         where: { productionOrderId: input.productionOrderId },
       });
 
@@ -246,71 +246,59 @@ export const productionCostsRouter = createTRPCRouter({
       const unitCost = totalCost / Number(quantityProduced);
       const unitCostStd = totalCostStd / Number(quantityProduced);
 
-      // Criar ou atualizar custo
-      if (existingCost) {
-        // Deletar detalhes antigos
-        await ctx.prisma.productionCostMaterial.deleteMany({ where: { productionCostId: existingCost.id } });
-        await ctx.prisma.productionCostLabor.deleteMany({ where: { productionCostId: existingCost.id } });
+      // Criar ou atualizar custo (em transação para atomicidade)
+      const costData = {
+        status: "CALCULATED" as const,
+        materialCost,
+        materialCostStd,
+        materialVariance: materialCost - materialCostStd,
+        laborCost,
+        laborCostStd,
+        laborVariance: laborCost - laborCostStd,
+        laborHours,
+        laborHoursStd,
+        overheadCost,
+        overheadCostStd,
+        overheadVariance: overheadCost - overheadCostStd,
+        totalCost,
+        totalCostStd,
+        totalVariance: totalCost - totalCostStd,
+        unitCost,
+        unitCostStd,
+        quantityProduced,
+        calculatedAt: new Date(),
+      };
 
-        existingCost = await ctx.prisma.productionCost.update({
-          where: { id: existingCost.id },
-          data: {
-            status: "CALCULATED",
-            materialCost,
-            materialCostStd,
-            materialVariance: materialCost - materialCostStd,
-            laborCost,
-            laborCostStd,
-            laborVariance: laborCost - laborCostStd,
-            laborHours,
-            laborHoursStd,
-            overheadCost,
-            overheadCostStd,
-            overheadVariance: overheadCost - overheadCostStd,
-            totalCost,
-            totalCostStd,
-            totalVariance: totalCost - totalCostStd,
-            unitCost,
-            unitCostStd,
-            quantityProduced,
-            calculatedAt: new Date(),
-            materialItems: { create: materialDetails },
-            laborItems: { create: laborDetails },
-          },
-          include: { materialItems: true, laborItems: true },
-        });
-      } else {
-        existingCost = await ctx.prisma.productionCost.create({
-          data: {
-            productionOrderId: input.productionOrderId,
-            companyId: ctx.companyId,
-            status: "CALCULATED",
-            materialCost,
-            materialCostStd,
-            materialVariance: materialCost - materialCostStd,
-            laborCost,
-            laborCostStd,
-            laborVariance: laborCost - laborCostStd,
-            laborHours,
-            laborHoursStd,
-            overheadCost,
-            overheadCostStd,
-            overheadVariance: overheadCost - overheadCostStd,
-            totalCost,
-            totalCostStd,
-            totalVariance: totalCost - totalCostStd,
-            unitCost,
-            unitCostStd,
-            quantityProduced,
-            calculatedAt: new Date(),
-            materialItems: { create: materialDetails },
-            laborItems: { create: laborDetails },
-          },
-          include: { materialItems: true, laborItems: true },
-        });
-      }
+      const result = await ctx.prisma.$transaction(async (tx) => {
+        if (existingCost) {
+          // Deletar detalhes antigos e atualizar atomicamente
+          await tx.productionCostMaterial.deleteMany({ where: { productionCostId: existingCost.id } });
+          await tx.productionCostLabor.deleteMany({ where: { productionCostId: existingCost.id } });
 
-      return existingCost;
+          return tx.productionCost.update({
+            where: { id: existingCost.id },
+            data: {
+              ...costData,
+              materialItems: { create: materialDetails },
+              laborItems: { create: laborDetails },
+            },
+            include: { materialItems: true, laborItems: true },
+          });
+        } else {
+          return tx.productionCost.create({
+            data: {
+              productionOrderId: input.productionOrderId,
+              companyId: ctx.companyId,
+              ...costData,
+              materialItems: { create: materialDetails },
+              laborItems: { create: laborDetails },
+            },
+            include: { materialItems: true, laborItems: true },
+          });
+        }
+      });
+
+      return result;
     }),
 
   // Fechar custo (não permite mais alterações)

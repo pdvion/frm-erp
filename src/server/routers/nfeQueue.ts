@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { tenantFilter } from "../trpc";
+import { Prisma } from "@prisma/client";
 
 // Status da NFe na fila
 const NfeQueueStatus = z.enum(["pending", "processing", "completed", "failed", "retry"]);
@@ -135,6 +136,10 @@ export const nfeQueueRouter = createTRPCRouter({
       offset: z.number().int().min(0).default(0),
     }))
     .query(async ({ input, ctx }) => {
+      const statusFilter = input.status
+        ? Prisma.sql`AND status = ${input.status}`
+        : Prisma.empty;
+
       const jobs = await ctx.prisma.$queryRaw<{
         id: string;
         nfe_id: string;
@@ -146,20 +151,20 @@ export const nfeQueueRouter = createTRPCRouter({
         updated_at: Date;
         completed_at: Date | null;
         next_retry_at: Date | null;
-      }[]>`
+      }[]>(Prisma.sql`
         SELECT * FROM nfe_queue_jobs 
         WHERE company_id = ${ctx.companyId}::uuid
-        ${input.status ? ctx.prisma.$queryRaw`AND status = ${input.status}` : ctx.prisma.$queryRaw``}
+        ${statusFilter}
         ORDER BY created_at DESC
         LIMIT ${input.limit}
         OFFSET ${input.offset}
-      `;
+      `);
 
-      const countResult = await ctx.prisma.$queryRaw<{ count: bigint }[]>`
+      const countResult = await ctx.prisma.$queryRaw<{ count: bigint }[]>(Prisma.sql`
         SELECT COUNT(*) as count FROM nfe_queue_jobs 
         WHERE company_id = ${ctx.companyId}::uuid
-        ${input.status ? ctx.prisma.$queryRaw`AND status = ${input.status}` : ctx.prisma.$queryRaw``}
-      `;
+        ${statusFilter}
+      `);
 
       return {
         jobs: jobs.map((job) => ({

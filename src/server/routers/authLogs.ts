@@ -30,6 +30,8 @@ export const authLogsRouter = createTRPCRouter({
       const page = input?.page ?? 1;
       const limit = input?.limit ?? 50;
       const offset = (page - 1) * limit;
+      const dateFrom = input?.dateFrom ?? null;
+      const dateTo = input?.dateTo ?? null;
 
       // Buscar IDs dos usuários da empresa para filtrar logs por tenant
       const companyUsers = await ctx.prisma.userCompany.findMany({
@@ -48,16 +50,25 @@ export const authLogsRouter = createTRPCRouter({
         `SELECT id, payload, ip_address, created_at 
          FROM auth.audit_log_entries 
          WHERE payload->>'actor_id' = ANY($3::text[])
+         ${dateFrom ? "AND created_at >= $4::timestamptz" : ""}
+         ${dateTo ? `AND created_at <= $${dateFrom ? 5 : 4}::timestamptz` : ""}
          ORDER BY created_at DESC 
          LIMIT $1 OFFSET $2`,
         limit,
         offset,
-        userIds
+        userIds,
+        ...(dateFrom ? [dateFrom] : []),
+        ...(dateTo ? [dateTo] : [])
       );
 
       const countResult = await ctx.prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
-        `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE payload->>'actor_id' = ANY($1::text[])`,
-        userIds
+        `SELECT COUNT(*) as count FROM auth.audit_log_entries 
+         WHERE payload->>'actor_id' = ANY($1::text[])
+         ${dateFrom ? "AND created_at >= $2::timestamptz" : ""}
+         ${dateTo ? `AND created_at <= $${dateFrom ? 3 : 2}::timestamptz` : ""}`,
+        userIds,
+        ...(dateFrom ? [dateFrom] : []),
+        ...(dateTo ? [dateTo] : [])
       );
       const total = Number(countResult[0]?.count ?? 0);
 
