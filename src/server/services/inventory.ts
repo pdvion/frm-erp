@@ -320,16 +320,16 @@ export class InventoryService {
   async releaseReservation(input: ReleaseReservationInput) {
     const { reservationId, companyId, userId, reason } = input;
 
-    const reservation = await this.prisma.stockReservation.findFirst({
-      where: { id: reservationId, companyId, status: "ACTIVE" },
-      include: { inventory: true },
-    });
-
-    if (!reservation) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já liberada" });
-    }
-
     return this.prisma.$transaction(async (tx) => {
+      const reservation = await tx.stockReservation.findFirst({
+        where: { id: reservationId, companyId, status: "ACTIVE" },
+        include: { inventory: true },
+      });
+
+      if (!reservation) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já liberada" });
+      }
+
       const updated = await tx.stockReservation.update({
         where: { id: reservationId },
         data: {
@@ -361,21 +361,20 @@ export class InventoryService {
   async consumeReservation(input: ConsumeReservationInput) {
     const { reservationId, companyId, userId } = input;
 
-    const reservation = await this.prisma.stockReservation.findFirst({
-      where: { id: reservationId, companyId, status: "ACTIVE" },
-      include: { inventory: { include: { material: true } } },
-    });
-
-    if (!reservation) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já consumida" });
-    }
-
-    const quantityToConsume = input.quantity || reservation.quantity;
-    if (quantityToConsume > reservation.quantity) {
-      throw new TRPCError({ code: "BAD_REQUEST", message: "Quantidade a consumir maior que a reservada" });
-    }
-
     return this.prisma.$transaction(async (tx) => {
+      const reservation = await tx.stockReservation.findFirst({
+        where: { id: reservationId, companyId, status: "ACTIVE" },
+        include: { inventory: { include: { material: true } } },
+      });
+
+      if (!reservation) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já consumida" });
+      }
+
+      const quantityToConsume = input.quantity || reservation.quantity;
+      if (quantityToConsume > reservation.quantity) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quantidade a consumir maior que a reservada" });
+      }
       // Criar movimento de saída
       await tx.inventoryMovement.create({
         data: {
