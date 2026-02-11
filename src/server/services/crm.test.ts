@@ -161,7 +161,7 @@ describe("getDefaultPipelineStages", () => {
 // ==========================================================================
 
 function createMockPrisma() {
-  return {
+  const mock = {
     salesPipeline: {
       count: vi.fn(),
       create: vi.fn(),
@@ -188,7 +188,10 @@ function createMockPrisma() {
       create: vi.fn(),
       findMany: vi.fn(),
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    $transaction: vi.fn().mockImplementation((fn: any) => fn(mock)),
   } as unknown as PrismaClient;
+  return mock;
 }
 
 describe("CrmService", () => {
@@ -326,7 +329,7 @@ describe("CrmService", () => {
 
   describe("moveOpportunity", () => {
     it("move para novo estágio e atualiza probabilidade", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "opp-1",
         status: "OPEN",
         pipeline: {
@@ -344,6 +347,7 @@ describe("CrmService", () => {
 
       await service.moveOpportunity({
         opportunityId: "opp-1",
+        companyId: "comp-1",
         newStage: "Proposta",
       });
 
@@ -354,29 +358,29 @@ describe("CrmService", () => {
     });
 
     it("rejeita se oportunidade não está OPEN", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "opp-1",
         status: "WON",
         pipeline: { stages: [] },
       });
 
       await expect(
-        service.moveOpportunity({ opportunityId: "opp-1", newStage: "Proposta" }),
+        service.moveOpportunity({ opportunityId: "opp-1", companyId: "comp-1", newStage: "Proposta" }),
       ).rejects.toThrow("Apenas oportunidades abertas podem ser movidas");
     });
 
     it("rejeita se oportunidade não existe", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       await expect(
-        service.moveOpportunity({ opportunityId: "opp-999", newStage: "X" }),
+        service.moveOpportunity({ opportunityId: "opp-999", companyId: "comp-1", newStage: "X" }),
       ).rejects.toThrow("Oportunidade não encontrada");
     });
   });
 
   describe("winOpportunity", () => {
     it("marca como WON com probabilidade 100", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "opp-1",
         status: "OPEN",
       });
@@ -385,7 +389,7 @@ describe("CrmService", () => {
         status: "WON",
       });
 
-      await service.winOpportunity({ opportunityId: "opp-1" });
+      await service.winOpportunity({ opportunityId: "opp-1", companyId: "comp-1" });
 
       expect(prisma.opportunity.update).toHaveBeenCalledWith({
         where: { id: "opp-1" },
@@ -398,20 +402,20 @@ describe("CrmService", () => {
     });
 
     it("rejeita se não está OPEN", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "opp-1",
         status: "LOST",
       });
 
       await expect(
-        service.winOpportunity({ opportunityId: "opp-1" }),
+        service.winOpportunity({ opportunityId: "opp-1", companyId: "comp-1" }),
       ).rejects.toThrow("Apenas oportunidades abertas podem ser ganhas");
     });
   });
 
   describe("loseOpportunity", () => {
     it("marca como LOST com motivo", async () => {
-      (prisma.opportunity.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "opp-1",
         status: "OPEN",
       });
@@ -422,6 +426,7 @@ describe("CrmService", () => {
 
       await service.loseOpportunity({
         opportunityId: "opp-1",
+        companyId: "comp-1",
         lostReason: "Preço alto",
       });
 

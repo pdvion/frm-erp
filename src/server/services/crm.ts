@@ -214,19 +214,21 @@ export class CrmService {
   ) {
     const pipelineStages = stages ?? getDefaultPipelineStages();
 
-    // Se é o primeiro pipeline, marcar como default
-    const existingCount = await this.prisma.salesPipeline.count({
-      where: { companyId },
-    });
+    // Transação para evitar race condition no isDefault
+    return this.prisma.$transaction(async (tx) => {
+      const existingCount = await tx.salesPipeline.count({
+        where: { companyId },
+      });
 
-    return this.prisma.salesPipeline.create({
-      data: {
-        companyId,
-        name,
-        description: description ?? null,
-        isDefault: existingCount === 0,
-        stages: JSON.parse(JSON.stringify(pipelineStages)),
-      },
+      return tx.salesPipeline.create({
+        data: {
+          companyId,
+          name,
+          description: description ?? null,
+          isDefault: existingCount === 0,
+          stages: JSON.parse(JSON.stringify(pipelineStages)),
+        },
+      });
     });
   }
 
@@ -238,46 +240,48 @@ export class CrmService {
    * Cria uma nova oportunidade no pipeline
    */
   async createOpportunity(input: CreateOpportunityInput) {
-    // Gerar próximo código
-    const lastOpp = await this.prisma.opportunity.findFirst({
-      where: { companyId: input.companyId },
-      orderBy: { code: "desc" },
-      select: { code: true },
-    });
-    const nextCode = (lastOpp?.code ?? 0) + 1;
+    // Transação para evitar race condition no nextCode
+    return this.prisma.$transaction(async (tx) => {
+      const lastOpp = await tx.opportunity.findFirst({
+        where: { companyId: input.companyId },
+        orderBy: { code: "desc" },
+        select: { code: true },
+      });
+      const nextCode = (lastOpp?.code ?? 0) + 1;
 
-    // Buscar probabilidade do estágio no pipeline
-    const pipeline = await this.prisma.salesPipeline.findUnique({
-      where: { id: input.pipelineId },
-      select: { stages: true },
-    });
+      // Buscar probabilidade do estágio no pipeline
+      const pipeline = await tx.salesPipeline.findUnique({
+        where: { id: input.pipelineId },
+        select: { stages: true },
+      });
 
-    let probability = input.probability ?? 50;
-    if (pipeline?.stages) {
-      const stages = pipeline.stages as unknown as PipelineStage[];
-      const stageConfig = stages.find((s) => s.name === input.stage);
-      if (stageConfig && !input.probability) {
-        probability = stageConfig.probability;
+      let probability = input.probability ?? 50;
+      if (pipeline?.stages) {
+        const stages = pipeline.stages as unknown as PipelineStage[];
+        const stageConfig = stages.find((s) => s.name === input.stage);
+        if (stageConfig && !input.probability) {
+          probability = stageConfig.probability;
+        }
       }
-    }
 
-    return this.prisma.opportunity.create({
-      data: {
-        companyId: input.companyId,
-        code: nextCode,
-        title: input.title,
-        customerId: input.customerId,
-        pipelineId: input.pipelineId,
-        stage: input.stage,
-        value: input.value,
-        probability,
-        expectedCloseDate: input.expectedCloseDate ?? null,
-        status: "OPEN",
-        leadId: input.leadId ?? null,
-        assignedTo: input.assignedTo ?? null,
-        notes: input.notes ?? null,
-        createdBy: input.createdBy ?? null,
-      },
+      return tx.opportunity.create({
+        data: {
+          companyId: input.companyId,
+          code: nextCode,
+          title: input.title,
+          customerId: input.customerId,
+          pipelineId: input.pipelineId,
+          stage: input.stage,
+          value: input.value,
+          probability,
+          expectedCloseDate: input.expectedCloseDate ?? null,
+          status: "OPEN",
+          leadId: input.leadId ?? null,
+          assignedTo: input.assignedTo ?? null,
+          notes: input.notes ?? null,
+          createdBy: input.createdBy ?? null,
+        },
+      });
     });
   }
 
@@ -490,7 +494,7 @@ export class CrmService {
         companyId,
         assignedTo: { not: null },
         OR: [
-          { status: "OPEN" },
+          { status: "OPEN", createdAt: { lte: endDate } },
           { wonAt: { gte: startDate, lte: endDate } },
           { lostAt: { gte: startDate, lte: endDate } },
         ],
