@@ -394,7 +394,8 @@ export class PayrollService {
     }
 
     // 6. Insalubridade
-    if (options.includeInsalubrity && employee.insalubrityDegree) {
+    const validInsalubrityDegrees: InsalubrityDegree[] = ["LOW", "MEDIUM", "HIGH"];
+    if (options.includeInsalubrity && employee.insalubrityDegree && validInsalubrityDegrees.includes(employee.insalubrityDegree as InsalubrityDegree)) {
       const value = calculateInsalubrity(
         baseSalary,
         MINIMUM_WAGE_2024,
