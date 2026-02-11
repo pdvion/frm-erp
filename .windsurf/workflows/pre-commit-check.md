@@ -8,13 +8,19 @@ Execute este workflow **ANTES** de fazer commit para evitar falhas no CI.
 
 ## ⚠️ REGRA OBRIGATÓRIA
 
-**NUNCA fazer push sem executar os 3 comandos abaixo e todos passarem:**
+**NUNCA fazer push sem executar os 4 comandos abaixo e todos passarem:**
 
 ```bash
-NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && npx vitest run && npx eslint .
+NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && pnpm lint && npx vitest run && pnpm build
 ```
 
-> **Nota:** `tsc` precisa de 4GB de heap por causa do schema Prisma grande (~6000 linhas).
+> **Nota:** O schema Prisma é grande (~6000+ linhas), por isso o `tsc` precisa de `--max-old-space-size=4096`.
+
+Se você alterou testes/configuração de testes/áreas críticas (ex.: `src/lib`, `src/server`), execute também:
+
+```bash
+pnpm test:coverage
+```
 
 ## ⚠️ APÓS MUDANÇAS NO SCHEMA PRISMA
 
@@ -43,16 +49,22 @@ pnpm type-check
 NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit
 ```
 
-### 2. Executar Testes
+### 2. Verificar Lint
+// turbo
+```bash
+pnpm lint
+```
+
+### 3. Executar Testes
 // turbo
 ```bash
 npx vitest run
 ```
 
-### 3. Verificar Lint
+### 4. Verificar Build
 // turbo
 ```bash
-npx eslint .
+pnpm build
 ```
 
 Se QUALQUER comando falhar, **NÃO FAÇA COMMIT**. Corrija os erros primeiro.
@@ -101,9 +113,16 @@ Se retornar resultados, corrigir para camelCase + @map antes de commitar.
 
 ### ESLint
 - [ ] Não deixar variáveis não utilizadas
-- [ ] Usar variável em vez de prefixo `_` (lint ainda reclama)
 - [ ] Não usar `console.log` em produção (usar logger)
 - [ ] Executar `pnpm lint --fix` para corrigir indentação automaticamente
+
+### Multi-Tenant
+- [ ] SEMPRE filtrar por `companyId` em queries de dados
+- [ ] Usar `tenantProcedure` em vez de `publicProcedure`
+- [ ] Usar `ctx.tenant.companyId!` (NÃO `ctx.companyId` — deprecated)
+- [ ] `tenantFilter()` está deprecated — usar `companyId` direto no where
+- [ ] Incluir `companyId` ao criar novos registros
+- [ ] `companyId` é NOT NULL (Schema v1) — não usar `String?`
 
 ### Design System
 - [ ] Usar componentes de `src/components/ui/` (Button, Card, etc.)
@@ -196,7 +215,7 @@ git push origin main
 1. **NÃO faça mais commits** até resolver
 2. Executar localmente:
    ```bash
-   NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && npx vitest run && npx eslint .
+   NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && pnpm lint && npx vitest run && pnpm build
    ```
 3. Corrigir TODOS os erros
 4. Fazer novo commit com fix

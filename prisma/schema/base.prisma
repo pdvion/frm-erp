@@ -117,6 +117,12 @@ model Company {
   communicationLogs             CommunicationLog[]
   leadScoringRules              LeadScoringRule[]
   salesTargets                  SalesTarget[]
+  fiscalObligations             FiscalObligation[]
+  taxApurations                 TaxApuration[]
+  nfseConfig                    NfseConfig?
+  nfseIssued                    NfseIssued[]
+  difalCalculations             DifalCalculation[]
+  blocoKRecords                 BlocoKRecord[]
 
   @@map("companies")
 }
