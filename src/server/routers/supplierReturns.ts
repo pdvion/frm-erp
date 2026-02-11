@@ -54,8 +54,12 @@ export const supplierReturnsRouter = createTRPCRouter({
         companyId: ctx.companyId,
         ...(status && { status }),
         ...(supplierId && { supplierId }),
-        ...(startDate && { returnDate: { gte: startDate } }),
-        ...(endDate && { returnDate: { lte: endDate } }),
+        ...((startDate || endDate) && {
+          returnDate: {
+            ...(startDate && { gte: startDate }),
+            ...(endDate && { lte: endDate }),
+          },
+        }),
         ...(search && {
           OR: [
             { supplier: { companyName: { contains: search, mode: "insensitive" as const } } },
@@ -394,7 +398,18 @@ export const supplierReturnsRouter = createTRPCRouter({
             where: { materialId: item.materialId, companyId: ctx.companyId },
           });
 
-          if (inventory) {
+          if (!inventory || inventory.quantity < item.quantity) {
+            const material = await tx.material.findUnique({
+              where: { id: item.materialId },
+              select: { description: true },
+            });
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Estoque insuficiente para o material: ${material?.description || item.materialId}`,
+            });
+          }
+
+          {
             // Baixar estoque
             await tx.inventory.update({
               where: { id: inventory.id },

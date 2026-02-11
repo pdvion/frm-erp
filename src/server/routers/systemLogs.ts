@@ -29,8 +29,12 @@ export const systemLogsRouter = createTRPCRouter({
       const where = {
         ...(level && { level }),
         ...(source && { source: { contains: source } }),
-        ...(startDate && { createdAt: { gte: new Date(startDate) } }),
-        ...(endDate && { createdAt: { lte: new Date(endDate) } }),
+        ...((startDate || endDate) && {
+          createdAt: {
+            ...(startDate && { gte: new Date(startDate) }),
+            ...(endDate && { lte: new Date(endDate) }),
+          },
+        }),
       };
 
       const [logs, total] = await Promise.all([

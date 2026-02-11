@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
 export const authLogsRouter = createTRPCRouter({
   // Listar logs de autenticação do Supabase
@@ -15,12 +16,29 @@ export const authLogsRouter = createTRPCRouter({
       }).optional()
     )
     .query(async ({ input, ctx }) => {
+      // Verificar permissão de admin
+      if (!ctx.tenant.userId) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não identificado" });
+      }
+      const permission = await ctx.prisma.userCompanyPermission.findFirst({
+        where: { userId: ctx.tenant.userId, companyId: ctx.companyId, module: "SETTINGS", permission: "FULL" },
+      });
+      if (!permission) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Acesso restrito a administradores" });
+      }
+
       const page = input?.page ?? 1;
       const limit = input?.limit ?? 50;
       const offset = (page - 1) * limit;
 
-      // Query direta ao schema auth do Supabase
-      // Nota: Prisma não tem acesso direto ao schema auth, então usamos raw query
+      // Buscar IDs dos usuários da empresa para filtrar logs por tenant
+      const companyUsers = await ctx.prisma.userCompany.findMany({
+        where: { companyId: ctx.companyId },
+        select: { userId: true },
+      });
+      const userIds = companyUsers.map((u: { userId: string }) => u.userId);
+
+      // Query ao schema auth do Supabase, filtrada por usuários do tenant
       const logs = await ctx.prisma.$queryRawUnsafe<Array<{
         id: string;
         payload: Record<string, unknown>;
@@ -29,14 +47,17 @@ export const authLogsRouter = createTRPCRouter({
       }>>(
         `SELECT id, payload, ip_address, created_at 
          FROM auth.audit_log_entries 
+         WHERE payload->>'actor_id' = ANY($3::text[])
          ORDER BY created_at DESC 
          LIMIT $1 OFFSET $2`,
         limit,
-        offset
+        offset,
+        userIds
       );
 
       const countResult = await ctx.prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
-        `SELECT COUNT(*) as count FROM auth.audit_log_entries`
+        `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE payload->>'actor_id' = ANY($1::text[])`,
+        userIds
       );
       const total = Number(countResult[0]?.count ?? 0);
 
@@ -61,31 +82,52 @@ export const authLogsRouter = createTRPCRouter({
 
   // Estatísticas de eventos de auth
   stats: tenantProcedure.query(async ({ ctx }) => {
+    // Verificar permissão de admin
+    if (!ctx.tenant.userId) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Usuário não identificado" });
+    }
+    const permission = await ctx.prisma.userCompanyPermission.findFirst({
+      where: { userId: ctx.tenant.userId, companyId: ctx.companyId, module: "SETTINGS", permission: "FULL" },
+    });
+    if (!permission) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Acesso restrito a administradores" });
+    }
+
+    // Buscar IDs dos usuários da empresa
+    const companyUsers = await ctx.prisma.userCompany.findMany({
+      where: { companyId: ctx.companyId },
+      select: { userId: true },
+    });
+    const userIds = companyUsers.map((u: { userId: string }) => u.userId);
+
     const now = new Date();
     const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Total de eventos nas últimas 24h
+    // Total de eventos nas últimas 24h (filtrado por tenant)
     const last24hResult = await ctx.prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
-      `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE created_at >= $1`,
-      last24h
+      `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE created_at >= $1 AND payload->>'actor_id' = ANY($2::text[])`,
+      last24h,
+      userIds
     );
 
-    // Total de eventos nos últimos 7 dias
+    // Total de eventos nos últimos 7 dias (filtrado por tenant)
     const last7dResult = await ctx.prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
-      `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE created_at >= $1`,
-      last7d
+      `SELECT COUNT(*) as count FROM auth.audit_log_entries WHERE created_at >= $1 AND payload->>'actor_id' = ANY($2::text[])`,
+      last7d,
+      userIds
     );
 
-    // Eventos por tipo (últimos 7 dias)
+    // Eventos por tipo (últimos 7 dias, filtrado por tenant)
     const byTypeResult = await ctx.prisma.$queryRawUnsafe<Array<{ action: string; count: bigint }>>(
       `SELECT payload->>'action' as action, COUNT(*) as count 
        FROM auth.audit_log_entries 
-       WHERE created_at >= $1 
+       WHERE created_at >= $1 AND payload->>'actor_id' = ANY($2::text[])
        GROUP BY payload->>'action' 
        ORDER BY count DESC 
        LIMIT 10`,
-      last7d
+      last7d,
+      userIds
     );
 
     return {
