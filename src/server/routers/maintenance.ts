@@ -2,12 +2,18 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { auditCreate, auditUpdate } from "../services/audit";
 import { MaintenanceService, getNextMaintenanceDate } from "../services/maintenance";
+import { TRPCError } from "@trpc/server";
+import {
+  MaintenanceFrequency, EquipmentCriticality, MaintenanceType,
+  MaintenanceOrderStatus, MaintenancePriority, FailureCategory,
+} from "@prisma/client";
 
-const freqZ = z.enum(["HOURS","DAILY","WEEKLY","BIWEEKLY","MONTHLY","QUARTERLY","SEMIANNUAL","ANNUAL"]);
-const critZ = z.enum(["A","B","C"]);
-const typeZ = z.enum(["PREVENTIVE","CORRECTIVE","PREDICTIVE","IMPROVEMENT"]);
-const statusZ = z.enum(["PLANNED","APPROVED","IN_PROGRESS","ON_HOLD","COMPLETED","CANCELLED"]);
-const prioZ = z.enum(["EMERGENCY","URGENT","HIGH","NORMAL","LOW"]);
+const freqZ = z.nativeEnum(MaintenanceFrequency);
+const critZ = z.nativeEnum(EquipmentCriticality);
+const typeZ = z.nativeEnum(MaintenanceType);
+const statusZ = z.nativeEnum(MaintenanceOrderStatus);
+const prioZ = z.nativeEnum(MaintenancePriority);
+const failCatZ = z.nativeEnum(FailureCategory);
 const pageZ = z.object({ page: z.number().min(1).default(1), limit: z.number().min(1).max(100).default(20) });
 
 export const maintenanceRouter = createTRPCRouter({
@@ -50,7 +56,7 @@ export const maintenanceRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), name: z.string().optional(), description: z.string().nullable().optional(),
       manufacturer: z.string().nullable().optional(), model: z.string().nullable().optional(),
       criticality: critZ.optional(), location: z.string().nullable().optional(),
-      workCenterId: z.string().nullable().optional(), operatingHours: z.number().optional(),
+      workCenterId: z.string().nullable().optional(), operatingHours: z.number().min(0).optional(),
       isActive: z.boolean().optional(), notes: z.string().nullable().optional() }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input; const cid = ctx.tenant.companyId!;
@@ -85,6 +91,8 @@ export const maintenanceRouter = createTRPCRouter({
       estimatedDuration: z.number().default(60), assignedTeam: z.string().optional(), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const cid = ctx.tenant.companyId!;
+      const eq = await ctx.prisma.maintenanceEquipment.findFirst({ where: { id: input.equipmentId, companyId: cid } });
+      if (!eq) throw new TRPCError({ code: "BAD_REQUEST", message: "Equipamento não encontrado para este tenant" });
       const nextDueDate = getNextMaintenanceDate(new Date(), input.frequency, input.frequencyValue);
       const r = await ctx.prisma.maintenancePlan.create({ data: { companyId: cid, nextDueDate, ...input } });
       await auditCreate("MaintenancePlan", r, r.code, { userId: ctx.tenant.userId ?? undefined, companyId: cid });
@@ -98,8 +106,17 @@ export const maintenanceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input; const cid = ctx.tenant.companyId!;
       const old = await ctx.prisma.maintenancePlan.findFirst({ where: { id, companyId: cid } });
-      if (!old) throw new Error("Plano não encontrado");
-      const r = await ctx.prisma.maintenancePlan.update({ where: { id }, data });
+      if (!old) throw new TRPCError({ code: "NOT_FOUND", message: "Plano não encontrado" });
+      const updateData: Record<string, unknown> = { ...data };
+      const freqChanged = (input.frequency && input.frequency !== old.frequency) ||
+        (input.frequencyValue && input.frequencyValue !== old.frequencyValue);
+      if (freqChanged) {
+        const freq = input.frequency ?? old.frequency;
+        const freqVal = input.frequencyValue ?? old.frequencyValue ?? 1;
+        const baseDate = old.lastExecutedAt ?? old.createdAt;
+        updateData.nextDueDate = getNextMaintenanceDate(baseDate, freq, freqVal);
+      }
+      const r = await ctx.prisma.maintenancePlan.update({ where: { id }, data: updateData });
       await auditUpdate("MaintenancePlan", id, r.code, old, r, { userId: ctx.tenant.userId ?? undefined, companyId: cid });
       return r;
     }),
@@ -146,6 +163,16 @@ export const maintenanceRouter = createTRPCRouter({
       estimatedDuration: z.number().optional(), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const cid = ctx.tenant.companyId!;
+      const eq = await ctx.prisma.maintenanceEquipment.findFirst({ where: { id: input.equipmentId, companyId: cid } });
+      if (!eq) throw new TRPCError({ code: "BAD_REQUEST", message: "Equipamento não encontrado" });
+      if (input.failureCodeId) {
+        const fc = await ctx.prisma.failureCode.findFirst({ where: { id: input.failureCodeId, companyId: cid } });
+        if (!fc) throw new TRPCError({ code: "BAD_REQUEST", message: "Código de falha não encontrado" });
+      }
+      if (input.assignedTo) {
+        const u = await ctx.prisma.user.findFirst({ where: { id: input.assignedTo, companyId: cid } });
+        if (!u) throw new TRPCError({ code: "BAD_REQUEST", message: "Técnico não encontrado" });
+      }
       const svc = new MaintenanceService(ctx.prisma);
       const r = await svc.createOrder(cid, { ...input, requestedBy: ctx.tenant.userId });
       await auditCreate("MaintenanceOrder", r, String(r.code), { userId: ctx.tenant.userId ?? undefined, companyId: cid });
@@ -176,6 +203,9 @@ export const maintenanceRouter = createTRPCRouter({
     .input(z.object({ orderId: z.string(), materialId: z.string(), quantity: z.number().min(0.01),
       unitCost: z.number().min(0), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const cid = ctx.tenant.companyId!;
+      const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.orderId, companyId: cid } });
+      if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
       const totalCost = input.quantity * input.unitCost;
       return ctx.prisma.maintenanceOrderPart.create({ data: { ...input, totalCost } });
     }),
@@ -186,6 +216,13 @@ export const maintenanceRouter = createTRPCRouter({
       endTime: z.coerce.date().optional(), hours: z.number().min(0).default(0),
       hourlyRate: z.number().min(0).default(0), notes: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const cid = ctx.tenant.companyId!;
+      const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.orderId, companyId: cid } });
+      if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
+      if (input.employeeId) {
+        const emp = await ctx.prisma.employee.findFirst({ where: { id: input.employeeId, companyId: cid } });
+        if (!emp) throw new TRPCError({ code: "BAD_REQUEST", message: "Funcionário não encontrado" });
+      }
       const totalCost = Number(input.hours) * Number(input.hourlyRate);
       return ctx.prisma.maintenanceOrderLabor.create({
         data: {
@@ -207,6 +244,11 @@ export const maintenanceRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), isCompleted: z.boolean(), result: z.string().nullable().optional(),
       notes: z.string().nullable().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const cid = ctx.tenant.companyId!;
+      const cl = await ctx.prisma.maintenanceChecklist.findFirst({
+        where: { id: input.id, order: { companyId: cid } },
+      });
+      if (!cl) throw new TRPCError({ code: "FORBIDDEN", message: "Checklist não pertence a este tenant" });
       const { id, ...data } = input;
       return ctx.prisma.maintenanceChecklist.update({ where: { id },
         data: { ...data, completedAt: input.isCompleted ? new Date() : null, completedBy: input.isCompleted ? ctx.tenant.userId : null } });
@@ -214,7 +256,7 @@ export const maintenanceRouter = createTRPCRouter({
 
   // CÓDIGOS DE FALHA
   listFailureCodes: tenantProcedure
-    .input(z.object({ category: z.enum(["MECHANICAL","ELECTRICAL","ELECTRONIC","HYDRAULIC","PNEUMATIC","SOFTWARE","OTHER"]).optional() }).optional())
+    .input(z.object({ category: failCatZ.optional() }).optional())
     .query(async ({ ctx, input }) => {
       const cid = ctx.tenant.companyId!;
       const w: Record<string, unknown> = { companyId: cid, isActive: true };
@@ -224,7 +266,7 @@ export const maintenanceRouter = createTRPCRouter({
 
   createFailureCode: tenantProcedure
     .input(z.object({ code: z.string().min(1), name: z.string().min(1), description: z.string().optional(),
-      category: z.enum(["MECHANICAL","ELECTRICAL","ELECTRONIC","HYDRAULIC","PNEUMATIC","SOFTWARE","OTHER"]),
+      category: failCatZ,
       severity: z.number().min(1).max(5).default(3) }))
     .mutation(async ({ ctx, input }) => {
       const cid = ctx.tenant.companyId!;

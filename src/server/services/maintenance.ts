@@ -5,7 +5,8 @@
  * @see VIO-1078
  */
 
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient, MaintenanceFrequency, MaintenancePriority } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 // ==========================================================================
 // TYPES
@@ -63,7 +64,7 @@ export function calculatePreventiveRatio(preventiveCount: number, totalCount: nu
 
 export function getNextMaintenanceDate(
   lastDate: Date,
-  frequency: string,
+  frequency: MaintenanceFrequency | string,
   frequencyValue: number = 1,
 ): Date {
   const next = new Date(lastDate);
@@ -106,7 +107,7 @@ export function calculateDurationMinutes(start: Date, end: Date): number {
   return Math.max(0, Math.round(diffMs / 60000));
 }
 
-export function getPriorityWeight(priority: string): number {
+export function getPriorityWeight(priority: MaintenancePriority | string): number {
   const weights: Record<string, number> = {
     EMERGENCY: 1, URGENT: 2, HIGH: 3, NORMAL: 4, LOW: 5,
   };
@@ -128,17 +129,13 @@ export function generateChecklistFromPlan(checklist: ChecklistItem[] | null): Ar
 // SERVICE CLASS
 // ==========================================================================
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+type OrderWithRelations = Prisma.MaintenanceOrderGetPayload<{ include: { parts: true; labor: true } }>;
+
 export class MaintenanceService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  private get equipment() { return (this.prisma as any).maintenanceEquipment; }
-  private get plan() { return (this.prisma as any).maintenancePlan; }
-  private get order() { return (this.prisma as any).maintenanceOrder; }
-  private get checklist() { return (this.prisma as any).maintenanceChecklist; }
-
   async createEquipment(companyId: string, data: Record<string, unknown>) {
-    return this.equipment.create({ data: { companyId, ...data } });
+    return this.prisma.maintenanceEquipment.create({ data: { companyId, ...data } as Prisma.MaintenanceEquipmentUncheckedCreateInput });
   }
 
   async createPlan(companyId: string, data: Record<string, unknown>) {
@@ -147,75 +144,78 @@ export class MaintenanceService {
       (data.frequency as string) ?? "MONTHLY",
       (data.frequencyValue as number) ?? 1,
     );
-    return this.plan.create({ data: { companyId, nextDueDate, ...data } });
+    return this.prisma.maintenancePlan.create({ data: { companyId, nextDueDate, ...data } as Prisma.MaintenancePlanUncheckedCreateInput });
   }
 
   async generateOrdersFromPlans(companyId: string): Promise<number> {
     const now = new Date();
-    const duePlans = await this.plan.findMany({
+    const duePlans = await this.prisma.maintenancePlan.findMany({
       where: { companyId, isActive: true, nextDueDate: { lte: now } },
     });
 
-    let generated = 0;
+    const last = await this.prisma.maintenanceOrder.findFirst({
+      where: { companyId }, orderBy: { code: "desc" },
+    });
+    let nextCode = (last?.code ?? 0) + 1;
+
     for (const p of duePlans) {
-      const last = await this.order.findFirst({
-        where: { companyId }, orderBy: { code: "desc" },
-      });
-      const nextCode = ((last?.code as number) ?? 0) + 1 + generated;
-
-      const o = await this.order.create({
-        data: {
-          companyId, code: nextCode, equipmentId: p.equipmentId,
-          planId: p.id, type: p.type, status: "PLANNED", priority: "NORMAL",
-          title: `${p.name}`, estimatedDuration: p.estimatedDuration,
-          plannedStart: now,
-        },
-      });
-
-      const items = generateChecklistFromPlan(p.checklist as ChecklistItem[] | null);
-      for (const item of items) {
-        await this.checklist.create({
-          data: { orderId: o.id, ...item },
+      const code = nextCode++;
+      await this.prisma.$transaction(async (tx) => {
+        const o = await tx.maintenanceOrder.create({
+          data: {
+            companyId, code, equipmentId: p.equipmentId,
+            planId: p.id, type: p.type, status: "PLANNED", priority: "NORMAL",
+            title: `${p.name}`, estimatedDuration: p.estimatedDuration,
+            plannedStart: now,
+          },
         });
-      }
 
-      const nextDueDate = getNextMaintenanceDate(now, p.frequency, p.frequencyValue ?? 1);
-      await this.plan.update({
-        where: { id: p.id },
-        data: { lastExecutedAt: now, nextDueDate },
+        const items = generateChecklistFromPlan(p.checklist as ChecklistItem[] | null);
+        for (const item of items) {
+          await tx.maintenanceChecklist.create({
+            data: { orderId: o.id, ...item },
+          });
+        }
+
+        const nextDueDate = getNextMaintenanceDate(now, p.frequency, p.frequencyValue ?? 1);
+        await tx.maintenancePlan.update({
+          where: { id: p.id },
+          data: { lastExecutedAt: now, nextDueDate },
+        });
       });
-      generated++;
     }
-    return generated;
+    return duePlans.length;
   }
 
   async createOrder(companyId: string, data: Record<string, unknown>) {
-    const last = await this.order.findFirst({
-      where: { companyId }, orderBy: { code: "desc" },
-    });
-    const nextCode = ((last?.code as number) ?? 0) + 1;
-    return this.order.create({
-      data: { companyId, code: nextCode, status: "PLANNED", ...data },
+    return this.prisma.$transaction(async (tx) => {
+      const last = await tx.maintenanceOrder.findFirst({
+        where: { companyId }, orderBy: { code: "desc" },
+      });
+      const nextCode = (last?.code ?? 0) + 1;
+      return tx.maintenanceOrder.create({
+        data: { companyId, code: nextCode, status: "PLANNED", ...data } as Prisma.MaintenanceOrderUncheckedCreateInput,
+      });
     });
   }
 
   async startOrder(orderId: string) {
-    return this.order.update({
+    return this.prisma.maintenanceOrder.update({
       where: { id: orderId },
       data: { status: "IN_PROGRESS", actualStart: new Date() },
     });
   }
 
   async completeOrder(orderId: string, solution?: string, completedBy?: string) {
-    const o = await this.order.findUnique({ where: { id: orderId } });
+    const o = await this.prisma.maintenanceOrder.findUnique({ where: { id: orderId } });
     if (!o) throw new Error("Ordem não encontrada");
 
     const actualEnd = new Date();
     const actualDuration = o.actualStart
-      ? calculateDurationMinutes(new Date(o.actualStart as string), actualEnd)
+      ? calculateDurationMinutes(new Date(o.actualStart), actualEnd)
       : null;
 
-    return this.order.update({
+    return this.prisma.maintenanceOrder.update({
       where: { id: orderId },
       data: {
         status: "COMPLETED", actualEnd, actualDuration,
@@ -225,7 +225,7 @@ export class MaintenanceService {
   }
 
   async cancelOrder(orderId: string, reason: string, cancelledBy?: string) {
-    return this.order.update({
+    return this.prisma.maintenanceOrder.update({
       where: { id: orderId },
       data: {
         status: "CANCELLED", cancelReason: reason,
@@ -235,22 +235,22 @@ export class MaintenanceService {
   }
 
   async getEquipmentKPIs(companyId: string, equipmentId: string): Promise<MaintenanceKPIs> {
-    const equipment = await this.equipment.findFirst({
+    const equipment = await this.prisma.maintenanceEquipment.findFirst({
       where: { id: equipmentId, companyId },
     });
 
-    const orders = await this.order.findMany({
+    const orders: OrderWithRelations[] = await this.prisma.maintenanceOrder.findMany({
       where: { equipmentId, companyId },
       include: { parts: true, labor: true },
     });
 
-    const completed = orders.filter((o: any) => o.status === "COMPLETED");
-    const corrective = completed.filter((o: any) => o.type === "CORRECTIVE");
-    const preventive = completed.filter((o: any) => o.type === "PREVENTIVE");
-    const open = orders.filter((o: any) => !["COMPLETED", "CANCELLED"].includes(o.status));
+    const completed = orders.filter((o) => o.status === "COMPLETED");
+    const corrective = completed.filter((o) => o.type === "CORRECTIVE");
+    const preventive = completed.filter((o) => o.type === "PREVENTIVE");
+    const open = orders.filter((o) => !["COMPLETED", "CANCELLED"].includes(o.status));
 
     const totalRepairMinutes = corrective.reduce(
-      (sum: number, o: any) => sum + (o.actualDuration ?? 0), 0,
+      (sum, o) => sum + (o.actualDuration ?? 0), 0,
     );
 
     const operatingHours = Number(equipment?.operatingHours ?? 0);
@@ -262,11 +262,11 @@ export class MaintenanceService {
 
     let totalCost = 0;
     for (const o of completed) {
-      const partsCost = (o.parts as any[]).reduce(
-        (s: number, p: any) => s + Number(p.totalCost ?? 0), 0,
+      const partsCost = o.parts.reduce(
+        (s, p) => s + Number(p.totalCost ?? 0), 0,
       );
-      const laborCost = (o.labor as any[]).reduce(
-        (s: number, l: any) => s + Number(l.totalCost ?? 0), 0,
+      const laborCost = o.labor.reduce(
+        (s, l) => s + Number(l.totalCost ?? 0), 0,
       );
       totalCost += calculateMaintenanceCost(partsCost, laborCost);
     }
@@ -281,4 +281,3 @@ export class MaintenanceService {
     };
   }
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
