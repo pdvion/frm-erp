@@ -2,72 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
-
-// =============================================================================
-// TABELAS DE CÁLCULO 2024
-// =============================================================================
-
-// Tabela INSS 2024 (progressiva)
-function calculateINSS(salary: number): number {
-  if (salary <= 1412.0) return salary * 0.075;
-  if (salary <= 2666.68) return 105.9 + (salary - 1412.0) * 0.09;
-  if (salary <= 4000.03) return 218.82 + (salary - 2666.68) * 0.12;
-  if (salary <= 7786.02) return 378.82 + (salary - 4000.03) * 0.14;
-  return 908.85; // Teto
-}
-
-// Tabela IRRF 2024
-function calculateIRRF(baseCalculo: number, dependentes: number = 0): number {
-  // Dedução por dependente: R$ 189,59
-  const deducaoDependentes = dependentes * 189.59;
-  const base = baseCalculo - deducaoDependentes;
-
-  if (base <= 2259.2) return 0;
-  if (base <= 2826.65) return base * 0.075 - 169.44;
-  if (base <= 3751.05) return base * 0.15 - 381.44;
-  if (base <= 4664.68) return base * 0.225 - 662.77;
-  return base * 0.275 - 896.0;
-}
-
-// Calcular DSR (Descanso Semanal Remunerado)
-function calculateDSR(
-  horasExtras: number,
-  valorHoraExtra: number,
-  diasUteis: number,
-  domingosEFeriados: number
-): number {
-  if (diasUteis === 0) return 0;
-  return (horasExtras * valorHoraExtra * domingosEFeriados) / diasUteis;
-}
-
-// Calcular adicional noturno (20% sobre hora normal, entre 22h e 5h)
-function calculateNightShiftBonus(nightHours: number, hourlyRate: number): number {
-  return nightHours * hourlyRate * 0.2;
-}
-
-// Calcular hora reduzida noturna (52:30 = 0.875 hora)
-function calculateNightHoursReduction(nightHours: number): number {
-  return nightHours * (60 / 52.5 - 1);
-}
-
-// Calcular insalubridade
-function calculateInsalubrity(
-  baseSalary: number,
-  minimumWage: number,
-  degree: "LOW" | "MEDIUM" | "HIGH" | null
-): number {
-  if (!degree) return 0;
-  const percentages = { LOW: 0.1, MEDIUM: 0.2, HIGH: 0.4 };
-  return minimumWage * percentages[degree];
-}
-
-// Calcular periculosidade (30% sobre salário base)
-function calculateDangerousness(baseSalary: number, hasDangerousness: boolean): number {
-  return hasDangerousness ? baseSalary * 0.3 : 0;
-}
-
-// Salário mínimo 2024
-const MINIMUM_WAGE_2024 = 1412.0;
+import { PayrollService, calculateWorkingDays } from "../services/payroll";
 
 // =============================================================================
 // ROUTER
@@ -141,36 +76,27 @@ export const payrollRouter = createTRPCRouter({
       // Buscar dias úteis e feriados do mês
       const startOfMonth = new Date(payroll.referenceYear, payroll.referenceMonth - 1, 1);
       const endOfMonth = new Date(payroll.referenceYear, payroll.referenceMonth, 0);
-      const daysInMonth = endOfMonth.getDate();
 
-      // Calcular dias úteis e domingos/feriados
-      let diasUteis = 0;
-      let domingosEFeriados = 0;
-      for (let d = 1; d <= daysInMonth; d++) {
-        const date = new Date(payroll.referenceYear, payroll.referenceMonth - 1, d);
-        const dayOfWeek = date.getDay();
-        if (dayOfWeek === 0) {
-          domingosEFeriados++;
-        } else if (dayOfWeek !== 6) {
-          diasUteis++;
-        }
-      }
-
-      // Buscar feriados do mês
       const holidays = await ctx.prisma.holiday.findMany({
         where: {
           ...tenantFilter(ctx.companyId, true),
           date: { gte: startOfMonth, lte: endOfMonth },
         },
       });
-      domingosEFeriados += holidays.length;
+
+      const workingDays = calculateWorkingDays(
+        payroll.referenceYear,
+        payroll.referenceMonth,
+        holidays.length,
+      );
+
+      const payrollService = new PayrollService(ctx.prisma);
 
       // Processar cada funcionário
       await ctx.prisma.$transaction(async (tx) => {
         for (const item of payroll.items) {
           const employee = item.employee;
           const baseSalary = Number(item.baseSalary || employee.salary || 0);
-          const hourlyRate = Number(baseSalary) / 220; // 220 horas mensais padrão
 
           // Buscar timesheet do funcionário para o mês
           const timesheetDays = await tx.timesheetDay.findMany({
@@ -180,194 +106,39 @@ export const payrollRouter = createTRPCRouter({
             },
           });
 
-          // Calcular horas trabalhadas
-          const workedHours = timesheetDays.reduce((sum, day) => sum + (Number(day.workedHours) || 0), 0);
-          const overtimeHours50 = timesheetDays.reduce(
-            (sum, day) => sum + (Number(day.overtime50) || 0),
-            0
-          );
-          const overtimeHours100 = timesheetDays.reduce(
-            (sum, day) => sum + (Number(day.overtime100) || 0),
-            0
-          );
-          const nightHours = timesheetDays.reduce((sum, day) => sum + (Number(day.nightHours) || 0), 0);
-          const absenceDays = timesheetDays.filter((day) => day.status === "ABSENCE").length;
-
-          // Eventos a criar
-          const events: Array<{
-            code: string;
-            description: string;
-            type: "ALLOWANCE" | "DEDUCTION";
-            reference: number | null;
-            value: number;
-            isDeduction: boolean;
-          }> = [];
-
-          // 1. Salário Base
-          let grossSalary = baseSalary;
-          events.push({
-            code: "001",
-            description: "Salário Base",
-            type: "ALLOWANCE",
-            reference: null,
-            value: baseSalary,
-            isDeduction: false,
-          });
-
-          // 2. Horas Extras 50%
-          if (options.includeOvertime && overtimeHours50 > 0) {
-            const overtime50Value = overtimeHours50 * hourlyRate * 1.5;
-            grossSalary += overtime50Value;
-            events.push({
-              code: "002",
-              description: "Horas Extras 50%",
-              type: "ALLOWANCE",
-              reference: overtimeHours50,
-              value: overtime50Value,
-              isDeduction: false,
-            });
-          }
-
-          // 3. Horas Extras 100%
-          if (options.includeOvertime && overtimeHours100 > 0) {
-            const overtime100Value = overtimeHours100 * hourlyRate * 2;
-            grossSalary += overtime100Value;
-            events.push({
-              code: "003",
-              description: "Horas Extras 100%",
-              type: "ALLOWANCE",
-              reference: overtimeHours100,
-              value: overtime100Value,
-              isDeduction: false,
-            });
-          }
-
-          // 4. Adicional Noturno
-          if (options.includeNightShift && nightHours > 0) {
-            const nightBonus = calculateNightShiftBonus(nightHours, hourlyRate);
-            const nightHoursReduction = calculateNightHoursReduction(nightHours);
-            const nightReductionValue = nightHoursReduction * hourlyRate;
-            grossSalary += nightBonus + nightReductionValue;
-            events.push({
-              code: "004",
-              description: "Adicional Noturno",
-              type: "ALLOWANCE",
-              reference: nightHours,
-              value: nightBonus + nightReductionValue,
-              isDeduction: false,
-            });
-          }
-
-          // 5. DSR sobre Horas Extras
-          if (options.includeDSR && (overtimeHours50 > 0 || overtimeHours100 > 0)) {
-            const totalOvertimeValue =
-              overtimeHours50 * hourlyRate * 1.5 + overtimeHours100 * hourlyRate * 2;
-            const dsrValue = calculateDSR(
-              overtimeHours50 + overtimeHours100,
-              totalOvertimeValue / (overtimeHours50 + overtimeHours100 || 1),
-              diasUteis,
-              domingosEFeriados
-            );
-            if (dsrValue > 0) {
-              grossSalary += dsrValue;
-              events.push({
-                code: "005",
-                description: "DSR sobre Horas Extras",
-                type: "ALLOWANCE",
-                reference: null,
-                value: dsrValue,
-                isDeduction: false,
-              });
-            }
-          }
-
-          // 6. Insalubridade
-          if (options.includeInsalubrity && employee.insalubrityDegree) {
-            const insalubrityValue = calculateInsalubrity(
-              baseSalary,
-              MINIMUM_WAGE_2024,
-              employee.insalubrityDegree as "LOW" | "MEDIUM" | "HIGH"
-            );
-            grossSalary += insalubrityValue;
-            events.push({
-              code: "006",
-              description: `Insalubridade (${employee.insalubrityDegree})`,
-              type: "ALLOWANCE",
-              reference: null,
-              value: insalubrityValue,
-              isDeduction: false,
-            });
-          }
-
-          // 7. Periculosidade
-          if (options.includeDangerousness && employee.hasDangerousness) {
-            const dangerousnessValue = calculateDangerousness(baseSalary, true);
-            grossSalary += dangerousnessValue;
-            events.push({
-              code: "007",
-              description: "Periculosidade 30%",
-              type: "ALLOWANCE",
-              reference: 30,
-              value: dangerousnessValue,
-              isDeduction: false,
-            });
-          }
-
-          // 8. Faltas
-          if (absenceDays > 0) {
-            const absenceValue = (Number(baseSalary) / 30) * absenceDays;
-            grossSalary -= absenceValue;
-            events.push({
-              code: "101",
-              description: "Faltas",
-              type: "DEDUCTION",
-              reference: absenceDays,
-              value: absenceValue,
-              isDeduction: true,
-            });
-          }
-
-          // Calcular INSS
-          const inss = calculateINSS(grossSalary);
-          events.push({
-            code: "201",
-            description: "INSS",
-            type: "DEDUCTION",
-            reference: null,
-            value: inss,
-            isDeduction: true,
-          });
-
-          // Calcular IRRF
-          const dependentes = employee.dependentsCount || 0;
-          const irrf = calculateIRRF(Number(grossSalary) - inss, dependentes);
-          if (irrf > 0) {
-            events.push({
-              code: "202",
-              description: "IRRF",
-              type: "DEDUCTION",
-              reference: null,
-              value: irrf,
-              isDeduction: true,
-            });
-          }
-
-          // Calcular FGTS (não é desconto, mas provisão)
-          const fgts = Number(grossSalary) * 0.08;
+          // Agregar dados do timesheet
+          const timesheetData = {
+            workedHours: timesheetDays.reduce((sum, day) => sum + (Number(day.workedHours) || 0), 0),
+            overtimeHours50: timesheetDays.reduce((sum, day) => sum + (Number(day.overtime50) || 0), 0),
+            overtimeHours100: timesheetDays.reduce((sum, day) => sum + (Number(day.overtime100) || 0), 0),
+            nightHours: timesheetDays.reduce((sum, day) => sum + (Number(day.nightHours) || 0), 0),
+            absenceDays: timesheetDays.filter((day) => day.status === "ABSENCE").length,
+          };
 
           // Outros descontos existentes (VT, VR, etc)
           const existingDeductions = item.events
             .filter((e) => e.isDeduction && !["201", "202"].includes(e.code))
             .reduce((sum, e) => sum + Number(e.value), 0);
 
-          const totalItemDeductions = inss + irrf + existingDeductions;
-          const netSalary = Number(grossSalary) - totalItemDeductions;
+          // Delegar cálculo ao PayrollService
+          const result = payrollService.calculateEmployeePayroll(
+            {
+              baseSalary,
+              insalubrityDegree: employee.insalubrityDegree,
+              hasDangerousness: employee.hasDangerousness ?? false,
+              dependentsCount: employee.dependentsCount ?? 0,
+              existingDeductions,
+              timesheetData,
+            },
+            options,
+            workingDays,
+          );
 
           // Limpar eventos antigos e criar novos
           await tx.payrollEvent.deleteMany({ where: { payrollItemId: item.id } });
 
           await tx.payrollEvent.createMany({
-            data: events.map((e) => ({
+            data: result.events.map((e) => ({
               payrollItemId: item.id,
               ...e,
             })),
@@ -377,24 +148,24 @@ export const payrollRouter = createTRPCRouter({
           await tx.payrollItem.update({
             where: { id: item.id },
             data: {
-              workedDays: daysInMonth - absenceDays,
-              workedHours,
-              overtimeHours: overtimeHours50 + overtimeHours100,
-              nightHours,
-              absenceDays,
-              grossSalary,
-              inss,
-              irrf,
-              fgts,
-              totalDeductions: totalItemDeductions,
-              netSalary,
+              workedDays: result.workedDays,
+              workedHours: result.workedHours,
+              overtimeHours: result.overtimeHours,
+              nightHours: result.nightHours,
+              absenceDays: result.absenceDays,
+              grossSalary: result.grossSalary,
+              inss: result.inss,
+              irrf: result.irrf,
+              fgts: result.fgts,
+              totalDeductions: result.totalDeductions,
+              netSalary: result.netSalary,
             },
           });
 
-          totalGross += grossSalary;
-          totalNet += netSalary;
-          totalDeductions += totalItemDeductions;
-          totalFGTS += fgts;
+          totalGross += result.grossSalary;
+          totalNet += result.netSalary;
+          totalDeductions += result.totalDeductions;
+          totalFGTS += result.fgts;
         }
 
         // Atualizar totais da folha
@@ -523,28 +294,8 @@ export const payrollRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Folha não encontrada" });
       }
 
-      const totals = payroll.items.reduce(
-        (acc, item) => ({
-          inss: Number(acc.inss) + Number(item.inss),
-          irrf: Number(acc.irrf) + Number(item.irrf),
-          fgts: Number(acc.fgts) + Number(item.fgts),
-          inssPatronal: acc.inssPatronal + Number(item.grossSalary) * 0.2, // 20% patronal
-          rat: acc.rat + Number(item.grossSalary) * 0.03, // RAT 3% (média)
-          terceiros: acc.terceiros + Number(item.grossSalary) * 0.058, // Sistema S 5.8%
-          provisaoFerias: acc.provisaoFerias + Number(item.grossSalary) / 12 + Number(item.grossSalary) / 12 / 3,
-          provisao13: acc.provisao13 + Number(item.grossSalary) / 12,
-        }),
-        {
-          inss: 0,
-          irrf: 0,
-          fgts: 0,
-          inssPatronal: 0,
-          rat: 0,
-          terceiros: 0,
-          provisaoFerias: 0,
-          provisao13: 0,
-        }
-      );
+      const payrollService = new PayrollService(ctx.prisma);
+      const charges = payrollService.calculateChargesSummary(payroll.items);
 
       return {
         period: { month: payroll.referenceMonth, year: payroll.referenceYear },
@@ -552,28 +303,21 @@ export const payrollRouter = createTRPCRouter({
         grossTotal: payroll.totalGross,
         netTotal: payroll.totalNet,
         charges: {
-          inssEmployee: totals.inss,
-          irrfEmployee: totals.irrf,
-          fgts: totals.fgts,
-          inssPatronal: totals.inssPatronal,
-          rat: totals.rat,
-          terceiros: totals.terceiros,
-          totalEncargos:
-            totals.fgts + totals.inssPatronal + totals.rat + totals.terceiros,
+          inssEmployee: charges.inssEmployee,
+          irrfEmployee: charges.irrfEmployee,
+          fgts: charges.fgts,
+          inssPatronal: charges.inssPatronal,
+          rat: charges.rat,
+          terceiros: charges.terceiros,
+          totalEncargos: charges.totalEncargos,
         },
         provisions: {
-          ferias: totals.provisaoFerias,
-          thirteenth: totals.provisao13,
-          total: totals.provisaoFerias + totals.provisao13,
+          ferias: charges.provisaoFerias,
+          thirteenth: charges.provisao13,
+          total: charges.provisaoTotal,
         },
         totalCost:
-          Number(payroll.totalGross) +
-          totals.fgts +
-          totals.inssPatronal +
-          totals.rat +
-          totals.terceiros +
-          totals.provisaoFerias +
-          totals.provisao13,
+          Number(payroll.totalGross) + charges.totalEncargos + charges.provisaoTotal,
       };
     }),
 

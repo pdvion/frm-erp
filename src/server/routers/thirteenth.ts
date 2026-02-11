@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { PayrollService } from "../services/payroll";
 
 export const thirteenthRouter = createTRPCRouter({
   // Listar 13º salário
@@ -81,15 +82,12 @@ export const thirteenthRouter = createTRPCRouter({
 
         if (existing) continue;
 
-        // Calcular meses trabalhados no ano
-        const hireDate = new Date(employee.hireDate);
-        const startOfYear = new Date(input.year, 0, 1);
-        const monthsWorked = hireDate > startOfYear
-          ? 12 - hireDate.getMonth()
-          : 12;
-
-        // 1ª parcela = 50% do salário proporcional (sem descontos)
-        const grossValue = (Number(employee.salary) / 12) * monthsWorked * 0.5;
+        const payrollService = new PayrollService(ctx.prisma);
+        const calc = payrollService.calculateThirteenthFirstInstallment({
+          salary: employee.salary,
+          hireDate: new Date(employee.hireDate),
+          year: input.year,
+        });
 
         const thirteenth = await ctx.prisma.thirteenthSalary.create({
           data: {
@@ -98,10 +96,10 @@ export const thirteenthRouter = createTRPCRouter({
             year: input.year,
             type: "FIRST_INSTALLMENT",
             status: "CALCULATED",
-            monthsWorked,
+            monthsWorked: calc.monthsWorked,
             baseSalary: employee.salary,
-            grossValue,
-            netValue: grossValue, // 1ª parcela não tem descontos
+            grossValue: calc.grossValue,
+            netValue: calc.netValue,
             createdBy: ctx.tenant.userId,
           },
         });
@@ -150,37 +148,13 @@ export const thirteenthRouter = createTRPCRouter({
           },
         });
 
-        // Calcular meses trabalhados no ano
-        const hireDate = new Date(employee.hireDate);
-        const startOfYear = new Date(input.year, 0, 1);
-        const monthsWorked = hireDate > startOfYear
-          ? 12 - hireDate.getMonth()
-          : 12;
-
-        // Total do 13º
-        const totalThirteenth = (Number(employee.salary) / 12) * monthsWorked;
-        
-        // 2ª parcela = Total - 1ª parcela
-        const firstValue = firstInstallment?.grossValue || 0;
-        const grossValue = totalThirteenth - Number(firstValue);
-
-        // Calcular INSS sobre o total
-        const inssDeduction = Math.min(totalThirteenth * 0.14, 908.85);
-
-        // Calcular IRRF sobre o total
-        const baseIrrf = totalThirteenth - inssDeduction;
-        let irrfDeduction = 0;
-        if (baseIrrf > 4664.68) {
-          irrfDeduction = baseIrrf * 0.275 - 896.00;
-        } else if (baseIrrf > 3751.05) {
-          irrfDeduction = baseIrrf * 0.225 - 662.77;
-        } else if (baseIrrf > 2826.65) {
-          irrfDeduction = baseIrrf * 0.15 - 381.44;
-        } else if (baseIrrf > 2259.20) {
-          irrfDeduction = baseIrrf * 0.075 - 169.44;
-        }
-
-        const netValue = grossValue - inssDeduction - irrfDeduction;
+        const payrollService = new PayrollService(ctx.prisma);
+        const calc = payrollService.calculateThirteenthSecondInstallment({
+          salary: employee.salary,
+          hireDate: new Date(employee.hireDate),
+          year: input.year,
+          firstInstallmentGross: Number(firstInstallment?.grossValue || 0),
+        });
 
         const thirteenth = await ctx.prisma.thirteenthSalary.create({
           data: {
@@ -189,12 +163,12 @@ export const thirteenthRouter = createTRPCRouter({
             year: input.year,
             type: "SECOND_INSTALLMENT",
             status: "CALCULATED",
-            monthsWorked,
+            monthsWorked: calc.monthsWorked,
             baseSalary: employee.salary,
-            grossValue,
-            inssDeduction,
-            irrfDeduction,
-            netValue,
+            grossValue: calc.grossValue,
+            inssDeduction: calc.inssDeduction,
+            irrfDeduction: calc.irrfDeduction,
+            netValue: calc.netValue,
             createdBy: ctx.tenant.userId,
           },
         });

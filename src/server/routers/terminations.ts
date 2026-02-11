@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { PayrollService, calculateNoticePeriodDays } from "../services/payroll";
 
 export const terminationsRouter = createTRPCRouter({
   // Listar rescisões
@@ -83,10 +84,9 @@ export const terminationsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Funcionário não encontrado" });
       }
 
-      // Calcular dias de aviso prévio (3 dias por ano trabalhado, mín 30, máx 90)
+      // Calcular dias de aviso prévio
       const hireDate = new Date(employee.hireDate);
-      const yearsWorked = Math.floor((input.terminationDate.getTime() - hireDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-      const noticePeriodDays = Math.min(90, Math.max(30, 30 + (yearsWorked * 3)));
+      const noticePeriodDays = calculateNoticePeriodDays(hireDate, input.terminationDate);
 
       return ctx.prisma.termination.create({
         data: {
@@ -121,99 +121,36 @@ export const terminationsRouter = createTRPCRouter({
 
       if (!termination) throw new TRPCError({ code: "NOT_FOUND", message: "Rescisão não encontrada ou sem permissão" });
 
-      const { employee, type, terminationDate, noticePeriodIndemnity } = termination;
-      const baseSalaryNum = Number(termination.baseSalary || 0);
-      const noticePeriodDaysNum = Number(termination.noticePeriodDays || 30);
-      const hireDate = new Date(employee.hireDate);
-      const dailySalary = baseSalaryNum / 30;
-
-      // Saldo de salário (dias trabalhados no mês)
-      const dayOfMonth = terminationDate.getDate();
-      const salaryBalance = dailySalary * dayOfMonth;
-
-      // Aviso prévio indenizado
-      let noticePeriodValue = 0;
-      if (noticePeriodIndemnity && type !== "RESIGNATION" && type !== "DISMISSAL_WITH_CAUSE") {
-        noticePeriodValue = dailySalary * noticePeriodDaysNum;
-      }
-
-      // Férias vencidas (período aquisitivo completo)
-      const monthsSinceHire = Math.floor((terminationDate.getTime() - hireDate.getTime()) / (30 * 24 * 60 * 60 * 1000));
-      const completedPeriods = Math.floor(monthsSinceHire / 12);
-      const vacationBalanceCalc = completedPeriods > 0 ? baseSalaryNum : 0;
-
-      // Férias proporcionais (meses do período aquisitivo atual)
-      const monthsInCurrentPeriod = monthsSinceHire % 12;
-      const vacationProportional = (baseSalaryNum / 12) * monthsInCurrentPeriod;
-
-      // 1/3 de férias
-      const vacationOneThird = (vacationBalanceCalc + vacationProportional) / 3;
-
-      // 13º proporcional
-      const monthsInYear = terminationDate.getMonth() + 1;
-      let thirteenthProportional = 0;
-      if (type !== "DISMISSAL_WITH_CAUSE") {
-        thirteenthProportional = (baseSalaryNum / 12) * monthsInYear;
-      }
-
-      // FGTS (8% do salário por mês)
-      const fgtsBalance = baseSalaryNum * 0.08 * monthsSinceHire;
-
-      // Multa FGTS
-      let fgtsFine = 0;
-      if (type === "DISMISSAL_NO_CAUSE") {
-        fgtsFine = fgtsBalance * 0.40; // 40%
-      } else if (type === "MUTUAL_AGREEMENT") {
-        fgtsFine = fgtsBalance * 0.20; // 20%
-      }
-
-      // Total bruto
-      const totalGross = salaryBalance + noticePeriodValue + vacationBalanceCalc + 
-        vacationProportional + vacationOneThird + thirteenthProportional + fgtsFine;
-
-      // Calcular INSS
-      const baseInss = salaryBalance + noticePeriodValue;
-      const inssDeduction = Math.min(baseInss * 0.14, 908.85);
-
-      // Calcular IRRF
-      const baseIrrf = baseInss - inssDeduction;
-      let irrfDeduction = 0;
-      if (baseIrrf > 4664.68) {
-        irrfDeduction = baseIrrf * 0.275 - 896.00;
-      } else if (baseIrrf > 3751.05) {
-        irrfDeduction = baseIrrf * 0.225 - 662.77;
-      } else if (baseIrrf > 2826.65) {
-        irrfDeduction = baseIrrf * 0.15 - 381.44;
-      } else if (baseIrrf > 2259.20) {
-        irrfDeduction = baseIrrf * 0.075 - 169.44;
-      }
-
-      const totalDeductions = inssDeduction + irrfDeduction;
-      const totalNet = totalGross - totalDeductions;
-
-      // Elegibilidade para seguro desemprego
-      const eligibleForUnemployment = type === "DISMISSAL_NO_CAUSE" && monthsSinceHire >= 12;
-      const unemploymentGuides = eligibleForUnemployment ? Math.min(5, Math.floor(monthsSinceHire / 6)) : 0;
+      // Delegar cálculo ao PayrollService
+      const payrollService = new PayrollService(ctx.prisma);
+      const calc = payrollService.calculateTermination({
+        baseSalary: termination.baseSalary || 0,
+        hireDate: new Date(termination.employee.hireDate),
+        terminationDate: termination.terminationDate,
+        type: termination.type,
+        noticePeriodDays: Number(termination.noticePeriodDays || 30),
+        noticePeriodIndemnity: termination.noticePeriodIndemnity ?? false,
+      });
 
       return ctx.prisma.termination.update({
         where: { id: input.id },
         data: {
           status: "CALCULATED",
-          salaryBalance,
-          noticePeriodValue,
-          vacationBalance: vacationBalanceCalc,
-          vacationProportional,
-          vacationOneThird,
-          thirteenthProportional,
-          fgtsBalance,
-          fgtsFine,
-          totalGross,
-          inssDeduction,
-          irrfDeduction,
-          totalDeductions,
-          totalNet,
-          eligibleForUnemployment,
-          unemploymentGuides,
+          salaryBalance: calc.salaryBalance,
+          noticePeriodValue: calc.noticePeriodValue,
+          vacationBalance: calc.vacationBalance,
+          vacationProportional: calc.vacationProportional,
+          vacationOneThird: calc.vacationOneThird,
+          thirteenthProportional: calc.thirteenthProportional,
+          fgtsBalance: calc.fgtsBalance,
+          fgtsFine: calc.fgtsFine,
+          totalGross: calc.totalGross,
+          inssDeduction: calc.inssDeduction,
+          irrfDeduction: calc.irrfDeduction,
+          totalDeductions: calc.totalDeductions,
+          totalNet: calc.totalNet,
+          eligibleForUnemployment: calc.eligibleForUnemployment,
+          unemploymentGuides: calc.unemploymentGuides,
         },
       });
     }),
