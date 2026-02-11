@@ -217,7 +217,7 @@ export class TaxCalculationService {
         ...(options.invoiceIds ? { id: { in: options.invoiceIds } } : {}),
         xmlContent: { not: null },
       },
-      take: options.limit || 100,
+      take: options.limit ?? 100,
       select: { xmlContent: true },
     });
 
