@@ -232,57 +232,59 @@ export class AssetService {
     const annualRate = calculateAnnualRate(input.usefulLifeMonths);
     const residualValue = input.residualValue ?? 0;
 
-    // Gerar próximo código
-    const lastAsset = await this.prisma.fixedAsset.findFirst({
-      where: { companyId: input.companyId },
-      orderBy: { code: "desc" },
-      select: { code: true },
-    });
-    const nextCode = (lastAsset?.code ?? 0) + 1;
+    return this.prisma.$transaction(async (tx) => {
+      // Gerar próximo código
+      const lastAsset = await tx.fixedAsset.findFirst({
+        where: { companyId: input.companyId },
+        orderBy: { code: "desc" },
+        select: { code: true },
+      });
+      const nextCode = (lastAsset?.code ?? 0) + 1;
 
-    const asset = await this.prisma.fixedAsset.create({
-      data: {
-        companyId: input.companyId,
-        code: nextCode,
-        name: input.name,
-        description: input.description ?? null,
-        category: input.category,
-        status: "ACTIVE",
-        acquisitionDate: input.acquisitionDate,
-        acquisitionValue: input.acquisitionValue,
-        residualValue,
-        usefulLifeMonths: input.usefulLifeMonths,
-        depreciationMethod: input.depreciationMethod ?? "STRAIGHT_LINE",
-        depreciationRate: annualRate,
-        accumulatedDepr: 0,
-        netBookValue: input.acquisitionValue,
-        location: input.location ?? null,
-        responsibleId: input.responsibleId ?? null,
-        costCenterId: input.costCenterId ?? null,
-        supplier: input.supplier ?? null,
-        invoiceNumber: input.invoiceNumber ?? null,
-        serialNumber: input.serialNumber ?? null,
-        warrantyExpiry: input.warrantyExpiry ?? null,
-        notes: input.notes ?? null,
-        createdBy: input.createdBy ?? null,
-      },
-    });
+      const asset = await tx.fixedAsset.create({
+        data: {
+          companyId: input.companyId,
+          code: nextCode,
+          name: input.name,
+          description: input.description ?? null,
+          category: input.category,
+          status: "ACTIVE",
+          acquisitionDate: input.acquisitionDate,
+          acquisitionValue: input.acquisitionValue,
+          residualValue,
+          usefulLifeMonths: input.usefulLifeMonths,
+          depreciationMethod: input.depreciationMethod ?? "STRAIGHT_LINE",
+          depreciationRate: annualRate,
+          accumulatedDepr: 0,
+          netBookValue: input.acquisitionValue,
+          location: input.location ?? null,
+          responsibleId: input.responsibleId ?? null,
+          costCenterId: input.costCenterId ?? null,
+          supplier: input.supplier ?? null,
+          invoiceNumber: input.invoiceNumber ?? null,
+          serialNumber: input.serialNumber ?? null,
+          warrantyExpiry: input.warrantyExpiry ?? null,
+          notes: input.notes ?? null,
+          createdBy: input.createdBy ?? null,
+        },
+      });
 
-    // Registrar movimento de aquisição
-    await this.prisma.assetMovement.create({
-      data: {
-        assetId: asset.id,
-        type: "ACQUISITION",
-        date: input.acquisitionDate,
-        value: input.acquisitionValue,
-        description: `Aquisição: ${input.name}`,
-        toLocation: input.location ?? null,
-        toCostCenterId: input.costCenterId ?? null,
-        createdBy: input.createdBy ?? null,
-      },
-    });
+      // Registrar movimento de aquisição
+      await tx.assetMovement.create({
+        data: {
+          assetId: asset.id,
+          type: "ACQUISITION",
+          date: input.acquisitionDate,
+          value: input.acquisitionValue,
+          description: `Aquisição: ${input.name}`,
+          toLocation: input.location ?? null,
+          toCostCenterId: input.costCenterId ?? null,
+          createdBy: input.createdBy ?? null,
+        },
+      });
 
-    return asset;
+      return asset;
+    });
   }
 
   // ========================================================================
@@ -446,40 +448,42 @@ export class AssetService {
    * Realiza baixa de um ativo (venda, descarte, perda)
    */
   async disposeAsset(input: DisposalInput) {
-    const asset = await this.prisma.fixedAsset.findUnique({
-      where: { id: input.assetId },
+    return this.prisma.$transaction(async (tx) => {
+      const asset = await tx.fixedAsset.findUnique({
+        where: { id: input.assetId },
+      });
+
+      if (!asset) throw new Error("Ativo não encontrado");
+      if (asset.status === "DISPOSED") throw new Error("Ativo já foi baixado");
+
+      const netBookValue = Number(asset.netBookValue);
+      const { gainLoss, type } = calculateDisposalGainLoss(netBookValue, input.disposalValue);
+
+      // Atualizar ativo
+      const updatedAsset = await tx.fixedAsset.update({
+        where: { id: input.assetId },
+        data: {
+          status: "DISPOSED",
+          disposalDate: input.disposalDate,
+          disposalValue: input.disposalValue,
+          disposalReason: input.disposalReason,
+        },
+      });
+
+      // Registrar movimento
+      await tx.assetMovement.create({
+        data: {
+          assetId: input.assetId,
+          type: "DISPOSAL",
+          date: input.disposalDate,
+          value: input.disposalValue,
+          description: `Baixa: ${input.disposalReason} (${type === "GAIN" ? "Ganho" : type === "LOSS" ? "Perda" : "Neutro"}: R$ ${Math.abs(gainLoss).toFixed(2)})`,
+          createdBy: input.userId ?? null,
+        },
+      });
+
+      return { asset: updatedAsset, gainLoss, type };
     });
-
-    if (!asset) throw new Error("Ativo não encontrado");
-    if (asset.status === "DISPOSED") throw new Error("Ativo já foi baixado");
-
-    const netBookValue = Number(asset.netBookValue);
-    const { gainLoss, type } = calculateDisposalGainLoss(netBookValue, input.disposalValue);
-
-    // Atualizar ativo
-    await this.prisma.fixedAsset.update({
-      where: { id: input.assetId },
-      data: {
-        status: "DISPOSED",
-        disposalDate: input.disposalDate,
-        disposalValue: input.disposalValue,
-        disposalReason: input.disposalReason,
-      },
-    });
-
-    // Registrar movimento
-    await this.prisma.assetMovement.create({
-      data: {
-        assetId: input.assetId,
-        type: "DISPOSAL",
-        date: input.disposalDate,
-        value: input.disposalValue,
-        description: `Baixa: ${input.disposalReason} (${type === "GAIN" ? "Ganho" : type === "LOSS" ? "Perda" : "Neutro"}: R$ ${Math.abs(gainLoss).toFixed(2)})`,
-        createdBy: input.userId ?? null,
-      },
-    });
-
-    return { asset, gainLoss, type };
   }
 
   // ========================================================================
@@ -490,44 +494,46 @@ export class AssetService {
    * Transfere ativo entre locais/centros de custo
    */
   async transferAsset(input: TransferInput) {
-    const asset = await this.prisma.fixedAsset.findUnique({
-      where: { id: input.assetId },
+    return this.prisma.$transaction(async (tx) => {
+      const asset = await tx.fixedAsset.findUnique({
+        where: { id: input.assetId },
+      });
+
+      if (!asset) throw new Error("Ativo não encontrado");
+      if (asset.status !== "ACTIVE" && asset.status !== "FULLY_DEPRECIATED") {
+        throw new Error("Apenas ativos ativos ou totalmente depreciados podem ser transferidos");
+      }
+
+      const fromLocation = asset.location;
+      const fromCostCenterId = asset.costCenterId;
+
+      // Atualizar ativo
+      const updatedAsset = await tx.fixedAsset.update({
+        where: { id: input.assetId },
+        data: {
+          location: input.toLocation ?? asset.location,
+          costCenterId: input.toCostCenterId ?? asset.costCenterId,
+        },
+      });
+
+      // Registrar movimento
+      await tx.assetMovement.create({
+        data: {
+          assetId: input.assetId,
+          type: "TRANSFER",
+          date: input.date,
+          value: Number(asset.netBookValue),
+          description: input.description,
+          fromLocation,
+          toLocation: input.toLocation ?? null,
+          fromCostCenterId,
+          toCostCenterId: input.toCostCenterId ?? null,
+          createdBy: input.userId ?? null,
+        },
+      });
+
+      return updatedAsset;
     });
-
-    if (!asset) throw new Error("Ativo não encontrado");
-    if (asset.status !== "ACTIVE" && asset.status !== "FULLY_DEPRECIATED") {
-      throw new Error("Apenas ativos ativos ou totalmente depreciados podem ser transferidos");
-    }
-
-    const fromLocation = asset.location;
-    const fromCostCenterId = asset.costCenterId;
-
-    // Atualizar ativo
-    await this.prisma.fixedAsset.update({
-      where: { id: input.assetId },
-      data: {
-        location: input.toLocation ?? asset.location,
-        costCenterId: input.toCostCenterId ?? asset.costCenterId,
-      },
-    });
-
-    // Registrar movimento
-    await this.prisma.assetMovement.create({
-      data: {
-        assetId: input.assetId,
-        type: "TRANSFER",
-        date: input.date,
-        value: Number(asset.netBookValue),
-        description: input.description,
-        fromLocation,
-        toLocation: input.toLocation ?? null,
-        fromCostCenterId,
-        toCostCenterId: input.toCostCenterId ?? null,
-        createdBy: input.userId ?? null,
-      },
-    });
-
-    return asset;
   }
 
   // ========================================================================
