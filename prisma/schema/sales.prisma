@@ -53,6 +53,9 @@ model Customer {
   leads                   Lead[]
   salesOrders             SalesOrder[]
   salesQuotes             SalesQuote[]
+  contacts                Contact[]
+  opportunities           Opportunity[]
+  communicationLogs       CommunicationLog[]
 
   @@unique([code, companyId])
   @@index([cnpj])
@@ -263,4 +266,143 @@ model SalesOrderItem {
   @@index([materialId], map: "idx_sales_order_items_material")
   @@index([productionOrderId], map: "idx_sales_order_items_production")
   @@map("sales_order_items")
+}
+
+model SalesPipeline {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String        @map("company_id") @db.Uuid
+  name          String        @db.VarChar(100)
+  description   String?
+  isDefault     Boolean       @default(false) @map("is_default")
+  isActive      Boolean       @default(true) @map("is_active")
+  stages        Json          @default("[]") // Array de { order, name, probability }
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("sales_pipelines")
+}
+
+model Contact {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String    @map("company_id") @db.Uuid
+  customerId    String    @map("customer_id") @db.Uuid
+  name          String    @db.VarChar(255)
+  role          String?   @db.VarChar(100) // Cargo
+  department    String?   @db.VarChar(100)
+  email         String?   @db.VarChar(255)
+  phone         String?   @db.VarChar(30)
+  mobile        String?   @db.VarChar(30)
+  isPrimary     Boolean   @default(false) @map("is_primary")
+  isActive      Boolean   @default(true) @map("is_active")
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer      Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([customerId])
+  @@map("contacts")
+}
+
+model Opportunity {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String          @map("company_id") @db.Uuid
+  code            Int
+  title           String          @db.VarChar(255)
+  customerId      String          @map("customer_id") @db.Uuid
+  pipelineId      String          @map("pipeline_id") @db.Uuid
+  stage           String          @db.VarChar(50) // Nome do estágio no pipeline
+  value           Decimal         @db.Decimal(15, 2)
+  probability     Int             @default(50) // 0-100
+  expectedCloseDate DateTime?     @map("expected_close_date") @db.Date
+  status          String          @default("OPEN") @db.VarChar(20) // OPEN, WON, LOST
+  wonAt           DateTime?       @map("won_at")
+  lostAt          DateTime?       @map("lost_at")
+  lostReason      String?         @map("lost_reason")
+  leadId          String?         @map("lead_id") @db.Uuid
+  assignedTo      String?         @map("assigned_to") @db.Uuid
+  notes           String?
+  createdBy       String?         @map("created_by") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at")
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer        Customer        @relation(fields: [customerId], references: [id], onUpdate: NoAction)
+  pipeline        SalesPipeline   @relation(fields: [pipelineId], references: [id], onUpdate: NoAction)
+  assignedUser    User?           @relation("OpportunityAssigned", fields: [assignedTo], references: [id], onUpdate: NoAction)
+  communicationLogs CommunicationLog[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([companyId, status])
+  @@index([customerId])
+  @@index([pipelineId])
+  @@index([assignedTo])
+  @@map("opportunities")
+}
+
+model CommunicationLog {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid
+  customerId      String    @map("customer_id") @db.Uuid
+  opportunityId   String?   @map("opportunity_id") @db.Uuid
+  channel         String    @db.VarChar(20) // EMAIL, PHONE, WHATSAPP, MEETING, VISIT
+  direction       String    @db.VarChar(10) // INBOUND, OUTBOUND
+  subject         String?   @db.VarChar(255)
+  content         String?
+  contactName     String?   @map("contact_name") @db.VarChar(255)
+  scheduledAt     DateTime? @map("scheduled_at")
+  occurredAt      DateTime  @default(now()) @map("occurred_at")
+  durationMinutes Int?      @map("duration_minutes")
+  createdBy       String?   @map("created_by") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer        Customer  @relation(fields: [customerId], references: [id], onUpdate: NoAction)
+  opportunity     Opportunity? @relation(fields: [opportunityId], references: [id], onUpdate: NoAction)
+
+  @@index([companyId])
+  @@index([customerId])
+  @@index([opportunityId])
+  @@index([companyId, occurredAt])
+  @@map("communication_logs")
+}
+
+model LeadScoringRule {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  field       String   @db.VarChar(50) // Campo do Lead: source, estimatedValue, etc.
+  operator    String   @db.VarChar(20) // EQUALS, GREATER_THAN, LESS_THAN, CONTAINS, IN
+  value       String   // Valor para comparação (JSON-encoded se necessário)
+  score       Int      // Pontos a adicionar/subtrair
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@map("lead_scoring_rules")
+}
+
+model SalesTarget {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  userId      String?  @map("user_id") @db.Uuid // null = meta da empresa
+  year        Int
+  month       Int      // 1-12
+  targetValue Decimal  @map("target_value") @db.Decimal(15, 2)
+  actualValue Decimal  @default(0) @map("actual_value") @db.Decimal(15, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        User?    @relation("SalesTargetUser", fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@unique([companyId, userId, year, month])
+  @@index([companyId])
+  @@index([userId])
+  @@map("sales_targets")
 }

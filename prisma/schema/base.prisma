@@ -111,6 +111,12 @@ model Company {
   chartOfAccounts               ChartOfAccounts[]
   accountingEntries             AccountingEntry[]
   fixedAssets                   FixedAsset[]
+  salesPipelines                SalesPipeline[]
+  contacts                      Contact[]
+  opportunities                 Opportunity[]
+  communicationLogs             CommunicationLog[]
+  leadScoringRules              LeadScoringRule[]
+  salesTargets                  SalesTarget[]
 
   @@map("companies")
 }
@@ -202,6 +208,8 @@ model User {
   workflowStepEscalations                       WorkflowStep[]              @relation("StepEscalation")
   accountingEntriesPosted                       AccountingEntry[]           @relation("AccountingEntryPoster")
   accountingEntriesCreated                      AccountingEntry[]           @relation("AccountingEntryCreator")
+  assignedOpportunities                         Opportunity[]               @relation("OpportunityAssigned")
+  salesTargets                                  SalesTarget[]               @relation("SalesTargetUser")
 
   @@index([companyId])
   @@map("users")
