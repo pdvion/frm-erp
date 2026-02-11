@@ -427,7 +427,16 @@ export const crmRouter = createTRPCRouter({
         id: z.string().uuid(),
         name: z.string().min(1).max(100).optional(),
         field: z.string().min(1).max(50).optional(),
-        operator: z.string().optional(),
+        operator: z.enum([
+          "EQUALS",
+          "NOT_EQUALS",
+          "CONTAINS",
+          "GREATER_THAN",
+          "LESS_THAN",
+          "GREATER_EQUAL",
+          "LESS_EQUAL",
+          "IN",
+        ]).optional(),
         value: z.string().optional(),
         score: z.number().int().min(-100).max(100).optional(),
         isActive: z.boolean().optional(),
@@ -522,8 +531,8 @@ export const crmRouter = createTRPCRouter({
   getForecast: tenantProcedure
     .input(
       z.object({
-        startDate: z.string(),
-        endDate: z.string(),
+        startDate: z.coerce.date(),
+        endDate: z.coerce.date(),
         pipelineId: z.string().uuid().optional(),
       }),
     )
@@ -532,8 +541,8 @@ export const crmRouter = createTRPCRouter({
       const svc = new CrmService(ctx.prisma);
       return svc.getForecast(
         companyId,
-        new Date(input.startDate),
-        new Date(input.endDate),
+        input.startDate,
+        input.endDate,
         input.pipelineId,
       );
     }),

@@ -165,6 +165,7 @@ function createMockPrisma() {
     salesPipeline: {
       count: vi.fn(),
       create: vi.fn(),
+      findFirst: vi.fn(),
       findUnique: vi.fn(),
       findMany: vi.fn(),
     },
@@ -273,7 +274,7 @@ describe("CrmService", () => {
   describe("createOpportunity", () => {
     it("gera código sequencial e usa probabilidade do estágio", async () => {
       (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({ code: 5 });
-      (prisma.salesPipeline.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.salesPipeline.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         stages: [
           { order: 1, name: "Prospecção", probability: 10 },
           { order: 2, name: "Qualificação", probability: 25 },
@@ -306,7 +307,7 @@ describe("CrmService", () => {
 
     it("usa probabilidade explícita quando fornecida", async () => {
       (prisma.opportunity.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-      (prisma.salesPipeline.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.salesPipeline.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
         stages: [{ order: 1, name: "Prospecção", probability: 10 }],
       });
       (prisma.opportunity.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "opp-2" });

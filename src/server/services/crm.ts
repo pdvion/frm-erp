@@ -249,11 +249,12 @@ export class CrmService {
       });
       const nextCode = (lastOpp?.code ?? 0) + 1;
 
-      // Buscar probabilidade do estágio no pipeline
-      const pipeline = await tx.salesPipeline.findUnique({
-        where: { id: input.pipelineId },
+      // Buscar probabilidade do estágio no pipeline (com filtro de tenant)
+      const pipeline = await tx.salesPipeline.findFirst({
+        where: { id: input.pipelineId, companyId: input.companyId },
         select: { stages: true },
       });
+      if (!pipeline) throw new Error("Pipeline não encontrado");
 
       let probability = input.probability ?? 50;
       if (pipeline?.stages) {
