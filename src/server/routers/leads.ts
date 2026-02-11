@@ -113,34 +113,36 @@ export const leadsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      // Gerar código sequencial
-      const lastLead = await ctx.prisma.lead.findFirst({
-        where: { companyId: ctx.companyId },
-        orderBy: { code: "desc" },
-        select: { code: true },
-      });
+      // Gerar código sequencial + criar lead em transação para evitar race condition
+      const lead = await ctx.prisma.$transaction(async (tx) => {
+        const lastLead = await tx.lead.findFirst({
+          where: { companyId: ctx.companyId },
+          orderBy: { code: "desc" },
+          select: { code: true },
+        });
 
-      const nextCode = lastLead ? String(parseInt(lastLead.code) + 1).padStart(6, "0") : "000001";
+        const nextCode = lastLead ? String(parseInt(lastLead.code) + 1).padStart(6, "0") : "000001";
 
-      const lead = await ctx.prisma.lead.create({
-        data: {
-          code: nextCode,
-          companyId: ctx.companyId,
-          companyName: input.companyName,
-          contactName: input.contactName,
-          email: input.email || null,
-          phone: input.phone,
-          source: input.source,
-          status: "NEW",
-          estimatedValue: input.estimatedValue,
-          probability: input.probability ?? 50,
-          expectedCloseDate: input.expectedCloseDate ? new Date(input.expectedCloseDate) : null,
-          description: input.description,
-          notes: input.notes,
-          assignedTo: input.assignedTo,
-          customerId: input.customerId,
-          createdBy: ctx.tenant.userId,
-        },
+        return tx.lead.create({
+          data: {
+            code: nextCode,
+            companyId: ctx.companyId,
+            companyName: input.companyName,
+            contactName: input.contactName,
+            email: input.email || null,
+            phone: input.phone,
+            source: input.source,
+            status: "NEW",
+            estimatedValue: input.estimatedValue,
+            probability: input.probability ?? 50,
+            expectedCloseDate: input.expectedCloseDate ? new Date(input.expectedCloseDate) : null,
+            description: input.description,
+            notes: input.notes,
+            assignedTo: input.assignedTo,
+            customerId: input.customerId,
+            createdBy: ctx.tenant.userId,
+          },
+        });
       });
 
       return lead;
@@ -293,17 +295,16 @@ export const leadsRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Lead já convertido em cliente" });
       }
 
-      // Gerar código do cliente
-      const lastCustomer = await ctx.prisma.customer.findFirst({
-        where: { companyId: ctx.companyId },
-        orderBy: { code: "desc" },
-        select: { code: true },
-      });
+      // Transação para garantir atomicidade (nextCode + customer + lead update)
+      return ctx.prisma.$transaction(async (tx) => {
+        const lastCustomer = await tx.customer.findFirst({
+          where: { companyId: ctx.companyId },
+          orderBy: { code: "desc" },
+          select: { code: true },
+        });
 
-      const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
+        const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
 
-      // Transação para garantir atomicidade (customer + lead update)
-      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
         const customer = await tx.customer.create({
           data: {
             code: nextCode,

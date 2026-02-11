@@ -1,0 +1,455 @@
+model Material {
+  id                          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                        Int                       @unique
+  internalCode                String?
+  description                 String
+  categoryId                  String?                   @db.Uuid
+  unit                        String                    @default("UN")
+  location                    String?
+  minQuantity                 Decimal                     @db.Decimal(15, 4) @default(0)
+  maxQuantity                 Decimal?  @db.Decimal(15, 4)
+  monthlyAverage              Decimal                     @db.Decimal(15, 4) @default(0)
+  lastPurchasePrice           Decimal?  @db.Decimal(15, 2)
+  lastPurchaseDate            DateTime?
+  ncm                         String?
+  status                      MaterialStatus            @default(ACTIVE)
+  requiresQualityCheck        Boolean                   @default(false)
+  companyId                   String                    @db.Uuid
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @default(now()) @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?               @db.Uuid
+  isShared                    Boolean                   @default(false)
+  purchaseUnit                String?                   @map("purchase_unit")
+  unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
+  subCategoryId               String?                   @map("sub_category_id") @db.Uuid
+  writeOffCode                String?                   @map("write_off_code")
+  isEpi                       Boolean?                  @default(false) @map("is_epi")
+  isOfficeSupply              Boolean?                  @default(false) @map("is_office_supply")
+  notes                       String?
+  ipiRate                     Decimal?                    @db.Decimal(10, 4) @default(0) @map("ipi_rate")
+  icmsRate                    Decimal?                    @db.Decimal(10, 4) @default(0) @map("icms_rate")
+  avgDeliveryDays             Decimal?                    @db.Decimal(15, 4) @default(0) @map("avg_delivery_days")
+  calculatedMinQuantity       Decimal?                    @db.Decimal(15, 4) @default(0) @map("calculated_min_quantity")
+  minQuantityCalcType         String?                   @default("MANUAL") @map("min_quantity_calc_type")
+  minQuantityAlarmDate        DateTime?                 @map("min_quantity_alarm_date") @db.Timestamp(6)
+  minQuantityCalcDate         DateTime?                 @map("min_quantity_calc_date") @db.Timestamp(6)
+  adjustMaxConsumptionManual  Boolean?                  @default(false) @map("adjust_max_consumption_manual")
+  maxMonthlyConsumption       Decimal?                    @db.Decimal(15, 4) @default(0) @map("max_monthly_consumption")
+  reservedQuantity            Decimal?                    @db.Decimal(15, 4) @default(0) @map("reserved_quantity")
+  peak12Months                Decimal?                    @db.Decimal(15, 4) @default(0) @map("peak_12_months")
+  lastPurchasePriceAvg        Decimal?                    @db.Decimal(15, 2) @default(0) @map("last_purchase_unit_price_avg")
+  lastPurchaseQuantity        Decimal?                    @db.Decimal(15, 4) @default(0) @map("last_purchase_quantity")
+  lastSupplierId              String?                   @map("last_supplier_id") @db.Uuid
+  costCenterFrm               String?                   @map("cost_center_frm")
+  costCenterFnd               String?                   @map("cost_center_fnd")
+  financialAccount            String?                   @map("financial_account")
+  requiredBrand               String?                   @map("required_brand")
+  requiredBrandReason         String?                   @map("required_brand_reason")
+  stockLocationId             String?                   @map("stock_location_id") @db.Uuid
+  requiresQualityInspection   Boolean?                  @default(false) @map("requires_quality_inspection")
+  requiresMaterialCertificate Boolean?                  @default(false) @map("requires_material_certificate")
+  requiresControlSheets       Boolean?                  @default(false) @map("requires_control_sheets")
+  requiresReturn              Boolean?                  @default(false) @map("requires_return")
+  requiresFiscalEntry         Boolean?                  @default(false) @map("requires_fiscal_entry")
+  parentProductId             String?                   @map("parent_product_id") @db.Uuid
+  assetId                     String?                   @map("asset_id") @db.Uuid
+  weight                      Decimal?                    @db.Decimal(15, 4) @default(0)
+  weightUnit                  String?                   @default("KG") @map("weight_unit")
+  barcode                     String?
+  manufacturer                String?
+  manufacturerCode            String?                   @map("manufacturer_code")
+  epiCaCode                   String?                   @map("epi_ca_code")
+  financialValidated          Boolean                   @default(false) @map("financial_validated")
+  financialValidatedCc        Boolean                   @default(false) @map("financial_validated_cc")
+  bomAsChild                  BomItem[]                 @relation("BomChild")
+  bomAsParent                 BomItem[]                 @relation("BomParent")
+  import_process_items        ImportProcessItem[]
+  inventory                   Inventory[]
+  inventoryCounts             InventoryCount[]
+  issuedInvoiceItems          IssuedInvoiceItem[]
+  locationInventory           LocationInventory[]
+  receivingItems              MaterialReceivingItem[]
+  requisitionItems            MaterialRequisitionItem[]
+  category                    Category?                 @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company                     Company                   @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mrpParameter                MrpParameter?
+  mrpSuggestions              MrpSuggestion[]
+  non_conformities            NonConformity[]
+  pickingListItems            PickingListItem[]
+  productionOrderMaterials    ProductionOrderMaterial[] @relation("ProductionMaterial")
+  productionOrdersAsProduct   ProductionOrder[]         @relation("ProductionProduct")
+  catalogProducts             Product[]
+  purchaseOrderItems          PurchaseOrderItem[]
+  quality_inspections         QualityInspection[]
+  quoteItems                  QuoteItem[]
+  receivedInvoiceItems        ReceivedInvoiceItem[]
+  salesOrderItems             SalesOrderItem[]
+  salesQuoteItems             SalesQuoteItem[]
+  stockReservations           StockReservation[]
+  stockTransferItems          StockTransferItem[]
+  supplierMaterials           SupplierMaterial[]
+  supplierReturnItems         SupplierReturnItem[]
+  lots                        Lot[]
+  intercompanyTransferItems   IntercompanyTransferItem[]
+
+  @@index([companyId], map: "idx_materials_companyId")
+  @@index([categoryId])
+  @@unique([companyId, legacyId])
+  @@map("materials")
+  @@index([companyId, code])
+}
+
+model Inventory {
+  id                       String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  materialId               String              @db.Uuid
+  companyId                String              @db.Uuid
+  inventoryType            InventoryType       @default(RAW_MATERIAL)
+  quantity                 Decimal               @db.Decimal(15, 4) @default(0)
+  reservedQty              Decimal               @db.Decimal(15, 4) @default(0)
+  availableQty             Decimal               @db.Decimal(15, 4) @default(0)
+  unitCost                 Decimal               @db.Decimal(15, 2) @default(0)
+  totalCost                Decimal               @db.Decimal(15, 2) @default(0)
+  lastMovementAt           DateTime?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @default(now()) @updatedAt
+  location                 String?
+  quantitySemiFinished     Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_semi_finished")
+  quantityFinished         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_finished")
+  quantityCritical         Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_critical")
+  quantityScrap            Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_scrap")
+  quantityDead             Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_dead")
+  quantityAccountingInd    Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_ind")
+  quantityAccountingResale Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_accounting_resale")
+  quantityOnOrder          Decimal?              @db.Decimal(15, 4) @default(0) @map("quantity_on_order")
+  expectedDeliveryDate     DateTime?           @map("expected_delivery_date") @db.Timestamptz(6)
+  consumptionRuleId        String?             @map("consumption_rule_id")
+  consumeByFormula         Boolean?            @default(false) @map("consume_by_formula")
+  legacyProductCode        Int?                @map("legacy_product_code")
+  version                  Int                 @default(1)
+  company                  Company             @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  material                 Material            @relation(fields: [materialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  movements                InventoryMovement[]
+  reservations             StockReservation[]
+
+  @@unique([materialId, companyId, inventoryType])
+  @@index([companyId], map: "idx_inventory_companyId")
+  @@index([id, version], map: "idx_inventory_version")
+  @@unique([companyId, legacyId])
+  @@map("inventory")
+  @@index([companyId, materialId])
+}
+
+model InventoryMovement {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventoryId    String       @db.Uuid
+  movementType   MovementType
+  quantity       Decimal  @db.Decimal(15, 4)
+  unitCost       Decimal        @db.Decimal(15, 2) @default(0)
+  totalCost      Decimal        @db.Decimal(15, 2) @default(0)
+  balanceAfter   Decimal        @db.Decimal(15, 2) @default(0)
+  documentType   String?
+  documentNumber String?
+  documentId     String?
+  supplierId     String?      @db.Uuid
+  notes          String?
+  userId         String?      @db.Uuid
+  movementDate   DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  inventory      Inventory    @relation(fields: [inventoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier       Supplier?    @relation(fields: [supplierId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user           User?        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([inventoryId, movementDate])
+  @@index([supplierId])
+  @@index([userId])
+  @@map("inventory_movements")
+}
+
+model StockReservation {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code           Int
+  companyId      String    @db.Uuid
+  inventoryId    String    @db.Uuid
+  materialId     String    @db.Uuid
+  quantity       Decimal  @db.Decimal(15, 4)
+  consumedQty    Decimal     @db.Decimal(15, 4) @default(0)
+  documentType   String
+  documentId     String
+  documentNumber String?
+  status         String    @default("ACTIVE")
+  expiresAt      DateTime?
+  notes          String?
+  createdBy      String?
+  createdAt      DateTime  @default(now())
+  releasedAt     DateTime?
+  releasedBy     String?
+  releaseReason  String?
+  consumedAt     DateTime?
+  company        Company   @relation(fields: [companyId], references: [id])
+  inventory      Inventory @relation(fields: [inventoryId], references: [id])
+  material       Material  @relation(fields: [materialId], references: [id])
+
+  @@unique([companyId, code])
+  @@index([materialId, status])
+  @@index([documentType, documentId])
+  @@index([inventoryId], map: "idx_stock_reservations_inventory")
+  @@map("stock_reservations")
+  @@index([companyId])
+}
+
+model StockLocation {
+  id                  String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  legacyId          Int?
+  code                String
+  name                String
+  description         String?
+  type                LocationType            @default(WAREHOUSE)
+  parentId            String?                 @db.Uuid
+  companyId           String                  @db.Uuid
+  address             String?
+  isActive            Boolean                 @default(true)
+  isDefault           Boolean                 @default(false)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @default(now()) @updatedAt
+  inventoryCounts     InventoryCount[]
+  locationInventory   LocationInventory[]
+  receivingItems      MaterialReceivingItem[]
+  materialReceivings  MaterialReceiving[]
+  physicalInventories PhysicalInventory[]
+  pickingListItems    PickingListItem[]
+  company             Company                 @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_locations_company_fkey")
+  parent              StockLocation?          @relation("LocationHierarchy", fields: [parentId], references: [id], onUpdate: NoAction, map: "stock_locations_parent_fkey")
+  children            StockLocation[]         @relation("LocationHierarchy")
+  transfersFrom       StockTransfer[]         @relation("TransferFrom")
+  transfersTo         StockTransfer[]         @relation("TransferTo")
+  supplierReturnItems SupplierReturnItem[]
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([type])
+  @@index([parentId], map: "idx_stock_locations_parent")
+  @@unique([companyId, legacyId])
+  @@map("stock_locations")
+}
+
+model LocationInventory {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  locationId     String        @db.Uuid
+  materialId     String        @db.Uuid
+  quantity       Decimal         @db.Decimal(15, 4) @default(0)
+  reservedQty    Decimal         @db.Decimal(15, 4) @default(0)
+  minQuantity    Decimal         @db.Decimal(15, 4) @default(0)
+  maxQuantity    Decimal?  @db.Decimal(15, 4)
+  lastMovementAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now()) @updatedAt
+  location       StockLocation @relation(fields: [locationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "location_inventory_location_fkey")
+  material       Material      @relation(fields: [materialId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "location_inventory_material_fkey")
+
+  @@unique([locationId, materialId], map: "location_inventory_location_material_key")
+  @@index([locationId])
+  @@index([materialId])
+  @@index([locationId], map: "idx_location_inventory_location")
+  @@index([materialId], map: "idx_location_inventory_material")
+  @@map("location_inventory")
+}
+
+model StockTransfer {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code               Int
+  companyId          String              @db.Uuid
+  fromLocationId     String              @db.Uuid
+  toLocationId       String              @db.Uuid
+  status             TransferStatus      @default(PENDING)
+  requestedAt        DateTime            @default(now())
+  requestedBy        String?             @db.Uuid
+  approvedAt         DateTime?
+  approvedBy         String?             @db.Uuid
+  shippedAt          DateTime?
+  shippedBy          String?             @db.Uuid
+  receivedAt         DateTime?
+  receivedBy         String?             @db.Uuid
+  cancelledAt        DateTime?
+  cancelledBy        String?             @db.Uuid
+  cancellationReason String?
+  notes              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @default(now()) @updatedAt
+  items              StockTransferItem[]
+  approvedByUser     User?               @relation("TransferApproved", fields: [approvedBy], references: [id], onUpdate: NoAction)
+  company            Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "stock_transfers_company_fkey")
+  fromLocation       StockLocation       @relation("TransferFrom", fields: [fromLocationId], references: [id], onUpdate: NoAction, map: "stock_transfers_from_fkey")
+  receivedByUser     User?               @relation("TransferReceived", fields: [receivedBy], references: [id], onUpdate: NoAction)
+  requestedByUser    User?               @relation("TransferRequested", fields: [requestedBy], references: [id], onUpdate: NoAction)
+  shippedByUser      User?               @relation("TransferShipped", fields: [shippedBy], references: [id], onUpdate: NoAction)
+  toLocation         StockLocation       @relation("TransferTo", fields: [toLocationId], references: [id], onUpdate: NoAction, map: "stock_transfers_to_fkey")
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([status])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+  @@index([approvedBy], map: "idx_stock_transfers_approved_by")
+  @@index([fromLocationId], map: "idx_stock_transfers_from_location")
+  @@index([receivedBy], map: "idx_stock_transfers_received_by")
+  @@index([requestedBy], map: "idx_stock_transfers_requested_by")
+  @@index([shippedBy], map: "idx_stock_transfers_shipped_by")
+  @@index([toLocationId], map: "idx_stock_transfers_to_location")
+  @@map("stock_transfers")
+}
+
+model StockTransferItem {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transferId   String        @db.Uuid
+  materialId   String        @db.Uuid
+  requestedQty Decimal  @db.Decimal(15, 4)
+  shippedQty   Decimal         @db.Decimal(15, 4) @default(0)
+  receivedQty  Decimal         @db.Decimal(15, 4) @default(0)
+  unit         String        @default("UN")
+  notes        String?
+  createdAt    DateTime      @default(now())
+  material     Material      @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "stock_transfer_items_material_fkey")
+  transfer     StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "stock_transfer_items_transfer_fkey")
+
+  @@index([transferId])
+  @@index([materialId], map: "idx_stock_transfer_items_material")
+  @@map("stock_transfer_items")
+}
+
+model PhysicalInventory {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        Int
+  companyId   String           @db.Uuid
+  locationId  String?          @db.Uuid
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  status      String           @default("OPEN")
+  createdBy   String?          @db.Uuid
+  closedBy    String?          @db.Uuid
+  closedAt    DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @default(now()) @updatedAt
+  counts      InventoryCount[]
+  company     Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "physical_inventories_company_fkey")
+  location    StockLocation?   @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "physical_inventories_location_fkey")
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([status])
+  @@index([locationId], map: "idx_physical_inventories_location")
+  @@map("physical_inventories")
+}
+
+model InventoryCount {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inventoryId String            @db.Uuid
+  materialId  String            @db.Uuid
+  locationId  String?           @db.Uuid
+  systemQty   Decimal             @db.Decimal(15, 4) @default(0)
+  countedQty  Decimal?  @db.Decimal(15, 4)
+  difference  Decimal?  @db.Decimal(15, 2)
+  countedBy   String?           @db.Uuid
+  countedAt   DateTime?
+  verified    Boolean           @default(false)
+  verifiedBy  String?           @db.Uuid
+  verifiedAt  DateTime?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  inventory   PhysicalInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "inventory_counts_inventory_fkey")
+  location    StockLocation?    @relation(fields: [locationId], references: [id], onUpdate: NoAction, map: "inventory_counts_location_fkey")
+  material    Material          @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "inventory_counts_material_fkey")
+
+  @@index([inventoryId])
+  @@index([materialId])
+  @@index([locationId], map: "idx_inventory_counts_location")
+  @@map("inventory_counts")
+}
+
+model Lot {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String
+  materialId   String      @map("material_id") @db.Uuid
+  companyId    String      @map("company_id") @db.Uuid
+  status       LotStatus   @default(AVAILABLE)
+  quantity     Decimal     @db.Decimal(15, 4)
+  reservedQty  Decimal     @default(0) @map("reserved_qty") @db.Decimal(15, 4)
+  unitCost     Decimal?    @map("unit_cost") @db.Decimal(15, 4)
+  manufactureDate DateTime? @map("manufacture_date") @db.Date
+  expirationDate  DateTime? @map("expiration_date") @db.Date
+  supplierId   String?     @map("supplier_id") @db.Uuid
+  locationId   String?     @map("location_id") @db.Uuid
+  notes        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
+  material     Material    @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  movements    LotMovement[]
+
+  @@unique([code, companyId], map: "uq_lots_code_company")
+  @@index([materialId], map: "idx_lots_material_id")
+  @@index([companyId], map: "idx_lots_company_id")
+  @@index([status], map: "idx_lots_status")
+  @@index([expirationDate], map: "idx_lots_expiration_date")
+  @@map("lots")
+}
+
+model LotMovement {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lotId         String   @map("lot_id") @db.Uuid
+  type          String
+  quantity      Decimal  @db.Decimal(15, 4)
+  documentType  String?  @map("document_type")
+  documentId    String?  @map("document_id") @db.Uuid
+  notes         String?
+  userId        String?  @map("user_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  lot           Lot      @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId], map: "idx_lot_movements_lot_id")
+  @@index([createdAt], map: "idx_lot_movements_created_at")
+  @@map("lot_movements")
+}
+
+model IntercompanyTransfer {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int            @default(autoincrement())
+  sourceCompanyId   String         @map("source_company_id") @db.Uuid
+  targetCompanyId   String         @map("target_company_id") @db.Uuid
+  status            TransferStatus @default(DRAFT)
+  transferDate      DateTime?      @map("transfer_date")
+  shippedAt         DateTime?      @map("shipped_at")
+  receivedAt        DateTime?      @map("received_at")
+  notes             String?
+  createdBy         String?        @map("created_by") @db.Uuid
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+  sourceCompany     Company        @relation("IntercompanyTransferSource", fields: [sourceCompanyId], references: [id], onDelete: NoAction)
+  targetCompany     Company        @relation("IntercompanyTransferTarget", fields: [targetCompanyId], references: [id], onDelete: NoAction)
+  items             IntercompanyTransferItem[]
+
+  @@index([sourceCompanyId], map: "idx_intercompany_transfers_source")
+  @@index([targetCompanyId], map: "idx_intercompany_transfers_target")
+  @@index([status], map: "idx_intercompany_transfers_status")
+  @@map("intercompany_transfers")
+}
+
+model IntercompanyTransferItem {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transferId  String               @map("transfer_id") @db.Uuid
+  materialId  String               @map("material_id") @db.Uuid
+  quantity    Decimal              @db.Decimal(15, 4)
+  unitCost    Decimal?             @map("unit_cost") @db.Decimal(15, 4)
+  lotId       String?              @map("lot_id") @db.Uuid
+  notes       String?
+  createdAt   DateTime             @default(now()) @map("created_at")
+  transfer    IntercompanyTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  material    Material             @relation(fields: [materialId], references: [id], onDelete: NoAction)
+
+  @@index([transferId], map: "idx_intercompany_transfer_items_transfer")
+  @@index([materialId], map: "idx_intercompany_transfer_items_material")
+  @@map("intercompany_transfer_items")
+}

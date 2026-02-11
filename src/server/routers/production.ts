@@ -389,7 +389,7 @@ export const productionRouter = createTRPCRouter({
       const isComplete = newProducedQty >= Number(order.quantity);
 
       // Transação para garantir atomicidade (OP + operação + inventário)
-      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+      return ctx.prisma.$transaction(async (tx) => {
         // Atualizar OP
         await tx.productionOrder.update({
           where: { id: input.orderId },
@@ -529,7 +529,7 @@ export const productionRouter = createTRPCRouter({
       const totalCost = Number(unitCost) * Number(input.quantity);
 
       // Transação para garantir atomicidade (material OP + movimentação + estoque)
-      return ctx.prisma.$transaction(async (tx: typeof ctx.prisma) => {
+      return ctx.prisma.$transaction(async (tx) => {
         await tx.productionOrderMaterial.update({
           where: { id: input.materialId },
           data: {

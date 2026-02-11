@@ -1,0 +1,90 @@
+model Task {
+  id                                                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                                               Int                @default(autoincrement())
+  companyId                                          String?            @map("company_id") @db.Uuid
+  title                                              String             @db.VarChar(500)
+  description                                        String?
+  priority                                           TaskPriority?      @default(NORMAL)
+  status                                             TaskStatus?        @default(PENDING)
+  targetType                                         String             @map("target_type") @db.VarChar(50)
+  targetUserId                                       String?            @map("target_user_id") @db.Uuid
+  targetDepartmentId                                 String?            @map("target_department_id") @db.Uuid
+  targetGroupId                                      String?            @map("target_group_id") @db.Uuid
+  targetPermission                                   String?            @map("target_permission") @db.VarChar(100)
+  ownerId                                            String?            @map("owner_id") @db.Uuid
+  acceptedAt                                         DateTime?          @map("accepted_at") @db.Timestamptz(6)
+  deadline                                           DateTime?          @db.Timestamptz(6)
+  slaAcceptHours                                     Int?               @default(24) @map("sla_accept_hours")
+  slaResolveHours                                    Int?               @default(72) @map("sla_resolve_hours")
+  entityType                                         TaskEntityType?    @map("entity_type")
+  entityId                                           String?            @map("entity_id") @db.Uuid
+  notificationId                                     String?            @map("notification_id") @db.Uuid
+  resolution                                         String?
+  completedAt                                        DateTime?          @map("completed_at") @db.Timestamptz(6)
+  createdById                                        String?            @map("created_by") @db.Uuid
+  createdAt                                          DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                                          DateTime?          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  notifications                                      Notification[]
+  attachments                                        TaskAttachment[]
+  history                                            TaskHistory[]
+  company                                            Company?           @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdBy                                          User?              @relation("TaskCreatedBy", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notifications_tasks_notification_idTonotifications Notification?      @relation("tasks_notification_idTonotifications", fields: [notificationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  owner                                              User?              @relation("TaskOwner", fields: [ownerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  targetDepartment                                   Department?        @relation("TaskTargetDepartment", fields: [targetDepartmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  targetGroup                                        NotificationGroup? @relation(fields: [targetGroupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  targetUser                                         User?              @relation("TaskTargetUser", fields: [targetUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_tasks_company")
+  @@index([createdById], map: "idx_tasks_created_by")
+  @@index([deadline], map: "idx_tasks_deadline")
+  @@index([entityType, entityId], map: "idx_tasks_entity")
+  @@index([notificationId], map: "idx_tasks_notification")
+  @@index([ownerId], map: "idx_tasks_owner")
+  @@index([status], map: "idx_tasks_status")
+  @@index([targetDepartmentId], map: "idx_tasks_target_department")
+  @@index([targetGroupId], map: "idx_tasks_target_group")
+  @@index([targetUserId], map: "idx_tasks_target_user")
+  @@map("tasks")
+}
+
+model TaskHistory {
+  id                                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId                                 String      @map("task_id") @db.Uuid
+  userId                                 String?     @map("user_id") @db.Uuid
+  action                                 String      @db.VarChar(50)
+  oldStatus                              TaskStatus? @map("old_status")
+  newStatus                              TaskStatus? @map("new_status")
+  oldOwnerId                             String?     @map("old_owner_id") @db.Uuid
+  newOwnerId                             String?     @map("new_owner_id") @db.Uuid
+  comment                                String?
+  metadata                               Json?       @default("{}")
+  createdAt                              DateTime?   @default(now()) @map("created_at") @db.Timestamptz(6)
+  users_task_history_new_owner_idTousers User?       @relation("task_history_new_owner_idTousers", fields: [newOwnerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_task_history_old_owner_idTousers User?       @relation("task_history_old_owner_idTousers", fields: [oldOwnerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  task                                   Task        @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                                   User?       @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([newOwnerId], map: "idx_task_history_new_owner")
+  @@index([oldOwnerId], map: "idx_task_history_old_owner")
+  @@index([taskId], map: "idx_task_history_task")
+  @@index([userId], map: "idx_task_history_user")
+  @@map("task_history")
+}
+
+model TaskAttachment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId      String    @map("task_id") @db.Uuid
+  fileName    String    @map("file_name") @db.VarChar(255)
+  fileType    String    @map("file_type") @db.VarChar(100)
+  fileSize    Int       @map("file_size")
+  fileUrl     String    @map("file_url")
+  description String?
+  uploadedBy  String?   @map("uploaded_by") @db.Uuid
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([taskId], map: "idx_task_attachments_task_id")
+  @@map("task_attachments")
+}

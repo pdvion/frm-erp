@@ -344,7 +344,7 @@ export const groupsRouter = createTRPCRouter({
       const user = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
         include: {
-          companies: {
+          userCompanies: {
             where: { companyId: ctx.companyId },
             select: { companyId: true },
           },
@@ -358,7 +358,7 @@ export const groupsRouter = createTRPCRouter({
         });
       }
 
-      if (!user.companies || user.companies.length === 0) {
+      if (!user.userCompanies || user.userCompanies.length === 0) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Usuário não pertence a esta empresa",

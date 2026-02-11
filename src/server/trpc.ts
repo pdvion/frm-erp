@@ -2,6 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
+import type { PrismaClient } from "@prisma/client";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getTenantContext, hasPermission, type SystemModule, type PermissionLevel } from "./context";
@@ -183,23 +184,22 @@ export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx,
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let enhancedPrisma: any = ctx.prisma;
+  let enhancedPrisma: PrismaClient = ctx.prisma;
 
   if (ENABLE_PRISMA_RLS) {
     // RLS: injeta companyId automaticamente em todas as queries de TENANT_MODELS
     const tenantPrisma = createTenantPrisma(ctx.prisma, ctx.tenant.companyId);
 
     // Audit: registra CREATE/UPDATE/DELETE em AUDITED_MODELS
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    enhancedPrisma = createAuditedPrisma(tenantPrisma as any, {
+    // Cast para PrismaClient é seguro: $extends só ADICIONA comportamento, não remove métodos
+    enhancedPrisma = createAuditedPrisma(tenantPrisma as PrismaClient, {
       userId: ctx.tenant.userId,
       userEmail: ctx.supabaseUser?.email,
       companyId: ctx.tenant.companyId,
       ipAddress: (ctx.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) ?? ctx.headers.get("x-real-ip") ?? undefined,
       userAgent: ctx.headers.get("user-agent") ?? undefined,
       requestPath: ctx.headers.get("x-invoke-path") ?? ctx.headers.get("referer") ?? undefined,
-    });
+    }) as PrismaClient;
   }
 
   return next({

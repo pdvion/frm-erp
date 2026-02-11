@@ -478,74 +478,77 @@ export const requisitionsRouter = createTRPCRouter({
       // Calcular custo
       const unitCost = inventory.unitCost;
       const totalCost = Number(unitCost) * Number(input.quantity);
-
-      // Atualizar item
       const newSeparatedQty = Number(item.separatedQty) + Number(input.quantity);
-      await ctx.prisma.materialRequisitionItem.update({
-        where: { id: input.itemId },
-        data: {
-          separatedQty: newSeparatedQty,
-          unitCost,
-          totalCost: Number(item.totalCost) + totalCost,
-        },
-      });
 
-      // Criar movimentação de saída
-      await ctx.prisma.inventoryMovement.create({
-        data: {
-          inventoryId: inventory.id,
-          movementType: "EXIT",
-          quantity: input.quantity,
-          unitCost,
-          totalCost,
-          balanceAfter: Number(inventory.quantity) - Number(input.quantity),
-          documentType: "REQ",
-          documentNumber: String(item.requisition.code),
-          documentId: item.requisition.id,
-          notes: `Requisição #${item.requisition.code} - ${item.material.description}`,
-          userId: ctx.tenant.userId,
-        },
-      });
-
-      // Atualizar estoque
-      await ctx.prisma.inventory.update({
-        where: { id: inventory.id },
-        data: {
-          quantity: { decrement: input.quantity },
-          availableQty: { decrement: input.quantity },
-          totalCost: { decrement: totalCost },
-          lastMovementAt: new Date(),
-        },
-      });
-
-      // Verificar se requisição foi completada
-      const allItems = await ctx.prisma.materialRequisitionItem.findMany({
-        where: { requisitionId: item.requisition.id },
-      });
-
-      const allCompleted = allItems.every((i) => {
-        const approved = i.approvedQty ?? i.requestedQty;
-        return i.separatedQty >= approved;
-      });
-
-      const anyCompleted = allItems.some((i) => Number(i.separatedQty) > 0);
-
-      let newStatus = item.requisition.status;
-      if (allCompleted) {
-        newStatus = "COMPLETED";
-      } else if (anyCompleted) {
-        newStatus = "PARTIAL";
-      }
-
-      if (newStatus !== item.requisition.status) {
-        await ctx.prisma.materialRequisition.update({
-          where: { id: item.requisition.id },
+      // Executar todas as operações em transação para atomicidade
+      await ctx.prisma.$transaction(async (tx) => {
+        // Atualizar item
+        await tx.materialRequisitionItem.update({
+          where: { id: input.itemId },
           data: {
-            status: newStatus,
-            separatedAt: allCompleted ? new Date() : undefined,
+            separatedQty: newSeparatedQty,
+            unitCost,
+            totalCost: Number(item.totalCost) + totalCost,
           },
         });
-      }
+
+        // Criar movimentação de saída
+        await tx.inventoryMovement.create({
+          data: {
+            inventoryId: inventory.id,
+            movementType: "EXIT",
+            quantity: input.quantity,
+            unitCost,
+            totalCost,
+            balanceAfter: Number(inventory.quantity) - Number(input.quantity),
+            documentType: "REQ",
+            documentNumber: String(item.requisition.code),
+            documentId: item.requisition.id,
+            notes: `Requisição #${item.requisition.code} - ${item.material.description}`,
+            userId: ctx.tenant.userId,
+          },
+        });
+
+        // Atualizar estoque
+        await tx.inventory.update({
+          where: { id: inventory.id },
+          data: {
+            quantity: { decrement: input.quantity },
+            availableQty: { decrement: input.quantity },
+            totalCost: { decrement: totalCost },
+            lastMovementAt: new Date(),
+          },
+        });
+
+        // Verificar se requisição foi completada
+        const allItems = await tx.materialRequisitionItem.findMany({
+          where: { requisitionId: item.requisition.id },
+        });
+
+        const allCompleted = allItems.every((i) => {
+          const approved = i.approvedQty ?? i.requestedQty;
+          return i.separatedQty >= approved;
+        });
+
+        const anyCompleted = allItems.some((i) => Number(i.separatedQty) > 0);
+
+        let newStatus = item.requisition.status;
+        if (allCompleted) {
+          newStatus = "COMPLETED";
+        } else if (anyCompleted) {
+          newStatus = "PARTIAL";
+        }
+
+        if (newStatus !== item.requisition.status) {
+          await tx.materialRequisition.update({
+            where: { id: item.requisition.id },
+            data: {
+              status: newStatus,
+              separatedAt: allCompleted ? new Date() : undefined,
+            },
+          });
+        }
+      });
 
       return { success: true, newSeparatedQty };
     }),

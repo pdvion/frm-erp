@@ -1,0 +1,81 @@
+model GedDocument {
+  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              Int               @default(autoincrement())
+  companyId         String            @db.Uuid
+  title             String
+  description       String?
+  fileName          String
+  fileType          String
+  fileSize          Int
+  fileUrl           String
+  filePath          String
+  categoryId        String?           @db.Uuid
+  tags              String[]          @default([])
+  entityType        GedEntityType?
+  entityId          String?           @db.Uuid
+  version           Int               @default(1)
+  parentId          String?           @db.Uuid
+  isLatestVersion   Boolean           @default(true)
+  status            GedDocumentStatus @default(ACTIVE)
+  isShared          Boolean           @default(false)
+  requiresSignature Boolean           @default(false)
+  signedAt          DateTime?
+  signedBy          String?           @db.Uuid
+  signatureId       String?
+  createdBy         String?           @db.Uuid
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now()) @updatedAt
+  deletedAt         DateTime?
+  metadata          Json?
+  accessLogs        GedAccessLog[]
+  category          GedCategory?      @relation(fields: [categoryId], references: [id])
+  parent            GedDocument?      @relation("DocumentVersions", fields: [parentId], references: [id])
+  versions          GedDocument[]     @relation("DocumentVersions")
+
+  @@index([companyId])
+  @@index([categoryId])
+  @@index([entityType, entityId])
+  @@index([status])
+  @@index([parentId])
+  @@index([tags], type: Gin)
+  @@map("ged_documents")
+}
+
+model GedCategory {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String        @db.Uuid
+  name        String
+  description String?
+  color       String?
+  icon        String?
+  parentId    String?       @db.Uuid
+  isActive    Boolean       @default(true)
+  isShared    Boolean       @default(false)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  parent      GedCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    GedCategory[] @relation("CategoryHierarchy")
+  documents   GedDocument[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@index([parentId])
+  @@map("ged_categories")
+}
+
+model GedAccessLog {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId String      @db.Uuid
+  userId     String?     @db.Uuid
+  action     String
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime    @default(now())
+  document   GedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("ged_access_logs")
+}

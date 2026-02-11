@@ -54,8 +54,12 @@ export const supplierReturnsRouter = createTRPCRouter({
         companyId: ctx.companyId,
         ...(status && { status }),
         ...(supplierId && { supplierId }),
-        ...(startDate && { returnDate: { gte: startDate } }),
-        ...(endDate && { returnDate: { lte: endDate } }),
+        ...((startDate || endDate) && {
+          returnDate: {
+            ...(startDate && { gte: startDate }),
+            ...(endDate && { lte: endDate }),
+          },
+        }),
         ...(search && {
           OR: [
             { supplier: { companyName: { contains: search, mode: "insensitive" as const } } },
@@ -368,25 +372,7 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      // Validar estoque antes da transação
-      for (const item of existing.items) {
-        const inventory = await ctx.prisma.inventory.findFirst({
-          where: { materialId: item.materialId, companyId: ctx.companyId },
-        });
-
-        if (!inventory || inventory.quantity < item.quantity) {
-          const material = await ctx.prisma.material.findUnique({
-            where: { id: item.materialId },
-            select: { description: true },
-          });
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Estoque insuficiente para o material: ${material?.description || item.materialId}`,
-          });
-        }
-      }
-
-      // Executar todas as operações em transação
+      // Executar todas as operações em transação (validação de estoque dentro da tx)
       const updated = await ctx.prisma.$transaction(async (tx) => {
         // Baixar estoque dos itens
         for (const item of existing.items) {
@@ -394,7 +380,18 @@ export const supplierReturnsRouter = createTRPCRouter({
             where: { materialId: item.materialId, companyId: ctx.companyId },
           });
 
-          if (inventory) {
+          if (!inventory || inventory.quantity < item.quantity) {
+            const material = await tx.material.findUnique({
+              where: { id: item.materialId },
+              select: { description: true },
+            });
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Estoque insuficiente para o material: ${material?.description || item.materialId}`,
+            });
+          }
+
+          {
             // Baixar estoque
             await tx.inventory.update({
               where: { id: inventory.id },

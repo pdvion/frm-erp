@@ -25,7 +25,7 @@ export default function OnboardingWizardPage() {
   const router = useRouter();
   const companyId = params.companyId as string;
 
-  const { data: onboarding, isLoading } = trpc.onboarding.getStatus.useQuery({ companyId });
+  const { data: onboarding, isLoading } = trpc.onboarding.getStatus.useQuery();
   const { data: company } = trpc.companies.getById.useQuery({ id: companyId });
   const startMutation = trpc.onboarding.start.useMutation();
   const updateStepMutation = trpc.onboarding.updateStep.useMutation();
@@ -42,12 +42,12 @@ export default function OnboardingWizardPage() {
 
   useEffect(() => {
     if (!onboarding && company && !startMutation.isPending) {
-      startMutation.mutate({ companyId });
+      startMutation.mutate();
     }
   }, [onboarding, company, companyId, startMutation]);
 
   const handleNext = async () => {
-    await updateStepMutation.mutateAsync({ companyId, step: currentStep, data: formData });
+    await updateStepMutation.mutateAsync({ step: currentStep, data: formData });
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
       setFormData({});
@@ -55,7 +55,7 @@ export default function OnboardingWizardPage() {
   };
 
   const handleComplete = async () => {
-    await completeMutation.mutateAsync({ companyId });
+    await completeMutation.mutateAsync();
     router.push("/setup/onboarding");
   };
 

@@ -1,0 +1,352 @@
+model SystemSetting {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key           String   @db.VarChar(100)
+  value         Json
+  category      String   @default("general") @db.VarChar(50)
+  companyId     String?  @db.Uuid
+  description   String?
+  updatedBy     String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  updatedByUser User?    @relation(fields: [updatedBy], references: [id])
+
+  @@index([category])
+  @@index([companyId])
+  @@index([updatedBy])
+  @@map("system_settings")
+}
+
+model CloneLog {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sourceCompanyId String   @db.Uuid
+  targetCompanyId String   @db.Uuid
+  entityType      String
+  entityId        String   @db.Uuid
+  clonedEntityId  String   @db.Uuid
+  clonedBy        String   @db.Uuid
+  createdAt       DateTime @default(now())
+  clonedByUser    User     @relation(fields: [clonedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sourceCompany   Company  @relation("CloneSource", fields: [sourceCompanyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  targetCompany   Company  @relation("CloneTarget", fields: [targetCompanyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([clonedBy])
+  @@index([sourceCompanyId])
+  @@index([targetCompanyId])
+  @@map("clone_logs")
+}
+
+model AuditLog {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?     @db.Uuid
+  userEmail     String?
+  userName      String?
+  companyId     String?     @db.Uuid
+  companyName   String?
+  action        AuditAction
+  entityType    String
+  entityId      String?
+  entityCode    String?
+  description   String?
+  oldValues     Json?
+  newValues     Json?
+  changedFields String[]    @default([])
+  ipAddress     String?
+  userAgent     String?
+  requestPath   String?
+  requestMethod String?
+  createdAt     DateTime    @default(now())
+  user          User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([companyId])
+  @@map("audit_logs")
+}
+
+model Tutorial {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String    @unique @db.VarChar(100)
+  title       String    @db.VarChar(255)
+  description String?
+  content     String
+  module      String?   @db.VarChar(50)
+  category    String?   @db.VarChar(50)
+  icon        String?   @db.VarChar(50)
+  orderIndex  Int?      @default(0) @map("order_index")
+  isPublished Boolean?  @default(true) @map("is_published")
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy   String?   @map("created_by") @db.Uuid
+  creator     User?     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([category], map: "idx_tutorials_category")
+  @@index([createdBy], map: "idx_tutorials_created_by")
+  @@index([module], map: "idx_tutorials_module")
+  @@index([slug], map: "idx_tutorials_slug")
+  @@map("tutorials")
+}
+
+model Notification {
+  id                                         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                                     String?            @map("user_id") @db.Uuid
+  companyId                                  String?            @map("company_id") @db.Uuid
+  type                                       String             @db.VarChar(50)
+  category                                   String             @db.VarChar(50)
+  title                                      String             @db.VarChar(255)
+  message                                    String?
+  link                                       String?            @db.VarChar(500)
+  metadata                                   Json?              @default("{}")
+  isRead                                     Boolean?           @default(false) @map("is_read")
+  readAt                                     DateTime?          @map("read_at") @db.Timestamptz(6)
+  createdAt                                  DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
+  departmentId                               String?            @map("department_id") @db.Uuid
+  groupId                                    String?            @map("group_id") @db.Uuid
+  targetPermission                           String?            @map("target_permission") @db.VarChar(100)
+  isTask                                     Boolean?           @default(false) @map("is_task")
+  taskId                                     String?            @map("task_id") @db.Uuid
+  company                                    Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  department                                 Department?        @relation(fields: [departmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  group                                      NotificationGroup? @relation(fields: [groupId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  task                                       Task?              @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                                       User?              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tasks_tasks_notification_idTonotifications Task[]             @relation("tasks_notification_idTonotifications")
+
+  @@index([category], map: "idx_notifications_category")
+  @@index([companyId], map: "idx_notifications_company_id")
+  @@index([createdAt(sort: Desc)], map: "idx_notifications_created_at")
+  @@index([departmentId], map: "idx_notifications_department")
+  @@index([groupId], map: "idx_notifications_group")
+  @@index([isRead], map: "idx_notifications_is_read")
+  @@index([taskId], map: "idx_notifications_task")
+  @@index([type], map: "idx_notifications_type")
+  @@index([userId], map: "idx_notifications_user_id")
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  category     String    @db.VarChar(50)
+  emailEnabled Boolean?  @default(true) @map("email_enabled")
+  pushEnabled  Boolean?  @default(true) @map("push_enabled")
+  inAppEnabled Boolean?  @default(true) @map("in_app_enabled")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, category])
+  @@index([userId], map: "idx_notification_preferences_user")
+  @@map("notification_preferences")
+}
+
+model SystemLog {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  level      String    @db.VarChar(10)
+  message    String
+  context    Json?     @default("{}")
+  stack      String?
+  userId     String?   @map("user_id") @db.Uuid
+  companyId  String?   @map("company_id") @db.Uuid
+  requestId  String?   @map("request_id") @db.VarChar(100)
+  source     String?   @db.VarChar(100)
+  durationMs Int?      @map("duration_ms")
+  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  company    Company?  @relation(fields: [companyId], references: [id], onUpdate: NoAction)
+  user       User?     @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_system_logs_company_id")
+  @@index([createdAt(sort: Desc)], map: "idx_system_logs_created_at")
+  @@index([level], map: "idx_system_logs_level")
+  @@index([source], map: "idx_system_logs_source")
+  @@index([userId], map: "idx_system_logs_user_id")
+  @@map("system_logs")
+}
+
+model NotificationGroup {
+  id            String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code          String                    @db.VarChar(50)
+  name          String                    @db.VarChar(255)
+  description   String?
+  companyId     String?                   @map("company_id") @db.Uuid
+  isActive      Boolean?                  @default(true) @map("is_active")
+  createdAt     DateTime?                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?                 @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  members       NotificationGroupMember[]
+  company       Company?                  @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notifications Notification[]
+  tasks         Task[]
+
+  @@unique([code, companyId])
+  @@index([companyId], map: "idx_notification_groups_company")
+  @@map("notification_groups")
+}
+
+model NotificationGroupMember {
+  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  groupId   String            @map("group_id") @db.Uuid
+  userId    String            @map("user_id") @db.Uuid
+  addedAt   DateTime?         @default(now()) @map("added_at") @db.Timestamptz(6)
+  addedById String?           @map("added_by") @db.Uuid
+  addedBy   User?             @relation("GroupMemberAddedBy", fields: [addedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  group     NotificationGroup @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([groupId, userId])
+  @@index([addedById], map: "idx_notification_group_members_added_by")
+  @@index([groupId], map: "idx_notification_group_members_group")
+  @@index([userId], map: "idx_notification_group_members_user")
+  @@map("notification_group_members")
+}
+
+model Dashboard {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String            @db.Uuid
+  name        String            @db.VarChar(255)
+  description String?
+  isDefault   Boolean           @default(false)
+  isPublic    Boolean           @default(false)
+  layout      Json?             @default("[]")
+  filters     Json?             @default("{}")
+  createdBy   String?           @db.Uuid
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now()) @updatedAt
+  widgets     DashboardWidget[]
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  creator     User?             @relation(fields: [createdBy], references: [id], onUpdate: NoAction)
+
+  @@index([companyId])
+  @@index([createdBy])
+  @@map("dashboards")
+}
+
+model Kpi {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId      String            @db.Uuid
+  code           String            @db.VarChar(50)
+  name           String            @db.VarChar(255)
+  description    String?
+  category       String            @db.VarChar(50)
+  unit           String?           @db.VarChar(20)
+  formula        String?
+  targetMin      Decimal?          @db.Decimal(15, 2)
+  targetExpected Decimal?          @db.Decimal(15, 2)
+  targetMax      Decimal?          @db.Decimal(15, 2)
+  polarity       String            @default("HIGHER") @db.VarChar(10)
+  frequency      String            @default("DAILY") @db.VarChar(20)
+  isActive       Boolean           @default(true)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @default(now()) @updatedAt
+  widgets        DashboardWidget[]
+  values         KpiValue[]
+  company        Company           @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([code, companyId])
+  @@index([companyId])
+  @@index([category])
+  @@map("kpis")
+}
+
+model KpiValue {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kpiId     String   @db.Uuid
+  companyId String   @db.Uuid
+  period    DateTime @db.Date
+  value     Decimal  @db.Decimal(15, 4)
+  target    Decimal? @db.Decimal(15, 4)
+  status    String   @default("ON_TARGET") @db.VarChar(20)
+  metadata  Json?    @default("{}")
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  kpi       Kpi      @relation(fields: [kpiId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([kpiId, period])
+  @@index([kpiId])
+  @@index([period])
+  @@index([companyId])
+  @@map("kpi_values")
+}
+
+model DashboardWidget {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dashboardId String    @db.Uuid
+  type        String    @db.VarChar(50)
+  title       String    @db.VarChar(255)
+  config      Json      @default("{}")
+  position    Json      @default("{\"h\": 2, \"w\": 4, \"x\": 0, \"y\": 0}")
+  kpiId       String?   @db.Uuid
+  dataSource  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  dashboard   Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  kpi         Kpi?      @relation(fields: [kpiId], references: [id], onUpdate: NoAction)
+
+  @@index([dashboardId])
+  @@index([kpiId])
+  @@map("dashboard_widgets")
+}
+
+model SavedReport {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @db.Uuid
+  companyId   String   @db.Uuid
+  reportType  String
+  name        String
+  description String?
+  filters     Json     @default("{}")
+  isDefault   Boolean  @default(false)
+  isShared    Boolean  @default(false)
+  isFavorite  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId], map: "idx_saved_reports_companyId")
+  @@index([reportType], map: "idx_saved_reports_reportType")
+  @@index([userId], map: "idx_saved_reports_userId")
+  @@map("saved_reports")
+}
+
+model AiUsageLog {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  provider      String
+  model         String
+  taskType      String   @map("task_type")
+  inputTokens   Int      @default(0) @map("input_tokens")
+  outputTokens  Int      @default(0) @map("output_tokens")
+  totalTokens   Int      @default(0) @map("total_tokens")
+  latencyMs     Int      @default(0) @map("latency_ms")
+  estimatedCost Decimal    @db.Decimal(15, 2) @default(0) @map("estimated_cost")
+  success       Boolean  @default(true)
+  errorMessage  String?  @map("error_message")
+  wasFallback   Boolean  @default(false) @map("was_fallback")
+  fallbackFrom  String?  @map("fallback_from")
+  userId        String?  @map("user_id") @db.Uuid
+  requestId     String?  @map("request_id")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([companyId, createdAt(sort: Desc)], map: "idx_ai_usage_logs_company_created")
+  @@index([provider, model], map: "idx_ai_usage_logs_provider_model")
+  @@index([taskType], map: "idx_ai_usage_logs_task_type")
+  @@map("ai_usage_logs")
+  @@index([companyId])
+}
+
+model Embedding {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id") @db.Uuid
+  companyId  String   @map("company_id") @db.Uuid
+  content    String
+  model      String   @default("text-embedding-3-small")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([entityType, entityId])
+  @@index([entityType, companyId])
+  @@map("embeddings")
+  @@index([companyId])
+}
