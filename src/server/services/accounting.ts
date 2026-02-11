@@ -283,13 +283,13 @@ export class AccountingService {
     // Criar contas em ordem (pais primeiro) — em transação para atomicidade
     const createdAccounts = new Map<string, string>();
 
-    await this.prisma.$transaction(async (tx: Record<string, unknown>) => {
-      const txPrisma = tx as unknown as typeof this.prisma;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await this.prisma.$transaction(async (tx: any) => {
       for (const account of defaultAccounts) {
         const parentCode = deriveParentCode(account.code);
         const parentId = parentCode ? createdAccounts.get(parentCode) ?? null : null;
 
-        const created = await txPrisma.chartOfAccounts.create({
+        const created = await tx.chartOfAccounts.create({
           data: {
             companyId,
             code: account.code,
@@ -720,7 +720,7 @@ export class AccountingService {
         accountName: account.name,
         level: account.level,
         amount: Math.round(balance * 100) / 100,
-        isSubtotal: !account.isAnalytical,
+        isSubtotal: false,
       };
 
       if (account.type === "REVENUE") {
