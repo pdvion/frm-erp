@@ -42,13 +42,46 @@ model NovaEntidade {
 }
 ```
 
-### 2. Criar Router tRPC
+### 2. Criar Service Layer (se lógica de negócio complexa)
+
+Se o módulo tem lógica de negócio (cálculos, validações, regras), criar service em `src/server/services/[nome].ts`:
+
+```typescript
+import type { PrismaClient } from "@prisma/client";
+
+// Funções puras (testáveis sem mock)
+export function calcularAlgo(valor: number): number {
+  return Math.round(valor * 1.1 * 100) / 100;
+}
+
+// Classe com Prisma (recebe client tenant-scoped)
+export class NomeService {
+  constructor(private prisma: PrismaClient) {}
+
+  async criarEntidade(input: CreateInput) {
+    // Lógica de negócio + persistência
+    return this.prisma.entidade.create({ data: { ... } });
+  }
+}
+```
+
+**Padrão consolidado** (PRs #47-#52):
+- Funções puras exportadas no topo (cálculos, validações)
+- Classe `XxxService` recebe `PrismaClient` no construtor
+- Router instancia: `new NomeService(ctx.prisma)`
+- Testes em `src/server/services/[nome].test.ts` com mock do Prisma
+
+### 3. Criar Router tRPC
 Criar arquivo em `src/server/routers/[nome].ts`:
+
+> **⚠️ `tenantFilter()` está DEPRECADO.** O RLS Extension filtra automaticamente por tenant.
+> Use `companyId: ctx.tenant.companyId!` diretamente nas queries.
 
 ```typescript
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
+import { NomeService } from "../services/nome";
 
 export const nomeRouter = createTRPCRouter({
   // Listar com filtro de tenant
@@ -59,16 +92,15 @@ export const nomeRouter = createTRPCRouter({
       limit: z.number().min(1).max(100).default(20),
     }).optional())
     .query(async ({ ctx, input }) => {
+      const companyId = ctx.tenant.companyId!;
       const { search, page = 1, limit = 20 } = input ?? {};
-      
-      const where = {
-        ...tenantFilter(ctx.companyId),
-        ...(search && {
-          OR: [
-            { campo: { contains: search, mode: "insensitive" as const } },
-          ],
-        }),
-      };
+
+      const where: Record<string, unknown> = { companyId };
+      if (search) {
+        where.OR = [
+          { campo: { contains: search, mode: "insensitive" } },
+        ];
+      }
 
       const [items, total] = await Promise.all([
         ctx.prisma.entidade.findMany({
@@ -88,79 +120,59 @@ export const nomeRouter = createTRPCRouter({
 
   // Buscar por ID
   byId: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.entidade.findFirst({
-        where: { id: input.id, ...tenantFilter(ctx.companyId) },
+      const companyId = ctx.tenant.companyId!;
+      const item = await ctx.prisma.entidade.findFirst({
+        where: { id: input.id, companyId },
       });
+      if (!item) throw new TRPCError({ code: "NOT_FOUND", message: "Não encontrado" });
+      return item;
     }),
 
-  // Criar
+  // Criar (delegando ao service)
   create: tenantProcedure
     .input(z.object({
       // campos obrigatórios e opcionais
     }))
     .mutation(async ({ ctx, input }) => {
-      const item = await ctx.prisma.entidade.create({
-        data: { ...input, companyId: ctx.companyId },
+      const svc = new NomeService(ctx.prisma);
+      return svc.criarEntidade({
+        ...input,
+        companyId: ctx.tenant.companyId!,
+        createdBy: ctx.tenant.userId ?? null,
       });
-
-      await auditCreate("Entidade", item, item.code?.toString(), {
-        userId: ctx.tenant.userId ?? undefined,
-        companyId: ctx.companyId,
-      });
-
-      return item;
     }),
 
   // Atualizar
   update: tenantProcedure
     .input(z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       // campos atualizáveis
     }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      
-      const old = await ctx.prisma.entidade.findFirst({
-        where: { id, ...tenantFilter(ctx.companyId, false) },
-      });
-      
-      if (!old) throw new Error("Não encontrado ou sem permissão");
-      
-      const item = await ctx.prisma.entidade.update({
-        where: { id },
-        data,
-      });
+      const companyId = ctx.tenant.companyId!;
 
-      await auditUpdate("Entidade", id, item.code?.toString(), old, item, {
-        userId: ctx.tenant.userId ?? undefined,
-        companyId: ctx.companyId,
+      const existing = await ctx.prisma.entidade.findFirst({
+        where: { id, companyId },
       });
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Não encontrado" });
 
-      return item;
+      return ctx.prisma.entidade.update({ where: { id }, data });
     }),
 
   // Deletar
   delete: tenantProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const companyId = ctx.tenant.companyId!;
       const existing = await ctx.prisma.entidade.findFirst({
-        where: { id: input.id, ...tenantFilter(ctx.companyId, false) },
+        where: { id: input.id, companyId },
       });
-      
-      if (!existing) throw new Error("Não encontrado ou sem permissão");
-      
-      const deleted = await ctx.prisma.entidade.delete({
-        where: { id: input.id },
-      });
+      if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Não encontrado" });
 
-      await auditDelete("Entidade", existing, existing.code?.toString(), {
-        userId: ctx.tenant.userId ?? undefined,
-        companyId: ctx.companyId,
-      });
-
-      return deleted;
+      return ctx.prisma.entidade.delete({ where: { id: input.id } });
     }),
 });
 ```
@@ -204,7 +216,7 @@ const results = await ctx.prisma.$queryRaw`
 `;
 ```
 
-### 3. Registrar Router
+### 4. Registrar Router
 Editar `src/server/routers/index.ts`:
 
 ```typescript
@@ -216,7 +228,7 @@ export const appRouter = createTRPCRouter({
 });
 ```
 
-### 4. Criar Páginas
+### 5. Criar Páginas
 
 **Listagem** (`src/app/[nome]/page.tsx`):
 - Header com título e botão "Novo"
@@ -253,23 +265,37 @@ const createMutation = trpc.modulo.create.useMutation({
 });
 ```
 
-### 5. Verificar Build
+### 6. Verificar Build
 // turbo
 ```bash
-pnpm type-check
+NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit
+npx vitest run
 ```
 
-### 6. Commit e Push
+### 7. Commit e Push
 ```bash
 git add -A
-git commit -m "feat([modulo]): [descrição] VIO-XXX"
-git push origin main
+git commit -m "feat([modulo]): [descrição]
+
+Ref: VIO-XXX"
+git push -u origin feat/vio-XXX-nome-feature
 ```
 
-### 7. Atualizar Linear
+### 8. Criar PR e Atualizar Linear
 Usar `mcp2_update_issue` para atualizar status da issue
 
 ## Erros Comuns
+
+### ❌ Usar tenantFilter() — DEPRECADO
+```typescript
+// ❌ ERRADO — tenantFilter está deprecado desde PR #45
+import { tenantFilter } from "../trpc";
+const where = { ...tenantFilter(ctx.companyId) };
+
+// ✅ CORRETO — usar companyId direto (RLS filtra automaticamente)
+const companyId = ctx.tenant.companyId!;
+const where = { companyId };
+```
 
 ### Lint: "mode: 'insensitive'" em queries
 ```typescript

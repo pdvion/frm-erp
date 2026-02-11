@@ -110,6 +110,7 @@ model Company {
   intercompanyTransfersTarget   IntercompanyTransfer[] @relation("IntercompanyTransferTarget")
   chartOfAccounts               ChartOfAccounts[]
   accountingEntries             AccountingEntry[]
+  fixedAssets                   FixedAsset[]
 
   @@map("companies")
 }

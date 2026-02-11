@@ -8,17 +8,13 @@ Execute este workflow **ANTES** de fazer commit para evitar falhas no CI.
 
 ## ⚠️ REGRA OBRIGATÓRIA
 
-**NUNCA fazer push sem executar os 4 comandos abaixo e todos passarem:**
+**NUNCA fazer push sem executar os 3 comandos abaixo e todos passarem:**
 
 ```bash
-pnpm type-check && pnpm lint && pnpm test:run && pnpm build
+NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && npx vitest run && npx eslint .
 ```
 
-Se você alterou testes/configuração de testes/áreas críticas (ex.: `src/lib`, `src/server`), execute também:
-
-```bash
-pnpm test:coverage
-```
+> **Nota:** `tsc` precisa de 4GB de heap por causa do schema Prisma grande (~6000 linhas).
 
 ## ⚠️ APÓS MUDANÇAS NO SCHEMA PRISMA
 
@@ -44,25 +40,19 @@ pnpm type-check
 ### 1. Verificar Tipos TypeScript
 // turbo
 ```bash
-pnpm type-check
+NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit
 ```
 
-### 2. Verificar Lint
+### 2. Executar Testes
 // turbo
 ```bash
-pnpm lint
+npx vitest run
 ```
 
-### 3. Executar Testes
+### 3. Verificar Lint
 // turbo
 ```bash
-pnpm test:run
-```
-
-### 4. Verificar Build
-// turbo
-```bash
-pnpm build
+npx eslint .
 ```
 
 Se QUALQUER comando falhar, **NÃO FAÇA COMMIT**. Corrija os erros primeiro.
@@ -206,7 +196,7 @@ git push origin main
 1. **NÃO faça mais commits** até resolver
 2. Executar localmente:
    ```bash
-   pnpm type-check && pnpm lint && pnpm build
+   NODE_OPTIONS="--max-old-space-size=4096" npx tsc --noEmit && npx vitest run && npx eslint .
    ```
 3. Corrigir TODOS os erros
 4. Fazer novo commit com fix

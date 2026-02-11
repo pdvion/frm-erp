@@ -80,6 +80,7 @@ import { employeePortalRouter } from "./employeePortal";
 import { onboardingRouter } from "./onboarding";
 import { embeddingsRouter } from "./embeddings";
 import { accountingRouter } from "./accounting";
+import { assetsRouter } from "./assets";
 
 export const appRouter = createTRPCRouter({
   nfeBatchImport: nfeBatchImportRouter,
@@ -163,6 +164,7 @@ export const appRouter = createTRPCRouter({
   onboarding: onboardingRouter,
   embeddings: embeddingsRouter,
   accounting: accountingRouter,
+  assets: assetsRouter,
 });
 
 export type AppRouter = typeof appRouter;
