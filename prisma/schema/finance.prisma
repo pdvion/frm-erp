@@ -146,6 +146,7 @@ model CostCenter {
   departments        Department[]
   payableAllocations PayableCostAllocation[]
   accountingEntryItems AccountingEntryItem[]
+  fixedAssets          FixedAsset[]            @relation("FixedAssetCostCenter")
 
   @@unique([code, companyId])
   @@index([companyId])
@@ -887,4 +888,85 @@ model AccountingEntryItem {
   @@index([accountId])
   @@index([costCenterId])
   @@map("accounting_entry_items")
+}
+
+model FixedAsset {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId           String              @map("company_id") @db.Uuid
+  code                Int
+  name                String              @db.VarChar(255)
+  description         String?
+  category            String              @db.VarChar(50) // MACHINERY, VEHICLES, FURNITURE, IT_EQUIPMENT, BUILDINGS, LAND, OTHER
+  status              String              @default("ACTIVE") @db.VarChar(20) // ACTIVE, DISPOSED, TRANSFERRED, FULLY_DEPRECIATED
+  acquisitionDate     DateTime            @map("acquisition_date") @db.Date
+  acquisitionValue    Decimal             @map("acquisition_value") @db.Decimal(15, 2)
+  residualValue       Decimal             @default(0) @map("residual_value") @db.Decimal(15, 2)
+  usefulLifeMonths    Int                 @map("useful_life_months")
+  depreciationMethod  String              @default("STRAIGHT_LINE") @map("depreciation_method") @db.VarChar(30) // STRAIGHT_LINE, DECLINING_BALANCE, SUM_OF_YEARS
+  depreciationRate    Decimal             @map("depreciation_rate") @db.Decimal(8, 4) // Taxa anual (ex: 10.0000 = 10%)
+  accumulatedDepr     Decimal             @default(0) @map("accumulated_depr") @db.Decimal(15, 2)
+  netBookValue        Decimal             @map("net_book_value") @db.Decimal(15, 2)
+  location            String?             @db.VarChar(255)
+  responsibleId       String?             @map("responsible_id") @db.Uuid
+  costCenterId        String?             @map("cost_center_id") @db.Uuid
+  supplier            String?             @db.VarChar(255)
+  invoiceNumber       String?             @map("invoice_number") @db.VarChar(50)
+  serialNumber        String?             @map("serial_number") @db.VarChar(100)
+  warrantyExpiry      DateTime?           @map("warranty_expiry") @db.Date
+  disposalDate        DateTime?           @map("disposal_date") @db.Date
+  disposalValue       Decimal?            @map("disposal_value") @db.Decimal(15, 2)
+  disposalReason      String?             @map("disposal_reason")
+  notes               String?
+  createdBy           String?             @map("created_by") @db.Uuid
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @default(now()) @updatedAt @map("updated_at")
+  company             Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  responsible         Employee?           @relation(fields: [responsibleId], references: [id], onUpdate: NoAction)
+  costCenter          CostCenter?         @relation("FixedAssetCostCenter", fields: [costCenterId], references: [id], onUpdate: NoAction)
+  depreciations       AssetDepreciation[]
+  movements           AssetMovement[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([companyId, status])
+  @@index([companyId, category])
+  @@index([responsibleId])
+  @@index([costCenterId])
+  @@map("fixed_assets")
+}
+
+model AssetDepreciation {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assetId         String     @map("asset_id") @db.Uuid
+  period          DateTime   @db.Date // Primeiro dia do mês de competência
+  depreciationValue Decimal  @map("depreciation_value") @db.Decimal(15, 2)
+  accumulatedValue  Decimal  @map("accumulated_value") @db.Decimal(15, 2)
+  netBookValue    Decimal    @map("net_book_value") @db.Decimal(15, 2)
+  rate            Decimal    @db.Decimal(8, 4) // Taxa mensal aplicada
+  createdAt       DateTime   @default(now()) @map("created_at")
+  asset           FixedAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, period])
+  @@index([assetId])
+  @@map("asset_depreciations")
+}
+
+model AssetMovement {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assetId         String     @map("asset_id") @db.Uuid
+  type            String     @db.VarChar(30) // ACQUISITION, DEPRECIATION, DISPOSAL, TRANSFER, REVALUATION, IMPAIRMENT
+  date            DateTime   @db.Date
+  value           Decimal    @db.Decimal(15, 2)
+  description     String
+  fromLocation    String?    @map("from_location") @db.VarChar(255)
+  toLocation      String?    @map("to_location") @db.VarChar(255)
+  fromCostCenterId String?   @map("from_cost_center_id") @db.Uuid
+  toCostCenterId  String?    @map("to_cost_center_id") @db.Uuid
+  createdBy       String?    @map("created_by") @db.Uuid
+  createdAt       DateTime   @default(now()) @map("created_at")
+  asset           FixedAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([assetId, type])
+  @@map("asset_movements")
 }
