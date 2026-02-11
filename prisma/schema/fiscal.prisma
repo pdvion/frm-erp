@@ -318,3 +318,191 @@ model TaxRegime {
 
   @@map("tax_regimes")
 }
+
+model FiscalObligation {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid
+  type            String    @db.VarChar(30) // SPED_FISCAL, EFD_REINF, ESOCIAL, DCTF, DIRF, ECF, ECD, GIA, SINTEGRA
+  year            Int
+  month           Int       // 1-12
+  dueDate         DateTime  @map("due_date") @db.Date
+  status          String    @default("PENDING") @db.VarChar(20) // PENDING, IN_PROGRESS, SUBMITTED, LATE, RECTIFIED
+  submittedAt     DateTime? @map("submitted_at")
+  receiptNumber   String?   @map("receipt_number") @db.VarChar(50)
+  receiptProtocol String?   @map("receipt_protocol") @db.VarChar(100)
+  isRectification Boolean   @default(false) @map("is_rectification")
+  rectificationOf String?   @map("rectification_of") @db.Uuid
+  notes           String?
+  responsibleId   String?   @map("responsible_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, type, year, month])
+  @@index([companyId])
+  @@index([companyId, status])
+  @@index([dueDate])
+  @@map("fiscal_obligations")
+}
+
+model TaxApuration {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String   @map("company_id") @db.Uuid
+  taxType         String   @map("tax_type") @db.VarChar(20) // ICMS, IPI, PIS, COFINS, ISS, IRPJ, CSLL, ICMS_ST, DIFAL
+  year            Int
+  month           Int
+  status          String   @default("OPEN") @db.VarChar(20) // OPEN, CLOSED, RECTIFIED
+  creditValue     Decimal  @default(0) @map("credit_value") @db.Decimal(15, 2)
+  debitValue      Decimal  @default(0) @map("debit_value") @db.Decimal(15, 2)
+  balanceValue    Decimal  @default(0) @map("balance_value") @db.Decimal(15, 2)
+  previousCredit  Decimal  @default(0) @map("previous_credit") @db.Decimal(15, 2)
+  amountDue       Decimal  @default(0) @map("amount_due") @db.Decimal(15, 2)
+  paidAt          DateTime? @map("paid_at")
+  paidValue       Decimal?  @map("paid_value") @db.Decimal(15, 2)
+  dareNumber      String?   @map("dare_number") @db.VarChar(50)
+  notes           String?
+  calculatedBy    String?   @map("calculated_by") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  items           TaxApurationItem[]
+
+  @@unique([companyId, taxType, year, month])
+  @@index([companyId])
+  @@index([companyId, taxType])
+  @@index([companyId, status])
+  @@map("tax_apurations")
+}
+
+model TaxApurationItem {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  apurationId     String   @map("apuration_id") @db.Uuid
+  documentType    String   @map("document_type") @db.VarChar(30)
+  documentId      String?  @map("document_id") @db.Uuid
+  documentNumber  String?  @map("document_number") @db.VarChar(50)
+  cfop            String?  @db.VarChar(10)
+  baseValue       Decimal  @default(0) @map("base_value") @db.Decimal(15, 2)
+  rate            Decimal  @default(0) @db.Decimal(7, 4)
+  taxValue        Decimal  @default(0) @map("tax_value") @db.Decimal(15, 2)
+  nature          String   @db.VarChar(10)
+  description     String?  @db.VarChar(255)
+  createdAt       DateTime @default(now()) @map("created_at")
+  apuration       TaxApuration @relation(fields: [apurationId], references: [id], onDelete: Cascade)
+
+  @@index([apurationId])
+  @@map("tax_apuration_items")
+}
+
+model NfseConfig {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId        String   @unique @map("company_id") @db.Uuid
+  providerCode     String   @map("provider_code") @db.VarChar(30)
+  municipalityCode String   @map("municipality_code") @db.VarChar(10)
+  environment      String   @default("HOMOLOGATION") @db.VarChar(20)
+  certificatePath  String?  @map("certificate_path") @db.VarChar(500)
+  login            String?  @db.VarChar(100)
+  password         String?  @db.VarChar(255)
+  token            String?  @db.VarChar(500)
+  cnae             String?  @db.VarChar(10)
+  serviceCode      String?  @map("service_code") @db.VarChar(20)
+  issRate          Decimal? @map("iss_rate") @db.Decimal(5, 2)
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  company          Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("nfse_configs")
+}
+
+model NfseIssued {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId        String    @map("company_id") @db.Uuid
+  code             Int
+  customerId       String    @map("customer_id") @db.Uuid
+  serviceCode      String    @map("service_code") @db.VarChar(20)
+  cnae             String?   @db.VarChar(10)
+  description      String
+  competenceDate   DateTime  @map("competence_date") @db.Date
+  issueDate        DateTime? @map("issue_date")
+  serviceValue     Decimal   @map("service_value") @db.Decimal(15, 2)
+  deductionValue   Decimal   @default(0) @map("deduction_value") @db.Decimal(15, 2)
+  baseValue        Decimal   @map("base_value") @db.Decimal(15, 2)
+  issRate          Decimal   @map("iss_rate") @db.Decimal(5, 2)
+  issValue         Decimal   @map("iss_value") @db.Decimal(15, 2)
+  issWithheld      Boolean   @default(false) @map("iss_withheld")
+  pisValue         Decimal   @default(0) @map("pis_value") @db.Decimal(15, 2)
+  cofinsValue      Decimal   @default(0) @map("cofins_value") @db.Decimal(15, 2)
+  irValue          Decimal   @default(0) @map("ir_value") @db.Decimal(15, 2)
+  csllValue        Decimal   @default(0) @map("csll_value") @db.Decimal(15, 2)
+  inssValue        Decimal   @default(0) @map("inss_value") @db.Decimal(15, 2)
+  netValue         Decimal   @map("net_value") @db.Decimal(15, 2)
+  status           String    @default("DRAFT") @db.VarChar(20)
+  nfseNumber       String?   @map("nfse_number") @db.VarChar(30)
+  verificationCode String?   @map("verification_code") @db.VarChar(50)
+  xmlContent       String?   @map("xml_content")
+  pdfUrl           String?   @map("pdf_url") @db.VarChar(500)
+  cancelledAt      DateTime? @map("cancelled_at")
+  cancelReason     String?   @map("cancel_reason")
+  createdBy        String?   @map("created_by") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer         Customer  @relation(fields: [customerId], references: [id], onUpdate: NoAction)
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([companyId, status])
+  @@index([customerId])
+  @@index([competenceDate])
+  @@map("nfse_issued")
+}
+
+model DifalCalculation {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  documentType     String   @map("document_type") @db.VarChar(20)
+  documentId       String?  @map("document_id") @db.Uuid
+  documentNumber   String?  @map("document_number") @db.VarChar(50)
+  ufOrigem         String   @map("uf_origem") @db.VarChar(2)
+  ufDestino        String   @map("uf_destino") @db.VarChar(2)
+  productValue     Decimal  @map("product_value") @db.Decimal(15, 2)
+  icmsOrigemRate   Decimal  @map("icms_origem_rate") @db.Decimal(5, 2)
+  icmsDestinoRate  Decimal  @map("icms_destino_rate") @db.Decimal(5, 2)
+  icmsInterRate    Decimal  @map("icms_inter_rate") @db.Decimal(5, 2)
+  fcp              Decimal  @default(0) @db.Decimal(15, 2)
+  difalValue       Decimal  @map("difal_value") @db.Decimal(15, 2)
+  difalOrigem      Decimal  @map("difal_origem") @db.Decimal(15, 2)
+  difalDestino     Decimal  @map("difal_destino") @db.Decimal(15, 2)
+  icmsStBase       Decimal? @map("icms_st_base") @db.Decimal(15, 2)
+  icmsStMva        Decimal? @map("icms_st_mva") @db.Decimal(7, 4)
+  icmsStValue      Decimal? @map("icms_st_value") @db.Decimal(15, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+  company          Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([companyId, ufOrigem, ufDestino])
+  @@map("difal_calculations")
+}
+
+model BlocoKRecord {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String   @map("company_id") @db.Uuid
+  year            Int
+  month           Int
+  recordType      String   @map("record_type") @db.VarChar(10)
+  materialId      String?  @map("material_id") @db.Uuid
+  quantity         Decimal? @db.Decimal(15, 4)
+  productionOrderId String? @map("production_order_id") @db.Uuid
+  movementDate    DateTime? @map("movement_date") @db.Date
+  movementType    String?  @map("movement_type") @db.VarChar(20)
+  originDocument  String?  @map("origin_document") @db.VarChar(50)
+  status          String   @default("PENDING") @db.VarChar(20)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([companyId, year, month])
+  @@index([materialId])
+  @@map("bloco_k_records")
+}

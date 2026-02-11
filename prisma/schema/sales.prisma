@@ -56,6 +56,7 @@ model Customer {
   contacts                Contact[]
   opportunities           Opportunity[]
   communicationLogs       CommunicationLog[]
+  nfseIssued              NfseIssued[]
 
   @@unique([code, companyId])
   @@index([cnpj])
