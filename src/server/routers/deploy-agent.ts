@@ -6,21 +6,17 @@ import { TRPCError } from "@trpc/server";
 
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { prisma } from "@/lib/prisma";
 import { parseNFeXml } from "@/lib/nfe-parser";
 import { processNFeEntities } from "@/lib/deploy-agent/entity-importer";
 import {
-  analyzeFiscalPatterns,
+  TaxCalculationService,
   getCfopDescription,
   getCstIcmsDescription,
   suggestCfopForOperation,
-} from "@/lib/deploy-agent/fiscal-rules-engine";
-import {
-  generateTaxConfiguration,
-  detectTaxRegime,
   getCstDescription,
   getDefaultInterstateAliquota,
-  generateTaxConfigReport,
-} from "@/lib/deploy-agent/tax-config";
+} from "../services/tax-calculation";
 import {
   generateFinancialConfiguration,
   generateFinancialReport,
@@ -43,7 +39,7 @@ export const deployAgentRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { status, limit, cursor } = input;
 
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
+      const invoices = await prisma.receivedInvoice.findMany({
         where: {
           ...tenantFilter(ctx.companyId),
           ...(status ? { status } : {}),
@@ -84,7 +80,7 @@ export const deployAgentRouter = createTRPCRouter({
   getImportDetails: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId),
@@ -125,7 +121,7 @@ export const deployAgentRouter = createTRPCRouter({
       // Verificar se fornecedor existe
       if (invoice.supplierCnpj) {
         const cnpjLimpo = invoice.supplierCnpj.replace(/\D/g, "");
-        const existingSupplier = await ctx.prisma.supplier.findFirst({
+        const existingSupplier = await prisma.supplier.findFirst({
           where: {
             OR: [
               { cnpj: { contains: cnpjLimpo } },
@@ -152,7 +148,7 @@ export const deployAgentRouter = createTRPCRouter({
 
       // Verificar materiais
       for (const item of invoice.items) {
-        const existingMaterial = await ctx.prisma.material.findFirst({
+        const existingMaterial = await prisma.material.findFirst({
           where: {
             internalCode: item.productCode,
             ...tenantFilter(ctx.companyId),
@@ -187,7 +183,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId),
@@ -221,7 +217,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId),
@@ -241,7 +237,7 @@ export const deployAgentRouter = createTRPCRouter({
       });
 
       // Atualizar status da NFe
-      await ctx.prisma.receivedInvoice.update({
+      await prisma.receivedInvoice.update({
         where: { id: input.invoiceId },
         data: {
           status: "APPROVED",
@@ -251,7 +247,7 @@ export const deployAgentRouter = createTRPCRouter({
 
       // Vincular fornecedor se foi criado/encontrado
       if (summary.suppliers.length > 0 && summary.suppliers[0].id) {
-        await ctx.prisma.receivedInvoice.update({
+        await prisma.receivedInvoice.update({
           where: { id: input.invoiceId },
           data: { supplierId: summary.suppliers[0].id },
         });
@@ -271,7 +267,7 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.update({
+      const invoice = await prisma.receivedInvoice.update({
         where: {
           id: input.invoiceId,
           companyId: ctx.companyId,
@@ -291,19 +287,19 @@ export const deployAgentRouter = createTRPCRouter({
    */
   getStats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, approved, rejected, totalSuppliers, totalMaterials] = await Promise.all([
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "PENDING" },
       }),
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "APPROVED" },
       }),
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId), status: "REJECTED" },
       }),
-      ctx.prisma.supplier.count({
+      prisma.supplier.count({
         where: tenantFilter(ctx.companyId),
       }),
-      ctx.prisma.material.count({
+      prisma.material.count({
         where: tenantFilter(ctx.companyId),
       }),
     ]);
@@ -329,29 +325,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      return taxService.analyzeFiscal({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
-
-      return analyzeFiscalPatterns(parsedNfes);
     }),
 
   /**
@@ -413,29 +392,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      return taxService.generateTaxConfig({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
-
-      return generateTaxConfiguration(parsedNfes);
     }),
 
   /**
@@ -449,29 +411,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      return taxService.detectRegime({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
-
-      return detectTaxRegime(parsedNfes);
     }),
 
   /**
@@ -485,33 +430,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      return taxService.generateReport({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
-
-      const config = generateTaxConfiguration(parsedNfes);
-      return {
-        report: generateTaxConfigReport(config),
-        config,
-      };
     }),
 
   /**
@@ -556,27 +480,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      const parsedNfes = await taxService.fetchAndParseNFes({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
 
       return generateFinancialConfiguration(parsedNfes);
     }),
@@ -592,27 +501,12 @@ export const deployAgentRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const invoices = await ctx.prisma.receivedInvoice.findMany({
-        where: {
-          ...tenantFilter(ctx.companyId),
-          ...(input.invoiceIds ? { id: { in: input.invoiceIds } } : {}),
-          xmlContent: { not: null },
-        },
-        take: input.limit,
-        select: { xmlContent: true },
+      const taxService = new TaxCalculationService(ctx.prisma);
+      const parsedNfes = await taxService.fetchAndParseNFes({
+        companyId: ctx.companyId,
+        invoiceIds: input.invoiceIds,
+        limit: input.limit,
       });
-
-      const parsedNfes = invoices
-        .filter((inv) => inv.xmlContent)
-        .map((inv) => {
-          try {
-            return parseNFeXml(inv.xmlContent!);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
 
       const config = generateFinancialConfiguration(parsedNfes);
       return {
@@ -658,56 +552,18 @@ export const deployAgentRouter = createTRPCRouter({
         xmlContents: z.array(z.string()),
       })
     )
-    .mutation(({ input }) => {
-      const parsedNfes = input.xmlContents
-        .map((xml) => {
-          try {
-            return parseNFeXml(xml);
-          } catch (e) {
-            console.warn("[deploy-agent] Failed to parse NFe XML:", e);
-            return null;
-          }
-        })
-        .filter((nfe): nfe is NonNullable<typeof nfe> => nfe !== null);
+    .mutation(({ input, ctx }) => {
+      const taxService = new TaxCalculationService(ctx.prisma);
+      const result = taxService.analyzeXmlBatch(input.xmlContents);
 
-      if (parsedNfes.length === 0) {
-        return {
-          success: false,
-          error: "Nenhum XML válido encontrado",
-          taxConfig: null,
-          financialConfig: null,
-          fiscalPatterns: null,
-          entities: null,
-        };
-      }
-
-      const taxConfig = generateTaxConfiguration(parsedNfes);
-      const financialConfig = generateFinancialConfiguration(parsedNfes);
-      const fiscalPatterns = analyzeFiscalPatterns(parsedNfes);
-
-      const suppliers = new Set<string>();
-      const materials = new Set<string>();
-
-      for (const nfe of parsedNfes) {
-        if (nfe.emitente?.cnpj) {
-          suppliers.add(nfe.emitente.cnpj);
-        }
-        for (const item of nfe.itens) {
-          if (item.codigo) {
-            materials.add(item.codigo);
-          }
-        }
-      }
+      // Adicionar financialConfig separadamente (não faz parte do TaxCalculationService)
+      const financialConfig = result.parsedNfes.length > 0
+        ? generateFinancialConfiguration(result.parsedNfes)
+        : null;
 
       return {
-        success: true,
-        taxConfig,
+        ...result,
         financialConfig,
-        fiscalPatterns,
-        entities: {
-          suppliers: suppliers.size,
-          materials: materials.size,
-        },
       };
     }),
 
@@ -734,7 +590,7 @@ export const deployAgentRouter = createTRPCRouter({
       };
 
       if (input.importSuppliers) {
-        const pendingInvoices = await ctx.prisma.receivedInvoice.findMany({
+        const pendingInvoices = await prisma.receivedInvoice.findMany({
           where: {
             ...tenantFilter(ctx.companyId),
             status: "PENDING",
@@ -758,7 +614,7 @@ export const deployAgentRouter = createTRPCRouter({
         }
 
         for (const cnpj of supplierCnpjs) {
-          const exists = await ctx.prisma.supplier.findFirst({
+          const exists = await prisma.supplier.findFirst({
             where: { ...tenantFilter(ctx.companyId), cnpj },
           });
 
@@ -769,7 +625,7 @@ export const deployAgentRouter = createTRPCRouter({
       }
 
       if (input.importMaterials) {
-        const pendingInvoices = await ctx.prisma.receivedInvoice.findMany({
+        const pendingInvoices = await prisma.receivedInvoice.findMany({
           where: {
             ...tenantFilter(ctx.companyId),
             status: "PENDING",
@@ -798,7 +654,7 @@ export const deployAgentRouter = createTRPCRouter({
           const numericCode = parseInt(materialCode, 10);
           if (isNaN(numericCode)) continue;
 
-          const exists = await ctx.prisma.material.findFirst({
+          const exists = await prisma.material.findFirst({
             where: { ...tenantFilter(ctx.companyId), code: numericCode },
           });
 
