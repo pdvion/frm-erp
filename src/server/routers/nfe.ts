@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
+import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { parseNFeXml, validateNFeXml, type NFeParsed } from "@/lib/nfe-parser";
 import { tenantFilter } from "../trpc";
+import { InvoiceService } from "../services/invoice";
 
 export const nfeRouter = createTRPCRouter({
   // Importar XML de NFe
@@ -32,7 +34,7 @@ export const nfeRouter = createTRPCRouter({
       }
 
       // Verificar se já existe
-      const existing = await ctx.prisma.receivedInvoice.findUnique({
+      const existing = await prisma.receivedInvoice.findUnique({
         where: { accessKey: parsed.chaveAcesso },
       });
 
@@ -45,7 +47,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Buscar fornecedor pelo CNPJ
       const cnpjLimpo = parsed.emitente.cnpj.replace(/\D/g, "");
-      const supplier = await ctx.prisma.supplier.findFirst({
+      const supplier = await prisma.supplier.findFirst({
         where: {
           cnpj: {
             contains: cnpjLimpo,
@@ -57,7 +59,7 @@ export const nfeRouter = createTRPCRouter({
       const productCodes = parsed.itens.map((item) => item.codigo);
       const productCodesAsNumbers = productCodes.map((c) => parseInt(c, 10)).filter((n) => !isNaN(n));
       
-      const materials = await ctx.prisma.material.findMany({
+      const materials = await prisma.material.findMany({
         where: {
           OR: [
             { code: { in: productCodesAsNumbers } },
@@ -75,7 +77,7 @@ export const nfeRouter = createTRPCRouter({
       });
 
       // Criar NFe e itens com vinculação de materiais
-      const invoice = await ctx.prisma.receivedInvoice.create({
+      const invoice = await prisma.receivedInvoice.create({
         data: {
           accessKey: parsed.chaveAcesso,
           invoiceNumber: parsed.numero,
@@ -158,7 +160,7 @@ export const nfeRouter = createTRPCRouter({
           const parsed = parseNFeXml(xmlContent);
 
           // Verificar duplicata
-          const existing = await ctx.prisma.receivedInvoice.findUnique({
+          const existing = await prisma.receivedInvoice.findUnique({
             where: { accessKey: parsed.chaveAcesso },
           });
 
@@ -174,12 +176,12 @@ export const nfeRouter = createTRPCRouter({
 
           // Buscar fornecedor
           const cnpjLimpo = parsed.emitente.cnpj.replace(/\D/g, "");
-          const supplier = await ctx.prisma.supplier.findFirst({
+          const supplier = await prisma.supplier.findFirst({
             where: { cnpj: { contains: cnpjLimpo } },
           });
 
           // Criar NFe
-          const created = await ctx.prisma.receivedInvoice.create({
+          const created = await prisma.receivedInvoice.create({
             data: {
               accessKey: parsed.chaveAcesso,
               invoiceNumber: parsed.numero,
@@ -273,7 +275,7 @@ export const nfeRouter = createTRPCRouter({
       startOfMonth.setHours(0, 0, 0, 0);
 
       const [invoices, total, pending, approvedMonth, rejected, totalValueMonth] = await Promise.all([
-        ctx.prisma.receivedInvoice.findMany({
+        prisma.receivedInvoice.findMany({
           where,
           include: {
             supplier: {
@@ -285,21 +287,21 @@ export const nfeRouter = createTRPCRouter({
           skip: (input.page - 1) * input.limit,
           take: input.limit,
         }),
-        ctx.prisma.receivedInvoice.count({ where }),
-        ctx.prisma.receivedInvoice.count({
+        prisma.receivedInvoice.count({ where }),
+        prisma.receivedInvoice.count({
           where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" },
         }),
-        ctx.prisma.receivedInvoice.count({
+        prisma.receivedInvoice.count({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: "APPROVED",
             approvedAt: { gte: startOfMonth },
           },
         }),
-        ctx.prisma.receivedInvoice.count({
+        prisma.receivedInvoice.count({
           where: { ...tenantFilter(ctx.companyId, false), status: "REJECTED" },
         }),
-        ctx.prisma.receivedInvoice.aggregate({
+        prisma.receivedInvoice.aggregate({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: "APPROVED",
@@ -332,7 +334,7 @@ export const nfeRouter = createTRPCRouter({
       id: z.string(),
     }))
     .query(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -372,8 +374,8 @@ export const nfeRouter = createTRPCRouter({
       itemId: z.string(),
       materialId: z.string(),
     }))
-    .mutation(async ({ input, ctx }) => {
-      const item = await ctx.prisma.receivedInvoiceItem.update({
+    .mutation(async ({ input }) => {
+      const item = await prisma.receivedInvoiceItem.update({
         where: { id: input.itemId },
         data: {
           materialId: input.materialId,
@@ -391,8 +393,8 @@ export const nfeRouter = createTRPCRouter({
       invoiceId: z.string(),
       purchaseOrderId: z.string(),
     }))
-    .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.update({
+    .mutation(async ({ input }) => {
+      const invoice = await prisma.receivedInvoice.update({
         where: { id: input.invoiceId },
         data: { purchaseOrderId: input.purchaseOrderId },
         include: { purchaseOrder: true },
@@ -407,7 +409,7 @@ export const nfeRouter = createTRPCRouter({
       id: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -438,91 +440,38 @@ export const nfeRouter = createTRPCRouter({
         });
       }
 
-      // Criar movimentações de estoque para cada item
-      const movements = [];
+      // Processar entrada de estoque e side-effects via InvoiceService
+      const invoiceService = new InvoiceService(ctx.prisma);
+      const movementIds: string[] = [];
+
       for (const item of invoice.items) {
         if (!item.materialId) continue;
 
-        // Buscar ou criar registro de estoque
-        let inventory = await ctx.prisma.inventory.findFirst({
-          where: {
-            materialId: item.materialId,
-            ...tenantFilter(ctx.companyId, false),
-          },
+        const movementId = await invoiceService.processStockEntry(prisma, {
+          materialId: item.materialId,
+          companyId: ctx.companyId,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          supplierName: invoice.supplierName,
+          supplierId: invoice.supplierId,
         });
-
-        if (!inventory) {
-          // Criar registro de estoque
-          inventory = await ctx.prisma.inventory.create({
-            data: {
-              materialId: item.materialId,
-              quantity: 0,
-              unitCost: item.unitPrice,
-              totalCost: 0,
-              companyId: ctx.companyId,
-            },
-          });
-        }
-
-        // Calcular novo custo médio
-        const currentTotal = Number(inventory.quantity) * Number(inventory.unitCost);
-        const newTotal = Number(item.quantity) * Number(item.unitPrice);
-        const newQuantity = Number(inventory.quantity) + Number(item.quantity);
-        const newUnitCost = newQuantity > 0 ? (currentTotal + newTotal) / newQuantity : item.unitPrice;
-
-        // Atualizar estoque
-        await ctx.prisma.inventory.update({
-          where: { id: inventory.id },
-          data: {
-            quantity: newQuantity,
-            unitCost: newUnitCost,
-            totalCost: newQuantity * Number(newUnitCost),
-            availableQty: newQuantity - Number(inventory.reservedQty),
-            lastMovementAt: new Date(),
-          },
-        });
-
-        // Criar movimentação de entrada
-        const movement = await ctx.prisma.inventoryMovement.create({
-          data: {
-            inventoryId: inventory.id,
-            movementType: "ENTRY",
-            quantity: item.quantity,
-            unitCost: item.unitPrice,
-            totalCost: item.totalPrice,
-            balanceAfter: newQuantity,
-            documentType: "NFE",
-            documentNumber: String(invoice.invoiceNumber),
-            documentId: invoice.id,
-            supplierId: invoice.supplierId,
-            notes: `Entrada via NFe ${invoice.invoiceNumber} - ${invoice.supplierName}`,
-          },
-        });
-        movements.push(movement);
+        movementIds.push(movementId);
 
         // Atualizar preço do fornecedor
         if (invoice.supplierId) {
-          const supplierMaterial = await ctx.prisma.supplierMaterial.findFirst({
-            where: {
-              supplierId: invoice.supplierId,
-              materialId: item.materialId,
-            },
+          await invoiceService.updateSupplierPrice(prisma, {
+            supplierId: invoice.supplierId,
+            materialId: item.materialId,
+            unitPrice: item.unitPrice,
           });
-
-          if (supplierMaterial) {
-            await ctx.prisma.supplierMaterial.update({
-              where: { id: supplierMaterial.id },
-              data: {
-                lastPrice: item.unitPrice,
-                lastPriceDate: new Date(),
-              },
-            });
-          }
         }
       }
 
       // Atualizar status da NFe
-      const updated = await ctx.prisma.receivedInvoice.update({
+      const updated = await prisma.receivedInvoice.update({
         where: { id: input.id },
         data: {
           status: "APPROVED",
@@ -534,66 +483,26 @@ export const nfeRouter = createTRPCRouter({
 
       // Atualizar status do pedido de compra se vinculado
       if (invoice.purchaseOrderId) {
-        // Verificar se todas as NFes do pedido foram recebidas
-        const pendingInvoices = await ctx.prisma.receivedInvoice.count({
-          where: {
-            purchaseOrderId: invoice.purchaseOrderId,
-            status: { not: "APPROVED" },
-          },
-        });
-
-        if (pendingInvoices === 0) {
-          await ctx.prisma.purchaseOrder.update({
-            where: { id: invoice.purchaseOrderId },
-            data: { status: "COMPLETED" },
-          });
-        } else {
-          await ctx.prisma.purchaseOrder.update({
-            where: { id: invoice.purchaseOrderId },
-            data: { status: "PARTIAL" },
-          });
-        }
+        await invoiceService.updatePurchaseOrderStatus(prisma, invoice.purchaseOrderId);
       }
 
       // Gerar título a pagar automaticamente
       let payableId: string | null = null;
       if (invoice.supplierId && Number(invoice.totalInvoice) > 0) {
-        // Gerar código sequencial para o título
-        const lastPayable = await ctx.prisma.accountsPayable.findFirst({
-          where: tenantFilter(ctx.companyId, false),
-          orderBy: { code: "desc" },
+        payableId = await invoiceService.generatePayable(prisma, {
+          companyId: ctx.companyId,
+          supplierId: invoice.supplierId,
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          supplierName: invoice.supplierName,
+          issueDate: invoice.issueDate,
+          totalInvoice: invoice.totalInvoice,
         });
-        const nextCode = (lastPayable?.code || 0) + 1;
-
-        // Calcular data de vencimento (30 dias após emissão, ou usar duplicatas se existirem)
-        const dueDate = new Date(invoice.issueDate);
-        dueDate.setDate(dueDate.getDate() + 30);
-
-        // Criar título a pagar
-        const payable = await ctx.prisma.accountsPayable.create({
-          data: {
-            code: nextCode,
-            supplierId: invoice.supplierId,
-            description: `NFe ${invoice.invoiceNumber} - ${invoice.supplierName}`,
-            documentNumber: String(invoice.invoiceNumber),
-            documentType: "INVOICE",
-            documentId: invoice.id,
-            invoiceId: invoice.id,
-            issueDate: invoice.issueDate,
-            dueDate,
-            originalValue: invoice.totalInvoice,
-            netValue: invoice.totalInvoice,
-            status: "PENDING",
-            companyId: ctx.companyId,
-            notes: `Título gerado automaticamente a partir da NFe ${invoice.invoiceNumber}`,
-          },
-        });
-        payableId = payable.id;
       }
 
       return {
         invoice: updated,
-        movementsCreated: movements.length,
+        movementsCreated: movementIds.length,
         payableId,
       };
     }),
@@ -605,7 +514,7 @@ export const nfeRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.update({
+      const invoice = await prisma.receivedInvoice.update({
         where: { id: input.id },
         data: {
           status: "REJECTED",
@@ -625,7 +534,7 @@ export const nfeRouter = createTRPCRouter({
       createIfNotFound: z.boolean().default(false),
     }))
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId, false),
@@ -641,7 +550,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Buscar fornecedor pelo CNPJ
       const cnpjLimpo = invoice.supplierCnpj.replace(/\D/g, "");
-      let supplier = await ctx.prisma.supplier.findFirst({
+      let supplier = await prisma.supplier.findFirst({
         where: {
           cnpj: { contains: cnpjLimpo },
         },
@@ -649,13 +558,13 @@ export const nfeRouter = createTRPCRouter({
 
       if (!supplier && input.createIfNotFound) {
         // Obter próximo código
-        const lastSupplier = await ctx.prisma.supplier.findFirst({
+        const lastSupplier = await prisma.supplier.findFirst({
           orderBy: { code: "desc" },
         });
         const nextCode = (lastSupplier?.code || 0) + 1;
 
         // Criar fornecedor
-        supplier = await ctx.prisma.supplier.create({
+        supplier = await prisma.supplier.create({
           data: {
             code: nextCode,
             companyName: invoice.supplierName,
@@ -667,7 +576,7 @@ export const nfeRouter = createTRPCRouter({
 
       if (supplier) {
         // Vincular à NFe
-        await ctx.prisma.receivedInvoice.update({
+        await prisma.receivedInvoice.update({
           where: { id: input.invoiceId },
           data: { supplierId: supplier.id },
         });
@@ -686,7 +595,7 @@ export const nfeRouter = createTRPCRouter({
       itemId: z.string(),
     }))
     .query(async ({ input, ctx }) => {
-      const item = await ctx.prisma.receivedInvoiceItem.findUnique({
+      const item = await prisma.receivedInvoiceItem.findUnique({
         where: { id: input.itemId },
         include: {
           invoice: true,
@@ -702,7 +611,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Buscar por código do fornecedor (SupplierMaterial)
       const bySupplierCode = item.invoice.supplierId
-        ? await ctx.prisma.supplierMaterial.findMany({
+        ? await prisma.supplierMaterial.findMany({
           where: {
             supplierId: item.invoice.supplierId,
             supplierCode: item.productCode,
@@ -718,7 +627,7 @@ export const nfeRouter = createTRPCRouter({
         .filter((t) => t.length > 3)
         .slice(0, 3);
 
-      const byDescription = await ctx.prisma.material.findMany({
+      const byDescription = await prisma.material.findMany({
         where: {
           ...tenantFilter(ctx.companyId, false),
           OR: searchTerms.map((term) => ({
@@ -730,7 +639,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Buscar por NCM
       const byNcm = item.ncm
-        ? await ctx.prisma.material.findMany({
+        ? await prisma.material.findMany({
           where: {
             ...tenantFilter(ctx.companyId, false),
             ncm: item.ncm,
@@ -764,8 +673,8 @@ export const nfeRouter = createTRPCRouter({
       materialId: z.string(),
       saveForFuture: z.boolean().default(true),
     }))
-    .mutation(async ({ input, ctx }) => {
-      const item = await ctx.prisma.receivedInvoiceItem.findUnique({
+    .mutation(async ({ input }) => {
+      const item = await prisma.receivedInvoiceItem.findUnique({
         where: { id: input.itemId },
         include: { invoice: true },
       });
@@ -778,7 +687,7 @@ export const nfeRouter = createTRPCRouter({
       }
 
       // Atualizar item
-      const updatedItem = await ctx.prisma.receivedInvoiceItem.update({
+      const updatedItem = await prisma.receivedInvoiceItem.update({
         where: { id: input.itemId },
         data: {
           materialId: input.materialId,
@@ -790,7 +699,7 @@ export const nfeRouter = createTRPCRouter({
       // Salvar vínculo para futuras importações
       if (input.saveForFuture && item.invoice.supplierId) {
         // Verificar se já existe
-        const existing = await ctx.prisma.supplierMaterial.findFirst({
+        const existing = await prisma.supplierMaterial.findFirst({
           where: {
             supplierId: item.invoice.supplierId,
             materialId: input.materialId,
@@ -798,7 +707,7 @@ export const nfeRouter = createTRPCRouter({
         });
 
         if (!existing) {
-          await ctx.prisma.supplierMaterial.create({
+          await prisma.supplierMaterial.create({
             data: {
               supplierId: item.invoice.supplierId,
               materialId: input.materialId,
@@ -809,7 +718,7 @@ export const nfeRouter = createTRPCRouter({
           });
         } else {
           // Atualizar código e preço
-          await ctx.prisma.supplierMaterial.update({
+          await prisma.supplierMaterial.update({
             where: { id: existing.id },
             data: {
               supplierCode: item.productCode,
@@ -829,7 +738,7 @@ export const nfeRouter = createTRPCRouter({
       invoiceId: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId, false),
@@ -854,7 +763,7 @@ export const nfeRouter = createTRPCRouter({
       for (const item of invoice.items) {
         // Buscar por código do fornecedor
         if (invoice.supplierId) {
-          const supplierMaterial = await ctx.prisma.supplierMaterial.findFirst({
+          const supplierMaterial = await prisma.supplierMaterial.findFirst({
             where: {
               supplierId: invoice.supplierId,
               supplierCode: item.productCode,
@@ -862,7 +771,7 @@ export const nfeRouter = createTRPCRouter({
           });
 
           if (supplierMaterial) {
-            await ctx.prisma.receivedInvoiceItem.update({
+            await prisma.receivedInvoiceItem.update({
               where: { id: item.id },
               data: {
                 materialId: supplierMaterial.materialId,
@@ -875,7 +784,7 @@ export const nfeRouter = createTRPCRouter({
         }
 
         // Marcar como não encontrado
-        await ctx.prisma.receivedInvoiceItem.update({
+        await prisma.receivedInvoiceItem.update({
           where: { id: item.id },
           data: { matchStatus: "NOT_FOUND" },
         });
@@ -896,7 +805,7 @@ export const nfeRouter = createTRPCRouter({
       categoryId: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const item = await ctx.prisma.receivedInvoiceItem.findUnique({
+      const item = await prisma.receivedInvoiceItem.findUnique({
         where: { id: input.itemId },
         include: { invoice: true },
       });
@@ -909,13 +818,13 @@ export const nfeRouter = createTRPCRouter({
       }
 
       // Obter próximo código
-      const lastMaterial = await ctx.prisma.material.findFirst({
+      const lastMaterial = await prisma.material.findFirst({
         orderBy: { code: "desc" },
       });
       const nextCode = (lastMaterial?.code || 0) + 1;
 
       // Criar material
-      const material = await ctx.prisma.material.create({
+      const material = await prisma.material.create({
         data: {
           code: nextCode,
           description: item.productName,
@@ -927,7 +836,7 @@ export const nfeRouter = createTRPCRouter({
       });
 
       // Vincular item ao material
-      await ctx.prisma.receivedInvoiceItem.update({
+      await prisma.receivedInvoiceItem.update({
         where: { id: input.itemId },
         data: {
           materialId: material.id,
@@ -937,7 +846,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Criar vínculo fornecedor-material
       if (item.invoice.supplierId) {
-        await ctx.prisma.supplierMaterial.create({
+        await prisma.supplierMaterial.create({
           data: {
             supplierId: item.invoice.supplierId,
             materialId: material.id,
@@ -959,7 +868,7 @@ export const nfeRouter = createTRPCRouter({
     }))
     .query(async ({ input, ctx }) => {
       const [invoice, purchaseOrder] = await Promise.all([
-        ctx.prisma.receivedInvoice.findFirst({
+        prisma.receivedInvoice.findFirst({
           where: {
             id: input.invoiceId,
             ...tenantFilter(ctx.companyId, false),
@@ -970,7 +879,7 @@ export const nfeRouter = createTRPCRouter({
             },
           },
         }),
-        ctx.prisma.purchaseOrder.findFirst({
+        prisma.purchaseOrder.findFirst({
           where: {
             id: input.purchaseOrderId,
             ...tenantFilter(ctx.companyId, false),
@@ -1128,9 +1037,9 @@ export const nfeRouter = createTRPCRouter({
         divergenceNote: z.string().optional(),
       })),
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       for (const item of input.items) {
-        await ctx.prisma.receivedInvoiceItem.update({
+        await prisma.receivedInvoiceItem.update({
           where: { id: item.itemId },
           data: {
             matchStatus: item.status,
@@ -1140,7 +1049,7 @@ export const nfeRouter = createTRPCRouter({
       }
 
       // Atualizar status da NFe para VALIDATED se todos os itens foram verificados
-      const invoice = await ctx.prisma.receivedInvoice.findUnique({
+      const invoice = await prisma.receivedInvoice.findUnique({
         where: { id: input.invoiceId },
         include: { items: true },
       });
@@ -1151,7 +1060,7 @@ export const nfeRouter = createTRPCRouter({
         );
 
         if (allVerified) {
-          await ctx.prisma.receivedInvoice.update({
+          await prisma.receivedInvoice.update({
             where: { id: input.invoiceId },
             data: { status: "VALIDATED" },
           });
@@ -1167,7 +1076,7 @@ export const nfeRouter = createTRPCRouter({
       invoiceId: z.string(),
     }))
     .query(async ({ input, ctx }) => {
-      const invoice = await ctx.prisma.receivedInvoice.findFirst({
+      const invoice = await prisma.receivedInvoice.findFirst({
         where: {
           id: input.invoiceId,
           ...tenantFilter(ctx.companyId, false),
@@ -1187,7 +1096,7 @@ export const nfeRouter = createTRPCRouter({
 
       // Buscar pedidos do mesmo fornecedor que ainda não foram totalmente recebidos
       const supplierId = invoice.supplierId;
-      const purchaseOrders = await ctx.prisma.purchaseOrder.findMany({
+      const purchaseOrders = await prisma.purchaseOrder.findMany({
         where: {
           ...tenantFilter(ctx.companyId, false),
           supplierId: supplierId,
@@ -1225,19 +1134,19 @@ export const nfeRouter = createTRPCRouter({
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [pending, validated, approved, rejected, totalValue] = await Promise.all([
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId, false), status: "PENDING" },
       }),
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId, false), status: "VALIDATED" },
       }),
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId, false), status: "APPROVED" },
       }),
-      ctx.prisma.receivedInvoice.count({
+      prisma.receivedInvoice.count({
         where: { ...tenantFilter(ctx.companyId, false), status: "REJECTED" },
       }),
-      ctx.prisma.receivedInvoice.aggregate({
+      prisma.receivedInvoice.aggregate({
         where: { ...tenantFilter(ctx.companyId, false), status: "APPROVED" },
         _sum: { totalInvoice: true },
       }),
@@ -1259,7 +1168,7 @@ export const nfeRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Buscar NFe com XML
-      const invoice = await ctx.prisma.receivedInvoice.findUnique({
+      const invoice = await prisma.receivedInvoice.findUnique({
         where: { id: input.invoiceId },
         include: {
           supplier: true,
@@ -1301,9 +1210,9 @@ export const nfeRouter = createTRPCRouter({
 
       if (nfeData.duplicatas.length === 0) {
         // Se não há duplicatas, criar um título único com o valor total
-        const nextCode = await getNextPayableCode(ctx.prisma, ctx.companyId);
+        const nextCode = await getNextPayableCode(ctx.companyId);
         
-        await ctx.prisma.accountsPayable.create({
+        await prisma.accountsPayable.create({
           data: {
             code: nextCode,
             companyId: ctx.companyId,
@@ -1331,9 +1240,9 @@ export const nfeRouter = createTRPCRouter({
 
       for (let i = 0; i < nfeData.duplicatas.length; i++) {
         const dup = nfeData.duplicatas[i];
-        const nextCode = await getNextPayableCode(ctx.prisma, ctx.companyId);
+        const nextCode = await getNextPayableCode(ctx.companyId);
 
-        const payable = await ctx.prisma.accountsPayable.create({
+        const payable = await prisma.accountsPayable.create({
           data: {
             code: nextCode,
             companyId: ctx.companyId,
@@ -1364,8 +1273,7 @@ export const nfeRouter = createTRPCRouter({
 });
 
 // Função auxiliar para obter próximo código de título
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getNextPayableCode(prisma: any, companyId: string): Promise<number> {
+async function getNextPayableCode(companyId: string): Promise<number> {
   const lastPayable = await prisma.accountsPayable.findFirst({
     where: { companyId },
     orderBy: { code: "desc" },
