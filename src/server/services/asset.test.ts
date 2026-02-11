@@ -166,10 +166,13 @@ describe("AssetService", () => {
       assetDepreciation: {
         create: vi.fn().mockResolvedValue({}),
         findUnique: vi.fn().mockResolvedValue(null),
+        findMany: vi.fn().mockResolvedValue([]),
       },
       assetMovement: {
         create: vi.fn().mockResolvedValue({}),
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      $transaction: vi.fn().mockImplementation((fn: any) => fn(mockPrisma)),
     };
     service = new AssetService(mockPrisma);
   });
@@ -317,7 +320,7 @@ describe("AssetService", () => {
           acquisitionDate: new Date("2025-01-01"),
         },
       ]);
-      mockPrisma.assetDepreciation.findUnique.mockResolvedValue({ id: "dep-1" });
+      mockPrisma.assetDepreciation.findMany.mockResolvedValue([{ assetId: "asset-1" }]);
 
       const results = await service.processMonthlyDepreciation("comp-1", new Date("2026-02-01"));
       expect(results).toHaveLength(0);
@@ -362,7 +365,7 @@ describe("AssetService", () => {
 
   describe("disposeAsset", () => {
     it("should dispose asset and calculate gain", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "ACTIVE",
         netBookValue: 50000,
@@ -370,6 +373,7 @@ describe("AssetService", () => {
 
       const result = await service.disposeAsset({
         assetId: "asset-1",
+        companyId: "comp-1",
         disposalDate: new Date("2026-03-01"),
         disposalValue: 60000,
         disposalReason: "Venda",
@@ -384,7 +388,7 @@ describe("AssetService", () => {
     });
 
     it("should dispose asset and calculate loss", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "ACTIVE",
         netBookValue: 50000,
@@ -392,6 +396,7 @@ describe("AssetService", () => {
 
       const result = await service.disposeAsset({
         assetId: "asset-1",
+        companyId: "comp-1",
         disposalDate: new Date("2026-03-01"),
         disposalValue: 30000,
         disposalReason: "Descarte",
@@ -405,6 +410,7 @@ describe("AssetService", () => {
       await expect(
         service.disposeAsset({
           assetId: "nonexistent",
+          companyId: "comp-1",
           disposalDate: new Date(),
           disposalValue: 0,
           disposalReason: "test",
@@ -413,7 +419,7 @@ describe("AssetService", () => {
     });
 
     it("should throw if asset already disposed", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "DISPOSED",
       });
@@ -421,6 +427,7 @@ describe("AssetService", () => {
       await expect(
         service.disposeAsset({
           assetId: "asset-1",
+          companyId: "comp-1",
           disposalDate: new Date(),
           disposalValue: 0,
           disposalReason: "test",
@@ -429,7 +436,7 @@ describe("AssetService", () => {
     });
 
     it("should register disposal movement", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "ACTIVE",
         netBookValue: 50000,
@@ -437,6 +444,7 @@ describe("AssetService", () => {
 
       await service.disposeAsset({
         assetId: "asset-1",
+        companyId: "comp-1",
         disposalDate: new Date("2026-03-01"),
         disposalValue: 50000,
         disposalReason: "Venda",
@@ -454,7 +462,7 @@ describe("AssetService", () => {
 
   describe("transferAsset", () => {
     it("should transfer active asset", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "ACTIVE",
         location: "Galpão A",
@@ -464,6 +472,7 @@ describe("AssetService", () => {
 
       await service.transferAsset({
         assetId: "asset-1",
+        companyId: "comp-1",
         date: new Date("2026-03-01"),
         toLocation: "Galpão B",
         toCostCenterId: "cc-2",
@@ -490,6 +499,7 @@ describe("AssetService", () => {
       await expect(
         service.transferAsset({
           assetId: "nonexistent",
+          companyId: "comp-1",
           date: new Date(),
           description: "test",
         }),
@@ -497,7 +507,7 @@ describe("AssetService", () => {
     });
 
     it("should throw if asset is disposed", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "DISPOSED",
       });
@@ -505,6 +515,7 @@ describe("AssetService", () => {
       await expect(
         service.transferAsset({
           assetId: "asset-1",
+          companyId: "comp-1",
           date: new Date(),
           description: "test",
         }),
@@ -512,7 +523,7 @@ describe("AssetService", () => {
     });
 
     it("should allow transfer of fully depreciated asset", async () => {
-      mockPrisma.fixedAsset.findUnique.mockResolvedValue({
+      mockPrisma.fixedAsset.findFirst.mockResolvedValue({
         id: "asset-1",
         status: "FULLY_DEPRECIATED",
         location: "Sala 1",
@@ -522,6 +533,7 @@ describe("AssetService", () => {
 
       await service.transferAsset({
         assetId: "asset-1",
+        companyId: "comp-1",
         date: new Date(),
         toLocation: "Sala 2",
         description: "Remanejamento",

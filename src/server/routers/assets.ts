@@ -209,6 +209,7 @@ export const assetsRouter = createTRPCRouter({
       const svc = new AssetService(ctx.prisma);
       return svc.disposeAsset({
         ...input,
+        companyId,
         userId: ctx.tenant.userId ?? null,
       });
     }),
@@ -241,6 +242,7 @@ export const assetsRouter = createTRPCRouter({
       const svc = new AssetService(ctx.prisma);
       return svc.transferAsset({
         ...input,
+        companyId,
         userId: ctx.tenant.userId ?? null,
       });
     }),

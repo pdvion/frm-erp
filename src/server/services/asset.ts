@@ -73,6 +73,7 @@ export interface DepreciationResult {
 
 export interface DisposalInput {
   assetId: string;
+  companyId: string;
   disposalDate: Date;
   disposalValue: number;
   disposalReason: string;
@@ -81,6 +82,7 @@ export interface DisposalInput {
 
 export interface TransferInput {
   assetId: string;
+  companyId: string;
   date: Date;
   toLocation?: string | null;
   toCostCenterId?: string | null;
@@ -352,9 +354,28 @@ export class AssetService {
       },
     });
 
-    const results: DepreciationResult[] = [];
+    if (assets.length === 0) return [];
+
+    // Batch: buscar todas as depreciações já existentes para este período (evita N+1)
+    const assetIds = assets.map((a) => a.id);
+    const existingDepreciations = await this.prisma.assetDepreciation.findMany({
+      where: { assetId: { in: assetIds }, period },
+      select: { assetId: true },
+    });
+    const alreadyDepreciated = new Set(existingDepreciations.map((d) => d.assetId));
+
+    // Calcular depreciações pendentes
+    const pending: Array<{
+      asset: (typeof assets)[0];
+      depreciationValue: number;
+      newAccumulated: number;
+      newNetBookValue: number;
+      monthlyRate: number;
+    }> = [];
 
     for (const asset of assets) {
+      if (alreadyDepreciated.has(asset.id)) continue;
+
       const netBookValue = Number(asset.netBookValue);
       const residualValue = Number(asset.residualValue);
       const acquisitionValue = Number(asset.acquisitionValue);
@@ -362,13 +383,6 @@ export class AssetService {
 
       if (netBookValue <= residualValue) continue;
 
-      // Verificar se já depreciou neste período
-      const existing = await this.prisma.assetDepreciation.findUnique({
-        where: { assetId_period: { assetId: asset.id, period } },
-      });
-      if (existing) continue;
-
-      // Calcular meses decorridos
       const acquisitionDate = new Date(asset.acquisitionDate);
       const elapsedMonths =
         (period.getFullYear() - acquisitionDate.getFullYear()) * 12 +
@@ -392,50 +406,59 @@ export class AssetService {
       const newNetBookValue = Math.round((acquisitionValue - newAccumulated) * 100) / 100;
       const monthlyRate = calculateMonthlyRate(annualRate);
 
-      // Criar registro de depreciação
-      await this.prisma.assetDepreciation.create({
-        data: {
+      pending.push({ asset, depreciationValue, newAccumulated, newNetBookValue, monthlyRate });
+    }
+
+    if (pending.length === 0) return [];
+
+    // Executar todas as escritas em uma única transação
+    const results: DepreciationResult[] = [];
+
+    await this.prisma.$transaction(async (tx: Record<string, unknown>) => {
+      const txPrisma = tx as unknown as typeof this.prisma;
+      for (const { asset, depreciationValue, newAccumulated, newNetBookValue, monthlyRate } of pending) {
+        await txPrisma.assetDepreciation.create({
+          data: {
+            assetId: asset.id,
+            period,
+            depreciationValue,
+            accumulatedValue: newAccumulated,
+            netBookValue: newNetBookValue,
+            rate: monthlyRate,
+          },
+        });
+
+        const newStatus = newNetBookValue <= Number(asset.residualValue) ? "FULLY_DEPRECIATED" : "ACTIVE";
+        await txPrisma.fixedAsset.update({
+          where: { id: asset.id },
+          data: {
+            accumulatedDepr: newAccumulated,
+            netBookValue: newNetBookValue,
+            status: newStatus,
+          },
+        });
+
+        await txPrisma.assetMovement.create({
+          data: {
+            assetId: asset.id,
+            type: "DEPRECIATION",
+            date: period,
+            value: depreciationValue,
+            description: `Depreciação ${period.toISOString().slice(0, 7)}`,
+          },
+        });
+
+        results.push({
           assetId: asset.id,
+          assetName: asset.name,
           period,
           depreciationValue,
           accumulatedValue: newAccumulated,
           netBookValue: newNetBookValue,
           rate: monthlyRate,
-        },
-      });
-
-      // Atualizar ativo
-      const newStatus = newNetBookValue <= residualValue ? "FULLY_DEPRECIATED" : "ACTIVE";
-      await this.prisma.fixedAsset.update({
-        where: { id: asset.id },
-        data: {
-          accumulatedDepr: newAccumulated,
-          netBookValue: newNetBookValue,
-          status: newStatus,
-        },
-      });
-
-      // Registrar movimento
-      await this.prisma.assetMovement.create({
-        data: {
-          assetId: asset.id,
-          type: "DEPRECIATION",
-          date: period,
-          value: depreciationValue,
-          description: `Depreciação ${period.toISOString().slice(0, 7)}`,
-        },
-      });
-
-      results.push({
-        assetId: asset.id,
-        assetName: asset.name,
-        period,
-        depreciationValue,
-        accumulatedValue: newAccumulated,
-        netBookValue: newNetBookValue,
-        rate: monthlyRate,
-      });
-    }
+        });
+      }
+    });
 
     return results;
   }
@@ -449,8 +472,8 @@ export class AssetService {
    */
   async disposeAsset(input: DisposalInput) {
     return this.prisma.$transaction(async (tx) => {
-      const asset = await tx.fixedAsset.findUnique({
-        where: { id: input.assetId },
+      const asset = await tx.fixedAsset.findFirst({
+        where: { id: input.assetId, companyId: input.companyId },
       });
 
       if (!asset) throw new Error("Ativo não encontrado");
@@ -495,8 +518,8 @@ export class AssetService {
    */
   async transferAsset(input: TransferInput) {
     return this.prisma.$transaction(async (tx) => {
-      const asset = await tx.fixedAsset.findUnique({
-        where: { id: input.assetId },
+      const asset = await tx.fixedAsset.findFirst({
+        where: { id: input.assetId, companyId: input.companyId },
       });
 
       if (!asset) throw new Error("Ativo não encontrado");
