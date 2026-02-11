@@ -116,24 +116,24 @@ export function calculateItemTaxBreakdown(
   pisRate: number,
   cofinsRate: number,
 ): ItemTaxBreakdown {
-  const icmsValue = totalPrice * (icmsRate / 100);
-  const ipiValue = totalPrice * (ipiRate / 100);
-  const pisValue = totalPrice * (pisRate / 100);
-  const cofinsValue = totalPrice * (cofinsRate / 100);
-  const totalTax = icmsValue + ipiValue + pisValue + cofinsValue;
-  const effectiveTaxRate = totalPrice > 0 ? (totalTax / totalPrice) * 100 : 0;
+  const roundedIcms = Math.round(totalPrice * (icmsRate / 100) * 100) / 100;
+  const roundedIpi = Math.round(totalPrice * (ipiRate / 100) * 100) / 100;
+  const roundedPis = Math.round(totalPrice * (pisRate / 100) * 100) / 100;
+  const roundedCofins = Math.round(totalPrice * (cofinsRate / 100) * 100) / 100;
+  const totalTax = Math.round((roundedIcms + roundedIpi + roundedPis + roundedCofins) * 100) / 100;
+  const effectiveTaxRate = totalPrice > 0 ? Math.round((totalTax / totalPrice) * 100 * 100) / 100 : 0;
 
   return {
     icmsRate,
-    icmsValue: Math.round(icmsValue * 100) / 100,
+    icmsValue: roundedIcms,
     ipiRate,
-    ipiValue: Math.round(ipiValue * 100) / 100,
+    ipiValue: roundedIpi,
     pisRate,
-    pisValue: Math.round(pisValue * 100) / 100,
+    pisValue: roundedPis,
     cofinsRate,
-    cofinsValue: Math.round(cofinsValue * 100) / 100,
-    totalTax: Math.round(totalTax * 100) / 100,
-    effectiveTaxRate: Math.round(effectiveTaxRate * 100) / 100,
+    cofinsValue: roundedCofins,
+    totalTax,
+    effectiveTaxRate,
   };
 }
 
@@ -272,6 +272,7 @@ export class TaxCalculationService {
     taxConfig: TaxConfiguration | null;
     fiscalPatterns: FiscalAnalysisResult | null;
     entities: { suppliers: number; materials: number } | null;
+    parsedNfes: NFeParsed[];
   } {
     const parsedNfes = safeParseNFeXmls(xmlContents);
 
@@ -282,6 +283,7 @@ export class TaxCalculationService {
         taxConfig: null,
         fiscalPatterns: null,
         entities: null,
+        parsedNfes: [],
       };
     }
 
@@ -310,6 +312,7 @@ export class TaxCalculationService {
         suppliers: suppliers.size,
         materials: materials.size,
       },
+      parsedNfes,
     };
   }
 }

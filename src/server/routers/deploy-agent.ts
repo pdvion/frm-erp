@@ -11,7 +11,6 @@ import { parseNFeXml } from "@/lib/nfe-parser";
 import { processNFeEntities } from "@/lib/deploy-agent/entity-importer";
 import {
   TaxCalculationService,
-  safeParseNFeXmls,
   getCfopDescription,
   getCstIcmsDescription,
   suggestCfopForOperation,
@@ -558,9 +557,8 @@ export const deployAgentRouter = createTRPCRouter({
       const result = taxService.analyzeXmlBatch(input.xmlContents);
 
       // Adicionar financialConfig separadamente (não faz parte do TaxCalculationService)
-      const parsedNfes = safeParseNFeXmls(input.xmlContents);
-      const financialConfig = parsedNfes.length > 0
-        ? generateFinancialConfiguration(parsedNfes)
+      const financialConfig = result.parsedNfes.length > 0
+        ? generateFinancialConfiguration(result.parsedNfes)
         : null;
 
       return {
