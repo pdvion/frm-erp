@@ -182,6 +182,8 @@ describe("AccountingService", () => {
       accountingEntryItem: {
         findMany: vi.fn().mockResolvedValue([]),
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      $transaction: vi.fn().mockImplementation((fn: any) => fn(mockPrisma)),
     };
     service = new AccountingService(mockPrisma as never);
   });

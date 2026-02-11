@@ -280,28 +280,31 @@ export class AccountingService {
       { code: "5.3.02", name: "Tarifas Bancárias", type: "EXPENSE", nature: "DEBIT" },
     ];
 
-    // Criar contas em ordem (pais primeiro)
+    // Criar contas em ordem (pais primeiro) — em transação para atomicidade
     const createdAccounts = new Map<string, string>();
 
-    for (const account of defaultAccounts) {
-      const parentCode = deriveParentCode(account.code);
-      const parentId = parentCode ? createdAccounts.get(parentCode) ?? null : null;
+    await this.prisma.$transaction(async (tx: Record<string, unknown>) => {
+      const txPrisma = tx as unknown as typeof this.prisma;
+      for (const account of defaultAccounts) {
+        const parentCode = deriveParentCode(account.code);
+        const parentId = parentCode ? createdAccounts.get(parentCode) ?? null : null;
 
-      const created = await this.prisma.chartOfAccounts.create({
-        data: {
-          companyId,
-          code: account.code,
-          name: account.name,
-          type: account.type,
-          nature: account.nature,
-          level: calculateAccountLevel(account.code),
-          parentId,
-          isAnalytical: account.isAnalytical ?? true,
-        },
-      });
+        const created = await txPrisma.chartOfAccounts.create({
+          data: {
+            companyId,
+            code: account.code,
+            name: account.name,
+            type: account.type,
+            nature: account.nature,
+            level: calculateAccountLevel(account.code),
+            parentId,
+            isAnalytical: account.isAnalytical ?? true,
+          },
+        });
 
-      createdAccounts.set(account.code, created.id);
-    }
+        createdAccounts.set(account.code, created.id);
+      }
+    });
 
     return { accountsCreated: createdAccounts.size };
   }
@@ -665,11 +668,12 @@ export class AccountingService {
     startDate: Date,
     endDate: Date,
   ): Promise<IncomeStatementResult> {
-    // Buscar contas de receita e despesa
+    // Buscar contas analíticas de receita e despesa (apenas analíticas possuem lançamentos diretos)
     const accounts = await this.prisma.chartOfAccounts.findMany({
       where: {
         companyId,
         isActive: true,
+        isAnalytical: true,
         type: { in: ["REVENUE", "EXPENSE"] },
       },
       orderBy: { code: "asc" },
