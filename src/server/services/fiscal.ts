@@ -428,68 +428,78 @@ export class FiscalService {
    * Calcula e fecha a apuração de um período
    */
   async closeApuration(companyId: string, taxType: string, year: number, month: number) {
-    const apuration = await (this.prisma as unknown as { taxApuration: { findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null> } }).taxApuration.findFirst({
-      where: { companyId, taxType, year, month },
-      include: { items: true },
-    });
+    // Transação para garantir atomicidade do fechamento + propagação de crédito
+    return this.prisma.$transaction(async (tx) => {
+      const txPrisma = tx as unknown as {
+        taxApuration: {
+          findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null>;
+          update: (args: Record<string, unknown>) => Promise<unknown>;
+        };
+      };
 
-    if (!apuration) {
-      throw new Error(`Apuração ${taxType} ${month}/${year} não encontrada`);
-    }
-
-    if ((apuration as Record<string, unknown>).status === "CLOSED") {
-      throw new Error("Apuração já está fechada");
-    }
-
-    const items = (apuration as Record<string, unknown>).items as Array<Record<string, unknown>>;
-
-    let debitValue = 0;
-    let creditValue = 0;
-
-    for (const item of items) {
-      const val = Number(item.taxValue);
-      if (item.nature === "DEBIT") debitValue += val;
-      else creditValue += val;
-    }
-
-    const previousCredit = Number((apuration as Record<string, unknown>).previousCredit) || 0;
-    const { balance, amountDue, carryForwardCredit } = calculateApurationBalance(
-      debitValue,
-      creditValue,
-      previousCredit,
-    );
-
-    const updated = await (this.prisma as unknown as { taxApuration: { update: (args: Record<string, unknown>) => Promise<unknown> } }).taxApuration.update({
-      where: { id: (apuration as Record<string, unknown>).id as string },
-      data: {
-        debitValue: round2(debitValue),
-        creditValue: round2(creditValue),
-        balanceValue: balance,
-        amountDue,
-        status: "CLOSED",
-      },
-      include: { items: true },
-    });
-
-    // Propagar crédito acumulado para o próximo período
-    if (carryForwardCredit > 0) {
-      let nextMonth = month + 1;
-      let nextYear = year;
-      if (nextMonth > 12) { nextMonth = 1; nextYear++; }
-
-      const nextApuration = await (this.prisma as unknown as { taxApuration: { findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null> } }).taxApuration.findFirst({
-        where: { companyId, taxType, year: nextYear, month: nextMonth },
+      const apuration = await txPrisma.taxApuration.findFirst({
+        where: { companyId, taxType, year, month },
+        include: { items: true },
       });
 
-      if (nextApuration) {
-        await (this.prisma as unknown as { taxApuration: { update: (args: Record<string, unknown>) => Promise<unknown> } }).taxApuration.update({
-          where: { id: nextApuration.id as string },
-          data: { previousCredit: carryForwardCredit },
-        });
+      if (!apuration) {
+        throw new Error(`Apuração ${taxType} ${month}/${year} não encontrada`);
       }
-    }
 
-    return updated;
+      if ((apuration as Record<string, unknown>).status === "CLOSED") {
+        throw new Error("Apuração já está fechada");
+      }
+
+      const items = (apuration as Record<string, unknown>).items as Array<Record<string, unknown>>;
+
+      let debitValue = 0;
+      let creditValue = 0;
+
+      for (const item of items) {
+        const val = Number(item.taxValue);
+        if (item.nature === "DEBIT") debitValue += val;
+        else creditValue += val;
+      }
+
+      const previousCredit = Number((apuration as Record<string, unknown>).previousCredit) || 0;
+      const { balance, amountDue, carryForwardCredit } = calculateApurationBalance(
+        debitValue,
+        creditValue,
+        previousCredit,
+      );
+
+      const updated = await txPrisma.taxApuration.update({
+        where: { id: (apuration as Record<string, unknown>).id as string },
+        data: {
+          debitValue: round2(debitValue),
+          creditValue: round2(creditValue),
+          balanceValue: balance,
+          amountDue,
+          status: "CLOSED",
+        },
+        include: { items: true },
+      });
+
+      // Propagar crédito acumulado para o próximo período
+      if (carryForwardCredit > 0) {
+        let nextMonth = month + 1;
+        let nextYear = year;
+        if (nextMonth > 12) { nextMonth = 1; nextYear++; }
+
+        const nextApuration = await txPrisma.taxApuration.findFirst({
+          where: { companyId, taxType, year: nextYear, month: nextMonth },
+        });
+
+        if (nextApuration) {
+          await txPrisma.taxApuration.update({
+            where: { id: nextApuration.id as string },
+            data: { previousCredit: carryForwardCredit },
+          });
+        }
+      }
+
+      return updated;
+    });
   }
 
   /**
@@ -616,39 +626,48 @@ export class FiscalService {
       inssRate: params.inssRate,
     });
 
-    // Gerar próximo código
-    const lastNfse = await (this.prisma as unknown as { nfseIssued: { findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null> } }).nfseIssued.findFirst({
-      where: { companyId },
-      orderBy: { code: "desc" },
-      select: { code: true },
-    });
+    // Transação para evitar race condition no nextCode
+    return this.prisma.$transaction(async (tx) => {
+      const txPrisma = tx as unknown as {
+        nfseIssued: {
+          findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null>;
+          create: (args: Record<string, unknown>) => Promise<unknown>;
+        };
+      };
 
-    const nextCode = lastNfse ? (lastNfse.code as number) + 1 : 1;
+      const lastNfse = await txPrisma.nfseIssued.findFirst({
+        where: { companyId },
+        orderBy: { code: "desc" },
+        select: { code: true },
+      });
 
-    return (this.prisma as unknown as { nfseIssued: { create: (args: Record<string, unknown>) => Promise<unknown> } }).nfseIssued.create({
-      data: {
-        companyId,
-        code: nextCode,
-        customerId: params.customerId,
-        serviceCode: params.serviceCode,
-        cnae: params.cnae ?? null,
-        description: params.description,
-        competenceDate: params.competenceDate,
-        serviceValue: params.serviceValue,
-        deductionValue: params.deductionValue ?? 0,
-        baseValue: calc.baseValue,
-        issRate: params.issRate,
-        issValue: calc.issValue,
-        issWithheld: params.issWithheld ?? false,
-        pisValue: calc.pisValue,
-        cofinsValue: calc.cofinsValue,
-        irValue: calc.irValue,
-        csllValue: calc.csllValue,
-        inssValue: calc.inssValue,
-        netValue: calc.netValue,
-        status: "DRAFT",
-        createdBy: params.createdBy ?? null,
-      },
+      const nextCode = lastNfse ? (lastNfse.code as number) + 1 : 1;
+
+      return txPrisma.nfseIssued.create({
+        data: {
+          companyId,
+          code: nextCode,
+          customerId: params.customerId,
+          serviceCode: params.serviceCode,
+          cnae: params.cnae ?? null,
+          description: params.description,
+          competenceDate: params.competenceDate,
+          serviceValue: params.serviceValue,
+          deductionValue: params.deductionValue ?? 0,
+          baseValue: calc.baseValue,
+          issRate: params.issRate,
+          issValue: calc.issValue,
+          issWithheld: params.issWithheld ?? false,
+          pisValue: calc.pisValue,
+          cofinsValue: calc.cofinsValue,
+          irValue: calc.irValue,
+          csllValue: calc.csllValue,
+          inssValue: calc.inssValue,
+          netValue: calc.netValue,
+          status: "DRAFT",
+          createdBy: params.createdBy ?? null,
+        },
+      });
     });
   }
 
@@ -660,12 +679,7 @@ export class FiscalService {
    * Gera registros do Bloco K a partir de ordens de produção do período
    */
   async generateBlocoKRecords(companyId: string, year: number, month: number) {
-    // Limpar registros anteriores pendentes
-    await (this.prisma as unknown as { blocoKRecord: { deleteMany: (args: Record<string, unknown>) => Promise<unknown> } }).blocoKRecord.deleteMany({
-      where: { companyId, year, month, status: "PENDING" },
-    });
-
-    // Buscar ordens de produção do período
+    // Buscar ordens de produção do período (leitura fora da transação)
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0);
 
@@ -681,50 +695,65 @@ export class FiscalService {
       },
     });
 
-    const records = [];
+    // Transação para garantir atomicidade do deleteMany + creates
+    return this.prisma.$transaction(async (tx) => {
+      const txPrisma = tx as unknown as {
+        blocoKRecord: {
+          deleteMany: (args: Record<string, unknown>) => Promise<unknown>;
+          create: (args: Record<string, unknown>) => Promise<unknown>;
+        };
+      };
 
-    for (const order of productionOrders) {
-      // K230 - Itens produzidos
-      const produced = await (this.prisma as unknown as { blocoKRecord: { create: (args: Record<string, unknown>) => Promise<unknown> } }).blocoKRecord.create({
-        data: {
-          companyId,
-          year,
-          month,
-          recordType: "K230",
-          materialId: (order.material as Record<string, unknown>)?.id as string ?? (order as Record<string, unknown>).materialId as string,
-          quantity: (order as Record<string, unknown>).producedQuantity as number ?? (order as Record<string, unknown>).quantity as number,
-          productionOrderId: (order as Record<string, unknown>).id as string,
-          movementDate: (order as Record<string, unknown>).completedAt as Date,
-          movementType: "PRODUCTION",
-          status: "PENDING",
-        },
+      // Limpar registros anteriores pendentes
+      await txPrisma.blocoKRecord.deleteMany({
+        where: { companyId, year, month, status: "PENDING" },
       });
-      records.push(produced);
 
-      // K235 - Insumos consumidos
-      const consumptions = (order as Record<string, unknown>).consumptions as Array<Record<string, unknown>> | undefined;
-      if (consumptions) {
-        for (const consumption of consumptions) {
-          const consumed = await (this.prisma as unknown as { blocoKRecord: { create: (args: Record<string, unknown>) => Promise<unknown> } }).blocoKRecord.create({
-            data: {
-              companyId,
-              year,
-              month,
-              recordType: "K235",
-              materialId: (consumption.material as Record<string, unknown>)?.id as string ?? consumption.materialId as string,
-              quantity: consumption.quantity as number,
-              productionOrderId: (order as Record<string, unknown>).id as string,
-              movementDate: (order as Record<string, unknown>).completedAt as Date,
-              movementType: "CONSUMPTION",
-              status: "PENDING",
-            },
-          });
-          records.push(consumed);
+      const records = [];
+
+      for (const order of productionOrders) {
+        // K230 - Itens produzidos
+        const produced = await txPrisma.blocoKRecord.create({
+          data: {
+            companyId,
+            year,
+            month,
+            recordType: "K230",
+            materialId: (order.material as Record<string, unknown>)?.id as string ?? (order as Record<string, unknown>).materialId as string,
+            quantity: (order as Record<string, unknown>).producedQuantity as number ?? (order as Record<string, unknown>).quantity as number,
+            productionOrderId: (order as Record<string, unknown>).id as string,
+            movementDate: (order as Record<string, unknown>).completedAt as Date,
+            movementType: "PRODUCTION",
+            status: "PENDING",
+          },
+        });
+        records.push(produced);
+
+        // K235 - Insumos consumidos
+        const consumptions = (order as Record<string, unknown>).consumptions as Array<Record<string, unknown>> | undefined;
+        if (consumptions) {
+          for (const consumption of consumptions) {
+            const consumed = await txPrisma.blocoKRecord.create({
+              data: {
+                companyId,
+                year,
+                month,
+                recordType: "K235",
+                materialId: (consumption.material as Record<string, unknown>)?.id as string ?? consumption.materialId as string,
+                quantity: consumption.quantity as number,
+                productionOrderId: (order as Record<string, unknown>).id as string,
+                movementDate: (order as Record<string, unknown>).completedAt as Date,
+                movementType: "CONSUMPTION",
+                status: "PENDING",
+              },
+            });
+            records.push(consumed);
+          }
         }
       }
-    }
 
-    return records;
+      return records;
+    });
   }
 
   // --------------------------------------------------------------------------

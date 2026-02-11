@@ -183,7 +183,14 @@ export const fiscalRouter = createTRPCRouter({
   getNfseConfig: tenantProcedure
     .query(async ({ ctx }) => {
       const companyId = ctx.tenant.companyId!;
-      return ctx.prisma.nfseConfig.findUnique({ where: { companyId } });
+      const config = await ctx.prisma.nfseConfig.findUnique({ where: { companyId } });
+      if (!config) return null;
+      // Redact sensitive credentials — never expose plaintext to client
+      return {
+        ...config,
+        password: config.password ? "••••••••" : null,
+        token: config.token ? "••••••••" : null,
+      };
     }),
 
   upsertNfseConfig: tenantProcedure

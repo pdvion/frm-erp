@@ -312,6 +312,8 @@ describe("FiscalService", () => {
       productionOrder: {
         findMany: vi.fn(),
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      $transaction: vi.fn().mockImplementation((fn: any) => fn(mockPrisma)),
     };
 
     service = new FiscalService(mockPrisma as unknown as PrismaClient);
