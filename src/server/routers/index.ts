@@ -79,6 +79,7 @@ import { aiUsageRouter } from "./aiUsage";
 import { employeePortalRouter } from "./employeePortal";
 import { onboardingRouter } from "./onboarding";
 import { embeddingsRouter } from "./embeddings";
+import { accountingRouter } from "./accounting";
 
 export const appRouter = createTRPCRouter({
   nfeBatchImport: nfeBatchImportRouter,
@@ -161,6 +162,7 @@ export const appRouter = createTRPCRouter({
   employeePortal: employeePortalRouter,
   onboarding: onboardingRouter,
   embeddings: embeddingsRouter,
+  accounting: accountingRouter,
 });
 
 export type AppRouter = typeof appRouter;

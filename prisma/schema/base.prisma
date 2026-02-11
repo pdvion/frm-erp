@@ -108,6 +108,8 @@ model Company {
   onboarding                    CompanyOnboarding?
   intercompanyTransfersSource   IntercompanyTransfer[] @relation("IntercompanyTransferSource")
   intercompanyTransfersTarget   IntercompanyTransfer[] @relation("IntercompanyTransferTarget")
+  chartOfAccounts               ChartOfAccounts[]
+  accountingEntries             AccountingEntry[]
 
   @@map("companies")
 }
@@ -197,6 +199,8 @@ model User {
   workflowStepsAssigned                         WorkflowStepHistory[]       @relation("StepAssignee")
   workflowStepsCompleted                        WorkflowStepHistory[]       @relation("StepCompleter")
   workflowStepEscalations                       WorkflowStep[]              @relation("StepEscalation")
+  accountingEntriesPosted                       AccountingEntry[]           @relation("AccountingEntryPoster")
+  accountingEntriesCreated                      AccountingEntry[]           @relation("AccountingEntryCreator")
 
   @@index([companyId])
   @@map("users")

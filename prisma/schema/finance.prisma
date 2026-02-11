@@ -145,6 +145,7 @@ model CostCenter {
   children           CostCenter[]            @relation("CostCenterHierarchy")
   departments        Department[]
   payableAllocations PayableCostAllocation[]
+  accountingEntryItems AccountingEntryItem[]
 
   @@unique([code, companyId])
   @@index([companyId])
@@ -807,4 +808,83 @@ model CollectionAction {
   @@index([status], map: "idx_collection_actions_status")
   @@index([stepId], map: "idx_collection_actions_step")
   @@map("collection_actions")
+}
+
+model ChartOfAccounts {
+  id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String                @map("company_id") @db.Uuid
+  code          String                @db.VarChar(20)
+  name          String                @db.VarChar(255)
+  type          String                @db.VarChar(20) // ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE
+  nature        String                @db.VarChar(10) // DEBIT, CREDIT
+  level         Int                   @default(1)
+  parentId      String?               @map("parent_id") @db.Uuid
+  isAnalytical  Boolean               @default(true) @map("is_analytical")
+  isActive      Boolean               @default(true) @map("is_active")
+  referenceCode String?               @map("reference_code") @db.VarChar(20) // Código referencial RFB
+  description   String?
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @default(now()) @updatedAt @map("updated_at")
+  company       Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent        ChartOfAccounts?      @relation("ChartOfAccountsHierarchy", fields: [parentId], references: [id], onUpdate: NoAction)
+  children      ChartOfAccounts[]     @relation("ChartOfAccountsHierarchy")
+  entryItems    AccountingEntryItem[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([parentId])
+  @@index([companyId, type])
+  @@map("chart_of_accounts")
+}
+
+model AccountingEntry {
+  id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String                @map("company_id") @db.Uuid
+  code          Int
+  date          DateTime              @db.Date
+  description   String
+  documentType  String?               @map("document_type") @db.VarChar(50) // NFE, PAYROLL, MANUAL, etc.
+  documentId    String?               @map("document_id") @db.Uuid
+  documentNumber String?              @map("document_number") @db.VarChar(50)
+  status        String                @default("DRAFT") @db.VarChar(20) // DRAFT, POSTED, REVERSED
+  totalDebit    Decimal               @default(0) @map("total_debit") @db.Decimal(15, 2)
+  totalCredit   Decimal               @default(0) @map("total_credit") @db.Decimal(15, 2)
+  reversalOf    String?               @map("reversal_of") @db.Uuid
+  reversedBy    String?               @map("reversed_by") @db.Uuid
+  notes         String?
+  postedBy      String?               @map("posted_by") @db.Uuid
+  postedAt      DateTime?             @map("posted_at")
+  createdBy     String?               @map("created_by") @db.Uuid
+  createdAt     DateTime              @default(now()) @map("created_at")
+  updatedAt     DateTime              @default(now()) @updatedAt @map("updated_at")
+  company       Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  poster        User?                 @relation("AccountingEntryPoster", fields: [postedBy], references: [id], onUpdate: NoAction)
+  creator       User?                 @relation("AccountingEntryCreator", fields: [createdBy], references: [id], onUpdate: NoAction)
+  items         AccountingEntryItem[]
+
+  @@unique([companyId, code])
+  @@index([companyId, date])
+  @@index([companyId, status])
+  @@index([documentType, documentId])
+  @@map("accounting_entries")
+}
+
+model AccountingEntryItem {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entryId     String          @map("entry_id") @db.Uuid
+  accountId   String          @map("account_id") @db.Uuid
+  type        String          @db.VarChar(10) // DEBIT, CREDIT
+  amount      Decimal         @db.Decimal(15, 2)
+  costCenterId String?        @map("cost_center_id") @db.Uuid
+  description String?
+  sequence    Int             @default(1)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  entry       AccountingEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  account     ChartOfAccounts @relation(fields: [accountId], references: [id], onDelete: NoAction)
+  costCenter  CostCenter?     @relation(fields: [costCenterId], references: [id], onUpdate: NoAction)
+
+  @@index([entryId])
+  @@index([accountId])
+  @@index([costCenterId])
+  @@map("accounting_entry_items")
 }
