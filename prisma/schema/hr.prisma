@@ -127,6 +127,7 @@ model Employee {
   dependents          EmployeeDependent[]
   leaveRecords        LeaveRecord[]
   fixedAssets         FixedAsset[]
+  maintenanceLabor    MaintenanceOrderLabor[] @relation("MaintenanceLabor")
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_employees_companyId")

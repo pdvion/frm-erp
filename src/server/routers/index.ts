@@ -83,6 +83,7 @@ import { accountingRouter } from "./accounting";
 import { assetsRouter } from "./assets";
 import { crmRouter } from "./crm";
 import { fiscalRouter } from "./fiscal";
+import { maintenanceRouter } from "./maintenance";
 
 export const appRouter = createTRPCRouter({
   nfeBatchImport: nfeBatchImportRouter,
@@ -169,6 +170,7 @@ export const appRouter = createTRPCRouter({
   assets: assetsRouter,
   crm: crmRouter,
   fiscal: fiscalRouter,
+  maintenance: maintenanceRouter,
 });
 
 export type AppRouter = typeof appRouter;

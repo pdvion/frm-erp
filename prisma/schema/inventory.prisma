@@ -93,6 +93,7 @@ model Material {
   supplierReturnItems         SupplierReturnItem[]
   lots                        Lot[]
   intercompanyTransferItems   IntercompanyTransferItem[]
+  maintenanceParts            MaintenanceOrderPart[]     @relation("MaintenanceParts")
 
   @@index([companyId], map: "idx_materials_companyId")
   @@index([categoryId])

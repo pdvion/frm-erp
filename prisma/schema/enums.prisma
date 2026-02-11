@@ -691,3 +691,54 @@ enum AttributeDataType {
   BOOLEAN
   ENUM
 }
+
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+  PREDICTIVE
+  IMPROVEMENT
+}
+
+enum MaintenanceOrderStatus {
+  PLANNED
+  APPROVED
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum MaintenancePriority {
+  EMERGENCY
+  URGENT
+  HIGH
+  NORMAL
+  LOW
+}
+
+enum MaintenanceFrequency {
+  HOURS
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMIANNUAL
+  ANNUAL
+}
+
+enum EquipmentCriticality {
+  A
+  B
+  C
+}
+
+enum FailureCategory {
+  MECHANICAL
+  ELECTRICAL
+  HYDRAULIC
+  PNEUMATIC
+  ELECTRONIC
+  SOFTWARE
+  OTHER
+}
