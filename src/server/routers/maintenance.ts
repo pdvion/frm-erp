@@ -180,6 +180,9 @@ export const maintenanceRouter = createTRPCRouter({
     }),
 
   startOrder: tenantProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const cid = ctx.tenant.companyId!;
+    const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.id, companyId: cid } });
+    if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
     const svc = new MaintenanceService(ctx.prisma);
     return svc.startOrder(input.id);
   }),
@@ -187,6 +190,9 @@ export const maintenanceRouter = createTRPCRouter({
   completeOrder: tenantProcedure
     .input(z.object({ id: z.string(), solution: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const cid = ctx.tenant.companyId!;
+      const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.id, companyId: cid } });
+      if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
       const svc = new MaintenanceService(ctx.prisma);
       return svc.completeOrder(input.id, input.solution, ctx.tenant.userId ?? undefined);
     }),
@@ -194,6 +200,9 @@ export const maintenanceRouter = createTRPCRouter({
   cancelOrder: tenantProcedure
     .input(z.object({ id: z.string(), reason: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
+      const cid = ctx.tenant.companyId!;
+      const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.id, companyId: cid } });
+      if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
       const svc = new MaintenanceService(ctx.prisma);
       return svc.cancelOrder(input.id, input.reason, ctx.tenant.userId ?? undefined);
     }),

@@ -135,7 +135,7 @@ export class MaintenanceService {
   constructor(private readonly prisma: PrismaClient) {}
 
   async createEquipment(companyId: string, data: Record<string, unknown>) {
-    return this.prisma.maintenanceEquipment.create({ data: { companyId, ...data } as Prisma.MaintenanceEquipmentUncheckedCreateInput });
+    return this.prisma.maintenanceEquipment.create({ data: { ...data, companyId } as Prisma.MaintenanceEquipmentUncheckedCreateInput });
   }
 
   async createPlan(companyId: string, data: Record<string, unknown>) {
@@ -144,7 +144,7 @@ export class MaintenanceService {
       (data.frequency as string) ?? "MONTHLY",
       (data.frequencyValue as number) ?? 1,
     );
-    return this.prisma.maintenancePlan.create({ data: { companyId, nextDueDate, ...data } as Prisma.MaintenancePlanUncheckedCreateInput });
+    return this.prisma.maintenancePlan.create({ data: { ...data, companyId, nextDueDate } as Prisma.MaintenancePlanUncheckedCreateInput });
   }
 
   async generateOrdersFromPlans(companyId: string): Promise<number> {
@@ -194,7 +194,7 @@ export class MaintenanceService {
       });
       const nextCode = (last?.code ?? 0) + 1;
       return tx.maintenanceOrder.create({
-        data: { companyId, code: nextCode, status: "PLANNED", ...data } as Prisma.MaintenanceOrderUncheckedCreateInput,
+        data: { ...data, companyId, code: nextCode, status: "PLANNED" } as Prisma.MaintenanceOrderUncheckedCreateInput,
       });
     });
   }
