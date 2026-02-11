@@ -196,9 +196,9 @@ export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx,
       userId: ctx.tenant.userId,
       userEmail: ctx.supabaseUser?.email,
       companyId: ctx.tenant.companyId,
-      ipAddress: ctx.headers.get("x-forwarded-for") ?? ctx.headers.get("x-real-ip") ?? undefined,
+      ipAddress: (ctx.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) ?? ctx.headers.get("x-real-ip") ?? undefined,
       userAgent: ctx.headers.get("user-agent") ?? undefined,
-      requestPath: ctx.headers.get("x-trpc-source") ?? undefined,
+      requestPath: ctx.headers.get("x-invoke-path") ?? ctx.headers.get("referer") ?? undefined,
     });
   }
 
