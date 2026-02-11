@@ -284,9 +284,9 @@ export class CrmService {
   /**
    * Move oportunidade para outro estágio do pipeline
    */
-  async moveOpportunity(input: MoveOpportunityInput) {
-    const opp = await this.prisma.opportunity.findUnique({
-      where: { id: input.opportunityId },
+  async moveOpportunity(input: MoveOpportunityInput & { companyId: string }) {
+    const opp = await this.prisma.opportunity.findFirst({
+      where: { id: input.opportunityId, companyId: input.companyId },
       include: { pipeline: { select: { stages: true } } },
     });
 
@@ -313,9 +313,9 @@ export class CrmService {
   /**
    * Marca oportunidade como ganha
    */
-  async winOpportunity(input: WinOpportunityInput) {
-    const opp = await this.prisma.opportunity.findUnique({
-      where: { id: input.opportunityId },
+  async winOpportunity(input: WinOpportunityInput & { companyId: string }) {
+    const opp = await this.prisma.opportunity.findFirst({
+      where: { id: input.opportunityId, companyId: input.companyId },
     });
 
     if (!opp) throw new Error("Oportunidade não encontrada");
@@ -334,9 +334,9 @@ export class CrmService {
   /**
    * Marca oportunidade como perdida
    */
-  async loseOpportunity(input: LoseOpportunityInput) {
-    const opp = await this.prisma.opportunity.findUnique({
-      where: { id: input.opportunityId },
+  async loseOpportunity(input: LoseOpportunityInput & { companyId: string }) {
+    const opp = await this.prisma.opportunity.findFirst({
+      where: { id: input.opportunityId, companyId: input.companyId },
     });
 
     if (!opp) throw new Error("Oportunidade não encontrada");

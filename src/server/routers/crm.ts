@@ -286,14 +286,14 @@ export const crmRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const svc = new CrmService(ctx.prisma);
-      return svc.moveOpportunity(input);
+      return svc.moveOpportunity({ ...input, companyId: ctx.tenant.companyId! });
     }),
 
   winOpportunity: tenantProcedure
     .input(z.object({ opportunityId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const svc = new CrmService(ctx.prisma);
-      return svc.winOpportunity(input);
+      return svc.winOpportunity({ ...input, companyId: ctx.tenant.companyId! });
     }),
 
   loseOpportunity: tenantProcedure
@@ -305,7 +305,7 @@ export const crmRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const svc = new CrmService(ctx.prisma);
-      return svc.loseOpportunity(input);
+      return svc.loseOpportunity({ ...input, companyId: ctx.tenant.companyId! });
     }),
 
   // ========================================================================
