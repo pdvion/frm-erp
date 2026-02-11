@@ -367,20 +367,22 @@ export class AccountingService {
    * Efetiva (posta) um lançamento contábil
    */
   async postEntry(entryId: string, userId: string) {
-    const entry = await this.prisma.accountingEntry.findUnique({
-      where: { id: entryId },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const entry = await tx.accountingEntry.findUnique({
+        where: { id: entryId },
+      });
 
-    if (!entry) throw new Error("Lançamento não encontrado");
-    if (entry.status !== "DRAFT") throw new Error("Apenas lançamentos em rascunho podem ser efetivados");
+      if (!entry) throw new Error("Lançamento não encontrado");
+      if (entry.status !== "DRAFT") throw new Error("Apenas lançamentos em rascunho podem ser efetivados");
 
-    return this.prisma.accountingEntry.update({
-      where: { id: entryId },
-      data: {
-        status: "POSTED",
-        postedBy: userId,
-        postedAt: new Date(),
-      },
+      return tx.accountingEntry.update({
+        where: { id: entryId },
+        data: {
+          status: "POSTED",
+          postedBy: userId,
+          postedAt: new Date(),
+        },
+      });
     });
   }
 
@@ -388,60 +390,62 @@ export class AccountingService {
    * Estorna um lançamento contábil (cria lançamento inverso)
    */
   async reverseEntry(entryId: string, userId: string) {
-    const entry = await this.prisma.accountingEntry.findUnique({
-      where: { id: entryId },
-      include: { items: true },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const entry = await tx.accountingEntry.findUnique({
+        where: { id: entryId },
+        include: { items: true },
+      });
 
-    if (!entry) throw new Error("Lançamento não encontrado");
-    if (entry.status !== "POSTED") throw new Error("Apenas lançamentos efetivados podem ser estornados");
+      if (!entry) throw new Error("Lançamento não encontrado");
+      if (entry.status !== "POSTED") throw new Error("Apenas lançamentos efetivados podem ser estornados");
 
-    // Gerar próximo código
-    const lastEntry = await this.prisma.accountingEntry.findFirst({
-      where: { companyId: entry.companyId },
-      orderBy: { code: "desc" },
-      select: { code: true },
-    });
-    const nextCode = (lastEntry?.code ?? 0) + 1;
+      // Gerar próximo código
+      const lastEntry = await tx.accountingEntry.findFirst({
+        where: { companyId: entry.companyId },
+        orderBy: { code: "desc" },
+        select: { code: true },
+      });
+      const nextCode = (lastEntry?.code ?? 0) + 1;
 
-    // Criar lançamento inverso
-    const reversal = await this.prisma.accountingEntry.create({
-      data: {
-        companyId: entry.companyId,
-        code: nextCode,
-        date: new Date(),
-        description: `Estorno: ${entry.description}`,
-        documentType: "REVERSAL",
-        documentId: entry.id,
-        documentNumber: String(entry.code),
-        reversalOf: entry.id,
-        totalDebit: entry.totalCredit,
-        totalCredit: entry.totalDebit,
-        status: "POSTED",
-        postedBy: userId,
-        postedAt: new Date(),
-        createdBy: userId,
-        items: {
-          create: entry.items.map((item, index) => ({
-            accountId: item.accountId,
-            type: item.type === "DEBIT" ? "CREDIT" : "DEBIT",
-            amount: item.amount,
-            costCenterId: item.costCenterId,
-            description: `Estorno: ${item.description || ""}`,
-            sequence: index + 1,
-          })),
+      // Criar lançamento inverso
+      const reversal = await tx.accountingEntry.create({
+        data: {
+          companyId: entry.companyId,
+          code: nextCode,
+          date: new Date(),
+          description: `Estorno: ${entry.description}`,
+          documentType: "REVERSAL",
+          documentId: entry.id,
+          documentNumber: String(entry.code),
+          reversalOf: entry.id,
+          totalDebit: entry.totalCredit,
+          totalCredit: entry.totalDebit,
+          status: "POSTED",
+          postedBy: userId,
+          postedAt: new Date(),
+          createdBy: userId,
+          items: {
+            create: entry.items.map((item, index) => ({
+              accountId: item.accountId,
+              type: item.type === "DEBIT" ? "CREDIT" : "DEBIT",
+              amount: item.amount,
+              costCenterId: item.costCenterId,
+              description: `Estorno: ${item.description || ""}`,
+              sequence: index + 1,
+            })),
+          },
         },
-      },
-      include: { items: { include: { account: true } } },
-    });
+        include: { items: { include: { account: true } } },
+      });
 
-    // Marcar original como estornado
-    await this.prisma.accountingEntry.update({
-      where: { id: entryId },
-      data: { status: "REVERSED", reversedBy: reversal.id },
-    });
+      // Marcar original como estornado
+      await tx.accountingEntry.update({
+        where: { id: entryId },
+        data: { status: "REVERSED", reversedBy: reversal.id },
+      });
 
-    return reversal;
+      return reversal;
+    });
   }
 
   // ========================================================================

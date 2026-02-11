@@ -111,7 +111,10 @@ export const accountingRouter = createTRPCRouter({
         description: z.string().optional().nullable(),
         referenceCode: z.string().max(20).optional().nullable(),
         isActive: z.boolean().optional(),
-      })
+      }).refine(
+        (data) => data.name !== undefined || data.description !== undefined || data.referenceCode !== undefined || data.isActive !== undefined,
+        { message: "Informe ao menos um campo para atualizar" },
+      )
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
