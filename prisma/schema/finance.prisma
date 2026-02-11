@@ -925,6 +925,7 @@ model FixedAsset {
   costCenter          CostCenter?         @relation("FixedAssetCostCenter", fields: [costCenterId], references: [id], onUpdate: NoAction)
   depreciations       AssetDepreciation[]
   movements           AssetMovement[]
+  maintenanceEquipment MaintenanceEquipment[]
 
   @@unique([companyId, code])
   @@index([companyId])

@@ -1,0 +1,218 @@
+model MaintenanceEquipment {
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId        String               @map("company_id") @db.Uuid
+  code             String               @db.VarChar(30)
+  name             String               @db.VarChar(200)
+  description      String?
+  manufacturer     String?              @db.VarChar(200)
+  model            String?              @db.VarChar(200)
+  serialNumber     String?              @map("serial_number") @db.VarChar(100)
+  installDate      DateTime?            @map("install_date")
+  warrantyExpiry   DateTime?            @map("warranty_expiry")
+  criticality      EquipmentCriticality @default(B)
+  location         String?              @db.VarChar(200)
+  operatingHours   Decimal              @default(0) @map("operating_hours") @db.Decimal(15, 2)
+  workCenterId     String?              @map("work_center_id") @db.Uuid
+  fixedAssetId     String?              @map("fixed_asset_id") @db.Uuid
+  parentId         String?              @map("parent_id") @db.Uuid
+  technicalSpecs   Json?                @map("technical_specs")
+  imageUrl         String?              @map("image_url")
+  isActive         Boolean              @default(true) @map("is_active")
+  notes            String?
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @default(now()) @updatedAt @map("updated_at")
+  company          Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  workCenter       WorkCenter?          @relation(fields: [workCenterId], references: [id], onUpdate: NoAction)
+  fixedAsset       FixedAsset?          @relation(fields: [fixedAssetId], references: [id], onUpdate: NoAction)
+  parent           MaintenanceEquipment?  @relation("EquipmentHierarchy", fields: [parentId], references: [id], onUpdate: NoAction)
+  children         MaintenanceEquipment[] @relation("EquipmentHierarchy")
+  maintenancePlans MaintenancePlan[]
+  maintenanceOrders MaintenanceOrder[]
+  failureCodes     EquipmentFailureCode[]
+
+  @@unique([companyId, code])
+  @@index([companyId], map: "idx_maintenance_equipment_company")
+  @@index([workCenterId], map: "idx_maintenance_equipment_work_center")
+  @@index([parentId], map: "idx_maintenance_equipment_parent")
+  @@index([criticality], map: "idx_maintenance_equipment_criticality")
+  @@map("maintenance_equipment")
+}
+
+model MaintenancePlan {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId         String               @map("company_id") @db.Uuid
+  code              String               @db.VarChar(30)
+  name              String               @db.VarChar(200)
+  description       String?
+  equipmentId       String               @map("equipment_id") @db.Uuid
+  type              MaintenanceType      @default(PREVENTIVE)
+  frequency         MaintenanceFrequency @default(MONTHLY)
+  frequencyValue    Int                  @default(1) @map("frequency_value")
+  triggerHours      Decimal?             @map("trigger_hours") @db.Decimal(15, 2)
+  estimatedDuration Int                  @default(60) @map("estimated_duration")
+  checklist         Json?
+  requiredParts     Json?                @map("required_parts")
+  assignedTeam      String?              @map("assigned_team") @db.VarChar(200)
+  lastExecutedAt    DateTime?            @map("last_executed_at")
+  nextDueDate       DateTime?            @map("next_due_date")
+  isActive          Boolean              @default(true) @map("is_active")
+  notes             String?
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @default(now()) @updatedAt @map("updated_at")
+  company           Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  equipment         MaintenanceEquipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  maintenanceOrders MaintenanceOrder[]
+
+  @@unique([companyId, code])
+  @@index([companyId], map: "idx_maintenance_plans_company")
+  @@index([equipmentId], map: "idx_maintenance_plans_equipment")
+  @@index([nextDueDate], map: "idx_maintenance_plans_next_due")
+  @@index([isActive], map: "idx_maintenance_plans_active")
+  @@map("maintenance_plans")
+}
+
+model MaintenanceOrder {
+  id                String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId         String                  @map("company_id") @db.Uuid
+  code              Int
+  equipmentId       String                  @map("equipment_id") @db.Uuid
+  planId            String?                 @map("plan_id") @db.Uuid
+  type              MaintenanceType         @default(CORRECTIVE)
+  status            MaintenanceOrderStatus  @default(PLANNED)
+  priority          MaintenancePriority     @default(NORMAL)
+  title             String                  @db.VarChar(300)
+  description       String?
+  failureDescription String?                @map("failure_description")
+  failureCodeId     String?                 @map("failure_code_id") @db.Uuid
+  requestedBy       String?                 @map("requested_by") @db.Uuid
+  assignedTo        String?                 @map("assigned_to") @db.Uuid
+  plannedStart      DateTime?               @map("planned_start")
+  plannedEnd        DateTime?               @map("planned_end")
+  actualStart       DateTime?               @map("actual_start")
+  actualEnd         DateTime?               @map("actual_end")
+  estimatedDuration Int?                    @map("estimated_duration")
+  actualDuration    Int?                    @map("actual_duration")
+  downtime          Int?
+  rootCause         String?                 @map("root_cause")
+  solution          String?
+  notes             String?
+  completedBy       String?                 @map("completed_by") @db.Uuid
+  approvedBy        String?                 @map("approved_by") @db.Uuid
+  approvedAt        DateTime?               @map("approved_at")
+  cancelledBy       String?                 @map("cancelled_by") @db.Uuid
+  cancelledAt       DateTime?               @map("cancelled_at")
+  cancelReason      String?                 @map("cancel_reason")
+  createdAt         DateTime                @default(now()) @map("created_at")
+  updatedAt         DateTime                @default(now()) @updatedAt @map("updated_at")
+  company           Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  equipment         MaintenanceEquipment    @relation(fields: [equipmentId], references: [id])
+  plan              MaintenancePlan?        @relation(fields: [planId], references: [id], onUpdate: NoAction)
+  failureCode       FailureCode?            @relation(fields: [failureCodeId], references: [id], onUpdate: NoAction)
+  requestedByUser   User?                   @relation("MaintenanceRequester", fields: [requestedBy], references: [id], onUpdate: NoAction)
+  assignedToUser    User?                   @relation("MaintenanceTechnician", fields: [assignedTo], references: [id], onUpdate: NoAction)
+  parts             MaintenanceOrderPart[]
+  labor             MaintenanceOrderLabor[]
+  checklist         MaintenanceChecklist[]
+
+  @@unique([companyId, code])
+  @@index([companyId], map: "idx_maintenance_orders_company")
+  @@index([equipmentId], map: "idx_maintenance_orders_equipment")
+  @@index([planId], map: "idx_maintenance_orders_plan")
+  @@index([status], map: "idx_maintenance_orders_status")
+  @@index([type], map: "idx_maintenance_orders_type")
+  @@index([priority], map: "idx_maintenance_orders_priority")
+  @@index([assignedTo], map: "idx_maintenance_orders_assigned")
+  @@index([companyId, status])
+  @@map("maintenance_orders")
+}
+
+model MaintenanceOrderPart {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String           @map("order_id") @db.Uuid
+  materialId  String           @map("material_id") @db.Uuid
+  quantity    Decimal          @db.Decimal(15, 4)
+  unitCost    Decimal          @default(0) @map("unit_cost") @db.Decimal(15, 2)
+  totalCost   Decimal          @default(0) @map("total_cost") @db.Decimal(15, 2)
+  consumed    Boolean          @default(false)
+  notes       String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+  order       MaintenanceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  material    Material         @relation("MaintenanceParts", fields: [materialId], references: [id], onUpdate: NoAction)
+
+  @@index([orderId], map: "idx_maintenance_order_parts_order")
+  @@index([materialId], map: "idx_maintenance_order_parts_material")
+  @@map("maintenance_order_parts")
+}
+
+model MaintenanceOrderLabor {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String           @map("order_id") @db.Uuid
+  employeeId  String?          @map("employee_id") @db.Uuid
+  techName    String?          @map("tech_name") @db.VarChar(200)
+  startTime   DateTime         @map("start_time")
+  endTime     DateTime?        @map("end_time")
+  hours       Decimal          @default(0) @db.Decimal(10, 2)
+  hourlyRate  Decimal          @default(0) @map("hourly_rate") @db.Decimal(10, 2)
+  totalCost   Decimal          @default(0) @map("total_cost") @db.Decimal(15, 2)
+  notes       String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+  order       MaintenanceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  employee    Employee?        @relation("MaintenanceLabor", fields: [employeeId], references: [id], onUpdate: NoAction)
+
+  @@index([orderId], map: "idx_maintenance_order_labor_order")
+  @@index([employeeId], map: "idx_maintenance_order_labor_employee")
+  @@map("maintenance_order_labor")
+}
+
+model MaintenanceChecklist {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String           @map("order_id") @db.Uuid
+  sequence    Int              @default(0)
+  description String
+  isRequired  Boolean          @default(false) @map("is_required")
+  isCompleted Boolean          @default(false) @map("is_completed")
+  completedAt DateTime?        @map("completed_at")
+  completedBy String?          @map("completed_by") @db.Uuid
+  notes       String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+  order       MaintenanceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId], map: "idx_maintenance_checklist_order")
+  @@map("maintenance_checklists")
+}
+
+model FailureCode {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId   String           @map("company_id") @db.Uuid
+  code        String           @db.VarChar(20)
+  name        String           @db.VarChar(200)
+  description String?          @db.VarChar(300)
+  severity    Int              @default(3)
+  category    FailureCategory  @default(OTHER)
+  isActive    Boolean          @default(true) @map("is_active")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at")
+  company     Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  maintenanceOrders MaintenanceOrder[]
+  equipmentFailures EquipmentFailureCode[]
+
+  @@unique([companyId, code])
+  @@index([companyId], map: "idx_failure_codes_company")
+  @@index([category], map: "idx_failure_codes_category")
+  @@map("failure_codes")
+}
+
+model EquipmentFailureCode {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  equipmentId String               @map("equipment_id") @db.Uuid
+  failureCodeId String             @map("failure_code_id") @db.Uuid
+  occurrences Int                  @default(0)
+  lastOccurrence DateTime?         @map("last_occurrence")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  equipment   MaintenanceEquipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  failureCode FailureCode          @relation(fields: [failureCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([equipmentId, failureCodeId])
+  @@index([equipmentId], map: "idx_equipment_failure_codes_equipment")
+  @@map("equipment_failure_codes")
+}

@@ -211,6 +211,7 @@ model WorkCenter {
   machineStops     MachineStop[]
   oeeTargets       OeeTarget[]
   productionLogs   ProductionLog[]
+  maintenanceEquipment MaintenanceEquipment[]
   company          Company         @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "work_centers_company_fkey")
 
   @@unique([code, companyId])

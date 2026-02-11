@@ -123,6 +123,10 @@ model Company {
   nfseIssued                    NfseIssued[]
   difalCalculations             DifalCalculation[]
   blocoKRecords                 BlocoKRecord[]
+  maintenanceEquipment          MaintenanceEquipment[]
+  maintenancePlans              MaintenancePlan[]
+  maintenanceOrders             MaintenanceOrder[]
+  failureCodes                  FailureCode[]
 
   @@map("companies")
 }
@@ -216,6 +220,8 @@ model User {
   accountingEntriesCreated                      AccountingEntry[]           @relation("AccountingEntryCreator")
   assignedOpportunities                         Opportunity[]               @relation("OpportunityAssigned")
   salesTargets                                  SalesTarget[]               @relation("SalesTargetUser")
+  maintenanceRequests                           MaintenanceOrder[]          @relation("MaintenanceRequester")
+  maintenanceAssignments                        MaintenanceOrder[]          @relation("MaintenanceTechnician")
 
   @@index([companyId])
   @@map("users")
