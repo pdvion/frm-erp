@@ -108,7 +108,8 @@ export const fiscalRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const service = new FiscalService(ctx.prisma);
-      return service.addApurationItem(input.apurationId, input);
+      const companyId = ctx.tenant.companyId!;
+      return service.addApurationItem(companyId, input.apurationId, input);
     }),
 
   closeApuration: tenantProcedure
@@ -287,21 +288,24 @@ export const fiscalRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const companyId = ctx.tenant.companyId!;
-      const nfse = await ctx.prisma.nfseIssued.findFirst({
-        where: { id: input.id, companyId },
-      });
-      if (!nfse) throw new TRPCError({ code: "NOT_FOUND", message: "NFS-e não encontrada" });
-      if (nfse.status === "CANCELLED") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "NFS-e já está cancelada" });
-      }
 
-      return ctx.prisma.nfseIssued.update({
-        where: { id: input.id },
-        data: {
-          status: "CANCELLED",
-          cancelledAt: new Date(),
-          cancelReason: input.reason,
-        },
+      return ctx.prisma.$transaction(async (tx: Record<string, unknown>) => {
+        const nfse = await (tx as unknown as typeof ctx.prisma).nfseIssued.findFirst({
+          where: { id: input.id, companyId },
+        });
+        if (!nfse) throw new TRPCError({ code: "NOT_FOUND", message: "NFS-e não encontrada" });
+        if (nfse.status === "CANCELLED") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "NFS-e já está cancelada" });
+        }
+
+        return (tx as unknown as typeof ctx.prisma).nfseIssued.update({
+          where: { id: input.id },
+          data: {
+            status: "CANCELLED",
+            cancelledAt: new Date(),
+            cancelReason: input.reason,
+          },
+        });
       });
     }),
 

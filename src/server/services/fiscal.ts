@@ -394,6 +394,7 @@ export class FiscalService {
    * Adiciona item à apuração (débito ou crédito)
    */
   async addApurationItem(
+    companyId: string,
     apurationId: string,
     item: {
       documentType: string;
@@ -407,6 +408,14 @@ export class FiscalService {
       description?: string;
     },
   ) {
+    // Verificar que a apuração pertence ao tenant
+    const apuration = await (this.prisma as unknown as { taxApuration: { findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null> } }).taxApuration.findFirst({
+      where: { id: apurationId, companyId },
+    });
+    if (!apuration) {
+      throw new Error("Apuração não encontrada ou não pertence à empresa");
+    }
+
     return (this.prisma as unknown as { taxApurationItem: { create: (args: Record<string, unknown>) => Promise<unknown> } }).taxApurationItem.create({
       data: {
         apurationId,
