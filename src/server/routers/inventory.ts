@@ -1,8 +1,8 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate } from "../services/audit";
 import { emitEvent } from "../services/events";
+import { InventoryService } from "../services/inventory";
 
 export const inventoryRouter = createTRPCRouter({
   // Listar estoque (com filtro de tenant)
@@ -102,97 +102,14 @@ export const inventoryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { materialId, inventoryType, movementType, quantity, unitCost, ...movementData } = input;
-      const companyId = ctx.companyId;
-      const isEntry = ["ENTRY", "RETURN", "PRODUCTION"].includes(movementType);
-
-      // Usar transação interativa para garantir atomicidade
-      const result = await ctx.prisma.$transaction(async (tx) => {
-        // Buscar ou criar registro de estoque
-        let inventory = await tx.inventory.findFirst({
-          where: {
-            materialId,
-            inventoryType,
-            companyId: companyId ?? null,
-          },
-        });
-
-        if (!inventory) {
-          inventory = await tx.inventory.create({
-            data: {
-              materialId,
-              inventoryType,
-              companyId,
-              quantity: 0,
-              availableQty: 0,
-              unitCost: 0,
-              totalCost: 0,
-              version: 1,
-            },
-          });
-        }
-
-        // Calcular novo saldo
-        const quantityChange = isEntry ? quantity : -quantity;
-        const newQuantity = Number(inventory.quantity) + quantityChange;
-        const totalCost = quantity * unitCost;
-
-        // Verificar saldo disponível para saídas
-        if (!isEntry && newQuantity < 0) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: `Saldo insuficiente. Disponível: ${inventory.quantity}, Solicitado: ${quantity}` });
-        }
-
-        // Criar movimento
-        const movement = await tx.inventoryMovement.create({
-          data: {
-            inventoryId: inventory.id,
-            movementType,
-            quantity,
-            unitCost,
-            totalCost,
-            balanceAfter: newQuantity,
-            ...movementData,
-          },
-          include: {
-            inventory: {
-              include: { material: true },
-            },
-          },
-        });
-
-        // Atualizar estoque com optimistic locking
-        const currentVersion = inventory.version;
-        const updated = await tx.inventory.updateMany({
-          where: {
-            id: inventory.id,
-            version: currentVersion, // Optimistic lock check
-          },
-          data: {
-            quantity: newQuantity,
-            availableQty: newQuantity - Number(inventory.reservedQty),
-            lastMovementAt: new Date(),
-            version: currentVersion + 1, // Increment version
-            // Recalcular custo médio para entradas
-            ...(isEntry && unitCost > 0 && {
-              unitCost: (Number(inventory.totalCost) + totalCost) / (Number(inventory.quantity) + quantity),
-              totalCost: Number(inventory.totalCost) + totalCost,
-            }),
-          },
-        });
-
-        // Se nenhum registro foi atualizado, houve conflito de concorrência
-        if (updated.count === 0) {
-          throw new TRPCError({ code: "CONFLICT", message: "Conflito de concorrência detectado. O estoque foi modificado por outro usuário. Por favor, tente novamente." });
-        }
-
-        return movement;
-      }, {
-        maxWait: 5000, // 5 segundos de espera máxima
-        timeout: 10000, // 10 segundos de timeout
+      const inventoryService = new InventoryService(ctx.prisma);
+      const result = await inventoryService.createMovement({
+        ...input,
+        companyId: ctx.companyId,
       });
 
       // Auditar movimento (fora da transação para não bloquear)
-      await auditCreate("InventoryMovement", result, `${movementType} - ${result.inventory.material.code}`, {
+      await auditCreate("InventoryMovement", result, `${input.movementType} - ${result.inventory.material.code}`, {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
@@ -259,95 +176,35 @@ export const inventoryRouter = createTRPCRouter({
 
   // Verificar itens com estoque abaixo do mínimo
   checkLowStock: tenantProcedure.query(async ({ ctx }) => {
-    // Buscar materiais com estoque abaixo do mínimo
-    const lowStockItems = await ctx.prisma.inventory.findMany({
-      where: {
-        ...tenantFilter(ctx.companyId, false),
-      },
-      include: {
-        material: {
-          include: { category: true },
-        },
-      },
-    });
-
-    // Filtrar apenas os que estão abaixo do mínimo
-    const alerts = lowStockItems
-      .filter((inv) => inv.material.minQuantity && inv.quantity < inv.material.minQuantity)
-      .map((inv) => ({
-        inventoryId: inv.id,
-        materialId: inv.material.id,
-        materialCode: inv.material.code,
-        materialDescription: inv.material.description,
-        unit: inv.material.unit,
-        category: inv.material.category?.name || "Sem categoria",
-        currentStock: inv.quantity,
-        minStock: inv.material.minQuantity || 0,
-        deficit: (Number(inv.material.minQuantity) || 0) - Number(inv.quantity),
-        percentOfMin: inv.material.minQuantity 
-          ? Math.round((Number(inv.quantity) / Number(inv.material.minQuantity)) * 100) 
-          : 0,
-        severity: Number(inv.quantity) <= 0 
-          ? "critical" as const
-          : Number(inv.quantity) < (Number(inv.material.minQuantity) || 0) * 0.5 
-            ? "high" as const 
-            : "medium" as const,
-      }))
-      .sort((a, b) => {
-        // Ordenar por severidade e depois por déficit
-        const severityOrder = { critical: 0, high: 1, medium: 2 };
-        if (severityOrder[a.severity] !== severityOrder[b.severity]) {
-          return severityOrder[a.severity] - severityOrder[b.severity];
-        }
-        return b.deficit - a.deficit;
-      });
-
-    return {
-      totalAlerts: alerts.length,
-      critical: alerts.filter((a) => a.severity === "critical").length,
-      high: alerts.filter((a) => a.severity === "high").length,
-      medium: alerts.filter((a) => a.severity === "medium").length,
-      alerts,
-    };
+    const inventoryService = new InventoryService(ctx.prisma);
+    return inventoryService.checkLowStock(ctx.companyId);
   }),
 
   // Gerar notificações para estoque baixo
   generateLowStockNotifications: tenantProcedure.mutation(async ({ ctx }) => {
-    // Buscar itens com estoque baixo
-    const lowStockItems = await ctx.prisma.inventory.findMany({
-      where: {
-        ...tenantFilter(ctx.companyId, false),
-      },
-      include: {
-        material: true,
-      },
-    });
+    const inventoryService = new InventoryService(ctx.prisma);
+    const { alerts } = await inventoryService.checkLowStock(ctx.companyId);
 
-    const itemsToNotify = lowStockItems.filter(
-      (inv) => inv.material.minQuantity && inv.quantity < inv.material.minQuantity
-    );
-
-    if (itemsToNotify.length === 0) {
+    if (alerts.length === 0) {
       return { created: 0, message: "Nenhum item com estoque baixo" };
     }
 
     // Emitir eventos de estoque baixo para cada item
-    for (const item of itemsToNotify) {
-      const isCritical = Number(item.quantity) <= (Number(item.material.minQuantity) || 0) * 0.5;
-      emitEvent(isCritical ? "inventory.criticalStock" : "inventory.lowStock", {
+    for (const alert of alerts) {
+      emitEvent(alert.severity === "critical" ? "inventory.criticalStock" : "inventory.lowStock", {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId ?? undefined,
       }, {
-        materialId: item.materialId,
-        materialName: item.material.description,
-        currentQty: item.quantity,
-        minQty: item.material.minQuantity || 0,
+        materialId: alert.materialId,
+        materialName: alert.materialDescription,
+        currentQty: alert.currentStock,
+        minQty: alert.minStock,
       });
     }
 
     return {
-      created: itemsToNotify.length,
-      itemCount: itemsToNotify.length,
+      created: alerts.length,
+      itemCount: alerts.length,
     };
   }),
 
@@ -367,62 +224,14 @@ export const inventoryRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      // Buscar estoque disponível
-      const inventory = await ctx.prisma.inventory.findFirst({
-        where: {
-          materialId: input.materialId,
-          ...tenantFilter(ctx.companyId, false),
-        },
-        include: { material: true },
+      const inventoryService = new InventoryService(ctx.prisma);
+      const reservation = await inventoryService.createReservation({
+        ...input,
+        companyId: ctx.companyId,
+        userId: ctx.tenant.userId,
       });
 
-      if (!inventory) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Material não encontrado no estoque" });
-      }
-
-      if (Number(inventory.availableQty) < Number(input.quantity)) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: `Quantidade disponível insuficiente. Disponível: ${inventory.availableQty}` });
-      }
-
-      // Gerar código da reserva
-      const lastReservation = await ctx.prisma.stockReservation.findFirst({
-        where: tenantFilter(ctx.companyId, false),
-        orderBy: { code: "desc" },
-      });
-      const nextCode = (lastReservation?.code || 0) + 1;
-
-      // Criar reserva
-      const reservation = await ctx.prisma.stockReservation.create({
-        data: {
-          code: nextCode,
-          companyId: ctx.companyId,
-          inventoryId: inventory.id,
-          materialId: input.materialId,
-          quantity: input.quantity,
-          documentType: input.documentType,
-          documentId: input.documentId,
-          documentNumber: input.documentNumber,
-          expiresAt: input.expiresAt,
-          notes: input.notes,
-          status: "ACTIVE",
-          createdBy: ctx.tenant.userId,
-        },
-        include: {
-          material: true,
-          inventory: true,
-        },
-      });
-
-      // Atualizar quantidade reservada no estoque
-      await ctx.prisma.inventory.update({
-        where: { id: inventory.id },
-        data: {
-          reservedQty: Number(inventory.reservedQty) + Number(input.quantity),
-          availableQty: Number(inventory.availableQty) - Number(input.quantity),
-        },
-      });
-
-      await auditCreate("StockReservation", reservation, String(nextCode), {
+      await auditCreate("StockReservation", reservation, String(reservation.code), {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
@@ -437,40 +246,12 @@ export const inventoryRouter = createTRPCRouter({
       reason: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const reservation = await ctx.prisma.stockReservation.findFirst({
-        where: {
-          id: input.reservationId,
-          ...tenantFilter(ctx.companyId, false),
-          status: "ACTIVE",
-        },
-        include: { inventory: true },
+      const inventoryService = new InventoryService(ctx.prisma);
+      return inventoryService.releaseReservation({
+        ...input,
+        companyId: ctx.companyId,
+        userId: ctx.tenant.userId,
       });
-
-      if (!reservation) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já liberada" });
-      }
-
-      // Atualizar reserva
-      const updated = await ctx.prisma.stockReservation.update({
-        where: { id: input.reservationId },
-        data: {
-          status: "RELEASED",
-          releasedAt: new Date(),
-          releasedBy: ctx.tenant.userId,
-          releaseReason: input.reason,
-        },
-      });
-
-      // Devolver quantidade ao estoque disponível
-      await ctx.prisma.inventory.update({
-        where: { id: reservation.inventoryId },
-        data: {
-          reservedQty: Number(reservation.inventory.reservedQty) - Number(reservation.quantity),
-          availableQty: Number(reservation.inventory.availableQty) + Number(reservation.quantity),
-        },
-      });
-
-      return updated;
     }),
 
   // Consumir reserva (baixa efetiva)
@@ -480,64 +261,12 @@ export const inventoryRouter = createTRPCRouter({
       quantity: z.number().positive().optional(), // Se não informado, consome tudo
     }))
     .mutation(async ({ ctx, input }) => {
-      const reservation = await ctx.prisma.stockReservation.findFirst({
-        where: {
-          id: input.reservationId,
-          ...tenantFilter(ctx.companyId, false),
-          status: "ACTIVE",
-        },
-        include: { inventory: { include: { material: true } } },
+      const inventoryService = new InventoryService(ctx.prisma);
+      return inventoryService.consumeReservation({
+        ...input,
+        companyId: ctx.companyId,
+        userId: ctx.tenant.userId,
       });
-
-      if (!reservation) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Reserva não encontrada ou já consumida" });
-      }
-
-      const quantityToConsume = input.quantity || reservation.quantity;
-      if (quantityToConsume > reservation.quantity) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Quantidade a consumir maior que a reservada" });
-      }
-
-      // Criar movimento de saída
-      await ctx.prisma.inventoryMovement.create({
-        data: {
-          inventoryId: reservation.inventoryId,
-          movementType: "EXIT",
-          quantity: quantityToConsume,
-          unitCost: reservation.inventory.unitCost,
-          totalCost: Number(quantityToConsume) * Number(reservation.inventory.unitCost),
-          balanceAfter: Number(reservation.inventory.quantity) - Number(quantityToConsume),
-          documentType: reservation.documentType,
-          documentNumber: reservation.documentNumber,
-          notes: `Consumo de reserva #${reservation.code}`,
-          userId: ctx.tenant.userId,
-        },
-      });
-
-      // Atualizar estoque
-      await ctx.prisma.inventory.update({
-        where: { id: reservation.inventoryId },
-        data: {
-          quantity: Number(reservation.inventory.quantity) - Number(quantityToConsume),
-          reservedQty: Number(reservation.inventory.reservedQty) - Number(quantityToConsume),
-          totalCost: (Number(reservation.inventory.quantity) - Number(quantityToConsume)) * Number(reservation.inventory.unitCost),
-          lastMovementAt: new Date(),
-        },
-      });
-
-      // Atualizar ou finalizar reserva
-      const remainingQty = Number(reservation.quantity) - Number(quantityToConsume);
-      const updated = await ctx.prisma.stockReservation.update({
-        where: { id: input.reservationId },
-        data: {
-          quantity: remainingQty,
-          consumedQty: (Number(reservation.consumedQty) || 0) + Number(quantityToConsume),
-          status: remainingQty <= 0 ? "CONSUMED" : "ACTIVE",
-          ...(remainingQty <= 0 && { consumedAt: new Date() }),
-        },
-      });
-
-      return updated;
     }),
 
   // Listar reservas

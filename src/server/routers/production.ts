@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { InventoryService } from "../services/inventory";
 
 export const productionRouter = createTRPCRouter({
   // Listar ordens de produção
@@ -414,21 +415,8 @@ export const productionRouter = createTRPCRouter({
 
         // Dar entrada do produto acabado no estoque
         if (input.quantity > 0) {
-          let inventory = order.product.inventory[0];
-          
-          if (!inventory) {
-            inventory = await tx.inventory.create({
-              data: {
-                materialId: order.product.id,
-                companyId: ctx.companyId,
-                inventoryType: "FINISHED",
-                quantity: 0,
-                availableQty: 0,
-                unitCost: 0,
-                totalCost: 0,
-              },
-            });
-          }
+          const inventoryService = new InventoryService(ctx.prisma);
+          const inventory = await inventoryService.getOrCreateInventory(tx, order.product.id, ctx.companyId, "FINISHED");
 
           // Calcular custo de produção baseado nos materiais consumidos
           const consumedMaterials = await tx.productionOrderMaterial.findMany({
@@ -442,32 +430,20 @@ export const productionRouter = createTRPCRouter({
             totalMaterialCost += Number(materialCost) * Number(mat.consumedQty);
           }
           
-          const unitCost = totalMaterialCost / newProducedQty;
+          const unitCost = newProducedQty > 0 
+            ? totalMaterialCost / newProducedQty 
+            : totalMaterialCost / Number(order.quantity);
           const totalCost = unitCost * input.quantity;
 
-          await tx.inventoryMovement.create({
-            data: {
-              inventoryId: inventory.id,
-              movementType: "ENTRY",
-              quantity: input.quantity,
-              unitCost,
-              totalCost,
-              balanceAfter: Number(inventory.quantity) + Number(input.quantity),
-              documentType: "OP",
-              documentNumber: String(order.code),
-              documentId: order.id,
-              notes: `Produção OP #${order.code} - ${order.product.description}`,
-              userId: ctx.tenant.userId,
-            },
-          });
-
-          // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
-          await tx.inventory.update({
-            where: { id: inventory.id },
-            data: {
-              quantity: { increment: input.quantity },
-              lastMovementAt: new Date(),
-            },
+          await inventoryService.recordProductionEntry(tx, {
+            inventoryId: inventory.id,
+            currentQuantity: Number(inventory.quantity),
+            quantity: input.quantity,
+            unitCost,
+            documentNumber: String(order.code),
+            documentId: order.id,
+            productDescription: order.product.description,
+            userId: ctx.tenant.userId,
           });
         }
 
@@ -539,30 +515,17 @@ export const productionRouter = createTRPCRouter({
           },
         });
 
-        await tx.inventoryMovement.create({
-          data: {
-            inventoryId: inventory.id,
-            movementType: "EXIT",
-            quantity: input.quantity,
-            unitCost,
-            totalCost,
-            balanceAfter: Number(inventory.quantity) - Number(input.quantity),
-            documentType: "OP",
-            documentNumber: String(orderMaterial.order.code),
-            documentId: orderMaterial.order.id,
-            notes: `Consumo OP #${orderMaterial.order.code} - ${orderMaterial.material.description}`,
-            userId: ctx.tenant.userId,
-          },
-        });
-
-        // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
-        await tx.inventory.update({
-          where: { id: inventory.id },
-          data: {
-            quantity: { decrement: input.quantity },
-            totalCost: { decrement: totalCost },
-            lastMovementAt: new Date(),
-          },
+        const inventoryService = new InventoryService(ctx.prisma);
+        await inventoryService.recordProductionConsumption(tx, {
+          inventoryId: inventory.id,
+          currentQuantity: Number(inventory.quantity),
+          quantity: input.quantity,
+          unitCost,
+          totalCost,
+          documentNumber: String(orderMaterial.order.code),
+          documentId: orderMaterial.order.id,
+          materialDescription: orderMaterial.material.description,
+          userId: ctx.tenant.userId,
         });
 
         return { success: true };
