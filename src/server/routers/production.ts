@@ -470,7 +470,7 @@ export const productionRouter = createTRPCRouter({
           where: { id: inventory.id },
           data: {
             quantity: { increment: input.quantity },
-            availableQty: { increment: input.quantity },
+            // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
             lastMovementAt: new Date(),
           },
         });
@@ -564,7 +564,7 @@ export const productionRouter = createTRPCRouter({
         where: { id: inventory.id },
         data: {
           quantity: { decrement: input.quantity },
-          availableQty: { decrement: input.quantity },
+          // availableQty é calculado automaticamente pelo trigger fn_inventory_compute_available_qty
           totalCost: { decrement: totalCost },
           lastMovementAt: new Date(),
         },
