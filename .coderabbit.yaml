@@ -106,7 +106,6 @@ reviews:
     circleci:
       enabled: false
     ast-grep:
-      enabled: true
       packages: []
       rule_dirs: []
       util_dirs: []
