@@ -61,7 +61,7 @@ export const maintenanceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input; const cid = ctx.tenant.companyId!;
       const old = await ctx.prisma.maintenanceEquipment.findFirst({ where: { id, companyId: cid } });
-      if (!old) throw new Error("Equipamento não encontrado");
+      if (!old) throw new TRPCError({ code: "NOT_FOUND", message: "Equipamento não encontrado" });
       const r = await ctx.prisma.maintenanceEquipment.update({ where: { id }, data });
       await auditUpdate("MaintenanceEquipment", id, r.code, old, r, { userId: ctx.tenant.userId ?? undefined, companyId: cid });
       return r;
@@ -215,6 +215,8 @@ export const maintenanceRouter = createTRPCRouter({
       const cid = ctx.tenant.companyId!;
       const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.orderId, companyId: cid } });
       if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
+      const mat = await ctx.prisma.material.findFirst({ where: { id: input.materialId, companyId: cid } });
+      if (!mat) throw new TRPCError({ code: "FORBIDDEN", message: "Material não pertence a este tenant" });
       const totalCost = input.quantity * input.unitCost;
       return ctx.prisma.maintenanceOrderPart.create({ data: { ...input, totalCost } });
     }),
@@ -279,7 +281,7 @@ export const maintenanceRouter = createTRPCRouter({
       severity: z.number().min(1).max(5).default(3) }))
     .mutation(async ({ ctx, input }) => {
       const cid = ctx.tenant.companyId!;
-      return ctx.prisma.failureCode.create({
+      const r = await ctx.prisma.failureCode.create({
         data: {
           companyId: cid,
           code: input.code,
@@ -289,11 +291,16 @@ export const maintenanceRouter = createTRPCRouter({
           severity: input.severity,
         },
       });
+      await auditCreate("FailureCode", r, r.code, { userId: ctx.tenant.userId ?? undefined, companyId: cid });
+      return r;
     }),
 
   // KPIs
   getEquipmentKPIs: tenantProcedure.input(z.object({ equipmentId: z.string() })).query(async ({ ctx, input }) => {
+    const cid = ctx.tenant.companyId!;
+    const eq = await ctx.prisma.maintenanceEquipment.findFirst({ where: { id: input.equipmentId, companyId: cid } });
+    if (!eq) throw new TRPCError({ code: "NOT_FOUND", message: "Equipamento não encontrado" });
     const svc = new MaintenanceService(ctx.prisma);
-    return svc.getEquipmentKPIs(ctx.tenant.companyId!, input.equipmentId);
+    return svc.getEquipmentKPIs(cid, input.equipmentId);
   }),
 });
