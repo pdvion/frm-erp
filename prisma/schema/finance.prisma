@@ -849,8 +849,8 @@ model AccountingEntry {
   status        String                @default("DRAFT") @db.VarChar(20) // DRAFT, POSTED, REVERSED
   totalDebit    Decimal               @default(0) @map("total_debit") @db.Decimal(15, 2)
   totalCredit   Decimal               @default(0) @map("total_credit") @db.Decimal(15, 2)
-  reversalOf    String?               @map("reversal_of") @db.Uuid
-  reversedBy    String?               @map("reversed_by") @db.Uuid
+  reversalOf    String?               @unique @map("reversal_of") @db.Uuid
+  reversedBy    String?               @unique @map("reversed_by") @db.Uuid
   notes         String?
   postedBy      String?               @map("posted_by") @db.Uuid
   postedAt      DateTime?             @map("posted_at")
