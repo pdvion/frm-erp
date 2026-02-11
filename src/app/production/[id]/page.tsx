@@ -389,7 +389,7 @@ export default function ProductionOrderDetailPage() {
                           <tr key={op.id} className={isComplete ? "bg-green-50" : ""}>
                             <td className="px-4 py-3 text-theme-secondary">{op.sequence}</td>
                             <td className="px-4 py-3 font-medium text-theme">{op.name}</td>
-                            <td className="px-4 py-3 text-theme-secondary">{op.workCenter?.name || "-"}</td>
+                            <td className="px-4 py-3 text-theme-secondary">{op.workCenter || "-"}</td>
                             <td className="px-4 py-3 text-right text-theme">{Number(op.plannedQty)}</td>
                             <td className="px-4 py-3 text-right">
                               <span className={isComplete ? "text-green-600 font-medium" : "text-theme"}>
