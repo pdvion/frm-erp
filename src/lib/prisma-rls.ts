@@ -18,41 +18,102 @@ import { PrismaClient } from "@prisma/client";
  */
 
 // Modelos que possuem campo companyId e devem ser filtrados
+// Atualizado VIO-1071: 34 → 75 models (todos os business models com companyId)
+// Excluídos intencionalmente: AuditLog, SystemSetting, Notification, NotificationGroup,
+// UserCompany, UserCompanyPermission, UserGroup, Holiday, Embedding, AiUsageLog,
+// CompanyOnboarding, SefazSyncLog, SefazManifestacaoLog, SefazPendingNfe, SefazSyncConfig,
+// DdaSyncLog, Dashboard (system/infra models)
 const TENANT_MODELS = new Set([
+  // --- Cadastros ---
   "Material",
   "Supplier",
   "Customer",
-  "AccountsPayable",
-  "AccountsReceivable",
-  "PurchaseOrder",
-  "SalesOrder",
-  "SalesQuote",
-  "ProductionOrder",
-  "Inventory",
-  "InventoryMovement",
-  "ReceivedInvoice",
-  "IssuedInvoice",
-  "Lead",
-  "Task",
-  "Workflow",
-  "WorkflowDefinition",
-  "GedDocument",
   "Employee",
-  "PayrollEntry",
-  "TimeClockEntry",
-  "WorkSchedule",
-  "Budget",
-  "CostCenter",
-  "FinancialCategory",
-  "BankAccount",
-  "PaymentRequest",
-  "ApprovalLevel",
-  "QualityInspection",
-  "MaintenanceOrder",
-  "ImportProcess",
-  "ExchangeContract",
   "Product",
   "ProductCategory",
+  // --- Financeiro ---
+  "AccountsPayable",
+  "AccountsReceivable",
+  "BankAccount",
+  "Budget",
+  "BudgetAccount",
+  "BudgetActual",
+  "BudgetAlert",
+  "BudgetVersion",
+  "CollectionRule",
+  "CostCenter",
+  "FinancialCategory",
+  "PaymentRequest",
+  "ApprovalLevel",
+  "ApprovalThreshold",
+  "DdaBoleto",
+  "DdaConfig",
+  // --- Compras ---
+  "PurchaseOrder",
+  "MaterialRequisition",
+  // --- Vendas ---
+  "SalesOrder",
+  "SalesQuote",
+  "Lead",
+  // --- Estoque ---
+  "Inventory",
+  "InventoryMovement",
+  "Lot",
+  "MaterialReceiving",
+  "MaterialStandardCost",
+  "PhysicalInventory",
+  "PickingList",
+  "StockReservation",
+  "StockTransfer",
+  // --- Produção ---
+  "ProductionOrder",
+  "ProductionCost",
+  "MrpRun",
+  "OeeTarget",
+  // --- Fiscal ---
+  "ReceivedInvoice",
+  "IssuedInvoice",
+  // --- RH/DP ---
+  "PayrollEntry",
+  "Payroll",
+  "TimeClockEntry",
+  "TimeClockAdjustment",
+  "WorkSchedule",
+  "Vacation",
+  "Termination",
+  "ThirteenthSalary",
+  "TransportVoucher",
+  "EmployeeBenefit",
+  "EmployeeDependent",
+  "EmployeeTraining",
+  "HoursBank",
+  "LeaveRecord",
+  "SkillMatrix",
+  "AdmissionProcess",
+  // --- Qualidade ---
+  "QualityInspection",
+  "NonConformity",
+  // --- Documentos ---
+  "GedDocument",
+  "GedCategory",
+  "SavedReport",
+  // --- Workflow ---
+  "Workflow",
+  "WorkflowDefinition",
+  "WorkflowInstance",
+  // --- Comex ---
+  "ImportProcess",
+  "ExchangeContract",
+  // --- GPD ---
+  "StrategicGoal",
+  "GoalIndicator",
+  "ActionPlan",
+  "Kpi",
+  "KpiValue",
+  // --- Manutenção ---
+  "MaintenanceOrder",
+  // --- Tarefas ---
+  "Task",
 ]);
 
 // Modelos que possuem campo isShared
@@ -66,7 +127,8 @@ const SHARED_MODELS = new Set([
 ]);
 
 /**
- * Cria filtro de tenant para queries
+ * Cria filtro de tenant para queries de leitura.
+ * Inclui registros da empresa, registros sem dono (null) e compartilhados.
  */
 function buildTenantFilter(model: string, companyId: string) {
   const hasShared = SHARED_MODELS.has(model);
@@ -90,6 +152,25 @@ function buildTenantFilter(model: string, companyId: string) {
 }
 
 /**
+ * Cria filtro de tenant para operações de escrita (update/delete).
+ * NÃO inclui companyId:null para evitar mutação de registros de sistema.
+ */
+function buildTenantWriteFilter(_model: string, companyId: string) {
+  return { companyId };
+}
+
+/**
+ * Compõe o filtro de tenant com o where existente usando AND,
+ * preservando condições OR do usuário.
+ */
+function composeTenantWhere(existingWhere: Record<string, unknown> | undefined, filter: Record<string, unknown>) {
+  if (!existingWhere || Object.keys(existingWhere).length === 0) {
+    return filter;
+  }
+  return { AND: [existingWhere, filter] };
+}
+
+/**
  * Cria um cliente Prisma com filtro automático de tenant
  * 
  * @param prisma - Cliente Prisma base
@@ -103,6 +184,11 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
     return prisma;
   }
 
+  // Guard: se $extends não está disponível (ex: mock em testes), retorna original
+  if (typeof prisma.$extends !== "function") {
+    return prisma;
+  }
+
   return prisma.$extends({
     name: "tenant-rls",
     query: {
@@ -110,14 +196,14 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         async findMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async findFirst({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
@@ -135,21 +221,21 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         async count({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async aggregate({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async groupBy({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
             const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
@@ -178,36 +264,36 @@ export function createTenantPrisma(prisma: PrismaClient, companyId: string | nul
         },
         async update({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async updateMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async delete({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async deleteMany({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
           }
           return query(args);
         },
         async upsert({ model, args, query }) {
           if (TENANT_MODELS.has(model)) {
-            const filter = buildTenantFilter(model, companyId);
-            args.where = { ...args.where, ...filter } as typeof args.where;
+            const filter = buildTenantWriteFilter(model, companyId);
+            args.where = composeTenantWhere(args.where as Record<string, unknown>, filter) as typeof args.where;
             // Injeta companyId na criação
             const createData = args.create as Record<string, unknown>;
             if (!createData.companyId) {

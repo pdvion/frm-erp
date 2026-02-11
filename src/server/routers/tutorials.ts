@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 export const tutorialsRouter = createTRPCRouter({
@@ -11,8 +10,8 @@ export const tutorialsRouter = createTRPCRouter({
       category: z.string().optional(),
       includeContent: z.boolean().optional(),
     }).optional())
-    .query(async ({ input }) => {
-      return prisma.tutorial.findMany({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.tutorial.findMany({
         where: {
           isPublished: true,
           ...(input?.module && { module: input.module }),
@@ -45,7 +44,7 @@ export const tutorialsRouter = createTRPCRouter({
       });
     }
 
-    return prisma.tutorial.findMany({
+    return ctx.prisma.tutorial.findMany({
       orderBy: { orderIndex: "asc" },
     });
   }),
@@ -53,8 +52,8 @@ export const tutorialsRouter = createTRPCRouter({
   // Obter tutorial por slug
   getBySlug: tenantProcedure
     .input(z.object({ slug: z.string() }))
-    .query(async ({ input }) => {
-      const tutorial = await prisma.tutorial.findUnique({
+    .query(async ({ input, ctx }) => {
+      const tutorial = await ctx.prisma.tutorial.findUnique({
         where: { slug: input.slug },
       });
 
@@ -71,8 +70,8 @@ export const tutorialsRouter = createTRPCRouter({
   // Obter tutorial por módulo (para ajuda contextual)
   getByModule: tenantProcedure
     .input(z.object({ module: z.string() }))
-    .query(async ({ input }) => {
-      return prisma.tutorial.findFirst({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.tutorial.findFirst({
         where: {
           module: input.module,
           isPublished: true,
@@ -104,7 +103,7 @@ export const tutorialsRouter = createTRPCRouter({
       }
 
       // Verificar slug duplicado
-      const existing = await prisma.tutorial.findUnique({
+      const existing = await ctx.prisma.tutorial.findUnique({
         where: { slug: input.slug },
       });
       if (existing) {
@@ -114,7 +113,7 @@ export const tutorialsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.tutorial.create({
+      return ctx.prisma.tutorial.create({
         data: {
           ...input,
           createdBy: ctx.tenant.userId,
@@ -149,7 +148,7 @@ export const tutorialsRouter = createTRPCRouter({
 
       // Verificar slug duplicado
       if (data.slug) {
-        const existing = await prisma.tutorial.findFirst({
+        const existing = await ctx.prisma.tutorial.findFirst({
           where: { slug: data.slug, NOT: { id } },
         });
         if (existing) {
@@ -160,7 +159,7 @@ export const tutorialsRouter = createTRPCRouter({
         }
       }
 
-      return prisma.tutorial.update({
+      return ctx.prisma.tutorial.update({
         where: { id },
         data,
       });
@@ -178,7 +177,7 @@ export const tutorialsRouter = createTRPCRouter({
         });
       }
 
-      await prisma.tutorial.delete({
+      await ctx.prisma.tutorial.delete({
         where: { id: input.id },
       });
 
@@ -186,8 +185,8 @@ export const tutorialsRouter = createTRPCRouter({
     }),
 
   // Listar categorias disponíveis
-  categories: tenantProcedure.query(async () => {
-    const tutorials = await prisma.tutorial.findMany({
+  categories: tenantProcedure.query(async ({ ctx }) => {
+    const tutorials = await ctx.prisma.tutorial.findMany({
       where: { isPublished: true },
       select: { category: true },
       distinct: ["category"],
@@ -199,8 +198,8 @@ export const tutorialsRouter = createTRPCRouter({
   }),
 
   // Listar módulos com tutoriais
-  modules: tenantProcedure.query(async () => {
-    const tutorials = await prisma.tutorial.findMany({
+  modules: tenantProcedure.query(async ({ ctx }) => {
+    const tutorials = await ctx.prisma.tutorial.findMany({
       where: { isPublished: true },
       select: { module: true },
       distinct: ["module"],

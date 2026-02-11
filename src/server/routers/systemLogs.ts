@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
+
 import { TRPCError } from "@trpc/server";
 
 export const systemLogsRouter = createTRPCRouter({
@@ -34,7 +34,7 @@ export const systemLogsRouter = createTRPCRouter({
       };
 
       const [logs, total] = await Promise.all([
-        prisma.systemLog.findMany({
+        ctx.prisma.systemLog.findMany({
           where,
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
@@ -44,7 +44,7 @@ export const systemLogsRouter = createTRPCRouter({
             company: { select: { id: true, name: true } },
           },
         }),
-        prisma.systemLog.count({ where }),
+        ctx.prisma.systemLog.count({ where }),
       ]);
 
       return {
@@ -67,7 +67,7 @@ export const systemLogsRouter = createTRPCRouter({
         });
       }
 
-      return prisma.systemLog.findUnique({
+      return ctx.prisma.systemLog.findUnique({
         where: { id: input.id },
         include: {
           user: { select: { id: true, name: true, email: true } },
@@ -96,13 +96,13 @@ export const systemLogsRouter = createTRPCRouter({
 
       const [byLevel, bySource, total, recentErrors] = await Promise.all([
         // Contagem por nível
-        prisma.systemLog.groupBy({
+        ctx.prisma.systemLog.groupBy({
           by: ["level"],
           where: { createdAt: { gte: startDate } },
           _count: true,
         }),
         // Top 10 fontes com mais logs
-        prisma.systemLog.groupBy({
+        ctx.prisma.systemLog.groupBy({
           by: ["source"],
           where: { createdAt: { gte: startDate }, source: { not: null } },
           _count: true,
@@ -110,11 +110,11 @@ export const systemLogsRouter = createTRPCRouter({
           take: 10,
         }),
         // Total no período
-        prisma.systemLog.count({
+        ctx.prisma.systemLog.count({
           where: { createdAt: { gte: startDate } },
         }),
         // Últimos erros
-        prisma.systemLog.findMany({
+        ctx.prisma.systemLog.findMany({
           where: {
             level: { in: ["error", "fatal"] },
             createdAt: { gte: startDate },
@@ -156,7 +156,7 @@ export const systemLogsRouter = createTRPCRouter({
       });
     }
 
-    const sources = await prisma.systemLog.findMany({
+    const sources = await ctx.prisma.systemLog.findMany({
       where: { source: { not: null } },
       select: { source: true },
       distinct: ["source"],
@@ -185,13 +185,13 @@ export const systemLogsRouter = createTRPCRouter({
       errorCutoffDate.setDate(errorCutoffDate.getDate() - 90);
 
       const [deletedNormal, deletedErrors] = await Promise.all([
-        prisma.systemLog.deleteMany({
+        ctx.prisma.systemLog.deleteMany({
           where: {
             createdAt: { lt: cutoffDate },
             level: { notIn: ["error", "fatal"] },
           },
         }),
-        prisma.systemLog.deleteMany({
+        ctx.prisma.systemLog.deleteMany({
           where: {
             createdAt: { lt: errorCutoffDate },
             level: { in: ["error", "fatal"] },

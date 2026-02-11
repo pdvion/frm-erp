@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 
 const inspectionTypeEnum = z.enum(["RECEIVING", "IN_PROCESS", "FINAL", "AUDIT"]);
@@ -45,7 +44,7 @@ export const qualityRouter = createTRPCRouter({
       if (materialId) where.materialId = materialId;
 
       const [inspections, total] = await Promise.all([
-        prisma.qualityInspection.findMany({
+        ctx.prisma.qualityInspection.findMany({
           where,
           include: {
             material: { select: { id: true, code: true, description: true } },
@@ -56,7 +55,7 @@ export const qualityRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.qualityInspection.count({ where }),
+        ctx.prisma.qualityInspection.count({ where }),
       ]);
 
       return {
@@ -70,7 +69,7 @@ export const qualityRouter = createTRPCRouter({
   getInspection: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const inspection = await prisma.qualityInspection.findFirst({
+      const inspection = await ctx.prisma.qualityInspection.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
           material: true,
@@ -108,7 +107,7 @@ export const qualityRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const lastInspection = await prisma.qualityInspection.findFirst({
+      const lastInspection = await ctx.prisma.qualityInspection.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -116,7 +115,7 @@ export const qualityRouter = createTRPCRouter({
 
       const nextCode = (lastInspection?.code ?? 0) + 1;
 
-      const inspection = await prisma.qualityInspection.create({
+      const inspection = await ctx.prisma.qualityInspection.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -157,7 +156,7 @@ export const qualityRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const item = await prisma.qualityInspectionItem.findFirst({
+      const item = await ctx.prisma.qualityInspectionItem.findFirst({
         where: { id: input.itemId },
         include: { inspection: true },
       });
@@ -171,7 +170,7 @@ export const qualityRouter = createTRPCRouter({
         throw new TRPCError({ code: "FORBIDDEN", message: "Acesso negado" });
       }
 
-      const updated = await prisma.qualityInspectionItem.update({
+      const updated = await ctx.prisma.qualityInspectionItem.update({
         where: { id: input.itemId },
         data: {
           measuredValue: input.measuredValue,
@@ -181,13 +180,13 @@ export const qualityRouter = createTRPCRouter({
       });
 
       // Atualizar status da inspeção se necessário
-      const allItems = await prisma.qualityInspectionItem.findMany({
+      const allItems = await ctx.prisma.qualityInspectionItem.findMany({
         where: { inspectionId: item.inspectionId },
       });
 
       const pendingItems = allItems.filter((i) => i.result === "PENDING");
       if (pendingItems.length === 0 && item.inspection.status === "PENDING") {
-        await prisma.qualityInspection.update({
+        await ctx.prisma.qualityInspection.update({
           where: { id: item.inspectionId },
           data: { status: "IN_PROGRESS" },
         });
@@ -207,7 +206,7 @@ export const qualityRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const inspection = await prisma.qualityInspection.findFirst({
+      const inspection = await ctx.prisma.qualityInspection.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: { items: true },
       });
@@ -230,7 +229,7 @@ export const qualityRouter = createTRPCRouter({
         finalStatus = "PARTIAL";
       }
 
-      const updated = await prisma.qualityInspection.update({
+      const updated = await ctx.prisma.qualityInspection.update({
         where: { id: input.id },
         data: {
           status: finalStatus,
@@ -278,7 +277,7 @@ export const qualityRouter = createTRPCRouter({
       if (severity) where.severity = severity;
 
       const [nonConformities, total] = await Promise.all([
-        prisma.nonConformity.findMany({
+        ctx.prisma.nonConformity.findMany({
           where,
           include: {
             material: { select: { id: true, code: true, description: true } },
@@ -289,7 +288,7 @@ export const qualityRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.nonConformity.count({ where }),
+        ctx.prisma.nonConformity.count({ where }),
       ]);
 
       return {
@@ -303,7 +302,7 @@ export const qualityRouter = createTRPCRouter({
   getNonConformity: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const nc = await prisma.nonConformity.findFirst({
+      const nc = await ctx.prisma.nonConformity.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
           material: true,
@@ -336,7 +335,7 @@ export const qualityRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const lastNC = await prisma.nonConformity.findFirst({
+      const lastNC = await ctx.prisma.nonConformity.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -344,7 +343,7 @@ export const qualityRouter = createTRPCRouter({
 
       const nextCode = (lastNC?.code ?? 0) + 1;
 
-      const nc = await prisma.nonConformity.create({
+      const nc = await ctx.prisma.nonConformity.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -382,7 +381,7 @@ export const qualityRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
 
-      const existing = await prisma.nonConformity.findFirst({
+      const existing = await ctx.prisma.nonConformity.findFirst({
         where: { id, companyId: ctx.companyId },
       });
 
@@ -390,7 +389,7 @@ export const qualityRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Não-conformidade não encontrada" });
       }
 
-      const nc = await prisma.nonConformity.update({
+      const nc = await ctx.prisma.nonConformity.update({
         where: { id },
         data: {
           status: data.status,
@@ -413,7 +412,7 @@ export const qualityRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const nc = await prisma.nonConformity.findFirst({
+      const nc = await ctx.prisma.nonConformity.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -430,7 +429,7 @@ export const qualityRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Ação corretiva é obrigatória para fechar" });
       }
 
-      return prisma.nonConformity.update({
+      return ctx.prisma.nonConformity.update({
         where: { id: input.id },
         data: {
           status: "CLOSED",
@@ -457,21 +456,21 @@ export const qualityRouter = createTRPCRouter({
       byType,
       bySeverity,
     ] = await Promise.all([
-      prisma.qualityInspection.count({ where: { companyId: ctx.companyId } }),
-      prisma.qualityInspection.count({
+      ctx.prisma.qualityInspection.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.qualityInspection.count({
         where: { companyId: ctx.companyId, status: "PENDING" },
       }),
-      prisma.qualityInspection.count({
+      ctx.prisma.qualityInspection.count({
         where: {
           companyId: ctx.companyId,
           inspectionDate: { gte: startOfMonth },
         },
       }),
       (async () => {
-        const approved = await prisma.qualityInspection.count({
+        const approved = await ctx.prisma.qualityInspection.count({
           where: { companyId: ctx.companyId, status: "APPROVED" },
         });
-        const total = await prisma.qualityInspection.count({
+        const total = await ctx.prisma.qualityInspection.count({
           where: {
             companyId: ctx.companyId,
             status: { in: ["APPROVED", "REJECTED", "PARTIAL"] },
@@ -479,18 +478,18 @@ export const qualityRouter = createTRPCRouter({
         });
         return total > 0 ? (approved / total) * 100 : 100;
       })(),
-      prisma.nonConformity.count({
+      ctx.prisma.nonConformity.count({
         where: { companyId: ctx.companyId, status: { not: "CLOSED" } },
       }),
-      prisma.nonConformity.count({
+      ctx.prisma.nonConformity.count({
         where: { companyId: ctx.companyId, severity: "CRITICAL", status: { not: "CLOSED" } },
       }),
-      prisma.nonConformity.groupBy({
+      ctx.prisma.nonConformity.groupBy({
         by: ["type"],
         where: { companyId: ctx.companyId },
         _count: true,
       }),
-      prisma.nonConformity.groupBy({
+      ctx.prisma.nonConformity.groupBy({
         by: ["severity"],
         where: { companyId: ctx.companyId, status: { not: "CLOSED" } },
         _count: true,

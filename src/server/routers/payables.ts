@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { emitEvent } from "../services/events";
@@ -81,7 +80,7 @@ export const payablesRouter = createTRPCRouter({
       }
 
       const [payables, total] = await Promise.all([
-        prisma.accountsPayable.findMany({
+        ctx.prisma.accountsPayable.findMany({
           where,
           include: {
             supplier: {
@@ -99,7 +98,7 @@ export const payablesRouter = createTRPCRouter({
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.accountsPayable.count({ where }),
+        ctx.prisma.accountsPayable.count({ where }),
       ]);
 
       // Marcar títulos vencidos
@@ -126,7 +125,7 @@ export const payablesRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -167,7 +166,7 @@ export const payablesRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -200,7 +199,7 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Criar pagamento
-      const payment = await prisma.payablePayment.create({
+      const payment = await ctx.prisma.payablePayment.create({
         data: {
           payableId: input.payableId,
           paymentDate: input.paymentDate,
@@ -218,7 +217,7 @@ export const payablesRouter = createTRPCRouter({
       const newPaidValue = Number(payable.paidValue) + Number(input.value);
       const isPaid = Math.abs(newPaidValue - Number(payable.netValue)) < 0.01;
 
-      const updatedPayable = await prisma.accountsPayable.update({
+      const updatedPayable = await ctx.prisma.accountsPayable.update({
         where: { id: input.payableId },
         data: {
           paidValue: newPaidValue,
@@ -253,7 +252,7 @@ export const payablesRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -281,7 +280,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      return prisma.accountsPayable.update({
+      return ctx.prisma.accountsPayable.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -310,7 +309,7 @@ export const payablesRouter = createTRPCRouter({
       byStatus,
     ] = await Promise.all([
       // Total pendente
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PENDING",
@@ -319,7 +318,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Total vencido
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PENDING",
@@ -329,7 +328,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Vence hoje
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PENDING",
@@ -342,7 +341,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Vence esta semana
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PENDING",
@@ -352,7 +351,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Vence este mês
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PENDING",
@@ -362,7 +361,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Pago este mês
-      prisma.accountsPayable.aggregate({
+      ctx.prisma.accountsPayable.aggregate({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: "PAID",
@@ -375,7 +374,7 @@ export const payablesRouter = createTRPCRouter({
         _count: true,
       }),
       // Por status
-      prisma.accountsPayable.groupBy({
+      ctx.prisma.accountsPayable.groupBy({
         by: ["status"],
         where: tenantFilter(ctx.companyId, false),
         _sum: { netValue: true },
@@ -432,7 +431,7 @@ export const payablesRouter = createTRPCRouter({
       { label: "A vencer > 90 dias", min: 90, max: Infinity },
     ];
 
-    const payables = await prisma.accountsPayable.findMany({
+    const payables = await ctx.prisma.accountsPayable.findMany({
       where: {
         ...tenantFilter(ctx.companyId, false),
         status: { in: ["PENDING", "PARTIAL"] },
@@ -468,7 +467,7 @@ export const payablesRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const limit = input?.limit || 10;
 
-      const result = await prisma.accountsPayable.groupBy({
+      const result = await ctx.prisma.accountsPayable.groupBy({
         by: ["supplierId"],
         where: {
           ...tenantFilter(ctx.companyId, false),
@@ -482,7 +481,7 @@ export const payablesRouter = createTRPCRouter({
 
       // Buscar nomes dos fornecedores
       const supplierIds = result.map((r) => r.supplierId);
-      const suppliers = await prisma.supplier.findMany({
+      const suppliers = await ctx.prisma.supplier.findMany({
         where: { id: { in: supplierIds } },
         select: { id: true, companyName: true, tradeName: true },
       });
@@ -531,14 +530,14 @@ export const payablesRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       // Obter próximo código
-      const lastPayable = await prisma.accountsPayable.findFirst({
+      const lastPayable = await ctx.prisma.accountsPayable.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
       });
       const nextCode = (lastPayable?.code || 0) + 1;
 
-      const payable = await prisma.accountsPayable.create({
+      const payable = await ctx.prisma.accountsPayable.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -596,7 +595,7 @@ export const payablesRouter = createTRPCRouter({
       barcode: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -617,7 +616,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      return prisma.accountsPayable.update({
+      return ctx.prisma.accountsPayable.update({
         where: { id: input.id },
         data: {
           description: input.description,
@@ -645,7 +644,7 @@ export const payablesRouter = createTRPCRouter({
       const { invoiceId, supplierId, duplicatas, nfeNumber, nfeSeries } = input;
 
       // Buscar próximo código
-      const lastPayable = await prisma.accountsPayable.findFirst({
+      const lastPayable = await ctx.prisma.accountsPayable.findFirst({
         where: tenantFilter(ctx.companyId, false),
         orderBy: { code: "desc" },
       });
@@ -654,7 +653,7 @@ export const payablesRouter = createTRPCRouter({
       // Criar um título para cada duplicata
       const payables = await Promise.all(
         duplicatas.map(async (dup, index) => {
-          const payable = await prisma.accountsPayable.create({
+          const payable = await ctx.prisma.accountsPayable.create({
             data: {
               code: nextCode + index,
               companyId: ctx.companyId,
@@ -685,7 +684,7 @@ export const payablesRouter = createTRPCRouter({
 
   // Listar centros de custo
   listCostCenters: tenantProcedure.query(async ({ ctx }) => {
-    return prisma.costCenter.findMany({
+    return ctx.prisma.costCenter.findMany({
       where: {
         ...tenantFilter(ctx.companyId, false),
         isActive: true,
@@ -704,7 +703,7 @@ export const payablesRouter = createTRPCRouter({
       })),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -728,14 +727,14 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Remover alocações anteriores
-      await prisma.payableCostAllocation.deleteMany({
+      await ctx.prisma.payableCostAllocation.deleteMany({
         where: { payableId: input.payableId },
       });
 
       // Criar novas alocações
       const allocations = await Promise.all(
         input.allocations.map((a) =>
-          prisma.payableCostAllocation.create({
+          ctx.prisma.payableCostAllocation.create({
             data: {
               payableId: input.payableId,
               costCenterId: a.costCenterId,
@@ -753,7 +752,7 @@ export const payablesRouter = createTRPCRouter({
   getCostAllocations: tenantProcedure
     .input(z.object({ payableId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -767,7 +766,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      return prisma.payableCostAllocation.findMany({
+      return ctx.prisma.payableCostAllocation.findMany({
         where: { payableId: input.payableId },
         include: { costCenter: true },
       });
@@ -781,7 +780,7 @@ export const payablesRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -796,7 +795,7 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Criar solicitação de aprovação
-      const approval = await prisma.payableApproval.create({
+      const approval = await ctx.prisma.payableApproval.create({
         data: {
           payableId: input.payableId,
           approverId: input.approverId,
@@ -823,7 +822,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      const approval = await prisma.payableApproval.findFirst({
+      const approval = await ctx.prisma.payableApproval.findFirst({
         where: {
           id: input.approvalId,
           approverId: ctx.tenant.userId,
@@ -845,7 +844,7 @@ export const payablesRouter = createTRPCRouter({
         });
       }
 
-      return prisma.payableApproval.update({
+      return ctx.prisma.payableApproval.update({
         where: { id: input.approvalId },
         data: {
           status: input.status,
@@ -861,7 +860,7 @@ export const payablesRouter = createTRPCRouter({
       return [];
     }
 
-    return prisma.payableApproval.findMany({
+    return ctx.prisma.payableApproval.findMany({
       where: {
         approverId: ctx.tenant.userId,
         status: "PENDING",
@@ -882,7 +881,7 @@ export const payablesRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payment = await prisma.payablePayment.findFirst({
+      const payment = await ctx.prisma.payablePayment.findFirst({
         where: { id: input.paymentId },
         include: { payable: true },
       });
@@ -895,7 +894,7 @@ export const payablesRouter = createTRPCRouter({
       }
 
       // Verificar permissão
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: payment.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -913,7 +912,7 @@ export const payablesRouter = createTRPCRouter({
       const newPaidValue = Number(payable.paidValue) - Number(payment.value);
       const newStatus = newPaidValue <= 0 ? "PENDING" : "PARTIAL";
 
-      await prisma.accountsPayable.update({
+      await ctx.prisma.accountsPayable.update({
         where: { id: payment.payableId },
         data: {
           paidValue: Math.max(0, newPaidValue),
@@ -927,7 +926,7 @@ export const payablesRouter = createTRPCRouter({
       });
 
       // Marcar pagamento como estornado
-      return prisma.payablePayment.update({
+      return ctx.prisma.payablePayment.update({
         where: { id: input.paymentId },
         data: {
           notes: `${payment.notes || ""}\n[ESTORNADO] ${input.reason}`.trim(),
@@ -943,7 +942,7 @@ export const payablesRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payable = await prisma.accountsPayable.findFirst({
+      const payable = await ctx.prisma.accountsPayable.findFirst({
         where: {
           id: input.payableId,
           ...tenantFilter(ctx.companyId, false),
@@ -967,7 +966,7 @@ export const payablesRouter = createTRPCRouter({
       const oldDueDate = payable.dueDate.toLocaleDateString("pt-BR");
       const newDueDateStr = input.newDueDate.toLocaleDateString("pt-BR");
 
-      return prisma.accountsPayable.update({
+      return ctx.prisma.accountsPayable.update({
         where: { id: input.payableId },
         data: {
           dueDate: input.newDueDate,
@@ -991,7 +990,7 @@ export const payablesRouter = createTRPCRouter({
       const endDate = input?.endDate || new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 dias
 
       // Buscar contas a pagar pendentes
-      const payables = await prisma.accountsPayable.findMany({
+      const payables = await ctx.prisma.accountsPayable.findMany({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: { in: ["PENDING", "PARTIAL"] },
@@ -1009,7 +1008,7 @@ export const payablesRouter = createTRPCRouter({
       });
 
       // Buscar contas a receber pendentes
-      const receivables = await prisma.accountsReceivable.findMany({
+      const receivables = await ctx.prisma.accountsReceivable.findMany({
         where: {
           ...tenantFilter(ctx.companyId, false),
           status: { in: ["PENDING", "PARTIAL"] },
@@ -1027,7 +1026,7 @@ export const payablesRouter = createTRPCRouter({
       });
 
       // Buscar saldo atual das contas bancárias
-      const bankAccounts = await prisma.bankAccount.findMany({
+      const bankAccounts = await ctx.prisma.bankAccount.findMany({
         where: {
           ...tenantFilter(ctx.companyId, false),
           isActive: true,
@@ -1160,7 +1159,7 @@ export const payablesRouter = createTRPCRouter({
       const baseWhere = { ...tenantFilter(ctx.companyId, false), barcode: { not: null } };
 
       const [payables, total, pendingCount, paidCount, overdueCount] = await Promise.all([
-        prisma.accountsPayable.findMany({
+        ctx.prisma.accountsPayable.findMany({
           where,
           include: {
             supplier: { select: { id: true, companyName: true, cnpj: true } },
@@ -1169,33 +1168,33 @@ export const payablesRouter = createTRPCRouter({
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.accountsPayable.count({ where }),
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({ where }),
+        ctx.prisma.accountsPayable.count({
           where: { ...baseWhere, status: "PENDING", dueDate: { gte: today } },
         }),
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({
           where: { ...baseWhere, status: "PAID", paidAt: { gte: startOfMonth } },
         }),
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({
           where: { ...baseWhere, status: "PENDING", dueDate: { lt: today } },
         }),
       ]);
 
       // Calcular valores
       const [pendingValue, paidValueMonth, overdueValue, totalValue] = await Promise.all([
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: { ...baseWhere, status: "PENDING", dueDate: { gte: today } },
           _sum: { netValue: true },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: { ...baseWhere, status: "PAID", paidAt: { gte: startOfMonth } },
           _sum: { netValue: true },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: { ...baseWhere, status: "PENDING", dueDate: { lt: today } },
           _sum: { netValue: true },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: baseWhere,
           _sum: { netValue: true },
         }),
@@ -1285,33 +1284,33 @@ export const payablesRouter = createTRPCRouter({
       const baseWhere = { companyId: ctx.companyId };
 
       const [pixTransactions, total] = await Promise.all([
-        prisma.pixTransaction.findMany({
+        ctx.prisma.pixTransaction.findMany({
           where,
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.pixTransaction.count({ where }),
+        ctx.prisma.pixTransaction.count({ where }),
       ]);
 
       // Estatísticas
       const [pendingStats, processingStats, completedTodayStats, totalMonthStats] = await Promise.all([
-        prisma.pixTransaction.aggregate({
+        ctx.prisma.pixTransaction.aggregate({
           where: { ...baseWhere, status: "PENDING" },
           _count: true,
           _sum: { value: true },
         }),
-        prisma.pixTransaction.aggregate({
+        ctx.prisma.pixTransaction.aggregate({
           where: { ...baseWhere, status: "PROCESSING" },
           _count: true,
           _sum: { value: true },
         }),
-        prisma.pixTransaction.aggregate({
+        ctx.prisma.pixTransaction.aggregate({
           where: { ...baseWhere, status: "COMPLETED", completedAt: { gte: today } },
           _count: true,
           _sum: { value: true },
         }),
-        prisma.pixTransaction.aggregate({
+        ctx.prisma.pixTransaction.aggregate({
           where: { ...baseWhere, completedAt: { gte: startOfMonth } },
           _count: true,
           _sum: { value: true },
@@ -1537,7 +1536,7 @@ export const payablesRouter = createTRPCRouter({
       const transactionId = `E${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
       // Criar registro da transação PIX
-      const pixTransaction = await prisma.pixTransaction.create({
+      const pixTransaction = await ctx.prisma.pixTransaction.create({
         data: {
           transactionId,
           type: "PAYMENT",
@@ -1559,7 +1558,7 @@ export const payablesRouter = createTRPCRouter({
 
       // Simular conclusão após 2 segundos (em produção seria via webhook)
       setTimeout(async () => {
-        await prisma.pixTransaction.update({
+        await ctx.prisma.pixTransaction.update({
           where: { id: pixTransaction.id },
           data: {
             status: "COMPLETED",
@@ -1582,7 +1581,7 @@ export const payablesRouter = createTRPCRouter({
       id: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const transaction = await prisma.pixTransaction.findFirst({
+      const transaction = await ctx.prisma.pixTransaction.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId, false),
@@ -1618,7 +1617,7 @@ export const payablesRouter = createTRPCRouter({
         }
       }
 
-      await prisma.pixTransaction.update({
+      await ctx.prisma.pixTransaction.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -1662,7 +1661,7 @@ export const payablesRouter = createTRPCRouter({
         if (maxValue !== undefined) where.netValue.lte = maxValue;
       }
 
-      const payables = await prisma.accountsPayable.findMany({
+      const payables = await ctx.prisma.accountsPayable.findMany({
         where,
         include: {
           supplier: {
@@ -1695,7 +1694,7 @@ export const payablesRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const payables = await prisma.accountsPayable.findMany({
+      const payables = await ctx.prisma.accountsPayable.findMany({
         where: {
           id: { in: input.payableIds },
           ...tenantFilter(ctx.companyId, false),
@@ -1726,7 +1725,7 @@ export const payablesRouter = createTRPCRouter({
           const remainingValue = Number(payable.netValue) - Number(payable.paidValue);
 
           // Criar pagamento
-          await prisma.payablePayment.create({
+          await ctx.prisma.payablePayment.create({
             data: {
               payableId: payable.id,
               paymentDate: input.paymentDate,
@@ -1738,7 +1737,7 @@ export const payablesRouter = createTRPCRouter({
           });
 
           // Atualizar título
-          await prisma.accountsPayable.update({
+          await ctx.prisma.accountsPayable.update({
             where: { id: payable.id },
             data: {
               paidValue: payable.netValue,
@@ -1791,14 +1790,14 @@ export const payablesRouter = createTRPCRouter({
       const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
       const [overdueCount, overdueValue, weekCount, weekValue, monthCount, monthValue] = await Promise.all([
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },
             dueDate: { lt: today },
           },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },
@@ -1806,14 +1805,14 @@ export const payablesRouter = createTRPCRouter({
           },
           _sum: { netValue: true },
         }),
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },
             dueDate: { gte: today, lte: endOfWeek },
           },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },
@@ -1821,14 +1820,14 @@ export const payablesRouter = createTRPCRouter({
           },
           _sum: { netValue: true },
         }),
-        prisma.accountsPayable.count({
+        ctx.prisma.accountsPayable.count({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },
             dueDate: { gte: today, lte: endOfMonth },
           },
         }),
-        prisma.accountsPayable.aggregate({
+        ctx.prisma.accountsPayable.aggregate({
           where: {
             ...tenantFilter(ctx.companyId, false),
             status: { in: ["PENDING", "PARTIAL"] },

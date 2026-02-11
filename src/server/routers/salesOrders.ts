@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { syncEntityEmbedding } from "../services/embeddingSync";
 
@@ -60,7 +59,7 @@ export const salesOrdersRouter = createTRPCRouter({
       }
 
       const [orders, total] = await Promise.all([
-        prisma.salesOrder.findMany({
+        ctx.prisma.salesOrder.findMany({
           where,
           include: {
             customer: { select: { id: true, code: true, companyName: true } },
@@ -70,7 +69,7 @@ export const salesOrdersRouter = createTRPCRouter({
           skip,
           take: limit,
         }),
-        prisma.salesOrder.count({ where }),
+        ctx.prisma.salesOrder.count({ where }),
       ]);
 
       return {
@@ -84,7 +83,7 @@ export const salesOrdersRouter = createTRPCRouter({
   byId: tenantProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: {
           id: input.id,
           ...tenantFilter(ctx.companyId),
@@ -132,7 +131,7 @@ export const salesOrdersRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       // Gerar código sequencial
-      const lastOrder = await prisma.salesOrder.findFirst({
+      const lastOrder = await ctx.prisma.salesOrder.findFirst({
         where: { companyId: ctx.companyId },
         orderBy: { code: "desc" },
         select: { code: true },
@@ -157,7 +156,7 @@ export const salesOrdersRouter = createTRPCRouter({
         };
       });
 
-      const order = await prisma.salesOrder.create({
+      const order = await ctx.prisma.salesOrder.create({
         data: {
           code: nextCode,
           companyId: ctx.companyId,
@@ -181,7 +180,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
       });
 
-      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "sales_order", order.id, "create");
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "sales_order", order.id, "create");
       return order;
     }),
 
@@ -204,7 +203,7 @@ export const salesOrdersRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input;
 
-      const existing = await prisma.salesOrder.findFirst({
+      const existing = await ctx.prisma.salesOrder.findFirst({
         where: { id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -223,7 +222,7 @@ export const salesOrdersRouter = createTRPCRouter({
 
       const totalValue = Number(existing.subtotal) * (1 - Number(discountPercent) / 100) - Number(discountValue) + Number(shippingValue);
 
-      const order = await prisma.salesOrder.update({
+      const order = await ctx.prisma.salesOrder.update({
         where: { id },
         data: {
           customerId: data.customerId,
@@ -240,7 +239,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
       });
 
-      syncEntityEmbedding({ prisma, companyId: ctx.companyId! }, "sales_order", order.id, "update");
+      syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "sales_order", order.id, "update");
       return order;
     }),
 
@@ -248,7 +247,7 @@ export const salesOrdersRouter = createTRPCRouter({
   confirm: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -260,7 +259,7 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Pedido não está pendente" });
       }
 
-      return prisma.salesOrder.update({
+      return ctx.prisma.salesOrder.update({
         where: { id: input.id },
         data: { status: "CONFIRMED" },
       });
@@ -275,7 +274,7 @@ export const salesOrdersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -287,7 +286,7 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Pedido não pode ser enviado neste status" });
       }
 
-      return prisma.salesOrder.update({
+      return ctx.prisma.salesOrder.update({
         where: { id: input.id },
         data: {
           status: "SHIPPED",
@@ -301,7 +300,7 @@ export const salesOrdersRouter = createTRPCRouter({
   deliver: tenantProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -313,7 +312,7 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Pedido não foi enviado" });
       }
 
-      return prisma.salesOrder.update({
+      return ctx.prisma.salesOrder.update({
         where: { id: input.id },
         data: {
           status: "DELIVERED",
@@ -331,7 +330,7 @@ export const salesOrdersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.id, ...tenantFilter(ctx.companyId) },
       });
 
@@ -343,7 +342,7 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Pedido não pode ser cancelado" });
       }
 
-      return prisma.salesOrder.update({
+      return ctx.prisma.salesOrder.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -367,7 +366,7 @@ export const salesOrdersRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: input.orderId, ...tenantFilter(ctx.companyId) },
         include: { items: true },
       });
@@ -383,7 +382,7 @@ export const salesOrdersRouter = createTRPCRouter({
       const itemTotal = input.quantity * input.unitPrice * (1 - input.discountPercent / 100);
       const nextSequence = Math.max(...order.items.map((i) => i.sequence), 0) + 1;
 
-      const item = await prisma.salesOrderItem.create({
+      const item = await ctx.prisma.salesOrderItem.create({
         data: {
           orderId: input.orderId,
           materialId: input.materialId,
@@ -401,7 +400,7 @@ export const salesOrdersRouter = createTRPCRouter({
       const newSubtotal = Number(order.subtotal) + itemTotal;
       const newTotal = Number(newSubtotal) * (1 - Number(order.discountPercent) / 100) - Number(order.discountValue) + Number(order.shippingValue);
 
-      await prisma.salesOrder.update({
+      await ctx.prisma.salesOrder.update({
         where: { id: input.orderId },
         data: { subtotal: newSubtotal, totalValue: newTotal },
       });
@@ -413,7 +412,7 @@ export const salesOrdersRouter = createTRPCRouter({
   removeItem: tenantProcedure
     .input(z.object({ itemId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const item = await prisma.salesOrderItem.findFirst({
+      const item = await ctx.prisma.salesOrderItem.findFirst({
         where: { id: input.itemId },
         include: { order: true },
       });
@@ -423,7 +422,7 @@ export const salesOrdersRouter = createTRPCRouter({
       }
 
       // Verificar se o pedido pertence à empresa
-      const order = await prisma.salesOrder.findFirst({
+      const order = await ctx.prisma.salesOrder.findFirst({
         where: { id: item.orderId, ...tenantFilter(ctx.companyId) },
       });
 
@@ -438,9 +437,9 @@ export const salesOrdersRouter = createTRPCRouter({
       const newSubtotal = Number(order.subtotal) - Number(item.totalPrice);
       const newTotal = Number(newSubtotal) * (1 - Number(order.discountPercent) / 100) - Number(order.discountValue) + Number(order.shippingValue);
 
-      await prisma.$transaction([
-        prisma.salesOrderItem.delete({ where: { id: input.itemId } }),
-        prisma.salesOrder.update({
+      await ctx.prisma.$transaction([
+        ctx.prisma.salesOrderItem.delete({ where: { id: input.itemId } }),
+        ctx.prisma.salesOrder.update({
           where: { id: order.id },
           data: { subtotal: newSubtotal, totalValue: newTotal },
         }),
@@ -463,17 +462,17 @@ export const salesOrdersRouter = createTRPCRouter({
       yearlyRevenue,
       byStatus,
     ] = await Promise.all([
-      prisma.salesOrder.count({ where: tenantFilter(ctx.companyId) }),
-      prisma.salesOrder.count({
+      ctx.prisma.salesOrder.count({ where: tenantFilter(ctx.companyId) }),
+      ctx.prisma.salesOrder.count({
         where: { ...tenantFilter(ctx.companyId), status: "PENDING" },
       }),
-      prisma.salesOrder.count({
+      ctx.prisma.salesOrder.count({
         where: {
           ...tenantFilter(ctx.companyId),
           orderDate: { gte: startOfMonth },
         },
       }),
-      prisma.salesOrder.aggregate({
+      ctx.prisma.salesOrder.aggregate({
         where: {
           ...tenantFilter(ctx.companyId),
           orderDate: { gte: startOfMonth },
@@ -481,7 +480,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
         _sum: { totalValue: true },
       }),
-      prisma.salesOrder.aggregate({
+      ctx.prisma.salesOrder.aggregate({
         where: {
           ...tenantFilter(ctx.companyId),
           orderDate: { gte: startOfYear },
@@ -489,7 +488,7 @@ export const salesOrdersRouter = createTRPCRouter({
         },
         _sum: { totalValue: true },
       }),
-      prisma.salesOrder.groupBy({
+      ctx.prisma.salesOrder.groupBy({
         by: ["status"],
         where: tenantFilter(ctx.companyId),
         _count: true,

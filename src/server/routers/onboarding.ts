@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
+import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
 
 export const onboardingRouter = createTRPCRouter({
   getStatus: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
-    .query(async ({ input }) => {
-      return prisma.companyOnboarding.findUnique({
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.companyOnboarding.findUnique({
         where: { companyId: input.companyId },
         include: { company: true },
       });
@@ -15,8 +15,8 @@ export const onboardingRouter = createTRPCRouter({
 
   start: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
-    .mutation(async ({ input }) => {
-      return prisma.companyOnboarding.upsert({
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.companyOnboarding.upsert({
         where: { companyId: input.companyId },
         create: { companyId: input.companyId, currentStep: 1 },
         update: {},
@@ -29,12 +29,16 @@ export const onboardingRouter = createTRPCRouter({
       step: z.number().min(1).max(5),
       data: z.record(z.string(), z.unknown()),
     }))
-    .mutation(async ({ input }) => {
-      const onboarding = await prisma.companyOnboarding.findUnique({
+    .mutation(async ({ input, ctx }) => {
+      const onboarding = await ctx.prisma.companyOnboarding.findUnique({
         where: { companyId: input.companyId },
       });
+
+      if (!onboarding) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Onboarding não encontrado. Execute 'start' primeiro." });
+      }
       
-      const stepsCompleted = (onboarding?.stepsCompleted as Record<string, boolean>) || {};
+      const stepsCompleted = (onboarding.stepsCompleted as Record<string, boolean>) || {};
       stepsCompleted[String(input.step)] = true;
 
       // Build update data
@@ -47,7 +51,7 @@ export const onboardingRouter = createTRPCRouter({
       const stepField = `step${input.step}Data`;
       updateData[stepField] = input.data as Prisma.InputJsonValue;
 
-      return prisma.companyOnboarding.update({
+      return ctx.prisma.companyOnboarding.update({
         where: { companyId: input.companyId },
         data: updateData,
       });
@@ -55,15 +59,23 @@ export const onboardingRouter = createTRPCRouter({
 
   complete: tenantProcedure
     .input(z.object({ companyId: z.string().uuid() }))
-    .mutation(async ({ input }) => {
-      return prisma.companyOnboarding.update({
+    .mutation(async ({ input, ctx }) => {
+      const onboarding = await ctx.prisma.companyOnboarding.findUnique({
+        where: { companyId: input.companyId },
+      });
+
+      if (!onboarding) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Onboarding não encontrado" });
+      }
+
+      return ctx.prisma.companyOnboarding.update({
         where: { companyId: input.companyId },
         data: { completedAt: new Date() },
       });
     }),
 
   list: tenantProcedure.query(async ({ ctx }) => {
-    return prisma.companyOnboarding.findMany({
+    return ctx.prisma.companyOnboarding.findMany({
       where: { completedAt: null, companyId: ctx.companyId },
       include: { company: true },
       orderBy: { createdAt: "desc" },

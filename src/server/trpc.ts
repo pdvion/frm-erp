@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import { getTenantContext, hasPermission, type SystemModule, type PermissionLevel } from "./context";
 import { checkRateLimit, type RateLimitType } from "@/lib/rate-limit";
 import { RateLimitError } from "@/lib/errors";
+import { createTenantPrisma } from "@/lib/prisma-rls";
+import { createAuditedPrisma } from "@/lib/prisma-audit";
 
 async function getSupabaseUser() {
   try {
@@ -167,6 +169,11 @@ const csrfProtection = t.middleware(async ({ ctx, type, next }) => {
   return next();
 });
 
+// Feature flag: ativar RLS + Audit Extensions no tenantProcedure
+// Quando ON: ctx.prisma é automaticamente filtrado por companyId + auditado
+// Quando OFF: comportamento atual (tenantFilter manual)
+const ENABLE_PRISMA_RLS = process.env.ENABLE_PRISMA_RLS?.toLowerCase() !== "false"; // ON by default
+
 // Procedure que requer empresa ativa
 export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx, next }) => {
   if (!ctx.tenant.companyId) {
@@ -175,9 +182,30 @@ export const tenantProcedure = t.procedure.use(csrfProtection).use(async ({ ctx,
       message: "Nenhuma empresa ativa. Selecione uma empresa para continuar.",
     });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let enhancedPrisma: any = ctx.prisma;
+
+  if (ENABLE_PRISMA_RLS) {
+    // RLS: injeta companyId automaticamente em todas as queries de TENANT_MODELS
+    const tenantPrisma = createTenantPrisma(ctx.prisma, ctx.tenant.companyId);
+
+    // Audit: registra CREATE/UPDATE/DELETE em AUDITED_MODELS
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    enhancedPrisma = createAuditedPrisma(tenantPrisma as any, {
+      userId: ctx.tenant.userId,
+      userEmail: ctx.supabaseUser?.email,
+      companyId: ctx.tenant.companyId,
+      ipAddress: (ctx.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) ?? ctx.headers.get("x-real-ip") ?? undefined,
+      userAgent: ctx.headers.get("user-agent") ?? undefined,
+      requestPath: ctx.headers.get("x-invoke-path") ?? ctx.headers.get("referer") ?? undefined,
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,
+      prisma: enhancedPrisma,
       companyId: ctx.tenant.companyId,
     },
   });
@@ -196,16 +224,22 @@ export const createProtectedProcedure = (module: SystemModule, requiredLevel: Pe
   });
 };
 
-// Helper para criar filtro de tenant
-// Para models com companyId NOT NULL, usar tenantFilter(companyId) → { companyId }
-// Para models com companyId nullable + isShared, usar tenantFilterShared(companyId)
+/**
+ * @deprecated Redundante com RLS Extension (VIO-1066). O `tenantProcedure` agora injeta
+ * companyId automaticamente via `createTenantPrisma`. Use `ctx.prisma` diretamente.
+ * Será removido após migração completa dos routers (VIO-1072).
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function tenantFilter(companyId: string | null, _includeShared?: boolean) {
   if (!companyId) return {};
   return { companyId };
 }
 
-// Filtro para models com isShared (Category, ProductCategory, etc.)
+/**
+ * @deprecated Redundante com RLS Extension (VIO-1066). O `createTenantPrisma` já trata
+ * SHARED_MODELS automaticamente. Use `ctx.prisma` diretamente.
+ * Será removido após migração completa dos routers (VIO-1072).
+ */
 export function tenantFilterShared(companyId: string | null) {
   if (!companyId) return {};
   return {

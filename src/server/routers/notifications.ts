@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, authProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { notificationService } from "../services/notifications";
 
 export const notificationsRouter = createTRPCRouter({
@@ -23,20 +22,20 @@ export const notificationsRouter = createTRPCRouter({
       const where = {
         OR: [
           { userId },
-          { userId: null }, // Notificações globais
+          { userId: null, companyId: ctx.companyId }, // Notificações globais da mesma empresa
         ],
         ...(category && { category }),
         ...(unreadOnly && { isRead: false }),
       };
 
       const [notifications, total] = await Promise.all([
-        prisma.notification.findMany({
+        ctx.prisma.notification.findMany({
           where,
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.notification.count({ where }),
+        ctx.prisma.notification.count({ where }),
       ]);
 
       return {
@@ -90,7 +89,7 @@ export const notificationsRouter = createTRPCRouter({
 
   // Obter preferências de notificação (usa authProcedure pois não precisa de empresa ativa)
   getPreferences: authProcedure.query(async ({ ctx }) => {
-    return prisma.notificationPreference.findMany({
+    return ctx.prisma.notificationPreference.findMany({
       where: { userId: ctx.userId },
     });
   }),
@@ -104,7 +103,7 @@ export const notificationsRouter = createTRPCRouter({
       inAppEnabled: z.boolean().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return prisma.notificationPreference.upsert({
+      return ctx.prisma.notificationPreference.upsert({
         where: {
           userId_category: {
             userId: ctx.userId,

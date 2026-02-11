@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
-import { prisma } from "@/lib/prisma";
 import { TRPCError } from "@trpc/server";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 
@@ -66,7 +65,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       };
 
       const [data, total] = await Promise.all([
-        prisma.supplierReturn.findMany({
+        ctx.prisma.supplierReturn.findMany({
           where,
           include: {
             supplier: { select: { id: true, code: true, companyName: true, cnpj: true } },
@@ -81,7 +80,7 @@ export const supplierReturnsRouter = createTRPCRouter({
           skip: (page - 1) * pageSize,
           take: pageSize,
         }),
-        prisma.supplierReturn.count({ where }),
+        ctx.prisma.supplierReturn.count({ where }),
       ]);
 
       return {
@@ -99,7 +98,7 @@ export const supplierReturnsRouter = createTRPCRouter({
   getById: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const supplierReturn = await prisma.supplierReturn.findFirst({
+      const supplierReturn = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: {
           supplier: true,
@@ -143,7 +142,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       const { supplierId, receivedInvoiceId, returnDate, notes, items } = input;
 
       // Verificar fornecedor
-      const supplier = await prisma.supplier.findFirst({
+      const supplier = await ctx.prisma.supplier.findFirst({
         where: { id: supplierId, companyId: ctx.companyId },
       });
 
@@ -153,7 +152,7 @@ export const supplierReturnsRouter = createTRPCRouter({
 
       // Verificar NFe de origem (se informada)
       if (receivedInvoiceId) {
-        const invoice = await prisma.receivedInvoice.findFirst({
+        const invoice = await ctx.prisma.receivedInvoice.findFirst({
           where: { id: receivedInvoiceId, companyId: ctx.companyId },
         });
 
@@ -164,7 +163,7 @@ export const supplierReturnsRouter = createTRPCRouter({
 
       // Validar materiais pertencem ao tenant
       const materialIds = items.map((item) => item.materialId);
-      const materials = await prisma.material.findMany({
+      const materials = await ctx.prisma.material.findMany({
         where: { id: { in: materialIds }, companyId: ctx.companyId },
         select: { id: true },
       });
@@ -182,7 +181,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
       // Criar devolução
-      const supplierReturn = await prisma.supplierReturn.create({
+      const supplierReturn = await ctx.prisma.supplierReturn.create({
         data: {
           supplierId,
           receivedInvoiceId,
@@ -234,7 +233,7 @@ export const supplierReturnsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, items, ...data } = input;
 
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id, companyId: ctx.companyId },
       });
 
@@ -253,7 +252,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       if (items) {
         const totalValue = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
-        const updated = await prisma.$transaction(async (tx) => {
+        const updated = await ctx.prisma.$transaction(async (tx) => {
           // Remover itens existentes
           await tx.supplierReturnItem.deleteMany({ where: { returnId: id } });
 
@@ -292,7 +291,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       }
 
       // Atualizar apenas dados básicos
-      const updated = await prisma.supplierReturn.update({
+      const updated = await ctx.prisma.supplierReturn.update({
         where: { id },
         data,
         include: {
@@ -313,7 +312,7 @@ export const supplierReturnsRouter = createTRPCRouter({
   submit: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: { items: true },
       });
@@ -336,7 +335,7 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      const updated = await prisma.supplierReturn.update({
+      const updated = await ctx.prisma.supplierReturn.update({
         where: { id: input.id },
         data: { status: "PENDING" },
       });
@@ -353,7 +352,7 @@ export const supplierReturnsRouter = createTRPCRouter({
   approve: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: { items: true },
       });
@@ -371,12 +370,12 @@ export const supplierReturnsRouter = createTRPCRouter({
 
       // Validar estoque antes da transação
       for (const item of existing.items) {
-        const inventory = await prisma.inventory.findFirst({
+        const inventory = await ctx.prisma.inventory.findFirst({
           where: { materialId: item.materialId, companyId: ctx.companyId },
         });
 
         if (!inventory || inventory.quantity < item.quantity) {
-          const material = await prisma.material.findUnique({
+          const material = await ctx.prisma.material.findUnique({
             where: { id: item.materialId },
             select: { description: true },
           });
@@ -388,7 +387,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       }
 
       // Executar todas as operações em transação
-      const updated = await prisma.$transaction(async (tx) => {
+      const updated = await ctx.prisma.$transaction(async (tx) => {
         // Baixar estoque dos itens
         for (const item of existing.items) {
           const inventory = await tx.inventory.findFirst({
@@ -449,7 +448,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -464,7 +463,7 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      const updated = await prisma.supplierReturn.update({
+      const updated = await ctx.prisma.supplierReturn.update({
         where: { id: input.id },
         data: {
           status: "INVOICED",
@@ -486,7 +485,7 @@ export const supplierReturnsRouter = createTRPCRouter({
   complete: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -502,7 +501,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       }
 
       // Executar todas as operações em transação
-      const updated = await prisma.$transaction(async (tx) => {
+      const updated = await ctx.prisma.$transaction(async (tx) => {
         // Gerar crédito no contas a pagar (se houver NFe de origem vinculada)
         if (existing.receivedInvoiceId) {
           const invoice = await tx.receivedInvoice.findUnique({
@@ -564,7 +563,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
         include: { items: true },
       });
@@ -581,7 +580,7 @@ export const supplierReturnsRouter = createTRPCRouter({
       }
 
       // Executar todas as operações em transação
-      const updated = await prisma.$transaction(async (tx) => {
+      const updated = await ctx.prisma.$transaction(async (tx) => {
         // Se já foi aprovada, estornar estoque
         if (existing.status === "APPROVED" || existing.status === "INVOICED") {
           for (const item of existing.items) {
@@ -639,7 +638,7 @@ export const supplierReturnsRouter = createTRPCRouter({
   delete: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.supplierReturn.findFirst({
+      const existing = await ctx.prisma.supplierReturn.findFirst({
         where: { id: input.id, companyId: ctx.companyId },
       });
 
@@ -654,7 +653,7 @@ export const supplierReturnsRouter = createTRPCRouter({
         });
       }
 
-      await prisma.supplierReturn.delete({ where: { id: input.id } });
+      await ctx.prisma.supplierReturn.delete({ where: { id: input.id } });
 
       await auditDelete("SupplierReturn", existing, String(existing.returnNumber), {
         userId: ctx.tenant.userId ?? undefined,
@@ -681,14 +680,14 @@ export const supplierReturnsRouter = createTRPCRouter({
   // Estatísticas
   stats: tenantProcedure.query(async ({ ctx }) => {
     const [total, byStatus, byMonth] = await Promise.all([
-      prisma.supplierReturn.count({ where: { companyId: ctx.companyId } }),
-      prisma.supplierReturn.groupBy({
+      ctx.prisma.supplierReturn.count({ where: { companyId: ctx.companyId } }),
+      ctx.prisma.supplierReturn.groupBy({
         by: ["status"],
         where: { companyId: ctx.companyId },
         _count: true,
         _sum: { totalValue: true },
       }),
-      prisma.$queryRaw<Array<{ month: string; count: bigint; total: number }>>`
+      ctx.prisma.$queryRaw<Array<{ month: string; count: bigint; total: number }>>`
         SELECT 
           TO_CHAR("returnDate", 'YYYY-MM') as month,
           COUNT(*) as count,
