@@ -25,14 +25,12 @@ describe("trpc coverage", () => {
     expect(tenantFilter(null)).toEqual({});
   });
 
-  it("tenantFilter returns simple companyId filter", () => {
-    expect(tenantFilter("company-1")).toEqual({ companyId: "company-1" });
+  it("tenantFilter returns empty when RLS is active (default)", () => {
+    expect(tenantFilter("company-1")).toEqual({});
   });
 
-  it("tenantFilterShared includes shared data", () => {
-    expect(tenantFilterShared("company-1")).toEqual({
-      OR: [{ companyId: "company-1" }, { companyId: null }, { isShared: true }],
-    });
+  it("tenantFilterShared returns empty when RLS is active (default)", () => {
+    expect(tenantFilterShared("company-1")).toEqual({});
   });
 
   it("createTRPCContext returns empty tenant when no supabase user email", async () => {

@@ -231,6 +231,9 @@ export const createProtectedProcedure = (module: SystemModule, requiredLevel: Pe
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function tenantFilter(companyId: string | null, _includeShared?: boolean) {
+  // Quando RLS Extension está ativo, retorna {} para evitar filtro duplicado
+  // O createTenantPrisma já injeta companyId automaticamente nas queries
+  if (ENABLE_PRISMA_RLS) return {};
   if (!companyId) return {};
   return { companyId };
 }
@@ -241,6 +244,8 @@ export function tenantFilter(companyId: string | null, _includeShared?: boolean)
  * Será removido após migração completa dos routers (VIO-1072).
  */
 export function tenantFilterShared(companyId: string | null) {
+  // Quando RLS Extension está ativo, retorna {} para evitar filtro duplicado
+  if (ENABLE_PRISMA_RLS) return {};
   if (!companyId) return {};
   return {
     OR: [
