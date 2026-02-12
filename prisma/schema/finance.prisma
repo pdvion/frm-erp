@@ -20,7 +20,7 @@ model Category {
 
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @map("legacy_id")
+  legacyId             Int?                    @map("legacy_id")
   code                 Int
   companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
@@ -48,8 +48,8 @@ model AccountsPayable {
   createdBy            String?                 @db.Uuid
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @default(now()) @updatedAt
-  deletedAt         DateTime?              @map("deleted_at")
-  deletedBy         String?               @map("deleted_by") @db.Uuid
+  deletedAt            DateTime?               @map("deleted_at")
+  deletedBy            String?                 @map("deleted_by") @db.Uuid
   bankAccountId        String?                 @db.Uuid
   approvalStatus       ApprovalStatus?         @default(PENDING)
   scheduledPaymentDate DateTime?

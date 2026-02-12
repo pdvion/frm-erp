@@ -25,8 +25,8 @@ model GedDocument {
   createdBy         String?           @db.Uuid
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @default(now()) @updatedAt
-  deletedAt         DateTime?              @map("deleted_at")
-  deletedBy         String?               @map("deleted_by") @db.Uuid
+  deletedAt         DateTime?         @map("deleted_at")
+  deletedBy         String?           @map("deleted_by") @db.Uuid
   metadata          Json?
   accessLogs        GedAccessLog[]
   category          GedCategory?      @relation(fields: [categoryId], references: [id])
