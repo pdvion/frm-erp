@@ -72,7 +72,7 @@ model CategoryAttribute {
 
 model Product {
   id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @unique
+  legacyId          Int?                    @unique @map("legacy_id")
   code             String              @unique
   materialId       String?             @map("material_id") @db.Uuid
   name             String
@@ -94,8 +94,8 @@ model Product {
   isShared         Boolean?            @default(false) @map("is_shared")
   createdAt        DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   attachments      ProductAttachment[]
   images           ProductImage[]
   videos           ProductVideo[]

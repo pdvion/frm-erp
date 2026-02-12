@@ -12,8 +12,8 @@ model WorkflowDefinition {
   createdBy     String?              @db.Uuid
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   canvasLayout  Json?
   formSchema    Json?
   variables     Json?                @default("[]")
