@@ -24,21 +24,26 @@ pnpm test:coverage
 
 ## ⚠️ APÓS MUDANÇAS NO SCHEMA PRISMA
 
-Se você alterou `prisma/schema.prisma`, execute OBRIGATORIAMENTE:
+Se você alterou `prisma/schema/*.prisma`, execute OBRIGATORIAMENTE:
 
 ```bash
-# 1. Regenerar cliente Prisma
+# 1. Aplicar migration SQL no banco (ver /db-migration)
+#    NUNCA alterar schema sem migration — ver REGRA 9 em /code-quality-rules
+
+# 2. Regenerar cliente Prisma
 pnpm prisma generate
 
-# 2. Verificar tipos em TODO o projeto (não apenas arquivos alterados)
+# 3. Verificar tipos em TODO o projeto (não apenas arquivos alterados)
 pnpm type-check
 
-# 3. Se houver erros, corrigir ANTES de commitar
+# 4. Validar schema contra o banco real (detecta drift)
+pnpm test:drift
 ```
 
 **Por que isso é crítico?**
 - Mudanças no schema podem quebrar código em arquivos NÃO modificados
 - Testes unitários usam mocks e NÃO detectam erros de tipo do Prisma
+- **`pnpm test:drift` é o ÚNICO gate que conecta ao banco real** — sem ele, drift passa silenciosamente
 - O CI pode passar mas o código em produção pode ter comportamento inesperado
 
 ## Passos Obrigatórios

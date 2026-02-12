@@ -186,6 +186,43 @@ return {
 
 ---
 
+## 🔴 REGRA 9: Schema Prisma — TODA mudança EXIGE migration SQL
+
+**NUNCA alterar `prisma/schema/*.prisma` sem aplicar a migration SQL correspondente no banco.**
+
+Este é o bug mais grave já encontrado no projeto: PRs #39 e #43 adicionaram `legacyId`, `deletedAt`, `deletedBy` ao schema Prisma mas **sem migration SQL**. Resultado: testes passaram (usam mocks), CI passou, mas o banco real ficou dessincronizado, causando 500 errors em produção.
+
+```
+# ❌ ERRADO — alterar schema sem migration
+1. Editar prisma/schema/xxx.prisma (adicionar campo)
+2. pnpm prisma generate
+3. git commit && git push
+# → tsc ✅, vitest ✅, lint ✅, build ✅ — TUDO PASSA
+# → Mas o banco real NÃO tem a coluna → 500 error em runtime
+
+# ✅ CORRETO — schema + migration SEMPRE juntos
+1. Editar prisma/schema/xxx.prisma (adicionar campo)
+2. Aplicar migration via mcp7_apply_migration (ver /db-migration)
+3. pnpm prisma generate
+4. pnpm test:drift  ← VALIDAR contra o banco real
+5. git commit && git push
+```
+
+**Checklist obrigatório ao alterar schema:**
+- [ ] Novo campo/tabela → `ALTER TABLE` / `CREATE TABLE` aplicado via `/db-migration`
+- [ ] Novo index → `CREATE INDEX` aplicado
+- [ ] Novo unique constraint → `ALTER TABLE ADD CONSTRAINT` aplicado
+- [ ] RLS habilitado em tabelas novas → `ALTER TABLE ENABLE ROW LEVEL SECURITY`
+- [ ] `pnpm test:drift` executado e passando (conecta ao banco real)
+
+**Por que os testes unitários NÃO detectam isso:**
+- `vitest.setup.ts` mocka `@/lib/prisma` globalmente
+- Todos os testes usam `vi.fn()` — nenhum toca o banco real
+- `tsc` valida tipos do Prisma Client (gerado), não do banco
+- Resultado: drift silencioso que só aparece em runtime
+
+---
+
 ## Referências
 
 - VIO-1080 a VIO-1095: Issues criadas no Linear para todos os itens pendentes

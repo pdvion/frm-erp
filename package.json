@@ -20,6 +20,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:drift": "vitest run src/server/utils/schema-drift.integration.test.ts",
     "ds:check": "node scripts/check-design-system.mjs",
     "ds:check:strict": "node scripts/check-design-system.mjs --strict",
     "prepare": "husky"
