@@ -78,6 +78,7 @@ model ProductionOrderMaterial {
 model ProductionOrderOperation {
   id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId         String          @db.Uuid
+  companyId       String          @db.Uuid
   sequence        Int
   name            String          @db.VarChar(200)
   workCenter      String?         @db.VarChar(100)
@@ -92,8 +93,10 @@ model ProductionOrderOperation {
   completedAt     DateTime?
   notes           String?
   createdAt       DateTime        @default(now())
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
   order           ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
+  @@index([companyId], map: "idx_production_order_operations_company")
   @@index([orderId], map: "idx_production_order_operations_orderId")
   @@map("production_order_operations")
 }
