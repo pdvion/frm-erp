@@ -39,7 +39,6 @@ model MaterialReceiving {
   supplier        Supplier                @relation(fields: [supplierId], references: [id], onUpdate: NoAction, map: "material_receivings_supplier_fkey")
 
   @@unique([code, companyId])
-  @@index([supplierId])
   @@index([status])
   @@index([receivingDate])
   @@index([companyId], map: "idx_material_receivings_companyId")
@@ -87,8 +86,6 @@ model MaterialReceivingItem {
   certificates        QualityCertificate[]
   divergences         ReceivingDivergence[]
 
-  @@index([receivingId])
-  @@index([materialId])
   @@index([status])
   @@index([locationId], map: "idx_material_receiving_items_location")
   @@index([materialId], map: "idx_material_receiving_items_material")
