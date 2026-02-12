@@ -116,14 +116,15 @@ const TENANT_MODELS = new Set([
   "Task",
 ]);
 
-// Modelos que possuem campo isShared
+// Modelos que possuem campo isShared E companyId nullable (realmente compartilháveis)
+// Material, Supplier, Customer têm isShared no schema mas companyId NOT NULL,
+// então na prática pertencem a uma empresa e usam filtro simples { companyId }
 const SHARED_MODELS = new Set([
-  "Material",
-  "Supplier",
-  "Customer",
-  "FinancialCategory",
-  "CostCenter",
-  "ProductCategory",
+  "Category",         // finance.prisma: companyId? + isShared
+  "ProductCategory",  // catalog.prisma: companyId? + isShared
+  "ProductAttribute", // catalog.prisma: companyId? + isShared
+  "Product",          // catalog.prisma: companyId? + isShared
+  "Port",             // impex.prisma: companyId? + isShared
 ]);
 
 // Modelos que possuem companyId nullable (String? no schema Prisma)

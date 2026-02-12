@@ -94,14 +94,11 @@ describe("createTenantPrisma — RLS Extension", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).material.findMany({ where: { unit: "KG" } });
 
-      // Material is SHARED + NOT NULL companyId → OR: [{ companyId }, { isShared: true }]
+      // Material has NOT NULL companyId, not in SHARED_MODELS → simple { companyId }
       const calledArgs = queryFn.mock.calls[0][0];
       expect(calledArgs.where.AND).toBeDefined();
       expect(calledArgs.where.AND[0]).toEqual({ unit: "KG" });
-      expect(calledArgs.where.AND[1].OR).toContainEqual({ companyId: COMPANY_A });
-      expect(calledArgs.where.AND[1].OR).toContainEqual({ isShared: true });
-      // NOT NULL companyId → no { companyId: null } in filter
-      expect(calledArgs.where.AND[1].OR).not.toContainEqual({ companyId: null });
+      expect(calledArgs.where.AND[1]).toEqual({ companyId: COMPANY_A });
     });
 
     it("works with empty where clause (no AND wrapper needed)", async () => {
@@ -110,41 +107,34 @@ describe("createTenantPrisma — RLS Extension", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tenantPrisma as any).material.findMany({});
 
-      // Material is SHARED + NOT NULL → OR: [{ companyId }, { isShared: true }]
+      // Material: NOT NULL companyId, not shared → simple { companyId }
       expect(queryFn).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({
-            OR: expect.arrayContaining([
-              { companyId: COMPANY_A },
-              { isShared: true },
-            ]),
-          }),
+          where: { companyId: COMPANY_A },
         })
       );
     });
   });
 
   describe("findMany — shared model", () => {
-    it("includes isShared: true in OR filter for shared models (no null for NOT NULL companyId)", async () => {
+    it("includes isShared + companyId:null in OR for nullable shared models", async () => {
       const tenantPrisma = createTenantPrisma(mockPrisma, COMPANY_A);
 
-      // Material is in SHARED_MODELS with NOT NULL companyId
+      // ProductCategory is in SHARED_MODELS + NULLABLE_COMPANY_MODELS
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (tenantPrisma as any).material.findMany({ where: {} });
+      await (tenantPrisma as any).productCategory.findMany({ where: {} });
 
       expect(queryFn).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             OR: expect.arrayContaining([
               { companyId: COMPANY_A },
+              { companyId: null },
               { isShared: true },
             ]),
           }),
         })
       );
-      // NOT NULL companyId → no null in filter
-      const calledArgs = queryFn.mock.calls[0][0];
-      expect(calledArgs.where.OR).not.toContainEqual({ companyId: null });
     });
   });
 
