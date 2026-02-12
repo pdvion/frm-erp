@@ -20,7 +20,7 @@ model Category {
 
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                 Int
   companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
@@ -48,8 +48,8 @@ model AccountsPayable {
   createdBy            String?                 @db.Uuid
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt            DateTime?               @map("deleted_at")
+  deletedBy            String?                 @map("deleted_by") @db.Uuid
   bankAccountId        String?                 @db.Uuid
   approvalStatus       ApprovalStatus?         @default(PENDING)
   scheduledPaymentDate DateTime?
@@ -125,7 +125,7 @@ model PayablePayment {
 
 model CostCenter {
   id                 String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code               String
   name               String
   description        String?
@@ -157,7 +157,7 @@ model CostCenter {
 
 model BankAccount {
   id                                                                     String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                                                                   String
   name                                                                   String
   bankCode                                                               String?
@@ -176,8 +176,8 @@ model BankAccount {
   notes                                                                  String?
   createdAt                                                              DateTime             @default(now())
   updatedAt                                                              DateTime             @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   accounts_payable                                                       AccountsPayable[]
   receivables                                                            AccountsReceivable[]
   company                                                                Company              @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "bank_accounts_company_fkey")
@@ -266,7 +266,7 @@ model PixTransaction {
 
 model AccountsReceivable {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code              Int
   companyId         String              @db.Uuid
   customerId        String              @db.Uuid
@@ -297,8 +297,8 @@ model AccountsReceivable {
   createdBy         String?             @db.Uuid
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   issuedInvoiceId   String?             @db.Uuid
   bankAccount       BankAccount?        @relation(fields: [bankAccountId], references: [id], onUpdate: NoAction, map: "accounts_receivable_bankaccount_fkey")
   company           Company             @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "accounts_receivable_company_fkey")
@@ -744,7 +744,7 @@ model DdaSyncLog {
 
 model CollectionRule {
   id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   companyId   String               @map("company_id") @db.Uuid
   name        String               @db.VarChar(100)
   description String?

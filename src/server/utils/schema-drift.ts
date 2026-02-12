@@ -93,17 +93,21 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
         continue;
       }
 
-      // Parse field: name Type? @map("col") @db.Xxx ...
-      const fieldMatch = trimmed.match(/^(\w+)\s+(\w+)(\?)?/);
+      // Parse field: name Type[]? @map("col") @db.Xxx ...
+      const fieldMatch = trimmed.match(/^(\w+)\s+(\w+)(\[\])?(\?)?/);
       if (!fieldMatch) continue;
 
-      const [, fieldName, fieldType, optional] = fieldMatch;
+      const [, fieldName, fieldType, isArray, optional] = fieldMatch;
 
-      // Detect relations (type starts with uppercase and is a model name, or has @relation)
+      // Detect relations:
+      // - Has @relation directive
+      // - Is an array type (Type[]) — always a relation
+      // - Type starts with uppercase and is not a scalar Prisma type
+      const scalarTypes = ["String", "Int", "Float", "Decimal", "Boolean", "DateTime", "Json", "BigInt", "Bytes"];
       const isRelation =
+        !!isArray ||
         trimmed.includes("@relation") ||
-        (fieldType[0] === fieldType[0].toUpperCase() &&
-          !["String", "Int", "Float", "Decimal", "Boolean", "DateTime", "Json", "BigInt", "Bytes"].includes(fieldType));
+        (fieldType[0] === fieldType[0].toUpperCase() && !scalarTypes.includes(fieldType));
 
       // Get @map column name if present
       const colMapMatch = trimmed.match(/@map\("([^"]+)"\)/);

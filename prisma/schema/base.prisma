@@ -10,7 +10,7 @@ datasource db {
 
 model Company {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @unique
+  legacyId          Int?                    @unique @map("legacy_id")
   code                 Int                     @unique
   name                 String
   tradeName            String?
@@ -133,18 +133,18 @@ model Company {
 
 model CompanyOnboarding {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  companyId      String    @unique @db.Uuid
+  companyId      String    @unique @map("company_id") @db.Uuid
   company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  currentStep    Int       @default(1)
-  stepsCompleted Json      @default("{}")
-  step1Data      Json?
-  step2Data      Json?
-  step3Data      Json?
-  step4Data      Json?
-  step5Data      Json?
-  completedAt    DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @default(now()) @updatedAt
+  currentStep    Int       @default(1) @map("current_step")
+  stepsCompleted Json      @default("{}") @map("steps_completed")
+  step1Data      Json?     @map("step1_data")
+  step2Data      Json?     @map("step2_data")
+  step3Data      Json?     @map("step3_data")
+  step4Data      Json?     @map("step4_data")
+  step5Data      Json?     @map("step5_data")
+  completedAt    DateTime? @map("completed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map("company_onboarding")
 }

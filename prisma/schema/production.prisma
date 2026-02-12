@@ -1,6 +1,6 @@
 model ProductionOrder {
   id                      String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                    Int
   companyId               String                     @db.Uuid
   productId               String                     @db.Uuid
@@ -19,8 +19,8 @@ model ProductionOrder {
   createdBy               String?                    @db.Uuid
   createdAt               DateTime                   @default(now())
   updatedAt               DateTime                   @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   request_type            production_request_type?
   execution_type          production_execution_type?
   customer_id             String?
@@ -189,7 +189,7 @@ model MrpSuggestion {
 
 model WorkCenter {
   id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code             String
   name             String
   description      String?
