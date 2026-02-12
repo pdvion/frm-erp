@@ -126,14 +126,35 @@ const SHARED_MODELS = new Set([
   "ProductCategory",
 ]);
 
+// Modelos que possuem companyId nullable (String? no schema Prisma)
+// Apenas estes podem receber { companyId: null } no filtro OR
+const NULLABLE_COMPANY_MODELS = new Set([
+  "SystemSetting",
+  "AuditLog",
+  "Notification",
+  "AiUsageLog",
+  "Task",
+  "Category",       // FinancialCategory
+  "Holiday",
+  "User",
+  "UserGroup",
+  "ProductCategory",
+  "ProductAttribute",
+  "ProductSpecification",
+  "Product",
+  "Port",
+]);
+
 /**
  * Cria filtro de tenant para queries de leitura.
  * Inclui registros da empresa, registros sem dono (null) e compartilhados.
  */
 function buildTenantFilter(model: string, companyId: string) {
   const hasShared = SHARED_MODELS.has(model);
+  const hasNullableCompany = NULLABLE_COMPANY_MODELS.has(model);
   
-  if (hasShared) {
+  if (hasShared && hasNullableCompany) {
+    // Modelo com companyId nullable E isShared: inclui null + shared
     return {
       OR: [
         { companyId },
@@ -143,12 +164,28 @@ function buildTenantFilter(model: string, companyId: string) {
     };
   }
   
-  return {
-    OR: [
-      { companyId },
-      { companyId: null },
-    ],
-  };
+  if (hasShared) {
+    // Modelo com isShared mas companyId NOT NULL: não inclui null
+    return {
+      OR: [
+        { companyId },
+        { isShared: true },
+      ],
+    };
+  }
+  
+  if (hasNullableCompany) {
+    // Modelo com companyId nullable sem isShared: inclui null
+    return {
+      OR: [
+        { companyId },
+        { companyId: null },
+      ],
+    };
+  }
+  
+  // Modelo com companyId NOT NULL: filtro simples
+  return { companyId };
 }
 
 /**
