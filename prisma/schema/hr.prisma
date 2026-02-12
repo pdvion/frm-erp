@@ -49,7 +49,6 @@ model JobPosition {
   @@unique([code, companyId])
   @@index([companyId], map: "idx_job_positions_companyId")
   @@index([departmentId], map: "idx_job_positions_department")
-  @@index([departmentId], map: "idx_job_positions_departmentId")
   @@unique([companyId, legacyId])
   @@map("job_positions")
 }
@@ -158,7 +157,6 @@ model TimeClockEntry {
   users         User?         @relation(fields: [approvedBy], references: [id], onUpdate: NoAction)
   employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "time_clock_entries_employee_fkey")
 
-  @@index([employeeId])
   @@index([timestamp])
   @@index([approvedBy], map: "idx_time_clock_entries_approved_by")
   @@index([employeeId], map: "idx_time_clock_entries_employee")
@@ -187,7 +185,6 @@ model TimesheetDay {
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "timesheet_days_employee_fkey")
 
   @@unique([employeeId, date], map: "timesheet_days_employee_date_key")
-  @@index([employeeId])
   @@index([date])
   @@index([employeeId], map: "idx_timesheet_days_employee")
   @@map("timesheet_days")

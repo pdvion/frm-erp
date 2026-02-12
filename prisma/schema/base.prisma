@@ -240,9 +240,7 @@ model UserCompany {
 
   @@unique([userId, companyId])
   @@index([companyId], map: "idx_user_companies_company")
-  @@index([companyId], map: "idx_user_companies_companyId")
   @@index([userId], map: "idx_user_companies_user")
-  @@index([userId])
   @@map("user_companies")
 }
 

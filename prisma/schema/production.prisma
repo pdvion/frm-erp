@@ -70,8 +70,6 @@ model ProductionOrderMaterial {
   material    Material        @relation("ProductionMaterial", fields: [materialId], references: [id])
   order       ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@index([orderId])
-  @@index([materialId])
   @@index([materialId], map: "idx_production_order_materials_material")
   @@index([orderId], map: "idx_production_order_materials_order")
   @@map("production_order_materials")
@@ -135,7 +133,6 @@ model MrpParameter {
   updatedAt              DateTime @default(now()) @updatedAt
   material               Material @relation(fields: [materialId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mrp_parameters_material_fkey")
 
-  @@index([materialId])
   @@index([materialId], map: "idx_mrp_parameters_material")
   @@map("mrp_parameters")
 }
@@ -183,8 +180,6 @@ model MrpSuggestion {
   material         Material            @relation(fields: [materialId], references: [id], onUpdate: NoAction, map: "mrp_suggestions_material_fkey")
   run              MrpRun              @relation(fields: [runId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mrp_suggestions_run_fkey")
 
-  @@index([runId])
-  @@index([materialId])
   @@index([status])
   @@index([type])
   @@index([materialId], map: "idx_mrp_suggestions_material")
@@ -246,9 +241,7 @@ model ProductionLog {
   productionOrder       ProductionOrder? @relation(fields: [productionOrderId], references: [id], onUpdate: NoAction, map: "production_logs_order_fkey")
   workCenter            WorkCenter       @relation(fields: [workCenterId], references: [id], onUpdate: NoAction, map: "production_logs_workcenter_fkey")
 
-  @@index([workCenterId])
   @@index([shiftDate])
-  @@index([productionOrderId])
   @@index([productionOrderId], map: "idx_production_logs_order")
   @@index([workCenterId], map: "idx_production_logs_workcenter")
   @@map("production_logs")
@@ -269,7 +262,6 @@ model MachineStop {
   productionLog   ProductionLog? @relation(fields: [productionLogId], references: [id], onUpdate: NoAction, map: "machine_stops_log_fkey")
   workCenter      WorkCenter     @relation(fields: [workCenterId], references: [id], onUpdate: NoAction, map: "machine_stops_workcenter_fkey")
 
-  @@index([workCenterId])
   @@index([startTime])
   @@index([stopType])
   @@index([productionLogId], map: "idx_machine_stops_productionlog")
@@ -293,7 +285,6 @@ model OeeTarget {
   workCenter         WorkCenter? @relation(fields: [workCenterId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "oee_targets_workcenter_fkey")
 
   @@index([companyId])
-  @@index([workCenterId])
   @@index([year, month])
   @@index([workCenterId], map: "idx_oee_targets_workcenter")
   @@map("oee_targets")
