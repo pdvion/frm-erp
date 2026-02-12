@@ -158,9 +158,8 @@ describe("Multi-tenant Isolation Tests (VIO-704)", () => {
       expect(result.materials).toHaveLength(1);
       expect(result.materials[0].companyId).toBe(COMPANY_A_ID);
 
-      // Verificar que o filtro de companyId foi aplicado
-      const findManyCall = mockFindMany.mock.calls[0][0];
-      expect(findManyCall.where.companyId).toBe(COMPANY_A_ID);
+      // Com RLS ativo, tenantFilter retorna {} — filtragem é feita pelo createTenantPrisma
+      expect(mockFindMany).toHaveBeenCalled();
     });
 
     it("byId returns null for material from another company", async () => {
@@ -222,9 +221,8 @@ describe("Multi-tenant Isolation Tests (VIO-704)", () => {
 
       expect(result.suppliers).toHaveLength(0);
 
-      // Verificar que o filtro usou COMPANY_B_ID
-      const findManyCall = mockFindMany.mock.calls[0][0];
-      expect(findManyCall.where.companyId).toBe(COMPANY_B_ID);
+      // Com RLS ativo, tenantFilter retorna {} — filtragem é feita pelo createTenantPrisma
+      expect(mockFindMany).toHaveBeenCalled();
     });
   });
 
@@ -479,20 +477,18 @@ describe("Multi-tenant Isolation Tests (VIO-704)", () => {
       expect(filter).toEqual({});
     });
 
-    it("returns companyId filter when includeShared is false", async () => {
+    it("returns empty when RLS is active (includeShared is false)", async () => {
       const { tenantFilter } = await import("../trpc");
       
       const filter = tenantFilter(COMPANY_A_ID, false);
-      expect(filter).toEqual({ companyId: COMPANY_A_ID });
+      expect(filter).toEqual({});
     });
 
-    it("returns OR filter with shared when using tenantFilterShared", async () => {
+    it("tenantFilterShared returns empty when RLS is active", async () => {
       const { tenantFilterShared } = await import("../trpc");
       
       const filter = tenantFilterShared(COMPANY_A_ID);
-      expect(filter).toHaveProperty("OR");
-      expect(filter.OR).toContainEqual({ companyId: COMPANY_A_ID });
-      expect(filter.OR).toContainEqual({ isShared: true });
+      expect(filter).toEqual({});
     });
   });
 });

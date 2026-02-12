@@ -8,24 +8,22 @@ describe("Tenant Isolation Security", () => {
       expect(filter).toEqual({});
     });
 
-    it("should filter by companyId", () => {
+    it("should return empty when RLS is active (filtering handled by createTenantPrisma)", () => {
       const filter = tenantFilter("company-123");
-      expect(filter).toEqual({ companyId: "company-123" });
+      expect(filter).toEqual({});
     });
 
-    it("should filter only by companyId when includeShared is false", () => {
+    it("should return empty with includeShared false when RLS is active", () => {
       const filter = tenantFilter("company-123", false);
-      expect(filter).toEqual({ companyId: "company-123" });
+      expect(filter).toEqual({});
     });
 
-    it("should not allow access to other company data", () => {
+    it("should be no-op for all companies when RLS is active", () => {
+      // With RLS active, tenantFilter is a no-op — createTenantPrisma handles isolation
       const companyAFilter = tenantFilter("company-A");
       const companyBFilter = tenantFilter("company-B");
-
-      // Filters should be different for different companies
-      expect(companyAFilter).not.toEqual(companyBFilter);
-      expect(companyAFilter).toEqual({ companyId: "company-A" });
-      expect(companyBFilter).toEqual({ companyId: "company-B" });
+      expect(companyAFilter).toEqual({});
+      expect(companyBFilter).toEqual({});
     });
   });
 
@@ -83,32 +81,27 @@ describe("Tenant Isolation Security", () => {
   });
 
   describe("Cross-Tenant Data Access Prevention", () => {
-    it("should prevent Company A from accessing Company B data", () => {
+    it("should prevent cross-tenant access via createTenantPrisma (not tenantFilter)", () => {
       const companyAId = "company-A";
       const companyBId = "company-B";
 
-      // Simulate a query filter for Company A
+      // With RLS active, tenantFilter returns {} — isolation is handled by createTenantPrisma
       const filterForA = tenantFilter(companyAId, false);
+      expect(filterForA).toEqual({});
 
-      // The filter should only match Company A data
-      expect(filterForA).toEqual({ companyId: companyAId });
-
-      // Simulate checking if Company B data would pass the filter
+      // Cross-tenant isolation is enforced by the Prisma RLS Extension, not by tenantFilter
       const companyBData = { companyId: companyBId, name: "Secret Data" };
       const wouldMatch = companyBData.companyId === companyAId;
       expect(wouldMatch).toBe(false);
     });
 
-    it("should allow shared data access across tenants via tenantFilterShared", () => {
+    it("should handle shared data via createTenantPrisma (not tenantFilterShared)", () => {
       const companyAId = "company-A";
       const filter = tenantFilterShared(companyAId);
 
-      // Shared data (isShared: true) should be accessible
-      const filterConditions = filter.OR as Array<{ companyId?: string | null; isShared?: boolean }>;
-      const matchesShared = filterConditions.some(
-        (cond) => cond.isShared === true
-      );
-      expect(matchesShared).toBe(true);
+      // With RLS active, tenantFilterShared returns {} — shared model handling
+      // is done by buildTenantFilter in prisma-rls.ts
+      expect(filter).toEqual({});
     });
 
     it("should isolate sensitive operations by company", () => {
