@@ -270,6 +270,11 @@ export const settingsRouter = createTRPCRouter({
           description: config["landing.hero.description"] ?? "",
           image: config["landing.hero.image"] ?? null,
         },
+        identity: {
+          companyName: config["landing.identity.companyName"] ?? "FRM ERP",
+          slogan: config["landing.identity.slogan"] ?? "Sistema de Gestão Industrial",
+          logo: config["landing.identity.logo"] ?? null,
+        },
         features: config["landing.features"] ?? [],
         trustIndicators: config["landing.trust_indicators"] ?? [],
       };

@@ -80,9 +80,10 @@ export interface MobileDrawerMenuProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  brandName?: string;
 }
 
-export function MobileDrawerMenu({ isOpen, onClose, children }: MobileDrawerMenuProps) {
+export function MobileDrawerMenu({ isOpen, onClose, children, brandName = "FRM ERP" }: MobileDrawerMenuProps) {
   return (
     <>
       {/* Backdrop */}
@@ -103,7 +104,7 @@ export function MobileDrawerMenu({ isOpen, onClose, children }: MobileDrawerMenu
         aria-hidden={!isOpen}
       >
         <div className="flex items-center justify-between h-14 px-4 border-b border-theme">
-          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">FRM ERP</span>
+          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{brandName}</span>
           <button
             onClick={onClose}
             className="flex items-center justify-center w-11 h-11 rounded-full active:bg-theme-secondary"

@@ -12,6 +12,7 @@ import {
 import { MobileHeader, MobileDrawerMenu } from "@/components/mobile/MobileHeader";
 import { BottomNav, BottomNavItem } from "@/components/mobile/BottomNav";
 import Link from "next/link";
+import { trpc } from "@/lib/trpc";
 
 const navigationItems: BottomNavItem[] = [
   {
@@ -41,20 +42,24 @@ const navigationItems: BottomNavItem[] = [
   },
 ];
 
-function getPageTitle(pathname: string): string {
-  if (pathname === "/m") return "FRM ERP";
+function getPageTitle(pathname: string, brandName: string): string {
+  if (pathname === "/m") return brandName;
   if (pathname.startsWith("/m/requisitions")) return "Requisições";
   if (pathname.startsWith("/m/approvals")) return "Aprovações";
   if (pathname.startsWith("/m/inventory")) return "Estoque";
   if (pathname.startsWith("/m/profile")) return "Perfil";
   if (pathname.startsWith("/m/notifications")) return "Notificações";
-  return "FRM ERP";
+  return brandName;
 }
 
 export default function MobileLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const title = getPageTitle(pathname);
+  const { data: landingConfig } = trpc.settings.getLandingConfig.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+  const companyName = (landingConfig?.identity?.companyName as string) || "FRM ERP";
+  const title = getPageTitle(pathname, companyName);
   const isSubpage = pathname !== "/m" && pathname.split("/").length > 2;
 
   return (
@@ -66,7 +71,7 @@ export default function MobileLayout({ children }: { children: ReactNode }) {
         showNotifications
       />
 
-      <MobileDrawerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+      <MobileDrawerMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} brandName={companyName}>
         {navigationItems.map((item) => {
           const isActive = pathname === item.href;
           return (

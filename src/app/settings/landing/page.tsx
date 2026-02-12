@@ -65,6 +65,12 @@ interface TrustIndicator {
   text: string;
 }
 
+interface IdentityConfig {
+  companyName: string;
+  slogan: string;
+  logo: string | null;
+}
+
 interface LandingConfig {
   hero: {
     title: string;
@@ -72,6 +78,7 @@ interface LandingConfig {
     description: string;
     image: string | null;
   };
+  identity: IdentityConfig;
   features: Feature[];
   trustIndicators: TrustIndicator[];
 }
@@ -87,6 +94,11 @@ export default function LandingSettingsPage() {
       description: "ERP desenvolvido para indústrias, com módulos avançados de compras, estoque, produção e financeiro.",
       image: null,
     },
+    identity: {
+      companyName: "FRM ERP",
+      slogan: "Sistema de Gestão Industrial",
+      logo: null,
+    },
     features: [],
     trustIndicators: [],
   });
@@ -94,7 +106,9 @@ export default function LandingSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<"hero" | "features" | "preview">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "identity" | "features" | "preview">("hero");
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   // Buscar configurações atuais
   const { data: landingConfig, isLoading, refetch } = trpc.settings.getLandingConfig.useQuery();
@@ -113,6 +127,11 @@ export default function LandingSettingsPage() {
           description: String(landingConfig.hero.description || ""),
           image: landingConfig.hero.image as string | null,
         },
+        identity: {
+          companyName: String(landingConfig.identity?.companyName || "FRM ERP"),
+          slogan: String(landingConfig.identity?.slogan || "Sistema de Gestão Industrial"),
+          logo: (landingConfig.identity?.logo as string | null) ?? null,
+        },
         features: (landingConfig.features as Feature[]) || [],
         trustIndicators: (landingConfig.trustIndicators as TrustIndicator[]) || [],
       });
@@ -121,6 +140,43 @@ export default function LandingSettingsPage() {
 
   // Verificar permissão
   const canEdit = hasPermission("settings.landing.edit") || hasPermission("*");
+
+  // Upload de logo
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingLogo(true);
+    setMessage(null);
+
+    try {
+      const { signedUrl, publicUrl } = await getUploadUrl.mutateAsync({
+        fileName: file.name,
+        path: "landing/identity",
+        contentType: file.type,
+      });
+
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+
+      if (!uploadResponse.ok) throw new Error("Falha no upload");
+
+      setConfig((prev) => ({
+        ...prev,
+        identity: { ...prev.identity, logo: publicUrl },
+      }));
+
+      setMessage({ type: "success", text: "Logo enviado com sucesso!" });
+    } catch (error) {
+      console.error("Erro no upload do logo:", error);
+      setMessage({ type: "error", text: "Erro ao enviar logo" });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
 
   // Upload de imagem
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,6 +291,21 @@ export default function LandingSettingsPage() {
         value: config.features,
         global: true,
       });
+      await updateSetting.mutateAsync({
+        key: "landing.identity.companyName",
+        value: config.identity.companyName,
+        global: true,
+      });
+      await updateSetting.mutateAsync({
+        key: "landing.identity.slogan",
+        value: config.identity.slogan,
+        global: true,
+      });
+      await updateSetting.mutateAsync({
+        key: "landing.identity.logo",
+        value: config.identity.logo,
+        global: true,
+      });
 
       setMessage({ type: "success", text: "Configurações salvas com sucesso!" });
       refetch();
@@ -255,6 +326,11 @@ export default function LandingSettingsPage() {
           subtitle: String(landingConfig.hero.subtitle || "Completa e Moderna"),
           description: String(landingConfig.hero.description || ""),
           image: landingConfig.hero.image as string | null,
+        },
+        identity: {
+          companyName: String(landingConfig.identity?.companyName || "FRM ERP"),
+          slogan: String(landingConfig.identity?.slogan || "Sistema de Gestão Industrial"),
+          logo: (landingConfig.identity?.logo as string | null) ?? null,
         },
         features: (landingConfig.features as Feature[]) || [],
         trustIndicators: (landingConfig.trustIndicators as TrustIndicator[]) || [],
@@ -359,6 +435,18 @@ export default function LandingSettingsPage() {
             >
               <ImageIcon className="w-4 h-4" />
               Hero & Textos
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setActiveTab("identity")}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 rounded-none ${
+                activeTab === "identity"
+                  ? "border-[var(--frm-primary)] text-[var(--frm-primary)]"
+                  : "border-transparent text-theme-muted hover:text-theme-secondary"
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              Identidade
             </Button>
             <Button
               variant="ghost"
@@ -498,6 +586,125 @@ export default function LandingSettingsPage() {
                       rows={3}
                       className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-[var(--frm-light)] focus:border-[var(--frm-light)]"
                     />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Identity Tab */}
+          {activeTab === "identity" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Logo */}
+              <div className="bg-theme-card rounded-xl shadow-sm border p-6">
+                <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5" />
+                  Logo da Empresa
+                </h2>
+                <p className="text-sm text-theme-muted mb-4">
+                  Exibido na sidebar e nas páginas de login. Recomendado: 128x128px, formato PNG com fundo transparente.
+                </p>
+                <div className="space-y-4">
+                  {config.identity.logo ? (
+                    <div className="relative inline-block">
+                      <Image
+                        src={config.identity.logo}
+                        alt="Logo"
+                        width={128}
+                        height={128}
+                        className="w-24 h-24 object-contain rounded-lg border border-theme p-2"
+                        unoptimized
+                      />
+                      <Button
+                        variant="ghost"
+                        onClick={() => setConfig((prev) => ({ ...prev, identity: { ...prev.identity, logo: null } }))}
+                        className="absolute -top-2 -right-2 p-1 bg-red-500 text-white hover:bg-red-600 rounded-full"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => logoInputRef.current?.click()}
+                      className="w-24 h-24 border-2 border-dashed border-theme rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--frm-primary)] transition-colors"
+                    >
+                      {isUploadingLogo ? (
+                        <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
+                      ) : (
+                        <>
+                          <Upload className="w-6 h-6 text-theme-muted mb-1" />
+                          <p className="text-xs text-theme-muted">Upload</p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  <Input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              {/* Nome e Slogan */}
+              <div className="bg-theme-card rounded-xl shadow-sm border p-6">
+                <h2 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
+                  <Type className="w-5 h-5" />
+                  Nome e Slogan
+                </h2>
+                <p className="text-sm text-theme-muted mb-4">
+                  O nome aparece na sidebar e no login. O slogan aparece nas páginas públicas.
+                </p>
+                <div className="space-y-4">
+                  <Input
+                    label="Nome da Empresa"
+                    value={config.identity.companyName}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        identity: { ...prev.identity, companyName: e.target.value },
+                      }))
+                    }
+                    placeholder="FRM ERP"
+                  />
+                  <Input
+                    label="Slogan"
+                    value={config.identity.slogan}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        identity: { ...prev.identity, slogan: e.target.value },
+                      }))
+                    }
+                    placeholder="Sistema de Gestão Industrial"
+                  />
+                </div>
+
+                {/* Preview da Sidebar */}
+                <div className="mt-6 p-4 bg-theme-tertiary rounded-lg">
+                  <p className="text-xs text-theme-muted mb-2">Preview da Sidebar:</p>
+                  <div className="flex items-center gap-2">
+                    {config.identity.logo ? (
+                      <Image
+                        src={config.identity.logo}
+                        alt="Logo"
+                        width={24}
+                        height={24}
+                        className="w-6 h-6 object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {config.identity.companyName.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <span className="font-semibold text-theme">
+                      {config.identity.companyName || "FRM ERP"}
+                    </span>
                   </div>
                 </div>
               </div>

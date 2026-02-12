@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -17,6 +18,7 @@ import {
 import { useTheme } from "@/contexts/ThemeContext";
 import { getMenuStructure } from "@/lib/routes/registry";
 import type { MenuItem } from "@/lib/routes/types";
+import { trpc } from "@/lib/trpc";
 
 
 interface SidebarProps {
@@ -115,6 +117,12 @@ export function Sidebar({ onClose }: SidebarProps) {
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const { theme, setTheme } = useTheme();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const { data: landingConfig } = trpc.settings.getLandingConfig.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+  const companyName = landingConfig?.identity?.companyName as string || "FRM ERP";
+  const companyLogo = landingConfig?.identity?.logo as string | null;
 
   // Obter menu do registry (memoizado)
   const menuItems = useMemo(() => getMenuStructure(), []);
@@ -223,8 +231,12 @@ export function Sidebar({ onClose }: SidebarProps) {
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-theme bg-theme-sidebar transition-all duration-300">
       <div className="flex h-14 items-center justify-between border-b border-theme px-4">
         <Link href="/dashboard" className="flex items-center gap-2" onClick={isMobile ? onClose : undefined}>
-          <Building2 className="h-6 w-6 text-blue-500" />
-          <span className="font-semibold text-theme">FRM ERP</span>
+          {companyLogo ? (
+            <Image src={companyLogo} alt={companyName} width={24} height={24} className="h-6 w-6 object-contain" unoptimized />
+          ) : (
+            <Building2 className="h-6 w-6 text-blue-500" />
+          )}
+          <span className="font-semibold text-theme">{companyName}</span>
         </Link>
         <button
           onClick={isMobile ? onClose : () => setIsCollapsed(true)}
