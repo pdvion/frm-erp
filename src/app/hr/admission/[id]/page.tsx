@@ -18,7 +18,6 @@ import {
   Loader2,
   FileText,
   CheckCircle,
-  XCircle,
   Clock,
   AlertCircle,
   Upload,
@@ -35,7 +34,6 @@ import {
   CreditCard,
   Stethoscope,
   ChevronRight,
-  RotateCcw,
 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "success" | "warning" | "error" | "info" | "purple" | "emerald" }> = {
@@ -70,6 +68,37 @@ const examResultConfig: Record<string, { label: string; variant: "default" | "su
   FIT_RESTRICTIONS: { label: "Apto c/ Restrições", variant: "warning" },
 };
 
+const docStatusStyles: Record<string, { bg: string; iconColor: string }> = {
+  VERIFIED: { bg: "bg-green-100 dark:bg-green-900/30", iconColor: "text-green-600" },
+  UPLOADED: { bg: "bg-blue-100 dark:bg-blue-900/30", iconColor: "text-blue-600" },
+  REJECTED: { bg: "bg-red-100 dark:bg-red-900/30", iconColor: "text-red-600" },
+  PENDING: { bg: "bg-theme-tertiary", iconColor: "text-theme-muted" },
+};
+
+interface AdmissionDocument {
+  id: string;
+  documentType: string;
+  documentName: string;
+  fileUrl: string | null;
+  status: string;
+  isRequired: boolean | null;
+  uploadedAt: Date | null;
+  verifiedAt: Date | null;
+  rejectionReason: string | null;
+}
+
+interface AdmissionStep {
+  id: string;
+  stepNumber: number;
+  stepName: string;
+  stepType: string;
+  status: string;
+  completedAt: Date | null;
+  completedBy: string | null;
+  completedByName: string | null;
+  notes: string | null;
+}
+
 type TabId = "overview" | "documents" | "steps" | "exams";
 
 interface PageProps {
@@ -83,17 +112,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
 
   // Document drawer state
   const documentDrawer = useDrawer();
-  const [selectedDoc, setSelectedDoc] = useState<{
-    id: string;
-    documentType: string;
-    documentName: string;
-    fileUrl: string | null;
-    status: string;
-    isRequired: boolean | null;
-    uploadedAt: Date | null;
-    verifiedAt: Date | null;
-    rejectionReason: string | null;
-  } | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<AdmissionDocument | null>(null);
 
   // Reject modal state
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -251,7 +270,6 @@ export default function AdmissionDetailPage({ params }: PageProps) {
   const isClosed = ["COMPLETED", "CANCELLED", "REJECTED"].includes(admission.status);
   const docsTotal = admission.admission_documents.length;
   const docsVerified = admission.admission_documents.filter((d) => d.status === "VERIFIED").length;
-  const docsUploaded = admission.admission_documents.filter((d) => d.status === "UPLOADED" || d.status === "VERIFIED").length;
 
   const tabs: { id: TabId; label: string; icon: React.ReactNode; count?: number }[] = [
     { id: "overview", label: "Visão Geral", icon: <User className="w-4 h-4" /> },
@@ -405,7 +423,6 @@ export default function AdmissionDetailPage({ params }: PageProps) {
       {activeTab === "documents" && (
         <DocumentsTab
           documents={admission.admission_documents}
-          isClosed={isClosed}
           onOpenDoc={openDocDrawer}
           canCompleteStep={canCompleteDocumentStep()}
         />
@@ -718,7 +735,6 @@ function InfoItem({ label, value, span2 }: { label: string; value: string | null
 
 function DocumentsTab({
   documents,
-  isClosed,
   onOpenDoc,
   canCompleteStep,
 }: {
@@ -735,18 +751,7 @@ function DocumentsTab({
     rejectionReason: string | null;
     createdAt: Date;
   }[];
-  isClosed: boolean;
-  onOpenDoc: (doc: {
-    id: string;
-    documentType: string;
-    documentName: string;
-    fileUrl: string | null;
-    status: string;
-    isRequired: boolean | null;
-    uploadedAt: Date | null;
-    verifiedAt: Date | null;
-    rejectionReason: string | null;
-  }) => void;
+  onOpenDoc: (doc: AdmissionDocument) => void;
   canCompleteStep: boolean;
 }) {
   const required = documents.filter((d) => d.isRequired);
@@ -827,16 +832,10 @@ function DocumentRow({ doc, onClick }: {
     >
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-          doc.status === "VERIFIED" ? "bg-green-100 dark:bg-green-900/30" :
-          doc.status === "UPLOADED" ? "bg-blue-100 dark:bg-blue-900/30" :
-          doc.status === "REJECTED" ? "bg-red-100 dark:bg-red-900/30" :
-          "bg-theme-tertiary"
+          (docStatusStyles[doc.status] ?? docStatusStyles.PENDING).bg
         }`}>
           <FileText className={`w-5 h-5 ${
-            doc.status === "VERIFIED" ? "text-green-600" :
-            doc.status === "UPLOADED" ? "text-blue-600" :
-            doc.status === "REJECTED" ? "text-red-600" :
-            "text-theme-muted"
+            (docStatusStyles[doc.status] ?? docStatusStyles.PENDING).iconColor
           }`} />
         </div>
         <div>
@@ -866,15 +865,7 @@ function StepsTab({
   onCompleteStep,
   isCompleting,
 }: {
-  steps: {
-    id: string;
-    stepNumber: number;
-    stepName: string;
-    stepType: string;
-    status: string;
-    completedAt: Date | null;
-    notes: string | null;
-  }[];
+  steps: AdmissionStep[];
   isClosed: boolean;
   canCompleteDocStep: boolean;
   onCompleteStep: (stepId: string) => void;
@@ -882,7 +873,7 @@ function StepsTab({
 }) {
   return (
     <div className="space-y-3">
-      {steps.map((step, index) => {
+      {steps.map((step) => {
         const cfg = stepStatusConfig[step.status] || stepStatusConfig.PENDING;
         const isDocStep = step.stepType === "DOCUMENT";
         const canComplete = step.status === "IN_PROGRESS" && !isClosed && (!isDocStep || canCompleteDocStep);
