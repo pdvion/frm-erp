@@ -1,6 +1,6 @@
 model Department {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code           String
   name           String
   description    String?
@@ -31,7 +31,7 @@ model Department {
 
 model JobPosition {
   id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code         String
   name         String
   description  String?
@@ -55,7 +55,7 @@ model JobPosition {
 
 model Employee {
   id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                Int
   companyId           String             @db.Uuid
   userId              String?            @db.Uuid
@@ -99,8 +99,8 @@ model Employee {
   createdBy           String?            @db.Uuid
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   insalubrityDegree   String?            @map("insalubrity_degree")
   hasDangerousness    Boolean?           @default(false) @map("has_dangerousness")
   dependentsCount     Int?               @default(0) @map("dependents_count")
@@ -192,7 +192,7 @@ model TimesheetDay {
 
 model WorkSchedule {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   companyId        String             @db.Uuid
   name             String
   code             String?
@@ -289,7 +289,7 @@ model TimeClockAdjustment {
 
 model Holiday {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @unique
+  legacyId          Int?                    @unique @map("legacy_id")
   companyId  String?  @db.Uuid
   date       DateTime @db.Date
   name       String
@@ -305,7 +305,7 @@ model Holiday {
 
 model Payroll {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code            Int
   companyId       String        @db.Uuid
   referenceMonth  Int
@@ -499,7 +499,7 @@ model Termination {
 
 model BenefitType {
   id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                    String
   name                    String
   description             String?
@@ -568,7 +568,7 @@ model TransportVoucher {
 
 model Training {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code              String
   name              String
   description       String?

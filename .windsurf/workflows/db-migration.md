@@ -70,6 +70,11 @@ CREATE POLICY "nova_tabela_delete_policy" ON nova_tabela
 "oldValues" JSONB,
 "newValues" JSONB,
 
+-- Monetários, quantidades, medidas → SEMPRE DECIMAL (NUNCA FLOAT)
+"totalValue" DECIMAL(15,2) NOT NULL DEFAULT 0,
+"quantity" DECIMAL(15,4) NOT NULL DEFAULT 0,
+-- Float APENAS para GPS, OEE, posições de UI
+
 -- Timestamps
 "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

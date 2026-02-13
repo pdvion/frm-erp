@@ -50,6 +50,9 @@ export default function <Modulo>Page() {
 
   const deleteMutation = trpc.<modulo>.delete.useMutation({
     onSuccess: () => refetch(),
+    onError: (error) => {
+      alert(`Erro ao excluir: ${error.message}`);
+    },
   });
 
   const items = data?.items ?? [];
@@ -90,7 +93,7 @@ export default function <Modulo>Page() {
           <Loader2 size={32} className="animate-spin text-blue-600" />
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-theme-muted">
           Nenhum registro encontrado
         </div>
       ) : (
@@ -149,7 +152,7 @@ export default function <Modulo>Page() {
           >
             Anterior
           </Button>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-theme-muted">
             Página {page} de {totalPages}
           </span>
           <Button
@@ -188,6 +191,9 @@ export default function New<Modulo>Page() {
   const createMutation = trpc.<modulo>.create.useMutation({
     onSuccess: (result) => {
       router.push(`/<modulo>/${result.id}`);
+    },
+    onError: (error) => {
+      alert(`Erro ao criar: ${error.message}`);
     },
   });
 

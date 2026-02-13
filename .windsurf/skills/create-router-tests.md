@@ -211,6 +211,34 @@ it("should throw NOT_FOUND error", async () => {
 });
 ```
 
+### 5. Testar Isolamento Multi-Tenant
+```typescript
+it("should NOT return data from another companyId", async () => {
+  const otherCompanyItem = { id: "1", name: "Item", companyId: "other-company" };
+  
+  // Simular que findFirst com companyId do tenant retorna null
+  vi.mocked(prisma.<modelo>.findFirst).mockResolvedValue(null);
+  
+  // Esperar NOT_FOUND, não retornar dados de outra empresa
+});
+```
+
+### 6. Testar IDOR Prevention
+```typescript
+it("should reject update/delete with id from another company", async () => {
+  // findFirst com { id, companyId } retorna null (id existe mas pertence a outra empresa)
+  vi.mocked(prisma.<modelo>.findFirst).mockResolvedValue(null);
+  
+  await expect(async () => {
+    // chamar update/delete procedure com id de outra empresa
+  }).rejects.toThrow("NOT_FOUND");
+  
+  // Garantir que update/delete NÃO foi chamado
+  expect(prisma.<modelo>.update).not.toHaveBeenCalled();
+  expect(prisma.<modelo>.delete).not.toHaveBeenCalled();
+});
+```
+
 ## Checklist
 
 - [ ] Criar arquivo de teste em `__tests__/<router>.test.ts`
@@ -221,7 +249,9 @@ it("should throw NOT_FOUND error", async () => {
 - [ ] Testes para `update` (sucesso, não encontrado)
 - [ ] Testes para `delete` (sucesso, não encontrado)
 - [ ] Testes de schema Zod
-- [ ] Testes de multi-tenancy (companyId)
+- [ ] Testes de multi-tenancy (companyId filtrado em queries)
+- [ ] Testes de isolamento (query NÃO retorna dados de outro companyId)
+- [ ] Testes de IDOR (update/delete com id de outra empresa retorna NOT_FOUND)
 - [ ] Executar `pnpm test:run`
 
 ## Comandos

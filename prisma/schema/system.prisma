@@ -11,6 +11,7 @@ model SystemSetting {
   company       Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   updatedByUser User?    @relation(fields: [updatedBy], references: [id])
 
+  @@unique([key, companyId])
   @@index([category])
   @@index([companyId])
   @@index([updatedBy])
