@@ -25,13 +25,14 @@ description: Cria um novo módulo CRUD completo com router tRPC e página Next.j
 ### Router tRPC
 ```typescript
 import { z } from "zod";
-import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
+import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 
 // SEMPRE usar tenantProcedure para endpoints com dados
-// SEMPRE usar tenantFilter(ctx.companyId) em queries
+// SEMPRE usar companyId direto no where (tenantFilter é DEPRECATED)
 // SEMPRE auditar create, update, delete
 // SEMPRE converter ctx.tenant.userId ?? undefined
+// Para módulos com lógica complexa, criar service em src/server/services/
 ```
 
 ### Páginas React
@@ -103,7 +104,9 @@ const { data, isLoading, error } = trpc.[modulo].list.useQuery({
 
 ## Checklist Pós-Criação
 
+- [ ] Se lógica complexa: criar service em `src/server/services/` primeiro
 - [ ] Registrar router em `src/server/routers/index.ts`
+- [ ] Mutations com `onError` handler no frontend
 - [ ] Verificar build: `pnpm type-check`
 - [ ] Testar localmente: `pnpm dev`
 - [ ] Commit com conventional commits

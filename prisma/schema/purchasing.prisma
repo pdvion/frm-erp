@@ -1,6 +1,6 @@
 model Supplier {
   id                      String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                    Int                          @unique
   companyName             String
   tradeName               String?
@@ -28,8 +28,8 @@ model Supplier {
   companyId               String                       @db.Uuid
   createdAt               DateTime                     @default(now())
   updatedAt               DateTime                     @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   isShared                Boolean                      @default(false)
   cat01Embalagens         Boolean?                     @default(false) @map("cat01_embalagens")
   cat02Tintas             Boolean?                     @default(false) @map("cat02_tintas")
@@ -161,7 +161,7 @@ model QuoteItem {
 
 model PurchaseOrder {
   id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                  Int                 @unique
   supplierId            String              @db.Uuid
   quoteId               String?             @db.Uuid
@@ -178,8 +178,8 @@ model PurchaseOrder {
   companyId             String              @db.Uuid
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   application           String?
   quoteSupplierCode     Int?                @map("quote_supplier_code")
   billingCompanyId      String?             @map("billing_company_id")

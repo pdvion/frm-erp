@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { withCodeRetry } from "../utils/next-code";
 
 export const transfersRouter = createTRPCRouter({
   list: tenantProcedure
@@ -66,21 +67,24 @@ export const transfersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Origem e destino devem ser diferentes" });
       }
 
-      const lastTransfer = await ctx.prisma.stockTransfer.findFirst({
-        where: tenantFilter(ctx.companyId, false),
-        orderBy: { code: "desc" },
-      });
+      return withCodeRetry(async (attempt) => {
+        const lastTransfer = await ctx.prisma.stockTransfer.findFirst({
+          where: tenantFilter(ctx.companyId, false),
+          orderBy: { code: "desc" },
+          select: { code: true },
+        });
 
-      return ctx.prisma.stockTransfer.create({
-        data: {
-          code: (lastTransfer?.code || 0) + 1,
-          companyId: ctx.companyId,
-          fromLocationId: input.fromLocationId,
-          toLocationId: input.toLocationId,
-          notes: input.notes,
-          requestedBy: ctx.tenant.userId,
-          items: { create: input.items },
-        },
+        return ctx.prisma.stockTransfer.create({
+          data: {
+            code: (lastTransfer?.code || 0) + 1 + attempt,
+            companyId: ctx.companyId,
+            fromLocationId: input.fromLocationId,
+            toLocationId: input.toLocationId,
+            notes: input.notes,
+            requestedBy: ctx.tenant.userId,
+            items: { create: input.items },
+          },
+        });
       });
     }),
 
