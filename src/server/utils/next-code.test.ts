@@ -42,7 +42,7 @@ describe("withCodeRetry", () => {
     });
     const createFn = vi.fn().mockRejectedValue(p2002Error);
 
-    await expect(withCodeRetry(createFn, 2)).rejects.toThrow("Unique constraint failed");
+    await expect(withCodeRetry(createFn, { maxRetries: 2 })).rejects.toThrow("Unique constraint failed");
     expect(createFn).toHaveBeenCalledTimes(3); // 0, 1, 2
   });
 
