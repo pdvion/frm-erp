@@ -125,7 +125,7 @@ export const admissionRouter = createTRPCRouter({
       positionId: z.string().optional(),
       departmentId: z.string().optional(),
       proposedSalary: z.number().optional(),
-      proposedStartDate: z.string().optional(),
+      proposedStartDate: z.coerce.date().optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
@@ -139,7 +139,7 @@ export const admissionRouter = createTRPCRouter({
           positionId: input.positionId,
           departmentId: input.departmentId,
           proposedSalary: input.proposedSalary,
-          proposedStartDate: input.proposedStartDate ? new Date(input.proposedStartDate) : undefined,
+          proposedStartDate: input.proposedStartDate ?? undefined,
           notes: input.notes,
           recruiterId: ctx.tenant.userId,
           totalSteps: DEFAULT_STEPS.length,
@@ -171,7 +171,7 @@ export const admissionRouter = createTRPCRouter({
       candidatePhone: z.string().optional(),
       candidateCpf: z.string().optional(),
       candidateRg: z.string().optional(),
-      candidateBirthDate: z.string().optional(),
+      candidateBirthDate: z.coerce.date().optional(),
       candidateGender: z.string().optional(),
       candidateMaritalStatus: z.string().optional(),
       candidateMobile: z.string().optional(),
@@ -185,7 +185,7 @@ export const admissionRouter = createTRPCRouter({
       positionId: z.string().optional(),
       departmentId: z.string().optional(),
       proposedSalary: z.number().optional(),
-      proposedStartDate: z.string().optional(),
+      proposedStartDate: z.coerce.date().optional(),
       contractType: z.string().optional(),
       workHoursPerDay: z.number().optional(),
       workDaysPerWeek: z.number().optional(),
@@ -206,7 +206,7 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { id, proposedStartDate, candidateBirthDate, ...data } = input;
+      const { id, ...data } = input;
       
       const existing = await ctx.prisma.admissionProcess.findFirst({
         where: { id, companyId: ctx.companyId },
@@ -217,14 +217,17 @@ export const admissionRouter = createTRPCRouter({
       
       const updated = await ctx.prisma.admissionProcess.update({
         where: { id },
-        data: {
-          ...data,
-          proposedStartDate: proposedStartDate ? new Date(proposedStartDate) : undefined,
-          candidateBirthDate: candidateBirthDate ? new Date(candidateBirthDate) : undefined,
-        },
+        data,
       });
-      
-      await auditUpdate("AdmissionProcess", id, existing.candidateName, existing, updated, {
+
+      const PII_FIELDS = ["candidateBankAccount", "candidateBankAccountDigit", "candidatePixKey"] as const;
+      const redact = <T extends Record<string, unknown>>(obj: T): T => {
+        const copy = { ...obj };
+        for (const f of PII_FIELDS) if (f in copy) (copy as Record<string, unknown>)[f] = "[REDACTED]";
+        return copy;
+      };
+
+      await auditUpdate("AdmissionProcess", id, existing.candidateName, redact(existing), redact(updated), {
         userId: ctx.tenant.userId ?? undefined,
         companyId: ctx.companyId,
       });
@@ -285,6 +288,14 @@ export const admissionRouter = createTRPCRouter({
       fileUrl: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const doc = await ctx.prisma.admissionDocument.findFirst({
+        where: { id: input.documentId },
+        include: { admissionProcess: { select: { companyId: true } } },
+      });
+      if (!doc || doc.admissionProcess.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Documento não encontrado" });
+      }
+
       return ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
@@ -303,6 +314,14 @@ export const admissionRouter = createTRPCRouter({
       rejectionReason: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const doc = await ctx.prisma.admissionDocument.findFirst({
+        where: { id: input.documentId },
+        include: { admissionProcess: { select: { companyId: true } } },
+      });
+      if (!doc || doc.admissionProcess.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Documento não encontrado" });
+      }
+
       return ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
@@ -320,16 +339,23 @@ export const admissionRouter = createTRPCRouter({
       admissionId: z.string().uuid(),
       examType: z.string().default("ADMISSIONAL"),
       clinicName: z.string().optional(),
-      scheduledDate: z.string(),
+      scheduledDate: z.coerce.date(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.admissionId, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
       return ctx.prisma.admissionExam.create({
         data: {
           admissionId: input.admissionId,
           examType: input.examType,
           clinicName: input.clinicName,
-          scheduledDate: new Date(input.scheduledDate),
+          scheduledDate: input.scheduledDate,
           notes: input.notes,
         },
       });
@@ -342,10 +368,18 @@ export const admissionRouter = createTRPCRouter({
       result: examResultEnum,
       asoNumber: z.string().optional(),
       asoUrl: z.string().optional(),
-      validUntil: z.string().optional(),
+      validUntil: z.coerce.date().optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const exam = await ctx.prisma.admissionExam.findFirst({
+        where: { id: input.examId },
+        include: { admissionProcess: { select: { companyId: true } } },
+      });
+      if (!exam || exam.admissionProcess.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Exame não encontrado" });
+      }
+
       return ctx.prisma.admissionExam.update({
         where: { id: input.examId },
         data: {
@@ -353,7 +387,7 @@ export const admissionRouter = createTRPCRouter({
           completedDate: new Date(),
           asoNumber: input.asoNumber,
           asoUrl: input.asoUrl,
-          validUntil: input.validUntil ? new Date(input.validUntil) : undefined,
+          validUntil: input.validUntil ?? undefined,
           notes: input.notes,
         },
       });
@@ -366,6 +400,14 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const existingStep = await ctx.prisma.admissionStep.findFirst({
+        where: { id: input.stepId },
+        include: { admissionProcess: { select: { companyId: true } } },
+      });
+      if (!existingStep || existingStep.admissionProcess.companyId !== ctx.companyId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Etapa não encontrada" });
+      }
+
       const step = await ctx.prisma.admissionStep.update({
         where: { id: input.stepId },
         data: {
