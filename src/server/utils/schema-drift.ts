@@ -61,6 +61,7 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
     const lines = content.split("\n");
 
     let currentModel: PrismaModel | null = null;
+    let modelIgnored = false;
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -69,21 +70,31 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
       const modelMatch = trimmed.match(/^model\s+(\w+)\s*\{/);
       if (modelMatch) {
         currentModel = { name: modelMatch[1], tableName: "", fields: [] };
+        modelIgnored = false;
         continue;
       }
 
       // End of model
       if (trimmed === "}" && currentModel) {
-        // If no @@map, Prisma uses the model name as table name
-        if (!currentModel.tableName) {
-          currentModel.tableName = currentModel.name;
+        if (!modelIgnored) {
+          // If no @@map, Prisma uses the model name as table name
+          if (!currentModel.tableName) {
+            currentModel.tableName = currentModel.name;
+          }
+          models.push(currentModel);
         }
-        models.push(currentModel);
         currentModel = null;
+        modelIgnored = false;
         continue;
       }
 
       if (!currentModel) continue;
+
+      // @@ignore — skip entire model
+      if (trimmed === "@@ignore") {
+        modelIgnored = true;
+        continue;
+      }
 
       // @@map("table_name")
       const mapMatch = trimmed.match(/@@map\("([^"]+)"\)/);
@@ -108,6 +119,12 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
 
       const [, fieldName, fieldType, isArray, optional] = fieldMatch;
 
+      // Skip @ignore fields
+      if (trimmed.includes("@ignore")) continue;
+
+      // Guard against empty fieldType
+      if (!fieldType || fieldType.length === 0) continue;
+
       // Detect relations:
       // - Has @relation directive
       // - Is an array type of a non-scalar (e.g. Employee[] is relation, but String[] is scalar list)
@@ -115,7 +132,7 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
       const isRelation =
         (!!isArray && !PRISMA_PRIMITIVE_TYPES.includes(fieldType as typeof PRISMA_PRIMITIVE_TYPES[number])) ||
         trimmed.includes("@relation") ||
-        (fieldType.length > 0 && fieldType[0] === fieldType[0].toUpperCase() && !PRISMA_PRIMITIVE_TYPES.includes(fieldType as typeof PRISMA_PRIMITIVE_TYPES[number]));
+        (fieldType[0] === fieldType[0].toUpperCase() && !PRISMA_PRIMITIVE_TYPES.includes(fieldType as typeof PRISMA_PRIMITIVE_TYPES[number]));
 
       // Get @map column name if present
       const colMapMatch = trimmed.match(/@map\("([^"]+)"\)/);
