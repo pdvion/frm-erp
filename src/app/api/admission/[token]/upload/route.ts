@@ -11,18 +11,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@supabase/supabase-js";
+import {
+  validateUploadFile,
+  generateStoragePath,
+  isTokenExpired,
+  isAdmissionClosed,
+} from "@/server/services/admission-portal";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const BUCKET_NAME = "admission-documents";
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-];
 
 function getSupabaseAdmin() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
@@ -49,11 +47,11 @@ export async function POST(
       return NextResponse.json({ error: "Processo não encontrado" }, { status: 404 });
     }
 
-    if (admission.tokenExpiresAt && admission.tokenExpiresAt < new Date()) {
+    if (isTokenExpired(admission.tokenExpiresAt)) {
       return NextResponse.json({ error: "Link expirado. Solicite um novo link ao RH." }, { status: 410 });
     }
 
-    if (admission.status === "COMPLETED" || admission.status === "CANCELLED" || admission.status === "REJECTED") {
+    if (isAdmissionClosed(admission.status ?? "")) {
       return NextResponse.json({ error: "Este processo não aceita mais alterações." }, { status: 403 });
     }
 
@@ -65,14 +63,9 @@ export async function POST(
       return NextResponse.json({ error: "Arquivo e documentId são obrigatórios" }, { status: 400 });
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: "Arquivo excede o tamanho máximo de 10MB" }, { status: 400 });
-    }
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({
-        error: `Tipo de arquivo não permitido. Aceitos: PDF, JPEG, PNG, WebP`,
-      }, { status: 400 });
+    const fileValidation = validateUploadFile(file.size, file.type);
+    if (!fileValidation.valid) {
+      return NextResponse.json({ error: fileValidation.error }, { status: 400 });
     }
 
     // Verify document belongs to this admission
@@ -86,8 +79,7 @@ export async function POST(
 
     // Upload to Supabase Storage
     const supabase = getSupabaseAdmin();
-    const ext = file.name.split(".").pop() || "pdf";
-    const storagePath = `${admission.companyId}/${admission.id}/${documentId}.${ext}`;
+    const storagePath = generateStoragePath(admission.companyId, admission.id, documentId, file.name);
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
