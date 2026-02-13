@@ -13,6 +13,7 @@ import {
   calculateMonthsWorkedInYear,
   calculateWorkingDays,
   MINIMUM_WAGE_2024,
+  type InsalubrityDegree,
 } from "./payroll";
 import type {
   PayrollCalculationOptions,
@@ -154,6 +155,10 @@ describe("Payroll calculation functions", () => {
 
     it("should return 0 for null degree", () => {
       expect(calculateInsalubrity(5000, MINIMUM_WAGE_2024, null)).toBe(0);
+    });
+
+    it("should return 0 for invalid degree instead of NaN", () => {
+      expect(calculateInsalubrity(5000, MINIMUM_WAGE_2024, "INVALID" as InsalubrityDegree)).toBe(0);
     });
   });
 

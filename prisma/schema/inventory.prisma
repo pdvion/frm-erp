@@ -1,6 +1,6 @@
 model Material {
   id                          String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                        Int                       @unique
   internalCode                String?
   description                 String
@@ -18,8 +18,8 @@ model Material {
   companyId                   String                    @db.Uuid
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   isShared                    Boolean                   @default(false)
   purchaseUnit                String?                   @map("purchase_unit")
   unitConversionFactor        Decimal?                    @db.Decimal(10, 4) @default(1) @map("unit_conversion_factor")
@@ -104,7 +104,7 @@ model Material {
 
 model Inventory {
   id                       String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   materialId               String              @db.Uuid
   companyId                String              @db.Uuid
   inventoryType            InventoryType       @default(RAW_MATERIAL)
@@ -203,7 +203,7 @@ model StockReservation {
 
 model StockLocation {
   id                  String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                String
   name                String
   description         String?
