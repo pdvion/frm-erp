@@ -189,6 +189,10 @@ export const impexRouter = createTRPCRouter({
       return ctx.prisma.cargoType.findMany({
         where: {
           ...(isActive !== undefined && { isActive }),
+          OR: [
+            { companyId: ctx.companyId },
+            { isShared: true },
+          ],
         },
         orderBy: { code: "asc" },
       });
@@ -205,7 +209,10 @@ export const impexRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.cargoType.create({
-        data: input,
+        data: {
+          ...input,
+          companyId: input.isShared ? null : ctx.companyId,
+        },
       });
     }),
 
@@ -221,6 +228,12 @@ export const impexRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
+      const existing = await ctx.prisma.cargoType.findFirst({
+        where: { id, OR: [{ companyId: ctx.companyId }, { isShared: true }] },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado" });
+      }
       return ctx.prisma.cargoType.update({
         where: { id },
         data,
@@ -230,6 +243,12 @@ export const impexRouter = createTRPCRouter({
   deleteCargoType: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.prisma.cargoType.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado" });
+      }
       return ctx.prisma.cargoType.delete({
         where: { id: input.id },
       });
@@ -251,6 +270,10 @@ export const impexRouter = createTRPCRouter({
       return ctx.prisma.incoterm.findMany({
         where: {
           ...(isActive !== undefined && { isActive }),
+          OR: [
+            { companyId: ctx.companyId },
+            { isShared: true },
+          ],
         },
         orderBy: { code: "asc" },
       });
@@ -267,7 +290,10 @@ export const impexRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.incoterm.create({
-        data: input,
+        data: {
+          ...input,
+          companyId: input.isShared ? null : ctx.companyId,
+        },
       });
     }),
 
@@ -283,6 +309,12 @@ export const impexRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
+      const existing = await ctx.prisma.incoterm.findFirst({
+        where: { id, OR: [{ companyId: ctx.companyId }, { isShared: true }] },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado" });
+      }
       return ctx.prisma.incoterm.update({
         where: { id },
         data,
@@ -292,6 +324,12 @@ export const impexRouter = createTRPCRouter({
   deleteIncoterm: tenantProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.prisma.incoterm.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado" });
+      }
       return ctx.prisma.incoterm.delete({
         where: { id: input.id },
       });
