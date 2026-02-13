@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
+import { calculateTokenExpiry } from "../services/admission-portal";
 
 // Constants
 const MAX_PAGE_SIZE = 100;
@@ -220,7 +221,14 @@ export const admissionRouter = createTRPCRouter({
         data,
       });
 
-      const PII_FIELDS = ["candidateBankAccount", "candidateBankAccountDigit", "candidatePixKey"] as const;
+      const PII_FIELDS = [
+        "candidateCpf", "candidateRg",
+        "candidateBankAccount", "candidateBankAccountDigit", "candidatePixKey",
+        "candidateAddress", "candidateAddressNumber", "candidateAddressComplement",
+        "candidateAddressNeighborhood", "candidateAddressCity", "candidateAddressState", "candidateAddressZipCode",
+        "candidateEmail", "candidatePhone", "candidateMobile",
+        "candidatePis", "candidateCtps", "candidateCtpsSeries",
+      ] as const;
       const redact = <T extends Record<string, unknown>>(obj: T): T => {
         const copy = { ...obj };
         for (const f of PII_FIELDS) if (f in copy) (copy as Record<string, unknown>)[f] = "[REDACTED]";
@@ -249,8 +257,7 @@ export const admissionRouter = createTRPCRouter({
       }
 
       const token = crypto.randomUUID();
-      const tokenExpiresAt = new Date();
-      tokenExpiresAt.setDate(tokenExpiresAt.getDate() + input.expiresInDays);
+      const tokenExpiresAt = calculateTokenExpiry({ expiresInDays: input.expiresInDays });
 
       const updated = await ctx.prisma.admissionProcess.update({
         where: { id: input.id },
@@ -314,6 +321,10 @@ export const admissionRouter = createTRPCRouter({
       rejectionReason: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      if (!input.approved && !input.rejectionReason?.trim()) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Informe o motivo da rejeição" });
+      }
+
       const doc = await ctx.prisma.admissionDocument.findFirst({
         where: { id: input.documentId },
         include: { admissionProcess: { select: { companyId: true } } },
@@ -406,6 +417,20 @@ export const admissionRouter = createTRPCRouter({
       });
       if (!existingStep || existingStep.admissionProcess.companyId !== ctx.companyId) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Etapa não encontrada" });
+      }
+
+      if (existingStep.stepType === "DOCUMENT") {
+        const [requiredTotal, verifiedTotal] = await Promise.all([
+          ctx.prisma.admissionDocument.count({
+            where: { admissionId: existingStep.admissionId, isRequired: true },
+          }),
+          ctx.prisma.admissionDocument.count({
+            where: { admissionId: existingStep.admissionId, isRequired: true, status: "VERIFIED" },
+          }),
+        ]);
+        if (verifiedTotal < requiredTotal) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Documentos obrigatórios pendentes de verificação" });
+        }
       }
 
       const step = await ctx.prisma.admissionStep.update({
