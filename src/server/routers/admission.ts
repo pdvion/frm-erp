@@ -170,17 +170,44 @@ export const admissionRouter = createTRPCRouter({
       candidateEmail: z.string().optional(),
       candidatePhone: z.string().optional(),
       candidateCpf: z.string().optional(),
+      candidateRg: z.string().optional(),
+      candidateBirthDate: z.string().optional(),
+      candidateGender: z.string().optional(),
+      candidateMaritalStatus: z.string().optional(),
+      candidateMobile: z.string().optional(),
+      candidateAddress: z.string().optional(),
+      candidateAddressNumber: z.string().optional(),
+      candidateAddressComplement: z.string().optional(),
+      candidateAddressNeighborhood: z.string().optional(),
+      candidateAddressCity: z.string().optional(),
+      candidateAddressState: z.string().optional(),
+      candidateAddressZipCode: z.string().optional(),
       positionId: z.string().optional(),
       departmentId: z.string().optional(),
       proposedSalary: z.number().optional(),
       proposedStartDate: z.string().optional(),
+      contractType: z.string().optional(),
+      workHoursPerDay: z.number().optional(),
+      workDaysPerWeek: z.number().optional(),
       managerId: z.string().optional(),
+      candidatePis: z.string().optional(),
+      candidateCtps: z.string().optional(),
+      candidateCtpsSeries: z.string().optional(),
+      candidateVoterRegistration: z.string().optional(),
+      candidateMilitaryService: z.string().optional(),
+      candidateBankName: z.string().optional(),
+      candidateBankCode: z.string().optional(),
+      candidateBankBranch: z.string().optional(),
+      candidateBankAgency: z.string().optional(),
+      candidateBankAccount: z.string().optional(),
+      candidateBankAccountDigit: z.string().optional(),
+      candidateBankAccountType: z.string().optional(),
+      candidatePixKey: z.string().optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { id, proposedStartDate, ...data } = input;
+      const { id, proposedStartDate, candidateBirthDate, ...data } = input;
       
-      // Validate tenant ownership
       const existing = await ctx.prisma.admissionProcess.findFirst({
         where: { id, companyId: ctx.companyId },
       });
@@ -193,6 +220,7 @@ export const admissionRouter = createTRPCRouter({
         data: {
           ...data,
           proposedStartDate: proposedStartDate ? new Date(proposedStartDate) : undefined,
+          candidateBirthDate: candidateBirthDate ? new Date(candidateBirthDate) : undefined,
         },
       });
       
@@ -201,6 +229,53 @@ export const admissionRouter = createTRPCRouter({
         companyId: ctx.companyId,
       });
       return updated;
+    }),
+
+  // Gerar token de acesso para portal do candidato
+  generateToken: tenantProcedure
+    .input(z.object({
+      id: z.string().uuid(),
+      expiresInDays: z.number().min(1).max(90).default(7),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
+      const token = crypto.randomUUID();
+      const tokenExpiresAt = new Date();
+      tokenExpiresAt.setDate(tokenExpiresAt.getDate() + input.expiresInDays);
+
+      const updated = await ctx.prisma.admissionProcess.update({
+        where: { id: input.id },
+        data: { accessToken: token, tokenExpiresAt },
+      });
+
+      return {
+        accessToken: updated.accessToken,
+        tokenExpiresAt: updated.tokenExpiresAt,
+        portalUrl: `/admission/portal/${token}`,
+      };
+    }),
+
+  // Revogar token de acesso
+  revokeToken: tenantProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
+      return ctx.prisma.admissionProcess.update({
+        where: { id: input.id },
+        data: { accessToken: null, tokenExpiresAt: null },
+      });
     }),
 
   // Upload de documento
