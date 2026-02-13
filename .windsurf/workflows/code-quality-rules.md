@@ -192,7 +192,7 @@ return {
 
 Este é o bug mais grave já encontrado no projeto: PRs #39 e #43 adicionaram `legacyId`, `deletedAt`, `deletedBy` ao schema Prisma mas **sem migration SQL**. Resultado: testes passaram (usam mocks), CI passou, mas o banco real ficou dessincronizado, causando 500 errors em produção.
 
-```
+```bash
 # ❌ ERRADO — alterar schema sem migration
 1. Editar prisma/schema/xxx.prisma (adicionar campo)
 2. pnpm prisma generate

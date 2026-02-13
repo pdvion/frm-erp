@@ -30,11 +30,18 @@ describe.skipIf(!shouldRun)("Schema Drift Detection (Integration)", () => {
   let driftIssues: DriftIssue[];
 
   beforeAll(async () => {
-    pool = new pg.Pool({
-      connectionString: DATABASE_URL,
-      max: 3,
-      connectionTimeoutMillis: 10000,
-    });
+    try {
+      pool = new pg.Pool({
+        connectionString: DATABASE_URL,
+        max: 3,
+        connectionTimeoutMillis: 10000,
+      });
+      // Verify connection is working
+      await pool.query("SELECT 1");
+    } catch (error) {
+      console.error(`Failed to connect to database. Check DATABASE_URL in .env: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
 
     async function queryFn(sql: string, params: string[]): Promise<unknown[]> {
       const result = await pool.query(sql, params);
@@ -83,6 +90,8 @@ describe.skipIf(!shouldRun)("Schema Drift Detection (Integration)", () => {
       console.warn(`\n⚠️  EXTRA DB COLUMNS (${extraColumns.length}) — not blocking:\n${details}\n`);
     }
     // This is informational only — extra columns don't break anything
+    // Verify all filtered items are of the correct type
+    expect(extraColumns.every((i) => i.type === "extra_column")).toBe(true);
   });
 
   it("should parse all schema models successfully", () => {

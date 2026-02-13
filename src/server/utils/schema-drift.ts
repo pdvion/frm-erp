@@ -9,9 +9,18 @@ import path from "path";
  *
  * This catches the exact class of bug where schema.prisma is updated
  * but no SQL migration is applied to the database.
+ *
+ * NOTE: This utility intentionally uses pg.Pool (not PrismaClient) because:
+ * 1. vitest.setup.ts globally mocks @/lib/prisma, making PrismaClient unusable in tests
+ * 2. Prisma v7 changed the constructor API, adding more mock complexity
+ * 3. pg.Pool connects directly to the real DB, bypassing all mock interference
  */
 
-interface PrismaField {
+export const PRISMA_PRIMITIVE_TYPES = [
+  "String", "Int", "Float", "Decimal", "Boolean", "DateTime", "Json", "BigInt", "Bytes",
+] as const;
+
+export interface PrismaField {
   name: string;
   dbColumn: string;
   type: string;
@@ -19,7 +28,7 @@ interface PrismaField {
   isRelation: boolean;
 }
 
-interface PrismaModel {
+export interface PrismaModel {
   name: string;
   tableName: string;
   fields: PrismaField[];
@@ -101,13 +110,12 @@ export function parsePrismaSchema(schemaDir: string): PrismaModel[] {
 
       // Detect relations:
       // - Has @relation directive
-      // - Is an array type (Type[]) — always a relation
+      // - Is an array type of a non-scalar (e.g. Employee[] is relation, but String[] is scalar list)
       // - Type starts with uppercase and is not a scalar Prisma type
-      const scalarTypes = ["String", "Int", "Float", "Decimal", "Boolean", "DateTime", "Json", "BigInt", "Bytes"];
       const isRelation =
-        !!isArray ||
+        (!!isArray && !PRISMA_PRIMITIVE_TYPES.includes(fieldType as typeof PRISMA_PRIMITIVE_TYPES[number])) ||
         trimmed.includes("@relation") ||
-        (fieldType[0] === fieldType[0].toUpperCase() && !scalarTypes.includes(fieldType));
+        (fieldType.length > 0 && fieldType[0] === fieldType[0].toUpperCase() && !PRISMA_PRIMITIVE_TYPES.includes(fieldType as typeof PRISMA_PRIMITIVE_TYPES[number]));
 
       // Get @map column name if present
       const colMapMatch = trimmed.match(/@map\("([^"]+)"\)/);

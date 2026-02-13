@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import path from "path";
-import { parsePrismaSchema } from "./schema-drift";
+import { parsePrismaSchema, PRISMA_PRIMITIVE_TYPES } from "./schema-drift";
 
 /**
  * Unit tests for the schema parser (no DB connection needed).
@@ -25,11 +25,10 @@ describe("parsePrismaSchema", () => {
     const company = models.find((m) => m.name === "Company");
     expect(company).toBeDefined();
 
+    // legacyId has @map("legacy_id") — stable field for testing @map extraction
     const legacyId = company!.fields.find((f) => f.name === "legacyId");
-    if (legacyId) {
-      // If legacyId has @map, dbColumn should be the mapped name
-      expect(legacyId.dbColumn).toBeDefined();
-    }
+    expect(legacyId).toBeDefined();
+    expect(legacyId!.dbColumn).toBe("legacy_id");
   });
 
   it("should identify relation fields", () => {
@@ -49,7 +48,7 @@ describe("parsePrismaSchema", () => {
     const nonRelations = company!.fields.filter((f) => !f.isRelation);
     // All non-relation fields should have simple types
     for (const field of nonRelations) {
-      expect(["String", "Int", "Float", "Decimal", "Boolean", "DateTime", "Json", "BigInt", "Bytes"]).toContain(
+      expect([...PRISMA_PRIMITIVE_TYPES]).toContain(
         field.type,
       );
     }
