@@ -474,6 +474,13 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
       return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
@@ -490,6 +497,13 @@ export const admissionRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
       return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
@@ -561,6 +575,13 @@ export const admissionRouter = createTRPCRouter({
       reason: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
+      const admission = await ctx.prisma.admissionProcess.findFirst({
+        where: { id: input.id, companyId: ctx.companyId },
+      });
+      if (!admission) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
+      }
+
       return ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
