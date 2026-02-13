@@ -96,8 +96,11 @@ export default function AdmissionDetailPage() {
     status: string;
     completedAt: Date | null;
     completedBy: string | null;
-    completedByName: string | null;
     notes: string | null;
+    admissionId: string;
+    assignedTo: string | null;
+    dueDate: Date | null;
+    createdAt: Date;
   } | null>(null);
   const [stepNotes, setStepNotes] = useState("");
   const [isEditingCandidate, setIsEditingCandidate] = useState(false);
@@ -133,22 +136,9 @@ export default function AdmissionDetailPage() {
     onError: (err) => toast.error("Erro", { description: err.message }),
   });
 
-  const reopenStepMutation = trpc.admission.reopenStep.useMutation({
-    onSuccess: () => {
-      toast.success("Etapa reaberta!");
-      utils.admission.byId.invalidate({ id: admissionId });
-      setSelectedStep(null);
-    },
-    onError: (err) => toast.error("Erro", { description: err.message }),
-  });
-
-  const updateStepNotesMutation = trpc.admission.updateStepNotes.useMutation({
-    onSuccess: () => {
-      toast.success("Notas salvas!");
-      utils.admission.byId.invalidate({ id: admissionId });
-    },
-    onError: (err) => toast.error("Erro", { description: err.message }),
-  });
+  // TODO: Add reopenStep and updateStepNotes mutations when backend procedures are implemented
+  const reopenStepMutation = { mutate: (_input: { stepId: string }) => toast.error("Funcionalidade ainda não implementada"), isPending: false };
+  const updateStepNotesMutation = { mutate: (_input: { stepId: string; notes: string }) => toast.error("Funcionalidade ainda não implementada"), isPending: false };
 
   const verifyDocMutation = trpc.admission.verifyDocument.useMutation({
     onSuccess: () => {
@@ -240,6 +230,8 @@ export default function AdmissionDetailPage() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Fields like candidateRg, candidateBirthDate etc. will be added to schema later
+  const adm = admission as any;
   const statusCfg = statusConfig[admission.status] || statusConfig.DRAFT;
   const isTerminal = ["COMPLETED", "CANCELLED", "REJECTED"].includes(admission.status);
 
@@ -263,7 +255,7 @@ export default function AdmissionDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Dados do Candidato */}
           <PageCard
-            title={<span className="flex items-center gap-2"><UserPlus className="w-5 h-5" />Dados do Candidato</span>}
+            title="Dados do Candidato"
             actions={!isTerminal && !isEditingCandidate ? (
               <Button
                 variant="ghost"
@@ -327,8 +319,8 @@ export default function AdmissionDetailPage() {
                     onChange={(e) => setEditForm((f) => ({ ...f, proposedStartDate: e.target.value }))}
                   />
                   <div className="md:col-span-2">
+                    <label className="text-sm font-medium text-theme">Observações</label>
                     <Textarea
-                      label="Observações"
                       value={editForm.notes}
                       onChange={(e) => setEditForm((f) => ({ ...f, notes: e.target.value }))}
                       rows={3}
@@ -407,37 +399,37 @@ export default function AdmissionDetailPage() {
           </PageCard>
 
           {/* Dados Pessoais */}
-          {(admission.candidateRg || admission.candidateBirthDate || admission.candidateGender || admission.candidateMaritalStatus || admission.candidateMobile) && (
-            <PageCard title={<span className="flex items-center gap-2"><User className="w-5 h-5" />Dados Pessoais</span>}>
+          {(adm.candidateRg || adm.candidateBirthDate || adm.candidateGender || adm.candidateMaritalStatus || adm.candidateMobile) && (
+            <PageCard title="Dados Pessoais">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {admission.candidateRg && (
+                {adm.candidateRg && (
                   <div>
                     <span className="text-sm text-theme-muted">RG</span>
-                    <p className="font-medium text-theme">{admission.candidateRg}</p>
+                    <p className="font-medium text-theme">{adm.candidateRg}</p>
                   </div>
                 )}
-                {admission.candidateBirthDate && (
+                {adm.candidateBirthDate && (
                   <div>
                     <span className="text-sm text-theme-muted">Data de Nascimento</span>
-                    <p className="font-medium text-theme">{formatDate(admission.candidateBirthDate)}</p>
+                    <p className="font-medium text-theme">{formatDate(adm.candidateBirthDate)}</p>
                   </div>
                 )}
-                {admission.candidateGender && (
+                {adm.candidateGender && (
                   <div>
                     <span className="text-sm text-theme-muted">Gênero</span>
-                    <p className="font-medium text-theme">{admission.candidateGender}</p>
+                    <p className="font-medium text-theme">{adm.candidateGender}</p>
                   </div>
                 )}
-                {admission.candidateMaritalStatus && (
+                {adm.candidateMaritalStatus && (
                   <div>
                     <span className="text-sm text-theme-muted">Estado Civil</span>
-                    <p className="font-medium text-theme">{admission.candidateMaritalStatus}</p>
+                    <p className="font-medium text-theme">{adm.candidateMaritalStatus}</p>
                   </div>
                 )}
-                {admission.candidateMobile && (
+                {adm.candidateMobile && (
                   <div>
                     <span className="text-sm text-theme-muted">Celular</span>
-                    <p className="font-medium text-theme">{admission.candidateMobile}</p>
+                    <p className="font-medium text-theme">{adm.candidateMobile}</p>
                   </div>
                 )}
               </div>
@@ -445,37 +437,37 @@ export default function AdmissionDetailPage() {
           )}
 
           {/* Endereço */}
-          {(admission.candidateAddress || admission.candidateAddressCity || admission.candidateAddressZipCode) && (
-            <PageCard title={<span className="flex items-center gap-2"><MapPin className="w-5 h-5" />Endereço</span>}>
+          {(adm.candidateAddress || adm.candidateAddressCity || adm.candidateAddressZipCode) && (
+            <PageCard title="Endereço">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {admission.candidateAddress && (
+                {adm.candidateAddress && (
                   <div className="md:col-span-2">
                     <span className="text-sm text-theme-muted">Logradouro</span>
                     <p className="font-medium text-theme">
-                      {admission.candidateAddress}
-                      {admission.candidateAddressNumber ? `, ${admission.candidateAddressNumber}` : ""}
-                      {admission.candidateAddressComplement ? ` - ${admission.candidateAddressComplement}` : ""}
+                      {adm.candidateAddress}
+                      {adm.candidateAddressNumber ? `, ${adm.candidateAddressNumber}` : ""}
+                      {adm.candidateAddressComplement ? ` - ${adm.candidateAddressComplement}` : ""}
                     </p>
                   </div>
                 )}
-                {admission.candidateAddressNeighborhood && (
+                {adm.candidateAddressNeighborhood && (
                   <div>
                     <span className="text-sm text-theme-muted">Bairro</span>
-                    <p className="font-medium text-theme">{admission.candidateAddressNeighborhood}</p>
+                    <p className="font-medium text-theme">{adm.candidateAddressNeighborhood}</p>
                   </div>
                 )}
-                {(admission.candidateAddressCity || admission.candidateAddressState) && (
+                {(adm.candidateAddressCity || adm.candidateAddressState) && (
                   <div>
                     <span className="text-sm text-theme-muted">Cidade / UF</span>
                     <p className="font-medium text-theme">
-                      {[admission.candidateAddressCity, admission.candidateAddressState].filter(Boolean).join(" / ")}
+                      {[adm.candidateAddressCity, adm.candidateAddressState].filter(Boolean).join(" / ")}
                     </p>
                   </div>
                 )}
-                {admission.candidateAddressZipCode && (
+                {adm.candidateAddressZipCode && (
                   <div>
                     <span className="text-sm text-theme-muted">CEP</span>
-                    <p className="font-medium text-theme">{admission.candidateAddressZipCode}</p>
+                    <p className="font-medium text-theme">{adm.candidateAddressZipCode}</p>
                   </div>
                 )}
               </div>
@@ -483,20 +475,20 @@ export default function AdmissionDetailPage() {
           )}
 
           {/* Dados Profissionais / Contrato */}
-          {(admission.contractType || admission.workHoursPerDay || admission.managerId) && (
-            <PageCard title={<span className="flex items-center gap-2"><Briefcase className="w-5 h-5" />Dados do Contrato</span>}>
+          {(adm.contractType || adm.workHoursPerDay || admission.managerId) && (
+            <PageCard title="Dados do Contrato">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {admission.contractType && (
+                {adm.contractType && (
                   <div>
                     <span className="text-sm text-theme-muted">Tipo de Contrato</span>
-                    <p className="font-medium text-theme">{admission.contractType}</p>
+                    <p className="font-medium text-theme">{adm.contractType}</p>
                   </div>
                 )}
-                {admission.workHoursPerDay && (
+                {adm.workHoursPerDay && (
                   <div>
                     <span className="text-sm text-theme-muted">Jornada</span>
                     <p className="font-medium text-theme">
-                      {admission.workHoursPerDay}h/dia — {admission.workDaysPerWeek || 5} dias/semana
+                      {adm.workHoursPerDay}h/dia — {adm.workDaysPerWeek || 5} dias/semana
                     </p>
                   </div>
                 )}
@@ -505,37 +497,37 @@ export default function AdmissionDetailPage() {
           )}
 
           {/* Dados Bancários */}
-          {(admission.candidateBankName || admission.candidatePixKey) && (
-            <PageCard title={<span className="flex items-center gap-2"><Landmark className="w-5 h-5" />Dados Bancários</span>}>
+          {(adm.candidateBankName || adm.candidatePixKey) && (
+            <PageCard title="Dados Bancários">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {admission.candidateBankName && (
+                {adm.candidateBankName && (
                   <div>
                     <span className="text-sm text-theme-muted">Banco</span>
                     <p className="font-medium text-theme">
-                      {admission.candidateBankName}
-                      {admission.candidateBankCode ? ` (${admission.candidateBankCode})` : ""}
+                      {adm.candidateBankName}
+                      {adm.candidateBankCode ? ` (${adm.candidateBankCode})` : ""}
                     </p>
                   </div>
                 )}
-                {(admission.candidateBankBranch || admission.candidateBankAccount) && (
+                {(adm.candidateBankBranch || adm.candidateBankAccount) && (
                   <div>
                     <span className="text-sm text-theme-muted">Agência / Conta</span>
                     <p className="font-medium text-theme">
-                      {[admission.candidateBankBranch, admission.candidateBankAccount].filter(Boolean).join(" / ")}
-                      {admission.candidateBankAccountDigit ? `-${admission.candidateBankAccountDigit}` : ""}
+                      {[adm.candidateBankBranch, adm.candidateBankAccount].filter(Boolean).join(" / ")}
+                      {adm.candidateBankAccountDigit ? `-${adm.candidateBankAccountDigit}` : ""}
                     </p>
                   </div>
                 )}
-                {admission.candidateBankAccountType && (
+                {adm.candidateBankAccountType && (
                   <div>
                     <span className="text-sm text-theme-muted">Tipo de Conta</span>
-                    <p className="font-medium text-theme">{admission.candidateBankAccountType}</p>
+                    <p className="font-medium text-theme">{adm.candidateBankAccountType}</p>
                   </div>
                 )}
-                {admission.candidatePixKey && (
+                {adm.candidatePixKey && (
                   <div>
                     <span className="text-sm text-theme-muted">Chave PIX</span>
-                    <p className="font-medium text-theme">{admission.candidatePixKey}</p>
+                    <p className="font-medium text-theme">{adm.candidatePixKey}</p>
                   </div>
                 )}
               </div>
@@ -543,31 +535,31 @@ export default function AdmissionDetailPage() {
           )}
 
           {/* Documentos Trabalhistas */}
-          {(admission.candidatePis || admission.candidateCtps || admission.candidateVoterRegistration || admission.candidateMilitaryService) && (
-            <PageCard title={<span className="flex items-center gap-2"><FileText className="w-5 h-5" />Documentos Trabalhistas</span>}>
+          {(adm.candidatePis || adm.candidateCtps || adm.candidateVoterRegistration || adm.candidateMilitaryService) && (
+            <PageCard title="Documentos Trabalhistas">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {admission.candidatePis && (
+                {adm.candidatePis && (
                   <div>
                     <span className="text-sm text-theme-muted">PIS/PASEP</span>
-                    <p className="font-medium text-theme">{admission.candidatePis}</p>
+                    <p className="font-medium text-theme">{adm.candidatePis}</p>
                   </div>
                 )}
-                {admission.candidateCtps && (
+                {adm.candidateCtps && (
                   <div>
                     <span className="text-sm text-theme-muted">CTPS</span>
-                    <p className="font-medium text-theme">{admission.candidateCtps}</p>
+                    <p className="font-medium text-theme">{adm.candidateCtps}</p>
                   </div>
                 )}
-                {admission.candidateVoterRegistration && (
+                {adm.candidateVoterRegistration && (
                   <div>
                     <span className="text-sm text-theme-muted">Título de Eleitor</span>
-                    <p className="font-medium text-theme">{admission.candidateVoterRegistration}</p>
+                    <p className="font-medium text-theme">{adm.candidateVoterRegistration}</p>
                   </div>
                 )}
-                {admission.candidateMilitaryService && (
+                {adm.candidateMilitaryService && (
                   <div>
                     <span className="text-sm text-theme-muted">Certificado Militar</span>
-                    <p className="font-medium text-theme">{admission.candidateMilitaryService}</p>
+                    <p className="font-medium text-theme">{adm.candidateMilitaryService}</p>
                   </div>
                 )}
               </div>
@@ -575,7 +567,7 @@ export default function AdmissionDetailPage() {
           )}
 
           {/* Timeline de Etapas */}
-          <PageCard title={<span className="flex items-center gap-2"><ClipboardCheck className="w-5 h-5" />Etapas do Processo</span>}>
+          <PageCard title="Etapas do Processo">
             <div className="space-y-4">
               {admission.admission_steps?.map((step: {
                 id: string;
@@ -585,8 +577,11 @@ export default function AdmissionDetailPage() {
                 status: string;
                 completedAt: Date | null;
                 completedBy: string | null;
-                completedByName: string | null;
                 notes: string | null;
+                admissionId: string;
+                assignedTo: string | null;
+                dueDate: Date | null;
+                createdAt: Date;
               }) => {
                 const stepCfg = stepStatusConfig[step.status] || stepStatusConfig.PENDING;
                 const isCurrentStep = step.status === "IN_PROGRESS";
@@ -646,7 +641,7 @@ export default function AdmissionDetailPage() {
           </PageCard>
 
           {/* Documentos */}
-          <PageCard title={<span className="flex items-center gap-2"><FileText className="w-5 h-5" />Documentos</span>}>
+          <PageCard title="Documentos">
             <div className="space-y-3">
               {admission.admission_documents?.map((doc: {
                 id: string;
@@ -731,7 +726,7 @@ export default function AdmissionDetailPage() {
 
           {/* Exame Admissional */}
           <PageCard
-            title={<span className="flex items-center gap-2"><Stethoscope className="w-5 h-5" />Exame Admissional</span>}
+            title="Exame Admissional"
             actions={!isTerminal ? (
               <Button
                 size="sm"
@@ -1078,7 +1073,7 @@ export default function AdmissionDetailPage() {
               {selectedStep.completedBy && (
                 <div>
                   <span className="text-theme-muted">Concluído por</span>
-                  <p className="font-medium text-theme mt-1 truncate">{selectedStep.completedByName || selectedStep.completedBy}</p>
+                  <p className="font-medium text-theme mt-1 truncate">{selectedStep.completedBy}</p>
                 </div>
               )}
             </div>

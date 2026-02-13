@@ -583,10 +583,10 @@ function EventsTab(props: EventsTabProps) {
                 </div>
 
                 {/* Expanded XML */}
-                {isExpanded && event.xmlContent && (
+                {isExpanded && Boolean(event.xmlContent) && (
                   <div className="border-t border-theme bg-gray-50 dark:bg-gray-900/50 p-4">
                     <pre className="text-xs text-theme-secondary overflow-x-auto whitespace-pre-wrap max-h-64 overflow-y-auto font-mono">
-                      {String(event.xmlContent)}
+                      {String(event.xmlContent as string)}
                     </pre>
                   </div>
                 )}
@@ -779,8 +779,8 @@ function ConfigTab({
 
       <div className="space-y-4">
         <div>
+          <label className="block text-sm font-medium text-theme mb-1">Ambiente</label>
           <Select
-            label="Ambiente"
             value={env}
             onChange={(value) => setEnv(value)}
             options={[
@@ -917,16 +917,16 @@ function GenerateModal({
           <div className="space-y-4">
             <div className="flex gap-3">
               <div className="flex-1">
+                <label className="block text-xs font-medium text-theme-secondary mb-1">Mês</label>
                 <Select
-                  label="Mês"
                   value={String(genMonth)}
                   onChange={(value) => setGenMonth(Number(value))}
                   options={months.map((m, i) => ({ value: String(i + 1), label: m }))}
                 />
               </div>
               <div className="w-24">
+                <label className="block text-xs font-medium text-theme-secondary mb-1">Ano</label>
                 <Select
-                  label="Ano"
                   value={String(genYear)}
                   onChange={(value) => setGenYear(Number(value))}
                   options={[2024, 2025, 2026].map(y => ({ value: String(y), label: String(y) }))}
