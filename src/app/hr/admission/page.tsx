@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -36,6 +37,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 };
 
 export default function AdmissionPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(1);
@@ -176,7 +178,7 @@ export default function AdmissionPage() {
                       {admissions.admissions.map((admission) => {
                         const statusCfg = statusConfig[admission.status] || statusConfig.DRAFT;
                         return (
-                          <tr key={admission.id} className="hover:bg-theme-hover">
+                          <tr key={admission.id} className="hover:bg-theme-hover cursor-pointer" onClick={() => router.push(`/hr/admission/${admission.id}`)}>
                             <td className="px-4 py-3 font-mono text-sm">
                               #{admission.code}
                             </td>
