@@ -66,8 +66,8 @@ export default function TimesheetPage() {
               />
             </div>
             <div className="flex-1">
+              <label className="block text-sm font-medium text-theme mb-1">Funcionário</label>
               <Select
-                label="Funcionário"
                 value={selectedEmployee}
                 onChange={(value) => setSelectedEmployee(value)}
                 placeholder="Todos os funcionários"

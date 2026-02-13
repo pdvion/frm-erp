@@ -113,18 +113,22 @@ export default function CalculatePayrollPage() {
                 Período de Referência
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                <Select
-                  label="Mês"
-                  value={String(selectedMonth)}
-                  onChange={(value) => setSelectedMonth(Number(value))}
-                  options={monthNames.map((name, index) => ({ value: String(index + 1), label: name }))}
-                />
-                <Select
-                  label="Ano"
-                  value={String(selectedYear)}
-                  onChange={(value) => setSelectedYear(Number(value))}
-                  options={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => ({ value: String(y), label: String(y) }))}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-theme mb-1">Mês</label>
+                  <Select
+                    value={String(selectedMonth)}
+                    onChange={(value) => setSelectedMonth(Number(value))}
+                    options={monthNames.map((name, index) => ({ value: String(index + 1), label: name }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-theme mb-1">Ano</label>
+                  <Select
+                    value={String(selectedYear)}
+                    onChange={(value) => setSelectedYear(Number(value))}
+                    options={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => ({ value: String(y), label: String(y) }))}
+                  />
+                </div>
               </div>
             </div>
 

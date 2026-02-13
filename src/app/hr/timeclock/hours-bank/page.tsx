@@ -327,12 +327,14 @@ export default function HoursBankPage() {
                 )}
               </div>
 
-              <Select
-                label="Tipo *"
-                value={newEntry.type}
-                onChange={(value) => setNewEntry({ ...newEntry, type: value as EntryType })}
-                options={entryTypes.map((t) => ({ value: t.value, label: t.label }))}
-              />
+              <div>
+                <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
+                <Select
+                  value={newEntry.type}
+                  onChange={(value) => setNewEntry({ ...newEntry, type: value as EntryType })}
+                  options={entryTypes.map((t) => ({ value: t.value, label: t.label }))}
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <Input
