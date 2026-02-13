@@ -123,7 +123,7 @@ export default function CalculatePayrollPage() {
                   label="Ano"
                   value={String(selectedYear)}
                   onChange={(value) => setSelectedYear(Number(value))}
-                  options={[2024, 2025, 2026].map((y) => ({ value: String(y), label: String(y) }))}
+                  options={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => ({ value: String(y), label: String(y) }))}
                 />
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function CalculatePayrollPage() {
             <div className="mt-6 space-y-2 text-sm text-theme-muted">
               <p>✓ Buscando dados do ponto eletrônico</p>
               <p>✓ Calculando horas extras e adicionais</p>
-              <p>✓ Aplicando tabelas INSS e IRRF 2024</p>
+              <p>✓ Aplicando tabelas INSS e IRRF {new Date().getFullYear()}</p>
               <p>✓ Gerando eventos da folha</p>
             </div>
           </div>
