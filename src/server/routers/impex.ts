@@ -229,10 +229,10 @@ export const impexRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
       const existing = await ctx.prisma.cargoType.findFirst({
-        where: { id, OR: [{ companyId: ctx.companyId }, { isShared: true }] },
+        where: { id, companyId: ctx.companyId, isShared: false },
       });
       if (!existing) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado ou é compartilhado" });
       }
       return ctx.prisma.cargoType.update({
         where: { id },
@@ -244,10 +244,10 @@ export const impexRouter = createTRPCRouter({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const existing = await ctx.prisma.cargoType.findFirst({
-        where: { id: input.id, companyId: ctx.companyId },
+        where: { id: input.id, companyId: ctx.companyId, isShared: false },
       });
       if (!existing) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Tipo de carga não encontrado ou é compartilhado" });
       }
       return ctx.prisma.cargoType.delete({
         where: { id: input.id },
@@ -310,10 +310,10 @@ export const impexRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
       const existing = await ctx.prisma.incoterm.findFirst({
-        where: { id, OR: [{ companyId: ctx.companyId }, { isShared: true }] },
+        where: { id, companyId: ctx.companyId, isShared: false },
       });
       if (!existing) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado ou é compartilhado" });
       }
       return ctx.prisma.incoterm.update({
         where: { id },
@@ -325,10 +325,10 @@ export const impexRouter = createTRPCRouter({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const existing = await ctx.prisma.incoterm.findFirst({
-        where: { id: input.id, companyId: ctx.companyId },
+        where: { id: input.id, companyId: ctx.companyId, isShared: false },
       });
       if (!existing) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Incoterm não encontrado ou é compartilhado" });
       }
       return ctx.prisma.incoterm.delete({
         where: { id: input.id },
