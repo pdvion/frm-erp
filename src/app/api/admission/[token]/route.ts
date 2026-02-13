@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isTokenExpired } from "@/server/services/admission-portal";
 
 async function findAdmissionByToken(token: string) {
   const admission = await prisma.admissionProcess.findUnique({
@@ -41,7 +42,7 @@ async function findAdmissionByToken(token: string) {
 
   if (!admission) return null;
 
-  if (admission.tokenExpiresAt && admission.tokenExpiresAt < new Date()) {
+  if (isTokenExpired(admission.tokenExpiresAt)) {
     return { expired: true } as const;
   }
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
-import { calculateTokenExpiry } from "../services/admission-portal";
+// admission-portal service used by API routes, not directly by this router
 
 // Constants
 const MAX_PAGE_SIZE = 100;
@@ -172,7 +172,7 @@ export const admissionRouter = createTRPCRouter({
       candidatePhone: z.string().optional(),
       candidateCpf: z.string().optional(),
       candidateRg: z.string().optional(),
-      candidateBirthDate: z.coerce.date().optional(),
+      candidateBirthDate: z.string().optional(),
       candidateGender: z.string().optional(),
       candidateMaritalStatus: z.string().optional(),
       candidateMobile: z.string().optional(),
@@ -186,7 +186,7 @@ export const admissionRouter = createTRPCRouter({
       positionId: z.string().optional(),
       departmentId: z.string().optional(),
       proposedSalary: z.number().optional(),
-      proposedStartDate: z.coerce.date().optional(),
+      proposedStartDate: z.string().optional(),
       contractType: z.string().optional(),
       workHoursPerDay: z.number().optional(),
       workDaysPerWeek: z.number().optional(),
@@ -207,7 +207,7 @@ export const admissionRouter = createTRPCRouter({
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { id, ...data } = input;
+      const { id, proposedStartDate, candidateBirthDate, ...data } = input;
       
       const existing = await ctx.prisma.admissionProcess.findFirst({
         where: { id, companyId: ctx.companyId },
@@ -218,7 +218,11 @@ export const admissionRouter = createTRPCRouter({
       
       const updated = await ctx.prisma.admissionProcess.update({
         where: { id },
-        data,
+        data: {
+          ...data,
+          proposedStartDate: proposedStartDate ? new Date(proposedStartDate) : undefined,
+          candidateBirthDate: candidateBirthDate ? new Date(candidateBirthDate) : undefined,
+        },
       });
 
       const PII_FIELDS = [
@@ -257,7 +261,8 @@ export const admissionRouter = createTRPCRouter({
       }
 
       const token = crypto.randomUUID();
-      const tokenExpiresAt = calculateTokenExpiry({ expiresInDays: input.expiresInDays });
+      const tokenExpiresAt = new Date();
+      tokenExpiresAt.setDate(tokenExpiresAt.getDate() + input.expiresInDays);
 
       const updated = await ctx.prisma.admissionProcess.update({
         where: { id: input.id },

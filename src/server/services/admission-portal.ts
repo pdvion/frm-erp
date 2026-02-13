@@ -111,7 +111,7 @@ export function validateUploadFile(
   if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
     return {
       valid: false,
-      error: `Tipo de arquivo não permitido. Aceitos: PDF, JPEG, PNG, WebP`,
+      error: `Tipo de arquivo não permitido. Aceitos: PDF, JPEG, PNG, WebP, HEIC`,
     };
   }
 
@@ -131,7 +131,9 @@ export function filterCandidateFields(
   for (const field of CANDIDATE_EDITABLE_FIELDS) {
     if (field in input && input[field] !== undefined) {
       if (field === "candidateBirthDate" && input[field]) {
-        data[field] = new Date(String(input[field]));
+        const parsed = new Date(String(input[field]));
+        if (Number.isNaN(parsed.getTime())) continue;
+        data[field] = parsed;
       } else {
         data[field] = input[field];
       }
@@ -164,12 +166,12 @@ export function generatePortalUrl(token: string, baseUrl?: string): string {
   return `${base}/admission/portal/${token}`;
 }
 
-/**
- * Calculate document completion stats
- */
-export function calculateDocumentStats(
-  documents: { status: string; isRequired: boolean | null }[]
-): {
+export interface DocumentStatusInput {
+  status: string;
+  isRequired: boolean | null;
+}
+
+export interface DocumentStats {
   total: number;
   required: number;
   uploaded: number;
@@ -179,7 +181,14 @@ export function calculateDocumentStats(
   requiredComplete: boolean;
   allComplete: boolean;
   completionPercent: number;
-} {
+}
+
+/**
+ * Calculate document completion stats
+ */
+export function calculateDocumentStats(
+  documents: DocumentStatusInput[]
+): DocumentStats {
   const total = documents.length;
   const required = documents.filter((d) => d.isRequired).length;
   const uploaded = documents.filter((d) => d.status === "UPLOADED" || d.status === "VERIFIED").length;

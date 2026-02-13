@@ -8,34 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-const ALLOWED_FIELDS = [
-  "candidateRg",
-  "candidateBirthDate",
-  "candidateGender",
-  "candidateMaritalStatus",
-  "candidateMobile",
-  "candidateAddress",
-  "candidateAddressNumber",
-  "candidateAddressComplement",
-  "candidateAddressNeighborhood",
-  "candidateAddressCity",
-  "candidateAddressState",
-  "candidateAddressZipCode",
-  "candidatePis",
-  "candidateCtps",
-  "candidateCtpsSeries",
-  "candidateVoterRegistration",
-  "candidateMilitaryService",
-  "candidateBankName",
-  "candidateBankCode",
-  "candidateBankBranch",
-  "candidateBankAgency",
-  "candidateBankAccount",
-  "candidateBankAccountDigit",
-  "candidateBankAccountType",
-  "candidatePixKey",
-] as const;
+import { filterCandidateFields, isTokenExpired, isAdmissionClosed } from "@/server/services/admission-portal";
 
 export async function POST(
   request: NextRequest,
@@ -56,29 +29,23 @@ export async function POST(
       return NextResponse.json({ error: "Processo não encontrado" }, { status: 404 });
     }
 
-    if (admission.tokenExpiresAt && admission.tokenExpiresAt < new Date()) {
+    if (isTokenExpired(admission.tokenExpiresAt)) {
       return NextResponse.json({ error: "Link expirado. Solicite um novo link ao RH." }, { status: 410 });
     }
 
-    if (admission.status === "COMPLETED" || admission.status === "CANCELLED" || admission.status === "REJECTED") {
+    if (isAdmissionClosed(admission.status ?? "")) {
       return NextResponse.json({ error: "Este processo não aceita mais alterações." }, { status: 403 });
     }
 
     const body = await request.json();
 
-    // Filter only allowed fields (prevent candidate from changing status, salary, etc.)
-    const data: Record<string, unknown> = {};
-    for (const field of ALLOWED_FIELDS) {
-      if (field in body && body[field] !== undefined) {
-        if (field === "candidateBirthDate" && body[field]) {
-          data[field] = new Date(body[field]);
-        } else {
-          data[field] = body[field];
-        }
-      }
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "Payload inválido" }, { status: 400 });
     }
 
-    if (Object.keys(data).length === 0) {
+    const { data, filteredCount } = filterCandidateFields(body as Record<string, unknown>);
+
+    if (filteredCount === 0) {
       return NextResponse.json({ error: "Nenhum campo válido enviado" }, { status: 400 });
     }
 
