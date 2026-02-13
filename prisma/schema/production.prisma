@@ -49,6 +49,7 @@ model ProductionOrder {
   salesOrderItems         SalesOrderItem[]
 
   @@unique([companyId, code])
+  @@unique([id, companyId])
   @@index([dueDate])
   @@index([companyId], map: "idx_production_orders_companyId")
   @@index([productId], map: "idx_production_orders_product")
@@ -94,7 +95,7 @@ model ProductionOrderOperation {
   notes           String?
   createdAt       DateTime        @default(now())
   company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  order           ProductionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order           ProductionOrder @relation(fields: [orderId, companyId], references: [id, companyId], onDelete: Cascade)
 
   @@index([companyId], map: "idx_production_order_operations_company")
   @@index([orderId], map: "idx_production_order_operations_orderId")
