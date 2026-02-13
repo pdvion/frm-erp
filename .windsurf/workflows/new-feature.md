@@ -42,8 +42,19 @@ model NovaEntidade {
 }
 ```
 
-### 2. Criar Router tRPC
+### 2. Criar Service Layer (se lógica complexa)
+
+Se a feature tem lógica de negócio significativa (cálculos, validações complexas, orquestração de múltiplas entidades), criar service em `src/server/services/[nome].ts` **ANTES** do router.
+
+Ver padrão em `src/server/services/inventory.ts`, `payroll.ts`, `asset.ts`, `maintenance.ts`.
+
+> **Regra:** Router (input/output) → Service (lógica) → Prisma (dados).
+> CRUD simples pode ir direto no router.
+
+### 3. Criar Router tRPC
 Criar arquivo em `src/server/routers/[nome].ts`:
+
+> **Nota:** Se `createTenantPrisma` está integrado no `tenantProcedure` (ON by default), o filtro de `companyId` é automático nas queries. Para mutations, ainda incluir `companyId` no `data`.
 
 ```typescript
 import { z } from "zod";
@@ -170,7 +181,7 @@ export const nomeRouter = createTRPCRouter({
 });
 ```
 
-### 2b. Se a feature usa IA (OpenAI, embeddings, etc.)
+### 3b. Se a feature usa IA (OpenAI, embeddings, etc.)
 
 **OBRIGATÓRIO**: Usar o helper centralizado para API keys:
 ```typescript
@@ -209,7 +220,7 @@ const results = await ctx.prisma.$queryRaw`
 `;
 ```
 
-### 3. Registrar Router
+### 4. Registrar Router
 Editar `src/server/routers/index.ts`:
 
 ```typescript
@@ -221,7 +232,7 @@ export const appRouter = createTRPCRouter({
 });
 ```
 
-### 4. Criar Páginas
+### 5. Criar Páginas
 
 **Listagem** (`src/app/[nome]/page.tsx`):
 - Header com título e botão "Novo"
@@ -257,32 +268,6 @@ const createMutation = trpc.modulo.create.useMutation({
   },
 });
 ```
-
-### 5. Criar Service Layer (para módulos complexos)
-Se a feature tem lógica de negócio significativa, criar service em `src/server/services/[nome].ts`:
-
-```typescript
-import type { PrismaClient } from "@prisma/client";
-
-// Pure functions (testáveis sem mock)
-export function calculateSomething(input: number): number {
-  return input * 2;
-}
-
-// Service class (usa Prisma)
-export class NomeService {
-  constructor(private readonly prisma: PrismaClient) {}
-
-  async createItem(companyId: string, data: { ... }) {
-    // Para models novos que o TS não reconhece no PrismaClient:
-    return (this.prisma as unknown as { entidade: { create: (args: Record<string, unknown>) => Promise<unknown> } }).entidade.create({
-      data: { companyId, ...data },
-    });
-  }
-}
-```
-
-E testes em `src/server/services/[nome].test.ts` com mocks do Prisma.
 
 ### 6. Verificar Build
 // turbo

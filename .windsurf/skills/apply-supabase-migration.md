@@ -37,10 +37,15 @@ ALTER TABLE "tabela" ADD CONSTRAINT "tabela_userId_fkey"
 "nome" TEXT NOT NULL,
 "descricao" TEXT,
 
--- Números
-"quantidade" FLOAT NOT NULL DEFAULT 0,
+-- Números inteiros
 "codigo" INTEGER NOT NULL,
-"valor" DECIMAL(10,2),
+
+-- Monetários, quantidades, medidas → SEMPRE DECIMAL (NUNCA FLOAT)
+"quantidade" DECIMAL(15,4) NOT NULL DEFAULT 0,
+"valor" DECIMAL(15,2) NOT NULL DEFAULT 0,
+
+-- Float APENAS para GPS, OEE, posições de UI
+"latitude" FLOAT,
 
 -- Booleanos
 "ativo" BOOLEAN NOT NULL DEFAULT true,
