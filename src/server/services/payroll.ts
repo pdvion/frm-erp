@@ -227,7 +227,9 @@ export function calculateInsalubrity(
 ): number {
   if (!degree) return 0;
   const percentages: Record<InsalubrityDegree, number> = { LOW: 0.1, MEDIUM: 0.2, HIGH: 0.4 };
-  return minimumWage * percentages[degree];
+  const pct = percentages[degree];
+  if (pct === undefined) return 0;
+  return minimumWage * pct;
 }
 
 /**

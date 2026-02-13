@@ -1,6 +1,6 @@
 model Customer {
   id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @map("legacy_id")
+  legacyId                Int?                 @map("legacy_id")
   code                    String
   companyId               String               @db.Uuid
   type                    String               @default("COMPANY")
@@ -123,7 +123,7 @@ model LeadActivity {
 
 model SalesQuote {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @map("legacy_id")
+  legacyId                                        Int?             @map("legacy_id")
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -151,8 +151,8 @@ model SalesQuote {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
-  deletedAt         DateTime?              @map("deleted_at")
-  deletedBy         String?               @map("deleted_by") @db.Uuid
+  deletedAt                                      DateTime?        @map("deleted_at")
+  deletedBy                                       String?          @map("deleted_by") @db.Uuid
   sales_orders_sales_orders_quoteIdTosales_quotes SalesOrder[]     @relation("sales_orders_quoteIdTosales_quotes")
   items                                           SalesQuoteItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_quotes_company_fkey")
@@ -194,7 +194,7 @@ model SalesQuoteItem {
 
 model SalesOrder {
   id                                              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @map("legacy_id")
+  legacyId                                        Int?             @map("legacy_id")
   code                                            Int
   companyId                                       String           @db.Uuid
   customerId                                      String           @db.Uuid
@@ -223,8 +223,8 @@ model SalesOrder {
   createdBy                                       String?          @db.Uuid
   createdAt                                       DateTime         @default(now())
   updatedAt                                       DateTime         @default(now()) @updatedAt
-  deletedAt         DateTime?              @map("deleted_at")
-  deletedBy         String?               @map("deleted_by") @db.Uuid
+  deletedAt                                      DateTime?        @map("deleted_at")
+  deletedBy                                       String?          @map("deleted_by") @db.Uuid
   issuedInvoices                                  IssuedInvoice[]  @relation("IssuedInvoiceOrder")
   items                                           SalesOrderItem[]
   company                                         Company          @relation(fields: [companyId], references: [id], onUpdate: NoAction, map: "sales_orders_company_fkey")

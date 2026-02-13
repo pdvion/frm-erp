@@ -20,7 +20,7 @@ model Category {
 
 model AccountsPayable {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @map("legacy_id")
+  legacyId             Int?                    @map("legacy_id")
   code                 Int
   companyId            String                  @db.Uuid
   supplierId           String                  @db.Uuid
