@@ -166,12 +166,12 @@ export function generatePortalUrl(token: string, baseUrl?: string): string {
   return `${base}/admission/portal/${token}`;
 }
 
-/**
- * Calculate document completion stats
- */
-export function calculateDocumentStats(
-  documents: { status: string; isRequired: boolean | null }[]
-): {
+export interface DocumentStatusInput {
+  status: string;
+  isRequired: boolean | null;
+}
+
+export interface DocumentStats {
   total: number;
   required: number;
   uploaded: number;
@@ -181,7 +181,14 @@ export function calculateDocumentStats(
   requiredComplete: boolean;
   allComplete: boolean;
   completionPercent: number;
-} {
+}
+
+/**
+ * Calculate document completion stats
+ */
+export function calculateDocumentStats(
+  documents: DocumentStatusInput[]
+): DocumentStats {
   const total = documents.length;
   const required = documents.filter((d) => d.isRequired).length;
   const uploaded = documents.filter((d) => d.status === "UPLOADED" || d.status === "VERIFIED").length;
