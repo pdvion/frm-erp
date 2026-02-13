@@ -127,6 +127,10 @@ model Company {
   maintenancePlans              MaintenancePlan[]
   maintenanceOrders             MaintenanceOrder[]
   failureCodes                  FailureCode[]
+  eSocialConfig                 ESocialConfig?
+  eSocialRubrics                ESocialRubric[]
+  eSocialBatches                ESocialBatch[]
+  eSocialEvents                 ESocialEvent[]
 
   @@map("companies")
 }

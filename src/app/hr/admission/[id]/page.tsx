@@ -95,8 +95,11 @@ interface AdmissionStep {
   status: string;
   completedAt: Date | null;
   completedBy: string | null;
-  completedByName: string | null;
   notes: string | null;
+  admissionId: string;
+  assignedTo: string | null;
+  dueDate: Date | null;
+  createdAt: Date;
 }
 
 type TabId = "overview" | "documents" | "steps" | "exams";
