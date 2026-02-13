@@ -14,7 +14,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
 
 export default function TimesheetPage() {
@@ -45,12 +45,10 @@ export default function TimesheetPage() {
         icon={<Clock className="w-6 h-6 text-blue-600" />}
         backHref="/hr"
         actions={
-          <Link
-            href="/hr/timesheet/register"
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--frm-primary)] text-white rounded-lg hover:bg-[var(--frm-dark)] transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Registrar Ponto</span>
+          <Link href="/hr/timesheet/register">
+            <Button leftIcon={<Plus className="w-5 h-5" />}>
+              Registrar Ponto
+            </Button>
           </Link>
         }
       />
@@ -68,19 +66,19 @@ export default function TimesheetPage() {
               />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-theme-secondary mb-1">Funcionário</label>
-              <NativeSelect
+              <Select
+                label="Funcionário"
                 value={selectedEmployee}
-                onChange={(e) => setSelectedEmployee(e.target.value)}
-                className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos os funcionários</option>
-                {employees?.employees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name}
-                  </option>
-                ))}
-              </NativeSelect>
+                onChange={(value) => setSelectedEmployee(value)}
+                placeholder="Todos os funcionários"
+                options={[
+                  { value: "", label: "Todos os funcionários" },
+                  ...(employees?.employees.map((emp) => ({
+                    value: emp.id,
+                    label: emp.name,
+                  })) || []),
+                ]}
+              />
             </div>
             <div className="flex items-end">
               <Button variant="outline" leftIcon={<Filter className="w-5 h-5" />}>

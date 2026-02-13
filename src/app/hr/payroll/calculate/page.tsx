@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 
 export default function CalculatePayrollPage() {
   const router = useRouter();
@@ -113,38 +113,18 @@ export default function CalculatePayrollPage() {
                 Período de Referência
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Mês
-                  </label>
-                  <NativeSelect
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    {monthNames.map((name, index) => (
-                      <option key={index} value={index + 1}>
-                        {name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Ano
-                  </label>
-                  <NativeSelect
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    {[2024, 2025, 2026].map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
+                <Select
+                  label="Mês"
+                  value={String(selectedMonth)}
+                  onChange={(value) => setSelectedMonth(Number(value))}
+                  options={monthNames.map((name, index) => ({ value: String(index + 1), label: name }))}
+                />
+                <Select
+                  label="Ano"
+                  value={String(selectedYear)}
+                  onChange={(value) => setSelectedYear(Number(value))}
+                  options={[2024, 2025, 2026].map((y) => ({ value: String(y), label: String(y) }))}
+                />
               </div>
             </div>
 

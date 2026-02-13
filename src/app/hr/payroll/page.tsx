@@ -75,12 +75,11 @@ export default function PayrollPage() {
             >
               Exportar
             </Button>
-            <Button
-              onClick={() => window.location.href = "/hr/payroll/calculate"}
-              leftIcon={<Plus className="w-5 h-5" />}
-            >
-              Calcular Folha
-            </Button>
+            <Link href="/hr/payroll/calculate">
+              <Button leftIcon={<Plus className="w-5 h-5" />}>
+                Calcular Folha
+              </Button>
+            </Link>
           </div>
         }
       />
@@ -155,12 +154,11 @@ export default function PayrollPage() {
             <DollarSign className="w-12 h-12 text-theme-muted mx-auto mb-4" />
             <h3 className="text-lg font-medium text-theme mb-2">Nenhuma folha encontrada</h3>
             <p className="text-theme-muted mb-4">Calcule a folha de pagamento para este mês</p>
-            <Button
-              onClick={() => window.location.href = "/hr/payroll/calculate"}
-              leftIcon={<Plus className="w-5 h-5" />}
-            >
-              Calcular Folha
-            </Button>
+            <Link href="/hr/payroll/calculate">
+              <Button leftIcon={<Plus className="w-5 h-5" />}>
+                Calcular Folha
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="bg-theme-card rounded-xl shadow-sm border border-theme overflow-hidden">

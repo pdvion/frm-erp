@@ -22,7 +22,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 import { Badge, colorToVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -85,17 +85,17 @@ export default function EmployeesPage() {
             </div>
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-theme-muted" />
-              <NativeSelect
+              <Select
                 value={statusFilter}
-                onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="border border-theme-input rounded-lg px-3 py-2"
-              >
-                <option value="ALL">Todos</option>
-                <option value="ACTIVE">Ativos</option>
-                <option value="VACATION">Férias</option>
-                <option value="LEAVE">Afastados</option>
-                <option value="TERMINATED">Desligados</option>
-              </NativeSelect>
+                onChange={(value) => { setStatusFilter(value); setPage(1); }}
+                options={[
+                  { value: "ALL", label: "Todos" },
+                  { value: "ACTIVE", label: "Ativos" },
+                  { value: "VACATION", label: "Férias" },
+                  { value: "LEAVE", label: "Afastados" },
+                  { value: "TERMINATED", label: "Desligados" },
+                ]}
+              />
             </div>
           </div>
         </div>
