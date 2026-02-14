@@ -132,6 +132,37 @@ export function truncateResponseBody(body: string | null): string | null {
 }
 
 // ============================================================
+// INTERFACES
+// ============================================================
+
+interface EmitOptions {
+  entityType?: string;
+  entityId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface DeliveryConfig {
+  id: string;
+  url: string;
+  secret: string;
+  headers: Prisma.JsonValue;
+  timeoutMs: number;
+  maxRetries: number;
+}
+
+interface AttemptConfig {
+  id: string;
+  url: string;
+  timeoutMs: number;
+  maxRetries: number;
+}
+
+interface FailureConfig {
+  id: string;
+  maxRetries: number;
+}
+
+// ============================================================
 // WEBHOOK SERVICE CLASS
 // ============================================================
 
@@ -148,11 +179,7 @@ export class WebhookService {
     companyId: string,
     eventType: WebhookEventType,
     payload: Record<string, unknown>,
-    options?: {
-      entityType?: string;
-      entityId?: string;
-      metadata?: Record<string, unknown>;
-    }
+    options?: EmitOptions
   ): Promise<void> {
     try {
       // 1. Find active webhooks subscribed to this event
@@ -202,14 +229,7 @@ export class WebhookService {
    * Handles retries with exponential backoff.
    */
   private async deliverToWebhook(
-    config: {
-      id: string;
-      url: string;
-      secret: string;
-      headers: Prisma.JsonValue;
-      timeoutMs: number;
-      maxRetries: number;
-    },
+    config: DeliveryConfig,
     eventId: string,
     eventType: string,
     payload: Record<string, unknown>
@@ -254,20 +274,16 @@ export class WebhookService {
    */
   private async attemptDelivery(
     deliveryId: string,
-    config: {
-      id: string;
-      url: string;
-      timeoutMs: number;
-      maxRetries: number;
-    },
+    config: AttemptConfig,
     headers: Record<string, string>,
     body: string
   ): Promise<void> {
     const startTime = Date.now();
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
+      timeout = setTimeout(() => controller.abort(), config.timeoutMs);
 
       const response = await fetch(config.url, {
         method: "POST",
@@ -275,8 +291,6 @@ export class WebhookService {
         body,
         signal: controller.signal,
       });
-
-      clearTimeout(timeout);
 
       const durationMs = Date.now() - startTime;
       const responseBody = await response.text().catch(() => null);
@@ -314,6 +328,8 @@ export class WebhookService {
         durationMs,
         errorMessage
       );
+    } finally {
+      if (timeout) clearTimeout(timeout);
     }
   }
 
@@ -322,7 +338,7 @@ export class WebhookService {
    */
   private async handleFailure(
     deliveryId: string,
-    config: { id: string; maxRetries: number },
+    config: FailureConfig,
     responseStatus: number | null,
     responseBody: string | null,
     durationMs: number,
@@ -420,6 +436,17 @@ export class WebhookService {
         "Content-Type": "application/json",
         [DELIVERY_ID_HEADER]: delivery.id,
       };
+
+      // Restore original event type header from stored request headers
+      const storedHeaders =
+        delivery.requestHeaders &&
+        typeof delivery.requestHeaders === "object" &&
+        !Array.isArray(delivery.requestHeaders)
+          ? (delivery.requestHeaders as Record<string, string>)
+          : {};
+      if (storedHeaders[EVENT_TYPE_HEADER]) {
+        headers[EVENT_TYPE_HEADER] = storedHeaders[EVENT_TYPE_HEADER];
+      }
 
       if (delivery.requestBody) {
         const timestamp = Date.now().toString();

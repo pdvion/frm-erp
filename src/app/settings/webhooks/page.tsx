@@ -182,6 +182,7 @@ export default function WebhooksPage() {
                     size="icon"
                     onClick={() => sendTestMutation.mutate({ id: webhook.id })}
                     title="Enviar teste"
+                    aria-label="Enviar teste"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
@@ -190,6 +191,7 @@ export default function WebhooksPage() {
                     size="icon"
                     onClick={() => router.push(`/settings/webhooks/${webhook.id}`)}
                     title="Ver detalhes"
+                    aria-label="Ver detalhes"
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
@@ -198,6 +200,7 @@ export default function WebhooksPage() {
                     size="icon"
                     onClick={() => setDeleteId(webhook.id)}
                     title="Excluir"
+                    aria-label="Excluir"
                   >
                     <Trash2 className="w-4 h-4 text-red-500" />
                   </Button>
@@ -259,15 +262,17 @@ export default function WebhooksPage() {
 // CREATE MODAL
 // ──────────────────────────────────────────────
 
+interface CreateWebhookModalProps {
+  eventTypes: { value: string; label: string }[];
+  onClose: () => void;
+  onCreated: () => void;
+}
+
 function CreateWebhookModal({
   eventTypes,
   onClose,
   onCreated,
-}: {
-  eventTypes: { value: string; label: string }[];
-  onClose: () => void;
-  onCreated: () => void;
-}) {
+}: CreateWebhookModalProps) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);

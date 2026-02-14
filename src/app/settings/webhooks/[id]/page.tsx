@@ -276,11 +276,21 @@ export default function WebhookDetailPage() {
               <div key={delivery.id} className="p-4">
                 <div
                   className="flex items-center gap-3 cursor-pointer"
+                  role="button"
+                  tabIndex={0}
                   onClick={() =>
                     setExpandedDelivery(
                       expandedDelivery === delivery.id ? null : delivery.id
                     )
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setExpandedDelivery(
+                        expandedDelivery === delivery.id ? null : delivery.id
+                      );
+                    }
+                  }}
                 >
                   {deliveryStatusIcon[delivery.status]}
                   <div className="flex-1 min-w-0">
@@ -394,10 +404,10 @@ export default function WebhookDetailPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      navigator.clipboard.writeText(newSecret).catch(() => {
-                        toast.error("Falha ao copiar");
-                      });
-                      toast.success("Secret copiado");
+                      navigator.clipboard
+                        .writeText(newSecret)
+                        .then(() => toast.success("Secret copiado"))
+                        .catch(() => toast.error("Falha ao copiar"));
                     }}
                   >
                     <Copy className="w-4 h-4" />
@@ -468,15 +478,13 @@ export default function WebhookDetailPage() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
+interface StatCardProps {
   label: string;
   value: number | string;
   icon: React.ReactNode;
-}) {
+}
+
+function StatCard({ label, value, icon }: StatCardProps) {
   return (
     <div className="bg-theme-card rounded-lg border border-theme p-4">
       <div className="flex items-center gap-2 mb-1">

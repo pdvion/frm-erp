@@ -324,7 +324,7 @@ export const webhooksRouter = createTRPCRouter({
   listEvents: tenantProcedure
     .input(
       z.object({
-        eventType: z.string().optional(),
+        eventType: z.enum(webhookEventTypeValues).optional(),
         page: z.number().int().min(1).optional(),
         limit: z.number().int().min(1).max(100).optional(),
       }).optional()
