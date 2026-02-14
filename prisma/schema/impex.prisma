@@ -43,12 +43,15 @@ model CargoType {
   code             String          @unique
   name             String
   description      String?
+  companyId        String?         @db.Uuid
   isShared         Boolean         @default(true)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now()) @db.Timestamptz(6)
   updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  company          Company?        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   import_processes ImportProcess[]
 
+  @@index([companyId], map: "idx_cargo_types_company")
   @@map("cargo_types")
 }
 
@@ -57,12 +60,15 @@ model Incoterm {
   code             String          @unique
   name             String
   description      String?
+  companyId        String?         @db.Uuid
   isShared         Boolean         @default(true)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now()) @db.Timestamptz(6)
   updatedAt        DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  company          Company?        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   import_processes ImportProcess[]
 
+  @@index([companyId], map: "idx_incoterms_company")
   @@map("incoterms")
 }
 

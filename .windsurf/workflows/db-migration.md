@@ -86,7 +86,15 @@ CREATE POLICY "nova_tabela_delete_policy" ON nova_tabela
 pnpm prisma generate
 ```
 
-### 4. Verificar tipos
+### 4. Validar schema contra o banco real (detecta drift)
+// turbo
+```bash
+pnpm test:drift
+```
+Se falhar, significa que o schema Prisma tem campos/tabelas que não existem no banco.
+Corrija aplicando as migrations faltantes antes de continuar.
+
+### 5. Verificar tipos
 // turbo
 ```bash
 pnpm type-check
