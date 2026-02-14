@@ -17,7 +17,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 
 type EntryType = "CREDIT" | "DEBIT" | "COMPENSATION" | "EXPIRATION" | "ADJUSTMENT";
 
@@ -328,20 +328,12 @@ export default function HoursBankPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Tipo *
-                </label>
-                <NativeSelect
+                <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
+                <Select
                   value={newEntry.type}
-                  onChange={(e) => setNewEntry({ ...newEntry, type: e.target.value as EntryType })}
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                >
-                  {entryTypes.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </NativeSelect>
+                  onChange={(value) => setNewEntry({ ...newEntry, type: value as EntryType })}
+                  options={entryTypes.map((t) => ({ value: t.value, label: t.label }))}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

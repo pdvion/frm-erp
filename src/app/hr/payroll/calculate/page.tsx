@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 
 export default function CalculatePayrollPage() {
   const router = useRouter();
@@ -114,36 +114,20 @@ export default function CalculatePayrollPage() {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Mês
-                  </label>
-                  <NativeSelect
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    {monthNames.map((name, index) => (
-                      <option key={index} value={index + 1}>
-                        {name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <label className="block text-sm font-medium text-theme mb-1">Mês</label>
+                  <Select
+                    value={String(selectedMonth)}
+                    onChange={(value) => setSelectedMonth(Number(value))}
+                    options={monthNames.map((name, index) => ({ value: String(index + 1), label: name }))}
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Ano
-                  </label>
-                  <NativeSelect
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-theme rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    {[2024, 2025, 2026].map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <label className="block text-sm font-medium text-theme mb-1">Ano</label>
+                  <Select
+                    value={String(selectedYear)}
+                    onChange={(value) => setSelectedYear(Number(value))}
+                    options={Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => ({ value: String(y), label: String(y) }))}
+                  />
                 </div>
               </div>
             </div>
@@ -286,7 +270,7 @@ export default function CalculatePayrollPage() {
             <div className="mt-6 space-y-2 text-sm text-theme-muted">
               <p>✓ Buscando dados do ponto eletrônico</p>
               <p>✓ Calculando horas extras e adicionais</p>
-              <p>✓ Aplicando tabelas INSS e IRRF 2024</p>
+              <p>✓ Aplicando tabelas INSS e IRRF {new Date().getFullYear()}</p>
               <p>✓ Gerando eventos da folha</p>
             </div>
           </div>

@@ -16,7 +16,7 @@ import {
   Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { NativeSelect } from "@/components/ui/NativeSelect";
+import { Select } from "@/components/ui/Select";
 
 const typeLabels: Record<string, string> = {
   RESIGNATION: "Pedido de Demissão",
@@ -62,12 +62,10 @@ export default function TerminationsPage() {
         icon={<UserMinus className="w-6 h-6" />}
         module="hr"
         actions={
-          <Link
-            href="/hr/terminations/new"
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Rescisão
+          <Link href="/hr/terminations/new">
+            <Button leftIcon={<Plus className="w-4 h-4" />} variant="destructive">
+              Nova Rescisão
+            </Button>
           </Link>
         }
       />
@@ -85,33 +83,33 @@ export default function TerminationsPage() {
                 className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
               />
             </div>
-            <NativeSelect
+            <Select
               value={typeFilter}
-              onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 border border-theme-input rounded-lg"
-            >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="RESIGNATION">Pedido de Demissão</option>
-              <option value="DISMISSAL_WITH_CAUSE">Justa Causa</option>
-              <option value="DISMISSAL_NO_CAUSE">Sem Justa Causa</option>
-              <option value="MUTUAL_AGREEMENT">Acordo Mútuo</option>
-              <option value="CONTRACT_END">Fim de Contrato</option>
-              <option value="RETIREMENT">Aposentadoria</option>
-              <option value="DEATH">Falecimento</option>
-            </NativeSelect>
-            <NativeSelect
+              onChange={(value) => { setTypeFilter(value); setPage(1); }}
+              options={[
+                { value: "ALL", label: "Todos os Tipos" },
+                { value: "RESIGNATION", label: "Pedido de Demissão" },
+                { value: "DISMISSAL_WITH_CAUSE", label: "Justa Causa" },
+                { value: "DISMISSAL_NO_CAUSE", label: "Sem Justa Causa" },
+                { value: "MUTUAL_AGREEMENT", label: "Acordo Mútuo" },
+                { value: "CONTRACT_END", label: "Fim de Contrato" },
+                { value: "RETIREMENT", label: "Aposentadoria" },
+                { value: "DEATH", label: "Falecimento" },
+              ]}
+            />
+            <Select
               value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="px-4 py-2 border border-theme-input rounded-lg"
-            >
-              <option value="ALL">Todos os Status</option>
-              <option value="DRAFT">Rascunho</option>
-              <option value="CALCULATED">Calculado</option>
-              <option value="APPROVED">Aprovado</option>
-              <option value="PAID">Pago</option>
-              <option value="HOMOLOGATED">Homologado</option>
-              <option value="CANCELLED">Cancelado</option>
-            </NativeSelect>
+              onChange={(value) => { setStatusFilter(value); setPage(1); }}
+              options={[
+                { value: "ALL", label: "Todos os Status" },
+                { value: "DRAFT", label: "Rascunho" },
+                { value: "CALCULATED", label: "Calculado" },
+                { value: "APPROVED", label: "Aprovado" },
+                { value: "PAID", label: "Pago" },
+                { value: "HOMOLOGATED", label: "Homologado" },
+                { value: "CANCELLED", label: "Cancelado" },
+              ]}
+            />
           </div>
         </div>
 
