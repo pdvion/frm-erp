@@ -208,7 +208,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
     if (!result.success || !result.url) {
       throw new Error(result.error || "Erro no upload");
     }
-    updatePhotoMutation.mutate({ id, candidatePhoto: result.url });
+    await updatePhotoMutation.mutateAsync({ id, candidatePhoto: result.url });
     toast.success("Foto atualizada!");
     return result.url;
   }

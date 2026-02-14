@@ -161,19 +161,23 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
-      // Notify: process created
-      const notifSvc = new AdmissionNotificationService(ctx.prisma);
-      await notifSvc.onStatusChange(
-        {
-          admissionId: admission.id,
-          candidateName: admission.candidateName,
-          companyId: ctx.companyId,
-          recruiterId: admission.recruiterId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        null,
-        "DRAFT"
-      );
+      // Notify: process created (non-blocking)
+      try {
+        const notifSvc = new AdmissionNotificationService(ctx.prisma);
+        await notifSvc.onStatusChange(
+          {
+            admissionId: admission.id,
+            candidateName: admission.candidateName,
+            companyId: ctx.companyId,
+            recruiterId: admission.recruiterId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          null,
+          "DRAFT"
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.create] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
       return admission;
     }),
@@ -334,18 +338,22 @@ export const admissionRouter = createTRPCRouter({
         include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true } } },
       });
 
-      // Notify: document uploaded
-      const notifSvc = new AdmissionNotificationService(ctx.prisma);
-      await notifSvc.onDocumentUploaded(
-        {
-          admissionId: updated.admissionProcess.id,
-          candidateName: updated.admissionProcess.candidateName,
-          companyId: updated.admissionProcess.companyId,
-          recruiterId: updated.admissionProcess.recruiterId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        updated.documentName
-      );
+      // Notify: document uploaded (non-blocking)
+      try {
+        const notifSvc = new AdmissionNotificationService(ctx.prisma);
+        await notifSvc.onDocumentUploaded(
+          {
+            admissionId: updated.admissionProcess.id,
+            candidateName: updated.admissionProcess.candidateName,
+            companyId: updated.admissionProcess.companyId,
+            recruiterId: updated.admissionProcess.recruiterId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          updated.documentName
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.uploadDocument] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
       return updated;
     }),
@@ -381,20 +389,24 @@ export const admissionRouter = createTRPCRouter({
         include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true } } },
       });
 
-      // Notify: document rejected
+      // Notify: document rejected (non-blocking)
       if (!input.approved) {
-        const notifSvc = new AdmissionNotificationService(ctx.prisma);
-        await notifSvc.onDocumentRejected(
-          {
-            admissionId: updatedDoc.admissionProcess.id,
-            candidateName: updatedDoc.admissionProcess.candidateName,
-            companyId: updatedDoc.admissionProcess.companyId,
-            recruiterId: updatedDoc.admissionProcess.recruiterId,
-            userId: ctx.tenant.userId ?? ctx.companyId,
-          },
-          updatedDoc.documentName,
-          input.rejectionReason ?? "Sem motivo informado"
-        );
+        try {
+          const notifSvc = new AdmissionNotificationService(ctx.prisma);
+          await notifSvc.onDocumentRejected(
+            {
+              admissionId: updatedDoc.admissionProcess.id,
+              candidateName: updatedDoc.admissionProcess.candidateName,
+              companyId: updatedDoc.admissionProcess.companyId,
+              recruiterId: updatedDoc.admissionProcess.recruiterId,
+              userId: ctx.tenant.userId ?? ctx.companyId,
+            },
+            updatedDoc.documentName,
+            input.rejectionReason ?? "Sem motivo informado"
+          );
+        } catch (e: unknown) {
+          console.warn("[admission.verifyDocument] Notification failed:", e instanceof Error ? e.message : String(e));
+        }
       }
 
       return updatedDoc;
@@ -460,20 +472,24 @@ export const admissionRouter = createTRPCRouter({
         include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true, managerId: true } } },
       });
 
-      // Notify: exam result
+      // Notify: exam result (non-blocking)
       if (input.result !== "PENDING") {
-        const notifSvc = new AdmissionNotificationService(ctx.prisma);
-        await notifSvc.onExamResult(
-          {
-            admissionId: updatedExam.admissionProcess.id,
-            candidateName: updatedExam.admissionProcess.candidateName,
-            companyId: updatedExam.admissionProcess.companyId,
-            recruiterId: updatedExam.admissionProcess.recruiterId,
-            managerId: updatedExam.admissionProcess.managerId,
-            userId: ctx.tenant.userId ?? ctx.companyId,
-          },
-          input.result as "FIT" | "UNFIT" | "FIT_RESTRICTIONS"
-        );
+        try {
+          const notifSvc = new AdmissionNotificationService(ctx.prisma);
+          await notifSvc.onExamResult(
+            {
+              admissionId: updatedExam.admissionProcess.id,
+              candidateName: updatedExam.admissionProcess.candidateName,
+              companyId: updatedExam.admissionProcess.companyId,
+              recruiterId: updatedExam.admissionProcess.recruiterId,
+              managerId: updatedExam.admissionProcess.managerId,
+              userId: ctx.tenant.userId ?? ctx.companyId,
+            },
+            input.result as "FIT" | "UNFIT" | "FIT_RESTRICTIONS"
+          );
+        } catch (e: unknown) {
+          console.warn("[admission.recordExamResult] Notification failed:", e instanceof Error ? e.message : String(e));
+        }
       }
 
       return updatedExam;
@@ -564,20 +580,24 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
-      // Notify: approved
-      const notifSvcApprove = new AdmissionNotificationService(ctx.prisma);
-      await notifSvcApprove.onStatusChange(
-        {
-          admissionId: approved.id,
-          candidateName: approved.candidateName,
-          companyId: ctx.companyId,
-          recruiterId: approved.recruiterId,
-          managerId: approved.managerId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        admission.status as "APPROVAL",
-        "APPROVED"
-      );
+      // Notify: approved (non-blocking)
+      try {
+        const notifSvcApprove = new AdmissionNotificationService(ctx.prisma);
+        await notifSvcApprove.onStatusChange(
+          {
+            admissionId: approved.id,
+            candidateName: approved.candidateName,
+            companyId: ctx.companyId,
+            recruiterId: approved.recruiterId,
+            managerId: approved.managerId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          admission.status as "APPROVAL",
+          "APPROVED"
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.approve] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
       return approved;
     }),
@@ -604,20 +624,24 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
-      // Notify: rejected
-      const notifSvcReject = new AdmissionNotificationService(ctx.prisma);
-      await notifSvcReject.onStatusChange(
-        {
-          admissionId: rejected.id,
-          candidateName: rejected.candidateName,
-          companyId: ctx.companyId,
-          recruiterId: rejected.recruiterId,
-          managerId: rejected.managerId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        admission.status as "APPROVAL",
-        "REJECTED"
-      );
+      // Notify: rejected (non-blocking)
+      try {
+        const notifSvcReject = new AdmissionNotificationService(ctx.prisma);
+        await notifSvcReject.onStatusChange(
+          {
+            admissionId: rejected.id,
+            candidateName: rejected.candidateName,
+            companyId: ctx.companyId,
+            recruiterId: rejected.recruiterId,
+            managerId: rejected.managerId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          admission.status as "APPROVAL",
+          "REJECTED"
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.reject] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
       return rejected;
     }),
@@ -638,58 +662,65 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Processo precisa estar aprovado" });
       }
 
-      // Buscar próximo código de funcionário
-      const lastEmployee = await ctx.prisma.employee.findFirst({
-        where: { companyId: ctx.companyId },
-        orderBy: { code: "desc" },
-        select: { code: true },
+      // Atomicidade: nextCode + create employee + update admission
+      const result = await ctx.prisma.$transaction(async (tx) => {
+        const lastEmployee = await tx.employee.findFirst({
+          where: { companyId: ctx.companyId },
+          orderBy: { code: "desc" },
+          select: { code: true },
+        });
+
+        const nextCode = (lastEmployee?.code || 0) + 1;
+
+        const employee = await tx.employee.create({
+          data: {
+            code: nextCode,
+            companyId: ctx.companyId,
+            name: admission.candidateName,
+            cpf: admission.candidateCpf,
+            email: admission.candidateEmail,
+            phone: admission.candidatePhone,
+            photo: admission.candidatePhoto,
+            positionId: admission.positionId,
+            departmentId: admission.departmentId,
+            salary: admission.proposedSalary || 0,
+            hireDate: admission.proposedStartDate || new Date(),
+            status: "ACTIVE",
+            createdBy: ctx.tenant.userId,
+          },
+        });
+
+        const updatedAdmission = await tx.admissionProcess.update({
+          where: { id: input.id },
+          data: {
+            status: "COMPLETED",
+            completedAt: new Date(),
+          },
+        });
+
+        return { admission: updatedAdmission, employee };
       });
 
-      const nextCode = (lastEmployee?.code || 0) + 1;
+      // Notify: completed (non-blocking, outside transaction)
+      try {
+        const notifSvcComplete = new AdmissionNotificationService(ctx.prisma);
+        await notifSvcComplete.onStatusChange(
+          {
+            admissionId: admission.id,
+            candidateName: admission.candidateName,
+            companyId: ctx.companyId,
+            recruiterId: admission.recruiterId,
+            managerId: admission.managerId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          "APPROVED",
+          "COMPLETED"
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.complete] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
-      // Criar funcionário
-      const employee = await ctx.prisma.employee.create({
-        data: {
-          code: nextCode,
-          companyId: ctx.companyId,
-          name: admission.candidateName,
-          cpf: admission.candidateCpf,
-          email: admission.candidateEmail,
-          phone: admission.candidatePhone,
-          positionId: admission.positionId,
-          departmentId: admission.departmentId,
-          salary: admission.proposedSalary || 0,
-          hireDate: admission.proposedStartDate || new Date(),
-          status: "ACTIVE",
-          createdBy: ctx.tenant.userId,
-        },
-      });
-
-      // Atualizar processo
-      await ctx.prisma.admissionProcess.update({
-        where: { id: input.id },
-        data: {
-          status: "COMPLETED",
-          completedAt: new Date(),
-        },
-      });
-
-      // Notify: completed
-      const notifSvcComplete = new AdmissionNotificationService(ctx.prisma);
-      await notifSvcComplete.onStatusChange(
-        {
-          admissionId: admission.id,
-          candidateName: admission.candidateName,
-          companyId: ctx.companyId,
-          recruiterId: admission.recruiterId,
-          managerId: admission.managerId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        "APPROVED",
-        "COMPLETED"
-      );
-
-      return { admission, employee };
+      return result;
     }),
 
   // Cancelar admissão
@@ -714,20 +745,24 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
-      // Notify: cancelled
-      const notifSvcCancel = new AdmissionNotificationService(ctx.prisma);
-      await notifSvcCancel.onStatusChange(
-        {
-          admissionId: cancelled.id,
-          candidateName: cancelled.candidateName,
-          companyId: ctx.companyId,
-          recruiterId: cancelled.recruiterId,
-          managerId: cancelled.managerId,
-          userId: ctx.tenant.userId ?? ctx.companyId,
-        },
-        admission.status as "DRAFT" | "DOCUMENTS" | "EXAM" | "APPROVAL",
-        "CANCELLED"
-      );
+      // Notify: cancelled (non-blocking)
+      try {
+        const notifSvcCancel = new AdmissionNotificationService(ctx.prisma);
+        await notifSvcCancel.onStatusChange(
+          {
+            admissionId: cancelled.id,
+            candidateName: cancelled.candidateName,
+            companyId: ctx.companyId,
+            recruiterId: cancelled.recruiterId,
+            managerId: cancelled.managerId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          admission.status as "DRAFT" | "DOCUMENTS" | "EXAM" | "APPROVAL",
+          "CANCELLED"
+        );
+      } catch (e: unknown) {
+        console.warn("[admission.cancel] Notification failed:", e instanceof Error ? e.message : String(e));
+      }
 
       return cancelled;
     }),
