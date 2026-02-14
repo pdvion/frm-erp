@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/Badge";
 import { Drawer, useDrawer } from "@/components/ui/Drawer";
 import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Textarea";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { toast } from "sonner";
+import { uploadImage, STORAGE_PATHS } from "@/lib/storage";
 
 import {
   UserPlus,
@@ -192,6 +194,25 @@ export default function AdmissionDetailPage({ params }: PageProps) {
     },
   });
 
+  const updatePhotoMutation = trpc.admission.update.useMutation({
+    onSuccess: () => {
+      utils.admission.byId.invalidate({ id });
+    },
+    onError: (err) => {
+      toast.error("Erro ao atualizar foto", { description: err.message });
+    },
+  });
+
+  async function handlePhotoUpload(file: File): Promise<string> {
+    const result = await uploadImage(file, STORAGE_PATHS.avatars, `admission-${id}-${Date.now()}.${file.name.split(".").pop()}`);
+    if (!result.success || !result.url) {
+      throw new Error(result.error || "Erro no upload");
+    }
+    updatePhotoMutation.mutate({ id, candidatePhoto: result.url });
+    toast.success("Foto atualizada!");
+    return result.url;
+  }
+
   // Handlers
   function openDocDrawer(doc: typeof selectedDoc) {
     setSelectedDoc(doc);
@@ -293,11 +314,29 @@ export default function AdmissionDetailPage({ params }: PageProps) {
       {/* Header Card */}
       <div className="bg-theme-card rounded-lg border border-theme p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-xl font-bold text-theme">{admission.candidateName}</h2>
-              <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
-            </div>
+          <div className="flex items-start gap-4 flex-1">
+            <ImageUpload
+              value={admission.candidatePhoto}
+              onChange={(url) => {
+                if (url === null) {
+                  updatePhotoMutation.mutate({ id, candidatePhoto: null });
+                }
+              }}
+              onUpload={handlePhotoUpload}
+              shape="circle"
+              size="lg"
+              alt={`Foto de ${admission.candidateName}`}
+              placeholder={
+                <span className="text-2xl font-bold text-theme-muted">
+                  {admission.candidateName.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
+                </span>
+              }
+            />
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-xl font-bold text-theme">{admission.candidateName}</h2>
+                <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
+              </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-theme-muted">
               {admission.candidateEmail && (
                 <div className="flex items-center gap-1.5">
@@ -338,7 +377,8 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                 />
               </div>
             </div>
-          </div>
+            </div>{/* close inner flex-1 */}
+          </div>{/* close flex items-start gap-4 */}
 
           {/* Portal Link Actions */}
           {!isClosed && (

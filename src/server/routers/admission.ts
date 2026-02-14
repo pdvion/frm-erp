@@ -219,6 +219,7 @@ export const admissionRouter = createTRPCRouter({
       candidateBankAccountDigit: z.string().optional(),
       candidateBankAccountType: z.string().optional(),
       candidatePixKey: z.string().optional(),
+      candidatePhoto: z.string().nullable().optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
