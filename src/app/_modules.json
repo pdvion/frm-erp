@@ -40,7 +40,7 @@
       "label": "Financeiro",
       "icon": "DollarSign",
       "order": 5,
-      "includes": ["finance", "payables", "receivables", "treasury", "assets"]
+      "includes": ["finance", "payables", "receivables", "treasury", "assets", "accounting"]
     },
     {
       "id": "fiscal",
