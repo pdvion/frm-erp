@@ -127,6 +127,7 @@ model Company {
   maintenancePlans              MaintenancePlan[]
   maintenanceOrders             MaintenanceOrder[]
   failureCodes                  FailureCode[]
+  productionOrderOperations     ProductionOrderOperation[]
   cargoTypes                    CargoType[]
   incoterms                     Incoterm[]
   eSocialConfig                 ESocialConfig?
