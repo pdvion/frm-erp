@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       prisma.product.findMany({
         where: {
           isPublished: true,
-          status: "active",
+          status: "ACTIVE",
           OR: [
             { name: { contains: searchTerm, mode: "insensitive" } },
             { shortDescription: { contains: searchTerm, mode: "insensitive" } },
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               products: {
-                where: { isPublished: true, status: "active" },
+                where: { isPublished: true, status: "ACTIVE" },
               },
             },
           },

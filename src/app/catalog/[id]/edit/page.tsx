@@ -34,7 +34,7 @@ export default function EditProductPage() {
     metaTitle: "",
     metaDescription: "",
     tags: "",
-    status: "draft",
+    status: "DRAFT",
   });
 
   const { data: product, isLoading } = trpc.productCatalog.getProduct.useQuery({
@@ -131,7 +131,7 @@ export default function EditProductPage() {
       metaTitle: formData.metaTitle || undefined,
       metaDescription: formData.metaDescription || undefined,
       tags: formData.tags ? formData.tags.split(",").map((t) => t.trim()) : undefined,
-      status: formData.status as "draft" | "active" | "inactive" | "discontinued",
+      status: formData.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "DISCONTINUED",
     });
   };
 
@@ -177,7 +177,7 @@ export default function EditProductPage() {
       fileName: file.name,
       fileType: file.type,
       sizeBytes: file.size,
-      type: type as "datasheet" | "manual" | "certificate" | "brochure" | "warranty",
+      type: type as "DATASHEET" | "MANUAL" | "CERTIFICATE" | "BROCHURE" | "WARRANTY",
     });
   };
 
@@ -350,10 +350,10 @@ export default function EditProductPage() {
                     value={formData.status}
                     onChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
                     options={[
-                      { value: "draft", label: "Rascunho" },
-                      { value: "active", label: "Ativo" },
-                      { value: "inactive", label: "Inativo" },
-                      { value: "discontinued", label: "Descontinuado" },
+                      { value: "DRAFT", label: "Rascunho" },
+                      { value: "ACTIVE", label: "Ativo" },
+                      { value: "INACTIVE", label: "Inativo" },
+                      { value: "DISCONTINUED", label: "Descontinuado" },
                     ]}
                   />
                 </div>
@@ -436,7 +436,7 @@ export default function EditProductPage() {
                   thumbnailUrl: v.thumbnailUrl ?? undefined,
                   title: v.title,
                   description: v.description ?? undefined,
-                  type: v.type ?? "demo",
+                  type: v.type ?? "DEMO",
                   duration: v.duration ?? undefined,
                   order: v.order ?? 0,
                 }))}
@@ -445,7 +445,7 @@ export default function EditProductPage() {
                     productId,
                     url: video.url,
                     title: video.title,
-                    type: video.type as "training" | "demo" | "testimonial" | "unboxing" | "installation",
+                    type: video.type as "TRAINING" | "DEMO" | "TESTIMONIAL" | "UNBOXING" | "INSTALLATION",
                     description: video.description,
                   })
                 }

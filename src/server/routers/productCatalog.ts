@@ -170,7 +170,7 @@ export const productCatalogRouter = createTRPCRouter({
         .object({
           search: z.string().optional(),
           categoryId: z.string().uuid().optional(),
-          status: z.enum(["draft", "active", "inactive", "discontinued"]).optional(),
+          status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "DISCONTINUED"]).optional(),
           isPublished: z.boolean().optional(),
           page: z.number().int().min(1).optional(),
           limit: z.number().int().min(1).max(100).optional(),
@@ -274,7 +274,7 @@ export const productCatalogRouter = createTRPCRouter({
         categoryId: z.string().uuid().optional(),
         materialId: z.string().uuid().optional(),
         tags: z.array(z.string()).optional(),
-        status: z.enum(["draft", "active", "inactive", "discontinued"]).optional(),
+        status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "DISCONTINUED"]).optional(),
         isPublished: z.boolean().optional(),
         featuredOrder: z.number().int().optional(),
         isShared: z.boolean().optional(),
@@ -298,7 +298,7 @@ export const productCatalogRouter = createTRPCRouter({
           categoryId: input.categoryId,
           materialId: input.materialId,
           tags: input.tags ?? [],
-          status: input.status ?? "draft",
+          status: input.status ?? "DRAFT",
           isPublished: input.isPublished ?? false,
           publishedAt: input.isPublished ? new Date() : null,
           featuredOrder: input.featuredOrder,
@@ -329,7 +329,7 @@ export const productCatalogRouter = createTRPCRouter({
         categoryId: z.string().uuid().optional().nullable(),
         materialId: z.string().uuid().optional().nullable(),
         tags: z.array(z.string()).optional(),
-        status: z.enum(["draft", "active", "inactive", "discontinued"]).optional(),
+        status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "DISCONTINUED"]).optional(),
         isPublished: z.boolean().optional(),
         featuredOrder: z.number().int().optional().nullable(),
         isShared: z.boolean().optional(),
@@ -376,7 +376,7 @@ export const productCatalogRouter = createTRPCRouter({
         data: {
           isPublished: input.publish,
           publishedAt: input.publish ? new Date() : null,
-          status: input.publish ? "active" : "draft",
+          status: input.publish ? "ACTIVE" : "DRAFT",
         },
       });
     }),
@@ -483,7 +483,7 @@ export const productCatalogRouter = createTRPCRouter({
         thumbnailUrl: z.string().url().optional(),
         title: z.string().min(1),
         description: z.string().optional(),
-        type: z.enum(["training", "demo", "testimonial", "unboxing", "installation"]).optional(),
+        type: z.enum(["TRAINING", "DEMO", "TESTIMONIAL", "UNBOXING", "INSTALLATION"]).optional(),
         duration: z.number().int().optional(),
         order: z.number().int().optional(),
       })
@@ -496,7 +496,7 @@ export const productCatalogRouter = createTRPCRouter({
           thumbnailUrl: input.thumbnailUrl,
           title: input.title,
           description: input.description,
-          type: input.type ?? "demo",
+          type: input.type ?? "DEMO",
           duration: input.duration,
           order: input.order ?? 0,
         },
@@ -511,7 +511,7 @@ export const productCatalogRouter = createTRPCRouter({
         thumbnailUrl: z.string().url().optional().nullable(),
         title: z.string().min(1).optional(),
         description: z.string().optional().nullable(),
-        type: z.enum(["training", "demo", "testimonial", "unboxing", "installation"]).optional(),
+        type: z.enum(["TRAINING", "DEMO", "TESTIMONIAL", "UNBOXING", "INSTALLATION"]).optional(),
         duration: z.number().int().optional().nullable(),
         order: z.number().int().optional(),
       })
@@ -558,7 +558,7 @@ export const productCatalogRouter = createTRPCRouter({
         fileName: z.string().min(1),
         fileType: z.string().min(1),
         sizeBytes: z.number().int().optional(),
-        type: z.enum(["datasheet", "manual", "certificate", "brochure", "warranty"]).optional(),
+        type: z.enum(["DATASHEET", "MANUAL", "CERTIFICATE", "BROCHURE", "WARRANTY"]).optional(),
         order: z.number().int().optional(),
       })
     )
@@ -570,7 +570,7 @@ export const productCatalogRouter = createTRPCRouter({
           fileName: input.fileName,
           fileType: input.fileType,
           sizeBytes: input.sizeBytes,
-          type: input.type ?? "datasheet",
+          type: input.type ?? "DATASHEET",
           order: input.order ?? 0,
         },
       });
@@ -581,7 +581,7 @@ export const productCatalogRouter = createTRPCRouter({
       z.object({
         id: z.string().uuid(),
         fileName: z.string().min(1).optional(),
-        type: z.enum(["datasheet", "manual", "certificate", "brochure", "warranty"]).optional(),
+        type: z.enum(["DATASHEET", "MANUAL", "CERTIFICATE", "BROCHURE", "WARRANTY"]).optional(),
         order: z.number().int().optional(),
       })
     )
@@ -614,7 +614,7 @@ export const productCatalogRouter = createTRPCRouter({
       await Promise.all([
         ctx.prisma.product.count({ where: filter }),
         ctx.prisma.product.count({ where: { ...filter, isPublished: true } }),
-        ctx.prisma.product.count({ where: { ...filter, status: "draft" } }),
+        ctx.prisma.product.count({ where: { ...filter, status: "DRAFT" } }),
         ctx.prisma.productCategory.count({ where: filter }),
         ctx.prisma.product.count({ where: { ...filter, images: { some: {} } } }),
       ]);
@@ -737,7 +737,7 @@ export const productCatalogRouter = createTRPCRouter({
           categoryId: input.categoryId,
           materialId: input.materialId,
           listPrice: input.listPrice,
-          status: input.isPublished ? "active" : "draft",
+          status: input.isPublished ? "ACTIVE" : "DRAFT",
           isPublished: input.isPublished ?? false,
           publishedAt: input.isPublished ? new Date() : null,
           companyId: ctx.companyId,

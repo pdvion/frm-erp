@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       where: {
         isPublished: true,
-        status: "active",
+        status: "ACTIVE",
         featuredOrder: { not: null },
       },
       include: {

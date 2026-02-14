@@ -24,7 +24,7 @@ export async function GET() {
             products: {
               where: {
                 isPublished: true,
-                status: "active",
+                status: "ACTIVE",
               },
             },
           },
