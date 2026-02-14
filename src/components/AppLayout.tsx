@@ -21,6 +21,7 @@ const publicRoutes = [
   "/set-password",
   "/mfa/verify",
   "/mfa/setup",
+  "/admission/portal",
 ];
 
 const mobileRoutes = ["/m"];
