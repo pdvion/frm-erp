@@ -3,20 +3,19 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import {
-  X,
   Loader2,
   CheckCircle,
   AlertTriangle,
   XCircle,
   ArrowRight,
   Package,
-  FileText,
   ShoppingCart,
   TrendingUp,
   TrendingDown,
   Minus,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 interface CompareInvoiceModalProps {
   invoiceId: string;
@@ -127,34 +126,14 @@ export function CompareInvoiceModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-theme-card rounded-xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-theme flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-theme">
-                Conferir NFe {invoiceNumber}
-              </h2>
-              <p className="text-sm text-theme-muted">
-                Compare com o pedido de compra
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      title={`Conferir NFe ${invoiceNumber}`}
+      description="Compare com o pedido de compra"
+      size="xl"
+    >
+        <div>
           {/* Seleção de Pedido */}
           {!selectedPO && (
             <div className="p-6">
@@ -379,40 +358,40 @@ export function CompareInvoiceModal({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-theme bg-theme-secondary flex items-center justify-between">
-          <div>
-            {selectedPO && (
+        <ModalFooter>
+          <div className="flex items-center justify-between w-full">
+            <div>
+              {selectedPO && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedPO(null)}
+                >
+                  ← Voltar para seleção
+                </Button>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
-                size="sm"
-                onClick={() => setSelectedPO(null)}
+                onClick={onClose}
               >
-                ← Voltar para seleção
+                Cancelar
               </Button>
-            )}
+              {selectedPO && comparison && (
+                <Button
+                  variant="primary"
+                  onClick={handleApplyAll}
+                  disabled={applyMutation.isPending || linkMutation.isPending}
+                  isLoading={applyMutation.isPending || linkMutation.isPending}
+                  leftIcon={<CheckCircle className="w-4 h-4" />}
+                >
+                  Confirmar Conferência
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              onClick={onClose}
-            >
-              Cancelar
-            </Button>
-            {selectedPO && comparison && (
-              <Button
-                variant="primary"
-                onClick={handleApplyAll}
-                disabled={applyMutation.isPending || linkMutation.isPending}
-                isLoading={applyMutation.isPending || linkMutation.isPending}
-                leftIcon={<CheckCircle className="w-4 h-4" />}
-              >
-                Confirmar Conferência
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+        </ModalFooter>
+    </Modal>
   );
 }

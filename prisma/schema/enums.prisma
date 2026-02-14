@@ -379,6 +379,7 @@ enum TaskEntityType {
   PAYABLE
   RECEIVABLE
   PRODUCTION_ORDER
+  ADMISSION
   OTHER
 
   @@map("task_entity_type")

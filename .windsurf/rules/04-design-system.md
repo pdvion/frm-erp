@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Design System FRM ERP — componentes obrigatórios, theme tokens, zero hardcode
+trigger: always_on
 ---
 
 # Design System — Zero Hardcode

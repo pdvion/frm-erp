@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Arquitetura do projeto FRM ERP — Service Layer, módulos, schema modularizado
+trigger: always_on
 ---
 
 # Arquitetura — FRM ERP

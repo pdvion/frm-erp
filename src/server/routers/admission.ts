@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { auditUpdate } from "../services/audit";
+import { AdmissionNotificationService } from "../services/admission-notification";
 // admission-portal service used by API routes, not directly by this router
 
 // Constants
@@ -160,6 +161,20 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
+      // Notify: process created
+      const notifSvc = new AdmissionNotificationService(ctx.prisma);
+      await notifSvc.onStatusChange(
+        {
+          admissionId: admission.id,
+          candidateName: admission.candidateName,
+          companyId: ctx.companyId,
+          recruiterId: admission.recruiterId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        null,
+        "DRAFT"
+      );
+
       return admission;
     }),
 
@@ -308,14 +323,30 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Documento não encontrado" });
       }
 
-      return ctx.prisma.admissionDocument.update({
+      const updated = await ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
           fileUrl: input.fileUrl,
           status: "UPLOADED",
           uploadedAt: new Date(),
         },
+        include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true } } },
       });
+
+      // Notify: document uploaded
+      const notifSvc = new AdmissionNotificationService(ctx.prisma);
+      await notifSvc.onDocumentUploaded(
+        {
+          admissionId: updated.admissionProcess.id,
+          candidateName: updated.admissionProcess.candidateName,
+          companyId: updated.admissionProcess.companyId,
+          recruiterId: updated.admissionProcess.recruiterId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        updated.documentName
+      );
+
+      return updated;
     }),
 
   // Verificar documento
@@ -338,7 +369,7 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Documento não encontrado" });
       }
 
-      return ctx.prisma.admissionDocument.update({
+      const updatedDoc = await ctx.prisma.admissionDocument.update({
         where: { id: input.documentId },
         data: {
           status: input.approved ? "VERIFIED" : "REJECTED",
@@ -346,7 +377,26 @@ export const admissionRouter = createTRPCRouter({
           verifiedBy: ctx.tenant.userId,
           rejectionReason: input.approved ? null : input.rejectionReason,
         },
+        include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true } } },
       });
+
+      // Notify: document rejected
+      if (!input.approved) {
+        const notifSvc = new AdmissionNotificationService(ctx.prisma);
+        await notifSvc.onDocumentRejected(
+          {
+            admissionId: updatedDoc.admissionProcess.id,
+            candidateName: updatedDoc.admissionProcess.candidateName,
+            companyId: updatedDoc.admissionProcess.companyId,
+            recruiterId: updatedDoc.admissionProcess.recruiterId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          updatedDoc.documentName,
+          input.rejectionReason ?? "Sem motivo informado"
+        );
+      }
+
+      return updatedDoc;
     }),
 
   // Agendar exame
@@ -396,7 +446,7 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Exame não encontrado" });
       }
 
-      return ctx.prisma.admissionExam.update({
+      const updatedExam = await ctx.prisma.admissionExam.update({
         where: { id: input.examId },
         data: {
           result: input.result,
@@ -406,7 +456,26 @@ export const admissionRouter = createTRPCRouter({
           validUntil: input.validUntil ?? undefined,
           notes: input.notes,
         },
+        include: { admissionProcess: { select: { id: true, candidateName: true, companyId: true, recruiterId: true, managerId: true } } },
       });
+
+      // Notify: exam result
+      if (input.result !== "PENDING") {
+        const notifSvc = new AdmissionNotificationService(ctx.prisma);
+        await notifSvc.onExamResult(
+          {
+            admissionId: updatedExam.admissionProcess.id,
+            candidateName: updatedExam.admissionProcess.candidateName,
+            companyId: updatedExam.admissionProcess.companyId,
+            recruiterId: updatedExam.admissionProcess.recruiterId,
+            managerId: updatedExam.admissionProcess.managerId,
+            userId: ctx.tenant.userId ?? ctx.companyId,
+          },
+          input.result as "FIT" | "UNFIT" | "FIT_RESTRICTIONS"
+        );
+      }
+
+      return updatedExam;
     }),
 
   // Completar etapa
@@ -486,13 +555,30 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
       }
 
-      return ctx.prisma.admissionProcess.update({
+      const approved = await ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "APPROVED",
           notes: input.notes,
         },
       });
+
+      // Notify: approved
+      const notifSvcApprove = new AdmissionNotificationService(ctx.prisma);
+      await notifSvcApprove.onStatusChange(
+        {
+          admissionId: approved.id,
+          candidateName: approved.candidateName,
+          companyId: ctx.companyId,
+          recruiterId: approved.recruiterId,
+          managerId: approved.managerId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        admission.status as "APPROVAL",
+        "APPROVED"
+      );
+
+      return approved;
     }),
 
   // Rejeitar admissão
@@ -509,13 +595,30 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
       }
 
-      return ctx.prisma.admissionProcess.update({
+      const rejected = await ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "REJECTED",
           notes: input.reason,
         },
       });
+
+      // Notify: rejected
+      const notifSvcReject = new AdmissionNotificationService(ctx.prisma);
+      await notifSvcReject.onStatusChange(
+        {
+          admissionId: rejected.id,
+          candidateName: rejected.candidateName,
+          companyId: ctx.companyId,
+          recruiterId: rejected.recruiterId,
+          managerId: rejected.managerId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        admission.status as "APPROVAL",
+        "REJECTED"
+      );
+
+      return rejected;
     }),
 
   // Completar admissão (criar funcionário)
@@ -570,6 +673,21 @@ export const admissionRouter = createTRPCRouter({
         },
       });
 
+      // Notify: completed
+      const notifSvcComplete = new AdmissionNotificationService(ctx.prisma);
+      await notifSvcComplete.onStatusChange(
+        {
+          admissionId: admission.id,
+          candidateName: admission.candidateName,
+          companyId: ctx.companyId,
+          recruiterId: admission.recruiterId,
+          managerId: admission.managerId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        "APPROVED",
+        "COMPLETED"
+      );
+
       return { admission, employee };
     }),
 
@@ -587,13 +705,30 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Processo não encontrado" });
       }
 
-      return ctx.prisma.admissionProcess.update({
+      const cancelled = await ctx.prisma.admissionProcess.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
           notes: input.reason,
         },
       });
+
+      // Notify: cancelled
+      const notifSvcCancel = new AdmissionNotificationService(ctx.prisma);
+      await notifSvcCancel.onStatusChange(
+        {
+          admissionId: cancelled.id,
+          candidateName: cancelled.candidateName,
+          companyId: ctx.companyId,
+          recruiterId: cancelled.recruiterId,
+          managerId: cancelled.managerId,
+          userId: ctx.tenant.userId ?? ctx.companyId,
+        },
+        admission.status as "DRAFT" | "DOCUMENTS" | "EXAM" | "APPROVAL",
+        "CANCELLED"
+      );
+
+      return cancelled;
     }),
 
   // Dashboard

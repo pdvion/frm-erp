@@ -1,3 +1,9 @@
+---
+activation: always_on
+description: CodeRabbit Checklist — verificações de segurança, performance e padrões recorrentes
+trigger: always_on
+---
+
 # CodeRabbit Checklist - Problemas Recorrentes
 
 ## Objetivo

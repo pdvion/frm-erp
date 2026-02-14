@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Verificações obrigatórias antes de criar arquivos — buscar existente, ler router, verificar schema
+trigger: always_on
 ---
 
 # Antes de Escrever Código — Verificações Obrigatórias
