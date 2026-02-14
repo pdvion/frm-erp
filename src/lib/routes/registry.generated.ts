@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T21:58:34.075Z
+ * Data: 2026-02-14T22:35:41.109Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -141,6 +141,12 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/sales", label: "Pedidos", showInMenu: true, enabled: true,
         children: [
+          { path: "/sales/crm", label: "CRM", showInMenu: true, enabled: true,
+            children: [
+              { path: "/sales/crm/contacts", label: "Contatos", showInMenu: true, enabled: true },
+              { path: "/sales/crm/opportunities", label: "Oportunidades", showInMenu: true, enabled: true },
+              { path: "/sales/crm/pipelines", label: "Pipelines", showInMenu: true, enabled: true }
+            ] },
           { path: "/sales/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
           { path: "/sales/invoices", label: "Invoices", showInMenu: true, enabled: true },
           { path: "/sales/leads", label: "Leads", showInMenu: true, enabled: true,
