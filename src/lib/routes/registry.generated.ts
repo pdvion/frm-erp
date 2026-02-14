@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T22:35:41.109Z
+ * Data: 2026-02-14T23:56:41.005Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -283,6 +283,13 @@ export const modules: ModuleDefinition[] = [
           { path: "/oee/production-logs", label: "Production Logs", showInMenu: true, enabled: true },
           { path: "/oee/stops", label: "Paradas", showInMenu: true, enabled: true },
           { path: "/oee/work-centers", label: "Work Centers", showInMenu: true, enabled: true }
+        ] },
+      { path: "/maintenance", label: "Manutenção", showInMenu: true, enabled: true,
+        children: [
+          { path: "/maintenance/equipment", label: "Equipamentos", showInMenu: true, enabled: true },
+          { path: "/maintenance/failure-codes", label: "Códigos de Falha", showInMenu: true, enabled: true },
+          { path: "/maintenance/orders", label: "Ordens de Serviço", showInMenu: true, enabled: true },
+          { path: "/maintenance/plans", label: "Planos", showInMenu: true, enabled: true }
         ] }
     ],
   },

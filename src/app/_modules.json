@@ -54,7 +54,7 @@
       "label": "Produção",
       "icon": "Factory",
       "order": 7,
-      "includes": ["production", "engineering", "mrp", "oee"]
+      "includes": ["production", "engineering", "mrp", "oee", "maintenance"]
     },
     {
       "id": "rh",
