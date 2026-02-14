@@ -1,5 +1,6 @@
 ---
 description: Cria e aplica migrations no banco Supabase
+auto_execution_mode: 3
 ---
 
 # Workflow: Database Migration

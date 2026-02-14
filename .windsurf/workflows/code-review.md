@@ -1,5 +1,6 @@
 ---
 description: Processo de Code Review e criação de PRs
+auto_execution_mode: 3
 ---
 
 # Workflow: Code Review
