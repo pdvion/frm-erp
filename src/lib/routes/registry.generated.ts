@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T20:35:56.348Z
+ * Data: 2026-02-14T21:58:34.075Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -68,16 +68,16 @@ export const modules: ModuleDefinition[] = [
         ] },
       { path: "/receiving", label: "Recebimento", showInMenu: true, enabled: true,
         children: [
-          { path: "/receiving/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/receiving/new", label: "Novo Recebimento", showInMenu: true, enabled: true }
         ] },
       { path: "/requisitions", label: "Requisições", showInMenu: true, enabled: true,
         children: [
-          { path: "/requisitions/consumption", label: "Consumption", showInMenu: true, enabled: true },
+          { path: "/requisitions/consumption", label: "Consumo", showInMenu: true, enabled: true },
           { path: "/requisitions/new", label: "Nova Requisição", showInMenu: true, enabled: true }
         ] },
       { path: "/supplier-returns", label: "Devoluções", showInMenu: true, enabled: true,
         children: [
-          { path: "/supplier-returns/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/supplier-returns/new", label: "Nova Devolução", showInMenu: true, enabled: true }
         ] }
     ],
   },
@@ -399,7 +399,7 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/workflow/definitions", label: "Definições", showInMenu: true, enabled: true,
         children: [
-          { path: "/workflow/definitions/new", label: "Novo Workflow", showInMenu: true, enabled: true,
+          { path: "/workflow/definitions/new", label: "Nova Definição", showInMenu: true, enabled: true,
             children: [
               { path: "/workflow/definitions/new/visual", label: "Editor Visual", showInMenu: true, enabled: true }
             ] }
