@@ -14,9 +14,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Select } from "@/components/ui/Select";
 import { PageCard } from "@/components/ui/PageCard";
 import { Alert } from "@/components/ui/Alert";
+import { ComboboxWithCreate } from "@/components/ui/ComboboxWithCreate";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 function formatCPF(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -52,15 +53,44 @@ export default function NewAdmissionPage() {
     notes: "",
   });
 
-  const { data: departments } = trpc.hr.listDepartments.useQuery(
+  const [showCreateDept, setShowCreateDept] = useState(false);
+  const [showCreatePos, setShowCreatePos] = useState(false);
+  const [newDept, setNewDept] = useState({ code: "", name: "" });
+  const [newPos, setNewPos] = useState({ code: "", name: "" });
+
+  const utils = trpc.useUtils();
+
+  const { data: departments, isLoading: loadingDepts } = trpc.hr.listDepartments.useQuery(
     undefined,
     { staleTime: 60_000 }
   );
 
-  const { data: positions } = trpc.hr.listPositions.useQuery(
+  const { data: positions, isLoading: loadingPos } = trpc.hr.listPositions.useQuery(
     undefined,
     { staleTime: 60_000 }
   );
+
+  const createDeptMutation = trpc.hr.createDepartment.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Departamento "${data.name}" criado!`);
+      utils.hr.listDepartments.invalidate();
+      setForm((p) => ({ ...p, departmentId: data.id }));
+      setShowCreateDept(false);
+      setNewDept({ code: "", name: "" });
+    },
+    onError: (err) => toast.error(`Erro ao criar departamento: ${err.message}`),
+  });
+
+  const createPosMutation = trpc.hr.createPosition.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Cargo "${data.name}" criado!`);
+      utils.hr.listPositions.invalidate();
+      setForm((p) => ({ ...p, positionId: data.id }));
+      setShowCreatePos(false);
+      setNewPos({ code: "", name: "" });
+    },
+    onError: (err) => toast.error(`Erro ao criar cargo: ${err.message}`),
+  });
 
   const createMutation = trpc.admission.create.useMutation({
     onSuccess: (data) => {
@@ -158,26 +188,34 @@ export default function NewAdmissionPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Departamento</label>
-              <Select
+              <ComboboxWithCreate
                 value={form.departmentId}
                 onChange={(val) => setForm((p) => ({ ...p, departmentId: val }))}
-                placeholder="Selecione..."
+                placeholder="Selecione o departamento..."
+                searchPlaceholder="Buscar departamento..."
+                isLoading={loadingDepts}
                 options={departments?.map((dept: { id: string; name: string }) => ({
                   value: dept.id,
                   label: dept.name,
                 })) ?? []}
+                createLabel="Criar departamento"
+                onCreateClick={() => setShowCreateDept(true)}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-theme mb-1">Cargo</label>
-              <Select
+              <ComboboxWithCreate
                 value={form.positionId}
                 onChange={(val) => setForm((p) => ({ ...p, positionId: val }))}
-                placeholder="Selecione..."
+                placeholder="Selecione o cargo..."
+                searchPlaceholder="Buscar cargo..."
+                isLoading={loadingPos}
                 options={positions?.map((pos: { id: string; name: string }) => ({
                   value: pos.id,
                   label: pos.name,
                 })) ?? []}
+                createLabel="Criar cargo"
+                onCreateClick={() => setShowCreatePos(true)}
               />
             </div>
             <Input
@@ -230,6 +268,77 @@ export default function NewAdmissionPage() {
           </Button>
         </div>
       </form>
+      {/* Modal: Criar Departamento */}
+      <Modal
+        isOpen={showCreateDept}
+        onClose={() => setShowCreateDept(false)}
+        title="Criar Departamento"
+        description="O departamento será selecionado automaticamente após a criação."
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Código *"
+            value={newDept.code}
+            onChange={(e) => setNewDept((p) => ({ ...p, code: e.target.value }))}
+            placeholder="Ex: DEP001"
+          />
+          <Input
+            label="Nome *"
+            value={newDept.name}
+            onChange={(e) => setNewDept((p) => ({ ...p, name: e.target.value }))}
+            placeholder="Ex: Recursos Humanos"
+          />
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => setShowCreateDept(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => createDeptMutation.mutate({ code: newDept.code, name: newDept.name })}
+            disabled={!newDept.code.trim() || !newDept.name.trim() || createDeptMutation.isPending}
+            isLoading={createDeptMutation.isPending}
+          >
+            Criar Departamento
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Modal: Criar Cargo */}
+      <Modal
+        isOpen={showCreatePos}
+        onClose={() => setShowCreatePos(false)}
+        title="Criar Cargo"
+        description="O cargo será selecionado automaticamente após a criação."
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Código *"
+            value={newPos.code}
+            onChange={(e) => setNewPos((p) => ({ ...p, code: e.target.value }))}
+            placeholder="Ex: POS001"
+          />
+          <Input
+            label="Nome *"
+            value={newPos.name}
+            onChange={(e) => setNewPos((p) => ({ ...p, name: e.target.value }))}
+            placeholder="Ex: Analista de RH"
+          />
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => setShowCreatePos(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => createPosMutation.mutate({ code: newPos.code, name: newPos.name })}
+            disabled={!newPos.code.trim() || !newPos.name.trim() || createPosMutation.isPending}
+            isLoading={createPosMutation.isPending}
+          >
+            Criar Cargo
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
