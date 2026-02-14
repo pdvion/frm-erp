@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { syncEntityEmbedding } from "../services/embeddingSync";
+import { emitWebhook } from "../services/webhook";
 
 const salesOrderStatusEnum = z.enum([
   "PENDING",
@@ -181,6 +182,12 @@ export const salesOrdersRouter = createTRPCRouter({
       });
 
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "sales_order", order.id, "create");
+
+      emitWebhook(ctx.prisma, ctx.companyId, "order.created", {
+        id: order.id, code: order.code, customerId: order.customerId,
+        totalValue: Number(order.totalValue), status: order.status,
+      }, { entityType: "SalesOrder", entityId: order.id });
+
       return order;
     }),
 
@@ -240,6 +247,11 @@ export const salesOrdersRouter = createTRPCRouter({
       });
 
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "sales_order", order.id, "update");
+
+      emitWebhook(ctx.prisma, ctx.companyId, "order.updated", {
+        id: order.id, code: existing.code, totalValue: Number(totalValue), status: order.status,
+      }, { entityType: "SalesOrder", entityId: order.id });
+
       return order;
     }),
 
@@ -342,7 +354,7 @@ export const salesOrdersRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Pedido não pode ser cancelado" });
       }
 
-      return ctx.prisma.salesOrder.update({
+      const cancelled = await ctx.prisma.salesOrder.update({
         where: { id: input.id },
         data: {
           status: "CANCELLED",
@@ -350,6 +362,13 @@ export const salesOrdersRouter = createTRPCRouter({
           cancellationReason: input.reason,
         },
       });
+
+      emitWebhook(ctx.prisma, ctx.companyId, "order.cancelled", {
+        id: cancelled.id, code: cancelled.code, reason: input.reason,
+        totalValue: Number(cancelled.totalValue),
+      }, { entityType: "SalesOrder", entityId: cancelled.id });
+
+      return cancelled;
     }),
 
   // Adicionar item ao pedido

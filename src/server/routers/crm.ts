@@ -10,6 +10,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { CrmService } from "../services/crm";
+import { emitWebhook } from "../services/webhook";
 
 export const crmRouter = createTRPCRouter({
   // ========================================================================
@@ -293,7 +294,13 @@ export const crmRouter = createTRPCRouter({
     .input(z.object({ opportunityId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const svc = new CrmService(ctx.prisma);
-      return svc.winOpportunity({ ...input, companyId: ctx.tenant.companyId! });
+      const result = await svc.winOpportunity({ ...input, companyId: ctx.tenant.companyId! });
+
+      emitWebhook(ctx.prisma, ctx.tenant.companyId!, "opportunity.won", {
+        id: input.opportunityId, title: result.title, value: Number(result.value),
+      }, { entityType: "Opportunity", entityId: input.opportunityId });
+
+      return result;
     }),
 
   loseOpportunity: tenantProcedure
@@ -305,7 +312,14 @@ export const crmRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const svc = new CrmService(ctx.prisma);
-      return svc.loseOpportunity({ ...input, companyId: ctx.tenant.companyId! });
+      const result = await svc.loseOpportunity({ ...input, companyId: ctx.tenant.companyId! });
+
+      emitWebhook(ctx.prisma, ctx.tenant.companyId!, "opportunity.lost", {
+        id: input.opportunityId, title: result.title, value: Number(result.value),
+        lostReason: input.lostReason,
+      }, { entityType: "Opportunity", entityId: input.opportunityId });
+
+      return result;
     }),
 
   // ========================================================================

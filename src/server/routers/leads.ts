@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { emitWebhook } from "../services/webhook";
 
 export const leadsRouter = createTRPCRouter({
   list: tenantProcedure
@@ -144,6 +145,11 @@ export const leadsRouter = createTRPCRouter({
           },
         });
       });
+
+      emitWebhook(ctx.prisma, ctx.companyId, "lead.created", {
+        id: lead.id, code: lead.code, companyName: lead.companyName,
+        source: lead.source, estimatedValue: Number(lead.estimatedValue ?? 0),
+      }, { entityType: "Lead", entityId: lead.id });
 
       return lead;
     }),
@@ -296,7 +302,7 @@ export const leadsRouter = createTRPCRouter({
       }
 
       // Transação para garantir atomicidade (nextCode + customer + lead update)
-      return ctx.prisma.$transaction(async (tx) => {
+      const customer = await ctx.prisma.$transaction(async (tx) => {
         const lastCustomer = await tx.customer.findFirst({
           where: { companyId: ctx.companyId },
           orderBy: { code: "desc" },
@@ -305,7 +311,7 @@ export const leadsRouter = createTRPCRouter({
 
         const nextCode = lastCustomer ? String(parseInt(lastCustomer.code) + 1).padStart(6, "0") : "000001";
 
-        const customer = await tx.customer.create({
+        const created = await tx.customer.create({
           data: {
             code: nextCode,
             companyId: ctx.companyId,
@@ -319,14 +325,20 @@ export const leadsRouter = createTRPCRouter({
         await tx.lead.update({
           where: { id: input.leadId },
           data: {
-            customerId: customer.id,
+            customerId: created.id,
             status: "WON",
             wonAt: new Date(),
           },
         });
 
-        return customer;
+        return created;
       });
+
+      emitWebhook(ctx.prisma, ctx.companyId, "lead.converted", {
+        leadId: input.leadId, companyName: lead.companyName,
+      }, { entityType: "Lead", entityId: input.leadId });
+
+      return customer;
     }),
 
   // Estatísticas do funil

@@ -603,3 +603,27 @@ export class WebhookService {
     };
   }
 }
+
+// ============================================================
+// CONVENIENCE HELPER FOR ROUTERS
+// ============================================================
+
+/**
+ * Fire-and-forget webhook emission from any router context.
+ * Non-blocking: catches all errors internally.
+ *
+ * Usage:
+ *   emitWebhook(ctx.prisma, ctx.companyId, "order.created", { id, code, ... });
+ */
+export function emitWebhook(
+  prisma: PrismaClient,
+  companyId: string,
+  eventType: WebhookEventType,
+  payload: Record<string, unknown>,
+  options?: { entityType?: string; entityId?: string; metadata?: Record<string, unknown> }
+): void {
+  const svc = new WebhookService(prisma);
+  svc.emit(companyId, eventType, payload, options).catch((e: unknown) =>
+    console.warn(`[webhook] emitWebhook ${eventType} failed:`, e instanceof Error ? e.message : String(e))
+  );
+}

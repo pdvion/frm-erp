@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { Prisma } from "@prisma/client";
 import { syncEntityEmbedding } from "../services/embeddingSync";
+import { emitWebhook } from "../services/webhook";
 
 // Tabela INSS 2024
 function calculateINSS(salary: number): number {
@@ -182,6 +183,11 @@ export const hrRouter = createTRPCRouter({
       });
 
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "employee", employee.id, "create");
+
+      emitWebhook(ctx.prisma, ctx.companyId, "employee.created", {
+        id: employee.id, name: employee.name, code: employee.code,
+        contractType: employee.contractType,
+      }, { entityType: "Employee", entityId: employee.id });
 
       return employee;
     }),
