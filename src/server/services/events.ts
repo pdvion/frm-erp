@@ -200,12 +200,14 @@ class EventService {
       // Dispatch to external webhooks (non-blocking)
       const webhookEventType = EVENT_TO_WEBHOOK[type];
       if (webhookEventType && context.companyId) {
+        const entityId = extractEntityId(data);
+        const emitOptions: { entityType?: string; entityId?: string; metadata?: Record<string, unknown> } = {};
+        if (data.entityType) emitOptions.entityType = String(data.entityType);
+        if (entityId) emitOptions.entityId = entityId;
+        if (context.metadata) emitOptions.metadata = context.metadata;
+
         this.webhookService
-          .emit(context.companyId, webhookEventType, data, {
-            entityType: String(data.entityType ?? ""),
-            entityId: extractEntityId(data),
-            metadata: context.metadata,
-          })
+          .emit(context.companyId, webhookEventType, data, emitOptions)
           .catch((e: unknown) =>
             console.warn(`[webhook] Failed to dispatch ${webhookEventType}:`, e instanceof Error ? e.message : String(e))
           );

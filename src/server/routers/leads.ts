@@ -148,7 +148,7 @@ export const leadsRouter = createTRPCRouter({
 
       emitWebhook(ctx.prisma, ctx.companyId, "lead.created", {
         id: lead.id, code: lead.code, companyName: lead.companyName,
-        source: lead.source, estimatedValue: Number(lead.estimatedValue ?? 0),
+        source: lead.source, estimatedValue: lead.estimatedValue?.toString() ?? "0",
       }, { entityType: "Lead", entityId: lead.id });
 
       return lead;
