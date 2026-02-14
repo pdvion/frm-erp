@@ -185,8 +185,7 @@ export const hrRouter = createTRPCRouter({
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId }, "employee", employee.id, "create");
 
       emitWebhook(ctx.prisma, ctx.companyId, "employee.created", {
-        id: employee.id, name: employee.name, code: employee.code,
-        contractType: employee.contractType,
+        id: employee.id, code: employee.code,
       }, { entityType: "Employee", entityId: employee.id });
 
       return employee;

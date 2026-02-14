@@ -297,7 +297,7 @@ export const crmRouter = createTRPCRouter({
       const result = await svc.winOpportunity({ ...input, companyId: ctx.tenant.companyId! });
 
       emitWebhook(ctx.prisma, ctx.tenant.companyId!, "opportunity.won", {
-        id: input.opportunityId, title: result.title, value: Number(result.value),
+        id: input.opportunityId, title: result.title, value: String(result.value),
       }, { entityType: "Opportunity", entityId: input.opportunityId });
 
       return result;
@@ -315,7 +315,7 @@ export const crmRouter = createTRPCRouter({
       const result = await svc.loseOpportunity({ ...input, companyId: ctx.tenant.companyId! });
 
       emitWebhook(ctx.prisma, ctx.tenant.companyId!, "opportunity.lost", {
-        id: input.opportunityId, title: result.title, value: Number(result.value),
+        id: input.opportunityId, title: result.title, value: String(result.value),
         lostReason: input.lostReason,
       }, { entityType: "Opportunity", entityId: input.opportunityId });
 

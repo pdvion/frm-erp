@@ -56,6 +56,17 @@ interface EventPayload {
 }
 
 /**
+ * Extracts the entity ID from event data based on known field naming conventions.
+ */
+function extractEntityId(data: Record<string, unknown>): string {
+  const idFields = ["entityId", "orderId", "quoteId", "payableId", "receivableId", "invoiceId", "materialId"] as const;
+  for (const field of idFields) {
+    if (data[field]) return String(data[field]);
+  }
+  return "";
+}
+
+/**
  * Maps internal EventType → WebhookEventType for automatic webhook dispatch.
  * Only events with a matching webhook type are forwarded.
  */
@@ -192,7 +203,7 @@ class EventService {
         this.webhookService
           .emit(context.companyId, webhookEventType, data, {
             entityType: String(data.entityType ?? ""),
-            entityId: String(data.entityId ?? data.orderId ?? data.quoteId ?? data.payableId ?? data.receivableId ?? data.invoiceId ?? ""),
+            entityId: extractEntityId(data),
             metadata: context.metadata,
           })
           .catch((e: unknown) =>

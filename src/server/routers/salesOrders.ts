@@ -249,7 +249,7 @@ export const salesOrdersRouter = createTRPCRouter({
       syncEntityEmbedding({ prisma: ctx.prisma, companyId: ctx.companyId! }, "sales_order", order.id, "update");
 
       emitWebhook(ctx.prisma, ctx.companyId, "order.updated", {
-        id: order.id, code: existing.code, totalValue: Number(totalValue), status: order.status,
+        id: order.id, code: existing.code, totalValue: Number(order.totalValue), status: order.status,
       }, { entityType: "SalesOrder", entityId: order.id });
 
       return order;
@@ -365,7 +365,7 @@ export const salesOrdersRouter = createTRPCRouter({
 
       emitWebhook(ctx.prisma, ctx.companyId, "order.cancelled", {
         id: cancelled.id, code: cancelled.code, reason: input.reason,
-        totalValue: Number(cancelled.totalValue),
+        totalValue: Number(cancelled.totalValue), status: cancelled.status,
       }, { entityType: "SalesOrder", entityId: cancelled.id });
 
       return cancelled;
