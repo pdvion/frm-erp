@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T16:18:34.598Z
+ * Data: 2026-02-14T17:57:39.741Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -474,7 +474,8 @@ export const modules: ModuleDefinition[] = [
           { path: "/settings/users", label: "Users", showInMenu: true, enabled: true,
             children: [
               { path: "/settings/users/new", label: "New", showInMenu: true, enabled: true }
-            ] }
+            ] },
+          { path: "/settings/webhooks", label: "Webhooks", showInMenu: true, enabled: true }
         ] }
     ],
   }
