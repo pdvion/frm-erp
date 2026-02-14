@@ -97,6 +97,19 @@ ls src/server/services/
 
 Se a lógica que você precisa já existe em um service, **use-o** em vez de reimplementar.
 
+## 7. SEMPRE Manter Sidebar Sincronizado
+
+Ao criar nova página em `src/app/`:
+1. Verificar/criar `_menu.json` na pasta com label PT-BR
+2. Verificar que a pasta está incluída em `src/app/_modules.json`
+3. Rodar `pnpm routes:generate` para atualizar o registry
+4. **NUNCA editar** `src/lib/routes/registry.generated.ts` — é auto-gerado
+
+```json
+// Exemplo de _menu.json para subpasta
+{ "label": "Novo Material" }
+```
+
 ## Checklist Rápido
 
 - [ ] Busquei por arquivos com nome similar?
@@ -105,3 +118,5 @@ Se a lógica que você precisa já existe em um service, **use-o** em vez de rei
 - [ ] Verifiquei os campos do model no schema?
 - [ ] Verifiquei branches/PRs pendentes?
 - [ ] Verifiquei services existentes?
+- [ ] Criei `_menu.json` com label PT-BR na nova pasta?
+- [ ] Verifiquei que o módulo está no `_modules.json`?

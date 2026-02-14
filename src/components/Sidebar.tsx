@@ -16,7 +16,7 @@ import {
   Monitor,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { getMenuStructure } from "@/lib/routes/registry";
+import { getMenuStructure } from "@/lib/routes/registry.generated";
 import type { MenuItem } from "@/lib/routes/types";
 import { trpc } from "@/lib/trpc";
 
