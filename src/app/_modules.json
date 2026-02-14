@@ -113,6 +113,13 @@
       "includes": ["admin", "audit"]
     },
     {
+      "id": "setup",
+      "label": "Setup",
+      "icon": "Rocket",
+      "order": 98,
+      "includes": ["setup"]
+    },
+    {
       "id": "configuracoes",
       "label": "Configurações",
       "icon": "Settings",

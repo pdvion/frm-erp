@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T18:37:20.751Z
+ * Data: 2026-02-14T21:58:34.075Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -20,6 +20,7 @@ import {
   Globe,
   Home,
   Receipt,
+  Rocket,
   Settings,
   Shield,
   ShoppingCart,
@@ -49,34 +50,34 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/materials", label: "Materiais", showInMenu: true, enabled: true, tags: ["cadastro","compras"],
         children: [
-          { path: "/materials/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/materials/new", label: "Novo Material", showInMenu: true, enabled: true }
         ] },
       { path: "/suppliers", label: "Fornecedores", showInMenu: true, enabled: true, tags: ["cadastro","compras"],
         children: [
-          { path: "/suppliers/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/suppliers/new", label: "Novo Fornecedor", showInMenu: true, enabled: true }
         ] },
       { path: "/quotes", label: "Cotações", showInMenu: true, enabled: true,
         children: [
-          { path: "/quotes/compare", label: "Compare", showInMenu: true, enabled: true },
-          { path: "/quotes/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/quotes/compare", label: "Comparar Cotações", showInMenu: true, enabled: true },
+          { path: "/quotes/new", label: "Nova Cotação", showInMenu: true, enabled: true }
         ] },
       { path: "/purchase-orders", label: "Ordens de Compra", showInMenu: true, enabled: true,
         children: [
           { path: "/purchase-orders/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
-          { path: "/purchase-orders/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/purchase-orders/new", label: "Novo Pedido de Compra", showInMenu: true, enabled: true }
         ] },
       { path: "/receiving", label: "Recebimento", showInMenu: true, enabled: true,
         children: [
-          { path: "/receiving/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/receiving/new", label: "Novo Recebimento", showInMenu: true, enabled: true }
         ] },
       { path: "/requisitions", label: "Requisições", showInMenu: true, enabled: true,
         children: [
-          { path: "/requisitions/consumption", label: "Consumption", showInMenu: true, enabled: true },
-          { path: "/requisitions/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/requisitions/consumption", label: "Consumo", showInMenu: true, enabled: true },
+          { path: "/requisitions/new", label: "Nova Requisição", showInMenu: true, enabled: true }
         ] },
       { path: "/supplier-returns", label: "Devoluções", showInMenu: true, enabled: true,
         children: [
-          { path: "/supplier-returns/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/supplier-returns/new", label: "Nova Devolução", showInMenu: true, enabled: true }
         ] }
     ],
   },
@@ -122,7 +123,7 @@ export const modules: ModuleDefinition[] = [
         ] },
       { path: "/transfers", label: "Transferências", showInMenu: true, enabled: true,
         children: [
-          { path: "/transfers/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/transfers/new", label: "Nova Transferência", showInMenu: true, enabled: true }
         ] },
       { path: "/picking", label: "Picking List", showInMenu: true, enabled: true,
         children: [
@@ -146,7 +147,7 @@ export const modules: ModuleDefinition[] = [
             children: [
               { path: "/sales/leads/new", label: "New", showInMenu: true, enabled: true }
             ] },
-          { path: "/sales/new", label: "New", showInMenu: true, enabled: true },
+          { path: "/sales/new", label: "Novo Pedido de Venda", showInMenu: true, enabled: true },
           { path: "/sales/orders", label: "Orders", showInMenu: true, enabled: true },
           { path: "/sales/quotes", label: "Quotes", showInMenu: true, enabled: true,
             children: [
@@ -155,17 +156,17 @@ export const modules: ModuleDefinition[] = [
         ] },
       { path: "/billing", label: "Faturamento", showInMenu: true, enabled: true,
         children: [
-          { path: "/billing/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/billing/new", label: "Nova Fatura", showInMenu: true, enabled: true }
         ] },
       { path: "/customers", label: "Clientes", showInMenu: true, enabled: true,
         children: [
-          { path: "/customers/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/customers/new", label: "Novo Cliente", showInMenu: true, enabled: true }
         ] },
       { path: "/catalog", label: "Catálogo", showInMenu: true, enabled: true,
         children: [
-          { path: "/catalog/categories", label: "Categories", showInMenu: true, enabled: true },
-          { path: "/catalog/new", label: "New", showInMenu: true, enabled: true },
-          { path: "/catalog/sync", label: "Sync", showInMenu: true, enabled: true }
+          { path: "/catalog/categories", label: "Categorias", showInMenu: true, enabled: true },
+          { path: "/catalog/new", label: "Novo Produto", showInMenu: true, enabled: true },
+          { path: "/catalog/sync", label: "Sincronização", showInMenu: true, enabled: true }
         ] }
     ],
   },
@@ -177,18 +178,18 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/finance", label: "Financeiro", showInMenu: true, enabled: true,
         children: [
-          { path: "/finance/dashboard", label: "Dashboard", showInMenu: true, enabled: true }
+          { path: "/finance/dashboard", label: "Dashboard Financeiro", showInMenu: true, enabled: true }
         ] },
       { path: "/payables", label: "Contas a Pagar", showInMenu: true, enabled: true,
         children: [
-          { path: "/payables/batch-payment", label: "Batch Payment", showInMenu: true, enabled: true },
+          { path: "/payables/batch-payment", label: "Pagamento em Lote", showInMenu: true, enabled: true },
           { path: "/payables/boletos", label: "Boletos", showInMenu: true, enabled: true,
             children: [
               { path: "/payables/boletos/new", label: "New", showInMenu: true, enabled: true }
             ] },
           { path: "/payables/cashflow", label: "Cashflow", showInMenu: true, enabled: true },
           { path: "/payables/cnab", label: "Cnab", showInMenu: true, enabled: true },
-          { path: "/payables/new", label: "New", showInMenu: true, enabled: true },
+          { path: "/payables/new", label: "Nova Conta a Pagar", showInMenu: true, enabled: true },
           { path: "/payables/pix", label: "Pix", showInMenu: true, enabled: true,
             children: [
               { path: "/payables/pix/new", label: "New", showInMenu: true, enabled: true },
@@ -197,11 +198,11 @@ export const modules: ModuleDefinition[] = [
         ] },
       { path: "/receivables", label: "Contas a Receber", showInMenu: true, enabled: true,
         children: [
-          { path: "/receivables/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/receivables/new", label: "Nova Conta a Receber", showInMenu: true, enabled: true }
         ] },
       { path: "/treasury", label: "Tesouraria", showInMenu: true, enabled: true,
         children: [
-          { path: "/treasury/accounts", label: "Accounts", showInMenu: true, enabled: true,
+          { path: "/treasury/accounts", label: "Contas Bancárias", showInMenu: true, enabled: true,
             children: [
               { path: "/treasury/accounts/new", label: "New", showInMenu: true, enabled: true }
             ] },
@@ -212,9 +213,9 @@ export const modules: ModuleDefinition[] = [
               { path: "/treasury/approvals/my-pending", label: "My Pending", showInMenu: true, enabled: true },
               { path: "/treasury/approvals/requests", label: "Requests", showInMenu: true, enabled: true }
             ] },
-          { path: "/treasury/dda", label: "Dda", showInMenu: true, enabled: true },
-          { path: "/treasury/import-ofx", label: "Import Ofx", showInMenu: true, enabled: true },
-          { path: "/treasury/reconciliation", label: "Reconciliation", showInMenu: true, enabled: true }
+          { path: "/treasury/dda", label: "DDA", showInMenu: true, enabled: true },
+          { path: "/treasury/import-ofx", label: "Importar OFX", showInMenu: true, enabled: true },
+          { path: "/treasury/reconciliation", label: "Conciliação Bancária", showInMenu: true, enabled: true }
         ] }
     ],
   },
@@ -237,7 +238,7 @@ export const modules: ModuleDefinition[] = [
               { path: "/fiscal/deploy-agent/analysis", label: "Análise Fiscal", showInMenu: true, enabled: true },
               { path: "/fiscal/deploy-agent/wizard", label: "Wizard Config", showInMenu: true, enabled: true }
             ] },
-          { path: "/fiscal/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
+          { path: "/fiscal/dashboard", label: "Dashboard Fiscal", showInMenu: true, enabled: true },
           { path: "/fiscal/nfe", label: "Nfe", showInMenu: true, enabled: true,
             children: [
               { path: "/fiscal/nfe/import", label: "Import", showInMenu: true, enabled: true }
@@ -256,25 +257,25 @@ export const modules: ModuleDefinition[] = [
         children: [
           { path: "/production/costs", label: "Costs", showInMenu: true, enabled: true },
           { path: "/production/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
-          { path: "/production/mes", label: "Mes", showInMenu: true, enabled: true },
+          { path: "/production/mes", label: "MES", showInMenu: true, enabled: true },
           { path: "/production/mrp", label: "Mrp", showInMenu: true, enabled: true },
           { path: "/production/new", label: "New", showInMenu: true, enabled: true },
           { path: "/production/oee", label: "Oee", showInMenu: true, enabled: true },
-          { path: "/production/quality", label: "Quality", showInMenu: true, enabled: true,
+          { path: "/production/quality", label: "Qualidade", showInMenu: true, enabled: true,
             children: [
               { path: "/production/quality/new", label: "New", showInMenu: true, enabled: true }
             ] },
-          { path: "/production/work-centers", label: "Work Centers", showInMenu: true, enabled: true }
+          { path: "/production/work-centers", label: "Centros de Trabalho", showInMenu: true, enabled: true }
         ] },
       { path: "/engineering", label: "Engineering", showInMenu: true, enabled: true,
         children: [
-          { path: "/engineering/bom", label: "Bom", showInMenu: true, enabled: true }
+          { path: "/engineering/bom", label: "Lista de Materiais (BOM)", showInMenu: true, enabled: true }
         ] },
       { path: "/mrp", label: "Mrp", showInMenu: true, enabled: true },
       { path: "/oee", label: "Oee", showInMenu: true, enabled: true,
         children: [
           { path: "/oee/production-logs", label: "Production Logs", showInMenu: true, enabled: true },
-          { path: "/oee/stops", label: "Stops", showInMenu: true, enabled: true },
+          { path: "/oee/stops", label: "Paradas", showInMenu: true, enabled: true },
           { path: "/oee/work-centers", label: "Work Centers", showInMenu: true, enabled: true }
         ] }
     ],
@@ -298,23 +299,23 @@ export const modules: ModuleDefinition[] = [
         children: [
           { path: "/hr/timeclock/adjustments", label: "Adjustments", showInMenu: true, enabled: true },
           { path: "/hr/timeclock/holidays", label: "Holidays", showInMenu: true, enabled: true },
-          { path: "/hr/timeclock/hours-bank", label: "Hours Bank", showInMenu: true, enabled: true },
-          { path: "/hr/timeclock/schedules", label: "Schedules", showInMenu: true, enabled: true }
+          { path: "/hr/timeclock/hours-bank", label: "Banco de Horas", showInMenu: true, enabled: true },
+          { path: "/hr/timeclock/schedules", label: "Escalas", showInMenu: true, enabled: true }
         ] },
       { path: "/hr/admission", label: "Admissão", showInMenu: true, enabled: true,
         children: [
-          { path: "/hr/admission/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/hr/admission/new", label: "Nova Admissão", showInMenu: true, enabled: true }
         ] },
       { path: "/hr/esocial", label: "eSocial", showInMenu: true, enabled: true },
       { path: "/hr/departments", label: "Departamentos", showInMenu: true, enabled: true },
       { path: "/hr/terminations", label: "Rescisões", showInMenu: true, enabled: true,
         children: [
-          { path: "/hr/terminations/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/hr/terminations/new", label: "Nova Rescisão", showInMenu: true, enabled: true }
         ] },
       { path: "/hr/thirteenth", label: "13º Salário", showInMenu: true, enabled: true },
       { path: "/hr/vacations", label: "Férias", showInMenu: true, enabled: true,
         children: [
-          { path: "/hr/vacations/new", label: "New", showInMenu: true, enabled: true }
+          { path: "/hr/vacations/new", label: "Novas Férias", showInMenu: true, enabled: true }
         ] },
       { path: "/hr/timesheet", label: "Timesheet", showInMenu: true, enabled: true }
     ],
@@ -325,23 +326,23 @@ export const modules: ModuleDefinition[] = [
     icon: BarChart3,
     order: 9,
     routes: [
-      { path: "/reports/cash-flow", label: "Cash Flow", showInMenu: true, enabled: true },
-      { path: "/reports/chart-builder", label: "Chart Builder", showInMenu: true, enabled: true },
+      { path: "/reports/cash-flow", label: "Fluxo de Caixa", showInMenu: true, enabled: true },
+      { path: "/reports/chart-builder", label: "Construtor de Gráficos", showInMenu: true, enabled: true },
       { path: "/reports/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
-      { path: "/reports/dre", label: "Dre", showInMenu: true, enabled: true },
-      { path: "/reports/financial-by-category", label: "Financial By Category", showInMenu: true, enabled: true },
+      { path: "/reports/dre", label: "DRE", showInMenu: true, enabled: true },
+      { path: "/reports/financial-by-category", label: "Financeiro por Categoria", showInMenu: true, enabled: true },
       { path: "/reports/fiscal", label: "Fiscal", showInMenu: true, enabled: true },
-      { path: "/reports/headcount", label: "Headcount", showInMenu: true, enabled: true },
-      { path: "/reports/hr", label: "Hr", showInMenu: true, enabled: true },
-      { path: "/reports/inventory", label: "Inventory", showInMenu: true, enabled: true },
-      { path: "/reports/inventory-abc", label: "Inventory Abc", showInMenu: true, enabled: true },
-      { path: "/reports/inventory-position", label: "Inventory Position", showInMenu: true, enabled: true },
-      { path: "/reports/payables-aging", label: "Payables Aging", showInMenu: true, enabled: true },
-      { path: "/reports/production", label: "Production", showInMenu: true, enabled: true },
-      { path: "/reports/purchases", label: "Purchases", showInMenu: true, enabled: true },
-      { path: "/reports/purchases-by-supplier", label: "Purchases By Supplier", showInMenu: true, enabled: true },
-      { path: "/reports/receivables-aging", label: "Receivables Aging", showInMenu: true, enabled: true },
-      { path: "/reports/sales", label: "Sales", showInMenu: true, enabled: true }
+      { path: "/reports/headcount", label: "Quadro de Pessoal", showInMenu: true, enabled: true },
+      { path: "/reports/hr", label: "Recursos Humanos", showInMenu: true, enabled: true },
+      { path: "/reports/inventory", label: "Estoque", showInMenu: true, enabled: true },
+      { path: "/reports/inventory-abc", label: "Curva ABC Estoque", showInMenu: true, enabled: true },
+      { path: "/reports/inventory-position", label: "Posição de Estoque", showInMenu: true, enabled: true },
+      { path: "/reports/payables-aging", label: "Aging Contas a Pagar", showInMenu: true, enabled: true },
+      { path: "/reports/production", label: "Produção", showInMenu: true, enabled: true },
+      { path: "/reports/purchases", label: "Compras", showInMenu: true, enabled: true },
+      { path: "/reports/purchases-by-supplier", label: "Compras por Fornecedor", showInMenu: true, enabled: true },
+      { path: "/reports/receivables-aging", label: "Aging Contas a Receber", showInMenu: true, enabled: true },
+      { path: "/reports/sales", label: "Vendas", showInMenu: true, enabled: true }
     ],
   },
   {
@@ -352,32 +353,32 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/bi", label: "Business Intelligence", showInMenu: true, enabled: true,
         children: [
-          { path: "/bi/analytics", label: "Analytics", showInMenu: true, enabled: true },
+          { path: "/bi/analytics", label: "Análises", showInMenu: true, enabled: true },
           { path: "/bi/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
-          { path: "/bi/dashboards", label: "Dashboards", showInMenu: true, enabled: true },
-          { path: "/bi/financial", label: "Financial", showInMenu: true, enabled: true },
-          { path: "/bi/inventory", label: "Inventory", showInMenu: true, enabled: true },
-          { path: "/bi/kpis", label: "Kpis", showInMenu: true, enabled: true },
-          { path: "/bi/production", label: "Production", showInMenu: true, enabled: true },
-          { path: "/bi/reports", label: "Reports", showInMenu: true, enabled: true },
-          { path: "/bi/sales", label: "Sales", showInMenu: true, enabled: true }
+          { path: "/bi/dashboards", label: "Painéis", showInMenu: true, enabled: true },
+          { path: "/bi/financial", label: "Financeiro", showInMenu: true, enabled: true },
+          { path: "/bi/inventory", label: "Estoque", showInMenu: true, enabled: true },
+          { path: "/bi/kpis", label: "KPIs", showInMenu: true, enabled: true },
+          { path: "/bi/production", label: "Produção", showInMenu: true, enabled: true },
+          { path: "/bi/reports", label: "Relatórios", showInMenu: true, enabled: true },
+          { path: "/bi/sales", label: "Vendas", showInMenu: true, enabled: true }
         ] },
       { path: "/gpd", label: "GPD", showInMenu: true, enabled: true,
         children: [
-          { path: "/gpd/actions", label: "Actions", showInMenu: true, enabled: true },
-          { path: "/gpd/goals", label: "Goals", showInMenu: true, enabled: true,
+          { path: "/gpd/actions", label: "Ações", showInMenu: true, enabled: true },
+          { path: "/gpd/goals", label: "Metas", showInMenu: true, enabled: true,
             children: [
-              { path: "/gpd/goals/new", label: "New", showInMenu: true, enabled: true }
+              { path: "/gpd/goals/new", label: "Nova Meta", showInMenu: true, enabled: true }
             ] },
-          { path: "/gpd/indicators", label: "Indicators", showInMenu: true, enabled: true }
+          { path: "/gpd/indicators", label: "Indicadores", showInMenu: true, enabled: true }
         ] },
       { path: "/budget", label: "Orçamento", showInMenu: true, enabled: true,
         children: [
-          { path: "/budget/accounts", label: "Accounts", showInMenu: true, enabled: true },
-          { path: "/budget/alerts", label: "Alerts", showInMenu: true, enabled: true },
-          { path: "/budget/planning", label: "Planning", showInMenu: true, enabled: true },
-          { path: "/budget/tracking", label: "Tracking", showInMenu: true, enabled: true },
-          { path: "/budget/versions", label: "Versions", showInMenu: true, enabled: true }
+          { path: "/budget/accounts", label: "Contas Orçamentárias", showInMenu: true, enabled: true },
+          { path: "/budget/alerts", label: "Alertas", showInMenu: true, enabled: true },
+          { path: "/budget/planning", label: "Planejamento", showInMenu: true, enabled: true },
+          { path: "/budget/tracking", label: "Acompanhamento", showInMenu: true, enabled: true },
+          { path: "/budget/versions", label: "Versões", showInMenu: true, enabled: true }
         ] }
     ],
   },
@@ -387,7 +388,7 @@ export const modules: ModuleDefinition[] = [
     icon: CheckSquare,
     order: 11,
     routes: [
-      { path: "/tasks/new", label: "New", showInMenu: true, enabled: true }
+      { path: "/tasks/new", label: "Nova Tarefa", showInMenu: true, enabled: true }
     ],
   },
   {
@@ -396,16 +397,16 @@ export const modules: ModuleDefinition[] = [
     icon: GitBranch,
     order: 12,
     routes: [
-      { path: "/workflow/definitions", label: "Definitions", showInMenu: true, enabled: true,
+      { path: "/workflow/definitions", label: "Definições", showInMenu: true, enabled: true,
         children: [
-          { path: "/workflow/definitions/new", label: "New", showInMenu: true, enabled: true,
+          { path: "/workflow/definitions/new", label: "Nova Definição", showInMenu: true, enabled: true,
             children: [
-              { path: "/workflow/definitions/new/visual", label: "Visual", showInMenu: true, enabled: true }
+              { path: "/workflow/definitions/new/visual", label: "Editor Visual", showInMenu: true, enabled: true }
             ] }
         ] },
-      { path: "/workflow/instances", label: "Instances", showInMenu: true, enabled: true },
-      { path: "/workflow/my-tasks", label: "My Tasks", showInMenu: true, enabled: true },
-      { path: "/workflow/new", label: "New", showInMenu: true, enabled: true }
+      { path: "/workflow/instances", label: "Instâncias", showInMenu: true, enabled: true },
+      { path: "/workflow/my-tasks", label: "Minhas Tarefas", showInMenu: true, enabled: true },
+      { path: "/workflow/new", label: "Novo Workflow", showInMenu: true, enabled: true }
     ],
   },
   {
@@ -414,7 +415,7 @@ export const modules: ModuleDefinition[] = [
     icon: FolderOpen,
     order: 13,
     routes: [
-      { path: "/documents/categories", label: "Categories", showInMenu: true, enabled: true }
+      { path: "/documents/categories", label: "Categorias", showInMenu: true, enabled: true }
     ],
   },
   {
@@ -435,8 +436,22 @@ export const modules: ModuleDefinition[] = [
       { path: "/audit", label: "Auditoria", showInMenu: true, enabled: true },
       { path: "/admin", label: "Admin", showInMenu: true, enabled: true,
         children: [
-          { path: "/admin/auth-logs", label: "Auth Logs", showInMenu: true, enabled: true }
+          { path: "/admin/auth-logs", label: "Logs de Autenticação", showInMenu: true, enabled: true }
         ] }
+    ],
+  },
+  {
+    id: "setup",
+    label: "Setup",
+    icon: Rocket,
+    order: 98,
+    routes: [
+      { path: "/setup/deploy-agent", label: "Deploy Agent", showInMenu: true, enabled: true,
+        children: [
+          { path: "/setup/deploy-agent/analysis", label: "Análise", showInMenu: true, enabled: true },
+          { path: "/setup/deploy-agent/wizard", label: "Assistente", showInMenu: true, enabled: true }
+        ] },
+      { path: "/setup/onboarding", label: "Onboarding", showInMenu: true, enabled: true }
     ],
   },
   {
@@ -447,33 +462,33 @@ export const modules: ModuleDefinition[] = [
     routes: [
       { path: "/docs", label: "Tutoriais", showInMenu: true, enabled: true,
         children: [
-          { path: "/docs/privacy", label: "Privacy", showInMenu: true, enabled: true },
-          { path: "/docs/terms", label: "Terms", showInMenu: true, enabled: true }
+          { path: "/docs/privacy", label: "Privacidade", showInMenu: true, enabled: true },
+          { path: "/docs/terms", label: "Termos de Uso", showInMenu: true, enabled: true }
         ] },
       { path: "/design-system", label: "Design System", showInMenu: true, enabled: true },
       { path: "/settings", label: "Configurações", showInMenu: true, enabled: true,
         children: [
-          { path: "/settings/ai", label: "Ai", showInMenu: true, enabled: true,
+          { path: "/settings/ai", label: "Inteligência Artificial", showInMenu: true, enabled: true,
             children: [
               { path: "/settings/ai/embeddings", label: "Embeddings", showInMenu: true, enabled: true },
-              { path: "/settings/ai/tasks", label: "Tasks", showInMenu: true, enabled: true },
-              { path: "/settings/ai/usage", label: "Usage", showInMenu: true, enabled: true }
+              { path: "/settings/ai/tasks", label: "Tarefas IA", showInMenu: true, enabled: true },
+              { path: "/settings/ai/usage", label: "Consumo", showInMenu: true, enabled: true }
             ] },
-          { path: "/settings/bank-accounts", label: "Bank Accounts", showInMenu: true, enabled: true },
-          { path: "/settings/collection-rules", label: "Collection Rules", showInMenu: true, enabled: true },
-          { path: "/settings/companies", label: "Companies", showInMenu: true, enabled: true },
+          { path: "/settings/bank-accounts", label: "Contas Bancárias", showInMenu: true, enabled: true },
+          { path: "/settings/collection-rules", label: "Regras de Cobrança", showInMenu: true, enabled: true },
+          { path: "/settings/companies", label: "Empresas", showInMenu: true, enabled: true },
           { path: "/settings/dashboard", label: "Dashboard", showInMenu: true, enabled: true },
           { path: "/settings/deploy-agent", label: "Deploy Agent", showInMenu: true, enabled: true },
-          { path: "/settings/email-integration", label: "Email Integration", showInMenu: true, enabled: true },
-          { path: "/settings/groups", label: "Groups", showInMenu: true, enabled: true },
-          { path: "/settings/import", label: "Import", showInMenu: true, enabled: true },
-          { path: "/settings/landing", label: "Landing", showInMenu: true, enabled: true },
-          { path: "/settings/notifications", label: "Notifications", showInMenu: true, enabled: true },
-          { path: "/settings/sefaz", label: "Sefaz", showInMenu: true, enabled: true },
-          { path: "/settings/tutorials", label: "Tutorials", showInMenu: true, enabled: true },
-          { path: "/settings/users", label: "Users", showInMenu: true, enabled: true,
+          { path: "/settings/email-integration", label: "Integração de E-mail", showInMenu: true, enabled: true },
+          { path: "/settings/groups", label: "Grupos", showInMenu: true, enabled: true },
+          { path: "/settings/import", label: "Importação", showInMenu: true, enabled: true },
+          { path: "/settings/landing", label: "Landing Page", showInMenu: true, enabled: true },
+          { path: "/settings/notifications", label: "Notificações", showInMenu: true, enabled: true },
+          { path: "/settings/sefaz", label: "SEFAZ", showInMenu: true, enabled: true },
+          { path: "/settings/tutorials", label: "Tutoriais", showInMenu: true, enabled: true },
+          { path: "/settings/users", label: "Usuários", showInMenu: true, enabled: true,
             children: [
-              { path: "/settings/users/new", label: "New", showInMenu: true, enabled: true }
+              { path: "/settings/users/new", label: "Novo Usuário", showInMenu: true, enabled: true }
             ] },
           { path: "/settings/webhooks", label: "Webhooks", showInMenu: true, enabled: true }
         ] }
