@@ -20,7 +20,7 @@ export async function GET(
           { id: slug },
         ],
         isPublished: true,
-        status: "active",
+        status: "ACTIVE",
       },
       include: {
         category: {

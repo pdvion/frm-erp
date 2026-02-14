@@ -1,5 +1,6 @@
 ---
 description: Evoluir página placeholder para funcionalidade completa
+auto_execution_mode: 2
 ---
 
 # Workflow: Placeholder para Funcional

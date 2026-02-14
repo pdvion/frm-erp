@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     const where: Prisma.ProductWhereInput = {
       isPublished: true,
-      status: "active",
+      status: "ACTIVE",
     };
 
     if (query.search) {

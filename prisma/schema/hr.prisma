@@ -681,6 +681,7 @@ model AdmissionProcess {
   candidateBankAccountDigit     String?             @map("candidate_bank_account_digit")
   candidateBankAccountType      String?             @map("candidate_bank_account_type")
   candidatePixKey               String?             @map("candidate_pix_key")
+  candidatePhoto                String?             @map("candidate_photo")
   accessToken                   String?             @unique @map("access_token") @db.Uuid
   tokenExpiresAt                DateTime?           @map("token_expires_at")
   createdAt                     DateTime            @default(now()) @map("created_at")

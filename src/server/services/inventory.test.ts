@@ -452,7 +452,7 @@ describe("InventoryService", () => {
   describe("releaseReservation", () => {
     it("should release reservation and restore available qty", async () => {
       const reservation = createMockReservation();
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(reservation);
+      tx.stockReservation.findFirst.mockResolvedValue(reservation);
       tx.stockReservation.update.mockResolvedValue({ ...reservation, status: "RELEASED" });
       tx.inventory.update.mockResolvedValue({});
 
@@ -475,7 +475,7 @@ describe("InventoryService", () => {
     });
 
     it("should reject when reservation not found", async () => {
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      tx.stockReservation.findFirst.mockResolvedValue(null);
 
       await expect(
         service.releaseReservation({ reservationId: "res-999", companyId: "company-1" }),
@@ -490,7 +490,7 @@ describe("InventoryService", () => {
   describe("consumeReservation", () => {
     it("should fully consume reservation when no quantity specified", async () => {
       const reservation = createMockReservation();
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(reservation);
+      tx.stockReservation.findFirst.mockResolvedValue(reservation);
       tx.inventoryMovement.create.mockResolvedValue({});
       tx.inventory.update.mockResolvedValue({});
       tx.stockReservation.update.mockResolvedValue({ ...reservation, status: "CONSUMED", quantity: 0 });
@@ -516,7 +516,7 @@ describe("InventoryService", () => {
 
     it("should partially consume reservation", async () => {
       const reservation = createMockReservation({ quantity: 20 });
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(reservation);
+      tx.stockReservation.findFirst.mockResolvedValue(reservation);
       tx.inventoryMovement.create.mockResolvedValue({});
       tx.inventory.update.mockResolvedValue({});
       tx.stockReservation.update.mockResolvedValue({ ...reservation, status: "ACTIVE", quantity: 15 });
@@ -539,7 +539,7 @@ describe("InventoryService", () => {
 
     it("should reject when quantity exceeds reservation", async () => {
       const reservation = createMockReservation({ quantity: 10 });
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(reservation);
+      tx.stockReservation.findFirst.mockResolvedValue(reservation);
 
       await expect(
         service.consumeReservation({ reservationId: "res-1", quantity: 20, companyId: "company-1" }),
@@ -547,7 +547,7 @@ describe("InventoryService", () => {
     });
 
     it("should reject when reservation not found", async () => {
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      tx.stockReservation.findFirst.mockResolvedValue(null);
 
       await expect(
         service.consumeReservation({ reservationId: "res-999", companyId: "company-1" }),
@@ -556,7 +556,7 @@ describe("InventoryService", () => {
 
     it("should set consumedAt when fully consumed", async () => {
       const reservation = createMockReservation({ quantity: 10 });
-      (prisma.stockReservation.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(reservation);
+      tx.stockReservation.findFirst.mockResolvedValue(reservation);
       tx.inventoryMovement.create.mockResolvedValue({});
       tx.inventory.update.mockResolvedValue({});
       tx.stockReservation.update.mockResolvedValue({});

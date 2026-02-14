@@ -1,5 +1,6 @@
 ---
 description: Verifica o status do deploy na Vercel e testa a aplicação
+auto_execution_mode: 3
 ---
 
 # Workflow: Verificar Deploy

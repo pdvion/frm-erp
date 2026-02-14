@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert } from "@/components/ui/Alert";
@@ -18,6 +19,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Info,
 } from "lucide-react";
 
 const contractTypes = [
@@ -119,6 +121,20 @@ export default function NewEmployeePage() {
       />
 
       <main className="max-w-4xl mx-auto">
+        <Alert variant="info" className="mb-6">
+          <div className="flex items-start gap-2">
+            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="font-medium">Para novas contratações com onboarding completo</span>, use a{" "}
+              <Link href="/hr/admission/new" className="text-blue-600 dark:text-blue-400 underline font-medium">
+                Admissão Digital
+              </Link>
+              {" "}— inclui coleta de documentos, exame admissional e aprovação do gestor.
+              Este formulário é para cadastro direto sem workflow.
+            </div>
+          </div>
+        </Alert>
+
         {error && (
           <Alert variant="error" className="mb-6">
             {error}

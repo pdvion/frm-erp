@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Regras de isolamento multi-tenant — RLS, IDOR prevention, companyId obrigatório
+trigger: always_on
 ---
 
 # Multi-Tenant — Regra Mais Crítica do Projeto

@@ -7,9 +7,9 @@ import { describe, it, expect } from "vitest";
 import { z } from "zod";
 
 // Schemas de validação (espelhando os do router)
-const productStatusSchema = z.enum(["draft", "active", "inactive", "discontinued"]);
-const productVideoTypeSchema = z.enum(["training", "demo", "testimonial", "unboxing", "installation"]);
-const productAttachmentTypeSchema = z.enum(["datasheet", "manual", "certificate", "brochure", "warranty"]);
+const productStatusSchema = z.enum(["DRAFT", "ACTIVE", "INACTIVE", "DISCONTINUED"]);
+const productVideoTypeSchema = z.enum(["TRAINING", "DEMO", "TESTIMONIAL", "UNBOXING", "INSTALLATION"]);
+const productAttachmentTypeSchema = z.enum(["DATASHEET", "MANUAL", "CERTIFICATE", "BROCHURE", "WARRANTY"]);
 
 const createCategoryInputSchema = z.object({
   name: z.string().min(1),
@@ -80,14 +80,14 @@ describe("productCatalog router", () => {
   describe("Enums", () => {
     describe("productStatusSchema", () => {
       it("should accept valid status values", () => {
-        expect(productStatusSchema.parse("draft")).toBe("draft");
-        expect(productStatusSchema.parse("active")).toBe("active");
-        expect(productStatusSchema.parse("inactive")).toBe("inactive");
-        expect(productStatusSchema.parse("discontinued")).toBe("discontinued");
+        expect(productStatusSchema.parse("DRAFT")).toBe("DRAFT");
+        expect(productStatusSchema.parse("ACTIVE")).toBe("ACTIVE");
+        expect(productStatusSchema.parse("INACTIVE")).toBe("INACTIVE");
+        expect(productStatusSchema.parse("DISCONTINUED")).toBe("DISCONTINUED");
       });
 
       it("should reject invalid status values", () => {
-        expect(() => productStatusSchema.parse("DRAFT")).toThrow();
+        expect(() => productStatusSchema.parse("draft")).toThrow();
         expect(() => productStatusSchema.parse("pending")).toThrow();
         expect(() => productStatusSchema.parse("")).toThrow();
       });
@@ -95,30 +95,30 @@ describe("productCatalog router", () => {
 
     describe("productVideoTypeSchema", () => {
       it("should accept valid video types", () => {
-        expect(productVideoTypeSchema.parse("training")).toBe("training");
-        expect(productVideoTypeSchema.parse("demo")).toBe("demo");
-        expect(productVideoTypeSchema.parse("testimonial")).toBe("testimonial");
-        expect(productVideoTypeSchema.parse("unboxing")).toBe("unboxing");
-        expect(productVideoTypeSchema.parse("installation")).toBe("installation");
+        expect(productVideoTypeSchema.parse("TRAINING")).toBe("TRAINING");
+        expect(productVideoTypeSchema.parse("DEMO")).toBe("DEMO");
+        expect(productVideoTypeSchema.parse("TESTIMONIAL")).toBe("TESTIMONIAL");
+        expect(productVideoTypeSchema.parse("UNBOXING")).toBe("UNBOXING");
+        expect(productVideoTypeSchema.parse("INSTALLATION")).toBe("INSTALLATION");
       });
 
       it("should reject invalid video types", () => {
-        expect(() => productVideoTypeSchema.parse("DEMO")).toThrow();
+        expect(() => productVideoTypeSchema.parse("demo")).toThrow();
         expect(() => productVideoTypeSchema.parse("tutorial")).toThrow();
       });
     });
 
     describe("productAttachmentTypeSchema", () => {
       it("should accept valid attachment types", () => {
-        expect(productAttachmentTypeSchema.parse("datasheet")).toBe("datasheet");
-        expect(productAttachmentTypeSchema.parse("manual")).toBe("manual");
-        expect(productAttachmentTypeSchema.parse("certificate")).toBe("certificate");
-        expect(productAttachmentTypeSchema.parse("brochure")).toBe("brochure");
-        expect(productAttachmentTypeSchema.parse("warranty")).toBe("warranty");
+        expect(productAttachmentTypeSchema.parse("DATASHEET")).toBe("DATASHEET");
+        expect(productAttachmentTypeSchema.parse("MANUAL")).toBe("MANUAL");
+        expect(productAttachmentTypeSchema.parse("CERTIFICATE")).toBe("CERTIFICATE");
+        expect(productAttachmentTypeSchema.parse("BROCHURE")).toBe("BROCHURE");
+        expect(productAttachmentTypeSchema.parse("WARRANTY")).toBe("WARRANTY");
       });
 
       it("should reject invalid attachment types", () => {
-        expect(() => productAttachmentTypeSchema.parse("DATASHEET")).toThrow();
+        expect(() => productAttachmentTypeSchema.parse("datasheet")).toThrow();
         expect(() => productAttachmentTypeSchema.parse("pdf")).toThrow();
       });
     });
@@ -199,7 +199,7 @@ describe("productCatalog router", () => {
           listPrice: 99.99,
           salePrice: 79.99,
           tags: ["novo", "destaque"],
-          status: "draft" as const,
+          status: "DRAFT" as const,
           isPublished: false,
         };
         expect(() => createProductInputSchema.parse(input)).not.toThrow();
@@ -262,7 +262,7 @@ describe("productCatalog router", () => {
       });
 
       it("should accept valid status values", () => {
-        const statuses = ["draft", "active", "inactive", "discontinued"] as const;
+        const statuses = ["DRAFT", "ACTIVE", "INACTIVE", "DISCONTINUED"] as const;
         statuses.forEach((status) => {
           const input = {
             code: "SKU-001",
@@ -355,7 +355,7 @@ describe("productCatalog router", () => {
           thumbnailUrl: "https://img.youtube.com/vi/abc123/0.jpg",
           title: "Vídeo de demonstração",
           description: "Como usar o produto",
-          type: "demo" as const,
+          type: "DEMO" as const,
           duration: 180,
           order: 0,
         };
@@ -381,7 +381,7 @@ describe("productCatalog router", () => {
       });
 
       it("should accept all video types", () => {
-        const types = ["training", "demo", "testimonial", "unboxing", "installation"] as const;
+        const types = ["TRAINING", "DEMO", "TESTIMONIAL", "UNBOXING", "INSTALLATION"] as const;
         types.forEach((type) => {
           const input = {
             productId: "123e4567-e89b-12d3-a456-426614174000",
@@ -404,7 +404,7 @@ describe("productCatalog router", () => {
           fileName: "manual-produto.pdf",
           fileType: "application/pdf",
           sizeBytes: 1024000,
-          type: "manual" as const,
+          type: "MANUAL" as const,
           order: 0,
         };
         expect(() => addAttachmentInputSchema.parse(input)).not.toThrow();
@@ -441,7 +441,7 @@ describe("productCatalog router", () => {
       });
 
       it("should accept all attachment types", () => {
-        const types = ["datasheet", "manual", "certificate", "brochure", "warranty"] as const;
+        const types = ["DATASHEET", "MANUAL", "CERTIFICATE", "BROCHURE", "WARRANTY"] as const;
         types.forEach((type) => {
           const input = {
             productId: "123e4567-e89b-12d3-a456-426614174000",

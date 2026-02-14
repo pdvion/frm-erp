@@ -1,5 +1,6 @@
 ---
 description: Workflow completo para criar uma nova feature no projeto FRM ERP
+auto_execution_mode: 3
 ---
 
 # Workflow: Nova Feature

@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Qualidade de código — pre-commit, TypeScript strict, conventional commits, error handling
+trigger: always_on
 ---
 
 # Code Quality — Regras Obrigatórias

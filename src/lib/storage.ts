@@ -8,6 +8,7 @@ export const STORAGE_PATHS = {
     features: "landing/features",
   },
   logos: "logos",
+  avatars: "avatars",
   general: "general",
 } as const;
 
@@ -15,6 +16,7 @@ export type StoragePath =
   | typeof STORAGE_PATHS.landing.hero
   | typeof STORAGE_PATHS.landing.features
   | typeof STORAGE_PATHS.logos
+  | typeof STORAGE_PATHS.avatars
   | typeof STORAGE_PATHS.general;
 
 export interface UploadResult {

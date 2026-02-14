@@ -24,13 +24,13 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 
 type ViewMode = "grid" | "list";
-type ProductStatus = "draft" | "active" | "inactive" | "discontinued";
+type ProductStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "DISCONTINUED";
 
 const STATUS_LABELS: Record<ProductStatus, { label: string; color: string }> = {
-  draft: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary" },
-  active: { label: "Ativo", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-  inactive: { label: "Inativo", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  discontinued: { label: "Descontinuado", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary" },
+  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+  INACTIVE: { label: "Inativo", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
+  DISCONTINUED: { label: "Descontinuado", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
 };
 
 export default function CatalogPage() {
@@ -178,10 +178,10 @@ export default function CatalogPage() {
               placeholder="Todos"
               options={[
                 { value: "", label: "Todos" },
-                { value: "draft", label: "Rascunho" },
-                { value: "active", label: "Ativo" },
-                { value: "inactive", label: "Inativo" },
-                { value: "discontinued", label: "Descontinuado" },
+                { value: "DRAFT", label: "Rascunho" },
+                { value: "ACTIVE", label: "Ativo" },
+                { value: "INACTIVE", label: "Inativo" },
+                { value: "DISCONTINUED", label: "Descontinuado" },
               ]}
             />
           </div>

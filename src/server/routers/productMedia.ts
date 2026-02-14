@@ -191,7 +191,7 @@ export const productMediaRouter = createTRPCRouter({
         thumbnailUrl: z.string().url().optional(),
         title: z.string().min(1),
         description: z.string().optional(),
-        type: z.enum(["training", "demo", "testimonial", "unboxing", "installation"]).optional(),
+        type: z.enum(["TRAINING", "DEMO", "TESTIMONIAL", "UNBOXING", "INSTALLATION"]).optional(),
         duration: z.number().int().optional(),
         isExternal: z.boolean().optional(),
       })
@@ -210,7 +210,7 @@ export const productMediaRouter = createTRPCRouter({
           thumbnailUrl: input.thumbnailUrl,
           title: input.title,
           description: input.description,
-          type: input.type ?? "demo",
+          type: input.type ?? "DEMO",
           duration: input.duration,
           order: (lastVideo?.order ?? -1) + 1,
         },
@@ -254,7 +254,7 @@ export const productMediaRouter = createTRPCRouter({
         fileName: z.string().min(1),
         fileType: z.string().min(1),
         sizeBytes: z.number().int().optional(),
-        type: z.enum(["datasheet", "manual", "certificate", "brochure", "warranty"]).optional(),
+        type: z.enum(["DATASHEET", "MANUAL", "CERTIFICATE", "BROCHURE", "WARRANTY"]).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -277,7 +277,7 @@ export const productMediaRouter = createTRPCRouter({
           fileName: input.fileName,
           fileType: input.fileType,
           sizeBytes: input.sizeBytes,
-          type: input.type ?? "datasheet",
+          type: input.type ?? "DATASHEET",
           order: (lastAttachment?.order ?? -1) + 1,
         },
       });

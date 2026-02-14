@@ -1,6 +1,7 @@
 ---
-trigger: always
+activation: always_on
 description: Convenções Prisma — nomenclatura, tipos, transações, validação Zod, padrões obrigatórios
+trigger: always_on
 ---
 
 # Prisma — Convenções e Padrões

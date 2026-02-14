@@ -217,16 +217,16 @@ export default function ProductDetailPage() {
               <span className="text-sm text-theme-muted">Status</span>
               <span
                 className={`px-2 py-1 text-xs font-medium rounded ${
-                  product.status === "active"
+                  product.status === "ACTIVE"
                     ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    : product.status === "draft"
+                    : product.status === "DRAFT"
                       ? "bg-theme-tertiary text-theme-secondary"
                       : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                 }`}
               >
-                {product.status === "active"
+                {product.status === "ACTIVE"
                   ? "Ativo"
-                  : product.status === "draft"
+                  : product.status === "DRAFT"
                     ? "Rascunho"
                     : product.status}
               </span>
