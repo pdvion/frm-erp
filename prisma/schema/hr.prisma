@@ -1,6 +1,6 @@
 model Department {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code           String
   name           String
   description    String?
@@ -31,7 +31,7 @@ model Department {
 
 model JobPosition {
   id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code         String
   name         String
   description  String?
@@ -55,7 +55,7 @@ model JobPosition {
 
 model Employee {
   id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                Int
   companyId           String             @db.Uuid
   userId              String?            @db.Uuid
@@ -99,8 +99,8 @@ model Employee {
   createdBy           String?            @db.Uuid
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   insalubrityDegree   String?            @map("insalubrity_degree")
   hasDangerousness    Boolean?           @default(false) @map("has_dangerousness")
   dependentsCount     Int?               @default(0) @map("dependents_count")
@@ -127,6 +127,7 @@ model Employee {
   leaveRecords        LeaveRecord[]
   fixedAssets         FixedAsset[]
   maintenanceLabor    MaintenanceOrderLabor[] @relation("MaintenanceLabor")
+  eSocialEvents       ESocialEvent[]          @relation("ESocialEventEmployee")
 
   @@unique([code, companyId])
   @@index([companyId], map: "idx_employees_companyId")
@@ -192,7 +193,7 @@ model TimesheetDay {
 
 model WorkSchedule {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   companyId        String             @db.Uuid
   name             String
   code             String?
@@ -289,7 +290,7 @@ model TimeClockAdjustment {
 
 model Holiday {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @unique
+  legacyId          Int?                    @unique @map("legacy_id")
   companyId  String?  @db.Uuid
   date       DateTime @db.Date
   name       String
@@ -305,7 +306,7 @@ model Holiday {
 
 model Payroll {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code            Int
   companyId       String        @db.Uuid
   referenceMonth  Int
@@ -499,7 +500,7 @@ model Termination {
 
 model BenefitType {
   id                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code                    String
   name                    String
   description             String?
@@ -568,7 +569,7 @@ model TransportVoucher {
 
 model Training {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code              String
   name              String
   description       String?
@@ -635,29 +636,59 @@ model SkillMatrix {
 }
 
 model AdmissionProcess {
-  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code                Int                 @default(autoincrement())
-  companyId           String              @map("company_id") @db.Uuid
-  candidateName       String              @map("candidate_name")
-  candidateEmail      String?             @map("candidate_email")
-  candidatePhone      String?             @map("candidate_phone")
-  candidateCpf        String?             @map("candidate_cpf")
-  positionId          String?             @map("position_id") @db.Uuid
-  departmentId        String?             @map("department_id") @db.Uuid
-  proposedSalary      Decimal?              @db.Decimal(15, 2) @map("proposed_salary")
-  proposedStartDate   DateTime?           @map("proposed_start_date")
-  status              String              @default("DRAFT")
-  currentStep         Int?                @default(1) @map("current_step")
-  totalSteps          Int?                @default(5) @map("total_steps")
-  recruiterId         String?             @map("recruiter_id") @db.Uuid
-  managerId           String?             @map("manager_id") @db.Uuid
-  notes               String?
-  createdAt           DateTime            @default(now()) @map("created_at")
-  updatedAt           DateTime            @default(now()) @updatedAt @map("updated_at")
-  completedAt         DateTime?           @map("completed_at")
-  admission_documents AdmissionDocument[]
-  admission_exams     AdmissionExam[]
-  admission_steps     AdmissionStep[]
+  id                            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                          Int                 @default(autoincrement())
+  companyId                     String              @map("company_id") @db.Uuid
+  candidateName                 String              @map("candidate_name")
+  candidateEmail                String?             @map("candidate_email")
+  candidatePhone                String?             @map("candidate_phone")
+  candidateCpf                  String?             @map("candidate_cpf")
+  candidateRg                   String?             @map("candidate_rg")
+  candidateBirthDate            DateTime?           @map("candidate_birth_date") @db.Date
+  candidateGender               String?             @map("candidate_gender")
+  candidateMaritalStatus        String?             @map("candidate_marital_status")
+  candidateMobile               String?             @map("candidate_mobile")
+  candidateAddress              String?             @map("candidate_address")
+  candidateAddressNumber        String?             @map("candidate_address_number")
+  candidateAddressComplement    String?             @map("candidate_address_complement")
+  candidateAddressNeighborhood  String?             @map("candidate_address_neighborhood")
+  candidateAddressCity          String?             @map("candidate_address_city")
+  candidateAddressState         String?             @map("candidate_address_state")
+  candidateAddressZipCode       String?             @map("candidate_address_zip_code")
+  positionId                    String?             @map("position_id") @db.Uuid
+  departmentId                  String?             @map("department_id") @db.Uuid
+  proposedSalary                Decimal?            @map("proposed_salary") @db.Decimal(15, 2)
+  proposedStartDate             DateTime?           @map("proposed_start_date")
+  contractType                  String?             @map("contract_type")
+  workHoursPerDay               Decimal?            @map("work_hours_per_day")
+  workDaysPerWeek               Int?                @map("work_days_per_week")
+  status                        String              @default("DRAFT")
+  currentStep                   Int?                @default(1) @map("current_step")
+  totalSteps                    Int?                @default(5) @map("total_steps")
+  recruiterId                   String?             @map("recruiter_id") @db.Uuid
+  managerId                     String?             @map("manager_id") @db.Uuid
+  notes                         String?
+  candidatePis                  String?             @map("candidate_pis")
+  candidateCtps                 String?             @map("candidate_ctps")
+  candidateCtpsSeries           String?             @map("candidate_ctps_series")
+  candidateVoterRegistration    String?             @map("candidate_voter_registration")
+  candidateMilitaryService      String?             @map("candidate_military_service")
+  candidateBankName             String?             @map("candidate_bank_name")
+  candidateBankCode             String?             @map("candidate_bank_code")
+  candidateBankBranch           String?             @map("candidate_bank_branch")
+  candidateBankAgency           String?             @map("candidate_bank_agency")
+  candidateBankAccount          String?             @map("candidate_bank_account")
+  candidateBankAccountDigit     String?             @map("candidate_bank_account_digit")
+  candidateBankAccountType      String?             @map("candidate_bank_account_type")
+  candidatePixKey               String?             @map("candidate_pix_key")
+  accessToken                   String?             @unique @map("access_token") @db.Uuid
+  tokenExpiresAt                DateTime?           @map("token_expires_at")
+  createdAt                     DateTime            @default(now()) @map("created_at")
+  updatedAt                     DateTime            @default(now()) @updatedAt @map("updated_at")
+  completedAt                   DateTime?           @map("completed_at")
+  admission_documents           AdmissionDocument[]
+  admission_exams               AdmissionExam[]
+  admission_steps               AdmissionStep[]
 
   @@index([companyId], map: "idx_admission_processes_company_id")
   @@index([status], map: "idx_admission_processes_status")

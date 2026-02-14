@@ -10,7 +10,7 @@ datasource db {
 
 model Company {
   id                   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?                    @unique
+  legacyId          Int?                    @unique @map("legacy_id")
   code                 Int                     @unique
   name                 String
   tradeName            String?
@@ -128,6 +128,10 @@ model Company {
   maintenanceOrders             MaintenanceOrder[]
   failureCodes                  FailureCode[]
   productionOrderOperations     ProductionOrderOperation[]
+  eSocialConfig                 ESocialConfig?
+  eSocialRubrics                ESocialRubric[]
+  eSocialBatches                ESocialBatch[]
+  eSocialEvents                 ESocialEvent[]
 
   @@map("companies")
 }

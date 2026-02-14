@@ -1,6 +1,6 @@
 model ReceivedInvoice {
   id                          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   accessKey                   String                @unique @db.VarChar(44)
   invoiceNumber               Int
   series                      Int                   @default(1)
@@ -30,8 +30,8 @@ model ReceivedInvoice {
   xmlContent                  String?
   createdAt                   DateTime              @default(now())
   updatedAt                   DateTime              @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   icms_st_base                Decimal?                @db.Decimal(15, 2) @default(0)
   icms_st_value               Decimal?                @db.Decimal(15, 2) @default(0)
   insurance_value             Decimal?                @db.Decimal(15, 2) @default(0)
@@ -102,7 +102,7 @@ model ReceivedInvoiceItem {
 
 model IssuedInvoice {
   id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  legacyId          Int?
+  legacyId          Int?                    @map("legacy_id")
   code               Int
   invoiceNumber      String               @db.VarChar(20)
   series             String               @default("1") @db.VarChar(5)
@@ -136,8 +136,8 @@ model IssuedInvoice {
   createdBy          String?              @db.Uuid
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @default(now()) @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?               @db.Uuid
+  deletedAt         DateTime?              @map("deleted_at")
+  deletedBy         String?               @map("deleted_by") @db.Uuid
   receivables        AccountsReceivable[]
   items              IssuedInvoiceItem[]
   customer           Customer             @relation(fields: [customerId], references: [id])

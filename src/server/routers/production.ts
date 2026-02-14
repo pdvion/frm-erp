@@ -270,6 +270,7 @@ export const productionRouter = createTRPCRouter({
       return ctx.prisma.productionOrderOperation.create({
         data: {
           orderId: input.orderId,
+          companyId: ctx.tenant.companyId!,
           sequence: input.sequence,
           name: input.name,
           workCenter: input.workCenter,
