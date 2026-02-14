@@ -94,6 +94,8 @@ model Company {
   systemLogs           SystemLog[]
   systemSettings       SystemSetting[]
   tasks                Task[]
+  webhookConfigs       WebhookConfig[]
+  webhookEvents        WebhookEvent[]
   terminations         Termination[]
   thirteenthSalaries   ThirteenthSalary[]
   userCompanies        UserCompany[]
@@ -213,6 +215,7 @@ model User {
   time_clock_entries                            TimeClockEntry[]
   tutorials                                     Tutorial[]
   userCompanies                                 UserCompany[]
+  webhookConfigsCreated                         WebhookConfig[]
   permissions                                   UserCompanyPermission[]
   addedToGroups                                 UserGroupMember[]           @relation("AddedByUser")
   groupMemberships                              UserGroupMember[]

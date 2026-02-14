@@ -743,3 +743,20 @@ enum FailureCategory {
   SOFTWARE
   OTHER
 }
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+
+  @@map("webhook_status")
+}
+
+enum WebhookDeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  DEAD_LETTER
+
+  @@map("webhook_delivery_status")
+}
