@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { auditCreate, auditUpdate, auditDelete } from "../services/audit";
 import { emitEvent } from "../services/events";
+import { emitWebhook } from "../services/webhook";
 import { startWorkflowForEntity, getWorkflowStatus, requiresApproval } from "@/lib/workflow-integration";
 
 export const purchaseOrdersRouter = createTRPCRouter({
@@ -446,6 +447,13 @@ export const purchaseOrdersRouter = createTRPCRouter({
             actualDeliveryDate: allReceived ? new Date() : undefined,
           },
         });
+      }
+
+      if (allReceived) {
+        emitWebhook(ctx.prisma, ctx.companyId, "purchase_order.received", {
+          id: item.purchaseOrderId, code: item.purchaseOrder.code,
+          supplierName: item.purchaseOrder.supplier.companyName,
+        }, { entityType: "PurchaseOrder", entityId: item.purchaseOrderId });
       }
 
       return updatedItem;

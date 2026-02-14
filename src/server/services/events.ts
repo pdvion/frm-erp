@@ -1,5 +1,6 @@
 import { notifications, notificationService } from "./notifications";
 import { prisma } from "@/lib/prisma";
+import { WebhookService, type WebhookEventType } from "./webhook";
 
 /**
  * Serviço de Eventos do Sistema
@@ -54,7 +55,40 @@ interface EventPayload {
   data: Record<string, unknown>;
 }
 
+/**
+ * Extracts the entity ID from event data based on known field naming conventions.
+ */
+function extractEntityId(data: Record<string, unknown>): string {
+  const idFields = ["entityId", "orderId", "quoteId", "payableId", "receivableId", "invoiceId", "materialId"] as const;
+  for (const field of idFields) {
+    if (data[field]) return String(data[field]);
+  }
+  return "";
+}
+
+/**
+ * Maps internal EventType → WebhookEventType for automatic webhook dispatch.
+ * Only events with a matching webhook type are forwarded.
+ */
+const EVENT_TO_WEBHOOK: Partial<Record<EventType, WebhookEventType>> = {
+  "quote.created": "quote.created",
+  "quote.approved": "quote.approved",
+  "purchaseOrder.created": "purchase_order.created",
+  "purchaseOrder.approved": "purchase_order.approved",
+  "inventory.lowStock": "stock.low",
+  "inventory.criticalStock": "stock.low",
+  "payable.created": "payable.created",
+  "payable.paid": "payable.paid",
+  "receivable.created": "receivable.created",
+  "receivable.received": "receivable.received",
+  "invoice.created": "invoice.created",
+  "invoice.authorized": "invoice.authorized",
+  "invoice.cancelled": "invoice.cancelled",
+};
+
 class EventService {
+  private webhookService = new WebhookService(prisma);
+
   /**
    * Emitir um evento do sistema
    */
@@ -161,6 +195,22 @@ class EventService {
 
         default:
           console.warn(`Unknown event type: ${type}`);
+      }
+
+      // Dispatch to external webhooks (non-blocking)
+      const webhookEventType = EVENT_TO_WEBHOOK[type];
+      if (webhookEventType && context.companyId) {
+        const entityId = extractEntityId(data);
+        const emitOptions: { entityType?: string; entityId?: string; metadata?: Record<string, unknown> } = {};
+        if (data.entityType) emitOptions.entityType = String(data.entityType);
+        if (entityId) emitOptions.entityId = entityId;
+        if (context.metadata) emitOptions.metadata = context.metadata;
+
+        this.webhookService
+          .emit(context.companyId, webhookEventType, data, emitOptions)
+          .catch((e: unknown) =>
+            console.warn(`[webhook] Failed to dispatch ${webhookEventType}:`, e instanceof Error ? e.message : String(e))
+          );
       }
     } catch (error) {
       console.error(`Error handling event ${type}:`, error);

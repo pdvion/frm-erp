@@ -3,6 +3,7 @@ import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { auditCreate, auditUpdate } from "../services/audit";
 import { MaintenanceService, getNextMaintenanceDate } from "../services/maintenance";
 import { TRPCError } from "@trpc/server";
+import { emitWebhook } from "../services/webhook";
 import {
   MaintenanceFrequency, EquipmentCriticality, MaintenanceType,
   MaintenanceOrderStatus, MaintenancePriority, FailureCategory,
@@ -176,6 +177,12 @@ export const maintenanceRouter = createTRPCRouter({
       const svc = new MaintenanceService(ctx.prisma);
       const r = await svc.createOrder(cid, { ...input, requestedBy: ctx.tenant.userId });
       await auditCreate("MaintenanceOrder", r, String(r.code), { userId: ctx.tenant.userId ?? undefined, companyId: cid });
+
+      emitWebhook(ctx.prisma, cid, "maintenance_order.created", {
+        id: r.id, code: r.code, title: input.title, type: input.type,
+        priority: input.priority, equipmentId: input.equipmentId,
+      }, { entityType: "MaintenanceOrder", entityId: r.id });
+
       return r;
     }),
 
@@ -194,7 +201,13 @@ export const maintenanceRouter = createTRPCRouter({
       const ord = await ctx.prisma.maintenanceOrder.findFirst({ where: { id: input.id, companyId: cid } });
       if (!ord) throw new TRPCError({ code: "FORBIDDEN", message: "Ordem não pertence a este tenant" });
       const svc = new MaintenanceService(ctx.prisma);
-      return svc.completeOrder(input.id, input.solution, ctx.tenant.userId ?? undefined);
+      const result = await svc.completeOrder(input.id, input.solution, ctx.tenant.userId ?? undefined);
+
+      emitWebhook(ctx.prisma, cid, "maintenance_order.completed", {
+        id: input.id, code: ord.code, title: ord.title,
+      }, { entityType: "MaintenanceOrder", entityId: input.id });
+
+      return result;
     }),
 
   cancelOrder: tenantProcedure

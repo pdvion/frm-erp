@@ -3,6 +3,7 @@ import { createTRPCRouter, tenantProcedure, tenantFilter } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { InventoryService } from "../services/inventory";
+import { emitWebhook } from "../services/webhook";
 
 export const productionRouter = createTRPCRouter({
   // Listar ordens de produção
@@ -189,6 +190,11 @@ export const productionRouter = createTRPCRouter({
           operations: true,
         },
       });
+
+      emitWebhook(ctx.prisma, ctx.companyId, "production_order.created", {
+        id: order.id, code: order.code, productId: order.productId,
+        quantity: Number(order.quantity), priority: order.priority,
+      }, { entityType: "ProductionOrder", entityId: order.id });
 
       return order;
     }),
@@ -390,7 +396,7 @@ export const productionRouter = createTRPCRouter({
       const isComplete = newProducedQty >= Number(order.quantity);
 
       // Transação para garantir atomicidade (OP + operação + inventário)
-      return ctx.prisma.$transaction(async (tx) => {
+      const result = await ctx.prisma.$transaction(async (tx) => {
         // Atualizar OP
         await tx.productionOrder.update({
           where: { id: input.orderId },
@@ -449,6 +455,14 @@ export const productionRouter = createTRPCRouter({
 
         return { success: true, newProducedQty, isComplete };
       });
+
+      if (isComplete) {
+        emitWebhook(ctx.prisma, ctx.companyId, "production_order.completed", {
+          id: input.orderId, code: order.code, producedQty: newProducedQty,
+        }, { entityType: "ProductionOrder", entityId: input.orderId });
+      }
+
+      return result;
     }),
 
   // Consumir material
