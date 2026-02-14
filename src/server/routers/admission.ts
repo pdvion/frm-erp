@@ -662,6 +662,14 @@ export const admissionRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Processo precisa estar aprovado" });
       }
 
+      if (!admission.proposedSalary || Number(admission.proposedSalary) <= 0) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Salário proposto é obrigatório para completar a admissão" });
+      }
+
+      if (!admission.proposedStartDate) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Data prevista de início é obrigatória para completar a admissão" });
+      }
+
       // Atomicidade: nextCode + create employee + update admission
       const result = await ctx.prisma.$transaction(async (tx) => {
         const lastEmployee = await tx.employee.findFirst({
@@ -683,8 +691,8 @@ export const admissionRouter = createTRPCRouter({
             photo: admission.candidatePhoto,
             positionId: admission.positionId,
             departmentId: admission.departmentId,
-            salary: admission.proposedSalary || 0,
-            hireDate: admission.proposedStartDate || new Date(),
+            salary: Number(admission.proposedSalary),
+            hireDate: admission.proposedStartDate!,
             status: "ACTIVE",
             createdBy: ctx.tenant.userId,
           },

@@ -187,8 +187,9 @@ export default function NewAdmissionPage() {
         <PageCard title="Dados da Vaga" className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-theme mb-1">Departamento</label>
+              <label htmlFor="departmentId" className="block text-sm font-medium text-theme mb-1">Departamento</label>
               <ComboboxWithCreate
+                id="departmentId"
                 value={form.departmentId}
                 onChange={(val) => setForm((p) => ({ ...p, departmentId: val }))}
                 placeholder="Selecione o departamento..."
@@ -203,8 +204,9 @@ export default function NewAdmissionPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-theme mb-1">Cargo</label>
+              <label htmlFor="positionId" className="block text-sm font-medium text-theme mb-1">Cargo</label>
               <ComboboxWithCreate
+                id="positionId"
                 value={form.positionId}
                 onChange={(val) => setForm((p) => ({ ...p, positionId: val }))}
                 placeholder="Selecione o cargo..."
