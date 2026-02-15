@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import type { PrismaClient, Prisma } from "@prisma/client";
+import { encrypt, decrypt } from "@/lib/encryption";
 
 // ============================================================
 // CONSTANTS
@@ -236,7 +237,7 @@ export class WebhookService {
   ): Promise<void> {
     const body = JSON.stringify(payload);
     const timestamp = Date.now().toString();
-    const signature = signPayload(`${timestamp}.${body}`, config.secret);
+    const signature = signPayload(`${timestamp}.${body}`, decrypt(config.secret));
 
     const customHeaders =
       config.headers && typeof config.headers === "object" && !Array.isArray(config.headers)
@@ -452,7 +453,7 @@ export class WebhookService {
         const timestamp = Date.now().toString();
         headers[SIGNATURE_HEADER] = signPayload(
           `${timestamp}.${delivery.requestBody}`,
-          delivery.webhook.secret
+          decrypt(delivery.webhook.secret)
         );
         headers[TIMESTAMP_HEADER] = timestamp;
       }
@@ -532,7 +533,7 @@ export class WebhookService {
 
     await this.prisma.webhookConfig.update({
       where: { id: configId },
-      data: { secret: newSecret },
+      data: { secret: encrypt(newSecret) },
     });
 
     return newSecret;

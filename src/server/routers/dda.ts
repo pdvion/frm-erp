@@ -8,6 +8,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure, sensitiveProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
+import { encryptOptional } from "@/lib/encryption";
 
 export const ddaRouter = createTRPCRouter({
   /**
@@ -353,7 +354,10 @@ export const ddaRouter = createTRPCRouter({
         orderBy: { bancoCodigo: "asc" },
       });
 
-      return configs;
+      return configs.map((c) => ({
+        ...c,
+        clientSecret: c.clientSecret ? "••••••••" : null,
+      }));
     }),
 
   /**
@@ -387,7 +391,7 @@ export const ddaRouter = createTRPCRouter({
             convenio: input.convenio,
             ambiente: input.ambiente,
             clientId: input.clientId,
-            clientSecret: input.clientSecret,
+            clientSecret: encryptOptional(input.clientSecret) ?? undefined,
             ativo: input.ativo,
             autoAprovarAte: input.autoAprovarAte,
             notificarNovos: input.notificarNovos,
@@ -408,7 +412,7 @@ export const ddaRouter = createTRPCRouter({
           convenio: input.convenio,
           ambiente: input.ambiente,
           clientId: input.clientId,
-          clientSecret: input.clientSecret,
+          clientSecret: encryptOptional(input.clientSecret) ?? undefined,
           ativo: input.ativo,
           autoAprovarAte: input.autoAprovarAte,
           notificarNovos: input.notificarNovos,

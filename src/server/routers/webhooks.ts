@@ -8,6 +8,7 @@ import {
   WEBHOOK_EVENT_TYPES,
   type WebhookEventType,
 } from "../services/webhook";
+import { encrypt } from "@/lib/encryption";
 
 const webhookEventTypeValues = Object.keys(WEBHOOK_EVENT_TYPES) as [
   WebhookEventType,
@@ -132,7 +133,7 @@ export const webhooksRouter = createTRPCRouter({
           companyId,
           name: input.name,
           url: input.url,
-          secret,
+          secret: encrypt(secret),
           events: input.events,
           description: input.description,
           headers: (input.headers ?? {}) as Prisma.InputJsonValue,
