@@ -229,7 +229,6 @@ export const createProtectedProcedure = (module: SystemModule, requiredLevel: Pe
  * companyId automaticamente via `createTenantPrisma`. Use `ctx.prisma` diretamente.
  * Será removido após migração completa dos routers (VIO-1072).
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function tenantFilter(companyId: string | null, _includeShared?: boolean) {
   // Quando RLS Extension está ativo, retorna {} para evitar filtro duplicado
   // O createTenantPrisma já injeta companyId automaticamente nas queries

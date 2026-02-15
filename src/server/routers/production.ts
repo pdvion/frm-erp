@@ -439,7 +439,7 @@ export const productionRouter = createTRPCRouter({
           const unitCost = newProducedQty > 0 
             ? totalMaterialCost / newProducedQty 
             : totalMaterialCost / Number(order.quantity);
-          const totalCost = unitCost * input.quantity;
+          const _totalCost = unitCost * input.quantity;
 
           await inventoryService.recordProductionEntry(tx, {
             inventoryId: inventory.id,

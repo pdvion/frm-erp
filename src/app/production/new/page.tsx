@@ -17,7 +17,6 @@ import {
   Plus,
   Trash2,
   Search,
-  X,
   Package,
 } from "lucide-react";
 

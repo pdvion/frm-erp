@@ -21,7 +21,6 @@ import {
   Camera,
   Barcode,
   Check,
-  X,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";

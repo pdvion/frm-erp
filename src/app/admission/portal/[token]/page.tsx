@@ -602,18 +602,18 @@ export default function CandidatePortalPage() {
                     doc.status === "VERIFIED"
                       ? "bg-green-50 border-green-200"
                       : doc.status === "REJECTED"
-                      ? "bg-red-50 border-red-200"
-                      : doc.status === "UPLOADED"
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-gray-50 border-gray-200"
+                        ? "bg-red-50 border-red-200"
+                        : doc.status === "UPLOADED"
+                          ? "bg-blue-50 border-blue-200"
+                          : "bg-gray-50 border-gray-200"
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <FileText className={`w-5 h-5 flex-shrink-0 ${
                       doc.status === "VERIFIED" ? "text-green-600" :
-                      doc.status === "REJECTED" ? "text-red-600" :
-                      doc.status === "UPLOADED" ? "text-blue-600" :
-                      "text-gray-400"
+                        doc.status === "REJECTED" ? "text-red-600" :
+                          doc.status === "UPLOADED" ? "text-blue-600" :
+                            "text-gray-400"
                     }`} />
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">
@@ -720,15 +720,15 @@ export default function CandidatePortalPage() {
                   label={doc.documentName}
                   value={
                     doc.status === "VERIFIED" ? "✓ Verificado" :
-                    doc.status === "UPLOADED" ? "Enviado" :
-                    doc.status === "REJECTED" ? "✗ Rejeitado" :
-                    "Pendente"
+                      doc.status === "UPLOADED" ? "Enviado" :
+                        doc.status === "REJECTED" ? "✗ Rejeitado" :
+                          "Pendente"
                   }
                   valueColor={
                     doc.status === "VERIFIED" ? "text-green-600" :
-                    doc.status === "REJECTED" ? "text-red-600" :
-                    doc.status === "UPLOADED" ? "text-blue-600" :
-                    "text-yellow-600"
+                      doc.status === "REJECTED" ? "text-red-600" :
+                        doc.status === "UPLOADED" ? "text-blue-600" :
+                          "text-yellow-600"
                   }
                 />
               ))}
@@ -780,8 +780,8 @@ export default function CandidatePortalPage() {
                       isActive
                         ? "bg-blue-600 text-white shadow-md"
                         : isDone
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                        : "bg-white text-gray-500 hover:bg-gray-100"
+                          ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          : "bg-white text-gray-500 hover:bg-gray-100"
                     }`}
                   >
                     <span className="flex-shrink-0">{s.icon}</span>

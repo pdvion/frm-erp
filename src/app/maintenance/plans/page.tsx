@@ -13,7 +13,6 @@ import {
   CalendarClock,
   Search,
   Loader2,
-  Plus,
   ChevronLeft,
   ChevronRight,
   Cpu,

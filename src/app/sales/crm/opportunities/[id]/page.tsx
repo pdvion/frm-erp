@@ -38,7 +38,7 @@ interface PipelineStage {
 
 export default function OpportunityDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
   const id = params.id as string;
 
   const [showMoveModal, setShowMoveModal] = useState(false);

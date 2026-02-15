@@ -17,7 +17,6 @@ import {
   Plus,
   Trash2,
   Search,
-  X,
 } from "lucide-react";
 
 export default function NewRequisitionPage() {

@@ -17,7 +17,6 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
-  Activity,
 } from "lucide-react";
 
 const criticalityConfig: Record<string, { label: string; variant: "error" | "warning" | "info" }> = {

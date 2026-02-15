@@ -337,46 +337,46 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                 <h2 className="text-xl font-bold text-theme">{admission.candidateName}</h2>
                 <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
               </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-theme-muted">
-              {admission.candidateEmail && (
-                <div className="flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5" />
-                  {admission.candidateEmail}
-                </div>
-              )}
-              {admission.candidatePhone && (
-                <div className="flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5" />
-                  {admission.candidatePhone}
-                </div>
-              )}
-              {admission.candidateCpf && (
-                <div className="flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5" />
-                  {admission.candidateCpf}
-                </div>
-              )}
-              {admission.proposedSalary && (
-                <div className="flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5" />
-                  {formatCurrency(admission.proposedSalary)}
-                </div>
-              )}
-            </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm text-theme-muted">
+                {admission.candidateEmail && (
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5" />
+                    {admission.candidateEmail}
+                  </div>
+                )}
+                {admission.candidatePhone && (
+                  <div className="flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    {admission.candidatePhone}
+                  </div>
+                )}
+                {admission.candidateCpf && (
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5" />
+                    {admission.candidateCpf}
+                  </div>
+                )}
+                {admission.proposedSalary && (
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5" />
+                    {formatCurrency(admission.proposedSalary)}
+                  </div>
+                )}
+              </div>
 
-            {/* Progress bar */}
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-xs text-theme-muted mb-1">
-                <span>Etapa {admission.currentStep} de {admission.totalSteps}</span>
-                <span>{docsVerified}/{docsTotal} documentos verificados</span>
+              {/* Progress bar */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-xs text-theme-muted mb-1">
+                  <span>Etapa {admission.currentStep} de {admission.totalSteps}</span>
+                  <span>{docsVerified}/{docsTotal} documentos verificados</span>
+                </div>
+                <div className="w-full bg-theme-tertiary rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all"
+                    style={{ width: `${((admission.currentStep || 0) / (admission.totalSteps || 1)) * 100}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-theme-tertiary rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all"
-                  style={{ width: `${((admission.currentStep || 0) / (admission.totalSteps || 1)) * 100}%` }}
-                />
-              </div>
-            </div>
             </div>{/* close inner flex-1 */}
           </div>{/* close flex items-start gap-4 */}
 
@@ -932,8 +932,8 @@ function StepsTab({
             {/* Step number circle */}
             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${
               step.status === "COMPLETED" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
-              step.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
-              "bg-theme-tertiary text-theme-muted"
+                step.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+                  "bg-theme-tertiary text-theme-muted"
             }`}>
               {step.status === "COMPLETED" ? <CheckCircle className="w-5 h-5" /> : step.stepNumber}
             </div>

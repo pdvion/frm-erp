@@ -9,7 +9,6 @@ import {
   ChevronRight,
   ChevronDown,
   FileText,
-  X,
   Save,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
@@ -267,83 +266,83 @@ function CategoryModal({
       size="sm"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Nome *"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="Ex: Contratos"
-          />
+        <Input
+          label="Nome *"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+          placeholder="Ex: Contratos"
+        />
 
+        <div>
+          <label className="block text-sm font-medium text-theme mb-1">
+              Descrição
+          </label>
+          <Textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={2}
+            placeholder="Descrição opcional"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-theme mb-1">
-              Descrição
-            </label>
-            <Textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={2}
-              placeholder="Descrição opcional"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
                 Cor
-              </label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="w-10 h-10 rounded border border-theme cursor-pointer"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="flex-1 text-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-theme mb-1">
-                Categoria Pai
-              </label>
-              <Select
-                value={formData.parentId || ""}
-                onChange={(value) =>
-                  setFormData({ ...formData, parentId: value || null })
-                }
-                placeholder="Nenhuma (raiz)"
-                options={[
-                  { value: "", label: "Nenhuma (raiz)" },
-                  ...flatCategories
-                    .filter((c) => c.id !== category?.id)
-                    .map((cat) => ({
-                      value: cat.id,
-                      label: cat.name,
-                    })),
-                ]}
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="color"
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                className="w-10 h-10 rounded border border-theme cursor-pointer"
+              />
+              <Input
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                className="flex-1 text-sm"
               />
             </div>
           </div>
 
-          <ModalFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+                Categoria Pai
+            </label>
+            <Select
+              value={formData.parentId || ""}
+              onChange={(value) =>
+                setFormData({ ...formData, parentId: value || null })
+              }
+              placeholder="Nenhuma (raiz)"
+              options={[
+                { value: "", label: "Nenhuma (raiz)" },
+                ...flatCategories
+                  .filter((c) => c.id !== category?.id)
+                  .map((cat) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  })),
+              ]}
+            />
+          </div>
+        </div>
+
+        <ModalFooter>
+          <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={!formData.name.trim()}
-              isLoading={isLoading}
-              leftIcon={<Save className="w-4 h-4" />}
-            >
+          </Button>
+          <Button
+            type="submit"
+            disabled={!formData.name.trim()}
+            isLoading={isLoading}
+            leftIcon={<Save className="w-4 h-4" />}
+          >
               Salvar
-            </Button>
-          </ModalFooter>
-        </form>
+          </Button>
+        </ModalFooter>
+      </form>
     </Modal>
   );
 }

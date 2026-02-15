@@ -30,7 +30,7 @@ export function generateApiKey(): {
   key: string;
   keyHash: string;
   keyPrefix: string;
-} {
+  } {
   const randomPart = randomBytes(API_KEY_RANDOM_BYTES).toString("hex");
   const key = `${API_KEY_PREFIX}${randomPart}`;
   const keyHash = hashApiKey(key);

@@ -19,7 +19,6 @@ import {
   Trash2,
   ExternalLink,
   Send,
-  RotateCcw,
   Copy,
   Eye,
 } from "lucide-react";

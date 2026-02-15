@@ -27,9 +27,10 @@ const eslintConfig = defineConfig([
     },
   },
   // VIO-984: Design System - Proibir elementos HTML nativos em favor dos componentes do DS
-  // Aplicado apenas em src/app (páginas), não em componentes do DS
+  // Aplicado em src/app (páginas), exceto portais públicos que usam HTML nativo intencionalmente
   {
     files: ["src/app/**/*.tsx", "src/app/**/*.jsx"],
+    ignores: ["src/app/portal/**", "src/app/admission/portal/**"],
     rules: {
       "react/forbid-elements": ["warn", {
         "forbid": [
@@ -39,6 +40,23 @@ const eslintConfig = defineConfig([
           { "element": "textarea", "message": "Use <Textarea> from @/components/ui/Textarea" },
         ]
       }],
+    },
+  },
+  // Permitir variáveis com prefixo _ como não-utilizadas (padrão de destructuring)
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+      }],
+    },
+  },
+  // ImageUpload usa <img> intencionalmente (preview de upload, não otimizável via next/image)
+  {
+    files: ["src/components/ui/ImageUpload.tsx"],
+    rules: {
+      "@next/next/no-img-element": "off",
     },
   },
 ]);

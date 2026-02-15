@@ -155,7 +155,7 @@ export function generateDesadvEdifact(data: DesadvData): string {
   const segments: string[] = [];
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
-  const timeStr = now.toISOString().slice(11, 15).replace(":", "");
+  const _timeStr = now.toISOString().slice(11, 15).replace(":", "");
 
   segments.push(`UNH+1+DESADV:D:96A:UN'`);
   segments.push(`BGM+351+${data.shipmentNumber}+9'`);

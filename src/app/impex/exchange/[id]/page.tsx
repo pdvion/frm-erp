@@ -328,122 +328,122 @@ export default function ExchangeContractDetailPage({
         size="sm"
       >
         <form onSubmit={handleLiquidate} className="space-y-4">
-              <div>
-                <Input
-                  label={`Valor a Liquidar (${contract.foreignCurrency}) *`}
-                  type="number"
-                  value={liquidationData.foreignValue}
-                  onChange={(e) =>
-                    setLiquidationData((prev) => ({
-                      ...prev,
-                      foreignValue: parseFloat(e.target.value) || 0,
-                    }))
-                  }
-                  required
-                  min={0}
-                  max={remainingValue}
-                  step={0.01}
-                />
-                <p className="text-xs text-theme-muted mt-1">
+          <div>
+            <Input
+              label={`Valor a Liquidar (${contract.foreignCurrency}) *`}
+              type="number"
+              value={liquidationData.foreignValue}
+              onChange={(e) =>
+                setLiquidationData((prev) => ({
+                  ...prev,
+                  foreignValue: parseFloat(e.target.value) || 0,
+                }))
+              }
+              required
+              min={0}
+              max={remainingValue}
+              step={0.01}
+            />
+            <p className="text-xs text-theme-muted mt-1">
                   Saldo disponível: {formatCurrency(remainingValue, contract.foreignCurrency)}
-                </p>
-              </div>
-              <div>
-                <Input
-                  label="Taxa de Liquidação *"
-                  type="number"
-                  value={liquidationData.liquidationRate}
-                  onChange={(e) =>
-                    setLiquidationData((prev) => ({
-                      ...prev,
-                      liquidationRate: parseFloat(e.target.value) || 0,
-                    }))
-                  }
-                  required
-                  min={0}
-                  step={0.0001}
-                />
-                <p className="text-xs text-theme-muted mt-1">
+            </p>
+          </div>
+          <div>
+            <Input
+              label="Taxa de Liquidação *"
+              type="number"
+              value={liquidationData.liquidationRate}
+              onChange={(e) =>
+                setLiquidationData((prev) => ({
+                  ...prev,
+                  liquidationRate: parseFloat(e.target.value) || 0,
+                }))
+              }
+              required
+              min={0}
+              step={0.0001}
+            />
+            <p className="text-xs text-theme-muted mt-1">
                   Taxa contratada: {formatRate(Number(contract.contractRate))}
-                </p>
-              </div>
-              <Input
-                label="Data da Liquidação *"
-                type="date"
-                value={liquidationData.liquidationDate}
-                onChange={(e) =>
-                  setLiquidationData((prev) => ({
-                    ...prev,
-                    liquidationDate: e.target.value,
-                  }))
-                }
-                required
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Observações</label>
-                <Textarea
-                  value={liquidationData.notes}
-                  onChange={(e) =>
-                    setLiquidationData((prev) => ({ ...prev, notes: e.target.value }))
-                  }
-                  rows={2}
-                />
-              </div>
+            </p>
+          </div>
+          <Input
+            label="Data da Liquidação *"
+            type="date"
+            value={liquidationData.liquidationDate}
+            onChange={(e) =>
+              setLiquidationData((prev) => ({
+                ...prev,
+                liquidationDate: e.target.value,
+              }))
+            }
+            required
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Observações</label>
+            <Textarea
+              value={liquidationData.notes}
+              onChange={(e) =>
+                setLiquidationData((prev) => ({ ...prev, notes: e.target.value }))
+              }
+              rows={2}
+            />
+          </div>
 
-              {liquidationData.foreignValue > 0 && liquidationData.liquidationRate > 0 && (
-                <div className="p-3 bg-theme-secondary rounded-lg">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-theme-muted">Valor em BRL:</span>
-                    <span className="text-theme font-medium">
-                      {formatCurrency(
-                        liquidationData.foreignValue * liquidationData.liquidationRate,
-                        "BRL"
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span className="text-theme-muted">Variação:</span>
-                    <span
-                      className={`font-medium ${
-                        liquidationData.liquidationRate > Number(contract.contractRate)
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {formatCurrency(
-                        liquidationData.foreignValue *
+          {liquidationData.foreignValue > 0 && liquidationData.liquidationRate > 0 && (
+            <div className="p-3 bg-theme-secondary rounded-lg">
+              <div className="flex justify-between text-sm">
+                <span className="text-theme-muted">Valor em BRL:</span>
+                <span className="text-theme font-medium">
+                  {formatCurrency(
+                    liquidationData.foreignValue * liquidationData.liquidationRate,
+                    "BRL"
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm mt-1">
+                <span className="text-theme-muted">Variação:</span>
+                <span
+                  className={`font-medium ${
+                    liquidationData.liquidationRate > Number(contract.contractRate)
+                      ? "text-red-600"
+                      : "text-green-600"
+                  }`}
+                >
+                  {formatCurrency(
+                    liquidationData.foreignValue *
                           (liquidationData.liquidationRate - Number(contract.contractRate)),
-                        "BRL"
-                      )}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-            {liquidateMutation.error && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-                {liquidateMutation.error.message}
+                    "BRL"
+                  )}
+                </span>
               </div>
-            )}
+            </div>
+          )}
 
-            <ModalFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowLiquidateForm(false)}
-              >
+          {liquidateMutation.error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+              {liquidateMutation.error.message}
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowLiquidateForm(false)}
+            >
                 Cancelar
-              </Button>
-              <Button
-                type="submit"
-                variant="success"
-                isLoading={liquidateMutation.isPending}
-                leftIcon={<CheckCircle className="w-4 h-4" />}
-              >
+            </Button>
+            <Button
+              type="submit"
+              variant="success"
+              isLoading={liquidateMutation.isPending}
+              leftIcon={<CheckCircle className="w-4 h-4" />}
+            >
                 Confirmar Liquidação
-              </Button>
-            </ModalFooter>
-          </form>
+            </Button>
+          </ModalFooter>
+        </form>
       </Modal>
     </div>
   );

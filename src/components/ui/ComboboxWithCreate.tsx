@@ -47,8 +47,8 @@ export function ComboboxWithCreate({
 
   const filtered = search
     ? options.filter((o) =>
-        o.label.toLowerCase().includes(search.toLowerCase())
-      )
+      o.label.toLowerCase().includes(search.toLowerCase())
+    )
     : options;
 
   const handleSelect = useCallback(
@@ -101,15 +101,14 @@ export function ComboboxWithCreate({
           text-sm transition-colors text-left
           bg-theme-input text-theme
           ${error
-            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-            : "border-theme-input focus:border-blue-500 focus:ring-blue-500"
-          }
+      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+      : "border-theme-input focus:border-blue-500 focus:ring-blue-500"
+    }
           ${disabled ? "cursor-not-allowed opacity-50 bg-theme-secondary" : ""}
           focus:outline-none focus:ring-2 focus:ring-offset-0
         `}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-invalid={error ? "true" : "false"}
       >
         <span className={selectedOption ? "text-theme" : "text-theme-muted"}>
           {selectedOption?.label ?? placeholder}
@@ -172,9 +171,9 @@ export function ComboboxWithCreate({
                   className={`
                     flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-colors
                     ${option.value === value
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "text-theme hover:bg-theme-secondary"
-                    }
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                  : "text-theme hover:bg-theme-secondary"
+                }
                   `}
                 >
                   <span>{option.label}</span>

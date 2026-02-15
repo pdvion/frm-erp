@@ -317,119 +317,119 @@ function AddComponentModal({
       size="md"
     >
       <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Componente</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar material..."
-                className="pl-10"
-              />
-            </div>
-            {materials?.materials && materials.materials.length > 0 && search && (
-              <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
-                {materials.materials
-                  .filter((m) => m.id !== parentMaterialId)
-                  .map((mat) => (
-                    <Button
-                      key={mat.id}
-                      variant="ghost"
-                      onClick={() => {
-                        setChildMaterialId(mat.id);
-                        setSearch(mat.description);
-                        setUnit(mat.unit);
-                      }}
-                      className="w-full justify-start text-left text-sm"
-                    >
-                      <span className="font-medium">{mat.code}</span> - {mat.description}
-                    </Button>
-                  ))}
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Componente</label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
             <Input
-              label="Quantidade"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              step="0.0001"
-            />
-            <Input
-              label="Unidade"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar material..."
+              className="pl-10"
             />
           </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <Input
-              label="Perda %"
-              type="number"
-              value={scrapPercentage}
-              onChange={(e) => setScrapPercentage(e.target.value)}
-              min="0"
-              max="100"
-            />
-            <Input
-              label="Lead Time (dias)"
-              type="number"
-              value={leadTimeDays}
-              onChange={(e) => setLeadTimeDays(e.target.value)}
-              min="0"
-            />
-            <Input
-              label="Sequência"
-              type="number"
-              value={sequence}
-              onChange={(e) => setSequence(e.target.value)}
-              min="0"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Observações</label>
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-            />
-          </div>
-
-          {addMutation.error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" />
-              {addMutation.error.message}
+          {materials?.materials && materials.materials.length > 0 && search && (
+            <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
+              {materials.materials
+                .filter((m) => m.id !== parentMaterialId)
+                .map((mat) => (
+                  <Button
+                    key={mat.id}
+                    variant="ghost"
+                    onClick={() => {
+                      setChildMaterialId(mat.id);
+                      setSearch(mat.description);
+                      setUnit(mat.unit);
+                    }}
+                    className="w-full justify-start text-left text-sm"
+                  >
+                    <span className="font-medium">{mat.code}</span> - {mat.description}
+                  </Button>
+                ))}
             </div>
           )}
-
-          <ModalFooter>
-            <Button variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={() =>
-                addMutation.mutate({
-                  parentMaterialId,
-                  childMaterialId,
-                  quantity: parseFloat(quantity) || 1,
-                  unit,
-                  scrapPercentage: parseFloat(scrapPercentage) || 0,
-                  leadTimeDays: parseInt(leadTimeDays) || 0,
-                  sequence: parseInt(sequence) || 0,
-                  notes: notes || undefined,
-                })
-              }
-              disabled={!childMaterialId || addMutation.isPending}
-              isLoading={addMutation.isPending}
-            >
-              Adicionar
-            </Button>
-          </ModalFooter>
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Quantidade"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="0.0001"
+          />
+          <Input
+            label="Unidade"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <Input
+            label="Perda %"
+            type="number"
+            value={scrapPercentage}
+            onChange={(e) => setScrapPercentage(e.target.value)}
+            min="0"
+            max="100"
+          />
+          <Input
+            label="Lead Time (dias)"
+            type="number"
+            value={leadTimeDays}
+            onChange={(e) => setLeadTimeDays(e.target.value)}
+            min="0"
+          />
+          <Input
+            label="Sequência"
+            type="number"
+            value={sequence}
+            onChange={(e) => setSequence(e.target.value)}
+            min="0"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Observações</label>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+          />
+        </div>
+
+        {addMutation.error && (
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            {addMutation.error.message}
+          </div>
+        )}
+
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
+              Cancelar
+          </Button>
+          <Button
+            onClick={() =>
+              addMutation.mutate({
+                parentMaterialId,
+                childMaterialId,
+                quantity: parseFloat(quantity) || 1,
+                unit,
+                scrapPercentage: parseFloat(scrapPercentage) || 0,
+                leadTimeDays: parseInt(leadTimeDays) || 0,
+                sequence: parseInt(sequence) || 0,
+                notes: notes || undefined,
+              })
+            }
+            disabled={!childMaterialId || addMutation.isPending}
+            isLoading={addMutation.isPending}
+          >
+              Adicionar
+          </Button>
+        </ModalFooter>
+      </div>
     </Modal>
   );
 }
@@ -480,19 +480,19 @@ function EditItemModal({
     >
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Quantidade"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              step="0.0001"
-            />
-            <Input
-              label="Unidade"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            />
-          </div>
+          <Input
+            label="Quantidade"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            step="0.0001"
+          />
+          <Input
+            label="Unidade"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+          />
+        </div>
 
         <div className="grid grid-cols-3 gap-4">
           <Input
@@ -817,77 +817,77 @@ function CopyBomModal({
       size="md"
     >
       <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">
               Material de Destino
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar material..."
-                className="pl-10"
-              />
-            </div>
-            {materials?.materials && materials.materials.length > 0 && search && (
-              <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
-                {materials.materials
-                  .filter((m) => m.id !== sourceMaterialId)
-                  .map((mat) => (
-                    <Button
-                      key={mat.id}
-                      variant="ghost"
-                      onClick={() => {
-                        setTargetMaterialId(mat.id);
-                        setSearch(mat.description);
-                      }}
-                      className="w-full justify-start text-left text-sm"
-                    >
-                      <span className="font-medium">{mat.code}</span> - {mat.description}
-                    </Button>
-                  ))}
-              </div>
-            )}
-          </div>
-
-          <label className="flex items-center gap-2">
-            <Input
-              type="checkbox"
-              checked={replaceExisting}
-              onChange={(e) => setReplaceExisting(e.target.checked)}
-              className="rounded border-theme text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-theme-secondary">
-              Substituir estrutura existente no destino
-            </span>
           </label>
-
-          {copyMutation.error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-              {copyMutation.error.message}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar material..."
+              className="pl-10"
+            />
+          </div>
+          {materials?.materials && materials.materials.length > 0 && search && (
+            <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
+              {materials.materials
+                .filter((m) => m.id !== sourceMaterialId)
+                .map((mat) => (
+                  <Button
+                    key={mat.id}
+                    variant="ghost"
+                    onClick={() => {
+                      setTargetMaterialId(mat.id);
+                      setSearch(mat.description);
+                    }}
+                    className="w-full justify-start text-left text-sm"
+                  >
+                    <span className="font-medium">{mat.code}</span> - {mat.description}
+                  </Button>
+                ))}
             </div>
           )}
-
-          <ModalFooter>
-            <Button variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={() =>
-                copyMutation.mutate({
-                  sourceMaterialId,
-                  targetMaterialId,
-                  replaceExisting,
-                })
-              }
-              disabled={!targetMaterialId || copyMutation.isPending}
-              isLoading={copyMutation.isPending}
-            >
-              Copiar
-            </Button>
-          </ModalFooter>
         </div>
+
+        <label className="flex items-center gap-2">
+          <Input
+            type="checkbox"
+            checked={replaceExisting}
+            onChange={(e) => setReplaceExisting(e.target.checked)}
+            className="rounded border-theme text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-theme-secondary">
+              Substituir estrutura existente no destino
+          </span>
+        </label>
+
+        {copyMutation.error && (
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+            {copyMutation.error.message}
+          </div>
+        )}
+
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
+              Cancelar
+          </Button>
+          <Button
+            onClick={() =>
+              copyMutation.mutate({
+                sourceMaterialId,
+                targetMaterialId,
+                replaceExisting,
+              })
+            }
+            disabled={!targetMaterialId || copyMutation.isPending}
+            isLoading={copyMutation.isPending}
+          >
+              Copiar
+          </Button>
+        </ModalFooter>
+      </div>
     </Modal>
   );
 }

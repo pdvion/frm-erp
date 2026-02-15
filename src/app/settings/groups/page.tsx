@@ -15,7 +15,6 @@ import {
   Edit2,
   Trash2,
   Check,
-  X,
   ChevronDown,
   ChevronRight,
 } from "lucide-react";

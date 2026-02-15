@@ -12,7 +12,6 @@ import {
   GitBranch,
   Plus,
   Loader2,
-  Edit2,
   Layers,
 } from "lucide-react";
 

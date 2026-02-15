@@ -26,7 +26,6 @@ import {
   parseEdifactOrders,
   generateDesadvEdifact,
   generateInvoicEdifact,
-  parseFlatFile,
   applyFieldMappings,
 } from "./edi";
 import type { FieldMapping, FlatFileFieldDef } from "./edi";
