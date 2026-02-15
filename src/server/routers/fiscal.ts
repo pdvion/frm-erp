@@ -8,6 +8,7 @@ import { z } from "zod";
 import { createTRPCRouter, tenantProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { FiscalService } from "../services/fiscal";
+import { encryptOptional } from "@/lib/encryption";
 
 export const fiscalRouter = createTRPCRouter({
   // ==========================================================================
@@ -208,10 +209,16 @@ export const fiscalRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       const companyId = ctx.tenant.companyId!;
+      const data = {
+        ...input,
+        password: encryptOptional(input.password) ?? undefined,
+        token: encryptOptional(input.token) ?? undefined,
+        issRate: input.issRate ?? undefined,
+      };
       return ctx.prisma.nfseConfig.upsert({
         where: { companyId },
-        create: { companyId, ...input, issRate: input.issRate ?? null },
-        update: { ...input, issRate: input.issRate ?? undefined },
+        create: { companyId, ...data, issRate: input.issRate ?? null },
+        update: data,
       });
     }),
 
