@@ -34,10 +34,7 @@ export const ediRouter = createTRPCRouter({
       const svc = new EdiService(ctx.prisma);
       const partner = await svc.getPartner(input.id, ctx.companyId);
       if (!partner) throw new TRPCError({ code: "NOT_FOUND", message: "Parceiro EDI não encontrado" });
-      return {
-        ...partner,
-        sftpPassword: partner.sftpPassword ? "••••••••" : null,
-      };
+      return partner;
     }),
 
   createPartner: tenantProcedure
