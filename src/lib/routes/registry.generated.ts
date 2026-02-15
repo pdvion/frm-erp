@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T23:56:41.005Z
+ * Data: 2026-02-14T23:58:47.324Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -222,6 +222,11 @@ export const modules: ModuleDefinition[] = [
           { path: "/treasury/dda", label: "DDA", showInMenu: true, enabled: true },
           { path: "/treasury/import-ofx", label: "Importar OFX", showInMenu: true, enabled: true },
           { path: "/treasury/reconciliation", label: "Conciliação Bancária", showInMenu: true, enabled: true }
+        ] },
+      { path: "/assets", label: "Patrimônio", showInMenu: true, enabled: true,
+        children: [
+          { path: "/assets/depreciation", label: "Depreciação", showInMenu: true, enabled: true },
+          { path: "/assets/movements", label: "Movimentações", showInMenu: true, enabled: true }
         ] }
     ],
   },
