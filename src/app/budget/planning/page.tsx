@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Calendar, Calculator } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/formatters";
@@ -135,58 +136,58 @@ export default function BudgetPlanningPage() {
       )}
 
       {/* Modal de distribuição */}
-      {showDistributeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">Distribuir Valor Anual</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Conta</label>
-                <Select
-                  value={distributeForm.accountId}
-                  onChange={(value) => setDistributeForm({ ...distributeForm, accountId: value })}
-                  placeholder="Selecione..."
-                  options={accounts?.map((a) => ({ value: a.id, label: `${a.code} - ${a.name}` })) || []}
-                />
-              </div>
-              <Input
-                label="Valor Anual"
-                type="number"
-                value={distributeForm.annualAmount}
-                onChange={(e) => setDistributeForm({ ...distributeForm, annualAmount: Number(e.target.value) })}
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Distribuição</label>
-                <Select
-                  value={distributeForm.distribution}
-                  onChange={(value) => setDistributeForm({ ...distributeForm, distribution: value as "LINEAR" | "SEASONAL" })}
-                  options={[
-                    { value: "LINEAR", label: "Linear (igual por mês)" },
-                    { value: "SEASONAL", label: "Sazonal" },
-                  ]}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setShowDistributeModal(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => distributeMutation.mutate({
-                  versionId: selectedVersion!,
-                  accountId: distributeForm.accountId,
-                  annualAmount: distributeForm.annualAmount,
-                  distribution: distributeForm.distribution,
-                })}
-                disabled={!distributeForm.accountId || !distributeForm.annualAmount}
-                isLoading={distributeMutation.isPending}
-              >
-                Distribuir
-              </Button>
-            </div>
+      <Modal
+        isOpen={showDistributeModal}
+        onClose={() => setShowDistributeModal(false)}
+        title="Distribuir Valor Anual"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Conta</label>
+            <Select
+              value={distributeForm.accountId}
+              onChange={(value) => setDistributeForm({ ...distributeForm, accountId: value })}
+              placeholder="Selecione..."
+              options={accounts?.map((a) => ({ value: a.id, label: `${a.code} - ${a.name}` })) || []}
+            />
           </div>
+          <Input
+            label="Valor Anual"
+            type="number"
+            value={distributeForm.annualAmount}
+            onChange={(e) => setDistributeForm({ ...distributeForm, annualAmount: Number(e.target.value) })}
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Distribuição</label>
+            <Select
+              value={distributeForm.distribution}
+              onChange={(value) => setDistributeForm({ ...distributeForm, distribution: value as "LINEAR" | "SEASONAL" })}
+              options={[
+                { value: "LINEAR", label: "Linear (igual por mês)" },
+                { value: "SEASONAL", label: "Sazonal" },
+              ]}
+            />
+          </div>
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowDistributeModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => distributeMutation.mutate({
+                versionId: selectedVersion!,
+                accountId: distributeForm.accountId,
+                annualAmount: distributeForm.annualAmount,
+                distribution: distributeForm.distribution,
+              })}
+              disabled={!distributeForm.accountId || !distributeForm.annualAmount}
+              isLoading={distributeMutation.isPending}
+            >
+              Distribuir
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       <div className="flex gap-4">
         <Link href="/budget" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">

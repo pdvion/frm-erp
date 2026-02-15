@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Layers,
   Calendar,
@@ -433,49 +434,44 @@ export default function BatchPaymentPage() {
       </div>
 
       {/* Modal de confirmação */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              Confirmar Pagamento em Lote
-            </h3>
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-sm">
-                <span className="text-theme-muted">Títulos selecionados:</span>
-                <span className="text-theme font-medium">{selectedIds.size}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-theme-muted">Data do pagamento:</span>
-                <span className="text-theme font-medium">
-                  {formatDate(paymentDate)}
-                </span>
-              </div>
-              <div className="flex justify-between text-lg pt-2 border-t border-theme">
-                <span className="text-theme">Total a pagar:</span>
-                <span className="text-green-600 dark:text-green-400 font-bold">
-                  {formatCurrency(totalSelected)}
-                </span>
-              </div>
+      <Modal
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        title="Confirmar Pagamento em Lote"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-theme-muted">Títulos selecionados:</span>
+              <span className="text-theme font-medium">{selectedIds.size}</span>
             </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirm(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handlePay}
-                isLoading={batchPayMutation.isPending}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                Confirmar
-              </Button>
+            <div className="flex justify-between text-sm">
+              <span className="text-theme-muted">Data do pagamento:</span>
+              <span className="text-theme font-medium">
+                {formatDate(paymentDate)}
+              </span>
+            </div>
+            <div className="flex justify-between text-lg pt-2 border-t border-theme">
+              <span className="text-theme">Total a pagar:</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                {formatCurrency(totalSelected)}
+              </span>
             </div>
           </div>
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowConfirm(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handlePay}
+              isLoading={batchPayMutation.isPending}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

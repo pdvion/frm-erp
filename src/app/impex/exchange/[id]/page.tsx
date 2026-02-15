@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import Link from "next/link";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -320,11 +321,13 @@ export default function ExchangeContractDetailPage({
         </div>
       </div>
 
-      {showLiquidateForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">Liquidar Contrato</h3>
-            <form onSubmit={handleLiquidate} className="space-y-4">
+      <Modal
+        isOpen={showLiquidateForm}
+        onClose={() => setShowLiquidateForm(false)}
+        title="Liquidar Contrato"
+        size="sm"
+      >
+        <form onSubmit={handleLiquidate} className="space-y-4">
               <div>
                 <Input
                   label={`Valor a Liquidar (${contract.foreignCurrency}) *`}
@@ -417,33 +420,31 @@ export default function ExchangeContractDetailPage({
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowLiquidateForm(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  variant="success"
-                  isLoading={liquidateMutation.isPending}
-                  leftIcon={<CheckCircle className="w-4 h-4" />}
-                >
-                  Confirmar Liquidação
-                </Button>
+            {liquidateMutation.error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+                {liquidateMutation.error.message}
               </div>
+            )}
 
-              {liquidateMutation.error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                  {liquidateMutation.error.message}
-                </div>
-              )}
-            </form>
-          </div>
-        </div>
-      )}
+            <ModalFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowLiquidateForm(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                variant="success"
+                isLoading={liquidateMutation.isPending}
+                leftIcon={<CheckCircle className="w-4 h-4" />}
+              >
+                Confirmar Liquidação
+              </Button>
+            </ModalFooter>
+          </form>
+      </Modal>
     </div>
   );
 }

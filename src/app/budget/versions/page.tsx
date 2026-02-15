@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { GitBranch, Plus, Lock, CheckCircle2, FileEdit } from "lucide-react";
 import Link from "next/link";
 import { formatDateTime } from "@/lib/formatters";
@@ -172,79 +173,79 @@ export default function BudgetVersionsPage() {
       )}
 
       {/* Modal de criação */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">Nova Versão de Orçamento</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Ano"
-                  type="number"
-                  value={newVersion.year}
-                  onChange={(e) => setNewVersion({ ...newVersion, year: Number(e.target.value) })}
-                />
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                  <Select
-                    value={newVersion.type}
-                    onChange={(value) => setNewVersion({ ...newVersion, type: value as "ORIGINAL" | "REVISED" | "FORECAST" })}
-                    options={[
-                      { value: "ORIGINAL", label: "Original" },
-                      { value: "REVISED", label: "Revisado" },
-                      { value: "FORECAST", label: "Forecast" },
-                    ]}
-                  />
-                </div>
-              </div>
-              <Input
-                label="Nome"
-                value={newVersion.name}
-                onChange={(e) => setNewVersion({ ...newVersion, name: e.target.value })}
-                placeholder="Ex: Orçamento 2026 - Original"
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Nova Versão de Orçamento"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Ano"
+              type="number"
+              value={newVersion.year}
+              onChange={(e) => setNewVersion({ ...newVersion, year: Number(e.target.value) })}
+            />
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
+              <Select
+                value={newVersion.type}
+                onChange={(value) => setNewVersion({ ...newVersion, type: value as "ORIGINAL" | "REVISED" | "FORECAST" })}
+                options={[
+                  { value: "ORIGINAL", label: "Original" },
+                  { value: "REVISED", label: "Revisado" },
+                  { value: "FORECAST", label: "Forecast" },
+                ]}
               />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Copiar de (opcional)</label>
-                <Select
-                  value={newVersion.copyFromVersionId || ""}
-                  onChange={(value) => setNewVersion({ ...newVersion, copyFromVersionId: value || undefined })}
-                  placeholder="Não copiar"
-                  options={versions?.map((v) => ({ value: v.id, label: `${v.name} (${v.year})` })) || []}
-                />
-              </div>
-              {newVersion.copyFromVersionId && (
-                <Input
-                  label="Ajuste % (opcional)"
-                  type="number"
-                  value={newVersion.adjustmentPercent}
-                  onChange={(e) => setNewVersion({ ...newVersion, adjustmentPercent: Number(e.target.value) })}
-                  placeholder="Ex: 5 para +5%"
-                />
-              )}
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <Textarea
-                  value={newVersion.description}
-                  onChange={(e) => setNewVersion({ ...newVersion, description: e.target.value })}
-                  rows={2}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setShowModal(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => createMutation.mutate(newVersion)}
-                disabled={!newVersion.name}
-                isLoading={createMutation.isPending}
-              >
-                Criar
-              </Button>
             </div>
           </div>
+          <Input
+            label="Nome"
+            value={newVersion.name}
+            onChange={(e) => setNewVersion({ ...newVersion, name: e.target.value })}
+            placeholder="Ex: Orçamento 2026 - Original"
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Copiar de (opcional)</label>
+            <Select
+              value={newVersion.copyFromVersionId || ""}
+              onChange={(value) => setNewVersion({ ...newVersion, copyFromVersionId: value || undefined })}
+              placeholder="Não copiar"
+              options={versions?.map((v) => ({ value: v.id, label: `${v.name} (${v.year})` })) || []}
+            />
+          </div>
+          {newVersion.copyFromVersionId && (
+            <Input
+              label="Ajuste % (opcional)"
+              type="number"
+              value={newVersion.adjustmentPercent}
+              onChange={(e) => setNewVersion({ ...newVersion, adjustmentPercent: Number(e.target.value) })}
+              placeholder="Ex: 5 para +5%"
+            />
+          )}
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+            <Textarea
+              value={newVersion.description}
+              onChange={(e) => setNewVersion({ ...newVersion, description: e.target.value })}
+              rows={2}
+            />
+          </div>
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => createMutation.mutate(newVersion)}
+              disabled={!newVersion.name}
+              isLoading={createMutation.isPending}
+            >
+              Criar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       <div className="flex gap-4">
         <Link href="/budget" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">

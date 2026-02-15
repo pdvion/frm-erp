@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Target, Plus, Clock, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -207,73 +208,73 @@ export default function GPDActionsPage() {
       )}
 
       {/* Modal de criação */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">Nova Ação</h3>
-            <div className="space-y-4">
-              <Input
-                label="Título"
-                value={newAction.title}
-                onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Nova Ação"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Título"
+            value={newAction.title}
+            onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
+              <Select
+                value={newAction.type}
+                onChange={(value) => setNewAction({ ...newAction, type: value as typeof newAction.type })}
+                options={[
+                  { value: "CORRECTIVE", label: "Corretiva" },
+                  { value: "PREVENTIVE", label: "Preventiva" },
+                  { value: "IMPROVEMENT", label: "Melhoria" },
+                ]}
               />
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                  <Select
-                    value={newAction.type}
-                    onChange={(value) => setNewAction({ ...newAction, type: value as typeof newAction.type })}
-                    options={[
-                      { value: "CORRECTIVE", label: "Corretiva" },
-                      { value: "PREVENTIVE", label: "Preventiva" },
-                      { value: "IMPROVEMENT", label: "Melhoria" },
-                    ]}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Prioridade</label>
-                  <Select
-                    value={String(newAction.priority)}
-                    onChange={(value) => setNewAction({ ...newAction, priority: Number(value) })}
-                    options={[
-                      { value: "1", label: "1 - Urgente" },
-                      { value: "2", label: "2 - Alta" },
-                      { value: "3", label: "3 - Normal" },
-                      { value: "4", label: "4 - Baixa" },
-                    ]}
-                  />
-                </div>
-              </div>
-              <Input
-                label="Prazo"
-                type="date"
-                value={newAction.dueDate}
-                onChange={(e) => setNewAction({ ...newAction, dueDate: e.target.value })}
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <Textarea
-                  value={newAction.description}
-                  onChange={(e) => setNewAction({ ...newAction, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
             </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setShowModal(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => createMutation.mutate(newAction)}
-                disabled={!newAction.title}
-                isLoading={createMutation.isPending}
-              >
-                Salvar
-              </Button>
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Prioridade</label>
+              <Select
+                value={String(newAction.priority)}
+                onChange={(value) => setNewAction({ ...newAction, priority: Number(value) })}
+                options={[
+                  { value: "1", label: "1 - Urgente" },
+                  { value: "2", label: "2 - Alta" },
+                  { value: "3", label: "3 - Normal" },
+                  { value: "4", label: "4 - Baixa" },
+                ]}
+              />
             </div>
           </div>
+          <Input
+            label="Prazo"
+            type="date"
+            value={newAction.dueDate}
+            onChange={(e) => setNewAction({ ...newAction, dueDate: e.target.value })}
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+            <Textarea
+              value={newAction.description}
+              onChange={(e) => setNewAction({ ...newAction, description: e.target.value })}
+              rows={3}
+            />
+          </div>
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => createMutation.mutate(newAction)}
+              disabled={!newAction.title}
+              isLoading={createMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       <div className="flex gap-4">
         <Link href="/gpd" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">

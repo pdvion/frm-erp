@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Checkbox } from "@/components/ui/Checkbox";
 import {
   LayoutDashboard,
@@ -164,75 +165,69 @@ export default function BIDashboardsPage() {
       </div>
 
       {/* Modal de criação */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">Novo Dashboard</h3>
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => { setShowCreateModal(false); setNewDashboard({ name: "", description: "", isDefault: false, isPublic: false }); }}
+        title="Novo Dashboard"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Nome *"
+            value={newDashboard.name}
+            onChange={(e) => setNewDashboard({ ...newDashboard, name: e.target.value })}
+            placeholder="Ex: Dashboard de Vendas"
+          />
 
-            <div className="space-y-4">
-              <Input
-                label="Nome *"
-                value={newDashboard.name}
-                onChange={(e) => setNewDashboard({ ...newDashboard, name: e.target.value })}
-                placeholder="Ex: Dashboard de Vendas"
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              Descrição
+            </label>
+            <Textarea
+              value={newDashboard.description}
+              onChange={(e) => setNewDashboard({ ...newDashboard, description: e.target.value })}
+              rows={2}
+              placeholder="Descrição opcional..."
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="isDefault"
+                checked={newDashboard.isDefault}
+                onChange={(checked) => setNewDashboard({ ...newDashboard, isDefault: checked })}
               />
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Descrição
-                </label>
-                <Textarea
-                  value={newDashboard.description}
-                  onChange={(e) => setNewDashboard({ ...newDashboard, description: e.target.value })}
-                  rows={2}
-                  placeholder="Descrição opcional..."
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="isDefault"
-                    checked={newDashboard.isDefault}
-                    onChange={(checked) => setNewDashboard({ ...newDashboard, isDefault: checked })}
-                  />
-                  <label htmlFor="isDefault" className="text-sm text-theme cursor-pointer">Dashboard padrão</label>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="isPublic"
-                    checked={newDashboard.isPublic}
-                    onChange={(checked) => setNewDashboard({ ...newDashboard, isPublic: checked })}
-                  />
-                  <label htmlFor="isPublic" className="text-sm text-theme cursor-pointer">Público</label>
-                </div>
-              </div>
+              <label htmlFor="isDefault" className="text-sm text-theme cursor-pointer">Dashboard padrão</label>
             </div>
 
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCreateModal(false);
-                  setNewDashboard({ name: "", description: "", isDefault: false, isPublic: false });
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={!newDashboard.name.trim()}
-                isLoading={createMutation.isPending}
-                className="flex-1"
-              >
-                Criar
-              </Button>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="isPublic"
+                checked={newDashboard.isPublic}
+                onChange={(checked) => setNewDashboard({ ...newDashboard, isPublic: checked })}
+              />
+              <label htmlFor="isPublic" className="text-sm text-theme cursor-pointer">Público</label>
             </div>
           </div>
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowCreateModal(false); setNewDashboard({ name: "", description: "", isDefault: false, isPublic: false }); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreate}
+              disabled={!newDashboard.name.trim()}
+              isLoading={createMutation.isPending}
+            >
+              Criar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Users, Plus, Search, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface BrokerFormData {
@@ -219,74 +220,72 @@ export default function BrokersPage() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-lg">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              {editingId ? "Editar Despachante" : "Novo Despachante"}
-            </h3>
-            <div className="space-y-4">
-              <Input
-                label="Nome *"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <Input
-                label="CNPJ *"
-                value={formatCnpj(formData.cnpj)}
-                onChange={(e) => setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, "") })}
-                placeholder="00.000.000/0000-00"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-                <Input
-                  label="Telefone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <Input
-                label="Endereço"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Cidade"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                />
-                <Input
-                  label="Estado"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-                  maxLength={2}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => { setShowModal(false); resetForm(); }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!formData.name || !formData.cnpj}
-                isLoading={createMutation.isPending || updateMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); resetForm(); }}
+        title={editingId ? "Editar Despachante" : "Novo Despachante"}
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Nome *"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+          <Input
+            label="CNPJ *"
+            value={formatCnpj(formData.cnpj)}
+            onChange={(e) => setFormData({ ...formData, cnpj: e.target.value.replace(/\D/g, "") })}
+            placeholder="00.000.000/0000-00"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+            <Input
+              label="Telefone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
           </div>
+          <Input
+            label="Endereço"
+            value={formData.address}
+            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Cidade"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            />
+            <Input
+              label="Estado"
+              value={formData.state}
+              onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+              maxLength={2}
+            />
+          </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowModal(false); resetForm(); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!formData.name || !formData.cnpj}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

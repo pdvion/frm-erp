@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 interface CategoryChild {
   id: string;
@@ -226,12 +227,14 @@ function CategoryItem({
 }
 
 function CategoryModal({
+  isOpen,
   category,
   categories,
   onClose,
   onSave,
   isLoading,
 }: {
+  isOpen: boolean;
   category: Category | null;
   categories: Category[];
   onClose: () => void;
@@ -257,22 +260,13 @@ function CategoryModal({
   ]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-theme-card border border-theme rounded-lg w-full max-w-md">
-        <div className="flex items-center justify-between p-4 border-b border-theme">
-          <h2 className="text-lg font-semibold text-theme">
-            {category ? "Editar Categoria" : "Nova Categoria"}
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={category ? "Editar Categoria" : "Nova Categoria"}
+      size="sm"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Nome *"
             value={formData.name}
@@ -336,12 +330,8 @@ function CategoryModal({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-            >
+          <ModalFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
             <Button
@@ -352,10 +342,9 @@ function CategoryModal({
             >
               Salvar
             </Button>
-          </div>
+          </ModalFooter>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -508,18 +497,17 @@ function CategoriesContent() {
         </ul>
       </div>
 
-      {showModal && (
-        <CategoryModal
-          category={editingCategory}
-          categories={categories ?? []}
-          onClose={() => {
-            setShowModal(false);
-            setEditingCategory(null);
-          }}
-          onSave={handleSave}
-          isLoading={createMutation.isPending || updateMutation.isPending}
-        />
-      )}
+      <CategoryModal
+        isOpen={showModal}
+        category={editingCategory}
+        categories={categories ?? []}
+        onClose={() => {
+          setShowModal(false);
+          setEditingCategory(null);
+        }}
+        onSave={handleSave}
+        isLoading={createMutation.isPending || updateMutation.isPending}
+      />
     </div>
   );
 }

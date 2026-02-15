@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Shield,
   Plus,
@@ -238,147 +239,123 @@ export default function GroupsPage() {
       </div>
 
       {/* Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-theme-card border border-theme rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-theme flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-theme">
-                {editingId ? "Editar Grupo" : "Novo Grupo"}
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetForm}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+      <Modal
+        isOpen={showForm}
+        onClose={resetForm}
+        title={editingId ? "Editar Grupo" : "Novo Grupo"}
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Nome do Grupo *"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
 
-            <form onSubmit={handleSubmit} className="flex-1 overflow-auto p-4 space-y-4">
-              <Input
-                label="Nome do Grupo *"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
-              />
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Descrição
-                </label>
-                <Textarea
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  rows={2}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-2">
-                  Permissões
-                </label>
-                <div className="border border-theme rounded-lg divide-y divide-theme max-h-64 overflow-auto">
-                  {groupedPermissions &&
-                    Object.entries(groupedPermissions).map(([module, perms]) => (
-                      <div key={module}>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() => toggleModule(module)}
-                          className="w-full justify-between"
-                        >
-                          <span className="font-medium capitalize">
-                            {module}
-                          </span>
-                          {expandedModules.includes(module) ? (
-                            <ChevronDown className="w-4 h-4" />
-                          ) : (
-                            <ChevronRight className="w-4 h-4" />
-                          )}
-                        </Button>
-                        {expandedModules.includes(module) && (
-                          <div className="px-3 pb-2 space-y-1">
-                            {perms?.map((perm) => (
-                              <label
-                                key={perm.key}
-                                className="flex items-center gap-2 py-1 cursor-pointer"
-                              >
-                                <div
-                                  className={`w-4 h-4 rounded border flex items-center justify-center ${
-                                    form.permissions.includes(perm.key)
-                                      ? "bg-blue-600 border-blue-600"
-                                      : "border-theme-input"
-                                  }`}
-                                  onClick={() => togglePermission(perm.key)}
-                                >
-                                  {form.permissions.includes(perm.key) && (
-                                    <Check className="w-3 h-3 text-white" />
-                                  )}
-                                </div>
-                                <span className="text-sm text-theme">
-                                  {perm.description}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-theme">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  isLoading={createMutation.isPending || updateMutation.isPending}
-                >
-                  {editingId ? "Salvar" : "Criar Grupo"}
-                </Button>
-              </div>
-            </form>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              Descrição
+            </label>
+            <Textarea
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              rows={2}
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className="block text-sm font-medium text-theme mb-2">
+              Permissões
+            </label>
+            <div className="border border-theme rounded-lg divide-y divide-theme max-h-64 overflow-auto">
+              {groupedPermissions &&
+                Object.entries(groupedPermissions).map(([module, perms]) => (
+                  <div key={module}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => toggleModule(module)}
+                      className="w-full justify-between"
+                    >
+                      <span className="font-medium capitalize">
+                        {module}
+                      </span>
+                      {expandedModules.includes(module) ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      )}
+                    </Button>
+                    {expandedModules.includes(module) && (
+                      <div className="px-3 pb-2 space-y-1">
+                        {perms?.map((perm) => (
+                          <label
+                            key={perm.key}
+                            className="flex items-center gap-2 py-1 cursor-pointer"
+                          >
+                            <div
+                              className={`w-4 h-4 rounded border flex items-center justify-center ${
+                                form.permissions.includes(perm.key)
+                                  ? "bg-blue-600 border-blue-600"
+                                  : "border-theme-input"
+                              }`}
+                              onClick={() => togglePermission(perm.key)}
+                            >
+                              {form.permissions.includes(perm.key) && (
+                                <Check className="w-3 h-3 text-white" />
+                              )}
+                            </div>
+                            <span className="text-sm text-theme">
+                              {perm.description}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          <ModalFooter>
+            <Button type="button" variant="outline" onClick={resetForm}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            >
+              {editingId ? "Salvar" : "Criar Grupo"}
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
 
       {/* Delete Confirmation */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-theme mb-2">
-              Excluir Grupo?
-            </h3>
-            <p className="text-sm text-theme-muted mb-4">
-              Esta ação não pode ser desfeita. Os membros perderão as permissões
-              deste grupo.
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(null)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
-                disabled={deleteMutation.isPending}
-                isLoading={deleteMutation.isPending}
-              >
-                Excluir
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title="Excluir Grupo?"
+        description="Esta ação não pode ser desfeita. Os membros perderão as permissões deste grupo."
+        size="sm"
+      >
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => deleteConfirm && deleteMutation.mutate({ id: deleteConfirm })}
+            disabled={deleteMutation.isPending}
+            isLoading={deleteMutation.isPending}
+          >
+            Excluir
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }

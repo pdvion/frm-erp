@@ -11,6 +11,7 @@ import { LinkMaterialModal } from "@/components/LinkMaterialModal";
 import { CompareInvoiceModal } from "@/components/CompareInvoiceModal";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   FileText,
   Clock,
@@ -608,63 +609,50 @@ export default function InvoiceDetailPage() {
       )}
 
       {/* Reject Modal */}
-      {showRejectModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="reject-nfe-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowRejectModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="reject-nfe-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <Ban className="w-5 h-5 text-red-600" />
-              Rejeitar NFe
-            </h3>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
-                Motivo da rejeição *
-              </label>
-              <Textarea
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
-                placeholder="Descreva o motivo da rejeição..."
-              />
-            </div>
-
-            {rejectMutation.error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                {rejectMutation.error.message}
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowRejectModal(false);
-                  setRejectReason("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => rejectMutation.mutate({ id, reason: rejectReason })}
-                disabled={!rejectReason.trim() || rejectMutation.isPending}
-                isLoading={rejectMutation.isPending}
-                className="flex-1"
-              >
-                Confirmar Rejeição
-              </Button>
-            </div>
+      <Modal
+        isOpen={showRejectModal}
+        onClose={() => { setShowRejectModal(false); setRejectReason(""); }}
+        title="Rejeitar NFe"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              Motivo da rejeição *
+            </label>
+            <Textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-red-500"
+              placeholder="Descreva o motivo da rejeição..."
+            />
           </div>
+
+          {rejectMutation.error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400">
+              {rejectMutation.error.message}
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowRejectModal(false); setRejectReason(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => rejectMutation.mutate({ id, reason: rejectReason })}
+              disabled={!rejectReason.trim() || rejectMutation.isPending}
+              isLoading={rejectMutation.isPending}
+            >
+              Confirmar Rejeição
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

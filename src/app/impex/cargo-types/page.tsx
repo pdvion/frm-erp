@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Package, Plus, Edit2, Trash2, Check, X } from "lucide-react";
 
 interface CargoTypeFormData {
@@ -171,52 +172,50 @@ export default function CargoTypesPage() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              {editingId ? "Editar Tipo de Carga" : "Novo Tipo de Carga"}
-            </h3>
-            <div className="space-y-4">
-              <Input
-                label="Código *"
-                value={formData.code}
-                onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                placeholder="Ex: FCL"
-              />
-              <Input
-                label="Nome *"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Full Container Load"
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => { setShowModal(false); resetForm(); }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!formData.code || !formData.name}
-                isLoading={createMutation.isPending || updateMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); resetForm(); }}
+        title={editingId ? "Editar Tipo de Carga" : "Novo Tipo de Carga"}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Código *"
+            value={formData.code}
+            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+            placeholder="Ex: FCL"
+          />
+          <Input
+            label="Nome *"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="Ex: Full Container Load"
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowModal(false); resetForm(); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!formData.code || !formData.name}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
