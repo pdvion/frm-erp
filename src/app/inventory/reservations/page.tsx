@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Package,
   Loader2,
@@ -290,23 +291,24 @@ export default function ReservationsPage() {
       </div>
 
       {/* Create Modal */}
-      {showCreateModal && (
-        <CreateReservationModal
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <CreateReservationModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={() => {
+          setShowCreateModal(false);
+          refetch();
+        }}
+      />
     </div>
   );
 }
 
 function CreateReservationModal({
+  isOpen,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }) {
@@ -328,109 +330,97 @@ function CreateReservationModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title-reserva"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Nova Reserva de Estoque"
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="modal-title-reserva" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-blue-600" />
-          Nova Reserva de Estoque
-        </h3>
-
-        <div className="space-y-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Material</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar material..."
-                className="pl-10"
-              />
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Material</label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted z-10" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar material..."
+              className="pl-10"
+            />
+          </div>
+          {materials?.materials && materials.materials.length > 0 && search && (
+            <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
+              {materials.materials.map((mat) => (
+                <Button
+                  key={mat.id}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setMaterialId(mat.id);
+                    setSearch(mat.description);
+                  }}
+                  className="w-full justify-start text-left"
+                >
+                  <span className="font-medium">{mat.code}</span> - {mat.description}
+                </Button>
+              ))}
             </div>
-            {materials?.materials && materials.materials.length > 0 && search && (
-              <div className="mt-1 border border-theme rounded-lg max-h-40 overflow-y-auto">
-                {materials.materials.map((mat) => (
-                  <Button
-                    key={mat.id}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setMaterialId(mat.id);
-                      setSearch(mat.description);
-                    }}
-                    className="w-full justify-start text-left"
-                  >
-                    <span className="font-medium">{mat.code}</span> - {mat.description}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
+          )}
+        </div>
 
-          <Input
-            label="Quantidade"
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            placeholder="0.00"
-            step={0.01}
+        <Input
+          label="Quantidade"
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          placeholder="0.00"
+          step={0.01}
+        />
+
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo de Documento</label>
+          <Select
+            value={documentType}
+            onChange={(value) => setDocumentType(value)}
+            options={Object.entries(documentTypeLabels).map(([value, label]) => ({
+              value,
+              label,
+            }))}
           />
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo de Documento</label>
-            <Select
-              value={documentType}
-              onChange={(value) => setDocumentType(value)}
-              options={Object.entries(documentTypeLabels).map(([value, label]) => ({
-                value,
-                label,
-              }))}
-            />
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="ID do Documento"
+            value={documentId}
+            onChange={(e) => setDocumentId(e.target.value)}
+            placeholder="UUID"
+          />
+          <Input
+            label="Número (opcional)"
+            value={documentNumber}
+            onChange={(e) => setDocumentNumber(e.target.value)}
+            placeholder="Ex: REQ-001"
+          />
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="ID do Documento"
-              value={documentId}
-              onChange={(e) => setDocumentId(e.target.value)}
-              placeholder="UUID"
-            />
-            <Input
-              label="Número (opcional)"
-              value={documentNumber}
-              onChange={(e) => setDocumentNumber(e.target.value)}
-              placeholder="Ex: REQ-001"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Observações (opcional)</label>
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Observações (opcional)</label>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+          />
         </div>
 
         {createMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {createMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
@@ -446,12 +436,11 @@ function CreateReservationModal({
             }
             disabled={!materialId || !quantity || !documentId || createMutation.isPending}
             isLoading={createMutation.isPending}
-            className="flex-1"
           >
             Criar Reserva
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }

@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   FileText,
   CheckCircle,
@@ -414,46 +415,33 @@ export default function QuoteDetailPage() {
       </div>
 
       {/* Reject Modal */}
-      {showRejectModal && (
-        <div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="reject-quote-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowRejectModal(false)}
-        >
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="reject-quote-title" className="text-lg font-medium text-theme mb-4">
-              Rejeitar Cotação
-            </h3>
-            <div className="mb-4">
-              <Textarea
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                rows={3}
-                placeholder="Informe o motivo..."
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowRejectModal(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => rejectMutation.mutate({ id, reason: rejectReason || undefined })}
-                isLoading={rejectMutation.isPending}
-                className="flex-1"
-              >
-                Confirmar
-              </Button>
-            </div>
-          </div>
+      <Modal
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        title="Rejeitar Cotação"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Textarea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            rows={3}
+            placeholder="Informe o motivo..."
+          />
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowRejectModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => rejectMutation.mutate({ id, reason: rejectReason || undefined })}
+              isLoading={rejectMutation.isPending}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

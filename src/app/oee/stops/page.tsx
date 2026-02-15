@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { PauseCircle } from "lucide-react";
 
 type StopType = "PLANNED" | "UNPLANNED" | "SETUP" | "MAINTENANCE" | "QUALITY" | "MATERIAL" | "OTHER";
@@ -173,69 +174,65 @@ export default function OEEStopsPage() {
       </div>
 
       {/* Modal de Registro */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-lg">
-            <h3 className="text-lg font-semibold text-theme mb-4">Registrar Parada</h3>
-            <form onSubmit={handleStopSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-                <Select
-                  value={stopForm.workCenterId}
-                  onChange={(value) => setStopForm({ ...stopForm, workCenterId: value })}
-                  placeholder="Selecione..."
-                  required
-                  options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Tipo de Parada</label>
-                <Select
-                  value={stopForm.stopType}
-                  onChange={(value) => setStopForm({ ...stopForm, stopType: value as StopType })}
-                  options={stopTypes.map((t) => ({ value: t.value, label: t.label }))}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Motivo</label>
-                <Textarea
-                  value={stopForm.reason}
-                  onChange={(e) => setStopForm({ ...stopForm, reason: e.target.value })}
-                  rows={2}
-                  required
-                  placeholder="Descreva o motivo da parada..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Solução (opcional)</label>
-                <Textarea
-                  value={stopForm.solution}
-                  onChange={(e) => setStopForm({ ...stopForm, solution: e.target.value })}
-                  rows={2}
-                  placeholder="Ação tomada para resolver..."
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!stopForm.workCenterId || !stopForm.reason}
-                  isLoading={logStopMutation.isPending}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Registrar Parada
-                </Button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Registrar Parada"
+        size="md"
+      >
+        <form onSubmit={handleStopSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
+            <Select
+              value={stopForm.workCenterId}
+              onChange={(value) => setStopForm({ ...stopForm, workCenterId: value })}
+              placeholder="Selecione..."
+              required
+              options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+            />
           </div>
-        </div>
-      )}
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Tipo de Parada</label>
+            <Select
+              value={stopForm.stopType}
+              onChange={(value) => setStopForm({ ...stopForm, stopType: value as StopType })}
+              options={stopTypes.map((t) => ({ value: t.value, label: t.label }))}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Motivo</label>
+            <Textarea
+              value={stopForm.reason}
+              onChange={(e) => setStopForm({ ...stopForm, reason: e.target.value })}
+              rows={2}
+              required
+              placeholder="Descreva o motivo da parada..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Solução (opcional)</label>
+            <Textarea
+              value={stopForm.solution}
+              onChange={(e) => setStopForm({ ...stopForm, solution: e.target.value })}
+              rows={2}
+              placeholder="Ação tomada para resolver..."
+            />
+          </div>
+          <ModalFooter>
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="danger"
+              disabled={!stopForm.workCenterId || !stopForm.reason}
+              isLoading={logStopMutation.isPending}
+            >
+              Registrar Parada
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Settings, Plus, Edit, ToggleLeft, ToggleRight } from "lucide-react";
 
 export default function OEEWorkCentersPage() {
@@ -191,102 +192,100 @@ export default function OEEWorkCentersPage() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              {editingId ? "Editar Centro de Trabalho" : "Novo Centro de Trabalho"}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Código"
-                  value={form.code}
-                  onChange={(e) => setForm({ ...form, code: e.target.value })}
-                  required
-                />
-                <Input
-                  label="Nome"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  required
-                />
-              </div>
-              <Input
-                label="Descrição"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-              <div className="grid grid-cols-3 gap-4">
-                <Input
-                  label="Capacidade/h"
-                  type="number"
-                  min={1}
-                  value={form.capacityPerHour}
-                  onChange={(e) => setForm({ ...form, capacityPerHour: Number(e.target.value) })}
-                />
-                <Input
-                  label="Horas/Dia"
-                  type="number"
-                  min={1}
-                  max={24}
-                  value={form.hoursPerDay}
-                  onChange={(e) => setForm({ ...form, hoursPerDay: Number(e.target.value) })}
-                />
-                <Input
-                  label="Dias/Semana"
-                  type="number"
-                  min={1}
-                  max={7}
-                  value={form.daysPerWeek}
-                  onChange={(e) => setForm({ ...form, daysPerWeek: Number(e.target.value) })}
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <Input
-                  label="Meta OEE (%)"
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={form.efficiencyTarget}
-                  onChange={(e) => setForm({ ...form, efficiencyTarget: Number(e.target.value) })}
-                />
-                <Input
-                  label="Setup (min)"
-                  type="number"
-                  min={0}
-                  value={form.setupTimeMinutes}
-                  onChange={(e) => setForm({ ...form, setupTimeMinutes: Number(e.target.value) })}
-                />
-                <Input
-                  label="Custo/h (R$)"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={form.costPerHour}
-                  onChange={(e) => setForm({ ...form, costPerHour: Number(e.target.value) })}
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => { setShowModal(false); setEditingId(null); }}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!form.code || !form.name}
-                  isLoading={createMutation.isPending || updateMutation.isPending}
-                >
-                  Salvar
-                </Button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); setEditingId(null); }}
+        title={editingId ? "Editar Centro de Trabalho" : "Novo Centro de Trabalho"}
+        size="md"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Código"
+              value={form.code}
+              onChange={(e) => setForm({ ...form, code: e.target.value })}
+              required
+            />
+            <Input
+              label="Nome"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+            />
           </div>
-        </div>
-      )}
+          <Input
+            label="Descrição"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+          <div className="grid grid-cols-3 gap-4">
+            <Input
+              label="Capacidade/h"
+              type="number"
+              min={1}
+              value={form.capacityPerHour}
+              onChange={(e) => setForm({ ...form, capacityPerHour: Number(e.target.value) })}
+            />
+            <Input
+              label="Horas/Dia"
+              type="number"
+              min={1}
+              max={24}
+              value={form.hoursPerDay}
+              onChange={(e) => setForm({ ...form, hoursPerDay: Number(e.target.value) })}
+            />
+            <Input
+              label="Dias/Semana"
+              type="number"
+              min={1}
+              max={7}
+              value={form.daysPerWeek}
+              onChange={(e) => setForm({ ...form, daysPerWeek: Number(e.target.value) })}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <Input
+              label="Meta OEE (%)"
+              type="number"
+              min={0}
+              max={100}
+              value={form.efficiencyTarget}
+              onChange={(e) => setForm({ ...form, efficiencyTarget: Number(e.target.value) })}
+            />
+            <Input
+              label="Setup (min)"
+              type="number"
+              min={0}
+              value={form.setupTimeMinutes}
+              onChange={(e) => setForm({ ...form, setupTimeMinutes: Number(e.target.value) })}
+            />
+            <Input
+              label="Custo/h (R$)"
+              type="number"
+              min={0}
+              step="0.01"
+              value={form.costPerHour}
+              onChange={(e) => setForm({ ...form, costPerHour: Number(e.target.value) })}
+            />
+          </div>
+          <ModalFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => { setShowModal(false); setEditingId(null); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={!form.code || !form.name}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
     </div>
   );
 }

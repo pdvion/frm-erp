@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal } from "@/components/ui/Modal";
 import {
   ChevronLeft,
   Package,
@@ -418,34 +419,24 @@ export default function MobileReceivingPage() {
       </footer>
 
       {/* Modal de Câmera (placeholder) */}
-      {showCamera && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-theme-card rounded-2xl p-6 w-full max-w-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Tirar Foto</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowCamera(false)}
-              >
-                <X className="w-6 h-6" />
-              </Button>
-            </div>
-            <div className="aspect-square bg-theme-tertiary rounded-xl flex items-center justify-center mb-4">
-              <Camera className="w-16 h-16 text-theme-muted" />
-            </div>
-            <p className="text-sm text-theme-muted text-center mb-4">
-              Funcionalidade de câmera será implementada com integração nativa.
-            </p>
-            <Button
-              onClick={() => setShowCamera(false)}
-              className="w-full py-3"
-            >
-              Fechar
-            </Button>
+      <Modal
+        isOpen={showCamera}
+        onClose={() => setShowCamera(false)}
+        title="Tirar Foto"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div className="aspect-square bg-theme-tertiary rounded-xl flex items-center justify-center">
+            <Camera className="w-16 h-16 text-theme-muted" />
           </div>
+          <p className="text-sm text-theme-muted text-center">
+            Funcionalidade de câmera será implementada com integração nativa.
+          </p>
+          <Button onClick={() => setShowCamera(false)} className="w-full">
+            Fechar
+          </Button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

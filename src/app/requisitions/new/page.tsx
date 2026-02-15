@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal } from "@/components/ui/Modal";
 import {
   Package,
   Loader2,
@@ -305,84 +306,64 @@ export default function NewRequisitionPage() {
       </main>
 
       {/* Material Search Modal */}
-      {showMaterialSearch && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="material-search-req-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowMaterialSearch(false)}
-        >
-          <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-theme flex items-center justify-between">
-              <h3 id="material-search-req-title" className="font-medium text-theme">Buscar Material</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowMaterialSearch(false);
-                  setMaterialSearch("");
-                }}
-                className="p-1"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+      <Modal
+        isOpen={showMaterialSearch}
+        onClose={() => { setShowMaterialSearch(false); setMaterialSearch(""); }}
+        title="Buscar Material"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
+            <Input
+              type="text"
+              value={materialSearch}
+              onChange={(e) => setMaterialSearch(e.target.value)}
+              placeholder="Digite para buscar (mín. 2 caracteres)..."
+              className="pl-10"
+              autoFocus
+            />
+          </div>
 
-            <div className="p-4 border-b border-theme">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5" />
-                <Input
-                  type="text"
-                  value={materialSearch}
-                  onChange={(e) => setMaterialSearch(e.target.value)}
-                  placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="w-full pl-10 pr-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-                  autoFocus
-                />
+          <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+            {loadingMaterials ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
               </div>
-            </div>
-
-            <div className="max-h-96 overflow-y-auto">
-              {loadingMaterials ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                </div>
-              ) : materialSearch.length < 2 ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Digite pelo menos 2 caracteres para buscar
-                </div>
-              ) : !materials?.materials.length ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Nenhum material encontrado
-                </div>
-              ) : (
-                <div className="divide-y divide-theme-table">
-                  {materials.materials.map((material) => (
-                    <Button
-                      key={material.id}
-                      variant="ghost"
-                      onClick={() => addItem(material)}
-                      disabled={items.some((i) => i.materialId === material.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed justify-start h-auto rounded-none"
-                    >
-                      <div>
-                        <div className="font-medium text-theme">{material.description}</div>
-                        <div className="text-sm text-theme-muted">
-                          Cód: {material.code} | {material.unit}
-                          {items.some((i) => i.materialId === material.id) && (
-                            <span className="ml-2 text-blue-600">(já adicionado)</span>
-                          )}
-                        </div>
+            ) : materialSearch.length < 2 ? (
+              <div className="text-center py-8 text-theme-muted">
+                Digite pelo menos 2 caracteres para buscar
+              </div>
+            ) : !materials?.materials.length ? (
+              <div className="text-center py-8 text-theme-muted">
+                Nenhum material encontrado
+              </div>
+            ) : (
+              <div className="divide-y divide-theme-table">
+                {materials.materials.map((material) => (
+                  <Button
+                    key={material.id}
+                    variant="ghost"
+                    onClick={() => addItem(material)}
+                    disabled={items.some((i) => i.materialId === material.id)}
+                    className="w-full px-4 py-3 text-left hover:bg-theme-hover disabled:opacity-50 disabled:cursor-not-allowed justify-start h-auto rounded-none"
+                  >
+                    <div>
+                      <div className="font-medium text-theme">{material.description}</div>
+                      <div className="text-sm text-theme-muted">
+                        Cód: {material.code} | {material.unit}
+                        {items.some((i) => i.materialId === material.id) && (
+                          <span className="ml-2 text-blue-600 dark:text-blue-400">(já adicionado)</span>
+                        )}
                       </div>
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

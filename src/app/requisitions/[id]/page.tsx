@@ -9,6 +9,7 @@ import { formatDateTime } from "@/lib/formatters";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Package,
   Clock,
@@ -443,68 +444,56 @@ export default function RequisitionDetailPage() {
       </main>
 
       {/* Cancel Modal */}
-      {showCancelModal && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="cancel-requisition-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
-            <h3 id="cancel-requisition-title" className="text-lg font-medium text-theme mb-4">Cancelar Requisição</h3>
-            
-            <p className="text-theme-secondary mb-4">
-              Tem certeza que deseja cancelar esta requisição?
-            </p>
-
-            <div>
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Motivo do Cancelamento *
-              </label>
-              <Textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                rows={3}
-                placeholder="Informe o motivo..."
-                className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {cancelMutation.error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                {cancelMutation.error.message}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCancelModal(false);
-                  setCancelReason("");
-                }}
-              >
-                Voltar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  if (!cancelReason.trim()) {
-                    toast.warning("Por favor, informe o motivo do cancelamento");
-                    return;
-                  }
-                  cancelMutation.mutate({ id, reason: cancelReason });
-                }}
-                isLoading={cancelMutation.isPending}
-                leftIcon={<Ban className="w-4 h-4" />}
-              >
-                Confirmar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => { setShowCancelModal(false); setCancelReason(""); }}
+        title="Cancelar Requisição"
+        description="Tem certeza que deseja cancelar esta requisição?"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Motivo do Cancelamento *
+            </label>
+            <Textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              rows={3}
+              placeholder="Informe o motivo..."
+            />
           </div>
+
+          {cancelMutation.error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+              {cancelMutation.error.message}
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
+            >
+              Voltar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                if (!cancelReason.trim()) {
+                  toast.warning("Por favor, informe o motivo do cancelamento");
+                  return;
+                }
+                cancelMutation.mutate({ id, reason: cancelReason });
+              }}
+              isLoading={cancelMutation.isPending}
+              leftIcon={<Ban className="w-4 h-4" />}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

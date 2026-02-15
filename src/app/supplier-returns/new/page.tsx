@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal } from "@/components/ui/Modal";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
@@ -222,73 +223,63 @@ export default function NewSupplierReturnPage() {
             </div>
 
             {/* Material Search Modal */}
-            {showMaterialSearch && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="bg-theme-card border-theme mx-4 w-full max-w-lg rounded-xl border p-6">
-                  <h3 className="text-theme mb-4 text-lg font-semibold">Buscar Material</h3>
-                  <div className="relative mb-4">
-                    <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                      type="text"
-                      value={searchMaterial}
-                      onChange={(e) => setSearchMaterial(e.target.value)}
-                      placeholder="Digite código ou descrição..."
-                      autoFocus
-                      className="border-theme bg-theme-card text-theme w-full rounded-lg border py-2 pr-4 pl-10"
-                    />
-                  </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    {loadingMaterials ? (
-                      <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-                      </div>
-                    ) : materialsData?.materials.length ? (
-                      <div className="space-y-2">
-                        {materialsData.materials.map((m) => (
-                          <Button
-                            key={m.id}
-                            type="button"
-                            variant="ghost"
-                            onClick={() => addItem(m)}
-                            className="hover:bg-theme-hover flex w-full items-center gap-3 rounded-lg p-3 text-left justify-start h-auto"
-                          >
-                            <Package className="text-theme-muted h-5 w-5" />
-                            <div className="flex-1">
-                              <div className="text-theme font-medium">
-                                {m.code} - {m.description}
-                              </div>
-                              <div className="text-theme-muted text-sm">
-                                {m.unit} | Último preço: {formatCurrency(m.lastPurchasePrice || 0)}
-                              </div>
+            <Modal
+              isOpen={showMaterialSearch}
+              onClose={() => { setShowMaterialSearch(false); setSearchMaterial(""); }}
+              title="Buscar Material"
+              size="md"
+            >
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="text-theme-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Input
+                    type="text"
+                    value={searchMaterial}
+                    onChange={(e) => setSearchMaterial(e.target.value)}
+                    placeholder="Digite código ou descrição..."
+                    autoFocus
+                    className="pl-10"
+                  />
+                </div>
+                <div className="max-h-64 overflow-y-auto -mx-6 px-6">
+                  {loadingMaterials ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-theme-muted" />
+                    </div>
+                  ) : materialsData?.materials.length ? (
+                    <div className="space-y-2">
+                      {materialsData.materials.map((m) => (
+                        <Button
+                          key={m.id}
+                          type="button"
+                          variant="ghost"
+                          onClick={() => addItem(m)}
+                          className="hover:bg-theme-hover flex w-full items-center gap-3 rounded-lg p-3 text-left justify-start h-auto"
+                        >
+                          <Package className="text-theme-muted h-5 w-5" />
+                          <div className="flex-1">
+                            <div className="text-theme font-medium">
+                              {m.code} - {m.description}
                             </div>
-                          </Button>
-                        ))}
-                      </div>
-                    ) : searchMaterial.length >= 2 ? (
-                      <p className="text-theme-muted py-8 text-center">
-                        Nenhum material encontrado
-                      </p>
-                    ) : (
-                      <p className="text-theme-muted py-8 text-center">
-                        Digite pelo menos 2 caracteres
-                      </p>
-                    )}
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => {
-                        setShowMaterialSearch(false);
-                        setSearchMaterial("");
-                      }}
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
+                            <div className="text-theme-muted text-sm">
+                              {m.unit} | Último preço: {formatCurrency(m.lastPurchasePrice || 0)}
+                            </div>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  ) : searchMaterial.length >= 2 ? (
+                    <p className="text-theme-muted py-8 text-center">
+                      Nenhum material encontrado
+                    </p>
+                  ) : (
+                    <p className="text-theme-muted py-8 text-center">
+                      Digite pelo menos 2 caracteres
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
+            </Modal>
 
             {/* Items Table */}
             {items.length === 0 ? (

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Factory,
   Loader2,
@@ -359,141 +360,111 @@ export default function MesPage() {
       </div>
 
       {/* Modal Registrar Parada */}
-      {showStopModal && (
-        <div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="stop-modal-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowStopModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md border border-theme">
-            <h3 id="stop-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <StopCircle className="w-5 h-5 text-red-500" />
-              Registrar Parada
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-theme-muted mb-1">Tipo de Parada</label>
-                <Select
-                  value={stopType}
-                  onChange={(value) => setStopType(value)}
-                  options={[
-                    { value: "UNPLANNED", label: "Não Planejada" },
-                    { value: "PLANNED", label: "Planejada" },
-                    { value: "SETUP", label: "Setup" },
-                    { value: "MAINTENANCE", label: "Manutenção" },
-                    { value: "QUALITY", label: "Qualidade" },
-                    { value: "MATERIAL", label: "Falta de Material" },
-                    { value: "OTHER", label: "Outro" },
-                  ]}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-theme-muted mb-1">Motivo *</label>
-                <Textarea
-                  value={stopReason}
-                  onChange={(e) => setStopReason(e.target.value)}
-                  rows={3}
-                  placeholder="Descreva o motivo da parada..."
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setShowStopModal(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleStartStop}
-                disabled={!stopReason || startStopMutation.isPending}
-                isLoading={startStopMutation.isPending}
-                className="flex-1"
-              >
-                Registrar Parada
-              </Button>
-            </div>
+      <Modal
+        isOpen={showStopModal}
+        onClose={() => setShowStopModal(false)}
+        title="Registrar Parada"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-theme-muted mb-1">Tipo de Parada</label>
+            <Select
+              value={stopType}
+              onChange={(value) => setStopType(value)}
+              options={[
+                { value: "UNPLANNED", label: "Não Planejada" },
+                { value: "PLANNED", label: "Planejada" },
+                { value: "SETUP", label: "Setup" },
+                { value: "MAINTENANCE", label: "Manutenção" },
+                { value: "QUALITY", label: "Qualidade" },
+                { value: "MATERIAL", label: "Falta de Material" },
+                { value: "OTHER", label: "Outro" },
+              ]}
+            />
           </div>
+
+          <div>
+            <label className="block text-sm text-theme-muted mb-1">Motivo *</label>
+            <Textarea
+              value={stopReason}
+              onChange={(e) => setStopReason(e.target.value)}
+              rows={3}
+              placeholder="Descreva o motivo da parada..."
+            />
+          </div>
+
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowStopModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleStartStop}
+              disabled={!stopReason || startStopMutation.isPending}
+              isLoading={startStopMutation.isPending}
+            >
+              Registrar Parada
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       {/* Modal Apontar Produção */}
-      {showReportModal && (
-        <div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="report-modal-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowReportModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md border border-theme">
-            <h3 id="report-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-blue-500" />
-              Apontar Produção
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-theme-muted mb-1">Quantidade Produzida *</label>
-                <Input
-                  type="number"
-                  value={reportQty.toString()}
-                  onChange={(e) => setReportQty(parseInt(e.target.value) || 0)}
-                  min={1}
-                  className="text-2xl text-center"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-theme-muted mb-1">Quantidade Refugo</label>
-                <Input
-                  type="number"
-                  value={scrapQty.toString()}
-                  onChange={(e) => setScrapQty(parseInt(e.target.value) || 0)}
-                  min={0}
-                  max={reportQty}
-                />
-              </div>
-
-              {scrapQty > 0 && (
-                <div>
-                  <label className="block text-sm text-theme-muted mb-1">Motivo do Refugo</label>
-                  <Input
-                    value={scrapReason}
-                    onChange={(e) => setScrapReason(e.target.value)}
-                    placeholder="Ex: Dimensional fora, Trinca, etc."
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setShowReportModal(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleQuickReport}
-                disabled={reportQty <= 0 || quickReportMutation.isPending}
-                isLoading={quickReportMutation.isPending}
-                className="flex-1"
-              >
-                Confirmar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        title="Apontar Produção"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-theme-muted mb-1">Quantidade Produzida *</label>
+            <Input
+              type="number"
+              value={reportQty.toString()}
+              onChange={(e) => setReportQty(parseInt(e.target.value) || 0)}
+              min={1}
+              className="text-2xl text-center"
+            />
           </div>
+
+          <div>
+            <label className="block text-sm text-theme-muted mb-1">Quantidade Refugo</label>
+            <Input
+              type="number"
+              value={scrapQty.toString()}
+              onChange={(e) => setScrapQty(parseInt(e.target.value) || 0)}
+              min={0}
+              max={reportQty}
+            />
+          </div>
+
+          {scrapQty > 0 && (
+            <div>
+              <label className="block text-sm text-theme-muted mb-1">Motivo do Refugo</label>
+              <Input
+                value={scrapReason}
+                onChange={(e) => setScrapReason(e.target.value)}
+                placeholder="Ex: Dimensional fora, Trinca, etc."
+              />
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowReportModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleQuickReport}
+              disabled={reportQty <= 0 || quickReportMutation.isPending}
+              isLoading={quickReportMutation.isPending}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

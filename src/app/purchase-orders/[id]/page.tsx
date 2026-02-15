@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   ShoppingCart,
   CheckCircle,
@@ -445,58 +446,45 @@ export default function PurchaseOrderDetailPage() {
       </div>
 
       {/* Receive Modal */}
-      {showReceiveModal && selectedItemId && (
-        <div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="receive-modal-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowReceiveModal(false)}
-        >
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="receive-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-              <PackageCheck className="w-5 h-5 text-teal-500" />
-              Registrar Recebimento
-            </h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Quantidade Recebida
-              </label>
-              <Input
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={receiveQty}
-                onChange={(e) => setReceiveQty(parseFloat(e.target.value) || 0)}
-                className="w-full px-3 py-2 bg-theme-input border border-theme-input rounded-lg text-theme focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowReceiveModal(false);
-                  setSelectedItemId(null);
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => registerReceiptMutation.mutate({ 
-                  itemId: selectedItemId, 
-                  receivedQty: receiveQty 
-                })}
-                disabled={receiveQty <= 0}
-                isLoading={registerReceiptMutation.isPending}
-                className="flex-1"
-              >
-                Confirmar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showReceiveModal && !!selectedItemId}
+        onClose={() => { setShowReceiveModal(false); setSelectedItemId(null); }}
+        title="Registrar Recebimento"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Quantidade Recebida
+            </label>
+            <Input
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={receiveQty}
+              onChange={(e) => setReceiveQty(parseFloat(e.target.value) || 0)}
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowReceiveModal(false); setSelectedItemId(null); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => selectedItemId && registerReceiptMutation.mutate({ 
+                itemId: selectedItemId, 
+                receivedQty: receiveQty 
+              })}
+              disabled={receiveQty <= 0}
+              isLoading={registerReceiptMutation.isPending}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

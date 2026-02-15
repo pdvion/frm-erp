@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal } from "@/components/ui/Modal";
 
 import {
   Factory,
@@ -413,150 +414,112 @@ export default function NewProductionOrderPage() {
       </main>
 
       {/* Product Search Modal */}
-      {showProductSearch && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="product-search-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowProductSearch(false)}
-        >
-          <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-theme flex items-center justify-between">
-              <h3 id="product-search-title" className="font-medium text-theme">Selecionar Produto</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowProductSearch(false);
-                  setProductSearch("");
-                }}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+      <Modal
+        isOpen={showProductSearch}
+        onClose={() => { setShowProductSearch(false); setProductSearch(""); }}
+        title="Selecionar Produto"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+            <Input
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              placeholder="Digite para buscar (mín. 2 caracteres)..."
+              className="pl-10"
+              autoFocus
+            />
+          </div>
 
-            <div className="p-4 border-b border-theme">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
-                <Input
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="pl-10"
-                  autoFocus
-                />
+          <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+            {loadingProducts ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
               </div>
-            </div>
-
-            <div className="max-h-96 overflow-y-auto">
-              {loadingProducts ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                </div>
-              ) : productSearch.length < 2 ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Digite pelo menos 2 caracteres
-                </div>
-              ) : !productsData?.materials.length ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Nenhum produto encontrado
-                </div>
-              ) : (
-                <div className="divide-y divide-theme-table">
-                  {productsData.materials.map((product) => (
-                    <Button
-                      key={product.id}
-                      variant="ghost"
-                      onClick={() => selectProduct(product)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
-                    >
-                      <div className="font-medium text-theme">{product.description}</div>
-                      <div className="text-sm text-theme-muted">Cód: {product.code} | {product.unit}</div>
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
+            ) : productSearch.length < 2 ? (
+              <div className="text-center py-8 text-theme-muted">
+                Digite pelo menos 2 caracteres
+              </div>
+            ) : !productsData?.materials.length ? (
+              <div className="text-center py-8 text-theme-muted">
+                Nenhum produto encontrado
+              </div>
+            ) : (
+              <div className="divide-y divide-theme-table">
+                {productsData.materials.map((product) => (
+                  <Button
+                    key={product.id}
+                    variant="ghost"
+                    onClick={() => selectProduct(product)}
+                    className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
+                  >
+                    <div className="font-medium text-theme">{product.description}</div>
+                    <div className="text-sm text-theme-muted">Cód: {product.code} | {product.unit}</div>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </Modal>
 
       {/* Material Search Modal */}
-      {showMaterialSearch && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="material-search-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowMaterialSearch(false)}
-        >
-          <div className="bg-theme-card rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
-            <div className="p-4 border-b border-theme flex items-center justify-between">
-              <h3 id="material-search-title" className="font-medium text-theme">Adicionar Material</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowMaterialSearch(false);
-                  setMaterialSearch("");
-                }}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+      <Modal
+        isOpen={showMaterialSearch}
+        onClose={() => { setShowMaterialSearch(false); setMaterialSearch(""); }}
+        title="Adicionar Material"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
+            <Input
+              value={materialSearch}
+              onChange={(e) => setMaterialSearch(e.target.value)}
+              placeholder="Digite para buscar (mín. 2 caracteres)..."
+              className="pl-10"
+              autoFocus
+            />
+          </div>
 
-            <div className="p-4 border-b border-theme">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-muted w-5 h-5 z-10" />
-                <Input
-                  value={materialSearch}
-                  onChange={(e) => setMaterialSearch(e.target.value)}
-                  placeholder="Digite para buscar (mín. 2 caracteres)..."
-                  className="pl-10"
-                  autoFocus
-                />
+          <div className="max-h-96 overflow-y-auto -mx-6 px-6">
+            {loadingMaterials ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
               </div>
-            </div>
-
-            <div className="max-h-96 overflow-y-auto">
-              {loadingMaterials ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                </div>
-              ) : materialSearch.length < 2 ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Digite pelo menos 2 caracteres
-                </div>
-              ) : !materialsData?.materials.length ? (
-                <div className="text-center py-8 text-theme-muted">
-                  Nenhum material encontrado
-                </div>
-              ) : (
-                <div className="divide-y divide-theme-table">
-                  {materialsData.materials.map((material) => (
-                    <Button
-                      key={material.id}
-                      variant="ghost"
-                      onClick={() => addMaterial(material)}
-                      disabled={materials.some((m) => m.materialId === material.id)}
-                      className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
-                    >
-                      <div className="font-medium text-theme">{material.description}</div>
-                      <div className="text-sm text-theme-muted">
-                        Cód: {material.code} | {material.unit}
-                        {materials.some((m) => m.materialId === material.id) && (
-                          <span className="ml-2 text-blue-600">(já adicionado)</span>
-                        )}
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
+            ) : materialSearch.length < 2 ? (
+              <div className="text-center py-8 text-theme-muted">
+                Digite pelo menos 2 caracteres
+              </div>
+            ) : !materialsData?.materials.length ? (
+              <div className="text-center py-8 text-theme-muted">
+                Nenhum material encontrado
+              </div>
+            ) : (
+              <div className="divide-y divide-theme-table">
+                {materialsData.materials.map((material) => (
+                  <Button
+                    key={material.id}
+                    variant="ghost"
+                    onClick={() => addMaterial(material)}
+                    disabled={materials.some((m) => m.materialId === material.id)}
+                    className="w-full px-4 py-3 text-left hover:bg-theme-hover h-auto flex-col items-start justify-start rounded-none"
+                  >
+                    <div className="font-medium text-theme">{material.description}</div>
+                    <div className="text-sm text-theme-muted">
+                      Cód: {material.code} | {material.unit}
+                      {materials.some((m) => m.materialId === material.id) && (
+                        <span className="ml-2 text-blue-600 dark:text-blue-400">(já adicionado)</span>
+                      )}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
