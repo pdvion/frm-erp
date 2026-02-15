@@ -283,4 +283,43 @@ export const suppliersRouter = createTRPCRouter({
 
       return deleted;
     }),
+
+  // ─── Portal do Fornecedor ─────────────────────────────────────────────
+
+  generatePortalToken: tenantProcedure
+    .input(z.object({
+      supplierId: z.string().uuid(),
+      expiresInDays: z.number().min(1).max(365).optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const supplier = await ctx.prisma.supplier.findFirst({
+        where: { id: input.supplierId, companyId: ctx.companyId },
+      });
+      if (!supplier) throw new TRPCError({ code: "NOT_FOUND", message: "Fornecedor não encontrado" });
+
+      const { SupplierPortalService } = await import("../services/supplier-portal");
+      const svc = new SupplierPortalService(ctx.prisma);
+      return svc.generateToken(
+        ctx.companyId,
+        input.supplierId,
+        ctx.tenant.userId ?? null,
+        input.expiresInDays
+      );
+    }),
+
+  revokePortalToken: tenantProcedure
+    .input(z.object({ tokenId: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const { SupplierPortalService } = await import("../services/supplier-portal");
+      const svc = new SupplierPortalService(ctx.prisma);
+      return svc.revokeToken(input.tokenId, ctx.companyId);
+    }),
+
+  listPortalTokens: tenantProcedure
+    .input(z.object({ supplierId: z.string().uuid() }))
+    .query(async ({ input, ctx }) => {
+      const { SupplierPortalService } = await import("../services/supplier-portal");
+      const svc = new SupplierPortalService(ctx.prisma);
+      return svc.listTokens(ctx.companyId, input.supplierId);
+    }),
 });

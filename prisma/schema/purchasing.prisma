@@ -66,11 +66,32 @@ model Supplier {
   supplierMaterials       SupplierMaterial[]
   supplierReturns         SupplierReturn[]
   company                 Company                      @relation(fields: [companyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  portalTokens            SupplierPortalToken[]
 
   @@index([companyId], map: "idx_suppliers_companyId")
   @@unique([companyId, legacyId])
   @@map("suppliers")
   @@index([companyId, code])
+}
+
+model SupplierPortalToken {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId  String    @map("company_id") @db.Uuid
+  supplierId String    @map("supplier_id") @db.Uuid
+  token      String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expiresAt  DateTime  @map("expires_at")
+  revokedAt  DateTime? @map("revoked_at")
+  createdBy  String?   @map("created_by") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  lastUsedAt DateTime? @map("last_used_at")
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([companyId])
+  @@index([supplierId])
+  @@index([token])
+  @@map("supplier_portal_tokens")
 }
 
 model SupplierMaterial {

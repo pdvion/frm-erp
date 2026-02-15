@@ -138,6 +138,7 @@ model Company {
   eSocialBatches                ESocialBatch[]
   eSocialEvents                 ESocialEvent[]
   apiKeys                       ApiKey[]
+  supplierPortalTokens          SupplierPortalToken[]
 
   @@map("companies")
 }
