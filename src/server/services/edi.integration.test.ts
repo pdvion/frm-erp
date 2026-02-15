@@ -889,7 +889,7 @@ describe("EDI Module — Integration Tests (User Flow Simulation)", () => {
       expect(result.parsedData).toBeNull();
     });
 
-    it("should handle EDIFACT message with no BGM (returns null order)", async () => {
+    it("should error on EDIFACT ORDERS with no BGM (invalid message)", async () => {
       const prisma = createSimpleMockPrisma();
       const svc = new EdiService(prisma);
 
@@ -900,11 +900,13 @@ describe("EDI Module — Integration Tests (User Flow Simulation)", () => {
 
       (prisma.ediMessage.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockMsg);
 
-      const result = await svc.processMessage(MSG_1, COMPANY_A);
+      await expect(svc.processMessage(MSG_1, COMPANY_A))
+        .rejects.toThrow("Falha ao parsear EDIFACT ORDERS");
 
-      expect(result.success).toBe(true);
-      // parseEdifactOrders returns null when no BGM → parsedData is null
-      expect(result.parsedData).toBeNull();
+      // Should set ERROR status
+      const updateCalls = (prisma.ediMessage.update as ReturnType<typeof vi.fn>).mock.calls;
+      const errorCall = updateCalls.find((c: unknown[]) => (c[0] as Record<string, Record<string, unknown>>).data.status === "ERROR");
+      expect(errorCall).toBeDefined();
     });
   });
 

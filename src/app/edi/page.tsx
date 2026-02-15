@@ -178,13 +178,13 @@ export default function EdiPage() {
                   <div className="flex items-center gap-2">
                     <Badge variant={STATUS_VARIANT[m.status] ?? "default"}>{m.status}</Badge>
                     {m.status === "PENDING" && (
-                      <Button variant="ghost" size="icon" onClick={() => processMutation.mutate({ id: m.id })}
+                      <Button variant="ghost" size="icon" aria-label="Processar mensagem EDI" onClick={() => processMutation.mutate({ id: m.id })}
                         disabled={processMutation.isPending}>
                         <FileText className="w-3.5 h-3.5" />
                       </Button>
                     )}
                     {m.status === "ERROR" && (
-                      <Button variant="ghost" size="icon" onClick={() => retryMutation.mutate({ id: m.id })}
+                      <Button variant="ghost" size="icon" aria-label="Reprocessar mensagem EDI" onClick={() => retryMutation.mutate({ id: m.id })}
                         disabled={retryMutation.isPending}>
                         <RefreshCw className="w-3.5 h-3.5" />
                       </Button>

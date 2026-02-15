@@ -254,7 +254,11 @@ export function applyFieldMappings(
         case "lowercase": value = String(value).toLowerCase(); break;
         case "trim": value = String(value).trim(); break;
         case "number": value = Number(value) || 0; break;
-        case "date": value = new Date(String(value)).toISOString().slice(0, 10); break;
+        case "date": {
+          const d = new Date(String(value));
+          value = Number.isNaN(d.getTime()) ? String(value) : d.toISOString().slice(0, 10);
+          break;
+        }
         case "cnpj": value = String(value).replace(/\D/g, "").padStart(14, "0"); break;
         case "none": break;
       }
@@ -283,20 +287,26 @@ export class EdiService {
       ];
     }
 
-    return this.prisma.ediPartner.findMany({
+    const partners = await this.prisma.ediPartner.findMany({
       where,
       orderBy: { name: "asc" },
       include: { _count: { select: { messages: true } } },
     });
+
+    return partners.map(({ sftpPassword: _pw, ...rest }) => rest);
   }
 
   async getPartner(id: string, companyId: string) {
-    return this.prisma.ediPartner.findFirst({
+    const partner = await this.prisma.ediPartner.findFirst({
       where: { id, companyId },
       include: {
         _count: { select: { messages: true, mappings: true } },
       },
     });
+    if (!partner) return null;
+
+    const { sftpPassword: _pw, ...rest } = partner;
+    return rest;
   }
 
   async createPartner(companyId: string, data: {
@@ -424,7 +434,9 @@ export class EdiService {
         if (message.partner.format === "EDIFACT") {
           const segments = parseEdifactSegments(message.rawContent);
           if (message.messageType === "ORDERS") {
-            parsedData = parseEdifactOrders(segments) as unknown as Record<string, unknown>;
+            const order = parseEdifactOrders(segments);
+            if (!order) throw new Error(`Falha ao parsear EDIFACT ORDERS (msg=${id}, partner=${message.partnerId})`);
+            parsedData = order as unknown as Record<string, unknown>;
           }
         } else if (message.partner.format === "FLAT_FILE") {
           // Flat file parsing requires mapping config — store raw parsed lines

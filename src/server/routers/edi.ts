@@ -20,7 +20,7 @@ export const ediRouter = createTRPCRouter({
 
   listPartners: tenantProcedure
     .input(z.object({
-      status: z.string().optional(),
+      status: z.enum(["ACTIVE", "INACTIVE", "TESTING"]).optional(),
       search: z.string().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
@@ -73,7 +73,7 @@ export const ediRouter = createTRPCRouter({
       sftpPassword: z.string().optional(),
       sftpInboundPath: z.string().optional(),
       sftpOutboundPath: z.string().optional(),
-      webhookUrl: z.string().optional(),
+      webhookUrl: z.string().url().optional(),
       notes: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
@@ -87,9 +87,9 @@ export const ediRouter = createTRPCRouter({
   listMessages: tenantProcedure
     .input(z.object({
       partnerId: z.string().uuid().optional(),
-      messageType: z.string().optional(),
+      messageType: z.enum(["ORDERS", "ORDRSP", "DESADV", "INVOIC", "RECADV", "PRICAT", "INVRPT", "OTHER"]).optional(),
       direction: z.enum(["INBOUND", "OUTBOUND"]).optional(),
-      status: z.string().optional(),
+      status: z.enum(["PENDING", "PROCESSING", "PROCESSED", "ERROR", "CANCELLED"]).optional(),
       limit: z.number().min(1).max(100).optional(),
       offset: z.number().min(0).optional(),
     }).optional())
