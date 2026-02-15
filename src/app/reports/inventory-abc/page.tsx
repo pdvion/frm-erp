@@ -6,13 +6,13 @@ import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Package, Download, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 
-const classColors: Record<string, { bg: string; text: string; label: string }> = {
-  A: { bg: "bg-green-100", text: "text-green-800", label: "Classe A (80%)" },
-  B: { bg: "bg-yellow-100", text: "text-yellow-800", label: "Classe B (15%)" },
-  C: { bg: "bg-red-100", text: "text-red-800", label: "Classe C (5%)" },
+const classColors: Record<string, { variant: BadgeVariant; label: string }> = {
+  A: { variant: "success", label: "Classe A (80%)" },
+  B: { variant: "warning", label: "Classe B (15%)" },
+  C: { variant: "error", label: "Classe C (5%)" },
 };
 
 export default function InventoryAbcReportPage() {
@@ -117,7 +117,7 @@ export default function InventoryAbcReportPage() {
                 <Button
                   key={cls}
                   onClick={() => setClassFilter(cls)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium ${classFilter === cls ? classColors[cls].bg + " " + classColors[cls].text : "bg-theme-tertiary text-theme-secondary"}`}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium ${classFilter === cls ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" : "bg-theme-tertiary text-theme-secondary"}`}
                 >
                   Classe {cls}
                 </Button>
@@ -161,7 +161,7 @@ export default function InventoryAbcReportPage() {
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm text-theme-secondary">{item.percentOfTotal.toFixed(2)}%</td>
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm text-theme-secondary">{item.cumulativePercent.toFixed(2)}%</td>
                         <td className="px-4 py-3 whitespace-nowrap text-center">
-                          <Badge variant={colorToVariant(`${cls.bg} ${cls.text}`)}>
+                          <Badge variant={cls.variant}>
                             {item.classification}
                           </Badge>
                         </td>

@@ -25,35 +25,35 @@ import {
   AlertCircle,
   Package,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const inspectionStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Andamento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <AlertCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
+const inspectionStatusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Andamento", variant: "info", icon: <AlertCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", variant: "orange", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
-const inspectionTypeConfig: Record<string, { label: string; color: string }> = {
-  RECEIVING: { label: "Recebimento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  IN_PROCESS: { label: "Em Processo", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-  FINAL: { label: "Final", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  AUDIT: { label: "Auditoria", color: "bg-theme-tertiary text-theme" },
+const inspectionTypeConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  RECEIVING: { label: "Recebimento", variant: "info" },
+  IN_PROCESS: { label: "Em Processo", variant: "purple" },
+  FINAL: { label: "Final", variant: "success" },
+  AUDIT: { label: "Auditoria", variant: "default" },
 };
 
-const ncSeverityConfig: Record<string, { label: string; color: string }> = {
-  MINOR: { label: "Menor", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  MAJOR: { label: "Maior", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
-  CRITICAL: { label: "Crítica", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+const ncSeverityConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  MINOR: { label: "Menor", variant: "warning" },
+  MAJOR: { label: "Maior", variant: "orange" },
+  CRITICAL: { label: "Crítica", variant: "error" },
 };
 
-const ncStatusConfig: Record<string, { label: string; color: string }> = {
-  OPEN: { label: "Aberta", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-  ANALYZING: { label: "Em Análise", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  ACTION: { label: "Ação em Andamento", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  VERIFICATION: { label: "Verificação", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-  CLOSED: { label: "Fechada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+const ncStatusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  OPEN: { label: "Aberta", variant: "error" },
+  ANALYZING: { label: "Em Análise", variant: "warning" },
+  ACTION: { label: "Ação em Andamento", variant: "info" },
+  VERIFICATION: { label: "Verificação", variant: "purple" },
+  CLOSED: { label: "Fechada", variant: "success" },
 };
 
 export default function QualityPage() {
@@ -261,7 +261,7 @@ export default function QualityPage() {
                           <tr key={inspection.id} className="hover:bg-theme-hover">
                             <td className="px-4 py-3 font-medium text-theme">#{inspection.code}</td>
                             <td className="px-4 py-3">
-                              <Badge variant={colorToVariant(typeCfg.color)}>
+                              <Badge variant={typeCfg.variant}>
                                 {typeCfg.label}
                               </Badge>
                             </td>
@@ -285,7 +285,7 @@ export default function QualityPage() {
                               {formatDate(inspection.inspectionDate)}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <Badge variant={colorToVariant(statusCfg.color)}>
+                              <Badge variant={statusCfg.variant}>
                                 {statusCfg.icon}
                                 {statusCfg.label}
                               </Badge>
@@ -361,7 +361,7 @@ export default function QualityPage() {
                               {nc.description}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <Badge variant={colorToVariant(severityCfg.color)}>
+                              <Badge variant={severityCfg.variant}>
                                 {severityCfg.label}
                               </Badge>
                             </td>
@@ -372,7 +372,7 @@ export default function QualityPage() {
                               {formatDate(nc.createdAt)}
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <Badge variant={colorToVariant(statusCfg.color)}>
+                              <Badge variant={statusCfg.variant}>
                                 {statusCfg.label}
                               </Badge>
                             </td>

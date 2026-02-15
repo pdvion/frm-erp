@@ -16,15 +16,15 @@ import { Button } from "@/components/ui/Button";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/formatters";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 const movementTypeConfig = {
-  ENTRY: { label: "Entrada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: ArrowDownCircle },
-  EXIT: { label: "Saída", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: ArrowUpCircle },
-  TRANSFER: { label: "Transferência", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: RefreshCw },
-  ADJUSTMENT: { label: "Ajuste", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: RefreshCw },
-  RETURN: { label: "Devolução", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: ArrowDownCircle },
-  PRODUCTION: { label: "Produção", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: RefreshCw },
+  ENTRY: { label: "Entrada", variant: "success" as BadgeVariant, icon: ArrowDownCircle },
+  EXIT: { label: "Saída", variant: "error" as BadgeVariant, icon: ArrowUpCircle },
+  TRANSFER: { label: "Transferência", variant: "info" as BadgeVariant, icon: RefreshCw },
+  ADJUSTMENT: { label: "Ajuste", variant: "warning" as BadgeVariant, icon: RefreshCw },
+  RETURN: { label: "Devolução", variant: "purple" as BadgeVariant, icon: ArrowDownCircle },
+  PRODUCTION: { label: "Produção", variant: "orange" as BadgeVariant, icon: RefreshCw },
 };
 
 export default function MovementsHistoryPage() {
@@ -145,7 +145,7 @@ export default function MovementsHistoryPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
-                            <Badge variant={colorToVariant(config?.color ?? "")}>
+                            <Badge variant={config?.variant ?? "default"}>
                               <Icon className="w-3.5 h-3.5" />
                               {config?.label ?? movement.movementType}
                             </Badge>

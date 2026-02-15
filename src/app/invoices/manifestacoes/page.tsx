@@ -20,15 +20,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type ManifestacaoTipo = "CIENCIA" | "CONFIRMACAO" | "DESCONHECIMENTO" | "NAO_REALIZADA";
 
-const manifestacaoConfig: Record<ManifestacaoTipo, { label: string; color: string; icon: React.ReactNode }> = {
-  CIENCIA: { label: "Ciência", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Eye className="w-3 h-3" /> },
-  CONFIRMACAO: { label: "Confirmação", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCheck className="w-3 h-3" /> },
-  DESCONHECIMENTO: { label: "Desconhecimento", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400", icon: <HelpCircle className="w-3 h-3" /> },
-  NAO_REALIZADA: { label: "Não Realizada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XOctagon className="w-3 h-3" /> },
+const manifestacaoConfig: Record<ManifestacaoTipo, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  CIENCIA: { label: "Ciência", variant: "info", icon: <Eye className="w-3 h-3" /> },
+  CONFIRMACAO: { label: "Confirmação", variant: "success", icon: <CheckCheck className="w-3 h-3" /> },
+  DESCONHECIMENTO: { label: "Desconhecimento", variant: "amber", icon: <HelpCircle className="w-3 h-3" /> },
+  NAO_REALIZADA: { label: "Não Realizada", variant: "error", icon: <XOctagon className="w-3 h-3" /> },
 };
 
 export default function ManifestacaoHistoryPage() {
@@ -162,7 +162,7 @@ export default function ManifestacaoHistoryPage() {
                             : "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <Badge variant={colorToVariant(config.color)}>
+                          <Badge variant={config.variant}>
                             {config.icon}
                             {config.label}
                           </Badge>

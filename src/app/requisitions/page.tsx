@@ -28,16 +28,16 @@ import {
   FolderKanban,
   MoreHorizontal,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme-secondary", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Aguardando", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_SEPARATION: { label: "Em Separação", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Play className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Aguardando", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovada", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_SEPARATION: { label: "Em Separação", variant: "purple", icon: <Play className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", variant: "orange", icon: <AlertTriangle className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluída", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const typeConfig: Record<string, { label: string; icon: React.ReactNode }> = {
@@ -95,7 +95,7 @@ export default function RequisitionsPage() {
               return (
                 <div key={s.status} className="bg-theme-card rounded-lg border border-theme p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
+                    <Badge variant={config.variant}>{config.icon}</Badge>
                     <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                   </div>
                   <div className="text-2xl font-bold text-theme">{s.count}</div>
@@ -249,7 +249,7 @@ export default function RequisitionsPage() {
                             {formatDate(req.requestedAt)}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(statusCfg.color)}>
+                            <Badge variant={statusCfg.variant}>
                               {statusCfg.icon}
                               {statusCfg.label}
                             </Badge>

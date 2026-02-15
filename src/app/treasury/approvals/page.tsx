@@ -18,20 +18,20 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 function UrgencyBadge({ urgency }: { urgency: string }) {
-  const config: Record<string, { color: string; label: string }> = {
-    LOW: { color: "bg-theme-tertiary text-theme-secondary", label: "Baixa" },
-    NORMAL: { color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
-    HIGH: { color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
-    URGENT: { color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
+  const config: Record<string, { variant: BadgeVariant; label: string }> = {
+    LOW: { variant: "default", label: "Baixa" },
+    NORMAL: { variant: "info", label: "Normal" },
+    HIGH: { variant: "orange", label: "Alta" },
+    URGENT: { variant: "error", label: "Urgente" },
   };
 
-  const { color, label } = config[urgency] || config.NORMAL;
+  const { variant, label } = config[urgency] || config.NORMAL;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );

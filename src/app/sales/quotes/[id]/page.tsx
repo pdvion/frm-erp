@@ -23,14 +23,16 @@ import {
   Target,
 } from "lucide-react";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Send className="w-4 h-4" /> },
-  VIEWED: { label: "Visualizado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Eye className="w-4 h-4" /> },
-  ACCEPTED: { label: "Aceito", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
-  EXPIRED: { label: "Expirado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  CONVERTED: { label: "Convertido", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400", icon: <ArrowRight className="w-4 h-4" /> },
+import type { BadgeVariant } from "@/components/ui/Badge";
+
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <Clock className="w-4 h-4" /> },
+  SENT: { label: "Enviado", variant: "info", icon: <Send className="w-4 h-4" /> },
+  VIEWED: { label: "Visualizado", variant: "purple", icon: <Eye className="w-4 h-4" /> },
+  ACCEPTED: { label: "Aceito", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  EXPIRED: { label: "Expirado", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  CONVERTED: { label: "Convertido", variant: "indigo", icon: <ArrowRight className="w-4 h-4" /> },
 };
 
 export default function SalesQuoteDetailPage() {
@@ -134,7 +136,7 @@ export default function SalesQuoteDetailPage() {
         icon={<FileText className="w-6 h-6" />}
         backHref="/sales/quotes"
         module="sales"
-        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           <div className="flex items-center gap-2">
             {quote.status === "DRAFT" && (

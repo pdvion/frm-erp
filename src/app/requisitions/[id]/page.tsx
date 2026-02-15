@@ -22,15 +22,16 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import type { BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  DRAFT: { label: "Rascunho", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
-  PENDING: { label: "Aguardando Aprovação", color: "text-yellow-800", bgColor: "bg-yellow-100" },
-  APPROVED: { label: "Aprovada", color: "text-blue-800", bgColor: "bg-blue-100" },
-  IN_SEPARATION: { label: "Em Separação", color: "text-purple-800", bgColor: "bg-purple-100" },
-  PARTIAL: { label: "Parcialmente Atendida", color: "text-orange-800", bgColor: "bg-orange-100" },
-  COMPLETED: { label: "Concluída", color: "text-green-800", bgColor: "bg-green-100" },
-  CANCELLED: { label: "Cancelada", color: "text-red-600", bgColor: "bg-red-100" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  DRAFT: { label: "Rascunho", variant: "default" },
+  PENDING: { label: "Aguardando Aprovação", variant: "warning" },
+  APPROVED: { label: "Aprovada", variant: "info" },
+  IN_SEPARATION: { label: "Em Separação", variant: "purple" },
+  PARTIAL: { label: "Parcialmente Atendida", variant: "orange" },
+  COMPLETED: { label: "Concluída", variant: "success" },
+  CANCELLED: { label: "Cancelada", variant: "error" },
 };
 
 const typeLabels: Record<string, string> = {
@@ -116,7 +117,7 @@ export default function RequisitionDetailPage() {
         icon={<Package className="w-6 h-6" />}
         backHref="/requisitions"
         module="requisitions"
-        badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
             {canCancel && (

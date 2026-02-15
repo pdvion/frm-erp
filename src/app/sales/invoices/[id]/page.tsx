@@ -24,12 +24,14 @@ import {
   Key,
 } from "lucide-react";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <AlertCircle className="w-4 h-4" /> },
-  AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
-  DENIED: { label: "Rejeitada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+import type { BadgeVariant } from "@/components/ui/Badge";
+
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <Clock className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", variant: "warning", icon: <AlertCircle className="w-4 h-4" /> },
+  AUTHORIZED: { label: "Autorizada", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  DENIED: { label: "Rejeitada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function IssuedInvoiceDetailPage() {
@@ -111,7 +113,7 @@ export default function IssuedInvoiceDetailPage() {
         icon={<FileText className="w-6 h-6" />}
         backHref="/sales/invoices"
         module="sales"
-        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           <div className="flex items-center gap-2">
             {invoice.status === "DRAFT" && (

@@ -29,16 +29,16 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "text-yellow-800 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "text-blue-800 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", icon: <Truck className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "text-orange-800 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "text-red-800 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  SENT: { label: "Enviado", variant: "purple", icon: <Truck className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", variant: "orange", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function PurchaseOrderDetailPage() {
@@ -118,7 +118,7 @@ export default function PurchaseOrderDetailPage() {
         title={`PC-${order.code.toString().padStart(6, "0")}`}
         icon={<ShoppingCart className="w-6 h-6" />}
         backHref="/purchase-orders"
-        badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
+        badge={{ label: config.label, variant: config.variant }}
       >
         {canSend && order.status !== "SENT" && (
           <Button
@@ -357,7 +357,7 @@ export default function PurchaseOrderDetailPage() {
                 <option value="APPROVED">Aprovado</option>
               </NativeSelect>
             ) : (
-              <Badge variant={colorToVariant(config.color)}>
+              <Badge variant={config.variant}>
                 {config.icon}
                 {config.label}
               </Badge>

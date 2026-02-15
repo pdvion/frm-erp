@@ -16,25 +16,25 @@ import {
   Settings,
   ClipboardList,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: string;
 };
 
 function StatusBadge({ status }: StatusBadgeProps) {
-  const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-theme-tertiary text-theme", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
-    REJECTED: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
+  const config: Record<string, { variant: BadgeVariant; label: string; icon: React.ReactNode }> = {
+    PENDING: { variant: "default", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    IN_PROGRESS: { variant: "info", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { variant: "success", label: "Concluído", icon: <CheckCircle className="h-3 w-3" /> },
+    CANCELLED: { variant: "default", label: "Cancelado", icon: <XCircle className="h-3 w-3" /> },
+    REJECTED: { variant: "error", label: "Rejeitado", icon: <XCircle className="h-3 w-3" /> },
   };
 
-  const { color, label, icon } = config[status] || config.PENDING;
+  const { variant, label, icon } = config[status] || config.PENDING;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {icon}
       {label}
     </Badge>
@@ -42,19 +42,19 @@ function StatusBadge({ status }: StatusBadgeProps) {
 }
 
 function CategoryBadge({ category }: { category: string }) {
-  const config: Record<string, { color: string; label: string }> = {
-    PURCHASE: { color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", label: "Compras" },
-    PAYMENT: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Pagamentos" },
-    HR: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "RH" },
-    PRODUCTION: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Produção" },
-    SALES: { color: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400", label: "Vendas" },
-    GENERAL: { color: "bg-theme-tertiary text-theme", label: "Geral" },
+  const config: Record<string, { variant: BadgeVariant; label: string }> = {
+    PURCHASE: { variant: "purple", label: "Compras" },
+    PAYMENT: { variant: "success", label: "Pagamentos" },
+    HR: { variant: "info", label: "RH" },
+    PRODUCTION: { variant: "orange", label: "Produção" },
+    SALES: { variant: "cyan", label: "Vendas" },
+    GENERAL: { variant: "default", label: "Geral" },
   };
 
-  const { color, label } = config[category] || config.GENERAL;
+  const { variant, label } = config[category] || config.GENERAL;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );

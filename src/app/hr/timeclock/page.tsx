@@ -20,13 +20,13 @@ import {
   Users,
   AlertCircle,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const clockTypeConfig: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  CLOCK_IN: { label: "Entrada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: Play },
-  CLOCK_OUT: { label: "Saída", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: Square },
-  BREAK_START: { label: "Início Intervalo", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: Coffee },
-  BREAK_END: { label: "Fim Intervalo", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Coffee },
+const clockTypeConfig: Record<string, { label: string; variant: BadgeVariant; icon: typeof Clock }> = {
+  CLOCK_IN: { label: "Entrada", variant: "success", icon: Play },
+  CLOCK_OUT: { label: "Saída", variant: "error", icon: Square },
+  BREAK_START: { label: "Início Intervalo", variant: "warning", icon: Coffee },
+  BREAK_END: { label: "Fim Intervalo", variant: "info", icon: Coffee },
 };
 
 export default function TimeclockPage() {
@@ -175,7 +175,7 @@ export default function TimeclockPage() {
                           <div className="text-sm text-theme-muted">#{entry.employee.code}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant={colorToVariant(config?.color)}>
+                          <Badge variant={config?.variant ?? "default"}>
                             <IconComponent className="w-3 h-3" />
                             {config?.label || entry.type}
                           </Badge>

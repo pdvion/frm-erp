@@ -31,21 +31,21 @@ import {
   Wand2,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/Textarea";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  VALIDATED: { label: "Validado", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
-const matchStatusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
-  MATCHED: { label: "Vinculado", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: <Link2 className="w-4 h-4" /> },
-  DIVERGENT: { label: "Divergente", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <AlertTriangle className="w-4 h-4" /> },
-  NOT_FOUND: { label: "Não encontrado", color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400", icon: <Unlink className="w-4 h-4" /> },
+const matchStatusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "default", icon: <Clock className="w-4 h-4" /> },
+  MATCHED: { label: "Vinculado", variant: "success", icon: <Link2 className="w-4 h-4" /> },
+  DIVERGENT: { label: "Divergente", variant: "warning", icon: <AlertTriangle className="w-4 h-4" /> },
+  NOT_FOUND: { label: "Não encontrado", variant: "error", icon: <Unlink className="w-4 h-4" /> },
 };
 
 export default function InvoiceDetailPage() {
@@ -146,7 +146,7 @@ export default function InvoiceDetailPage() {
         backHref="/invoices"
         module="fiscal"
         actions={
-          <Badge variant={colorToVariant(config.color)}>
+          <Badge variant={config.variant}>
             {config.icon}
             {config.label}
           </Badge>
@@ -404,7 +404,7 @@ export default function InvoiceDetailPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <Badge variant={colorToVariant(matchConfig.color)}>
+                          <Badge variant={matchConfig.variant}>
                             {matchConfig.icon}
                             {matchConfig.label}
                           </Badge>

@@ -20,16 +20,16 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme" },
-  SENT: { label: "Enviado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  VIEWED: { label: "Visualizado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-  ACCEPTED: { label: "Aceito", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-  EXPIRED: { label: "Expirado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  CONVERTED: { label: "Convertido", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  DRAFT: { label: "Rascunho", variant: "default" },
+  SENT: { label: "Enviado", variant: "info" },
+  VIEWED: { label: "Visualizado", variant: "purple" },
+  ACCEPTED: { label: "Aceito", variant: "success" },
+  REJECTED: { label: "Rejeitado", variant: "error" },
+  EXPIRED: { label: "Expirado", variant: "warning" },
+  CONVERTED: { label: "Convertido", variant: "indigo" },
 };
 
 export default function SalesQuotesPage() {
@@ -132,7 +132,7 @@ export default function SalesQuotesPage() {
                           <td className="px-4 py-3 text-center text-sm text-theme-secondary">{quote._count.items}</td>
                           <td className="px-4 py-3 text-right text-sm font-medium text-theme">{formatCurrency(quote.totalValue)}</td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(config.color)}>{config.label}</Badge>
+                            <Badge variant={config.variant}>{config.label}</Badge>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <LinkButton

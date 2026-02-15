@@ -23,14 +23,14 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  VACATION: { label: "Férias", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  LEAVE: { label: "Afastado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  SUSPENDED: { label: "Suspenso", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
-  TERMINATED: { label: "Desligado", color: "bg-theme-tertiary text-theme" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  ACTIVE: { label: "Ativo", variant: "success" },
+  VACATION: { label: "Férias", variant: "info" },
+  LEAVE: { label: "Afastado", variant: "warning" },
+  SUSPENDED: { label: "Suspenso", variant: "orange" },
+  TERMINATED: { label: "Desligado", variant: "default" },
 };
 
 const contractLabels: Record<string, string> = {
@@ -162,7 +162,7 @@ export default function EmployeesPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(config.color)}>
+                            <Badge variant={config.variant}>
                               {config.label}
                             </Badge>
                           </td>

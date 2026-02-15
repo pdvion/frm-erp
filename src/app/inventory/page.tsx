@@ -13,7 +13,7 @@ import {
   TrendingUp,
   TrendingDown
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -56,13 +56,13 @@ const inventoryTypeLabels: Record<string, string> = {
   SCRAP: "Sucata",
 };
 
-const inventoryTypeColors: Record<string, string> = {
-  RAW_MATERIAL: "bg-blue-500/20 text-blue-400",
-  SEMI_FINISHED: "bg-yellow-500/20 text-yellow-400",
-  FINISHED: "bg-green-500/20 text-green-400",
-  CRITICAL: "bg-red-500/20 text-red-400",
-  DEAD: "bg-theme-secondary0/20 text-theme-muted",
-  SCRAP: "bg-orange-500/20 text-orange-400",
+const inventoryTypeVariants: Record<string, BadgeVariant> = {
+  RAW_MATERIAL: "info",
+  SEMI_FINISHED: "warning",
+  FINISHED: "success",
+  CRITICAL: "error",
+  DEAD: "default",
+  SCRAP: "orange",
 };
 
 export default function InventoryPage() {
@@ -250,7 +250,7 @@ export default function InventoryPage() {
                             </div>
                           </td>
                           <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
-                            <Badge variant={colorToVariant(inventoryTypeColors[item.inventoryType] || "")}>
+                            <Badge variant={inventoryTypeVariants[item.inventoryType] || "default"}>
                               {inventoryTypeLabels[item.inventoryType]}
                             </Badge>
                           </td>

@@ -75,7 +75,7 @@ export default function MaterialDetailPage() {
         icon={<Package className="w-6 h-6" />}
         backHref="/materials"
         breadcrumbs={breadcrumbs}
-        badge={material.isShared ? { label: "Compartilhado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/50" } : undefined}
+        badge={material.isShared ? { label: "Compartilhado", variant: "purple" as const } : undefined}
         actions={
           <LinkButton
             href={`/materials/${material.id}/edit`}

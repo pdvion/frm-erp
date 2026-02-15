@@ -29,16 +29,16 @@ import {
   FileText,
   Calendar,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-secondary text-theme-muted", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  SENT: { label: "Enviado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Truck className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  SENT: { label: "Enviado", variant: "purple", icon: <Truck className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", variant: "orange", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const statusColors: Record<string, string> = {
@@ -171,9 +171,9 @@ export default function PurchaseOrdersPage() {
                 onClick={() => setStatusFilter(statusFilter === s.status ? "" : s.status)}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`p-1 rounded ${config.color}`}>
+                  <Badge variant={config.variant}>
                     {config.icon}
-                  </span>
+                  </Badge>
                   <div className="text-xl font-bold text-theme">{s.count}</div>
                 </div>
                 <div className="text-sm text-theme-secondary">{config.label}</div>
@@ -335,7 +335,7 @@ export default function PurchaseOrdersPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant={colorToVariant(config.color)}>
+                          <Badge variant={config.variant}>
                             {config.icon}
                             {config.label}
                           </Badge>

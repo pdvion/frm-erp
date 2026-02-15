@@ -23,17 +23,17 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <FileText className="w-4 h-4" /> },
-  DOCUMENTS: { label: "Documentos", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <FileText className="w-4 h-4" /> },
-  EXAM: { label: "Exame", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVAL: { label: "Aprovação", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <AlertCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-secondary", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <FileText className="w-4 h-4" /> },
+  DOCUMENTS: { label: "Documentos", variant: "info", icon: <FileText className="w-4 h-4" /> },
+  EXAM: { label: "Exame", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  APPROVAL: { label: "Aprovação", variant: "purple", icon: <AlertCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", variant: "emerald", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function AdmissionPage() {
@@ -212,7 +212,7 @@ export default function AdmissionPage() {
                               </div>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <Badge variant={colorToVariant(statusCfg.color)}>
+                              <Badge variant={statusCfg.variant}>
                                 {statusCfg.icon}
                                 {statusCfg.label}
                               </Badge>

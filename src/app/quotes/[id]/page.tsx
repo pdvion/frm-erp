@@ -29,16 +29,16 @@ import {
   Plus,
 } from "lucide-react";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "text-theme-muted", bgColor: "bg-theme-secondary", icon: <FileText className="w-4 h-4" /> },
-  PENDING: { label: "Pendente", color: "text-yellow-800 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", icon: <Clock className="w-4 h-4" /> },
-  SENT: { label: "Enviada", color: "text-blue-800 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", icon: <Send className="w-4 h-4" /> },
-  RECEIVED: { label: "Recebida", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", icon: <FileText className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovada", color: "text-green-700 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitada", color: "text-red-800 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "text-theme-muted", bgColor: "bg-theme-card", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <FileText className="w-4 h-4" /> },
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  SENT: { label: "Enviada", variant: "info", icon: <Send className="w-4 h-4" /> },
+  RECEIVED: { label: "Recebida", variant: "purple", icon: <FileText className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovada", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function QuoteDetailPage() {
@@ -121,7 +121,7 @@ export default function QuoteDetailPage() {
         title={`Cotação #${quote.code.toString().padStart(6, "0")}`}
         icon={<FileText className="w-6 h-6" />}
         backHref="/quotes"
-        badge={{ label: config.label, color: config.color, bgColor: config.bgColor }}
+        badge={{ label: config.label, variant: config.variant }}
       >
         {canEdit && (
           <LinkButton
@@ -344,7 +344,7 @@ export default function QuoteDetailPage() {
                 <option value="RECEIVED">Recebida</option>
               </NativeSelect>
             ) : (
-              <Badge variant={colorToVariant(config.color)}>
+              <Badge variant={config.variant}>
                 {config.icon}
                 {config.label}
               </Badge>
