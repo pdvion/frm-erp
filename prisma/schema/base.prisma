@@ -119,6 +119,7 @@ model Company {
   communicationLogs             CommunicationLog[]
   leadScoringRules              LeadScoringRule[]
   salesTargets                  SalesTarget[]
+  customerPortalTokens          CustomerPortalToken[]
   fiscalObligations             FiscalObligation[]
   taxApurations                 TaxApuration[]
   nfseConfig                    NfseConfig?

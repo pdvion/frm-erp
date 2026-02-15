@@ -215,4 +215,43 @@ export const customersRouter = createTRPCRouter({
         overdueCount,
       };
     }),
+
+  // ─── Portal do Cliente ────────────────────────────────────────────────────
+
+  generatePortalToken: tenantProcedure
+    .input(z.object({
+      customerId: z.string().uuid(),
+      expiresInDays: z.number().min(1).max(365).optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const customer = await ctx.prisma.customer.findFirst({
+        where: { id: input.customerId, companyId: ctx.companyId },
+      });
+      if (!customer) throw new TRPCError({ code: "NOT_FOUND", message: "Cliente não encontrado" });
+
+      const { CustomerPortalService } = await import("../services/customer-portal");
+      const svc = new CustomerPortalService(ctx.prisma);
+      return svc.generateToken(
+        ctx.companyId,
+        input.customerId,
+        ctx.tenant.userId ?? null,
+        input.expiresInDays
+      );
+    }),
+
+  revokePortalToken: tenantProcedure
+    .input(z.object({ tokenId: z.string().uuid() }))
+    .mutation(async ({ input, ctx }) => {
+      const { CustomerPortalService } = await import("../services/customer-portal");
+      const svc = new CustomerPortalService(ctx.prisma);
+      return svc.revokeToken(input.tokenId, ctx.companyId);
+    }),
+
+  listPortalTokens: tenantProcedure
+    .input(z.object({ customerId: z.string().uuid() }))
+    .query(async ({ input, ctx }) => {
+      const { CustomerPortalService } = await import("../services/customer-portal");
+      const svc = new CustomerPortalService(ctx.prisma);
+      return svc.listTokens(ctx.companyId, input.customerId);
+    }),
 });
