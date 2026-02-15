@@ -86,6 +86,7 @@ import { fiscalRouter } from "./fiscal";
 import { maintenanceRouter } from "./maintenance";
 import { esocialRouter } from "./esocial";
 import { webhooksRouter } from "./webhooks";
+import { apiKeysRouter } from "./apiKeys";
 
 export const appRouter = createTRPCRouter({
   nfeBatchImport: nfeBatchImportRouter,
@@ -175,6 +176,7 @@ export const appRouter = createTRPCRouter({
   maintenance: maintenanceRouter,
   esocial: esocialRouter,
   webhooks: webhooksRouter,
+  apiKeys: apiKeysRouter,
 });
 
 export type AppRouter = typeof appRouter;
