@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { FileText, Plus } from "lucide-react";
 
 export default function ProductionLogsPage() {
@@ -169,79 +170,71 @@ export default function ProductionLogsPage() {
       </div>
 
       {/* Modal de Registro */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-lg">
-            <h3 className="text-lg font-semibold text-theme mb-4">Registrar Produção</h3>
-            <form onSubmit={handleLogSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
-                <Select
-                  value={logForm.workCenterId}
-                  onChange={(value) => setLogForm({ ...logForm, workCenterId: value })}
-                  placeholder="Selecione..."
-                  required
-                  options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Qtd Planejada"
-                  type="number"
-                  value={logForm.plannedQuantity}
-                  onChange={(e) => setLogForm({ ...logForm, plannedQuantity: Number(e.target.value) })}
-                />
-                <Input
-                  label="Qtd Produzida"
-                  type="number"
-                  value={logForm.producedQuantity}
-                  onChange={(e) => setLogForm({ ...logForm, producedQuantity: Number(e.target.value) })}
-                />
-                <Input
-                  label="Qtd Boa"
-                  type="number"
-                  value={logForm.goodQuantity}
-                  onChange={(e) => setLogForm({ ...logForm, goodQuantity: Number(e.target.value) })}
-                />
-                <Input
-                  label="Refugo"
-                  type="number"
-                  value={logForm.scrapQuantity}
-                  onChange={(e) => setLogForm({ ...logForm, scrapQuantity: Number(e.target.value) })}
-                />
-                <Input
-                  label="Tempo Planejado (min)"
-                  type="number"
-                  value={logForm.plannedTimeMinutes}
-                  onChange={(e) => setLogForm({ ...logForm, plannedTimeMinutes: Number(e.target.value) })}
-                />
-                <Input
-                  label="Tempo Parada (min)"
-                  type="number"
-                  value={logForm.stopTimeMinutes}
-                  onChange={(e) => setLogForm({ ...logForm, stopTimeMinutes: Number(e.target.value) })}
-                />
-              </div>
-              <div className="flex justify-end gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!logForm.workCenterId}
-                  isLoading={logMutation.isPending}
-                >
-                  Salvar
-                </Button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Registrar Produção"
+        size="md"
+      >
+        <form onSubmit={handleLogSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Centro de Trabalho</label>
+            <Select
+              value={logForm.workCenterId}
+              onChange={(value) => setLogForm({ ...logForm, workCenterId: value })}
+              placeholder="Selecione..."
+              required
+              options={workCenters?.map((wc) => ({ value: wc.id, label: `${wc.code} - ${wc.name}` })) || []}
+            />
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Qtd Planejada"
+              type="number"
+              value={logForm.plannedQuantity}
+              onChange={(e) => setLogForm({ ...logForm, plannedQuantity: Number(e.target.value) })}
+            />
+            <Input
+              label="Qtd Produzida"
+              type="number"
+              value={logForm.producedQuantity}
+              onChange={(e) => setLogForm({ ...logForm, producedQuantity: Number(e.target.value) })}
+            />
+            <Input
+              label="Qtd Boa"
+              type="number"
+              value={logForm.goodQuantity}
+              onChange={(e) => setLogForm({ ...logForm, goodQuantity: Number(e.target.value) })}
+            />
+            <Input
+              label="Refugo"
+              type="number"
+              value={logForm.scrapQuantity}
+              onChange={(e) => setLogForm({ ...logForm, scrapQuantity: Number(e.target.value) })}
+            />
+            <Input
+              label="Tempo Planejado (min)"
+              type="number"
+              value={logForm.plannedTimeMinutes}
+              onChange={(e) => setLogForm({ ...logForm, plannedTimeMinutes: Number(e.target.value) })}
+            />
+            <Input
+              label="Tempo Parada (min)"
+              type="number"
+              value={logForm.stopTimeMinutes}
+              onChange={(e) => setLogForm({ ...logForm, stopTimeMinutes: Number(e.target.value) })}
+            />
+          </div>
+          <ModalFooter>
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={!logForm.workCenterId} isLoading={logMutation.isPending}>
+              Salvar
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
     </div>
   );
 }
