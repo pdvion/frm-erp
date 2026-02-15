@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   FileText,
   Check,
@@ -396,46 +397,42 @@ export default function DdaPage() {
       </PageCard>
 
       {/* Modal de Rejeição */}
-      {showRejectModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme dark:text-theme-muted mb-4">
-              Rejeitar Boleto
-            </h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-theme-secondary mb-2">
-                Motivo da Rejeição
-              </label>
-              <Textarea
-                value={motivoRejeicao}
-                onChange={(e) => setMotivoRejeicao(e.target.value)}
-                rows={3}
-                placeholder="Informe o motivo da rejeição..."
-              />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowRejectModal(false);
-                  setMotivoRejeicao("");
-                  setSelectedBoleto(null);
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleRejeitar}
-                disabled={!motivoRejeicao || rejeitarMutation.isPending}
-                isLoading={rejeitarMutation.isPending}
-              >
-                Rejeitar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showRejectModal}
+        onClose={() => { setShowRejectModal(false); setMotivoRejeicao(""); setSelectedBoleto(null); }}
+        title="Rejeitar Boleto"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              Motivo da Rejeição
+            </label>
+            <Textarea
+              value={motivoRejeicao}
+              onChange={(e) => setMotivoRejeicao(e.target.value)}
+              rows={3}
+              placeholder="Informe o motivo da rejeição..."
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowRejectModal(false); setMotivoRejeicao(""); setSelectedBoleto(null); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleRejeitar}
+              disabled={!motivoRejeicao || rejeitarMutation.isPending}
+              isLoading={rejeitarMutation.isPending}
+            >
+              Rejeitar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 type ActionType = "approve" | "reject" | null;
 
@@ -289,66 +290,53 @@ export default function MyPendingApprovalsPage() {
       </div>
 
       {/* Modal de ação */}
-      {selectedRequest && actionType && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              {actionType === "approve" ? "Aprovar Solicitação" : "Rejeitar Solicitação"}
-            </h3>
-
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  {actionType === "approve" ? "Comentários (opcional)" : "Motivo da Rejeição *"}
-                </label>
-                <Textarea
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
-                  rows={3}
-                  placeholder={
-                    actionType === "approve"
-                      ? "Adicione um comentário..."
-                      : "Informe o motivo da rejeição..."
-                  }
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
-                />
-              </div>
+      <Modal
+        isOpen={!!(selectedRequest && actionType)}
+        onClose={() => { setSelectedRequest(null); setActionType(null); setComments(""); setError(""); }}
+        title={actionType === "approve" ? "Aprovar Solicitação" : "Rejeitar Solicitação"}
+        size="sm"
+      >
+        <div className="space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+              {error}
             </div>
+          )}
 
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSelectedRequest(null);
-                  setActionType(null);
-                  setComments("");
-                  setError("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleAction}
-                isLoading={approveMutation.isPending || rejectMutation.isPending}
-                className={`flex-1 ${
-                  actionType === "approve"
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-red-600 hover:bg-red-700"
-                }`}
-              >
-                {actionType === "approve" ? "Confirmar Aprovação" : "Confirmar Rejeição"}
-              </Button>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              {actionType === "approve" ? "Comentários (opcional)" : "Motivo da Rejeição *"}
+            </label>
+            <Textarea
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              rows={3}
+              placeholder={
+                actionType === "approve"
+                  ? "Adicione um comentário..."
+                  : "Informe o motivo da rejeição..."
+              }
+              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
+            />
           </div>
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setSelectedRequest(null); setActionType(null); setComments(""); setError(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAction}
+              isLoading={approveMutation.isPending || rejectMutation.isPending}
+              variant={actionType === "reject" ? "danger" : "primary"}
+            >
+              {actionType === "approve" ? "Confirmar Aprovação" : "Confirmar Rejeição"}
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

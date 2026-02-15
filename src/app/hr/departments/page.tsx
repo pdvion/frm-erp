@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -228,94 +229,70 @@ export default function DepartmentsPage() {
         )}
 
         {/* Modal de Formulário */}
-        {showForm && (
-          <div 
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setShowForm(false);
-                resetForm();
-              }
-            }}
-          >
-            <div 
-              className="bg-theme-card rounded-xl shadow-xl max-w-md w-full p-6"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="form-title"
-            >
-              <h2 id="form-title" className="text-xl font-semibold mb-6">
-                {editingId ? "Editar Departamento" : "Novo Departamento"}
-              </h2>
+        <Modal
+          isOpen={showForm}
+          onClose={() => { setShowForm(false); resetForm(); }}
+          title={editingId ? "Editar Departamento" : "Novo Departamento"}
+          size="sm"
+        >
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Código *"
+              value={formData.code}
+              onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+              required
+            />
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  label="Código *"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  required
-                />
+            <Input
+              label="Nome *"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
 
-                <Input
-                  label="Nome *"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Descrição
-                  </label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Departamento Pai
-                  </label>
-                  <Select
-                    value={formData.parentId}
-                    onChange={(value) => setFormData({ ...formData, parentId: value })}
-                    placeholder="Nenhum (raiz)"
-                    options={[
-                      { value: "", label: "Nenhum (raiz)" },
-                      ...(departments?.map((dept) => ({
-                        value: dept.id,
-                        label: dept.name,
-                      })) || []),
-                    ]}
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowForm(false);
-                      resetForm();
-                    }}
-                    className="flex-1"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    isLoading={createMutation.isPending}
-                    className="flex-1"
-                  >
-                    Salvar
-                  </Button>
-                </div>
-              </form>
+            <div>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
+                Descrição
+              </label>
+              <Textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
             </div>
-          </div>
-        )}
+
+            <div>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
+                Departamento Pai
+              </label>
+              <Select
+                value={formData.parentId}
+                onChange={(value) => setFormData({ ...formData, parentId: value })}
+                placeholder="Nenhum (raiz)"
+                options={[
+                  { value: "", label: "Nenhum (raiz)" },
+                  ...(departments?.map((dept) => ({
+                    value: dept.id,
+                    label: dept.name,
+                  })) || []),
+                ]}
+              />
+            </div>
+
+            <ModalFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => { setShowForm(false); resetForm(); }}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" isLoading={createMutation.isPending}>
+                Salvar
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       </main>
     </div>
   );

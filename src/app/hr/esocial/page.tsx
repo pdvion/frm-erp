@@ -22,6 +22,7 @@ import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import type { ESocialEventType } from "@/server/services/esocial";
 
 // ============================================================================
@@ -277,18 +278,17 @@ export default function ESocialPage() {
       )}
 
       {/* Generate Modal */}
-      {showGenerateModal && (
-        <GenerateModal
-          year={selectedYear}
-          month={selectedMonth}
-          onGenerate={(year, month, types) => {
-            generateMut.mutate({ year, month, eventTypes: types.length > 0 ? types as ESocialEventType[] : undefined });
-          }}
-          onClose={() => setShowGenerateModal(false)}
-          isLoading={generateMut.isPending}
-          result={generateMut.data}
-        />
-      )}
+      <GenerateModal
+        isOpen={showGenerateModal}
+        year={selectedYear}
+        month={selectedMonth}
+        onGenerate={(year, month, types) => {
+          generateMut.mutate({ year, month, eventTypes: types.length > 0 ? types as ESocialEventType[] : undefined });
+        }}
+        onClose={() => setShowGenerateModal(false)}
+        isLoading={generateMut.isPending}
+        result={generateMut.data}
+      />
     </div>
   );
 }
@@ -841,6 +841,7 @@ function ConfigTab({
 // ============================================================================
 
 function GenerateModal({
+  isOpen,
   year,
   month,
   onGenerate,
@@ -848,6 +849,7 @@ function GenerateModal({
   isLoading,
   result,
 }: {
+  isOpen: boolean;
   year: number;
   month: number;
   onGenerate: (year: number, month: number, types: string[]) => void;
@@ -883,90 +885,85 @@ function GenerateModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-theme-card border border-theme rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
-        <h2 className="text-lg font-semibold text-theme-primary mb-4">Gerar Eventos eSocial</h2>
-
-        {result ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{result.generated}</p>
-                <p className="text-xs text-green-600 dark:text-green-500">Gerados</p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{result.skipped}</p>
-                <p className="text-xs text-gray-500">Já existentes</p>
-              </div>
+    <Modal isOpen={isOpen} onClose={onClose} title="Gerar Eventos eSocial" size="md">
+      {result ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-green-700 dark:text-green-400">{result.generated}</p>
+              <p className="text-xs text-green-600 dark:text-green-500">Gerados</p>
             </div>
-
-            {result.errors.length > 0 && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                <p className="text-sm font-medium text-red-700 dark:text-red-400 mb-1">Erros:</p>
-                {result.errors.map((err, i) => (
-                  <p key={i} className="text-xs text-red-600 dark:text-red-500">
-                    {EVENT_TYPE_LABELS[err.eventType] ?? err.eventType}: {err.error}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            <Button onClick={onClose} className="w-full">Fechar</Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-theme-secondary mb-1">Mês</label>
-                <Select
-                  value={String(genMonth)}
-                  onChange={(value) => setGenMonth(Number(value))}
-                  options={months.map((m, i) => ({ value: String(i + 1), label: m }))}
-                />
-              </div>
-              <div className="w-24">
-                <label className="block text-xs font-medium text-theme-secondary mb-1">Ano</label>
-                <Select
-                  value={String(genYear)}
-                  onChange={(value) => setGenYear(Number(value))}
-                  options={[2024, 2025, 2026].map(y => ({ value: String(y), label: String(y) }))}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-theme-secondary mb-2">Tipos de Evento</label>
-              <div className="space-y-2">
-                {eventOptions.map(opt => (
-                  <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedTypes.has(opt.value)}
-                      onChange={() => toggleType(opt.value)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-theme-primary">{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={onClose} className="flex-1">
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => onGenerate(genYear, genMonth, Array.from(selectedTypes))}
-                disabled={isLoading || selectedTypes.size === 0}
-                leftIcon={<Zap className="w-4 h-4" />}
-                className="flex-1"
-              >
-                {isLoading ? "Gerando..." : "Gerar"}
-              </Button>
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{result.skipped}</p>
+              <p className="text-xs text-gray-500">Já existentes</p>
             </div>
           </div>
-        )}
-      </div>
-    </div>
+
+          {result.errors.length > 0 && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+              <p className="text-sm font-medium text-red-700 dark:text-red-400 mb-1">Erros:</p>
+              {result.errors.map((err, i) => (
+                <p key={i} className="text-xs text-red-600 dark:text-red-500">
+                  {EVENT_TYPE_LABELS[err.eventType] ?? err.eventType}: {err.error}
+                </p>
+              ))}
+            </div>
+          )}
+
+          <Button onClick={onClose} className="w-full">Fechar</Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-theme-secondary mb-1">Mês</label>
+              <Select
+                value={String(genMonth)}
+                onChange={(value) => setGenMonth(Number(value))}
+                options={months.map((m, i) => ({ value: String(i + 1), label: m }))}
+              />
+            </div>
+            <div className="w-24">
+              <label className="block text-xs font-medium text-theme-secondary mb-1">Ano</label>
+              <Select
+                value={String(genYear)}
+                onChange={(value) => setGenYear(Number(value))}
+                options={[2024, 2025, 2026].map(y => ({ value: String(y), label: String(y) }))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-theme-secondary mb-2">Tipos de Evento</label>
+            <div className="space-y-2">
+              {eventOptions.map(opt => (
+                <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedTypes.has(opt.value)}
+                    onChange={() => toggleType(opt.value)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-theme-primary">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <ModalFooter>
+            <Button variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => onGenerate(genYear, genMonth, Array.from(selectedTypes))}
+              disabled={isLoading || selectedTypes.size === 0}
+              leftIcon={<Zap className="w-4 h-4" />}
+            >
+              {isLoading ? "Gerando..." : "Gerar"}
+            </Button>
+          </ModalFooter>
+        </div>
+      )}
+    </Modal>
   );
 }

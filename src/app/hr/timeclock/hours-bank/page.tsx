@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 type EntryType = "CREDIT" | "DEBIT" | "COMPENSATION" | "EXPIRATION" | "ADJUSTMENT";
 
@@ -279,114 +280,104 @@ export default function HoursBankPage() {
       </div>
 
       {/* Modal de novo lançamento */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              Novo Lançamento no Banco de Horas
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Funcionário *
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
-                  <Input
-                    type="text"
-                    value={employeeSearch}
-                    onChange={(e) => setEmployeeSearch(e.target.value)}
-                    placeholder="Buscar funcionário..."
-                    className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
-                  />
-                </div>
-                {employees?.employees && employees.employees.length > 0 && employeeSearch && (
-                  <div className="mt-1 max-h-32 overflow-auto border border-theme rounded-lg bg-theme-card">
-                    {employees.employees.map((emp) => (
-                      <Button
-                        key={emp.id}
-                        type="button"
-                        variant="ghost"
-                        onClick={() => {
-                          setNewEntry({ ...newEntry, employeeId: emp.id });
-                          setSelectedEmployee(emp.name);
-                          setEmployeeSearch("");
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme text-sm justify-start h-auto rounded-none"
-                      >
-                        {emp.name} ({emp.code})
-                      </Button>
-                    ))}
-                  </div>
-                )}
-                {selectedEmployee && (
-                  <p className="mt-1 text-sm text-green-600 dark:text-green-400">
-                    Selecionado: {selectedEmployee}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
-                <Select
-                  value={newEntry.type}
-                  onChange={(value) => setNewEntry({ ...newEntry, type: value as EntryType })}
-                  options={entryTypes.map((t) => ({ value: t.value, label: t.label }))}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Data *"
-                  type="date"
-                  value={newEntry.date}
-                  onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
-                />
-                <Input
-                  label="Horas *"
-                  type="number"
-                  step={0.5}
-                  min={0}
-                  value={newEntry.hours}
-                  onChange={(e) => setNewEntry({ ...newEntry, hours: parseFloat(e.target.value) || 0 })}
-                  placeholder="Ex: 2.5"
-                />
-              </div>
-
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => { setShowAddModal(false); setNewEntry(initialNewEntry); setSelectedEmployee(""); setEmployeeSearch(""); }}
+        title="Novo Lançamento no Banco de Horas"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              Funcionário *
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted" />
               <Input
-                label="Descrição"
-                value={newEntry.description}
-                onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
-                placeholder="Ex: Hora extra projeto X"
+                type="text"
+                value={employeeSearch}
+                onChange={(e) => setEmployeeSearch(e.target.value)}
+                placeholder="Buscar funcionário..."
+                className="w-full pl-10 pr-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme"
               />
             </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowAddModal(false);
-                  setNewEntry(initialNewEntry);
-                  setSelectedEmployee("");
-                  setEmployeeSearch("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleAddEntry}
-                disabled={!newEntry.employeeId || newEntry.hours === 0}
-                isLoading={addEntryMutation.isPending}
-                className="flex-1"
-              >
-                Salvar
-              </Button>
-            </div>
+            {employees?.employees && employees.employees.length > 0 && employeeSearch && (
+              <div className="mt-1 max-h-32 overflow-auto border border-theme rounded-lg bg-theme-card">
+                {employees.employees.map((emp) => (
+                  <Button
+                    key={emp.id}
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setNewEntry({ ...newEntry, employeeId: emp.id });
+                      setSelectedEmployee(emp.name);
+                      setEmployeeSearch("");
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-theme-secondary text-theme text-sm justify-start h-auto rounded-none"
+                  >
+                    {emp.name} ({emp.code})
+                  </Button>
+                ))}
+              </div>
+            )}
+            {selectedEmployee && (
+              <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                Selecionado: {selectedEmployee}
+              </p>
+            )}
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
+            <Select
+              value={newEntry.type}
+              onChange={(value) => setNewEntry({ ...newEntry, type: value as EntryType })}
+              options={entryTypes.map((t) => ({ value: t.value, label: t.label }))}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Data *"
+              type="date"
+              value={newEntry.date}
+              onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
+            />
+            <Input
+              label="Horas *"
+              type="number"
+              step={0.5}
+              min={0}
+              value={newEntry.hours}
+              onChange={(e) => setNewEntry({ ...newEntry, hours: parseFloat(e.target.value) || 0 })}
+              placeholder="Ex: 2.5"
+            />
+          </div>
+
+          <Input
+            label="Descrição"
+            value={newEntry.description}
+            onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
+            placeholder="Ex: Hora extra projeto X"
+          />
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowAddModal(false); setNewEntry(initialNewEntry); setSelectedEmployee(""); setEmployeeSearch(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAddEntry}
+              disabled={!newEntry.employeeId || newEntry.hours === 0}
+              isLoading={addEntryMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

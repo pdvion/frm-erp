@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   FileText,
@@ -398,46 +399,34 @@ export default function BillingDetailPage() {
       </main>
 
       {/* Cancel Modal */}
-      {showCancelModal && (
-        <CancelModal
-          invoiceId={id}
-          onClose={() => setShowCancelModal(false)}
-          onSuccess={() => {
-            setShowCancelModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <CancelModal
+        isOpen={showCancelModal}
+        invoiceId={id}
+        onClose={() => setShowCancelModal(false)}
+        onSuccess={() => { setShowCancelModal(false); refetch(); }}
+      />
 
       {/* Correction Modal */}
-      {showCorrectionModal && (
-        <CorrectionModal
-          invoiceId={id}
-          onClose={() => setShowCorrectionModal(false)}
-          onSuccess={() => {
-            setShowCorrectionModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <CorrectionModal
+        isOpen={showCorrectionModal}
+        invoiceId={id}
+        onClose={() => setShowCorrectionModal(false)}
+        onSuccess={() => { setShowCorrectionModal(false); refetch(); }}
+      />
 
       {/* Receivables Modal */}
-      {showReceivablesModal && (
-        <ReceivablesModal
-          invoiceId={id}
-          totalValue={toNumber(invoice.totalValue)}
-          onClose={() => setShowReceivablesModal(false)}
-          onSuccess={() => {
-            setShowReceivablesModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <ReceivablesModal
+        isOpen={showReceivablesModal}
+        invoiceId={id}
+        totalValue={toNumber(invoice.totalValue)}
+        onClose={() => setShowReceivablesModal(false)}
+        onSuccess={() => { setShowReceivablesModal(false); refetch(); }}
+      />
     </div>
   );
 }
 
-function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onClose: () => void; onSuccess: () => void }) {
+function CancelModal({ isOpen, invoiceId, onClose, onSuccess }: { isOpen: boolean; invoiceId: string; onClose: () => void; onSuccess: () => void }) {
   const [reason, setReason] = useState("");
 
   const cancelMutation = trpc.billing.cancel.useMutation({
@@ -445,24 +434,15 @@ function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onC
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cancel-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Cancelar Nota Fiscal"
+      description="O cancelamento só é permitido em até 24 horas após a autorização."
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="cancel-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Ban className="w-5 h-5 text-red-600" />
-          Cancelar Nota Fiscal
-        </h3>
-
-        <p className="text-sm text-theme-muted mb-4">
-          O cancelamento só é permitido em até 24 horas após a autorização.
-        </p>
-
-        <div className="mb-4">
+      <div className="space-y-4">
+        <div>
           <label className="block text-sm font-medium text-theme-secondary mb-2">
             Motivo do Cancelamento (mínimo 15 caracteres)
           </label>
@@ -475,30 +455,30 @@ function CancelModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onC
         </div>
 
         {cancelMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {cancelMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Voltar
           </Button>
           <Button
+            variant="danger"
             onClick={() => cancelMutation.mutate({ id: invoiceId, reason })}
             disabled={reason.length < 15}
             isLoading={cancelMutation.isPending}
-            className="flex-1 bg-red-600 hover:bg-red-700"
           >
             Confirmar Cancelamento
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
-function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string; onClose: () => void; onSuccess: () => void }) {
+function CorrectionModal({ isOpen, invoiceId, onClose, onSuccess }: { isOpen: boolean; invoiceId: string; onClose: () => void; onSuccess: () => void }) {
   const [correction, setCorrection] = useState("");
 
   const correctionMutation = trpc.billing.correctionLetter.useMutation({
@@ -506,24 +486,15 @@ function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string;
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="correction-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Carta de Correção"
+      description="A carta de correção não pode alterar valores, quantidades ou dados do destinatário."
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="correction-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <FileEdit className="w-5 h-5 text-yellow-600" />
-          Carta de Correção
-        </h3>
-
-        <p className="text-sm text-theme-muted mb-4">
-          A carta de correção não pode alterar valores, quantidades ou dados do destinatário.
-        </p>
-
-        <div className="mb-4">
+      <div className="space-y-4">
+        <div>
           <label className="block text-sm font-medium text-theme-secondary mb-2">
             Texto da Correção (mínimo 15 caracteres)
           </label>
@@ -536,30 +507,29 @@ function CorrectionModal({ invoiceId, onClose, onSuccess }: { invoiceId: string;
         </div>
 
         {correctionMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {correctionMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
             onClick={() => correctionMutation.mutate({ id: invoiceId, correction })}
             disabled={correction.length < 15}
             isLoading={correctionMutation.isPending}
-            className="flex-1 bg-yellow-600 hover:bg-yellow-700"
           >
             Enviar Correção
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
-function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoiceId: string; totalValue: number; onClose: () => void; onSuccess: () => void }) {
+function ReceivablesModal({ isOpen, invoiceId, totalValue, onClose, onSuccess }: { isOpen: boolean; invoiceId: string; totalValue: number; onClose: () => void; onSuccess: () => void }) {
   const [installments, setInstallments] = useState(() => {
     const initialDate = new Date();
     initialDate.setDate(initialDate.getDate() + 30);
@@ -590,26 +560,20 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="receivables-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Gerar Títulos a Receber"
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="receivables-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-blue-600" />
-          Gerar Títulos a Receber
-        </h3>
-
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="text-sm text-blue-700">
+      <div className="space-y-4">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="text-sm text-blue-700 dark:text-blue-400">
             Valor total: <span className="font-bold">{formatCurrency(totalValue)}</span>
           </div>
         </div>
 
-        <div className="space-y-3 mb-4">
+        <div className="space-y-3">
           {installments.map((inst, index) => (
             <div key={index} className="flex items-center gap-3">
               <div className="flex-1">
@@ -641,7 +605,7 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
                   variant="ghost"
                   size="sm"
                   onClick={() => removeInstallment(index)}
-                  className="p-2 text-red-600 hover:bg-red-50 mt-4"
+                  className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 mt-4"
                 >
                   <XCircle className="w-5 h-5" />
                 </Button>
@@ -653,30 +617,29 @@ function ReceivablesModal({ invoiceId, totalValue, onClose, onSuccess }: { invoi
         <Button
           variant="outline"
           onClick={addInstallment}
-          className="w-full mb-4 border-dashed"
+          className="w-full border-dashed"
         >
           + Adicionar Parcela
         </Button>
 
         {generateMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {generateMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
             onClick={() => generateMutation.mutate({ invoiceId, installments })}
             isLoading={generateMutation.isPending}
-            className="flex-1"
           >
             Gerar Títulos
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
