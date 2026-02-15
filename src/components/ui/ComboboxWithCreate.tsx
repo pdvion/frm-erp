@@ -40,8 +40,10 @@ export function ComboboxWithCreate({
 }: ComboboxWithCreateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const selectedOption = options.find((o) => o.value === value);
 
@@ -56,6 +58,7 @@ export function ComboboxWithCreate({
       onChange?.(val);
       setIsOpen(false);
       setSearch("");
+      setFocusedIndex(-1);
     },
     [onChange]
   );
@@ -65,9 +68,77 @@ export function ComboboxWithCreate({
       e.stopPropagation();
       onChange?.("");
       setSearch("");
+      setFocusedIndex(-1);
     },
     [onChange]
   );
+
+  // Keyboard navigation: Arrow Up/Down, Enter, Escape
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!isOpen) {
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setIsOpen(true);
+        }
+        return;
+      }
+
+      const hasCreateButton = Boolean(onCreateClick);
+      // Total navigable items: filtered options + create button (if present)
+      const totalItems = filtered.length + (hasCreateButton ? 1 : 0);
+
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setFocusedIndex((prev) => (prev < totalItems - 1 ? prev + 1 : 0));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setFocusedIndex((prev) => (prev > 0 ? prev - 1 : totalItems - 1));
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (focusedIndex >= 0 && focusedIndex < filtered.length) {
+            handleSelect(filtered[focusedIndex].value);
+          } else if (hasCreateButton && focusedIndex === filtered.length) {
+            setIsOpen(false);
+            setSearch("");
+            setFocusedIndex(-1);
+            onCreateClick?.();
+          }
+          break;
+        case "Escape":
+          e.preventDefault();
+          setIsOpen(false);
+          setSearch("");
+          setFocusedIndex(-1);
+          break;
+        case "Home":
+          e.preventDefault();
+          setFocusedIndex(0);
+          break;
+        case "End":
+          e.preventDefault();
+          setFocusedIndex(totalItems - 1);
+          break;
+      }
+    },
+    [isOpen, filtered, focusedIndex, handleSelect, onCreateClick]
+  );
+
+  // Auto-scroll focused item into view
+  useEffect(() => {
+    if (focusedIndex >= 0 && listRef.current) {
+      const items = listRef.current.querySelectorAll("[role='option'], [data-create-button]");
+      items[focusedIndex]?.scrollIntoView({ block: "nearest" });
+    }
+  }, [focusedIndex]);
+
+  // Reset focused index when search changes
+  useEffect(() => {
+    setFocusedIndex(-1);
+  }, [search]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -77,6 +148,7 @@ export function ComboboxWithCreate({
       ) {
         setIsOpen(false);
         setSearch("");
+        setFocusedIndex(-1);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -90,7 +162,7 @@ export function ComboboxWithCreate({
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${className}`} onKeyDown={handleKeyDown}>
       <button
         type="button"
         id={id}
@@ -152,7 +224,7 @@ export function ComboboxWithCreate({
             />
           </div>
 
-          <ul role="listbox" className="max-h-48 overflow-y-auto py-1">
+          <ul ref={listRef} role="listbox" className="max-h-48 overflow-y-auto py-1" aria-activedescendant={focusedIndex >= 0 && focusedIndex < filtered.length ? `${id}-option-${focusedIndex}` : undefined}>
             {isLoading ? (
               <li className="px-3 py-2 text-sm text-theme-muted text-center">
                 Carregando...
@@ -162,17 +234,21 @@ export function ComboboxWithCreate({
                 Nenhum resultado encontrado
               </li>
             ) : (
-              filtered.map((option) => (
+              filtered.map((option, index) => (
                 <li
                   key={option.value}
+                  id={`${id}-option-${index}`}
                   role="option"
                   aria-selected={option.value === value}
                   onClick={() => handleSelect(option.value)}
+                  onMouseEnter={() => setFocusedIndex(index)}
                   className={`
                     flex items-center justify-between px-3 py-2 text-sm cursor-pointer transition-colors
                     ${option.value === value
                   ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                  : "text-theme hover:bg-theme-secondary"
+                  : index === focusedIndex
+                    ? "bg-theme-secondary text-theme"
+                    : "text-theme hover:bg-theme-secondary"
                 }
                   `}
                 >
@@ -189,12 +265,19 @@ export function ComboboxWithCreate({
             <div className="border-t border-theme px-1 py-1">
               <button
                 type="button"
+                data-create-button
                 onClick={() => {
                   setIsOpen(false);
                   setSearch("");
+                  setFocusedIndex(-1);
                   onCreateClick();
                 }}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-theme-secondary transition-colors"
+                onMouseEnter={() => setFocusedIndex(filtered.length)}
+                className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+                  focusedIndex === filtered.length
+                    ? "bg-theme-secondary text-blue-600 dark:text-blue-400"
+                    : "text-blue-600 dark:text-blue-400 hover:bg-theme-secondary"
+                }`}
               >
                 <Plus className="h-4 w-4" />
                 {createLabel}
