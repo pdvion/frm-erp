@@ -163,7 +163,8 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function SupplierPortalPage() {
   const params = useParams();
-  const token = params.token as string;
+  const rawToken = params.token;
+  const token = typeof rawToken === "string" ? rawToken : Array.isArray(rawToken) ? rawToken[0] : "";
 
   const [portalData, setPortalData] = useState<PortalData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -213,7 +214,7 @@ export default function SupplierPortalPage() {
     try {
       const res = await fetch(`/api/portal/supplier/${token}/quotes?limit=20`);
       if (res.ok) { const d = await res.json(); setQuotes(d.items); setQuotesTotal(d.total); }
-    } catch { /* ignore */ } finally { setQuotesLoading(false); }
+    } catch (e: unknown) { console.warn("Erro ao carregar cotações:", e instanceof Error ? e.message : String(e)); } finally { setQuotesLoading(false); }
   }, [token]);
 
   const loadQuoteDetail = useCallback(async (quoteId: string) => {
@@ -228,7 +229,7 @@ export default function SupplierPortalPage() {
         q.items.forEach((i) => { items[i.id] = { unitPrice: String(i.unitPrice || ""), deliveryDays: String(i.deliveryDays || "") }; });
         setResponseItems(items);
       }
-    } catch { /* ignore */ } finally { setQuoteDetailLoading(false); }
+    } catch (e: unknown) { console.warn("Erro ao carregar detalhe da cotação:", e instanceof Error ? e.message : String(e)); } finally { setQuoteDetailLoading(false); }
   }, [token]);
 
   const loadPurchaseOrders = useCallback(async () => {
@@ -236,7 +237,7 @@ export default function SupplierPortalPage() {
     try {
       const res = await fetch(`/api/portal/supplier/${token}/purchase-orders?limit=20`);
       if (res.ok) { const d = await res.json(); setPurchaseOrders(d.items); setPosTotal(d.total); }
-    } catch { /* ignore */ } finally { setPosLoading(false); }
+    } catch (e: unknown) { console.warn("Erro ao carregar pedidos de compra:", e instanceof Error ? e.message : String(e)); } finally { setPosLoading(false); }
   }, [token]);
 
   const loadPayables = useCallback(async () => {
@@ -244,7 +245,7 @@ export default function SupplierPortalPage() {
     try {
       const res = await fetch(`/api/portal/supplier/${token}/payables?limit=20`);
       if (res.ok) { const d = await res.json(); setPayables(d.items); setPayablesTotal(d.total); }
-    } catch { /* ignore */ } finally { setPayablesLoading(false); }
+    } catch (e: unknown) { console.warn("Erro ao carregar pagamentos:", e instanceof Error ? e.message : String(e)); } finally { setPayablesLoading(false); }
   }, [token]);
 
   useEffect(() => {
@@ -273,7 +274,7 @@ export default function SupplierPortalPage() {
         setResponding(false);
         loadQuotes();
       }
-    } catch { /* ignore */ } finally { setSubmitting(false); }
+    } catch (e: unknown) { console.warn("Erro ao enviar resposta:", e instanceof Error ? e.message : String(e)); } finally { setSubmitting(false); }
   };
 
   // ─── Loading / Error ────────────────────────────────────────────────────
