@@ -64,7 +64,7 @@ export default function AdmissionPage() {
         {/* Dashboard Cards */}
         {loadingDashboard ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
@@ -152,7 +152,7 @@ export default function AdmissionPage() {
           <div className="p-4">
             {loadingAdmissions ? (
               <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
               </div>
             ) : !admissions?.admissions.length ? (
               <div className="text-center py-12">

@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
-import Link from "next/link";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { trpc } from "@/lib/trpc";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
@@ -71,9 +71,9 @@ const examResultConfig: Record<string, { label: string; variant: "default" | "su
 };
 
 const docStatusStyles: Record<string, { bg: string; iconColor: string }> = {
-  VERIFIED: { bg: "bg-green-100 dark:bg-green-900/30", iconColor: "text-green-600" },
-  UPLOADED: { bg: "bg-blue-100 dark:bg-blue-900/30", iconColor: "text-blue-600" },
-  REJECTED: { bg: "bg-red-100 dark:bg-red-900/30", iconColor: "text-red-600" },
+  VERIFIED: { bg: "bg-green-100 dark:bg-green-900/30", iconColor: "text-green-600 dark:text-green-400" },
+  UPLOADED: { bg: "bg-blue-100 dark:bg-blue-900/30", iconColor: "text-blue-600 dark:text-blue-400" },
+  REJECTED: { bg: "bg-red-100 dark:bg-red-900/30", iconColor: "text-red-600 dark:text-red-400" },
   PENDING: { bg: "bg-theme-tertiary", iconColor: "text-theme-muted" },
 };
 
@@ -266,7 +266,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
       </div>
     );
   }
@@ -278,13 +278,13 @@ export default function AdmissionDetailPage({ params }: PageProps) {
         <div className="bg-theme-card rounded-lg border border-theme p-8 text-center">
           <UserPlus className="w-12 h-12 mx-auto text-theme-muted mb-4" />
           <p className="text-theme-muted mb-4">O processo de admissão solicitado não foi encontrado.</p>
-          <Link
+          <LinkButton
             href="/hr/admission"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            variant="primary"
+            leftIcon={<ArrowLeft className="w-4 h-4" />}
           >
-            <ArrowLeft className="w-4 h-4" />
             Voltar para lista
-          </Link>
+          </LinkButton>
         </div>
       </div>
     );
@@ -445,7 +445,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? "border-blue-600 text-blue-600"
+                  ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400"
                   : "border-transparent text-theme-muted hover:text-theme hover:border-theme"
               }`}
             >
@@ -518,7 +518,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
               <div className="space-y-3">
                 <div className="bg-theme-tertiary rounded-lg p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <FileText className="w-8 h-8 text-blue-600" />
+                    <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                     <div>
                       <p className="text-sm font-medium text-theme">Arquivo enviado</p>
                       <p className="text-xs text-theme-muted">
@@ -558,7 +558,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                 <label className="block text-sm font-medium text-theme mb-2">Upload do documento:</label>
                 <label className="flex flex-col items-center justify-center gap-2 px-4 py-8 border-2 border-dashed border-theme rounded-lg cursor-pointer hover:bg-theme-tertiary transition-colors">
                   {uploadingDocId === selectedDoc.id ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-theme-muted" />
                   ) : (
                     <>
                       <Upload className="w-8 h-8 text-theme-muted" />
@@ -692,7 +692,7 @@ function OverviewTab({ admission }: { admission: Record<string, unknown> & {
       {/* Dados Pessoais */}
       <div className="bg-theme-card rounded-lg border border-theme p-5">
         <h3 className="text-sm font-semibold text-theme mb-4 flex items-center gap-2">
-          <User className="w-4 h-4 text-blue-600" />
+          <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           Dados Pessoais
         </h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -711,7 +711,7 @@ function OverviewTab({ admission }: { admission: Record<string, unknown> & {
       {/* Endereço */}
       <div className="bg-theme-card rounded-lg border border-theme p-5">
         <h3 className="text-sm font-semibold text-theme mb-4 flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-green-600" />
+          <MapPin className="w-4 h-4 text-green-600 dark:text-green-400" />
           Endereço
         </h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -728,7 +728,7 @@ function OverviewTab({ admission }: { admission: Record<string, unknown> & {
       {/* Dados Contratuais */}
       <div className="bg-theme-card rounded-lg border border-theme p-5">
         <h3 className="text-sm font-semibold text-theme mb-4 flex items-center gap-2">
-          <FileText className="w-4 h-4 text-purple-600" />
+          <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           Dados Contratuais
         </h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -742,7 +742,7 @@ function OverviewTab({ admission }: { admission: Record<string, unknown> & {
       {/* Dados Bancários */}
       <div className="bg-theme-card rounded-lg border border-theme p-5">
         <h3 className="text-sm font-semibold text-theme mb-4 flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-orange-600" />
+          <CreditCard className="w-4 h-4 text-orange-600 dark:text-orange-400" />
           Dados Bancários
         </h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
