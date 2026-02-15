@@ -113,6 +113,13 @@
       "includes": ["admin", "audit"]
     },
     {
+      "id": "integracoes",
+      "label": "Integrações",
+      "icon": "ArrowDownUp",
+      "order": 16,
+      "includes": ["edi"]
+    },
+    {
       "id": "setup",
       "label": "Setup",
       "icon": "Rocket",
