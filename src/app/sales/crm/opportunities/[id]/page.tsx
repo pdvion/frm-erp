@@ -257,20 +257,21 @@ export default function OpportunityDetailPage() {
             {sortedStages
               .filter((s) => s.name !== opp.stage)
               .map((stage) => (
-                <button
+                <Button
                   key={stage.name}
+                  variant="ghost"
                   onClick={() => setSelectedStage(stage.name)}
-                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                  className={`w-full text-left p-3 rounded-lg border transition-colors h-auto ${
                     selectedStage === stage.name
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                       : "border-theme hover:border-blue-300"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between w-full">
                     <span className="text-sm font-medium text-theme">{stage.name}</span>
                     <span className="text-xs text-theme-muted">{stage.probability}%</span>
                   </div>
-                </button>
+                </Button>
               ))}
           </div>
         </div>

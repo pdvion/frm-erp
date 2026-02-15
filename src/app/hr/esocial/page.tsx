@@ -21,6 +21,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Select } from "@/components/ui/Select";
 import { Modal, ModalFooter } from "@/components/ui/Modal";
 import type { ESocialEventType } from "@/server/services/esocial";
@@ -208,13 +209,14 @@ export default function ESocialPage() {
         {tabs.map(tab => {
           const Icon = tab.icon;
           return (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               role="tab"
               aria-selected={activeTab === tab.id}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-none border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400"
                   : "border-transparent text-theme-secondary hover:text-theme-primary hover:border-gray-300 dark:hover:border-gray-600"
@@ -222,7 +224,7 @@ export default function ESocialPage() {
             >
               <Icon className="w-4 h-4" />
               {tab.label}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -510,9 +512,9 @@ function EventsTab(props: EventsTabProps) {
         <div className="space-y-2">
           {/* Select All */}
           <div className="flex items-center gap-2 px-4 py-2">
-            <button onClick={onSelectAllDraft} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            <Button variant="ghost" onClick={onSelectAllDraft} className="text-xs text-blue-600 dark:text-blue-400 hover:underline px-0 h-auto">
               Selecionar todos pendentes
-            </button>
+            </Button>
           </div>
 
           {events.map((event) => {
@@ -530,11 +532,10 @@ function EventsTab(props: EventsTabProps) {
                 <div className="flex items-center gap-3 p-4">
                   {/* Checkbox */}
                   {(status === "DRAFT" || status === "VALIDATED") && (
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={isSelected}
                       onChange={() => onToggleSelect(id)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      aria-label={`Selecionar evento ${eventType}`}
                     />
                   )}
 
@@ -563,22 +564,26 @@ function EventsTab(props: EventsTabProps) {
                   {/* Actions */}
                   <div className="flex items-center gap-1">
                     {status === "DRAFT" && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => onValidate(id)}
                         disabled={isValidating}
-                        className="p-1.5 rounded-md hover:bg-theme-secondary/10 text-blue-600 dark:text-blue-400"
-                        title="Validar"
+                        className="p-1.5 text-blue-600 dark:text-blue-400"
+                        aria-label="Validar"
                       >
                         <Shield className="w-4 h-4" />
-                      </button>
+                      </Button>
                     )}
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => onExpandEvent(isExpanded ? null : id)}
-                      className="p-1.5 rounded-md hover:bg-theme-secondary/10 text-theme-secondary"
-                      title="Ver XML"
+                      className="p-1.5 text-theme-secondary"
+                      aria-label="Ver XML"
                     >
                       {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -794,29 +799,21 @@ function ConfigTab({
         </div>
 
         <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
+          <Checkbox
             id="autoGen"
             checked={autoGen}
-            onChange={(e) => setAutoGen(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            onChange={(checked) => setAutoGen(checked)}
+            label="Gerar eventos automaticamente ao processar folha"
           />
-          <label htmlFor="autoGen" className="text-sm text-theme-primary">
-            Gerar eventos automaticamente ao processar folha
-          </label>
         </div>
 
         <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
+          <Checkbox
             id="autoSend"
             checked={autoSend}
-            onChange={(e) => setAutoSend(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            onChange={(checked) => setAutoSend(checked)}
+            label="Enviar lotes automaticamente após validação"
           />
-          <label htmlFor="autoSend" className="text-sm text-theme-primary">
-            Enviar lotes automaticamente após validação
-          </label>
         </div>
 
         <div className="pt-4 border-t border-theme">
@@ -937,15 +934,12 @@ function GenerateModal({
             <label className="block text-xs font-medium text-theme-secondary mb-2">Tipos de Evento</label>
             <div className="space-y-2">
               {eventOptions.map(opt => (
-                <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedTypes.has(opt.value)}
-                    onChange={() => toggleType(opt.value)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-theme-primary">{opt.label}</span>
-                </label>
+                <Checkbox
+                  key={opt.value}
+                  checked={selectedTypes.has(opt.value)}
+                  onChange={() => toggleType(opt.value)}
+                  label={opt.label}
+                />
               ))}
             </div>
           </div>

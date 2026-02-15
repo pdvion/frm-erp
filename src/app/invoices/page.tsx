@@ -81,11 +81,11 @@ export default function InvoicesPage() {
             const stat = stats?.find((s) => s.status === status);
             const isActive = statusFilter === status;
             return (
-              <button
+              <Button
                 key={status}
-                type="button"
+                variant="ghost"
                 onClick={() => setStatusFilter(isActive ? "" : status)}
-                className={`p-4 rounded-lg border text-left transition-colors ${
+                className={`p-4 rounded-lg border text-left transition-colors h-auto flex flex-col items-start ${
                   isActive
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500"
                     : "border-theme bg-theme-card hover:bg-theme-hover"
@@ -97,7 +97,7 @@ export default function InvoicesPage() {
                 </div>
                 <div className="text-2xl font-bold text-theme">{stat?.count ?? 0}</div>
                 <div className="text-sm text-theme-muted">{formatCurrency(stat?.total ?? 0)}</div>
-              </button>
+              </Button>
             );
           })}
         </div>

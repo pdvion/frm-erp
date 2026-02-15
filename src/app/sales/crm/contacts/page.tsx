@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Alert } from "@/components/ui/Alert";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Select } from "@/components/ui/Select";
 import {
   Users,
@@ -274,14 +275,12 @@ export default function ContactsPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="isPrimary"
               checked={formIsPrimary}
-              onChange={(e) => setFormIsPrimary(e.target.checked)}
-              className="rounded border-theme"
+              onChange={(checked) => setFormIsPrimary(checked)}
+              label="Contato principal"
             />
-            <label htmlFor="isPrimary" className="text-sm text-theme">Contato principal</label>
           </div>
         </div>
         <ModalFooter>

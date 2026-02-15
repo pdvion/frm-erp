@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Alert } from "@/components/ui/Alert";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
@@ -397,11 +398,9 @@ function CreateWebhookModal({
                 key={evt.value}
                 className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-theme-secondary cursor-pointer text-sm"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={selectedEvents.includes(evt.value)}
                   onChange={() => toggleEvent(evt.value)}
-                  className="rounded"
                 />
                 <span className="font-mono text-xs text-theme-muted">
                   {evt.value}

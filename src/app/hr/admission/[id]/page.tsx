@@ -440,10 +440,11 @@ export default function AdmissionDetailPage({ params }: PageProps) {
       <div className="border-b border-theme">
         <nav className="flex gap-1 -mb-px">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-none border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? "border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400"
                   : "border-transparent text-theme-muted hover:text-theme hover:border-theme"
@@ -456,7 +457,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                   {tab.count}
                 </span>
               )}
-            </button>
+            </Button>
           ))}
         </nav>
       </div>
@@ -543,6 +544,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                     <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-theme rounded-lg cursor-pointer hover:bg-theme-tertiary transition-colors">
                       <Upload className="w-5 h-5 text-theme-muted" />
                       <span className="text-sm text-theme-muted">Clique para selecionar</span>
+                      {/* eslint-disable-next-line react/forbid-elements -- hidden file input, no DS equivalent */}
                       <input
                         type="file"
                         className="hidden"
@@ -566,6 +568,7 @@ export default function AdmissionDetailPage({ params }: PageProps) {
                       <span className="text-xs text-theme-muted">PDF, JPEG, PNG, WebP — máx. 10MB</span>
                     </>
                   )}
+                  {/* eslint-disable-next-line react/forbid-elements -- hidden file input, no DS equivalent */}
                   <input
                     type="file"
                     className="hidden"
@@ -869,9 +872,10 @@ function DocumentRow({ doc, onClick }: {
   const cfg = docStatusConfig[doc.status] || docStatusConfig.PENDING;
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={onClick}
-      className="w-full flex items-center justify-between p-4 bg-theme-card rounded-lg border border-theme hover:bg-theme-hover transition-colors text-left group"
+      className="w-full flex items-center justify-between p-4 bg-theme-card rounded-lg border border-theme hover:bg-theme-hover transition-colors text-left group h-auto"
     >
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -895,7 +899,7 @@ function DocumentRow({ doc, onClick }: {
         </Badge>
         <ChevronRight className="w-4 h-4 text-theme-muted group-hover:text-theme transition-colors" />
       </div>
-    </button>
+    </Button>
   );
 }
 
