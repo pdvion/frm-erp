@@ -116,7 +116,7 @@ export default function AssetDetailPage() {
         icon={<Building className="w-6 h-6" />}
         backHref="/assets"
         module="financeiro"
-        badge={{ label: st.label, color: st.variant === "success" ? "text-green-700" : st.variant === "error" ? "text-red-700" : st.variant === "warning" ? "text-yellow-700" : "text-gray-700", bgColor: st.variant === "success" ? "bg-green-100" : st.variant === "error" ? "bg-red-100" : st.variant === "warning" ? "bg-yellow-100" : "bg-gray-100" }}
+        badge={{ label: st.label, variant: st.variant }}
         actions={
           asset.status === "ACTIVE" ? (
             <div className="flex items-center gap-2">

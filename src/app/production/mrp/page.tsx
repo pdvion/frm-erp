@@ -24,20 +24,20 @@ import {
   FileText,
   RefreshCw,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
-  CONVERTED: { label: "Convertida", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <FileText className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovada", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  CONVERTED: { label: "Convertida", variant: "info", icon: <FileText className="w-4 h-4" /> },
 };
 
-const typeConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PRODUCTION: { label: "Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Factory className="w-4 h-4" /> },
-  PURCHASE: { label: "Compra", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <ShoppingCart className="w-4 h-4" /> },
-  RESCHEDULE: { label: "Reprogramar", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Calendar className="w-4 h-4" /> },
-  CANCEL: { label: "Cancelar", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+const typeConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PRODUCTION: { label: "Produção", variant: "purple", icon: <Factory className="w-4 h-4" /> },
+  PURCHASE: { label: "Compra", variant: "info", icon: <ShoppingCart className="w-4 h-4" /> },
+  RESCHEDULE: { label: "Reprogramar", variant: "orange", icon: <Calendar className="w-4 h-4" /> },
+  CANCEL: { label: "Cancelar", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function MrpPage() {
@@ -322,7 +322,7 @@ export default function MrpPage() {
                       return (
                         <tr key={suggestion.id} className="border-b border-theme hover:bg-theme-hover">
                           <td className="py-3 px-3">
-                            <Badge variant={colorToVariant(typeInfo.color)}>
+                            <Badge variant={typeInfo.variant}>
                               {typeInfo.icon}
                               {typeInfo.label}
                             </Badge>
@@ -337,7 +337,7 @@ export default function MrpPage() {
                           <td className="py-3 px-3 text-sm">{formatDate(suggestion.suggestedDate)}</td>
                           <td className="py-3 px-3 text-sm">{formatDate(suggestion.requiredDate)}</td>
                           <td className="py-3 px-3">
-                            <Badge variant={colorToVariant(statusInfo.color)}>
+                            <Badge variant={statusInfo.variant}>
                               {statusInfo.icon}
                               {statusInfo.label}
                             </Badge>

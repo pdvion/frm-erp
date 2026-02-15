@@ -21,12 +21,12 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  INACTIVE: { label: "Inativo", color: "bg-theme-tertiary text-theme-secondary" },
-  BLOCKED: { label: "Bloqueado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  ACTIVE: { label: "Ativo", variant: "success" },
+  INACTIVE: { label: "Inativo", variant: "default" },
+  BLOCKED: { label: "Bloqueado", variant: "error" },
 };
 
 export default function CustomersPage() {
@@ -177,7 +177,7 @@ export default function CustomersPage() {
                             {customer._count.receivables}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(config.color)}>
+                            <Badge variant={config.variant}>
                               {config.label}
                             </Badge>
                           </td>

@@ -12,7 +12,7 @@ import {
   ArrowRightLeft,
   FolderTree,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 const typeLabels: Record<string, string> = {
   WAREHOUSE: "Almoxarifado",
@@ -25,15 +25,15 @@ const typeLabels: Record<string, string> = {
   RECEIVING: "Recebimento",
 };
 
-const typeColors: Record<string, string> = {
-  WAREHOUSE: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  SHELF: "bg-theme-tertiary text-theme",
-  BIN: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-  ZONE: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  PRODUCTION: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
-  QUARANTINE: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-  SHIPPING: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
-  RECEIVING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+const typeVariants: Record<string, BadgeVariant> = {
+  WAREHOUSE: "info",
+  SHELF: "default",
+  BIN: "purple",
+  ZONE: "success",
+  PRODUCTION: "orange",
+  QUARANTINE: "error",
+  SHIPPING: "cyan",
+  RECEIVING: "warning",
 };
 
 export default function LocationsPage() {
@@ -129,7 +129,7 @@ export default function LocationsPage() {
                       <td className="px-4 py-3 font-medium text-theme">{loc.code}</td>
                       <td className="px-4 py-3 text-sm text-theme-secondary">{loc.name}</td>
                       <td className="px-4 py-3 text-center">
-                        <Badge variant={colorToVariant(typeColors[loc.type] || "")}>
+                        <Badge variant={typeVariants[loc.type] || "default"}>
                           {typeLabels[loc.type] || loc.type}
                         </Badge>
                       </td>

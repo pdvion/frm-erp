@@ -22,15 +22,15 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type ScheduleStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FAILED";
 
-const statusConfig: Record<ScheduleStatus, { label: string; color: string; icon: typeof Clock }> = {
-  SCHEDULED: { label: "Agendado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Clock },
-  COMPLETED: { label: "Executado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme", icon: XCircle },
-  FAILED: { label: "Falhou", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: AlertTriangle },
+const statusConfig: Record<ScheduleStatus, { label: string; variant: BadgeVariant; icon: typeof Clock }> = {
+  SCHEDULED: { label: "Agendado", variant: "info", icon: Clock },
+  COMPLETED: { label: "Executado", variant: "success", icon: CheckCircle },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: XCircle },
+  FAILED: { label: "Falhou", variant: "error", icon: AlertTriangle },
 };
 
 export default function PixSchedulesPage() {
@@ -241,7 +241,7 @@ export default function PixSchedulesPage() {
                           <p className="font-medium text-theme">{formatCurrency(schedule.value)}</p>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <Badge variant={colorToVariant(status.color)}>
+                          <Badge variant={status.variant}>
                             <StatusIcon className="w-3 h-3" />
                             {status.label}
                           </Badge>

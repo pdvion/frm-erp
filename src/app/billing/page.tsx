@@ -28,13 +28,13 @@ import {
   AlertTriangle,
   FileCheck,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  DRAFT: { label: "Rascunho", color: "bg-theme-tertiary text-theme", icon: <Clock className="w-4 h-4" /> },
-  AUTHORIZED: { label: "Autorizada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  DENIED: { label: "Denegada", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  DRAFT: { label: "Rascunho", variant: "default", icon: <Clock className="w-4 h-4" /> },
+  AUTHORIZED: { label: "Autorizada", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  DENIED: { label: "Denegada", variant: "orange", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
 export default function BillingPage() {
@@ -141,7 +141,7 @@ export default function BillingPage() {
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
+                  <Badge variant={config.variant}>{config.icon}</Badge>
                   <span className="text-sm font-medium">{config.label}</span>
                 </div>
                 <div className="text-2xl font-bold">{count}</div>
@@ -266,7 +266,7 @@ export default function BillingPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <Badge variant={colorToVariant(config.color)}>
+                            <Badge variant={config.variant}>
                               {config.icon}
                               {config.label}
                             </Badge>

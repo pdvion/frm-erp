@@ -23,14 +23,14 @@ import {
   Package,
   Eye,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  VALIDATED: { label: "Validado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  APPROVED: { label: "Aprovado", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  VALIDATED: { label: "Validado", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  APPROVED: { label: "Aprovado", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function InvoicesPage() {
@@ -92,7 +92,7 @@ export default function InvoicesPage() {
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
+                  <Badge variant={config.variant}>{config.icon}</Badge>
                   <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                 </div>
                 <div className="text-2xl font-bold text-theme">{stat?.count ?? 0}</div>
@@ -217,7 +217,7 @@ export default function InvoicesPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center">
-                            <Badge variant={colorToVariant(config.color)}>
+                            <Badge variant={config.variant}>
                               {config.icon}
                               {config.label}
                             </Badge>

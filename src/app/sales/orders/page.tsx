@@ -25,16 +25,16 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  CONFIRMED: { label: "Confirmado", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_PRODUCTION: { label: "Em Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Factory className="w-4 h-4" /> },
-  READY: { label: "Pronto", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400", icon: <Package className="w-4 h-4" /> },
-  SHIPPED: { label: "Enviado", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <Truck className="w-4 h-4" /> },
-  DELIVERED: { label: "Entregue", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  CONFIRMED: { label: "Confirmado", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_PRODUCTION: { label: "Em Produção", variant: "purple", icon: <Factory className="w-4 h-4" /> },
+  READY: { label: "Pronto", variant: "indigo", icon: <Package className="w-4 h-4" /> },
+  SHIPPED: { label: "Enviado", variant: "orange", icon: <Truck className="w-4 h-4" /> },
+  DELIVERED: { label: "Entregue", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function SalesOrdersPage() {
@@ -180,7 +180,7 @@ export default function SalesOrdersPage() {
                             {formatCurrency(order.totalValue)}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(config.color)}>
+                            <Badge variant={config.variant}>
                               {config.icon}
                               {config.label}
                             </Badge>

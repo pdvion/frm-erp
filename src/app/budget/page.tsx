@@ -19,39 +19,39 @@ import {
   BarChart3,
   FileText,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: string;
 };
 
 function StatusBadge({ status }: StatusBadgeProps) {
-  const config: Record<string, { color: string; label: string }> = {
-    OK: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "OK" },
-    WARNING: { color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", label: "Atenção" },
-    EXCEEDED: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Excedido" },
+  const config: Record<string, { variant: BadgeVariant; label: string }> = {
+    OK: { variant: "success", label: "OK" },
+    WARNING: { variant: "warning", label: "Atenção" },
+    EXCEEDED: { variant: "error", label: "Excedido" },
   };
 
-  const { color, label } = config[status] || config.OK;
+  const { variant, label } = config[status] || config.OK;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );
 }
 
 function VersionStatusBadge({ status }: { status: string }) {
-  const config: Record<string, { color: string; label: string }> = {
-    DRAFT: { color: "bg-theme-tertiary text-theme", label: "Rascunho" },
-    APPROVED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Aprovado" },
-    LOCKED: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Bloqueado" },
+  const config: Record<string, { variant: BadgeVariant; label: string }> = {
+    DRAFT: { variant: "default", label: "Rascunho" },
+    APPROVED: { variant: "success", label: "Aprovado" },
+    LOCKED: { variant: "info", label: "Bloqueado" },
   };
 
-  const { color, label } = config[status] || config.DRAFT;
+  const { variant, label } = config[status] || config.DRAFT;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );

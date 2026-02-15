@@ -25,17 +25,17 @@ import { formatDate, formatDateTime } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 const actionConfig = {
-  CREATE: { label: "Criação", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: Plus },
-  UPDATE: { label: "Atualização", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: Pencil },
-  DELETE: { label: "Exclusão", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: Trash2 },
-  VIEW: { label: "Visualização", color: "bg-theme-tertiary text-theme", icon: Eye },
-  LOGIN: { label: "Login", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: LogIn },
-  LOGOUT: { label: "Logout", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: LogOut },
-  EXPORT: { label: "Exportação", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: Download },
-  IMPORT: { label: "Importação", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: Upload },
+  CREATE: { label: "Criação", variant: "success" as BadgeVariant, icon: Plus },
+  UPDATE: { label: "Atualização", variant: "info" as BadgeVariant, icon: Pencil },
+  DELETE: { label: "Exclusão", variant: "error" as BadgeVariant, icon: Trash2 },
+  VIEW: { label: "Visualização", variant: "default" as BadgeVariant, icon: Eye },
+  LOGIN: { label: "Login", variant: "purple" as BadgeVariant, icon: LogIn },
+  LOGOUT: { label: "Logout", variant: "purple" as BadgeVariant, icon: LogOut },
+  EXPORT: { label: "Exportação", variant: "orange" as BadgeVariant, icon: Download },
+  IMPORT: { label: "Importação", variant: "orange" as BadgeVariant, icon: Upload },
 };
 
 const entityTypeLabels: Record<string, string> = {
@@ -231,7 +231,7 @@ export default function AuditPage() {
                                 </div>
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
-                                <Badge variant={colorToVariant(config?.color ?? "")}>
+                                <Badge variant={config?.variant ?? "default"}>
                                   <Icon className="w-3.5 h-3.5" />
                                   {config?.label ?? log.action}
                                 </Badge>
@@ -325,7 +325,7 @@ export default function AuditPage() {
                     <div>
                       <dt className="text-xs text-theme-muted uppercase">Ação</dt>
                       <dd className="text-sm">
-                        <Badge variant={colorToVariant(actionConfig[logDetail.action as keyof typeof actionConfig]?.color)}>
+                        <Badge variant={actionConfig[logDetail.action as keyof typeof actionConfig]?.variant ?? "default"}>
                           {actionConfig[logDetail.action as keyof typeof actionConfig]?.label || logDetail.action}
                         </Badge>
                       </dd>

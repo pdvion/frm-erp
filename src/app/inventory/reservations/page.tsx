@@ -20,13 +20,13 @@ import {
   Trash2,
   Play,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  ACTIVE: { label: "Ativa", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <Clock className="w-4 h-4" /> },
-  CONSUMED: { label: "Consumida", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  RELEASED: { label: "Liberada", color: "bg-theme-tertiary text-theme", icon: <XCircle className="w-4 h-4" /> },
-  EXPIRED: { label: "Expirada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: <AlertTriangle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  ACTIVE: { label: "Ativa", variant: "info", icon: <Clock className="w-4 h-4" /> },
+  CONSUMED: { label: "Consumida", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  RELEASED: { label: "Liberada", variant: "default", icon: <XCircle className="w-4 h-4" /> },
+  EXPIRED: { label: "Expirada", variant: "error", icon: <AlertTriangle className="w-4 h-4" /> },
 };
 
 const documentTypeLabels: Record<string, string> = {
@@ -221,7 +221,7 @@ export default function ReservationsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <Badge variant={colorToVariant(config.color)}>
+                          <Badge variant={config.variant}>
                             {config.icon}
                             {config.label}
                           </Badge>

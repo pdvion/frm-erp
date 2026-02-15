@@ -31,15 +31,15 @@ import {
   Shield,
   Calendar,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: <Clock className="w-4 h-4" /> },
-  ACCEPTED: { label: "Aceita", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <User className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Andamento", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Play className="w-4 h-4" /> },
-  ON_HOLD: { label: "Em Espera", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", icon: <AlertTriangle className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-theme-tertiary text-theme-muted", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  ACCEPTED: { label: "Aceita", variant: "info", icon: <User className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Andamento", variant: "purple", icon: <Play className="w-4 h-4" /> },
+  ON_HOLD: { label: "Em Espera", variant: "orange", icon: <AlertTriangle className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluída", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const priorityConfig: Record<string, { label: string; color: string }> = {
@@ -390,7 +390,7 @@ export default function TasksPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <Badge variant={colorToVariant(status.color)}>
+                        <Badge variant={status.variant}>
                           {status.icon}
                           {status.label}
                         </Badge>

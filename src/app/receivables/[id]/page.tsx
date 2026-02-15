@@ -19,15 +19,15 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  PENDING: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100" },
-  PARTIAL: { label: "Parcialmente Recebido", color: "text-blue-800", bgColor: "bg-blue-100" },
-  PAID: { label: "Recebido", color: "text-green-800", bgColor: "bg-green-100" },
-  OVERDUE: { label: "Vencido", color: "text-red-800", bgColor: "bg-red-100" },
-  CANCELLED: { label: "Cancelado", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
-  WRITTEN_OFF: { label: "Baixado", color: "text-theme-secondary", bgColor: "bg-theme-tertiary" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  PENDING: { label: "Pendente", variant: "warning" },
+  PARTIAL: { label: "Parcialmente Recebido", variant: "info" },
+  PAID: { label: "Recebido", variant: "success" },
+  OVERDUE: { label: "Vencido", variant: "error" },
+  CANCELLED: { label: "Cancelado", variant: "default" },
+  WRITTEN_OFF: { label: "Baixado", variant: "default" },
 };
 
 export default function ReceivableDetailPage() {
@@ -116,7 +116,7 @@ export default function ReceivableDetailPage() {
             {/* Status Card */}
             <div className="bg-theme-card rounded-lg border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <Badge variant={colorToVariant(config.color)}>
+                <Badge variant={config.variant}>
                   {config.label}
                 </Badge>
                 {receivable.documentNumber && (

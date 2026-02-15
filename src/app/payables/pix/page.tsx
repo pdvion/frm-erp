@@ -24,16 +24,16 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { LinkButton } from "@/components/ui/LinkButton";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type PixStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
 
-const statusConfig: Record<PixStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: Clock },
-  PROCESSING: { label: "Processando", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: RefreshCw },
-  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle },
-  FAILED: { label: "Falhou", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: AlertTriangle },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme", icon: AlertTriangle },
+const statusConfig: Record<PixStatus, { label: string; variant: BadgeVariant; icon: typeof CheckCircle }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: Clock },
+  PROCESSING: { label: "Processando", variant: "info", icon: RefreshCw },
+  COMPLETED: { label: "Concluído", variant: "success", icon: CheckCircle },
+  FAILED: { label: "Falhou", variant: "error", icon: AlertTriangle },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: AlertTriangle },
 };
 
 export default function PixPage() {
@@ -294,7 +294,7 @@ export default function PixPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-center">
-                            <Badge variant={colorToVariant(statusInfo.color)}>
+                            <Badge variant={statusInfo.variant}>
                               <StatusIcon className="w-3 h-3" />
                               {statusInfo.label}
                             </Badge>

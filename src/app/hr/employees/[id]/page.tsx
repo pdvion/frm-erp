@@ -22,14 +22,14 @@ import {
   User,
   FileText,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  ACTIVE: { label: "Ativo", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  VACATION: { label: "Férias", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  LEAVE: { label: "Afastado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  SUSPENDED: { label: "Suspenso", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
-  TERMINATED: { label: "Desligado", color: "bg-theme-tertiary text-theme-secondary" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  ACTIVE: { label: "Ativo", variant: "success" },
+  VACATION: { label: "Férias", variant: "info" },
+  LEAVE: { label: "Afastado", variant: "warning" },
+  SUSPENDED: { label: "Suspenso", variant: "orange" },
+  TERMINATED: { label: "Desligado", variant: "default" },
 };
 
 const contractLabels: Record<string, string> = {
@@ -111,7 +111,7 @@ export default function EmployeeDetailsPage({ params }: PageProps) {
 
       {/* Status Badge and Company */}
       <div className="flex items-center gap-4 flex-wrap">
-        <Badge variant={colorToVariant(config.color)}>
+        <Badge variant={config.variant}>
           {config.label}
         </Badge>
         <span className="text-theme-muted">

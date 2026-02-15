@@ -27,14 +27,15 @@ import {
   Hash,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import type { BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: <Clock className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Conferência", color: "bg-blue-100 text-blue-800 border-blue-200", icon: <Package className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluído", color: "bg-green-100 text-green-800 border-green-200", icon: <CheckCircle className="w-4 h-4" /> },
-  PARTIAL: { label: "Parcial", color: "bg-orange-100 text-orange-800 border-orange-200", icon: <AlertTriangle className="w-4 h-4" /> },
-  REJECTED: { label: "Rejeitado", color: "bg-red-100 text-red-800 border-red-200", icon: <XCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelado", color: "bg-theme-tertiary text-theme border-theme", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: <Clock className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Conferência", variant: "info", icon: <Package className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluído", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  PARTIAL: { label: "Parcial", variant: "orange", icon: <AlertTriangle className="w-4 h-4" /> },
+  REJECTED: { label: "Rejeitado", variant: "error", icon: <XCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelado", variant: "default", icon: <XCircle className="w-4 h-4" /> },
 };
 
 interface ItemConference {
@@ -142,7 +143,7 @@ export default function ReceivingDetailPage() {
         icon={<Package className="w-6 h-6" />}
         backHref="/receiving"
         module="receiving"
-        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           <div className="flex items-center gap-4">
             <Link

@@ -28,14 +28,14 @@ import {
   Cpu,
   Calculator,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PLANNED: { label: "Planejada", color: "bg-theme-tertiary text-theme-secondary", icon: <Clock className="w-4 h-4" /> },
-  RELEASED: { label: "Liberada", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: <CheckCircle className="w-4 h-4" /> },
-  IN_PROGRESS: { label: "Em Produção", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400", icon: <Play className="w-4 h-4" /> },
-  COMPLETED: { label: "Concluída", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: <CheckCircle className="w-4 h-4" /> },
-  CANCELLED: { label: "Cancelada", color: "bg-red-100 text-red-500", icon: <XCircle className="w-4 h-4" /> },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
+  PLANNED: { label: "Planejada", variant: "default", icon: <Clock className="w-4 h-4" /> },
+  RELEASED: { label: "Liberada", variant: "info", icon: <CheckCircle className="w-4 h-4" /> },
+  IN_PROGRESS: { label: "Em Produção", variant: "purple", icon: <Play className="w-4 h-4" /> },
+  COMPLETED: { label: "Concluída", variant: "success", icon: <CheckCircle className="w-4 h-4" /> },
+  CANCELLED: { label: "Cancelada", variant: "error", icon: <XCircle className="w-4 h-4" /> },
 };
 
 const priorityConfig: Record<number, { label: string; color: string }> = {
@@ -142,7 +142,7 @@ export default function ProductionPage() {
               return (
                 <div key={s.status} className="bg-theme-card rounded-lg border border-theme p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`p-1 rounded ${config.color}`}>{config.icon}</span>
+                    <Badge variant={config.variant}>{config.icon}</Badge>
                     <span className="text-sm font-medium text-theme-secondary">{config.label}</span>
                   </div>
                   <div className="text-2xl font-bold text-theme">{s.count}</div>
@@ -331,7 +331,7 @@ export default function ProductionPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant={colorToVariant(statusCfg.color)}>
+                            <Badge variant={statusCfg.variant}>
                               {statusCfg.icon}
                               {statusCfg.label}
                             </Badge>

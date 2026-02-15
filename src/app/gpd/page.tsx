@@ -20,7 +20,7 @@ import {
   Flag,
   Activity,
 } from "lucide-react";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type StatusBadgeProps = {
   status: "BELOW" | "ON_TARGET" | "ABOVE";
@@ -28,15 +28,15 @@ type StatusBadgeProps = {
 
 function StatusBadge({ status }: StatusBadgeProps) {
   const config = {
-    BELOW: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: TrendingDown, label: "Abaixo" },
-    ON_TARGET: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle, label: "Na Meta" },
-    ABOVE: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: TrendingUp, label: "Acima" },
+    BELOW: { variant: "error" as BadgeVariant, icon: TrendingDown, label: "Abaixo" },
+    ON_TARGET: { variant: "success" as BadgeVariant, icon: CheckCircle, label: "Na Meta" },
+    ABOVE: { variant: "info" as BadgeVariant, icon: TrendingUp, label: "Acima" },
   };
 
-  const { color, icon: Icon, label } = config[status];
+  const { variant, icon: Icon, label } = config[status];
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       <Icon className="h-3 w-3" />
       {label}
     </Badge>
@@ -44,17 +44,17 @@ function StatusBadge({ status }: StatusBadgeProps) {
 }
 
 function PriorityBadge({ priority }: { priority: number }) {
-  const config: Record<number, { color: string; label: string }> = {
-    1: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
-    2: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
-    3: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
-    4: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
+  const config: Record<number, { variant: BadgeVariant; label: string }> = {
+    1: { variant: "error", label: "Urgente" },
+    2: { variant: "orange", label: "Alta" },
+    3: { variant: "info", label: "Normal" },
+    4: { variant: "default", label: "Baixa" },
   };
 
-  const { color, label } = config[priority] || config[3];
+  const { variant, label } = config[priority] || config[3];
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );

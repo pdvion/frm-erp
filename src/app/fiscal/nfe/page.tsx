@@ -21,15 +21,15 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type NFeStatus = "PENDING" | "APPROVED" | "REJECTED" | "PROCESSING";
 
-const statusConfig: Record<NFeStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
-  PENDING: { label: "Pendente", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", icon: Clock },
-  APPROVED: { label: "Aprovada", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle },
-  REJECTED: { label: "Rejeitada", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", icon: XCircle },
-  PROCESSING: { label: "Processando", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", icon: AlertTriangle },
+const statusConfig: Record<NFeStatus, { label: string; variant: BadgeVariant; icon: typeof CheckCircle }> = {
+  PENDING: { label: "Pendente", variant: "warning", icon: Clock },
+  APPROVED: { label: "Aprovada", variant: "success", icon: CheckCircle },
+  REJECTED: { label: "Rejeitada", variant: "error", icon: XCircle },
+  PROCESSING: { label: "Processando", variant: "info", icon: AlertTriangle },
 };
 
 export default function NFePage() {
@@ -227,7 +227,7 @@ export default function NFePage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-center">
-                            <Badge variant={colorToVariant(statusInfo.color)}>
+                            <Badge variant={statusInfo.variant}>
                               <StatusIcon className="w-3 h-3" />
                               {statusInfo.label}
                             </Badge>

@@ -107,7 +107,7 @@ export default function CustomerDetailPage() {
         icon={<Building2 className="w-6 h-6" />}
         backHref="/customers"
         breadcrumbs={breadcrumbs}
-        badge={customer.isShared ? { label: "Compartilhado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/50" } : undefined}
+        badge={customer.isShared ? { label: "Compartilhado", variant: "purple" as const } : undefined}
         actions={
           <LinkButton
             href={`/customers/${customerId}/edit`}

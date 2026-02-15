@@ -27,17 +27,17 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 type BoletoStatus = "PENDENTE" | "APROVADO" | "REJEITADO" | "PAGO" | "VENCIDO" | "CANCELADO";
 
-const statusConfig: Record<BoletoStatus, { label: string; color: string; bgColor: string; icon: React.ElementType }> = {
-  PENDENTE: { label: "Pendente", color: "text-yellow-800", bgColor: "bg-yellow-100", icon: Clock },
-  APROVADO: { label: "Aprovado", color: "text-blue-800", bgColor: "bg-blue-100", icon: Check },
-  REJEITADO: { label: "Rejeitado", color: "text-red-800", bgColor: "bg-red-100", icon: X },
-  PAGO: { label: "Pago", color: "text-green-800", bgColor: "bg-green-100", icon: DollarSign },
-  VENCIDO: { label: "Vencido", color: "text-orange-800", bgColor: "bg-orange-100", icon: AlertTriangle },
-  CANCELADO: { label: "Cancelado", color: "text-theme", bgColor: "bg-theme-tertiary", icon: X },
+const statusConfig: Record<BoletoStatus, { label: string; variant: BadgeVariant; icon: React.ElementType }> = {
+  PENDENTE: { label: "Pendente", variant: "warning", icon: Clock },
+  APROVADO: { label: "Aprovado", variant: "info", icon: Check },
+  REJEITADO: { label: "Rejeitado", variant: "error", icon: X },
+  PAGO: { label: "Pago", variant: "success", icon: DollarSign },
+  VENCIDO: { label: "Vencido", variant: "orange", icon: AlertTriangle },
+  CANCELADO: { label: "Cancelado", variant: "default", icon: X },
 };
 
 export default function DdaPage() {
@@ -271,7 +271,7 @@ export default function DdaPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <Badge variant={colorToVariant(status.color)}>
+                        <Badge variant={status.variant}>
                           <StatusIcon className="h-3 w-3" />
                           {status.label}
                         </Badge>

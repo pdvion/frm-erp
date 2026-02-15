@@ -94,7 +94,7 @@ export default function SupplierDetailPage() {
         icon={<Users className="w-6 h-6" />}
         backHref="/suppliers"
         breadcrumbs={breadcrumbs}
-        badge={supplier.isShared ? { label: "Compartilhado", color: "text-purple-700 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/50" } : undefined}
+        badge={supplier.isShared ? { label: "Compartilhado", variant: "purple" as const } : undefined}
         actions={
           <LinkButton
             href={`/suppliers/${supplierId}/edit`}

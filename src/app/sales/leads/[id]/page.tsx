@@ -27,15 +27,16 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { NativeSelect } from "@/components/ui/NativeSelect";
+import type { BadgeVariant } from "@/components/ui/Badge";
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  NEW: { label: "Novo", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" },
-  CONTACTED: { label: "Contatado", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  QUALIFIED: { label: "Qualificado", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400" },
-  PROPOSAL: { label: "Proposta", color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400" },
-  NEGOTIATION: { label: "Negociação", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" },
-  WON: { label: "Ganho", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-  LOST: { label: "Perdido", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+const statusConfig: Record<string, { label: string; variant: BadgeVariant }> = {
+  NEW: { label: "Novo", variant: "info" },
+  CONTACTED: { label: "Contatado", variant: "warning" },
+  QUALIFIED: { label: "Qualificado", variant: "purple" },
+  PROPOSAL: { label: "Proposta", variant: "indigo" },
+  NEGOTIATION: { label: "Negociação", variant: "orange" },
+  WON: { label: "Ganho", variant: "success" },
+  LOST: { label: "Perdido", variant: "error" },
 };
 
 const sourceLabels: Record<string, string> = {
@@ -147,7 +148,7 @@ export default function LeadDetailPage() {
         icon={<Users className="w-6 h-6" />}
         backHref="/sales/leads"
         module="sales"
-        badge={{ label: config.label, color: config.color.split(" ")[1], bgColor: config.color.split(" ")[0] }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           <div className="flex items-center gap-2">
             {!lead.customerId && lead.status !== "LOST" && (

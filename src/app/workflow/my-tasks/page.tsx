@@ -16,21 +16,21 @@ import {
   Eye,
 } from "lucide-react";
 import { NativeSelect } from "@/components/ui/NativeSelect";
-import { Badge, colorToVariant } from "@/components/ui/Badge";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 function StatusBadge({ status }: { status: string }) {
-  const config: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
-    PENDING: { color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
-    ACCEPTED: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Aceita", icon: <Play className="h-3 w-3" /> },
-    IN_PROGRESS: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
-    COMPLETED: { color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400", label: "Concluída", icon: <CheckCircle className="h-3 w-3" /> },
-    CANCELLED: { color: "bg-theme-tertiary text-theme", label: "Cancelada", icon: <XCircle className="h-3 w-3" /> },
+  const config: Record<string, { variant: BadgeVariant; label: string; icon: React.ReactNode }> = {
+    PENDING: { variant: "warning", label: "Pendente", icon: <Clock className="h-3 w-3" /> },
+    ACCEPTED: { variant: "info", label: "Aceita", icon: <Play className="h-3 w-3" /> },
+    IN_PROGRESS: { variant: "info", label: "Em Andamento", icon: <Play className="h-3 w-3" /> },
+    COMPLETED: { variant: "success", label: "Concluída", icon: <CheckCircle className="h-3 w-3" /> },
+    CANCELLED: { variant: "default", label: "Cancelada", icon: <XCircle className="h-3 w-3" /> },
   };
 
-  const { color, label, icon } = config[status] || config.PENDING;
+  const { variant, label, icon } = config[status] || config.PENDING;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {icon}
       {label}
     </Badge>
@@ -38,17 +38,17 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function PriorityBadge({ priority }: { priority: string }) {
-  const config: Record<string, { color: string; label: string }> = {
-    URGENT: { color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400", label: "Urgente" },
-    HIGH: { color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400", label: "Alta" },
-    NORMAL: { color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400", label: "Normal" },
-    LOW: { color: "bg-theme-tertiary text-theme", label: "Baixa" },
+  const config: Record<string, { variant: BadgeVariant; label: string }> = {
+    URGENT: { variant: "error", label: "Urgente" },
+    HIGH: { variant: "orange", label: "Alta" },
+    NORMAL: { variant: "info", label: "Normal" },
+    LOW: { variant: "default", label: "Baixa" },
   };
 
-  const { color, label } = config[priority] || config.NORMAL;
+  const { variant, label } = config[priority] || config.NORMAL;
 
   return (
-    <Badge variant={colorToVariant(color)}>
+    <Badge variant={variant}>
       {label}
     </Badge>
   );

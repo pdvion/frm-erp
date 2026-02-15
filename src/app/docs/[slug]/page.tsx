@@ -55,7 +55,7 @@ export default function TutorialPage() {
         icon={<BookOpen className="w-6 h-6" />}
         backHref="/docs"
         module="docs"
-        badge={tutorial.module ? { label: tutorial.module, color: "text-blue-700", bgColor: "bg-blue-100" } : undefined}
+        badge={tutorial.module ? { label: tutorial.module, variant: "info" as const } : undefined}
       />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

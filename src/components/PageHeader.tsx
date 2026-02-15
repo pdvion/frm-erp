@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronLeft, BookOpen } from "lucide-react";
 import { HelpButton } from "@/components/HelpButton";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/Breadcrumbs";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 import { ReactNode } from "react";
 
 interface PageHeaderProps {
@@ -16,8 +17,7 @@ interface PageHeaderProps {
   breadcrumbs?: BreadcrumbItem[];
   badge?: {
     label: string;
-    color: string;
-    bgColor: string;
+    variant: BadgeVariant;
   };
   children?: ReactNode;
   actions?: ReactNode;
@@ -65,9 +65,9 @@ export function PageHeader({
                 {title}
               </h1>
               {badge && (
-                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${badge.bgColor} ${badge.color}`}>
+                <Badge variant={badge.variant}>
                   {badge.label}
-                </span>
+                </Badge>
               )}
             </div>
             {subtitle && (

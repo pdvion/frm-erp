@@ -113,7 +113,7 @@ export default function OpportunityDetailPage() {
         icon={<TrendingUp className="w-6 h-6" />}
         backHref="/sales/crm/opportunities"
         module="sales"
-        badge={{ label: config.label, color: config.variant === "success" ? "text-green-700" : config.variant === "error" ? "text-red-700" : "text-blue-700", bgColor: config.variant === "success" ? "bg-green-100" : config.variant === "error" ? "bg-red-100" : "bg-blue-100" }}
+        badge={{ label: config.label, variant: config.variant }}
         actions={
           opp.status === "OPEN" ? (
             <div className="flex items-center gap-2">
