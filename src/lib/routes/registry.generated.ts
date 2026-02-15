@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-14T23:58:47.324Z
+ * Data: 2026-02-15T00:01:30.531Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -227,6 +227,12 @@ export const modules: ModuleDefinition[] = [
         children: [
           { path: "/assets/depreciation", label: "Depreciação", showInMenu: true, enabled: true },
           { path: "/assets/movements", label: "Movimentações", showInMenu: true, enabled: true }
+        ] },
+      { path: "/accounting", label: "Contabilidade", showInMenu: true, enabled: true,
+        children: [
+          { path: "/accounting/chart-of-accounts", label: "Plano de Contas", showInMenu: true, enabled: true },
+          { path: "/accounting/entries", label: "Lançamentos", showInMenu: true, enabled: true },
+          { path: "/accounting/reports", label: "Relatórios Contábeis", showInMenu: true, enabled: true }
         ] }
     ],
   },
