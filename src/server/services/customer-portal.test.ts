@@ -148,10 +148,11 @@ describe("CustomerPortalService", () => {
   });
 
   describe("revokeToken", () => {
-    it("should throw if token not found", async () => {
+    it("should return null if token not found", async () => {
       mockPrisma.customerPortalToken.findFirst.mockResolvedValue(null);
 
-      await expect(svc.revokeToken("tok-1", "comp-1")).rejects.toThrow("Token não encontrado");
+      const result = await svc.revokeToken("tok-1", "comp-1");
+      expect(result).toBeNull();
     });
 
     it("should update revokedAt", async () => {

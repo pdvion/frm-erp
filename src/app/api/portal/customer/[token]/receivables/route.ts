@@ -21,8 +21,10 @@ export async function GET(
     }
 
     const url = new URL(request.url);
-    const limit = Math.min(Number(url.searchParams.get("limit") ?? 20), 50);
-    const offset = Number(url.searchParams.get("offset") ?? 0);
+    const limitParam = Number(url.searchParams.get("limit"));
+    const limit = Math.min(Number.isFinite(limitParam) && limitParam > 0 ? Math.floor(limitParam) : 20, 50);
+    const offsetParam = Number(url.searchParams.get("offset"));
+    const offset = Number.isFinite(offsetParam) && offsetParam >= 0 ? Math.floor(offsetParam) : 0;
     const status = url.searchParams.get("status") || undefined;
 
     const data = await svc.getReceivables(result.companyId, result.customerId, {

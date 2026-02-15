@@ -71,7 +71,7 @@ export class CustomerPortalService {
     const existing = await this.prisma.customerPortalToken.findFirst({
       where: { id: tokenId, companyId },
     });
-    if (!existing) throw new Error("Token não encontrado");
+    if (!existing) return null;
 
     return this.prisma.customerPortalToken.update({
       where: { id: tokenId },
@@ -84,7 +84,12 @@ export class CustomerPortalService {
    */
   async listTokens(companyId: string, customerId: string) {
     return this.prisma.customerPortalToken.findMany({
-      where: { companyId, customerId },
+      where: {
+        companyId,
+        customerId,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+      },
       orderBy: { createdAt: "desc" },
       take: 10,
     });

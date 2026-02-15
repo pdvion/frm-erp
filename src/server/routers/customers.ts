@@ -244,7 +244,9 @@ export const customersRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { CustomerPortalService } = await import("../services/customer-portal");
       const svc = new CustomerPortalService(ctx.prisma);
-      return svc.revokeToken(input.tokenId, ctx.companyId);
+      const result = await svc.revokeToken(input.tokenId, ctx.companyId);
+      if (!result) throw new TRPCError({ code: "NOT_FOUND", message: "Token não encontrado" });
+      return result;
     }),
 
   listPortalTokens: tenantProcedure
