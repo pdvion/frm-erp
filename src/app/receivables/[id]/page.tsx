@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Textarea";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
@@ -320,189 +321,166 @@ export default function ReceivableDetailPage() {
       </div>
 
       {/* Modal de Recebimento */}
-      {showPaymentModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="payment-receivable-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowPaymentModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="payment-receivable-title" className="text-lg font-medium text-theme mb-4">Registrar Recebimento</h3>
-            <div className="space-y-4">
-              <Input
-                label="Data do Recebimento"
-                type="date"
-                value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-              />
-              <Input
-                label="Valor Recebido"
-                type="number"
-                step="0.01"
-                value={paymentValue}
-                onChange={(e) => setPaymentValue(e.target.value)}
-                placeholder={remaining.toFixed(2)}
-              />
-              <div className="grid grid-cols-3 gap-2">
-                <Input
-                  label="Desconto"
-                  type="number"
-                  step="0.01"
-                  value={discountValue}
-                  onChange={(e) => setDiscountValue(e.target.value)}
-                />
-                <Input
-                  label="Juros"
-                  type="number"
-                  step="0.01"
-                  value={interestValue}
-                  onChange={(e) => setInterestValue(e.target.value)}
-                />
-                <Input
-                  label="Multa"
-                  type="number"
-                  step="0.01"
-                  value={fineValue}
-                  onChange={(e) => setFineValue(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Forma de Recebimento
-                </label>
-                <Select
-                  value={paymentMethod}
-                  onChange={setPaymentMethod}
-                  placeholder="Selecione..."
-                  options={[
-                    { value: "", label: "Selecione..." },
-                    { value: "PIX", label: "PIX" },
-                    { value: "Boleto", label: "Boleto" },
-                    { value: "Transferência", label: "Transferência" },
-                    { value: "Cartão", label: "Cartão" },
-                    { value: "Dinheiro", label: "Dinheiro" },
-                    { value: "Cheque", label: "Cheque" },
-                  ]}
-                />
-              </div>
-              {bankAccounts && bankAccounts.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1">
-                    Conta Bancária
-                  </label>
-                  <Select
-                    value={selectedBankAccount}
-                    onChange={setSelectedBankAccount}
-                    placeholder="Selecione..."
-                    options={[
-                      { value: "", label: "Selecione..." },
-                      ...bankAccounts.map((account) => ({
-                        value: account.id,
-                        label: `${account.name} - ${account.bankName}`,
-                      })),
-                    ]}
-                  />
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-theme-secondary mb-1">
-                  Observações
-                </label>
-                <Textarea
-                  value={paymentNotes}
-                  onChange={(e) => setPaymentNotes(e.target.value)}
-                  rows={2}
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowPaymentModal(false);
-                  resetPaymentForm();
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => {
-                  paymentMutation.mutate({
-                    receivableId: id,
-                    paymentDate: new Date(paymentDate),
-                    value: parseFloat(paymentValue) || remaining,
-                    discountValue: parseFloat(discountValue) || 0,
-                    interestValue: parseFloat(interestValue) || 0,
-                    fineValue: parseFloat(fineValue) || 0,
-                    paymentMethod: paymentMethod || undefined,
-                    bankAccountId: selectedBankAccount || undefined,
-                    notes: paymentNotes || undefined,
-                  });
-                }}
-                disabled={paymentMutation.isPending}
-                isLoading={paymentMutation.isPending}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                Confirmar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showPaymentModal}
+        onClose={() => { setShowPaymentModal(false); resetPaymentForm(); }}
+        title="Registrar Recebimento"
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Data do Recebimento"
+            type="date"
+            value={paymentDate}
+            onChange={(e) => setPaymentDate(e.target.value)}
+          />
+          <Input
+            label="Valor Recebido"
+            type="number"
+            step="0.01"
+            value={paymentValue}
+            onChange={(e) => setPaymentValue(e.target.value)}
+            placeholder={remaining.toFixed(2)}
+          />
+          <div className="grid grid-cols-3 gap-2">
+            <Input
+              label="Desconto"
+              type="number"
+              step="0.01"
+              value={discountValue}
+              onChange={(e) => setDiscountValue(e.target.value)}
+            />
+            <Input
+              label="Juros"
+              type="number"
+              step="0.01"
+              value={interestValue}
+              onChange={(e) => setInterestValue(e.target.value)}
+            />
+            <Input
+              label="Multa"
+              type="number"
+              step="0.01"
+              value={fineValue}
+              onChange={(e) => setFineValue(e.target.value)}
+            />
           </div>
-        </div>
-      )}
-
-      {/* Modal de Cancelamento */}
-      {showCancelModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="cancel-receivable-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowCancelModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 id="cancel-receivable-title" className="text-lg font-medium text-theme mb-4">Cancelar Título</h3>
-            <p className="text-theme-secondary mb-4">
-              Tem certeza que deseja cancelar este título? Esta ação não pode ser desfeita.
-            </p>
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Forma de Recebimento
+            </label>
+            <Select
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+              placeholder="Selecione..."
+              options={[
+                { value: "", label: "Selecione..." },
+                { value: "PIX", label: "PIX" },
+                { value: "Boleto", label: "Boleto" },
+                { value: "Transferência", label: "Transferência" },
+                { value: "Cartão", label: "Cartão" },
+                { value: "Dinheiro", label: "Dinheiro" },
+                { value: "Cheque", label: "Cheque" },
+              ]}
+            />
+          </div>
+          {bankAccounts && bankAccounts.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-theme-secondary mb-1">
-                Motivo do Cancelamento
+                Conta Bancária
               </label>
-              <Textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                rows={3}
-                placeholder="Informe o motivo..."
+              <Select
+                value={selectedBankAccount}
+                onChange={setSelectedBankAccount}
+                placeholder="Selecione..."
+                options={[
+                  { value: "", label: "Selecione..." },
+                  ...bankAccounts.map((account) => ({
+                    value: account.id,
+                    label: `${account.name} - ${account.bankName}`,
+                  })),
+                ]}
               />
             </div>
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCancelModal(false);
-                  setCancelReason("");
-                }}
-                className="flex-1"
-              >
-                Voltar
-              </Button>
-              <Button
-                onClick={() => {
-                  cancelMutation.mutate({ id, reason: cancelReason });
-                }}
-                disabled={!cancelReason || cancelMutation.isPending}
-                isLoading={cancelMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700"
-              >
-                Confirmar Cancelamento
-              </Button>
-            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Observações
+            </label>
+            <Textarea
+              value={paymentNotes}
+              onChange={(e) => setPaymentNotes(e.target.value)}
+              rows={2}
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowPaymentModal(false); resetPaymentForm(); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                paymentMutation.mutate({
+                  receivableId: id,
+                  paymentDate: new Date(paymentDate),
+                  value: parseFloat(paymentValue) || remaining,
+                  discountValue: parseFloat(discountValue) || 0,
+                  interestValue: parseFloat(interestValue) || 0,
+                  fineValue: parseFloat(fineValue) || 0,
+                  paymentMethod: paymentMethod || undefined,
+                  bankAccountId: selectedBankAccount || undefined,
+                  notes: paymentNotes || undefined,
+                });
+              }}
+              disabled={paymentMutation.isPending}
+              isLoading={paymentMutation.isPending}
+            >
+              Confirmar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
+
+      {/* Modal de Cancelamento */}
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => { setShowCancelModal(false); setCancelReason(""); }}
+        title="Cancelar Título"
+        description="Tem certeza que deseja cancelar este título? Esta ação não pode ser desfeita."
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Motivo do Cancelamento
+            </label>
+            <Textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              rows={3}
+              placeholder="Informe o motivo..."
+            />
+          </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
+            >
+              Voltar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => cancelMutation.mutate({ id, reason: cancelReason })}
+              disabled={!cancelReason || cancelMutation.isPending}
+              isLoading={cancelMutation.isPending}
+            >
+              Confirmar Cancelamento
+            </Button>
+          </ModalFooter>
+        </div>
+      </Modal>
     </div>
   );
 }

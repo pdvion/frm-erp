@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Calendar,
   Plus,
@@ -292,81 +293,74 @@ export default function HolidaysPage() {
       </div>
 
       {/* Modal de novo feriado */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">Novo Feriado</h3>
-
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <Input
-                label="Data *"
-                type="date"
-                value={newHoliday.date}
-                onChange={(e) => setNewHoliday({ ...newHoliday, date: e.target.value })}
-              />
-
-              <Input
-                label="Nome *"
-                value={newHoliday.name}
-                onChange={(e) => setNewHoliday({ ...newHoliday, name: e.target.value })}
-                placeholder="Ex: Aniversário da Empresa"
-              />
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Tipo
-                </label>
-                <Select
-                  value={newHoliday.type}
-                  onChange={(value) => setNewHoliday({ ...newHoliday, type: value as HolidayType })}
-                  options={holidayTypes.map((t) => ({
-                    value: t.value,
-                    label: t.label,
-                  }))}
-                />
-              </div>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Input
-                  type="checkbox"
-                  checked={newHoliday.isOptional}
-                  onChange={(e) => setNewHoliday({ ...newHoliday, isOptional: e.target.checked })}
-                  className="w-4 h-4 rounded border-theme-input"
-                />
-                <span className="text-sm text-theme">Ponto facultativo</span>
-              </label>
+      <Modal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); setNewHoliday(initialNewHoliday); setError(""); }}
+        title="Novo Feriado"
+        size="sm"
+      >
+        <div className="space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+              {error}
             </div>
+          )}
 
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowModal(false);
-                  setNewHoliday(initialNewHoliday);
-                  setError("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={createMutation.isPending}
-                isLoading={createMutation.isPending}
-                className="flex-1"
-              >
-                Salvar
-              </Button>
-            </div>
+          <Input
+            label="Data *"
+            type="date"
+            value={newHoliday.date}
+            onChange={(e) => setNewHoliday({ ...newHoliday, date: e.target.value })}
+          />
+
+          <Input
+            label="Nome *"
+            value={newHoliday.name}
+            onChange={(e) => setNewHoliday({ ...newHoliday, name: e.target.value })}
+            placeholder="Ex: Aniversário da Empresa"
+          />
+
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              Tipo
+            </label>
+            <Select
+              value={newHoliday.type}
+              onChange={(value) => setNewHoliday({ ...newHoliday, type: value as HolidayType })}
+              options={holidayTypes.map((t) => ({
+                value: t.value,
+                label: t.label,
+              }))}
+            />
           </div>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Input
+              type="checkbox"
+              checked={newHoliday.isOptional}
+              onChange={(e) => setNewHoliday({ ...newHoliday, isOptional: e.target.checked })}
+              className="w-4 h-4 rounded border-theme-input"
+            />
+            <span className="text-sm text-theme">Ponto facultativo</span>
+          </label>
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowModal(false); setNewHoliday(initialNewHoliday); setError(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreate}
+              disabled={createMutation.isPending}
+              isLoading={createMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

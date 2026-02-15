@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Shield,
   Plus,
@@ -537,37 +538,27 @@ export default function ApprovalLevelsPage() {
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-theme-card mx-4 w-full max-w-md rounded-xl p-6 shadow-xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="rounded-lg bg-red-100 p-2">
-                <AlertCircle className="h-6 w-6 text-red-600" />
-              </div>
-              <h3 className="text-theme text-lg font-semibold">Excluir Nível de Alçada</h3>
-            </div>
-            <p className="text-theme-secondary mb-6">
-              Tem certeza que deseja excluir este nível de alçada? Esta ação não pode ser desfeita.
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(null)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => deleteMutation.mutate({ id: deleteConfirm })}
-                disabled={deleteMutation.isPending}
-                isLoading={deleteMutation.isPending}
-              >
-                Excluir
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title="Excluir Nível de Alçada"
+        description="Tem certeza que deseja excluir este nível de alçada? Esta ação não pode ser desfeita."
+        size="sm"
+      >
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => deleteConfirm && deleteMutation.mutate({ id: deleteConfirm })}
+            disabled={deleteMutation.isPending}
+            isLoading={deleteMutation.isPending}
+          >
+            Excluir
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }

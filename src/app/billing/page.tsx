@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   FileText,
   Plus,
@@ -339,20 +340,16 @@ export default function BillingPage() {
       </div>
 
       {/* New Invoice Modal */}
-      {showNewModal && (
-        <NewInvoiceModal
-          onClose={() => setShowNewModal(false)}
-          onSuccess={() => {
-            setShowNewModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <NewInvoiceModal
+        isOpen={showNewModal}
+        onClose={() => setShowNewModal(false)}
+        onSuccess={() => { setShowNewModal(false); refetch(); }}
+      />
     </div>
   );
 }
 
-function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+function NewInvoiceModal({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose: () => void; onSuccess: () => void }) {
   const [selectedOrderId, setSelectedOrderId] = useState("");
 
   const { data: orders } = trpc.sales.listOrders.useQuery({
@@ -371,20 +368,14 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="new-invoice-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Nova Nota Fiscal"
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="new-invoice-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-blue-600" />
-          Nova Nota Fiscal
-        </h3>
-
-        <div className="mb-4">
+      <div className="space-y-4">
+        <div>
           <label className="block text-sm font-medium text-theme-secondary mb-2">
             Selecione o Pedido de Venda
           </label>
@@ -403,35 +394,30 @@ function NewInvoiceModal({ onClose, onSuccess }: { onClose: () => void; onSucces
         </div>
 
         {createFromOrderMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-center gap-2 text-red-700">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
               <AlertTriangle className="w-5 h-5" />
               <span className="font-medium">Erro ao criar nota</span>
             </div>
-            <div className="text-sm text-red-600 mt-1">
+            <div className="text-sm text-red-600 dark:text-red-400 mt-1">
               {createFromOrderMutation.error.message}
             </div>
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
             onClick={handleCreate}
             disabled={!selectedOrderId}
             isLoading={createFromOrderMutation.isPending}
-            className="flex-1"
           >
             {createFromOrderMutation.isPending ? "Criando..." : "Criar NFe"}
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }

@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Landmark,
   Loader2,
@@ -193,39 +194,33 @@ export default function AccountDetailPage() {
       </main>
 
       {/* Transfer Modal */}
-      {showTransferModal && (
-        <TransferModal
-          fromAccountId={id}
-          currentBalance={Number(account.currentBalance)}
-          onClose={() => setShowTransferModal(false)}
-          onSuccess={() => {
-            setShowTransferModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <TransferModal
+        isOpen={showTransferModal}
+        fromAccountId={id}
+        currentBalance={Number(account.currentBalance)}
+        onClose={() => setShowTransferModal(false)}
+        onSuccess={() => { setShowTransferModal(false); refetch(); }}
+      />
 
       {/* Transaction Modal */}
-      {showTransactionModal && (
-        <TransactionModal
-          accountId={id}
-          onClose={() => setShowTransactionModal(false)}
-          onSuccess={() => {
-            setShowTransactionModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <TransactionModal
+        isOpen={showTransactionModal}
+        accountId={id}
+        onClose={() => setShowTransactionModal(false)}
+        onSuccess={() => { setShowTransactionModal(false); refetch(); }}
+      />
     </div>
   );
 }
 
 function TransferModal({
+  isOpen,
   fromAccountId,
   currentBalance,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   fromAccountId: string;
   currentBalance: number;
   onClose: () => void;
@@ -243,71 +238,54 @@ function TransferModal({
   const otherAccounts = accounts?.filter((a) => a.id !== fromAccountId) || [];
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="transfer-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
-    >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 id="transfer-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <ArrowRightLeft className="w-5 h-5 text-blue-600" />
-          Transferência entre Contas
-        </h3>
-
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-700">
+    <Modal isOpen={isOpen} onClose={onClose} title="Transferência entre Contas" size="sm">
+      <div className="space-y-4">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-sm text-blue-700 dark:text-blue-400">
             Saldo disponível: <span className="font-bold">{formatCurrency(currentBalance)}</span>
           </p>
         </div>
 
-        <div className="space-y-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Conta Destino</label>
-            <NativeSelect
-              value={toAccountId}
-              onChange={(e) => setToAccountId(e.target.value)}
-              className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Selecione...</option>
-              {otherAccounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name} - {account.bankName}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-
-          <Input
-            label="Valor"
-            type="number"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="0.00"
-            step={0.01}
-          />
-
-          <Input
-            label="Descrição"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Transferência entre contas"
-          />
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Conta Destino</label>
+          <NativeSelect
+            value={toAccountId}
+            onChange={(e) => setToAccountId(e.target.value)}
+            className="w-full px-3 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Selecione...</option>
+            {otherAccounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name} - {account.bankName}
+              </option>
+            ))}
+          </NativeSelect>
         </div>
 
+        <Input
+          label="Valor"
+          type="number"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="0.00"
+          step={0.01}
+        />
+
+        <Input
+          label="Descrição"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Transferência entre contas"
+        />
+
         {transferMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {transferMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
@@ -322,21 +300,22 @@ function TransferModal({
             }
             disabled={!toAccountId || !value || parseFloat(value) > currentBalance || transferMutation.isPending}
             isLoading={transferMutation.isPending}
-            className="flex-1"
           >
             Transferir
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 function TransactionModal({
+  isOpen,
   accountId,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   accountId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -352,93 +331,76 @@ function TransactionModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="transaction-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
-    >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 id="transaction-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-blue-600" />
-          Novo Lançamento
-        </h3>
-
-        <div className="space-y-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
-            <div className="flex gap-2">
-              <Button
-                variant={type === "CREDIT" ? "primary" : "outline"}
-                onClick={() => setType("CREDIT")}
-                leftIcon={<TrendingUp className="w-4 h-4" />}
-                className={`flex-1 ${
-                  type === "CREDIT"
-                    ? "bg-green-600 hover:bg-green-700 border-green-500"
-                    : ""
-                }`}
-              >
-                Crédito
-              </Button>
-              <Button
-                variant={type === "DEBIT" ? "primary" : "outline"}
-                onClick={() => setType("DEBIT")}
-                leftIcon={<TrendingDown className="w-4 h-4" />}
-                className={`flex-1 ${
-                  type === "DEBIT"
-                    ? "bg-red-600 hover:bg-red-700 border-red-500"
-                    : ""
-                }`}
-              >
-                Débito
-              </Button>
-            </div>
+    <Modal isOpen={isOpen} onClose={onClose} title="Novo Lançamento" size="sm">
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Tipo</label>
+          <div className="flex gap-2">
+            <Button
+              variant={type === "CREDIT" ? "primary" : "outline"}
+              onClick={() => setType("CREDIT")}
+              leftIcon={<TrendingUp className="w-4 h-4" />}
+              className={`flex-1 ${
+                type === "CREDIT"
+                  ? "bg-green-600 hover:bg-green-700 border-green-500"
+                  : ""
+              }`}
+            >
+              Crédito
+            </Button>
+            <Button
+              variant={type === "DEBIT" ? "primary" : "outline"}
+              onClick={() => setType("DEBIT")}
+              leftIcon={<TrendingDown className="w-4 h-4" />}
+              className={`flex-1 ${
+                type === "DEBIT"
+                  ? "bg-red-600 hover:bg-red-700 border-red-500"
+                  : ""
+              }`}
+            >
+              Débito
+            </Button>
           </div>
-
-          <Input
-            label="Valor"
-            type="number"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="0.00"
-            step={0.01}
-          />
-
-          <Input
-            label="Descrição"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Descrição do lançamento"
-          />
-
-          <Input
-            label="Data"
-            type="date"
-            value={transactionDate}
-            onChange={(e) => setTransactionDate(e.target.value)}
-          />
-
-          <Input
-            label="Documento (opcional)"
-            value={documentNumber}
-            onChange={(e) => setDocumentNumber(e.target.value)}
-            placeholder="Número do documento"
-          />
         </div>
 
+        <Input
+          label="Valor"
+          type="number"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="0.00"
+          step={0.01}
+        />
+
+        <Input
+          label="Descrição"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Descrição do lançamento"
+        />
+
+        <Input
+          label="Data"
+          type="date"
+          value={transactionDate}
+          onChange={(e) => setTransactionDate(e.target.value)}
+        />
+
+        <Input
+          label="Documento (opcional)"
+          value={documentNumber}
+          onChange={(e) => setDocumentNumber(e.target.value)}
+          placeholder="Número do documento"
+        />
+
         {transactionMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {transactionMutation.error.message}
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
@@ -454,12 +416,11 @@ function TransactionModal({
             }
             disabled={!value || !description || transactionMutation.isPending}
             isLoading={transactionMutation.isPending}
-            className="flex-1"
           >
             Salvar
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }

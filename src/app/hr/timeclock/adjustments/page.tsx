@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 
 type StatusFilter = "PENDING" | "APPROVED" | "REJECTED" | "ALL";
 
@@ -295,57 +296,49 @@ export default function TimeclockAdjustmentsPage() {
       </div>
 
       {/* Modal de revisão */}
-      {selectedAdjustment && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              Revisar Ajuste de Ponto
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">
-                  Observações (opcional)
-                </label>
-                <Textarea
-                  value={reviewNotes}
-                  onChange={(e) => setReviewNotes(e.target.value)}
-                  rows={3}
-                  placeholder="Adicione observações sobre a revisão..."
-                  className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSelectedAdjustment(null);
-                  setReviewNotes("");
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => handleReview(false)}
-                disabled={reviewMutation.isPending}
-                className="flex-1 bg-red-600 hover:bg-red-700"
-              >
-                Rejeitar
-              </Button>
-              <Button
-                onClick={() => handleReview(true)}
-                disabled={reviewMutation.isPending}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                Aprovar
-              </Button>
-            </div>
+      <Modal
+        isOpen={!!selectedAdjustment}
+        onClose={() => { setSelectedAdjustment(null); setReviewNotes(""); }}
+        title="Revisar Ajuste de Ponto"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">
+              Observações (opcional)
+            </label>
+            <Textarea
+              value={reviewNotes}
+              onChange={(e) => setReviewNotes(e.target.value)}
+              rows={3}
+              placeholder="Adicione observações sobre a revisão..."
+              className="w-full px-4 py-2 bg-theme-input border border-theme-input rounded-lg text-theme resize-none"
+            />
           </div>
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setSelectedAdjustment(null); setReviewNotes(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleReview(false)}
+              disabled={reviewMutation.isPending}
+            >
+              Rejeitar
+            </Button>
+            <Button
+              onClick={() => handleReview(true)}
+              disabled={reviewMutation.isPending}
+            >
+              Aprovar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
