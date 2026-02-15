@@ -3,7 +3,7 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-15T00:03:48.940Z
+ * Data: 2026-02-15T13:21:57.661Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
@@ -498,6 +498,7 @@ export const modules: ModuleDefinition[] = [
               { path: "/settings/ai/tasks", label: "Tarefas IA", showInMenu: true, enabled: true },
               { path: "/settings/ai/usage", label: "Consumo", showInMenu: true, enabled: true }
             ] },
+          { path: "/settings/api-keys", label: "Chaves de API", showInMenu: true, enabled: true },
           { path: "/settings/bank-accounts", label: "Contas Bancárias", showInMenu: true, enabled: true },
           { path: "/settings/collection-rules", label: "Regras de Cobrança", showInMenu: true, enabled: true },
           { path: "/settings/companies", label: "Empresas", showInMenu: true, enabled: true },
