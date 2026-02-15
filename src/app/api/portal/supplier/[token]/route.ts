@@ -51,7 +51,7 @@ export async function GET(
       paymentSummary: summary,
     });
   } catch (error: unknown) {
-    console.error("Supplier portal API error:", error instanceof Error ? error.message : String(error));
+    console.warn("Supplier portal API error:", error instanceof Error ? error.message : String(error));
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }

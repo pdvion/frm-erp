@@ -49,6 +49,20 @@ export async function POST(
       return NextResponse.json({ error: "Itens são obrigatórios" }, { status: 400 });
     }
 
+    const invalidItem = body.items.find(
+      (item: unknown) =>
+        typeof item !== "object" ||
+        item === null ||
+        typeof (item as Record<string, unknown>).id !== "string" ||
+        typeof (item as Record<string, unknown>).unitPrice !== "number"
+    );
+    if (invalidItem) {
+      return NextResponse.json(
+        { error: "Estrutura de item inválida: id (string) e unitPrice (number) são obrigatórios" },
+        { status: 400 }
+      );
+    }
+
     const result = await access.svc.respondToQuote(access.result.supplierId, quoteId, {
       paymentTerms: body.paymentTerms,
       deliveryTerms: body.deliveryTerms,

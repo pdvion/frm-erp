@@ -13,4 +13,3 @@ CREATE TABLE IF NOT EXISTS supplier_portal_tokens (
 
 CREATE INDEX idx_supplier_portal_tokens_company ON supplier_portal_tokens(company_id);
 CREATE INDEX idx_supplier_portal_tokens_supplier ON supplier_portal_tokens(supplier_id);
-CREATE INDEX idx_supplier_portal_tokens_token ON supplier_portal_tokens(token);

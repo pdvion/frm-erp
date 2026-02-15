@@ -90,7 +90,6 @@ model SupplierPortalToken {
 
   @@index([companyId])
   @@index([supplierId])
-  @@index([token])
   @@map("supplier_portal_tokens")
 }
 
