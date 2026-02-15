@@ -1,9 +1,10 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, MutationCache } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { useState } from "react";
 import superjson from "superjson";
+import { toast } from "sonner";
 import { trpc } from "./trpc";
 
 function getBaseUrl() {
@@ -21,12 +22,26 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        mutationCache: new MutationCache({
+          onError: (error, _variables, _context, mutation) => {
+            // Only show toast if the mutation doesn't have its own onError handler
+            if (!mutation.options.onError) {
+              const message = error instanceof Error ? error.message : "Erro inesperado";
+              toast.error(message);
+            }
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 1000 * 60, // 1 minuto - dados considerados frescos
             gcTime: 1000 * 60 * 5, // 5 minutos - tempo de cache
             refetchOnWindowFocus: false, // Não refetch ao focar janela
-            retry: 1, // Apenas 1 retry em caso de erro
+            retry: (failureCount, error) => {
+              // Retry transient errors (network, 503) up to 2 times
+              if (failureCount >= 2) return false;
+              const message = error instanceof Error ? error.message : String(error);
+              return message.includes("fetch") || message.includes("network") || message.includes("503");
+            },
           },
         },
       })

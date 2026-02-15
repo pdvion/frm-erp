@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { Home, LayoutDashboard } from "lucide-react";
 
 export default function NotFound() {
   const pathname = usePathname();
@@ -18,18 +20,18 @@ export default function NotFound() {
           A página que você está procurando não existe ou foi movida.
         </p>
         <div className="flex gap-3 justify-center">
-          <Link
-            href={isMobileContext ? "/m" : "/dashboard"}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
-            {isMobileContext ? "Voltar ao Início" : "Ir para o Dashboard"}
+          <Link href={isMobileContext ? "/m" : "/dashboard"}>
+            <Button>
+              <LayoutDashboard className="w-4 h-4 mr-2" />
+              {isMobileContext ? "Voltar ao Início" : "Ir para o Dashboard"}
+            </Button>
           </Link>
           {!isMobileContext && (
-            <Link
-              href="/"
-              className="inline-flex items-center px-4 py-2 border border-theme text-theme rounded-lg hover:bg-theme-hover transition-colors font-medium"
-            >
-              Página Inicial
+            <Link href="/">
+              <Button variant="outline">
+                <Home className="w-4 h-4 mr-2" />
+                Página Inicial
+              </Button>
             </Link>
           )}
         </div>
