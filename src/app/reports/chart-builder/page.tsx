@@ -13,6 +13,7 @@ import {
 } from "@/components/charts";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   BarChart3,
   Sparkles,
@@ -320,36 +321,32 @@ export default function ChartBuilderPage() {
       </div>
 
       {/* Modal de Salvar Template */}
-      {showSaveModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold text-theme mb-4">Salvar Template</h3>
-            <Input
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="Nome do template"
-              className="text-sm mb-4"
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSaveModal(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveTemplate}
-                disabled={saveMutation.isPending || !templateName.trim()}
-                isLoading={saveMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </div>
-          </div>
+      <Modal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        title="Salvar Template"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            placeholder="Nome do template"
+          />
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowSaveModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSaveTemplate}
+              disabled={saveMutation.isPending || !templateName.trim()}
+              isLoading={saveMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Badge, type BadgeVariant } from "@/components/ui/Badge";
 
 const statusConfig: Record<string, { label: string; variant: BadgeVariant; icon: React.ReactNode }> = {
@@ -395,42 +396,33 @@ export default function TaskDetailPage() {
       </main>
 
       {/* Complete Modal */}
-      {showCompleteModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="complete-task-title"
-          onKeyDown={(e) => e.key === "Escape" && setShowCompleteModal(false)}
-        >
-          <div className="bg-theme-card rounded-lg p-6 w-full max-w-md">
-            <h3 id="complete-task-title" className="text-lg font-semibold text-theme mb-4">Concluir Tarefa</h3>
-            <Textarea
-              placeholder="Descreva a resolução (opcional)..."
-              value={resolution}
-              onChange={(e) => setResolution(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2 border border-theme-input rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
-            />
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="ghost"
-                onClick={() => setShowCompleteModal(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => completeMutation.mutate({ taskId, resolution })}
-                disabled={completeMutation.isPending}
-                isLoading={completeMutation.isPending}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                Concluir
-              </Button>
-            </div>
-          </div>
+      <Modal
+        isOpen={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        title="Concluir Tarefa"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Textarea
+            placeholder="Descreva a resolução (opcional)..."
+            value={resolution}
+            onChange={(e) => setResolution(e.target.value)}
+            rows={4}
+          />
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowCompleteModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => completeMutation.mutate({ taskId, resolution })}
+              disabled={completeMutation.isPending}
+              isLoading={completeMutation.isPending}
+            >
+              Concluir
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

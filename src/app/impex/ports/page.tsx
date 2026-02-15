@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Anchor, Plus, Search, Edit2, Trash2, Ship, Plane, Truck } from "lucide-react";
 
 type PortType = "MARITIME" | "AIRPORT" | "BORDER";
@@ -226,65 +227,63 @@ export default function PortsPage() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">
-              {editingId ? "Editar Porto" : "Novo Porto"}
-            </h3>
-            <div className="space-y-4">
-              <Input
-                label="Código *"
-                value={formData.code}
-                onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                placeholder="Ex: BRSSZ"
+      <Modal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); resetForm(); }}
+        title={editingId ? "Editar Porto" : "Novo Porto"}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Código *"
+            value={formData.code}
+            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+            placeholder="Ex: BRSSZ"
+          />
+          <Input
+            label="Nome *"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="Ex: Porto de Santos"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="País *"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value.toUpperCase() })}
+              placeholder="BR"
+              maxLength={2}
+            />
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
+              <Select
+                value={formData.type}
+                onChange={(value) => setFormData({ ...formData, type: value as PortType })}
+                options={[
+                  { value: "MARITIME", label: "Marítimo" },
+                  { value: "AIRPORT", label: "Aeroporto" },
+                  { value: "BORDER", label: "Fronteira" },
+                ]}
               />
-              <Input
-                label="Nome *"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Porto de Santos"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="País *"
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value.toUpperCase() })}
-                  placeholder="BR"
-                  maxLength={2}
-                />
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Tipo *</label>
-                  <Select
-                    value={formData.type}
-                    onChange={(value) => setFormData({ ...formData, type: value as PortType })}
-                    options={[
-                      { value: "MARITIME", label: "Marítimo" },
-                      { value: "AIRPORT", label: "Aeroporto" },
-                      { value: "BORDER", label: "Fronteira" },
-                    ]}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => { setShowModal(false); resetForm(); }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!formData.code || !formData.name}
-                isLoading={createMutation.isPending || updateMutation.isPending}
-              >
-                Salvar
-              </Button>
             </div>
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowModal(false); resetForm(); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!formData.code || !formData.name}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { BarChart2, Plus, TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
@@ -155,59 +156,56 @@ export default function GPDIndicatorsPage() {
       )}
 
       {/* Modal de registro de valor */}
-      {showModal && selectedIndicator && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">Registrar Valor</h3>
-            <div className="space-y-4">
-              <Input
-                label="Período"
-                type="date"
-                value={newValue.period}
-                onChange={(e) => setNewValue({ ...newValue, period: e.target.value })}
-              />
-              <Input
-                label="Valor"
-                type="number"
-                step="0.01"
-                value={newValue.value}
-                onChange={(e) => setNewValue({ ...newValue, value: Number(e.target.value) })}
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Observações</label>
-                <Textarea
-                  value={newValue.notes}
-                  onChange={(e) => setNewValue({ ...newValue, notes: e.target.value })}
-                  rows={2}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowModal(false);
-                  setSelectedIndicator(null);
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => recordMutation.mutate({
-                  indicatorId: selectedIndicator,
-                  period: newValue.period,
-                  value: newValue.value,
-                  notes: newValue.notes || undefined,
-                })}
-                disabled={!newValue.period}
-                isLoading={recordMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </div>
+      <Modal
+        isOpen={!!(showModal && selectedIndicator)}
+        onClose={() => { setShowModal(false); setSelectedIndicator(null); }}
+        title="Registrar Valor"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Período"
+            type="date"
+            value={newValue.period}
+            onChange={(e) => setNewValue({ ...newValue, period: e.target.value })}
+          />
+          <Input
+            label="Valor"
+            type="number"
+            step="0.01"
+            value={newValue.value}
+            onChange={(e) => setNewValue({ ...newValue, value: Number(e.target.value) })}
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Observações</label>
+            <Textarea
+              value={newValue.notes}
+              onChange={(e) => setNewValue({ ...newValue, notes: e.target.value })}
+              rows={2}
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowModal(false); setSelectedIndicator(null); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => selectedIndicator && recordMutation.mutate({
+                indicatorId: selectedIndicator,
+                period: newValue.period,
+                value: newValue.value,
+                notes: newValue.notes || undefined,
+              })}
+              disabled={!newValue.period}
+              isLoading={recordMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       <div className="flex gap-4">
         <Link href="/gpd" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   Target,
   Plus,
@@ -234,93 +235,87 @@ export default function BIKPIsPage() {
       </div>
 
       {/* Modal de criação */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 max-w-lg w-full mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">Novo KPI</h3>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Código *"
-                  value={newKpi.code}
-                  onChange={(e) => setNewKpi({ ...newKpi, code: e.target.value })}
-                  placeholder="Ex: KPI-001"
-                />
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Categoria *</label>
-                  <Select
-                    value={newKpi.category}
-                    onChange={(value) => setNewKpi({ ...newKpi, category: value as KpiCategory })}
-                    options={categoryOptions.filter((c) => c.value !== "ALL").map((opt) => ({ value: opt.value, label: opt.label }))}
-                  />
-                </div>
-              </div>
-
-              <Input
-                label="Nome *"
-                value={newKpi.name}
-                onChange={(e) => setNewKpi({ ...newKpi, name: e.target.value })}
-                placeholder="Ex: Taxa de Conversão de Vendas"
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Novo KPI"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Código *"
+              value={newKpi.code}
+              onChange={(e) => setNewKpi({ ...newKpi, code: e.target.value })}
+              placeholder="Ex: KPI-001"
+            />
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Categoria *</label>
+              <Select
+                value={newKpi.category}
+                onChange={(value) => setNewKpi({ ...newKpi, category: value as KpiCategory })}
+                options={categoryOptions.filter((c) => c.value !== "ALL").map((opt) => ({ value: opt.value, label: opt.label }))}
               />
-
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <Textarea
-                  value={newKpi.description}
-                  onChange={(e) => setNewKpi({ ...newKpi, description: e.target.value })}
-                  rows={2}
-                  placeholder="Descrição do KPI..."
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <Input
-                  label="Unidade"
-                  value={newKpi.unit}
-                  onChange={(e) => setNewKpi({ ...newKpi, unit: e.target.value })}
-                  placeholder="%"
-                />
-                <Input
-                  label="Meta"
-                  type="number"
-                  value={newKpi.targetExpected}
-                  onChange={(e) => setNewKpi({ ...newKpi, targetExpected: parseFloat(e.target.value) || 0 })}
-                />
-                <div>
-                  <label className="block text-sm font-medium text-theme mb-1">Polaridade</label>
-                  <Select
-                    value={newKpi.polarity}
-                    onChange={(value) => setNewKpi({ ...newKpi, polarity: value as "HIGHER" | "LOWER" })}
-                    options={[
-                      { value: "HIGHER", label: "Maior é melhor" },
-                      { value: "LOWER", label: "Menor é melhor" },
-                    ]}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                onClick={() => setShowCreateModal(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={!newKpi.code.trim() || !newKpi.name.trim()}
-                isLoading={createMutation.isPending}
-                className="flex-1"
-              >
-                Criar
-              </Button>
             </div>
           </div>
+
+          <Input
+            label="Nome *"
+            value={newKpi.name}
+            onChange={(e) => setNewKpi({ ...newKpi, name: e.target.value })}
+            placeholder="Ex: Taxa de Conversão de Vendas"
+          />
+
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+            <Textarea
+              value={newKpi.description}
+              onChange={(e) => setNewKpi({ ...newKpi, description: e.target.value })}
+              rows={2}
+              placeholder="Descrição do KPI..."
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <Input
+              label="Unidade"
+              value={newKpi.unit}
+              onChange={(e) => setNewKpi({ ...newKpi, unit: e.target.value })}
+              placeholder="%"
+            />
+            <Input
+              label="Meta"
+              type="number"
+              value={newKpi.targetExpected}
+              onChange={(e) => setNewKpi({ ...newKpi, targetExpected: parseFloat(e.target.value) || 0 })}
+            />
+            <div>
+              <label className="block text-sm font-medium text-theme mb-1">Polaridade</label>
+              <Select
+                value={newKpi.polarity}
+                onChange={(value) => setNewKpi({ ...newKpi, polarity: value as "HIGHER" | "LOWER" })}
+                options={[
+                  { value: "HIGHER", label: "Maior é melhor" },
+                  { value: "LOWER", label: "Menor é melhor" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreate}
+              disabled={!newKpi.code.trim() || !newKpi.name.trim()}
+              isLoading={createMutation.isPending}
+            >
+              Criar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

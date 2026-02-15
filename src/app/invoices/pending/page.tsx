@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { LinkButton } from "@/components/ui/LinkButton";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import {
   FileText,
   RefreshCw,
@@ -533,241 +534,222 @@ export default function PendingInvoicesPage() {
       </div>
 
       {/* Ignore Modal */}
-      {showIgnoreModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4">Ignorar NFe</h3>
-            <p className="text-theme-secondary mb-4">
-              Tem certeza que deseja ignorar esta NFe? Ela não será importada para o sistema.
-            </p>
-            <div className="mb-4">
-              <label htmlFor="ignore-motivo" className="block text-sm font-medium text-theme-secondary mb-1">
-                Motivo (opcional)
-              </label>
-              <Textarea
-                id="ignore-motivo"
-                value={ignoreMotivo}
-                onChange={(e) => setIgnoreMotivo(e.target.value)}
-                placeholder="Ex: NFe de devolução, já lançada manualmente..."
-                rows={3}
-              />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowIgnoreModal(false);
-                  setSelectedNfe(null);
-                  setIgnoreMotivo("");
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleIgnore}
-                disabled={ignoreMutation.isPending}
-                isLoading={ignoreMutation.isPending}
-              >
-                Ignorar NFe
-              </Button>
-            </div>
+      <Modal
+        isOpen={showIgnoreModal}
+        onClose={() => { setShowIgnoreModal(false); setSelectedNfe(null); setIgnoreMotivo(""); }}
+        title="Ignorar NFe"
+        description="Tem certeza que deseja ignorar esta NFe? Ela não será importada para o sistema."
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="ignore-motivo" className="block text-sm font-medium text-theme-secondary mb-1">
+              Motivo (opcional)
+            </label>
+            <Textarea
+              id="ignore-motivo"
+              value={ignoreMotivo}
+              onChange={(e) => setIgnoreMotivo(e.target.value)}
+              placeholder="Ex: NFe de devolução, já lançada manualmente..."
+              rows={3}
+            />
           </div>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowIgnoreModal(false); setSelectedNfe(null); setIgnoreMotivo(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleIgnore}
+              disabled={ignoreMutation.isPending}
+              isLoading={ignoreMutation.isPending}
+            >
+              Ignorar NFe
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       {/* Manifest Modal - Individual */}
-      {showManifestModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
-              <Send className="w-5 h-5 text-purple-600" />
-              Manifestação do Destinatário
-            </h3>
-            <p className="text-theme-secondary mb-4 text-sm">
-              Selecione o tipo de manifestação para registrar na SEFAZ.
-            </p>
-            
-            <div className="space-y-3 mb-4">
-              {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
-                const config = manifestacaoConfig[tipo];
-                return (
-                  <label
-                    key={tipo}
-                    className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                      manifestTipo === tipo
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-theme hover:border-theme"
-                    }`}
-                  >
-                    <Input
-                      type="radio"
-                      name="manifestTipo"
-                      value={tipo}
-                      checked={manifestTipo === tipo}
-                      onChange={() => setManifestTipo(tipo)}
-                      className="mt-1 text-purple-600 focus:ring-purple-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={config.variant}>
-                          {config.icon}
-                          {config.label}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-theme-muted mt-1">{config.description}</p>
+      <Modal
+        isOpen={showManifestModal}
+        onClose={() => { setShowManifestModal(false); setSelectedNfe(null); setSelectedNfeChave(""); setManifestTipo("CIENCIA"); setManifestJustificativa(""); }}
+        title="Manifestação do Destinatário"
+        description="Selecione o tipo de manifestação para registrar na SEFAZ."
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="space-y-3">
+            {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
+              const config = manifestacaoConfig[tipo];
+              return (
+                <label
+                  key={tipo}
+                  className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                    manifestTipo === tipo
+                      ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                      : "border-theme hover:border-theme"
+                  }`}
+                >
+                  <Input
+                    type="radio"
+                    name="manifestTipo"
+                    value={tipo}
+                    checked={manifestTipo === tipo}
+                    onChange={() => setManifestTipo(tipo)}
+                    className="mt-1 text-purple-600 focus:ring-purple-500"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Badge variant={config.variant}>
+                        {config.icon}
+                        {config.label}
+                      </Badge>
                     </div>
-                  </label>
-                );
-              })}
-            </div>
-
-            {manifestTipo === "NAO_REALIZADA" && (
-              <div className="mb-4">
-                <label htmlFor="manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
-                  Justificativa <span className="text-red-500">*</span>
+                    <p className="text-xs text-theme-muted mt-1">{config.description}</p>
+                  </div>
                 </label>
-                <Textarea
-                  id="manifest-justificativa"
-                  value={manifestJustificativa}
-                  onChange={(e) => setManifestJustificativa(e.target.value)}
-                  placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
-                  rows={3}
-                />
-                {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
-                  <p className="text-xs text-red-500 mt-1">
-                    Mínimo 15 caracteres ({manifestJustificativa.length}/15)
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowManifestModal(false);
-                  setSelectedNfe(null);
-                  setSelectedNfeChave("");
-                  setManifestTipo("CIENCIA");
-                  setManifestJustificativa("");
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleManifest}
-                disabled={
-                  manifestMutation.isPending ||
-                  (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
-                }
-                isLoading={manifestMutation.isPending}
-              >
-                Registrar Manifestação
-              </Button>
-            </div>
+              );
+            })}
           </div>
+
+          {manifestTipo === "NAO_REALIZADA" && (
+            <div>
+              <label htmlFor="manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
+                Justificativa <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                id="manifest-justificativa"
+                value={manifestJustificativa}
+                onChange={(e) => setManifestJustificativa(e.target.value)}
+                placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
+                rows={3}
+              />
+              {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Mínimo 15 caracteres ({manifestJustificativa.length}/15)
+                </p>
+              )}
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowManifestModal(false); setSelectedNfe(null); setSelectedNfeChave(""); setManifestTipo("CIENCIA"); setManifestJustificativa(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleManifest}
+              disabled={
+                manifestMutation.isPending ||
+                (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
+              }
+              isLoading={manifestMutation.isPending}
+            >
+              Registrar Manifestação
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       {/* Batch Manifest Modal */}
-      {showBatchManifestModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card rounded-xl shadow-xl p-6 w-full max-w-lg mx-4">
-            <h3 className="text-lg font-semibold text-theme mb-4 flex items-center gap-2">
-              <Send className="w-5 h-5 text-purple-600" />
-              Manifestação em Lote
-            </h3>
-            <p className="text-theme-secondary mb-4 text-sm">
-              Você está prestes a manifestar <strong>{selectedNfes.length}</strong> NFe(s).
-              Selecione o tipo de manifestação.
-            </p>
-            
-            <div className="space-y-3 mb-4">
-              {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
-                const config = manifestacaoConfig[tipo];
-                return (
-                  <label
-                    key={tipo}
-                    className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                      manifestTipo === tipo
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-theme hover:border-theme"
-                    }`}
-                  >
-                    <Input
-                      type="radio"
-                      name="batchManifestTipo"
-                      value={tipo}
-                      checked={manifestTipo === tipo}
-                      onChange={() => setManifestTipo(tipo)}
-                      className="mt-1 text-purple-600 focus:ring-purple-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={config.variant}>
-                          {config.icon}
-                          {config.label}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-theme-muted mt-1">{config.description}</p>
+      <Modal
+        isOpen={showBatchManifestModal}
+        onClose={() => { setShowBatchManifestModal(false); setManifestTipo("CIENCIA"); setManifestJustificativa(""); }}
+        title="Manifestação em Lote"
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-theme-secondary text-sm">
+            Você está prestes a manifestar <strong>{selectedNfes.length}</strong> NFe(s).
+            Selecione o tipo de manifestação.
+          </p>
+
+          <div className="space-y-3">
+            {(Object.keys(manifestacaoConfig) as ManifestacaoTipo[]).map((tipo) => {
+              const config = manifestacaoConfig[tipo];
+              return (
+                <label
+                  key={tipo}
+                  className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                    manifestTipo === tipo
+                      ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
+                      : "border-theme hover:border-theme"
+                  }`}
+                >
+                  <Input
+                    type="radio"
+                    name="batchManifestTipo"
+                    value={tipo}
+                    checked={manifestTipo === tipo}
+                    onChange={() => setManifestTipo(tipo)}
+                    className="mt-1 text-purple-600 focus:ring-purple-500"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Badge variant={config.variant}>
+                        {config.icon}
+                        {config.label}
+                      </Badge>
                     </div>
-                  </label>
-                );
-              })}
-            </div>
-
-            {manifestTipo === "NAO_REALIZADA" && (
-              <div className="mb-4">
-                <label htmlFor="batch-manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
-                  Justificativa <span className="text-red-500">*</span>
+                    <p className="text-xs text-theme-muted mt-1">{config.description}</p>
+                  </div>
                 </label>
-                <Textarea
-                  id="batch-manifest-justificativa"
-                  value={manifestJustificativa}
-                  onChange={(e) => setManifestJustificativa(e.target.value)}
-                  placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
-                  rows={3}
-                />
-                {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
-                  <p className="text-xs text-red-500 mt-1">
-                    Mínimo 15 caracteres ({manifestJustificativa.length}/15)
-                  </p>
-                )}
-              </div>
-            )}
-
-            {batchManifestMutation.isError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                Erro ao processar manifestações. Tente novamente.
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowBatchManifestModal(false);
-                  setManifestTipo("CIENCIA");
-                  setManifestJustificativa("");
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleBatchManifest}
-                disabled={
-                  batchManifestMutation.isPending ||
-                  (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
-                }
-                isLoading={batchManifestMutation.isPending}
-              >
-                Manifestar {selectedNfes.length} NFe(s)
-              </Button>
-            </div>
+              );
+            })}
           </div>
+
+          {manifestTipo === "NAO_REALIZADA" && (
+            <div>
+              <label htmlFor="batch-manifest-justificativa" className="block text-sm font-medium text-theme-secondary mb-1">
+                Justificativa <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                id="batch-manifest-justificativa"
+                value={manifestJustificativa}
+                onChange={(e) => setManifestJustificativa(e.target.value)}
+                placeholder="Informe o motivo da operação não realizada (mínimo 15 caracteres)"
+                rows={3}
+              />
+              {manifestJustificativa.length > 0 && manifestJustificativa.length < 15 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Mínimo 15 caracteres ({manifestJustificativa.length}/15)
+                </p>
+              )}
+            </div>
+          )}
+
+          {batchManifestMutation.isError && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400">
+              Erro ao processar manifestações. Tente novamente.
+            </div>
+          )}
+
+          <ModalFooter>
+            <Button
+              variant="outline"
+              onClick={() => { setShowBatchManifestModal(false); setManifestTipo("CIENCIA"); setManifestJustificativa(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleBatchManifest}
+              disabled={
+                batchManifestMutation.isPending ||
+                (manifestTipo === "NAO_REALIZADA" && manifestJustificativa.length < 15)
+              }
+              isLoading={batchManifestMutation.isPending}
+            >
+              Manifestar {selectedNfes.length} NFe(s)
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

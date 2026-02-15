@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { Wallet, Plus, ChevronRight, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 import Link from "next/link";
 
@@ -146,59 +147,59 @@ export default function BudgetAccountsPage() {
       )}
 
       {/* Modal de criação */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-card border border-theme rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-theme mb-4">Nova Conta Orçamentária</h3>
-            <div className="space-y-4">
-              <Input
-                label="Código"
-                value={newAccount.code}
-                onChange={(e) => setNewAccount({ ...newAccount, code: e.target.value })}
-                placeholder="Ex: 1.1.01"
-              />
-              <Input
-                label="Nome"
-                value={newAccount.name}
-                onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
-                placeholder="Nome da conta"
-              />
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
-                <Select
-                  value={newAccount.type}
-                  onChange={(value) => setNewAccount({ ...newAccount, type: value as "REVENUE" | "EXPENSE" | "INVESTMENT" })}
-                  options={[
-                    { value: "REVENUE", label: "Receita" },
-                    { value: "EXPENSE", label: "Despesa" },
-                    { value: "INVESTMENT", label: "Investimento" },
-                  ]}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
-                <Textarea
-                  value={newAccount.description}
-                  onChange={(e) => setNewAccount({ ...newAccount, description: e.target.value })}
-                  rows={2}
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setShowModal(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={() => createMutation.mutate(newAccount)}
-                disabled={!newAccount.code || !newAccount.name}
-                isLoading={createMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </div>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Nova Conta Orçamentária"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Código"
+            value={newAccount.code}
+            onChange={(e) => setNewAccount({ ...newAccount, code: e.target.value })}
+            placeholder="Ex: 1.1.01"
+          />
+          <Input
+            label="Nome"
+            value={newAccount.name}
+            onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
+            placeholder="Nome da conta"
+          />
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Tipo</label>
+            <Select
+              value={newAccount.type}
+              onChange={(value) => setNewAccount({ ...newAccount, type: value as "REVENUE" | "EXPENSE" | "INVESTMENT" })}
+              options={[
+                { value: "REVENUE", label: "Receita" },
+                { value: "EXPENSE", label: "Despesa" },
+                { value: "INVESTMENT", label: "Investimento" },
+              ]}
+            />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-theme mb-1">Descrição</label>
+            <Textarea
+              value={newAccount.description}
+              onChange={(e) => setNewAccount({ ...newAccount, description: e.target.value })}
+              rows={2}
+            />
+          </div>
+          <ModalFooter>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => createMutation.mutate(newAccount)}
+              disabled={!newAccount.code || !newAccount.name}
+              isLoading={createMutation.isPending}
+            >
+              Salvar
+            </Button>
+          </ModalFooter>
         </div>
-      )}
+      </Modal>
 
       <div className="flex gap-4">
         <Link href="/budget" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">

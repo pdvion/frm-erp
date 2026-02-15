@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
+import { Modal, ModalFooter } from "@/components/ui/Modal";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import {
   Layers,
@@ -231,64 +232,61 @@ export default function BomDetailPage() {
       </main>
 
       {/* Add Component Modal */}
-      {showAddModal && (
-        <AddComponentModal
-          parentMaterialId={materialId}
-          onClose={() => setShowAddModal(false)}
-          onSuccess={() => {
-            setShowAddModal(false);
-            refetch();
-          }}
-        />
-      )}
+      <AddComponentModal
+        isOpen={showAddModal}
+        parentMaterialId={materialId}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={() => {
+          setShowAddModal(false);
+          refetch();
+        }}
+      />
 
       {/* Cost Modal */}
-      {showCostModal && (
-        <CostModal
-          materialId={materialId}
-          onClose={() => setShowCostModal(false)}
-        />
-      )}
+      <CostModal
+        isOpen={showCostModal}
+        materialId={materialId}
+        onClose={() => setShowCostModal(false)}
+      />
 
       {/* Explode Modal */}
-      {showExplodeModal && (
-        <ExplodeModal
-          materialId={materialId}
-          onClose={() => setShowExplodeModal(false)}
-        />
-      )}
+      <ExplodeModal
+        isOpen={showExplodeModal}
+        materialId={materialId}
+        onClose={() => setShowExplodeModal(false)}
+      />
 
       {/* Copy Modal */}
-      {showCopyModal && (
-        <CopyBomModal
-          sourceMaterialId={materialId}
-          onClose={() => setShowCopyModal(false)}
-          onSuccess={() => {
-            setShowCopyModal(false);
-          }}
-        />
-      )}
+      <CopyBomModal
+        isOpen={showCopyModal}
+        sourceMaterialId={materialId}
+        onClose={() => setShowCopyModal(false)}
+        onSuccess={() => {
+          setShowCopyModal(false);
+        }}
+      />
 
       {/* Edit Item Modal */}
-      {editingItem && (
-        <EditItemModal
-          itemId={editingItem}
-          onClose={() => setEditingItem(null)}
-          onSuccess={() => {
-            setEditingItem(null);
-            refetch();
-          }}
-        />
-      )}
+      <EditItemModal
+        isOpen={!!editingItem}
+        itemId={editingItem ?? ""}
+        onClose={() => setEditingItem(null)}
+        onSuccess={() => {
+          setEditingItem(null);
+          refetch();
+        }}
+      />
     </div>
   );
 }
 
 function AddComponentModal({
+  isOpen,
   parentMaterialId,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   parentMaterialId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -312,20 +310,13 @@ function AddComponentModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-component-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Adicionar Componente"
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 id="add-component-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Plus className="w-5 h-5 text-blue-600" />
-          Adicionar Componente
-        </h3>
-
-        <div className="space-y-4 mb-4">
+      <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">Componente</label>
             <div className="relative">
@@ -407,53 +398,49 @@ function AddComponentModal({
               rows={2}
             />
           </div>
-        </div>
 
-        {addMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" />
-            {addMutation.error.message}
-          </div>
-        )}
+          {addMutation.error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              {addMutation.error.message}
+            </div>
+          )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={() =>
-              addMutation.mutate({
-                parentMaterialId,
-                childMaterialId,
-                quantity: parseFloat(quantity) || 1,
-                unit,
-                scrapPercentage: parseFloat(scrapPercentage) || 0,
-                leadTimeDays: parseInt(leadTimeDays) || 0,
-                sequence: parseInt(sequence) || 0,
-                notes: notes || undefined,
-              })
-            }
-            disabled={!childMaterialId || addMutation.isPending}
-            isLoading={addMutation.isPending}
-            className="flex-1"
-          >
-            Adicionar
-          </Button>
+          <ModalFooter>
+            <Button variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() =>
+                addMutation.mutate({
+                  parentMaterialId,
+                  childMaterialId,
+                  quantity: parseFloat(quantity) || 1,
+                  unit,
+                  scrapPercentage: parseFloat(scrapPercentage) || 0,
+                  leadTimeDays: parseInt(leadTimeDays) || 0,
+                  sequence: parseInt(sequence) || 0,
+                  notes: notes || undefined,
+                })
+              }
+              disabled={!childMaterialId || addMutation.isPending}
+              isLoading={addMutation.isPending}
+            >
+              Adicionar
+            </Button>
+          </ModalFooter>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
 function EditItemModal({
+  isOpen,
   itemId,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   itemId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -485,21 +472,14 @@ function EditItemModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-component-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Editar Componente"
+      size="sm"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 id="edit-component-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Edit2 className="w-5 h-5 text-blue-600" />
-          Editar Componente
-        </h3>
-
-        <div className="space-y-4 mb-4">
-          <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
             <Input
               label="Quantidade"
               type="number"
@@ -514,38 +494,33 @@ function EditItemModal({
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <Input
-              label="Perda %"
-              type="number"
-              value={scrapPercentage}
-              onChange={(e) => setScrapPercentage(e.target.value)}
-              min="0"
-              max="100"
-            />
-            <Input
-              label="Lead Time"
-              type="number"
-              value={leadTimeDays}
-              onChange={(e) => setLeadTimeDays(e.target.value)}
-              min="0"
-            />
-            <Input
-              label="Sequência"
-              type="number"
-              value={sequence}
-              onChange={(e) => setSequence(e.target.value)}
-              min="0"
-            />
-          </div>
+        <div className="grid grid-cols-3 gap-4">
+          <Input
+            label="Perda %"
+            type="number"
+            value={scrapPercentage}
+            onChange={(e) => setScrapPercentage(e.target.value)}
+            min="0"
+            max="100"
+          />
+          <Input
+            label="Lead Time"
+            type="number"
+            value={leadTimeDays}
+            onChange={(e) => setLeadTimeDays(e.target.value)}
+            min="0"
+          />
+          <Input
+            label="Sequência"
+            type="number"
+            value={sequence}
+            onChange={(e) => setSequence(e.target.value)}
+            min="0"
+          />
         </div>
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <Button
@@ -561,20 +536,21 @@ function EditItemModal({
             }
             disabled={updateMutation.isPending}
             isLoading={updateMutation.isPending}
-            className="flex-1"
           >
             Salvar
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 function CostModal({
+  isOpen,
   materialId,
   onClose,
 }: {
+  isOpen: boolean;
   materialId: string;
   onClose: () => void;
 }) {
@@ -586,20 +562,14 @@ function CostModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cost-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Cálculo de Custo"
+      size="lg"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 id="cost-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Calculator className="w-5 h-5 text-blue-600" />
-          Cálculo de Custo
-        </h3>
-
-        <div className="mb-4 w-32">
+      <div className="space-y-4">
+        <div className="w-32">
           <Input
             label="Quantidade"
             type="number"
@@ -665,23 +635,22 @@ function CostModal({
           </>
         ) : null}
 
-        <div className="mt-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={onClose}
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Fechar
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 function ExplodeModal({
+  isOpen,
   materialId,
   onClose,
 }: {
+  isOpen: boolean;
   materialId: string;
   onClose: () => void;
 }) {
@@ -696,20 +665,14 @@ function ExplodeModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="explode-modal-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Explosão da Estrutura"
+      size="lg"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
-        <h3 id="explode-modal-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <ChevronDown className="w-5 h-5 text-blue-600" />
-          Explosão da Estrutura
-        </h3>
-
-        <div className="flex gap-4 mb-4">
+      <div className="space-y-4">
+        <div className="flex gap-4">
           <div className="w-32">
             <Input
               label="Quantidade"
@@ -809,24 +772,23 @@ function ExplodeModal({
           </>
         ) : null}
 
-        <div className="mt-4 flex justify-end">
-          <Button
-            variant="outline"
-            onClick={onClose}
-          >
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose}>
             Fechar
           </Button>
-        </div>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 function CopyBomModal({
+  isOpen,
   sourceMaterialId,
   onClose,
   onSuccess,
 }: {
+  isOpen: boolean;
   sourceMaterialId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -848,20 +810,13 @@ function CopyBomModal({
   });
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="copy-bom-title"
-      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Copiar Estrutura"
+      size="md"
     >
-      <div className="bg-theme-card rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 id="copy-bom-title" className="text-lg font-medium text-theme mb-4 flex items-center gap-2">
-          <Copy className="w-5 h-5 text-blue-600" />
-          Copiar Estrutura
-        </h3>
-
-        <div className="space-y-4 mb-4">
+      <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-1">
               Material de Destino
@@ -907,38 +862,32 @@ function CopyBomModal({
               Substituir estrutura existente no destino
             </span>
           </label>
-        </div>
 
-        {copyMutation.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {copyMutation.error.message}
-          </div>
-        )}
+          {copyMutation.error && (
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+              {copyMutation.error.message}
+            </div>
+          )}
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={() =>
-              copyMutation.mutate({
-                sourceMaterialId,
-                targetMaterialId,
-                replaceExisting,
-              })
-            }
-            disabled={!targetMaterialId || copyMutation.isPending}
-            isLoading={copyMutation.isPending}
-            className="flex-1"
-          >
-            Copiar
-          </Button>
+          <ModalFooter>
+            <Button variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() =>
+                copyMutation.mutate({
+                  sourceMaterialId,
+                  targetMaterialId,
+                  replaceExisting,
+                })
+              }
+              disabled={!targetMaterialId || copyMutation.isPending}
+              isLoading={copyMutation.isPending}
+            >
+              Copiar
+            </Button>
+          </ModalFooter>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
