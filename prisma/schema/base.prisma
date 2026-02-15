@@ -136,6 +136,9 @@ model Company {
   eSocialRubrics                ESocialRubric[]
   eSocialBatches                ESocialBatch[]
   eSocialEvents                 ESocialEvent[]
+  ediPartners                   EdiPartner[]
+  ediMessages                   EdiMessage[]
+  ediMappings                   EdiMapping[]
   apiKeys                       ApiKey[]
 
   @@map("companies")

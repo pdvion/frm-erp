@@ -3,12 +3,13 @@
  * NÃO EDITE MANUALMENTE
  *
  * Gerado por: pnpm routes:generate
- * Data: 2026-02-15T13:21:57.661Z
+ * Data: 2026-02-15T14:41:44.315Z
  *
  * Para modificar o menu, edite os arquivos _menu.json nas pastas de src/app/
  */
 
 import {
+  ArrowDownUp,
   BarChart3,
   Bell,
   CheckSquare,
@@ -462,6 +463,15 @@ export const modules: ModuleDefinition[] = [
         children: [
           { path: "/admin/auth-logs", label: "Logs de Autenticação", showInMenu: true, enabled: true }
         ] }
+    ],
+  },
+  {
+    id: "integracoes",
+    label: "Integrações",
+    icon: ArrowDownUp,
+    order: 16,
+    routes: [
+      { path: "/edi", label: "EDI", showInMenu: true, enabled: true }
     ],
   },
   {

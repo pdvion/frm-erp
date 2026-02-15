@@ -1,0 +1,128 @@
+// ─── EDI — Electronic Data Interchange ────────────────────────────────────────
+// VIO-1126 — Troca eletrônica com montadoras/varejo
+
+enum EdiFormat {
+  EDIFACT
+  FLAT_FILE
+  XML
+  JSON
+
+  @@map("edi_format")
+}
+
+enum EdiMessageType {
+  ORDERS
+  ORDRSP
+  DESADV
+  INVOIC
+  RECADV
+  PRICAT
+  INVRPT
+  OTHER
+
+  @@map("edi_message_type")
+}
+
+enum EdiDirection {
+  INBOUND
+  OUTBOUND
+
+  @@map("edi_direction")
+}
+
+enum EdiMessageStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  ERROR
+  CANCELLED
+
+  @@map("edi_message_status")
+}
+
+enum EdiPartnerStatus {
+  ACTIVE
+  INACTIVE
+  TESTING
+
+  @@map("edi_partner_status")
+}
+
+model EdiPartner {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String           @map("company_id") @db.Uuid
+  code            String           @db.VarChar(50)
+  name            String
+  cnpj            String?          @db.VarChar(18)
+  format          EdiFormat        @default(EDIFACT)
+  status          EdiPartnerStatus @default(ACTIVE)
+  sftpHost        String?          @map("sftp_host")
+  sftpPort        Int?             @default(22) @map("sftp_port")
+  sftpUser        String?          @map("sftp_user")
+  sftpPassword    String?          @map("sftp_password")
+  sftpInboundPath String?          @map("sftp_inbound_path")
+  sftpOutboundPath String?         @map("sftp_outbound_path")
+  webhookUrl      String?          @map("webhook_url")
+  notes           String?
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  company  Company      @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  messages EdiMessage[]
+  mappings EdiMapping[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@map("edi_partners")
+}
+
+model EdiMessage {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId       String           @map("company_id") @db.Uuid
+  partnerId       String           @map("partner_id") @db.Uuid
+  messageType     EdiMessageType   @map("message_type")
+  direction       EdiDirection
+  status          EdiMessageStatus @default(PENDING)
+  referenceNumber String?          @map("reference_number") @db.VarChar(100)
+  fileName        String?          @map("file_name")
+  rawContent      String?          @map("raw_content")
+  parsedData      Json?            @map("parsed_data")
+  errorMessage    String?          @map("error_message")
+  processedAt     DateTime?        @map("processed_at")
+  relatedOrderId  String?          @map("related_order_id") @db.Uuid
+  relatedInvoiceId String?         @map("related_invoice_id") @db.Uuid
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  company Company    @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  partner EdiPartner @relation(fields: [partnerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([companyId])
+  @@index([partnerId])
+  @@index([status])
+  @@index([messageType])
+  @@index([direction])
+  @@map("edi_messages")
+}
+
+model EdiMapping {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  companyId     String         @map("company_id") @db.Uuid
+  partnerId     String         @map("partner_id") @db.Uuid
+  messageType   EdiMessageType @map("message_type")
+  direction     EdiDirection
+  name          String
+  description   String?
+  fieldMappings Json           @map("field_mappings")
+  isActive      Boolean        @default(true) @map("is_active")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  company Company    @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  partner EdiPartner @relation(fields: [partnerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([companyId, partnerId, messageType, direction])
+  @@index([companyId])
+  @@index([partnerId])
+  @@map("edi_mappings")
+}
