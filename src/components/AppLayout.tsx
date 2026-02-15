@@ -23,6 +23,7 @@ const publicRoutes = [
   "/mfa/setup",
   "/admission/portal",
   "/portal/customer",
+  "/portal/supplier",
 ];
 
 const mobileRoutes = ["/m"];

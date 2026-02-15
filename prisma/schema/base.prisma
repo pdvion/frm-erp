@@ -141,6 +141,7 @@ model Company {
   ediMessages                   EdiMessage[]
   ediMappings                   EdiMapping[]
   apiKeys                       ApiKey[]
+  supplierPortalTokens          SupplierPortalToken[]
 
   @@map("companies")
 }
